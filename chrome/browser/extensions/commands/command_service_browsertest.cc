@@ -391,8 +391,6 @@ IN_PROC_BROWSER_TEST_P(CommandServiceMv3UpgradeTest,
                                         /*keyboard_code=*/ui::VKEY_U);
 }
 
-// TODO(crbug.com/404070124): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;
@@ -423,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
   ui::Accelerator accelerator =
       command_service
           ->FindCommandByName(kExtensionId,
-                              manifest_values::kBrowserActionCommandEvent)
+                              manifest_values::kActionCommandEvent)
           .accelerator();
   EXPECT_EQ(ui::VKEY_F, accelerator.key_code());
   EXPECT_FALSE(accelerator.IsCtrlDown());
@@ -431,16 +429,15 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
   EXPECT_TRUE(accelerator.IsAltDown());
 
   // Remove the keybinding.
-  command_service->UpdateKeybindingPrefs(
-      kExtensionId, manifest_values::kBrowserActionCommandEvent,
-      /*keystroke=*/"");
+  command_service->UpdateKeybindingPrefs(kExtensionId,
+                                         manifest_values::kActionCommandEvent,
+                                         /*keystroke=*/"");
 
   // Verify it got removed.
-  accelerator =
-      command_service
-          ->FindCommandByName(kExtensionId,
-                              manifest_values::kBrowserActionCommandEvent)
-          .accelerator();
+  accelerator = command_service
+                    ->FindCommandByName(kExtensionId,
+                                        manifest_values::kActionCommandEvent)
+                    .accelerator();
   EXPECT_EQ(ui::VKEY_UNKNOWN, accelerator.key_code());
 
   // Update to version 2.
@@ -448,14 +445,12 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kExtensionId));
 
   // Verify it is still set to nothing.
-  accelerator =
-      command_service
-          ->FindCommandByName(kExtensionId,
-                              manifest_values::kBrowserActionCommandEvent)
-          .accelerator();
+  accelerator = command_service
+                    ->FindCommandByName(kExtensionId,
+                                        manifest_values::kActionCommandEvent)
+                    .accelerator();
   EXPECT_EQ(ui::VKEY_UNKNOWN, accelerator.key_code());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(CommandServiceTest,
                        RemoveKeybindingPrefsShouldBePlatformSpecific) {

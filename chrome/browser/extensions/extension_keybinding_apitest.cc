@@ -618,8 +618,10 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ShortcutAddedOnUpdate) {
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+F.
-  accelerator = command_service->FindCommandByName(
-      kId, manifest_values::kBrowserActionCommandEvent).accelerator();
+  accelerator =
+      command_service
+          ->FindCommandByName(kId, manifest_values::kActionCommandEvent)
+          .accelerator();
   EXPECT_EQ(ui::VKEY_F, accelerator.key_code());
   EXPECT_FALSE(accelerator.IsCtrlDown());
   EXPECT_TRUE(accelerator.IsShiftDown());
@@ -653,8 +655,10 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ShortcutChangedOnUpdate) {
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+F.
-  ui::Accelerator accelerator = command_service->FindCommandByName(
-      kId, manifest_values::kBrowserActionCommandEvent).accelerator();
+  ui::Accelerator accelerator =
+      command_service
+          ->FindCommandByName(kId, manifest_values::kActionCommandEvent)
+          .accelerator();
   EXPECT_EQ(ui::VKEY_F, accelerator.key_code());
   EXPECT_FALSE(accelerator.IsCtrlDown());
   EXPECT_TRUE(accelerator.IsShiftDown());
@@ -700,8 +704,10 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ShortcutRemovedOnUpdate) {
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+F.
-  ui::Accelerator accelerator = command_service->FindCommandByName(
-      kId, manifest_values::kBrowserActionCommandEvent).accelerator();
+  ui::Accelerator accelerator =
+      command_service
+          ->FindCommandByName(kId, manifest_values::kActionCommandEvent)
+          .accelerator();
   EXPECT_EQ(ui::VKEY_F, accelerator.key_code());
   EXPECT_FALSE(accelerator.IsCtrlDown());
   EXPECT_TRUE(accelerator.IsShiftDown());
@@ -758,8 +764,10 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify the previously-set keybinding is still set.
-  accelerator = command_service->FindCommandByName(
-      kId, manifest_values::kBrowserActionCommandEvent).accelerator();
+  accelerator =
+      command_service
+          ->FindCommandByName(kId, manifest_values::kActionCommandEvent)
+          .accelerator();
   EXPECT_EQ(ui::VKEY_G, accelerator.key_code());
   EXPECT_FALSE(accelerator.IsCtrlDown());
   EXPECT_TRUE(accelerator.IsShiftDown());
@@ -794,8 +802,10 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+F.
-  ui::Accelerator accelerator = command_service->FindCommandByName(
-      kId, manifest_values::kBrowserActionCommandEvent).accelerator();
+  ui::Accelerator accelerator =
+      command_service
+          ->FindCommandByName(kId, manifest_values::kActionCommandEvent)
+          .accelerator();
   EXPECT_EQ(ui::VKEY_F, accelerator.key_code());
   EXPECT_FALSE(accelerator.IsCtrlDown());
   EXPECT_TRUE(accelerator.IsShiftDown());
@@ -899,8 +909,10 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kId) != nullptr);
 
   // Verify it has a command of Alt+Shift+F.
-  ui::Accelerator accelerator = command_service->FindCommandByName(
-      kId, manifest_values::kBrowserActionCommandEvent).accelerator();
+  ui::Accelerator accelerator =
+      command_service
+          ->FindCommandByName(kId, manifest_values::kActionCommandEvent)
+          .accelerator();
   EXPECT_EQ(ui::VKEY_F, accelerator.key_code());
   EXPECT_FALSE(accelerator.IsCtrlDown());
   EXPECT_TRUE(accelerator.IsShiftDown());

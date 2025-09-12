@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Called when the user clicks on the browser action.
-chrome.browserAction.onClicked.addListener(function(windowId) {
+chrome.action.onClicked.addListener(function (windowId) {
   chrome.tabs.executeScript(null, { code: "document.body.bgColor='red'" });
 });
 
