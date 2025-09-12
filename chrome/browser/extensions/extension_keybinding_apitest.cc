@@ -541,9 +541,9 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   const Extension* extension = GetSingleLoadedExtension();
   // Simulate the user setting the keybinding to Ctrl+D.
-  command_service->UpdateKeybindingPrefs(
-      extension->id(), manifest_values::kBrowserActionCommandEvent,
-      kBookmarkKeybinding);
+  command_service->UpdateKeybindingPrefs(extension->id(),
+                                         manifest_values::kActionCommandEvent,
+                                         kBookmarkKeybinding);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
@@ -1043,9 +1043,9 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, IncognitoMode) {
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(incognito_browser, ui::VKEY_F,
                                               true, true, false, false));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(is_incognito_enabled,
-            base::Contains(test_observer.dispatched_events(),
-                           "browserAction.onClicked"));
+  EXPECT_EQ(
+      is_incognito_enabled,
+      base::Contains(test_observer.dispatched_events(), "action.onClicked"));
 
   test_observer.ClearEvents();
 
