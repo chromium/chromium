@@ -677,13 +677,7 @@ bool WebPageReplayServerWrapper::Start(
       args.push_back("--quiet_mode");
   }
   args.push_back(base::StringPrintf(
-      "--inject_scripts=%s,%s",
-      FilePathToUTF8(src_dir.AppendASCII("third_party")
-                         .AppendASCII("catapult")
-                         .AppendASCII("web_page_replay_go")
-                         .AppendASCII("deterministic.js")
-                         .value())
-          .c_str(),
+      "--inject_scripts=%s",
       FilePathToUTF8(src_dir.AppendASCII("chrome")
                          .AppendASCII("test")
                          .AppendASCII("data")

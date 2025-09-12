@@ -70,9 +70,8 @@ _DEFAULT_LOG_DATA_DIR = os.path.join(_HOME_DIR, 'data/local_test_results')
 _EXTRA_BROWSER_AUTOFILL = ('autofill_download_manager=1,form_cache=1,'
                            'autofill_agent=1,autofill_handler=1,'
                            'form_structure=1,cache_replayer=2')
-_WPR_INJECT_SCRIPTS = ('--inject_scripts=third_party/catapult/web_page_replay_g'
-                       'o/deterministic.js,chrome/test/data/web_page_replay_go_'
-                       'helper_scripts/automation_helper.js')
+_WPR_INJECT_SCRIPTS = ('--inject_scripts=chrome/test/data/web_page_replay_go_h'
+                       'elper_scripts/automation_helper.js')
 _NORMAL_BROWSER_AUTOFILL = 'cache_replayer=1'
 _RUN_BACKGROUND = 'testing/xvfb.py'
 _RUN_DISABLED_TESTS = '--gtest_also_run_disabled_tests'
