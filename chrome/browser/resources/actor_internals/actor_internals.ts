@@ -80,11 +80,13 @@ class ActorEventLog {
   addEntry(entry: JournalEntry) {
     const {row, cells} = this.createRow(entry);
     const typeCell = cells[3]!;
+    const detailsCell = cells[4]!;
     if (entry.track === 'FrontEnd') {
       typeCell.classList.add('frontend-track');
     }
 
     this.formatTypeCell(entry, row, typeCell);
+    this.formatDetailsCell(entry, detailsCell);
     this.insertRow(row, entry.timestamp.getTime());
   }
 
@@ -103,7 +105,6 @@ class ActorEventLog {
     cells[0]!.textContent = entry.taskId === 0 ? '' : entry.taskId.toString();
     cells[1]!.textContent = entry.url;
     cells[2]!.textContent = entry.event;
-    cells[4]!.textContent = entry.details;
     cells[5]!.textContent =
         new Date(entry.timestamp).toLocaleTimeString(undefined, {
           hour12: false,
@@ -111,6 +112,21 @@ class ActorEventLog {
         });
 
     return {row, cells};
+  }
+
+  private formatDetailsCell(entry: JournalEntry,
+      detailsCell: HTMLTableCellElement ) {
+    if (entry.event === 'GlicPerformActions' && entry.details.startsWith('proto=')) {
+      const protobytes = entry.details.substring('proto='.length);
+      const link = document.createElement('a');
+      link.textContent = 'Actions Proto';
+      link.href = `https://protoshop.corp.google.com/embed?tabs=viewer,editor&type=chrome_intelligence_proto_features.Actions&protobytes=${
+          protobytes}`;
+      link.target = '_blank';
+      detailsCell.appendChild(link);
+    } else {
+      detailsCell.textContent = entry.details;
+    }
   }
 
   private formatTypeCell(
