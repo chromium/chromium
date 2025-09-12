@@ -68,13 +68,13 @@
     Related searches
   </message>
   <message name="IDS_HISTORY_CLUSTERS_REMOVE_ALL_ITEMS" desc="Label of the item in drop-down menu that allows the user to remove a group of history items.">
-    Remove all from history
+    Delete all from history
   </message>
   <message name="IDS_HISTORY_CLUSTERS_REMOVE_PAGE" desc="Label of the item in drop-down menu that allows the user to remove a history item.">
-    Remove from history
+    Delete from history
   </message>
   <message name="IDS_HISTORY_CLUSTERS_REMOVE_ITEM_TOAST" desc="Confirmation message shown after user successfully removes one history item from the item's drop-down menu.">
-    Item removed
+    Item deleted
   </message>
   <message name="IDS_HISTORY_CLUSTERS_REMOVE_SELECTED_ITEMS" desc="Title of the button that allows the user to remove the selected history cluster items">
     Delete selected items

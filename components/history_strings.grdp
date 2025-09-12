@@ -87,7 +87,7 @@
     </message>
   </if>
   <message name="IDS_HISTORY_REMOVE_BOOKMARK" desc="Tooltip shown when hovered over a history entry's bookmark star. When clicked, removes the bookmark.">
-    Remove bookmark
+    Delete bookmark
   </message>
   <message name="IDS_HISTORY_REMOVE_PAGE" desc="Command in the history entry drop-down menu. Removes a page from the history.">
     Remove from history
