@@ -217,7 +217,7 @@ void AshMojomVideoConsumer::OnStopped() {
 void AshMojomVideoConsumer::OnLog(const std::string& message) {
   VLOG(3) << "AshMojomVideoConsumer::OnLog : " << message;
 }
-// Invoked every time we change target, but, sub_capture_target_version is not
+// Invoked every time we change target, but `capture_version` is not
 // relevant for window capture.
 void AshMojomVideoConsumer::OnNewCaptureVersion(
     const media::CaptureVersion& capture_version) {}
