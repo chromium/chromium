@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
@@ -222,6 +223,21 @@ bool SkiaImageRepresentation::SupportsMultipleConcurrentReadAccess() {
   return false;
 }
 
+bool SkiaImageRepresentation::SupportsDeferredGraphiteSubmit() {
+  return false;
+}
+
+bool SkiaImageRepresentation::NeedGraphiteContextSubmitBeforeEndAccess() {
+  if (!features::kSkiaGraphiteEnableDeferredSubmit.Get()) {
+    // If deferred submit is disabled, then a submit is always required.
+    return true;
+  }
+
+  //  If the backing can support deferred submissions, then we don't need to
+  //  submit before EndAccess().
+  return !SupportsDeferredGraphiteSubmit();
+}
+
 SkiaImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
     SkiaImageRepresentation* representation,
     std::vector<sk_sp<SkSurface>> surfaces)
@@ -295,11 +311,6 @@ SkiaGaneshImageRepresentation::SkiaGaneshImageRepresentation(
     MemoryTypeTracker* tracker)
     : SkiaImageRepresentation(manager, backing, tracker),
       gr_context_(gr_context) {}
-
-bool SkiaGaneshImageRepresentation::NeedGraphiteContextSubmitBeforeEndAccess() {
-  // Ganesh shouldn't need a Graphite context submit.
-  return false;
-}
 
 SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
     base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
@@ -574,12 +585,6 @@ SkiaGraphiteImageRepresentation::SkiaGraphiteImageRepresentation(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker)
     : SkiaImageRepresentation(manager, backing, tracker) {}
-
-bool SkiaGraphiteImageRepresentation::
-    NeedGraphiteContextSubmitBeforeEndAccess() {
-  // As default, assume Graphite context submit is needed.
-  return true;
-}
 
 SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
     ScopedGraphiteWriteAccess(

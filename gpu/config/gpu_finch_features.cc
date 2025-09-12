@@ -353,6 +353,15 @@ const base::FeatureParam<int> kSkiaGraphiteMaxPendingRecordings{
 const base::FeatureParam<int> kSkiaGraphiteMinPathSizeForMsaa{
     &kSkiaGraphiteSmallPathAtlas, "min_path_size_for_msaa", 0};
 
+// Whether to enable deferred submissions optimization (if possible). If it's
+// false, every SI's access will require a Graphite's Context::submit() call
+// before EndAccess()
+BASE_FEATURE_PARAM(bool,
+                   kSkiaGraphiteEnableDeferredSubmit,
+                   &kSkiaGraphite,
+                   "enable_deferred_submit",
+                   true);
+
 #if BUILDFLAG(IS_WIN)
 // Whether the we should DumpWithoutCrashing when D3D related errors are detected.
 const base::FeatureParam<bool> kSkiaGraphiteDawnDumpWCOnD3DError{

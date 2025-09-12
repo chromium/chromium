@@ -70,6 +70,8 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnBackendDebugLabels;
 GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
     kSkiaGraphiteMaxPendingRecordings;
+GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
+    kSkiaGraphiteEnableDeferredSubmit;
 
 #if BUILDFLAG(IS_WIN)
 GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>

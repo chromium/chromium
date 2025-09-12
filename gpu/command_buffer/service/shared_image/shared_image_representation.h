@@ -508,11 +508,15 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
 
   // Return whether we need to submit graphite's commands before EndAccess.
   // NOTE: Implemented only for Graphite.
-  virtual bool NeedGraphiteContextSubmitBeforeEndAccess() = 0;
+  bool NeedGraphiteContextSubmitBeforeEndAccess();
 
   virtual bool SupportsMultipleConcurrentReadAccess();
 
  protected:
+  // Return whether the graphite context submission can be deferred even after
+  // the backing is destroyed.
+  virtual bool SupportsDeferredGraphiteSubmit();
+
   virtual void EndWriteAccess() = 0;
   virtual void EndReadAccess() = 0;
 };
@@ -626,9 +630,6 @@ class GPU_GLES2_EXPORT SkiaGaneshImageRepresentation
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
-
-  // Return false for ganesh.
-  bool NeedGraphiteContextSubmitBeforeEndAccess() final;
 
  protected:
   friend class WrappedSkiaGaneshCompoundImageRepresentation;
@@ -765,8 +766,6 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
-
-  bool NeedGraphiteContextSubmitBeforeEndAccess() override;
 
  protected:
   friend class WrappedSkiaGraphiteCompoundImageRepresentation;

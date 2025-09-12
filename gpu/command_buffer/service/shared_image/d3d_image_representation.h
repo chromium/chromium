@@ -193,7 +193,7 @@ class D3DSkiaGraphiteDawnImageRepresentation
   ~D3DSkiaGraphiteDawnImageRepresentation() override;
 
   bool SupportsMultipleConcurrentReadAccess() override;
-  bool NeedGraphiteContextSubmitBeforeEndAccess() override;
+  bool SupportsDeferredGraphiteSubmit() override;
 
  private:
   std::vector<scoped_refptr<GraphiteTextureHolder>> WrapBackendTextures(

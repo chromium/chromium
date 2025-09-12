@@ -547,10 +547,9 @@ bool D3DSkiaGraphiteDawnImageRepresentation::
   return !d3d_image_backing->has_keyed_mutex();
 }
 
-bool D3DSkiaGraphiteDawnImageRepresentation::
-    NeedGraphiteContextSubmitBeforeEndAccess() {
+bool D3DSkiaGraphiteDawnImageRepresentation::SupportsDeferredGraphiteSubmit() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  return !d3d_image_backing->SupportsDeferredGraphiteSubmit();
+  return d3d_image_backing->SupportsDeferredGraphiteSubmit();
 }
 
 std::vector<scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>
