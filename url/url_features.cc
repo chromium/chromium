@@ -8,7 +8,6 @@
 namespace url {
 
 BASE_FEATURE(kDisallowSpaceCharacterInURLHostParsing,
-             "DisallowSpaceCharacterInURLHostParsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDisallowingSpaceCharacterInURLHostParsing() {
