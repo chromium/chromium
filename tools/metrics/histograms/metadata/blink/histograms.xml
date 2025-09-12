@@ -1193,6 +1193,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Blink.DocumentLoader.TotalTakenTimeToUpdateSubresourceLoadMetrics.OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"
+    units="ms" expires_after="2026-02-22">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Total time spent processing DocumentLoader::UpdateSubresourceLoadMetrics()
+    until the document parsing is finished in the renderer process. This is
+    recorded on each new navigation for http or https URLs in
+    OutermostMainFrame.
+  </summary>
+</histogram>
+
 <histogram name="Blink.EffectiveZoom" units="%" expires_after="2026-03-01">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>

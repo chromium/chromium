@@ -487,6 +487,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Gets the content settings for the current {frame, navigation commit} tuple.
   const mojom::RendererContentSettingsPtr& GetContentSettings();
 
+  void ReportTotalTakenTimeToUpdateSubresourceLoadMetrics();
+
  protected:
   // Based on its MIME type, if the main document's response corresponds to an
   // MHTML archive, then every resources will be loaded from this archive.
@@ -883,6 +885,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // the URL seems like a match. This matters for cross-origin navigations
   // (apart from error pages with the same precursor origin).
   bool force_new_document_sequence_number_ = false;
+
+  // Stores the total time taken by `UpdateSubresourceLoadMetrics()` for the
+  // measurement purpose.
+  base::TimeDelta total_taken_time_to_update_subresource_load_metrics_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);
