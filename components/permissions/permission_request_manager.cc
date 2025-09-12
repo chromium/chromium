@@ -905,8 +905,7 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   // only after the camera request is resolved. This is caused by code in
   // PermissionBubbleMediaAccessHandler and UserMediaClient. We probably don't
   // need two permission queues, so resolve the duplication.
-
-  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() || view_ ||
+  if (web_contents()->HasUncommittedNavigationInPrimaryMainFrame() || view_ ||
       IsRequestInProgress()) {
     return;
   }
@@ -1005,7 +1004,7 @@ void PermissionRequestManager::ShowPrompt() {
     return;
   }
 
-  DCHECK(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
+  DCHECK(!web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
   DCHECK(current_request_ui_to_use_);
 
   if (!tab_is_active_) {
@@ -1761,7 +1760,7 @@ void PermissionRequestManager::OnTabActiveChanged() {
     return;
   }
 
-  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+  if (web_contents()->HasUncommittedNavigationInPrimaryMainFrame()) {
     return;
   }
 
