@@ -7,7 +7,7 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "content/public/browser/browser_thread.h"
 
