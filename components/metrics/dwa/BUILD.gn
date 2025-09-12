@@ -15,11 +15,28 @@ component("dwa_recorder") {
   deps = [ "//base" ]
 }
 
+component("private_metrics_recorder") {
+  sources = [
+    "//components/metrics/private_metrics/dkm_recorder.cc",
+    "//components/metrics/private_metrics/dkm_recorder.h",
+  ]
+  defines = [ "IS_PRIVATE_METRICS_RECORDER_IMPL" ]
+  public_deps = [
+    "//components/metrics/private_metrics/mojom",
+    "//third_party/metrics_proto",
+  ]
+  deps = [ "//base" ]
+}
+
 # TODO(crbug.com/433729993): Build dwa static library under private_metrics static library.
 static_library("dwa") {
   sources = [
     "//components/metrics/private_metrics/data_upload_config_downloader.cc",
     "//components/metrics/private_metrics/data_upload_config_downloader.h",
+    "//components/metrics/private_metrics/dkm_entry_builder.cc",
+    "//components/metrics/private_metrics/dkm_entry_builder.h",
+    "//components/metrics/private_metrics/dkm_entry_builder_base.cc",
+    "//components/metrics/private_metrics/dkm_entry_builder_base.h",
     "//components/metrics/private_metrics/private_metrics_pref_names.cc",
     "//components/metrics/private_metrics/private_metrics_pref_names.h",
     "//components/metrics/private_metrics/private_metrics_reporting_service.cc",
@@ -43,7 +60,9 @@ static_library("dwa") {
   ]
   public_deps = [
     ":dwa_recorder",
+    ":private_metrics_recorder",
     "//components/metrics/dwa/mojom",
+    "//components/metrics/private_metrics/mojom",
     "//third_party/federated_compute:confidential_compute_proto",
     "//third_party/metrics_proto",
   ]
@@ -57,6 +76,7 @@ static_library("dwa") {
     "//components/version_info",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
     "//third_party/federated_compute:confidential_compute",
     "//third_party/oak:oak_proto",
@@ -67,6 +87,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "//components/metrics/private_metrics/data_upload_config_downloader_unittest.cc",
+    "//components/metrics/private_metrics/dkm_entry_builder_unittest.cc",
     "dwa_entry_builder_unittest.cc",
     "dwa_recorder_unittest.cc",
     "dwa_service_unittest.cc",
@@ -79,6 +100,7 @@ source_set("unit_tests") {
     "//components/metrics:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
