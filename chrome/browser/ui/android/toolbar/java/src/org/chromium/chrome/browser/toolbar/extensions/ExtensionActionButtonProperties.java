@@ -37,6 +37,10 @@ public class ExtensionActionButtonProperties {
     public static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** The context-click listener. */
+    public static final WritableObjectPropertyKey<View.OnContextClickListener>
+            ON_CONTEXT_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+
     /**
      * The title of the action. It is the name of the extension by default, but an extension can
      * update it programmatically.
@@ -45,5 +49,5 @@ public class ExtensionActionButtonProperties {
 
     /** The list of all keys defined here. */
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {ICON, ID, ON_CLICK_LISTENER, TITLE};
+            new PropertyKey[] {ICON, ID, ON_CLICK_LISTENER, ON_CONTEXT_CLICK_LISTENER, TITLE};
 }

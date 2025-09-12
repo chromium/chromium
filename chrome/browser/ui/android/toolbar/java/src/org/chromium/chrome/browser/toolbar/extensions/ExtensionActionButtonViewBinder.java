@@ -27,6 +27,9 @@ public class ExtensionActionButtonViewBinder {
             button.setImageBitmap(bitmap);
         } else if (key == ExtensionActionButtonProperties.ON_CLICK_LISTENER) {
             button.setOnClickListener(model.get(ExtensionActionButtonProperties.ON_CLICK_LISTENER));
+        } else if (key == ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER) {
+            button.setOnContextClickListener(
+                    model.get(ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER));
         }
     }
 }

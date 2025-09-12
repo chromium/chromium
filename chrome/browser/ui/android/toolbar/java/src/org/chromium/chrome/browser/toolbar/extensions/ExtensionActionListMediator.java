@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
@@ -14,18 +16,28 @@ import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
+import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.extensions.ShowAction;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.RectProvider;
 
 @NullMarked
 class ExtensionActionListMediator implements Destroyable {
@@ -116,6 +128,67 @@ class ExtensionActionListMediator implements Destroyable {
         mCurrentPopup.addOnDismissListener(this::closePopup);
     }
 
+    private void onContextClick(ListMenuButton buttonView, String actionId) {
+        Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
+        if (currentTab == null) {
+            return;
+        }
+
+        WebContents webContents = currentTab.getWebContents();
+        Profile profile = mExtensionActionsUpdateHelper.getProfile();
+        if (webContents == null || profile == null) {
+            return;
+        }
+
+        ExtensionActionContextMenuBridge extensionActionContextMenuBridge =
+                new ExtensionActionContextMenuBridge(
+                        profile, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
+        ModelList modelList = extensionActionContextMenuBridge.getModelList();
+
+        ListMenu.Delegate buttonDelegate =
+                new ListMenu.Delegate() {
+                    @Override
+                    public void onItemSelected(PropertyModel model) {
+                        View.OnClickListener listener = model.get(CLICK_LISTENER);
+
+                        if (listener != null) {
+                            listener.onClick(null);
+                        }
+                    }
+                };
+
+        BasicListMenu listMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(mContext, modelList, buttonDelegate);
+
+        ListMenuDelegate listDelegate =
+                new ListMenuDelegate() {
+                    @Override
+                    public ListMenu getListMenu() {
+                        return listMenu;
+                    }
+
+                    @Override
+                    public RectProvider getRectProvider(View listMenuHostingView) {
+                        return MenuBuilderHelper.getRectProvider(buttonView);
+                    }
+                };
+        buttonView.setDelegate(listDelegate, false);
+
+        buttonView.addPopupListener(
+                new ListMenuHost.PopupMenuShownListener() {
+                    @Override
+                    public void onPopupMenuShown() {}
+
+                    @Override
+                    public void onPopupMenuDismissed() {
+                        extensionActionContextMenuBridge.destroy();
+                        buttonView.removePopupListener(this);
+                    }
+                });
+
+        buttonView.showMenu();
+    }
+
     private void closePopup() {
         if (mCurrentPopup == null) {
             return;
@@ -158,6 +231,12 @@ class ExtensionActionListMediator implements Destroyable {
                             .with(
                                     ExtensionActionButtonProperties.ON_CLICK_LISTENER,
                                     (view) -> onPrimaryClick(view, actionId))
+                            .with(
+                                    ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER,
+                                    (view) -> {
+                                        onContextClick((ListMenuButton) view, actionId);
+                                        return false;
+                                    })
                             .with(ExtensionActionButtonProperties.TITLE, action.getTitle())
                             .build());
         }
