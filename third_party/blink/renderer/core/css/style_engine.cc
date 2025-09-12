@@ -4454,6 +4454,10 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
     if (auto* root_element = GetDocument().documentElement()) {
       if (const ComputedStyle* style = root_element->GetComputedStyle()) {
         root_color_scheme = style->UsedColorScheme();
+        if (RuntimeEnabledFeatures::
+                AboutBlankPageRespectsDarkModeOnUserActionEnabled()) {
+          root_color_scheme = AdjustAboutBlankColorScheme(root_color_scheme);
+        }
       } else if (SupportsDarkColorScheme()) {
         root_color_scheme = mojom::blink::ColorScheme::kDark;
       }
@@ -4518,6 +4522,30 @@ void StyleEngine::UpdateForcedBackgroundColor() {
       GetDocument().GetPage()->GetColorProviderForPainting(
           color_scheme, forced_colors_ != ForcedColors::kNone),
       GetDocument().IsInWebAppScope());
+}
+
+mojom::blink::ColorScheme StyleEngine::AdjustAboutBlankColorScheme(
+    mojom::blink::ColorScheme root_color_scheme) const {
+  // In browser contexts with a dark mode preference, about:blank should
+  // open in a dark color scheme when the user types about:blank into
+  // address bar or user is opening about:blank as a new tab page.
+  //
+  // Users were previously getting blinded when opening a new tab
+  // to about:blank or navigating to about:blank while in dark mode
+  // with no obvious user facing setting to override this behavior.
+  // Now we adjust to dark mode by default in these scenarios.
+  // The detection of this scenario is not intended to be perfect,
+  // though to capture a majority of known user scenarios.
+  // See https://issues.chromium.org/issues/40190899
+
+  const bool likely_user_initiated_aboutblank =
+      GetDocument().IsInMainFrame() && GetDocument().Url().IsAboutBlankURL() &&
+      !GetDocument().GetPage()->OpenedByDOM();
+  if (preferred_color_scheme_ == mojom::blink::PreferredColorScheme::kDark &&
+      likely_user_initiated_aboutblank) {
+    return mojom::blink::ColorScheme::kDark;
+  }
+  return root_color_scheme;
 }
 
 Color StyleEngine::ColorAdjustBackgroundColor() const {

@@ -220,6 +220,12 @@
       status: "stable",
     },
     {
+      // This flag changes about:blank to dark in dark mode on user action.
+      // See: https://issues.chromium.org/issues/40190899
+      name: "AboutBlankPageRespectsDarkModeOnUserAction",
+      status: "stable",
+    },
+    {
       name: "Accelerated2dCanvas",
       settable_from_internals: true,
       status: "stable",
