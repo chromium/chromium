@@ -18,6 +18,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
@@ -117,6 +118,12 @@ id<GREYMatcher> SafariImportButton() {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kIOSQuickDelete);
+  if ([self isRunningTest:@selector
+            (testSafariImportButtonHiddenWhenAllBlocked)] ||
+      [self isRunningTest:@selector
+            (testSafariImportButtonVisibleWhenSomeBlocked)]) {
+    config.features_enabled.push_back(kImportPasswordsFromSafari);
+  }
 
   return config;
 }
@@ -432,8 +439,7 @@ id<GREYMatcher> SafariImportButton() {
 
 // Tests that the Safari Import button remains visible if at least one data type
 // is not blocked from import by enterprise policies.
-// TODO(crbug.com/444394494): Test is failing.
-- (void)DISABLED_testSafariImportButtonVisibleWhenSomeBlocked {
+- (void)testSafariImportButtonVisibleWhenSomeBlocked {
   if (@available(iOS 18.2, *)) {
     MergePolicy(true, "AutofillCreditCardEnabled");
     MergePolicy(false, "PasswordManagerEnabled");
