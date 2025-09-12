@@ -1424,17 +1424,13 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return YES;
   }
 
-  GURL mainDocumentURL = net::GURLWithNSURL(action.request.mainDocumentURL);
-  if (web::GetWebClient()->IsAppSpecificURL(mainDocumentURL)
-#if !defined(__IPHONE_26_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_26_0
-      // The `sourceFrame.mainFrame` property is now always non-null when
-      // compiling against the iOS26 SDK, breaking this check.
-      && !action.sourceFrame.mainFrame
-#endif
-  ) {
+  if (!action.sourceFrame.mainFrame) {
     // AppSpecific URLs are allowed inside iframe if the main frame is also
     // app specific page.
-    return YES;
+    GURL mainDocumentURL = net::GURLWithNSURL(action.request.mainDocumentURL);
+    if (web::GetWebClient()->IsAppSpecificURL(mainDocumentURL)) {
+      return YES;
+    }
   }
 
   return NO;
