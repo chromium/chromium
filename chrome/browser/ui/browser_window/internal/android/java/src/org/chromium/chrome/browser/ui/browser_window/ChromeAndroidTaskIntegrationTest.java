@@ -9,10 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -23,10 +19,6 @@ import androidx.test.filters.MediumTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -45,6 +37,9 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(value = Batch.PER_CLASS)
@@ -54,8 +49,6 @@ public class ChromeAndroidTaskIntegrationTest {
     @Rule
     public FreshCtaTransitTestRule mFreshCtaTransitTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Test
     @MediumTest
@@ -133,8 +126,8 @@ public class ChromeAndroidTaskIntegrationTest {
         int taskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
         var chromeAndroidTask = getChromeAndroidTask(taskId);
         assertNotNull(chromeAndroidTask);
-        var mockFeature = mock(ChromeAndroidTaskFeature.class);
-        chromeAndroidTask.addFeature(mockFeature);
+        var testFeature = new TestChromeAndroidTaskFeature();
+        chromeAndroidTask.addFeature(testFeature);
 
         // Act:
         // Open a new window, which on tablet will enter split screen mode and trigger a
@@ -143,7 +136,7 @@ public class ChromeAndroidTaskIntegrationTest {
                 webPageStation.openRegularTabAppMenu().openNewWindow();
 
         // Assert.
-        verify(mockFeature, times(1)).onTaskBoundsChanged(any());
+        assertEquals(1, testFeature.mTimesOnTaskBoundsChanged);
 
         // Cleanup.
         ntpStation.getActivity().finish();
@@ -161,8 +154,8 @@ public class ChromeAndroidTaskIntegrationTest {
         int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
         var firstChromeAndroidTask = getChromeAndroidTask(firstTaskId);
         assertNotNull(firstChromeAndroidTask);
-        var mockFeature = mock(ChromeAndroidTaskFeature.class);
-        firstChromeAndroidTask.addFeature(mockFeature);
+        var testFeature = new TestChromeAndroidTaskFeature();
+        firstChromeAndroidTask.addFeature(testFeature);
 
         // Act:
         // Open a new window. The first window will lose focus.
@@ -178,9 +171,9 @@ public class ChromeAndroidTaskIntegrationTest {
         CriteriaHelper.pollUiThread(firstChromeAndroidTask::isActive);
 
         // Assert.
-        InOrder inOrder = Mockito.inOrder(mockFeature);
-        inOrder.verify(mockFeature).onTaskFocusChanged(/* hasFocus= */ false);
-        inOrder.verify(mockFeature).onTaskFocusChanged(/* hasFocus= */ true);
+        assertEquals(2, testFeature.mTaskFocusChangedParams.size());
+        assertFalse(testFeature.mTaskFocusChangedParams.get(0));
+        assertTrue(testFeature.mTaskFocusChangedParams.get(1));
 
         // Cleanup.
         ntpStation.getActivity().finish();
@@ -468,5 +461,28 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(chromeAndroidTaskTracker);
 
         return chromeAndroidTaskTracker.get(taskId);
+    }
+
+    private static final class TestChromeAndroidTaskFeature implements ChromeAndroidTaskFeature {
+
+        final List<Boolean> mTaskFocusChangedParams = new ArrayList<>();
+
+        int mTimesOnTaskBoundsChanged;
+
+        @Override
+        public void onAddedToTask() {}
+
+        @Override
+        public void onTaskRemoved() {}
+
+        @Override
+        public void onTaskBoundsChanged(Rect newBounds) {
+            mTimesOnTaskBoundsChanged++;
+        }
+
+        @Override
+        public void onTaskFocusChanged(boolean hasFocus) {
+            mTaskFocusChangedParams.add(hasFocus);
+        }
     }
 }

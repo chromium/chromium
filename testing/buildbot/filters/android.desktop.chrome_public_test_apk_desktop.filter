@@ -8,6 +8,3 @@
 # https://crbug.com/353910783
 -org.chromium.chrome.browser.TabsTest.testHideKeyboard
 -org.chromium.chrome.browser.keyboard_accessory.AutofillKeyboardAccessoryIntegrationTest.testSelectSuggestionHidesKeyboardAccessory
-
-# https://crbug.com/444066119
--org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskIntegrationTest.onTopResumedActivityChangedWithNative_invokesOnTaskFocusChangedForFeature
