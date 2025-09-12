@@ -181,9 +181,13 @@ bool CanvasResource::PrepareTransferableResource(
     return false;
   }
 
+  GetSyncToken();
+  if (needs_verified_synctoken) {
+    VerifySyncToken();
+  }
+
   *out_resource = viz::TransferableResource::Make(
-      client_shared_image, GetTransferableResourceSource(),
-      GetSyncTokenWithOptionalVerification(needs_verified_synctoken));
+      client_shared_image, GetTransferableResourceSource(), sync_token());
 
   out_resource->hdr_metadata = GetHDRMetadata();
   out_resource->is_low_latency_rendering = client_shared_image->usage().Has(
@@ -237,9 +241,8 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
            "CanvasResourceSharedImage"});
 
   // This class doesn't currently have a way of verifying the sync token for
-  // software SharedImages at the time of vending it in
-  // GetSyncTokenWithOptionalVerification(), so we instead ensure that it is
-  // verified now.
+  // software SharedImages at the time of vending it in VerifySyncToken(),
+  // so we instead ensure that it is verified now.
   owning_thread_data().sync_token =
       shared_image_interface->GenVerifiedSyncToken();
   owning_thread_data().mailbox_needs_new_sync_token = false;
@@ -516,7 +519,8 @@ void CanvasResourceSharedImage::Transfer() {
   // TODO(khushalsagar): This is for consistency with MailboxTextureHolder
   // transfer path. It's unclear why the verification can not be deferred until
   // the resource needs to be transferred cross-process.
-  GetSyncTokenWithOptionalVerification(true);
+  GetSyncToken();
+  VerifySyncToken();
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
@@ -646,9 +650,7 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
       GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken());
 }
 
-const gpu::SyncToken
-CanvasResourceSharedImage::GetSyncTokenWithOptionalVerification(
-    bool needs_verified_token) {
+const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
   if (GetClientSharedImage()->is_software()) {
     // This class doesn't currently have a way of verifying the sync token
     // within this call for software SharedImages, so it instead ensures that it
@@ -679,16 +681,17 @@ CanvasResourceSharedImage::GetSyncTokenWithOptionalVerification(
     owning_thread_data().mailbox_needs_new_sync_token = false;
   }
 
-  if (needs_verified_token &&
-      !owning_thread_data().sync_token.verified_flush()) {
+  return sync_token();
+}
+
+void CanvasResourceSharedImage::VerifySyncToken() {
+  if (!owning_thread_data().sync_token.verified_flush()) {
     int8_t* token_data = owning_thread_data().sync_token.GetData();
     auto* raster_interface = RasterInterface();
     raster_interface->ShallowFlushCHROMIUM();
     raster_interface->VerifySyncTokensCHROMIUM(&token_data, 1);
     owning_thread_data().sync_token.SetVerifyFlush();
   }
-
-  return sync_token();
 }
 
 void CanvasResourceSharedImage::NotifyResourceLost() {
@@ -801,9 +804,7 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
   return image;
 }
 
-const gpu::SyncToken
-ExternalCanvasResource::GetSyncTokenWithOptionalVerification(
-    bool needs_verified_token) {
+const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
   // This method is expected to be used both in WebGL and WebGPU, that's why it
   // uses InterfaceBase.
   if (!sync_token_.HasData()) {
@@ -813,7 +814,7 @@ ExternalCanvasResource::GetSyncTokenWithOptionalVerification(
   } else if (!sync_token_.verified_flush()) {
     // The offscreencanvas usage needs the sync_token to be verified in order to
     // be able to use it by the compositor. This is why this method produces a
-    // verified token even if `needs_verified_token` is false.
+    // verified token even if no verification is explicitly requested.
     int8_t* token_data = sync_token_.GetData();
     auto* interface = InterfaceBase();
     DCHECK(interface);
@@ -936,9 +937,7 @@ CanvasResourceSwapChain::GetClientSharedImage() const {
   return front_buffer_shared_image_;
 }
 
-const gpu::SyncToken
-CanvasResourceSwapChain::GetSyncTokenWithOptionalVerification(
-    bool needs_verified_token) {
+const gpu::SyncToken CanvasResourceSwapChain::GetSyncToken() {
   DCHECK(sync_token_.verified_flush());
   return sync_token_;
 }
