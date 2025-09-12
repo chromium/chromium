@@ -20,9 +20,9 @@ def _ConstructHistogram(doc, name, histogram_dict):
   histogram = doc.createElement('histogram')
   # Set histogram node attributes.
   histogram.setAttribute('name', name)
-  if 'enum' in histogram_dict:
-    histogram.setAttribute('enum', histogram_dict['enum']['name'])
-  else:
+  if 'enumDetails' in histogram_dict:
+    histogram.setAttribute('enum', histogram_dict['enumDetails']['name'])
+  elif 'units' in histogram_dict:
     histogram.setAttribute('units', histogram_dict['units'])
   if 'expires_after' in histogram_dict:
     histogram.setAttribute('expires_after', histogram_dict['expires_after'])
@@ -31,11 +31,12 @@ def _ConstructHistogram(doc, name, histogram_dict):
     owner_node = doc.createElement('owner')
     owner_node.appendChild(doc.createTextNode(owner))
     histogram.appendChild(owner_node)
-  # Populate the summary nodes.
-  if 'summary' in histogram_dict:
-    summary_node = doc.createElement('summary')
-    summary_node.appendChild(doc.createTextNode(histogram_dict['summary']))
-    histogram.appendChild(summary_node)
+  # Populate the description nodes.
+  if 'description' in histogram_dict:
+    description_node = doc.createElement('description')
+    description_node.appendChild(
+        doc.createTextNode(histogram_dict['description']))
+    histogram.appendChild(description_node)
   return histogram
 
 
