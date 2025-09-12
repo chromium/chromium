@@ -17,6 +17,7 @@
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/tool_utils.h"
@@ -252,10 +253,11 @@ WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
   WebInputEventResult result =
       frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
           WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
-  journal_->Log(
-      task_id_, WebInputEvent::GetName(type),
-      absl::StrFormat("%s[%s] -> %s", WebInputEvent::GetName(type),
-                      key_params.dom_key, WebInputEventResultToString(result)));
+  journal_->Log(task_id_, WebInputEvent::GetName(type),
+                JournalDetailsBuilder()
+                    .Add("key", key_params.dom_key)
+                    .Add("result", WebInputEventResultToString(result))
+                    .Build());
 
   return result;
 }
@@ -302,9 +304,8 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
 
   // Injecting a click to get focus.
   gfx::PointF coordinate = validated_result->target;
-  journal_->Log(
-      task_id_, "TypeTool::Execute",
-      absl::StrFormat("Click to focus on %s", base::ToString(coordinate)));
+  journal_->Log(task_id_, "TypeTool::Execute::Focus",
+                JournalDetailsBuilder().Add("coord", coordinate).Build());
   mojom::ActionResultPtr click_result =
       CreateAndDispatchClick(blink::WebMouseEvent::Button::kLeft, 1, coordinate,
                              frame_->GetWebFrame()->FrameWidget());
@@ -312,9 +313,8 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   // Cancel rest of typing if initial click failed.
   if (!IsOk(*click_result)) {
     journal_->Log(
-        task_id_, "TypeTool::Execute",
-        absl::StrFormat("Initial click to focus target failed. Reason: %s",
-                        click_result->message));
+        task_id_, "TypeTool::Execute::ClickFailed",
+        JournalDetailsBuilder().AddError(click_result->message).Build());
     std::move(callback).Run(std::move(click_result));
     return;
   }
@@ -334,25 +334,21 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
       focused_frame ? focused_frame->GetDocument().FocusedElement()
                     : WebElement();
   if (focused_element && focused_element.IsEditable()) {
-    journal_->Log(task_id_, "TypeTool::Execute",
-                  absl::StrFormat("Focused element is now %s",
-                                  base::ToString(focused_element)));
+    journal_->Log(
+        task_id_, "TypeTool::Execute::FocusElementEditable",
+        JournalDetailsBuilder().Add("focus", focused_element).Build());
     PrepareTargetForMode(*focused_frame, action_->mode);
   } else if (focused_element) {
     journal_->Log(
-        task_id_, "TypeTool::Execute",
-        absl::StrFormat(
-            "Target %s is not editable. Typing will proceed without clearing.",
-            base::ToString(focused_element)));
+        task_id_, "TypeTool::Execute::FocusElementNotEditable",
+        JournalDetailsBuilder().Add("focus", focused_element).Build());
     // TODO(crbug.com/421133798): If the target isn't editable, the existing
     // TypeAction modes don't make sense.
     ACTOR_LOG() << "Warning: TypeAction::Mode cannot be applied when targeting "
                    "a non-editable ["
                 << focused_element << "]. https://crbug.com/421133798.";
   } else {
-    journal_->Log(task_id_, "TypeTool::Execute",
-                  "No focused element (or no focused local frame) found. "
-                  "Typing will proceed without clearing.");
+    journal_->Log(task_id_, "TypeTool::Execute::NoFocusElement", {});
     ACTOR_LOG()
         << "Warning: TypeAction::Mode cannot be applied when there is no "
            "focused element in the widget. https://crbug.com/432551725.";
@@ -369,10 +365,10 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
 
     std::move(callback).Run(MakeOkResult());
   } else {
-    journal_->Log(task_id_, "TypeTool::Execute",
-                  absl::StrFormat(
-                      "Use incremental typing with %s delay",
-                      base::ToString(features::kGlicActorKeyUpDuration.Get())));
+    journal_->Log(task_id_, "TypeTool::Execute::TypeWithDelay",
+                  JournalDetailsBuilder()
+                      .Add("delay", features::kGlicActorKeyUpDuration.Get())
+                      .Build());
     task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
     target_and_keys_ = std::move(validated_result).value();
     task_runner_->PostDelayedTask(
@@ -480,9 +476,8 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
   for (char c : action_->text) {
     std::optional<KeyParams> params = GetKeyParamsForChar(c);
     if (!params.has_value()) {
-      journal_->Log(
-          task_id_, "TypeTool::Validate",
-          absl::StrFormat("Failed to map character '%c' to a key event.", c));
+      journal_->Log(task_id_, "TypeTool::Validate::FailedToMap",
+                    JournalDetailsBuilder().Add("char", c).Build());
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kTypeFailedMappingCharToKey,
                      absl::StrFormat("Failed on char[%c]", c)));

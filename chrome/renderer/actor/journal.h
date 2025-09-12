@@ -44,11 +44,12 @@ class Journal {
     // End an pending entry with additional details. This can only be called
     // once and will be automatically called from the destructor if it hasn't
     // been called.
-    void EndEntry(std::string_view details);
+    void EndEntry(std::vector<mojom::JournalDetailsPtr> details);
 
     // Logs an instant event within the scope of this async entry.
     void Log(std::string_view event_name);
-    void Log(std::string_view event_name, std::string_view details);
+    void Log(std::string_view event_name,
+             std::vector<mojom::JournalDetailsPtr> details);
 
    private:
     base::PassKey<Journal> pass_key_;
@@ -59,19 +60,21 @@ class Journal {
   };
 
   void Bind(mojo::PendingAssociatedRemote<mojom::JournalClient> client);
-  void Log(TaskId task_id, std::string_view event, std::string_view details);
+  void Log(TaskId task_id,
+           std::string_view event,
+           std::vector<mojom::JournalDetailsPtr> details);
 
   // Create an async entry. This will log a Begin Entry event and when the
   // PendingAsyncEntry object is destroyed the End Entry will be logged.
   std::unique_ptr<PendingAsyncEntry> CreatePendingAsyncEntry(
       TaskId task_id,
       std::string_view event_name,
-      std::string_view details);
+      std::vector<mojom::JournalDetailsPtr> details);
 
   void AddEndEvent(base::PassKey<Journal>,
                    TaskId task_id,
                    const std::string& event_name,
-                   std::string_view details);
+                   std::vector<mojom::JournalDetailsPtr> details);
 
  private:
   void AddJournalEntry(mojom::JournalEntryPtr journal_entry);

@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/drag_and_release_tool.h"
@@ -57,7 +58,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
   CHECK(!completion_callback_);
   completion_callback_ = std::move(callback);
   invoke_journal_entry_ =
-      journal_->CreatePendingAsyncEntry(invocation->task_id, "InvokeTool", "");
+      journal_->CreatePendingAsyncEntry(invocation->task_id, "InvokeTool", {});
 
   WebLocalFrame* web_frame = frame_->GetWebFrame();
 
@@ -152,7 +153,8 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
   }
 
   execute_journal_entry_ = journal_->CreatePendingAsyncEntry(
-      invocation->task_id, "ExecuteTool", tool_->DebugString());
+      invocation->task_id, "ExecuteTool",
+      JournalDetailsBuilder().Add("tool", tool_->DebugString()).Build());
   tool_->Execute(base::BindOnce(&ToolExecutor::ToolFinished,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 invocation->task_id));

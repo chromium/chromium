@@ -9,6 +9,7 @@
 #include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -109,7 +110,9 @@ void ToolBase::EnsureTargetInView() {
 base::expected<ToolBase::ResolvedTarget, mojom::ActionResultPtr>
 ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
   if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {
-    journal_->Log(task_id_, "TimeOfUseValidation", "No valid APC node.");
+    journal_->Log(
+        task_id_, "TimeOfUseValidation",
+        JournalDetailsBuilder().AddError("No valid APC node").Build());
     return resolved_target;
   }
 
@@ -120,14 +123,14 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
   if (target_->is_coordinate()) {
     if (target_node.GetDomNodeId() !=
         *observed_target_->node_attribute->dom_node_id) {
-      journal_->Log(
-          task_id_, "TimeOfUseValidation",
-          base::StrCat({"Observed Target Node:",
-                        base::NumberToString(
-                            *observed_target_->node_attribute->dom_node_id),
-                        " Hit Test Node:",
-                        base::NumberToString(target_node.GetDomNodeId()),
-                        NodeToDebugSring(target_node)}));
+      journal_->Log(task_id_, "TimeOfUseValidation",
+                    JournalDetailsBuilder()
+                        .Add("obs_node_id",
+                             *observed_target_->node_attribute->dom_node_id)
+                        .Add("target_node_id", target_node.GetDomNodeId())
+                        .Add("target", NodeToDebugSring(target_node))
+                        .AddError("Wrong Node At Location")
+                        .Build());
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
                      "The element at the target location is not the same as "
@@ -143,15 +146,14 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
     const blink::WebElement hit_element = hit_test_result.GetElement();
     // The action target from APC is not as granular as the live DOM hit test.
     if (!target_node.Contains(&hit_element)) {
-      journal_->Log(
-          task_id_, "TimeOfUseValidation",
-          base::StrCat(
-              {"Target Node:", base::NumberToString(target_node.GetDomNodeId()),
-               NodeToDebugSring(target_node),
-               " interaction point occluded by "
-               "Hit Test Node:",
-               base::NumberToString(hit_element.GetDomNodeId()),
-               NodeToDebugSring(hit_element)}));
+      journal_->Log(task_id_, "TimeOfUseValidation",
+                    JournalDetailsBuilder()
+                        .Add("target_id", target_node.GetDomNodeId())
+                        .Add("hit_node_id", hit_element.GetDomNodeId())
+                        .Add("target", NodeToDebugSring(target_node))
+                        .Add("hit_node", NodeToDebugSring(hit_element))
+                        .AddError("Node covered by another node")
+                        .Build());
       // TODO(crbug.com/418280472): return error after retry for failed task is
       // landed.
       return resolved_target;
@@ -160,11 +162,12 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
     if (!observed_target_->node_attribute->geometry) {
       journal_->Log(
           task_id_, "TimeOfUseValidation",
-          base::StrCat(
-              {"No geometry for node:",
-               base::NumberToString(
-                   *observed_target_->node_attribute->dom_node_id),
-               base::ToString(gfx::ToFlooredPoint(resolved_target.point))}));
+          JournalDetailsBuilder()
+              .Add("obs_node_id",
+                   *observed_target_->node_attribute->dom_node_id)
+              .Add("point", gfx::ToFlooredPoint(resolved_target.point))
+              .AddError("No geometry for node")
+              .Build());
       // TODO(crbug.com/418280472): return error after retry for failed task is
       // landed.
       return resolved_target;
@@ -175,12 +178,13 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
     const gfx::Rect observed_bounds =
         observed_target_->node_attribute->geometry->outer_bounding_box;
     if (!observed_bounds.Contains(gfx::ToFlooredPoint(resolved_target.point))) {
-      journal_->Log(
-          task_id_, "TimeOfUseValidation",
-          base::StrCat(
-              {"Target interaction point:",
-               base::ToString(gfx::ToFlooredPoint(resolved_target.point)),
-               " Observed bounding box:", base::ToString(observed_bounds)}));
+      journal_->Log(task_id_, "TimeOfUseValidation",
+                    JournalDetailsBuilder()
+                        .Add("resolved_target_point",
+                             gfx::ToFlooredPoint(resolved_target.point))
+                        .Add("bounding_box", observed_bounds)
+                        .AddError("Point not in box")
+                        .Build());
       // TODO(crbug.com/418280472): return error after retry for failed task is
       // landed.
       return resolved_target;

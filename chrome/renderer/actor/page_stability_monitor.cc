@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "content/public/renderer/render_frame.h"
@@ -71,7 +72,9 @@ void PageStabilityMonitor::WaitForStable(const ToolBase& tool,
   CHECK(!is_stable_callback_);
   journal_entry_ = journal.CreatePendingAsyncEntry(
       task_id, "PageStability",
-      absl::StrFormat("RequestsBefore[%d]", starting_request_count_));
+      JournalDetailsBuilder()
+          .Add("requests_before", starting_request_count_)
+          .Build());
 
   monitoring_start_delay_ = tool.ExecutionObservationDelay();
 
@@ -88,8 +91,9 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
   // process).
   journal_entry_->Log(
       "DidCommitProvisionalLoad",
-      absl::StrFormat("transition[%s]",
-                      PageTransitionGetCoreTransitionString(transition)));
+      JournalDetailsBuilder()
+          .Add("transition", PageTransitionGetCoreTransitionString(transition))
+          .Build());
   start_monitoring_delayed_handle_.CancelTask();
   MoveToState(State::kNavigationCommitted);
 }
@@ -97,7 +101,8 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
 void PageStabilityMonitor::DidFailProvisionalLoad() {
   if (state_ == State::kWaitForNavigation) {
     // TODO(b/436573891): Should this go back to `kStartMonitoring`?
-    journal_entry_->Log("DidFailProvisionalLoad");
+    journal_entry_->EndEntry(
+        JournalDetailsBuilder().AddError("DidFailProvisionalLoad").Build());
     MoveToState(State::kNavigationFailed);
   }
 }
@@ -123,8 +128,9 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     case State::kMonitorStartDelay: {
       journal_entry_->Log(
           "MonitorStartDelay",
-          absl::StrFormat("delay[%dms]",
-                          monitoring_start_delay_.InMilliseconds()));
+          JournalDetailsBuilder()
+              .Add("delay", monitoring_start_delay_.InMilliseconds())
+              .Build());
       start_monitoring_delayed_handle_ =
           PostCancelableMoveToStateClosure(State::kStartMonitoring,
                                            monitoring_start_delay_)
@@ -140,9 +146,10 @@ void PageStabilityMonitor::MoveToState(State new_state) {
         journal_entry_->Log("WaitForNavigation");
         next_state = State::kWaitForNavigation;
       } else if (after_request_count > starting_request_count_) {
-        journal_entry_->Log(
-            "WaitForNetworkIdle",
-            absl::StrFormat("Requests[%d]", after_request_count));
+        journal_entry_->Log("WaitForNetworkIdle",
+                            JournalDetailsBuilder()
+                                .Add("requests", after_request_count)
+                                .Build());
         next_state = State::kWaitForNetworkIdle;
       } else {
         journal_entry_->Log("WaitForMainThreadIdle");
@@ -179,21 +186,28 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       if (!widget->InsertVisualStateRequest(
               MoveToStateClosure(State::kMaybeDelayCallback))) {
         journal_entry_->EndEntry(
-            "Failed to wait for new frame presentation due to no "
-            "compositor.");
+            JournalDetailsBuilder()
+                .AddError("Failed to wait for new frame presentation due to no "
+                          "compositor.")
+                .Build());
         MoveToState(State::kInvokeCallback);
       }
       break;
     }
     case State::kTimeoutGlobal: {
-      journal_entry_->EndEntry("Timed out waiting for page stability.");
+      journal_entry_->EndEntry(
+          JournalDetailsBuilder()
+              .AddError("Timed out waiting for page stability.")
+              .Build());
       MoveToState(State::kInvokeCallback);
       break;
     }
     case State::kTimeoutMainThread: {
       journal_entry_->EndEntry(
-          "Timed out waiting for page stability - main thread to "
-          "produce a thread.");
+          JournalDetailsBuilder()
+              .AddError("Timed out waiting for page stability - main thread to "
+                        "produce a thread.")
+              .Build());
       MoveToState(State::kInvokeCallback);
       break;
     }

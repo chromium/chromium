@@ -12,6 +12,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -69,13 +70,13 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
 
   targeting_smooth_scroller_ = scrolling_element.HasScrollBehaviorSmooth();
 
-  journal_->Log(
-      task_id_, "ScrollTool::Execute",
-      absl::StrFormat("Scrolling element %s from %s by offset %s (CSS "
-                      "pixels). Smooth scroll: %v.",
-                      base::ToString(scrolling_element),
-                      start_offset_css.ToString(), offset_css.ToString(),
-                      targeting_smooth_scroller_));
+  journal_->Log(task_id_, "ScrollTool::Execute",
+                JournalDetailsBuilder()
+                    .Add("element", scrolling_element)
+                    .Add("start_offset", start_offset_css)
+                    .Add("offset", offset_css)
+                    .Add("smooth_scroll", targeting_smooth_scroller_)
+                    .Build());
 
   std::move(callback).Run(
       did_scroll
