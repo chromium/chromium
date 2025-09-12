@@ -119,6 +119,7 @@ void MemoryMeasurementProvider::OnMemorySummary(
     }
     result.resident_set_size += summary.resident_set_size;
     result.private_footprint += summary.private_footprint;
+    result.private_swap += summary.private_swap;
     return inserted;
   };
 
@@ -194,6 +195,8 @@ base::Value::Dict MemoryMeasurementProvider::DescribeContextData(
              base::NumberToString(result.resident_set_size.InKiB()));
     dict.Set("private_footprint_kb",
              base::NumberToString(result.private_footprint.InKiB()));
+    dict.Set("private_swap_kb",
+             base::NumberToString(result.private_swap.InKiB()));
   }
   return dict;
 }

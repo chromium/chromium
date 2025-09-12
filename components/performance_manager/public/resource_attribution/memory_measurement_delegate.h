@@ -30,17 +30,24 @@ class MemoryMeasurementDelegate {
  public:
   class Factory;
 
-  // The minimal results returned for a process memory measurement.
+  // The minimal results returned for a process memory measurement. The default
+  // implementation fills this in from a memory_instrumentation.mojom.OSMemDump.
+  // See the comments in memory_instrumentation.mojom for more details.
+  //
   // MemoryMeasurementProvider will wrap this in a full MemorySummaryResult.
   struct MemorySummaryMeasurement {
     base::ByteCount resident_set_size;
     base::ByteCount private_footprint;
 
+    // Only populated by default on Linux, ChromeOS and Android.
+    base::ByteCount private_swap;
+
     // Division operator required by SplitResourceAmongFramesAndWorkers().
     constexpr MemorySummaryMeasurement operator/(size_t divisor) {
       return MemorySummaryMeasurement{
           .resident_set_size = resident_set_size / divisor,
-          .private_footprint = private_footprint / divisor};
+          .private_footprint = private_footprint / divisor,
+          .private_swap = private_swap / divisor};
     }
 
     friend constexpr auto operator<=>(const MemorySummaryMeasurement&,

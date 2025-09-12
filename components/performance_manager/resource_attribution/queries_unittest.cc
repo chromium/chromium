@@ -68,6 +68,7 @@ constexpr auto kWorkerContextTypeId =
 // Fake memory results.
 constexpr base::ByteCount kFakeResidentSetSize = base::KiB(123);
 constexpr base::ByteCount kFakePrivateFootprint = base::KiB(456);
+constexpr base::ByteCount kFakePrivateSwap = base::KiB(789);
 
 class LenientMockQueryResultObserver : public QueryResultObserver {
  public:
@@ -119,6 +120,7 @@ class ResourceAttrQueriesPMTest
         MemoryMeasurementDelegate::MemorySummaryMeasurement{
             .resident_set_size = kFakeResidentSetSize,
             .private_footprint = kFakePrivateFootprint,
+            .private_swap = kFakePrivateSwap,
         };
   }
 
@@ -186,6 +188,7 @@ MemorySummaryResult FakeMemorySummaryResult(
       .metadata = ResultMetadata(expected_measurement_time, expected_algorithm),
       .resident_set_size = kFakeResidentSetSize,
       .private_footprint = kFakePrivateFootprint,
+      .private_swap = kFakePrivateSwap,
   };
 }
 

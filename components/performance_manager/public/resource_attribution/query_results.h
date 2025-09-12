@@ -94,6 +94,9 @@ struct MemorySummaryResult {
   base::ByteCount resident_set_size;
   base::ByteCount private_footprint;
 
+  // The private swapped memory. Only reported on Linux, ChromeOS and Android.
+  base::ByteCount private_swap;
+
   friend constexpr auto operator<=>(const MemorySummaryResult&,
                                     const MemorySummaryResult&) = default;
   friend constexpr bool operator==(const MemorySummaryResult&,

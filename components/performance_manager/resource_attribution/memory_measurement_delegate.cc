@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
+#include "build/build_config.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
@@ -91,13 +92,19 @@ void MemoryMeasurementDelegateImpl::OnMemorySummary(
       // be measured?
       continue;
     }
-    results.emplace(ProcessContext::FromProcessNode(process_node),
-                    MemorySummaryMeasurement{
-                        .resident_set_size =
-                            base::KiB(process_dump.os_dump().resident_set_kb),
-                        .private_footprint = base::KiB(
-                            process_dump.os_dump().private_footprint_kb),
-                    });
+    results.emplace(
+        ProcessContext::FromProcessNode(process_node),
+        MemorySummaryMeasurement{
+            .resident_set_size =
+                base::KiB(process_dump.os_dump().resident_set_kb),
+            .private_footprint =
+                base::KiB(process_dump.os_dump().private_footprint_kb),
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+            // `private_footprint_swap_kb` is only defined on these platforms
+            .private_swap =
+                base::KiB(process_dump.os_dump().private_footprint_swap_kb),
+#endif
+        });
   }
   std::move(callback).Run(std::move(results));
 }

@@ -120,6 +120,7 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
         MemoryMeasurementDelegate::MemorySummaryMeasurement{
             .resident_set_size = base::KiB(1),
             .private_footprint = base::KiB(2),
+            .private_swap = base::KiB(3),
         };
   }
 
