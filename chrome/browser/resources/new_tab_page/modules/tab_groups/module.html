@@ -27,7 +27,7 @@
         </div>
         <div id="zeroTabGroupsCreateNewTabGroup">
           <cr-button id="createNewTabGroupButton" class="create-new-tab-group"
-              @click="${this.onCreateNewTabGroupClick_}">
+              @click="${() => this.onCreateNewTabGroupClick_(true)}">
             <cr-icon id="createNewTabGroupButtonIcon"
                 icon="tab_groups:create_new_tab_group" slot="prefix-icon">
             </cr-icon>
@@ -40,9 +40,9 @@
     </div>
   `: html`
     <div id="tabGroupsContainer">
-      ${this.getTabGroups_().map(item => html`
+      ${this.getTabGroups_().map((item, index) => html`
         <cr-button class="tab-group"
-            @click="${() => this.onTabGroupClick_(item.id)}"
+            @click="${() => this.onTabGroupClick_(item.id, index)}"
             aria-label="${this.ariaLabels.get(item.id)}">
           <div class="row-content">
             <ntp-icon-container class="icon-container"
@@ -66,9 +66,9 @@
         <div id="divider"></div>
         <cr-button id="createNewTabGroupFooterButton"
             class="create-new-tab-group"
-            @click="${this.onCreateNewTabGroupClick_}">
+            @click="${() => this.onCreateNewTabGroupClick_(false)}">
           <div class="row-content">
-            <cr-icon id="createNewTabGroupIcon"
+            <cr-icon id="createNewsTabGroupIcon"
                 icon="tab_groups:create_new_tab_group" slot="icon">
             </cr-icon>
             <div id="createNewTabGroupText" class="tab-group-title">

@@ -17,6 +17,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit} from '../../i18n_setup.js';
+import {recordOccurrence, recordSmallCount} from '../../metrics_utils.js';
 import {Color} from '../../tab_group_types.mojom-webui.js';
 import type {PageHandlerRemote, TabGroup} from '../../tab_groups.mojom-webui.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
@@ -171,11 +172,17 @@ export class ModuleElement extends ModuleElementBase {
     this.showInfoDialog = false;
   }
 
-  protected onCreateNewTabGroupClick_() {
+  protected onCreateNewTabGroupClick_(fromZeroStateCard: boolean) {
+    const histogram = 'NewTabPage.TabGroups.CreateNewTabGroup';
+    recordOccurrence(histogram);
+    recordOccurrence(
+        `${histogram}.${fromZeroStateCard ? 'ZeroState' : 'SteadyState'}`);
+
     this.handler_.createNewTabGroup();
   }
 
-  protected onTabGroupClick_(id: string) {
+  protected onTabGroupClick_(id: string, index: number) {
+    recordSmallCount('NewTabPage.TabGroups.ClickTabGroupIndex', index);
     this.handler_.openTabGroup(id);
   }
 }
