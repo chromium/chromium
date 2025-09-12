@@ -86,8 +86,6 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kReducePPMs, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kVariantMapUsesAbslFlatMap, FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // Force to enable LowEndDeviceMode partially on Android 3Gb devices.
 // (see PartialLowEndModeOnMidRangeDevices below)

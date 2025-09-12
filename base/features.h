@@ -34,8 +34,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kLowMemoryDeviceThresholdMB);
 // is to measure their aggregated impact.
 BASE_EXPORT BASE_DECLARE_FEATURE(kReducePPMs);
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kVariantMapUsesAbslFlatMap);
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOn3GbDevices);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);

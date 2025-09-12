@@ -229,10 +229,8 @@ class VariantMap {
         }()) {}
 
   VariantMap()
-      : VariantMap(base::FeatureList::IsEnabled(
-                       base::features::kVariantMapUsesAbslFlatMap)
-                       ? MapType::kStdMap
-                       : MapType::kFlatHashMap) {}
+      : VariantMap(base::features::IsReducePPMsEnabled() ? MapType::kFlatHashMap
+                                                         : MapType::kStdMap) {}
 
   // The variant that holds one of the two map types.
   Map data_;
