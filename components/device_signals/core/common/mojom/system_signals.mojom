@@ -65,7 +65,6 @@ enum AntiVirusProductState {
 [EnableIf=is_win]
 struct AntiVirusSignal {
   string display_name;
-  string product_id;
   AntiVirusProductState state;
 };
 

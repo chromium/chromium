@@ -423,7 +423,6 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_MultipleSignals_Supported) {
 #if BUILDFLAG(IS_WIN)
   AvProduct av_product;
   av_product.display_name = "some_name";
-  av_product.product_id = "some_id";
   av_product.state = device_signals::AvProductState::kOn;
   AntiVirusSignalResponse av_response;
   av_response.av_products.push_back(av_product);

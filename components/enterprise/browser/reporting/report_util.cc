@@ -52,7 +52,6 @@ base::Value::Dict AvProductToDict(
       break;
   }
   antivirus_dict.Set("display_name", av_product.display_name());
-  antivirus_dict.Set("product_id", av_product.product_id());
 
   return antivirus_dict;
 }
@@ -143,7 +142,6 @@ std::unique_ptr<em::AntiVirusProduct> TranslateAvProduct(
   }
 
   av_product_in_report->set_display_name(av_product.display_name);
-  av_product_in_report->set_product_id(av_product.product_id);
 
   return av_product_in_report;
 }
