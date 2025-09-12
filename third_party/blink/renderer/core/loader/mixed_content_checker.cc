@@ -510,19 +510,16 @@ bool MixedContentChecker::ShouldBlockFetch(
   switch (context_type) {
     case mojom::blink::MixedContentContextType::kOptionallyBlockable:
 
-#if (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)) && \
-    BUILDFLAG(ENABLE_CAST_RECEIVER)
-      // Fuchsia WebEngine can be configured to allow loading Mixed Content from
-      // an insecure IP address. This is a workaround to revert Fuchsia Cast
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+      // Cast receivers can be configured to allow loading Mixed Content from
+      // an insecure IP address. This is a workaround to revert Cast
       // Receivers to the behavior before crrev.com/c/4032146.
       // TODO(crbug.com/1434440): Remove this workaround when there is a better
       // way to disable blocking Mixed Content with an IP address.
       allowed = !strict_mode;
 #else
       allowed = !strict_mode && !GURL(url).HostIsIPAddress();
-#endif  // (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)) &&
-        // BUILDFLAG(ENABLE_CAST_RECEIVER)
-
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
       if (allowed) {
         if (content_settings_client)
           content_settings_client->PassiveInsecureContentFound(url);
