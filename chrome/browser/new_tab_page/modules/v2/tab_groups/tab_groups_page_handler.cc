@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -47,19 +48,6 @@ enum class TimeDimension {
   kWeeks = 3,
   kMaxValue = kWeeks,
 };
-
-std::vector<const tab_groups::SavedTabGroup*> GetMostRecentTabGroups(
-    std::vector<const tab_groups::SavedTabGroup*> groups,
-    size_t count) {
-  std::sort(groups.begin(), groups.end(),
-            [](const tab_groups::SavedTabGroup* a,
-               const tab_groups::SavedTabGroup* b) {
-              return a->update_time() > b->update_time();
-            });
-  size_t size = std::min(count, groups.size());
-  return std::vector<const tab_groups::SavedTabGroup*>(groups.begin(),
-                                                       groups.begin() + size);
-}
 
 ntp::tab_groups::mojom::TabGroupPtr MakeTabGroup(
     const std::string& id,
@@ -136,6 +124,55 @@ void TabGroupsPageHandler::CreateNewTabGroup() {
   browser->command_controller()->ExecuteCommand(IDC_CREATE_NEW_TAB_GROUP);
 }
 
+std::vector<const tab_groups::SavedTabGroup*>
+TabGroupsPageHandler::FilterActiveGroup(
+    std::vector<const tab_groups::SavedTabGroup*> groups) {
+  // Get the group ID of the currently active tab. This can be nullopt if the
+  // active tab is not in any group.
+  TabStripModel* tab_strip_model =
+      webui::GetBrowserWindowInterface(web_contents_)->GetTabStripModel();
+  CHECK(tab_strip_model);
+  std::optional<tab_groups::TabGroupId> active_group_id =
+      tab_strip_model->GetTabGroupForTab(tab_strip_model->active_index());
+
+  // Filter the group that the active tab is in.
+  if (active_group_id.has_value()) {
+    groups.erase(
+        std::remove_if(
+            groups.begin(), groups.end(),
+            [&active_group_id](const tab_groups::SavedTabGroup* group) {
+              return group->local_group_id().has_value() &&
+                     group->local_group_id().value() == active_group_id.value();
+            }),
+        groups.end());
+  }
+
+  return groups;
+}
+
+std::vector<const tab_groups::SavedTabGroup*>
+TabGroupsPageHandler::GetMostRecentTabGroups(
+    std::vector<const tab_groups::SavedTabGroup*> groups,
+    size_t count) {
+  if (groups.empty() || count == 0) {
+    return {};
+  }
+
+  groups = FilterActiveGroup(groups);
+
+  // Sort the remaining groups by update time (most recent first).
+  std::sort(groups.begin(), groups.end(),
+            [](const tab_groups::SavedTabGroup* a,
+               const tab_groups::SavedTabGroup* b) {
+              return a->update_time() > b->update_time();
+            });
+
+  // Truncate the list to at most |count| groups.
+  size_t size = std::min(count, groups.size());
+  return std::vector<const tab_groups::SavedTabGroup*>(groups.begin(),
+                                                       groups.begin() + size);
+}
+
 std::optional<std::string> TabGroupsPageHandler::GetDeviceName(
     const std::optional<std::string>& cache_guid) {
   if (!cache_guid.has_value()) {
@@ -163,6 +200,14 @@ std::optional<std::string> TabGroupsPageHandler::GetDeviceName(
   }
 
   return device_info->client_name();
+}
+
+bool TabGroupsPageHandler::ShouldShowZeroState() {
+  std::vector<const tab_groups::SavedTabGroup*> groups =
+      tab_group_service_->ReadAllGroups();
+  return base::FeatureList::IsEnabled(
+             ntp_features::kNtpTabGroupsModuleZeroState) &&
+         groups.empty();
 }
 
 std::vector<ntp::tab_groups::mojom::TabGroupPtr>
@@ -207,7 +252,7 @@ TabGroupsPageHandler::GetSavedTabGroups() {
 
 void TabGroupsPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                         std::nullopt);
+                                                         std::nullopt, false);
 
   base::Time dismiss_time =
       pref_service_->GetTime(kTabGroupsLastDismissedTimePrefName);
@@ -261,7 +306,7 @@ void TabGroupsPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
     }
   }
 
-  std::move(callback).Run(std::move(tab_groups_mojom));
+  std::move(callback).Run(std::move(tab_groups_mojom), ShouldShowZeroState());
 }
 
 void TabGroupsPageHandler::DismissModule() {

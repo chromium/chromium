@@ -240,9 +240,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       "mostRelevantTabResumptionModuleFallbackToHost",
       base::FeatureList::IsEnabled(
           ntp_features::kNtpMostRelevantTabResumptionModuleFallbackToHost));
-  source->AddBoolean(
-      "tabGroupsModuleZeroStateEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpTabGroupsModuleZeroState));
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));
 

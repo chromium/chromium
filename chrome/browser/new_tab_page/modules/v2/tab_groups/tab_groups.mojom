@@ -35,7 +35,7 @@ interface PageHandler {
   // Returns a list of most recently used tab groups.
   // Returns null if the current time is still within the module's dismissal
   // time window.
-  GetTabGroups() => (array<TabGroup>? tab_groups);
+  GetTabGroups() => (array<TabGroup>? tab_groups, bool showZeroState);
   // Opens the tab group with the given ID.
   OpenTabGroup(string id);
   // Dismisses the module for a fixed amount of time.

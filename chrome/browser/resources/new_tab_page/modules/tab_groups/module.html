@@ -8,7 +8,7 @@
     @info-button-click="${this.onInfoButtonClick_}">
 </ntp-module-header-v2>
 <div id="tabGroups">
-  ${this.shouldShowZeroStateCard_() ? html`
+  ${this.showZeroState ? html`
     <div id="zeroTabGroupsContainer" class="tab-groups">
       <div id="zeroTabGroupsImageContainer">
         <img id="zeroTabGroupsImageLight" class="zero-tab-groups-image"

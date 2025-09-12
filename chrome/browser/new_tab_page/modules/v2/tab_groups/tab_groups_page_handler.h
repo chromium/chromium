@@ -18,6 +18,7 @@ class WebContents;
 }  // namespace content
 
 namespace tab_groups {
+class SavedTabGroup;
 class TabGroupId;
 class TabGroupSyncService;
 }  // namespace tab_groups
@@ -43,6 +44,12 @@ class TabGroupsPageHandler : public ntp::tab_groups::mojom::PageHandler {
   void RestoreModule() override;
 
  private:
+  bool ShouldShowZeroState();
+  std::vector<const tab_groups::SavedTabGroup*> FilterActiveGroup(
+      std::vector<const tab_groups::SavedTabGroup*> groups);
+  std::vector<const tab_groups::SavedTabGroup*> GetMostRecentTabGroups(
+      std::vector<const tab_groups::SavedTabGroup*> groups,
+      size_t count);
   std::optional<std::string> GetDeviceName(
       const std::optional<std::string>& cache_guid);
   std::vector<ntp::tab_groups::mojom::TabGroupPtr> GetSavedTabGroups();

@@ -27,9 +27,11 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  async function createModule(tabGroups: TabGroup[]|null):
-      Promise<TabGroupsModuleElement> {
-    handler.setResultFor('getTabGroups', Promise.resolve({tabGroups}));
+  async function createModule(
+      tabGroups: TabGroup[]|null,
+      showZeroState: boolean = false): Promise<TabGroupsModuleElement> {
+    handler.setResultFor(
+        'getTabGroups', Promise.resolve({tabGroups, showZeroState}));
     const module =
         await tabGroupsDescriptor.initialize(0) as TabGroupsModuleElement;
     document.body.append(module);
@@ -480,13 +482,9 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   });
 
   suite('with zero state flag enabled', () => {
-    setup(() => {
-      loadTimeData.overrideValues({tabGroupsModuleZeroStateEnabled: true});
-    });
-
     test('show zero state card when there are no tab groups', async () => {
       // Arrange.
-      const module = await createModule([]);
+      const module = await createModule([], true);
 
       // Assert.
       // The module must still exist without tab groups data.
@@ -518,7 +516,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
 
     test('create new tab group from the zero state card', async () => {
       // Arrange.
-      const module = await createModule([]);
+      const module = await createModule([], true);
       assertTrue(!!module);
 
       const createNewTabGroupButton =
