@@ -362,6 +362,8 @@ public class MessagesMetrics {
                 return "UpdateChromeForTabGroupShare";
             case MessageIdentifier.MODE_B_ROLLBACK_MESSAGE:
                 return "ModeBRollbackMessage";
+            case MessageIdentifier.RELOAD_PAGE:
+                return "ReloadPage";
             default:
                 return "Unknown";
         }

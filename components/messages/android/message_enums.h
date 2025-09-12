@@ -151,6 +151,7 @@ enum class MessageIdentifier {
   MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT = 61,
   UPDATE_CHROME_FOR_TAB_GROUP_SHARE = 62,
   MODE_B_ROLLBACK_MESSAGE = 63,
+  RELOAD_PAGE = 64,
   // Insert new values before this line.
   COUNT
 };
