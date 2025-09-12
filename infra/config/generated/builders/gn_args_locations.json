@@ -33,6 +33,7 @@
     "Deterministic Android": "ci/Deterministic Android/gn-args.json",
     "Deterministic Android (dbg)": "ci/Deterministic Android (dbg)/gn-args.json",
     "android-10-arm64-rel": "ci/android-10-arm64-rel/gn-args.json",
+    "android-10-x86-nofieldtrial-rel": "ci/android-10-x86-nofieldtrial-rel/gn-args.json",
     "android-10-x86-rel": "ci/android-10-x86-rel/gn-args.json",
     "android-11-x86-rel": "ci/android-11-x86-rel/gn-args.json",
     "android-12-x64-rel": "ci/android-12-x64-rel/gn-args.json",

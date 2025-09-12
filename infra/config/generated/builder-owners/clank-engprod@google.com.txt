@@ -9,6 +9,7 @@ ci/Deterministic Android
 ci/Deterministic Android (dbg)
 ci/android-10-arm64-rel
 ci/android-10-x86-fyi-rel
+ci/android-10-x86-nofieldtrial-rel
 ci/android-10-x86-rel
 ci/android-12-x64-rel
 ci/android-12l-landscape-x64-dbg-tests
