@@ -52,7 +52,7 @@ namespace {
 
 const char* const kWebUIBrowserWindowKey = "__WEBUI_BROWSER_WINDOW__";
 
-// Copied from chrome/browser/ui/views/frame/browser_frame.cc.
+// Copied from chrome/browser/ui/views/frame/browser_widget.cc.
 bool IsUsingLinuxSystemTheme(Profile* profile) {
 #if BUILDFLAG(IS_LINUX)
   return ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme();
@@ -291,7 +291,7 @@ ui::NativeTheme* WebUIBrowserWindow::GetNativeTheme() {
 }
 
 const ui::ThemeProvider* WebUIBrowserWindow::GetThemeProvider() const {
-  // Copied from BrowserFrame::GetThemeProvider().
+  // Copied from BrowserWidget::GetThemeProvider().
   auto* app_controller = browser_->app_controller();
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using

@@ -703,7 +703,7 @@ var defaultTests = [
         }
         browserFrameIndex = i;
         // Sanity check
-        chrome.test.assertEq('BrowserFrame', window.name);
+        chrome.test.assertEq('BrowserWidget', window.name);
         chrome.test.assertTrue(window.title.includes('New Tab') > 0);
         chrome.test.assertEq('Browser', window.windowType);
         chrome.test.assertEq(window.stateType, 'Normal');

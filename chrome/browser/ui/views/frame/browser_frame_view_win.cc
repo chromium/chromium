@@ -63,7 +63,7 @@ HICON BrowserFrameViewWin::throbber_icons_
 
 namespace {
 
-// When enabled, a call to BrowserFrame::GetMinimizeButtonOffset() is avoided
+// When enabled, a call to BrowserWidget::GetMinimizeButtonOffset() is avoided
 // when not needed. Behind a feature to assess impact
 // (go/chrome-performance-work-should-be-finched).
 // TODO(crbug.com/40897031): Clean up when experiment is complete.
@@ -96,7 +96,7 @@ constexpr int kIconTitleSpacing = 5;
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameViewWin, public:
 
-BrowserFrameViewWin::BrowserFrameViewWin(BrowserFrame* frame,
+BrowserFrameViewWin::BrowserFrameViewWin(BrowserWidget* frame,
                                          BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
   // We initialize all fields despite some of them being unused in some modes,

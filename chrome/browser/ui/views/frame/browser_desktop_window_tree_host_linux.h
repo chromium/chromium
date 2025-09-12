@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/frame/dbus_appmenu.h"  // nogncheck
 #endif
 
-class BrowserFrame;
+class BrowserWidget;
 class BrowserView;
 class BrowserNativeWidgetAuraLinux;
 enum class TabDragKind;
@@ -41,7 +41,7 @@ class BrowserDesktopWindowTreeHostLinux
       views::internal::NativeWidgetDelegate* native_widget_delegate,
       views::DesktopNativeWidgetAura* desktop_native_widget_aura,
       BrowserView* browser_view,
-      BrowserFrame* browser_frame);
+      BrowserWidget* browser_widget);
 
   BrowserDesktopWindowTreeHostLinux(const BrowserDesktopWindowTreeHostLinux&) =
       delete;
@@ -103,7 +103,7 @@ class BrowserDesktopWindowTreeHostLinux
   void OnDeviceScaleFactorChanged() override;
 
   raw_ptr<BrowserView> browser_view_ = nullptr;
-  raw_ptr<BrowserFrame> browser_frame_ = nullptr;
+  raw_ptr<BrowserWidget> browser_widget_ = nullptr;
   raw_ptr<BrowserNativeWidgetAuraLinux> native_widget_ = nullptr;
 
 #if BUILDFLAG(USE_DBUS)

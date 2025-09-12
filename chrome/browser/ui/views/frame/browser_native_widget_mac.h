@@ -11,7 +11,7 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/widget/native_widget_mac.h"
 
-class BrowserFrame;
+class BrowserWidget;
 class BrowserView;
 @class BrowserWindowTouchBarController;
 @class BrowserWindowTouchBarViewsDelegate;
@@ -24,7 +24,7 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
                                public BrowserNativeWidget,
                                public CommandObserver {
  public:
-  BrowserNativeWidgetMac(BrowserFrame* browser_frame,
+  BrowserNativeWidgetMac(BrowserWidget* browser_widget,
                          BrowserView* browser_view);
 
   BrowserNativeWidgetMac(const BrowserNativeWidgetMac&) = delete;

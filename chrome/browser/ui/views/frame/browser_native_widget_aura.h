@@ -15,7 +15,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 
 class BrowserDesktopWindowTreeHost;
-class BrowserFrame;
+class BrowserWidget;
 class BrowserView;
 
 namespace wm {
@@ -31,14 +31,14 @@ class VisibilityController;
 class BrowserNativeWidgetAura : public views::DesktopNativeWidgetAura,
                                 public BrowserNativeWidget {
  public:
-  BrowserNativeWidgetAura(BrowserFrame* browser_frame,
+  BrowserNativeWidgetAura(BrowserWidget* browser_widget,
                           BrowserView* browser_view);
 
   BrowserNativeWidgetAura(const BrowserNativeWidgetAura&) = delete;
   BrowserNativeWidgetAura& operator=(const BrowserNativeWidgetAura&) = delete;
 
   BrowserView* browser_view() const { return browser_view_; }
-  BrowserFrame* browser_frame() const { return browser_frame_; }
+  BrowserWidget* browser_widget() const { return browser_widget_; }
 
  protected:
   ~BrowserNativeWidgetAura() override;
@@ -70,7 +70,7 @@ class BrowserNativeWidgetAura : public views::DesktopNativeWidgetAura,
  private:
   // The BrowserView is our ClientView. This is a pointer to it.
   raw_ptr<BrowserView> browser_view_;
-  raw_ptr<BrowserFrame> browser_frame_;
+  raw_ptr<BrowserWidget> browser_widget_;
 
   // Owned by the RootWindow.
   raw_ptr<BrowserDesktopWindowTreeHost, AcrossTasksDanglingUntriaged>

@@ -17,7 +17,7 @@
 #include "ui/views/background.h"
 
 PictureInPictureBrowserFrameViewAsh::PictureInPictureBrowserFrameViewAsh(
-    BrowserFrame* frame,
+    BrowserWidget* frame,
     BrowserView* browser_view)
     : PictureInPictureBrowserFrameView(frame, browser_view) {
   aura::Window* frame_window = frame->GetNativeWindow();

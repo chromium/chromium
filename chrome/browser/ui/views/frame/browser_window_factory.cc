@@ -6,9 +6,9 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window_deleter.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/grit/branded_strings.h"
@@ -56,17 +56,17 @@ BrowserWindow::CreateBrowserWindow(Browser* browser,
 #else
   view = new BrowserView(browser);
 #endif
-  auto browser_frame = std::make_unique<BrowserFrame>(view);
-  view->set_frame(std::move(browser_frame));
+  auto browser_widget = std::make_unique<BrowserWidget>(view);
+  view->set_frame(std::move(browser_widget));
   if (in_tab_dragging) {
     view->frame()->SetTabDragKind(TabDragKind::kAllTabs);
   }
-  view->frame()->InitBrowserFrame();
+  view->frame()->InitBrowserWidget();
 
 #if BUILDFLAG(IS_MAC)
   if (view->UsesImmersiveFullscreenMode()) {
-    // This needs to happen after BrowserFrame has been initialized. It creates
-    // a new Widget that copies the theme from BrowserFrame.
+    // This needs to happen after BrowserWidget has been initialized. It creates
+    // a new Widget that copies the theme from BrowserWidget.
     view->CreateMacOverlayView();
   }
 #endif  // IS_MAC

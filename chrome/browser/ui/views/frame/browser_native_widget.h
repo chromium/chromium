@@ -12,7 +12,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
-class BrowserFrame;
+class BrowserWidget;
 enum class TabDragKind;
 
 namespace input {
@@ -33,7 +33,7 @@ class BrowserNativeWidget {
   virtual bool UseCustomFrame() const = 0;
 
   // Returns true if the OS takes care of showing the system menu. Returning
-  // false means BrowserFrame handles showing the system menu.
+  // false means BrowserWidget handles showing the system menu.
   virtual bool UsesNativeSystemMenu() const = 0;
 
   // Returns true when the window placement should be stored.
@@ -81,10 +81,11 @@ class BrowserNativeWidget {
 #endif
 
  protected:
-  friend class BrowserFrame;
+  friend class BrowserWidget;
 
-  // BrowserFrame pass-thrus ---------------------------------------------------
-  // See browser_frame.h for documentation:
+  // BrowserWidget pass-thrus
+  // --------------------------------------------------- See browser_widget.h
+  // for documentation:
   virtual int GetMinimizeButtonOffset() const = 0;
 };
 

@@ -19,8 +19,8 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
@@ -59,7 +59,7 @@ class PictureInPictureBrowserFrameView
   METADATA_HEADER(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
 
  public:
-  PictureInPictureBrowserFrameView(BrowserFrame* frame,
+  PictureInPictureBrowserFrameView(BrowserWidget* frame,
                                    BrowserView* browser_view);
   PictureInPictureBrowserFrameView(const PictureInPictureBrowserFrameView&) =
       delete;

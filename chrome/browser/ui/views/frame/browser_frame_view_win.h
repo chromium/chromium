@@ -24,8 +24,8 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   METADATA_HEADER(BrowserFrameViewWin, BrowserNonClientFrameView)
 
  public:
-  // Constructs a non-client view for an BrowserFrame.
-  BrowserFrameViewWin(BrowserFrame* frame, BrowserView* browser_view);
+  // Constructs a non-client view for an BrowserWidget.
+  BrowserFrameViewWin(BrowserWidget* frame, BrowserView* browser_view);
   BrowserFrameViewWin(const BrowserFrameViewWin&) = delete;
   BrowserFrameViewWin& operator=(const BrowserFrameViewWin&) = delete;
   ~BrowserFrameViewWin() override;

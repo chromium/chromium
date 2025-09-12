@@ -25,11 +25,11 @@ using aura::Window;
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNativeWidgetAura, public:
 
-BrowserNativeWidgetAura::BrowserNativeWidgetAura(BrowserFrame* browser_frame,
+BrowserNativeWidgetAura::BrowserNativeWidgetAura(BrowserWidget* browser_widget,
                                                  BrowserView* browser_view)
-    : views::DesktopNativeWidgetAura(browser_frame),
+    : views::DesktopNativeWidgetAura(browser_widget),
       browser_view_(browser_view),
-      browser_frame_(browser_frame),
+      browser_widget_(browser_widget),
       browser_desktop_window_tree_host_(nullptr) {
   GetNativeWindow()->SetName("BrowserFrameAura");
 }
@@ -43,7 +43,7 @@ BrowserNativeWidgetAura::~BrowserNativeWidgetAura() = default;
 // BrowserNativeWidgetAura, views::DesktopNativeWidgetAura overrides:
 
 void BrowserNativeWidgetAura::OnHostClosed() {
-  browser_frame_ = nullptr;
+  browser_widget_ = nullptr;
   browser_view_ = nullptr;
   aura::client::SetVisibilityClient(GetNativeView()->GetRootWindow(), nullptr);
   DesktopNativeWidgetAura::OnHostClosed();
@@ -53,7 +53,7 @@ void BrowserNativeWidgetAura::InitNativeWidget(
     views::Widget::InitParams params) {
   browser_desktop_window_tree_host_ =
       BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
-          browser_frame_, this, browser_view_, browser_frame_);
+          browser_widget_, this, browser_view_, browser_widget_);
   params.desktop_window_tree_host =
       browser_desktop_window_tree_host_->AsDesktopWindowTreeHost();
   DesktopNativeWidgetAura::InitNativeWidget(std::move(params));
@@ -134,7 +134,7 @@ bool BrowserNativeWidgetAura::ShouldUseInitialVisibleOnAllWorkspaces() const {
 }
 
 void BrowserNativeWidgetAura::ClientDestroyedWidget() {
-  browser_frame_ = nullptr;
+  browser_widget_ = nullptr;
   browser_view_ = nullptr;
   DesktopNativeWidgetAura::ClientDestroyedWidget();
 }

@@ -45,25 +45,25 @@ BrowserCaptionButtonContainer::BrowserCaptionButtonContainer(
     BrowserFrameViewWin* frame_view)
     : frame_view_(frame_view),
       minimize_button_(AddChildView(CreateCaptionButton(
-          base::BindRepeating(&BrowserFrame::Minimize,
+          base::BindRepeating(&BrowserWidget::Minimize,
                               base::Unretained(frame_view_->frame())),
           frame_view_,
           VIEW_ID_MINIMIZE_BUTTON,
           IDS_APP_ACCNAME_MINIMIZE))),
       maximize_button_(AddChildView(CreateCaptionButton(
-          base::BindRepeating(&BrowserFrame::Maximize,
+          base::BindRepeating(&BrowserWidget::Maximize,
                               base::Unretained(frame_view_->frame())),
           frame_view_,
           VIEW_ID_MAXIMIZE_BUTTON,
           IDS_APP_ACCNAME_MAXIMIZE))),
       restore_button_(AddChildView(CreateCaptionButton(
-          base::BindRepeating(&BrowserFrame::Restore,
+          base::BindRepeating(&BrowserWidget::Restore,
                               base::Unretained(frame_view_->frame())),
           frame_view_,
           VIEW_ID_RESTORE_BUTTON,
           IDS_APP_ACCNAME_RESTORE))),
       close_button_(AddChildView(CreateCaptionButton(
-          base::BindRepeating(&BrowserFrame::CloseWithReason,
+          base::BindRepeating(&BrowserWidget::CloseWithReason,
                               base::Unretained(frame_view_->frame()),
                               views::Widget::ClosedReason::kCloseButtonClicked),
           frame_view_,

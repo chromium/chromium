@@ -18,8 +18,8 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -76,14 +76,14 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNativeWidgetAsh, public:
 
-BrowserNativeWidgetAsh::BrowserNativeWidgetAsh(BrowserFrame* browser_frame,
+BrowserNativeWidgetAsh::BrowserNativeWidgetAsh(BrowserWidget* browser_widget,
                                                BrowserView* browser_view)
-    : views::NativeWidgetAura(browser_frame), browser_view_(browser_view) {
-  widget_observation_.Observe(browser_frame);
+    : views::NativeWidgetAura(browser_widget), browser_view_(browser_view) {
+  widget_observation_.Observe(browser_widget);
   GetNativeWindow()->SetName("BrowserNativeWidgetAsh");
   Browser* browser = browser_view->browser();
 
-  created_from_drag_ = browser_frame->tab_drag_kind() != TabDragKind::kNone;
+  created_from_drag_ = browser_widget->tab_drag_kind() != TabDragKind::kNone;
 
   // Turn on auto window management if we don't need an explicit bounds.
   // This way the requested bounds are honored.
