@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -73,7 +74,8 @@ enum class GlicPrewarmingFreSource {
 // possible via enterprise policy). This is required on disabled profiles
 // since pieces of this service are the ones that monitor this runtime
 // preference for changes and cause the UI to respond to it.
-class GlicKeyedService : public KeyedService {
+class GlicKeyedService : public KeyedService,
+                         public GlicSharingManagerProvider {
  public:
   explicit GlicKeyedService(
       Profile* profile,
@@ -124,7 +126,7 @@ class GlicKeyedService : public KeyedService {
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicFreController& fre_controller();
   GlicWindowController& window_controller() const;
-  GlicSharingManager& sharing_manager();
+  GlicSharingManager& sharing_manager() override;
 
   // Called when a webview guest is created within a chrome://glic WebUI.
   void GuestAdded(content::WebContents* guest_contents);
