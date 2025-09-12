@@ -55,6 +55,7 @@ source_set("model") {
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui",
     "//ios/chrome/browser/omnibox/ui:model_interface",
+    "//ios/chrome/browser/omnibox/ui:omnibox_util",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",

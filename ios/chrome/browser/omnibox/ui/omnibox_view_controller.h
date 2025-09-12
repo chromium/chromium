@@ -15,6 +15,7 @@
 @class LayoutGuideCenter;
 @protocol OmniboxMutator;
 @protocol OmniboxKeyboardDelegate;
+@protocol OmniboxTextInput;
 @protocol TextFieldViewContaining;
 
 @interface OmniboxViewController : UIViewController <EditViewAnimatee,
@@ -27,8 +28,9 @@
 /// Whether the UI is configured for search-only mode.
 @property(nonatomic, assign) BOOL searchOnlyUI;
 
-// The textfield used by this view controller.
+// The text input used by this view controller.
 @property(nonatomic, readonly, strong) OmniboxTextFieldIOS* textField;
+@property(nonatomic, readonly, strong) id<OmniboxTextInput> textInput;
 
 // The view, which contains a text field view.
 @property(nonatomic, readonly)

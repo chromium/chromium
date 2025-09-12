@@ -41,6 +41,10 @@
 /// Returns the underlying view of the text input.
 - (UIView*)view;
 
+/// Use to make the view or any subview that is the first responder resign
+/// (optionally force)
+- (BOOL)endEditing:(BOOL)force;
+
 /// Sets the field's text to `text`.  If `userTextLength` is less than the
 /// length of `text`, the excess is displayed as inline autocompleted text. When
 /// the field is not in editing mode, it will respect the text attributes set on

@@ -16,6 +16,7 @@
 class OmniboxClient;
 @protocol OmniboxFocusDelegate;
 @protocol OmniboxTextControllerDelegate;
+@protocol OmniboxTextInput;
 @class OmniboxTextFieldIOS;
 
 /// Controller of the omnibox text.
@@ -31,8 +32,8 @@ class OmniboxClient;
 @property(nonatomic, weak)
     OmniboxAutocompleteController* omniboxAutocompleteController;
 
-/// Omnibox textfield.
-@property(nonatomic, weak) OmniboxTextFieldIOS* textField;
+/// Omnibox text input.
+@property(nonatomic, weak) id<OmniboxTextInput> textInput;
 
 /// Returns the current selection range.
 @property(nonatomic, assign, readonly) NSRange currentSelection;

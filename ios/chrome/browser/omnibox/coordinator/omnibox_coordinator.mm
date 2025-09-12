@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_keyboard_accessory_view.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_paste_delegate.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_view_controller.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -179,6 +180,7 @@
 
   _omniboxTextModel = std::make_unique<OmniboxTextModel>(_client.get());
   OmniboxTextFieldIOS* textField = viewController.textField;
+  id<OmniboxTextInput> textInput = viewController.textInput;
 
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
       initWithOmniboxClient:_client.get()
@@ -218,7 +220,7 @@
   _omniboxTextController.focusDelegate = self.focusDelegate;
   _omniboxTextController.omniboxAutocompleteController =
       _omniboxAutocompleteController;
-  _omniboxTextController.textField = textField;
+  _omniboxTextController.textInput = textInput;
   _omniboxAutocompleteController.omniboxTextController = _omniboxTextController;
   _omniboxAutocompleteController.omniboxMetricsRecorder =
       _omniboxMetricsRecorder;
