@@ -1100,6 +1100,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     const AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source) {
   SuggestionsContext context;
+  context.trigger_source = trigger_source;
 
   // When Compose suggestions or manual fallback for plus addresses are
   // requested, there is no need to load Autofill suggestions.

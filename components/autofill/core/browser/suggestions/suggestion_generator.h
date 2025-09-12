@@ -100,6 +100,7 @@ class SuggestionGenerator {
   // phase in suggestion generation (see top-level ddocumentation for more
   // details) must generate a Suggestion object for each of the passed
   // `SuggestionData` and in the given order.
+  // TODO(crbug.com/409962888): Take `SuggestionContext` here.
   virtual void FetchSuggestionData(
       const FormData& form,
       const FormFieldData& trigger_field,
