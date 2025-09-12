@@ -109,6 +109,7 @@ using segmentation_platform::TipIdentifier;
     _profilePrefChangeRegistrar.RemoveAll();
     _prefObserverBridge.reset();
   }
+  _profilePrefService = nil;
 }
 
 - (void)reconfigureWithTipIdentifier:(TipIdentifier)identifier {

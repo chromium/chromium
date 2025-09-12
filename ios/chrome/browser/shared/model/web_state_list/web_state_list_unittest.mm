@@ -127,7 +127,7 @@ class WebStateListTestObserver : public WebStateListObserver {
 
   // Returns the last group for the last detached WebState.
   const TabGroup* web_state_detached_group() const {
-    return web_state_detached_group_;
+    return web_state_detached_group_.get();
   }
 
   // Returns whether a WebState was activated.
@@ -344,30 +344,35 @@ class WebStateListTestObserver : public WebStateListObserver {
 
  private:
   int web_state_inserted_count_ = 0;
-  raw_ptr<const TabGroup> web_state_inserted_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_inserted_group_ =
+      nullptr;
   int web_state_moved_count_ = 0;
-  raw_ptr<const TabGroup> web_state_moved_old_group_ = nullptr;
-  raw_ptr<const TabGroup> web_state_moved_new_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_moved_old_group_ =
+      nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_moved_new_group_ =
+      nullptr;
   int web_state_replaced_count_ = 0;
   int web_state_detached_count_ = 0;
-  raw_ptr<const TabGroup> web_state_detached_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> web_state_detached_group_ =
+      nullptr;
   int web_state_activated_count_ = 0;
   int pinned_state_changed_count_ = 0;
   int status_only_count_ = 0;
-  raw_ptr<web::WebState> status_only_web_state_ = nullptr;
-  raw_ptr<const TabGroup> status_only_old_group_ = nullptr;
-  raw_ptr<const TabGroup> status_only_new_group_ = nullptr;
+  raw_ptr<web::WebState, DanglingUntriaged> status_only_web_state_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> status_only_old_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> status_only_new_group_ = nullptr;
   int group_created_count_ = 0;
-  raw_ptr<const TabGroup> group_created_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_created_group_ = nullptr;
   int visual_data_updated_count_ = 0;
-  raw_ptr<const TabGroup> visual_data_updated_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> visual_data_updated_group_ =
+      nullptr;
   TabGroupVisualData old_visual_data_ = TabGroupVisualData();
   int group_moved_count_ = 0;
-  raw_ptr<const TabGroup> group_moved_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_moved_group_ = nullptr;
   TabGroupRange group_moved_from_range_ = TabGroupRange::InvalidRange();
   TabGroupRange group_moved_to_range_ = TabGroupRange::InvalidRange();
   int group_deleted_count_ = 0;
-  raw_ptr<const TabGroup> group_deleted_group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_deleted_group_ = nullptr;
   int batch_operation_started_count_ = 0;
   int batch_operation_ended_count_ = 0;
   int web_state_list_destroyed_count_ = 0;
@@ -457,9 +462,9 @@ class TestWebStateListDelegate final : public WebStateListDelegate {
   int inserted_web_state_count_ = 0;
   int activated_web_state_count_ = 0;
   int removed_web_state_count_ = 0;
-  raw_ptr<web::WebState> last_inserted_web_state_;
-  raw_ptr<web::WebState> last_activated_web_state_;
-  raw_ptr<web::WebState> last_removed_web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> last_inserted_web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> last_activated_web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> last_removed_web_state_;
 };
 
 class TestWebStateListGroupsDelegate final : public WebStateListGroupsDelegate {

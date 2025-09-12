@@ -63,7 +63,7 @@ bool IsV3() {
 
 @implementation PaymentsSuggestionBottomSheetMediator {
   // The WebStateList observed by this mediator and the observer bridge.
-  raw_ptr<WebStateList> _webStateList;
+  raw_ptr<WebStateList, DanglingUntriaged> _webStateList;
 
   // Bridge and forwarder for observing WebState events. The forwarder is a
   // scoped observation, so the bridge will automatically be removed from the
@@ -79,7 +79,8 @@ bool IsV3() {
       _webStateListObservation;
 
   // Personal Data Manager from which we can get Credit Card information.
-  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager, DanglingUntriaged>
+      _personalDataManager;
 
   // C++ to ObjC bridge for PersonalDataManagerObserver.
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>

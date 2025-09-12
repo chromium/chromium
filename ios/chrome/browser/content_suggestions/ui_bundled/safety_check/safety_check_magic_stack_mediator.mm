@@ -70,7 +70,7 @@ int ImpressionsCount(const base::Value::List& impressions,
 @end
 
 @implementation SafetyCheckMagicStackMediator {
-  raw_ptr<IOSChromeSafetyCheckManager> _safetyCheckManager;
+  raw_ptr<IOSChromeSafetyCheckManager, DanglingUntriaged> _safetyCheckManager;
   // Observer for Safety Check changes.
   std::unique_ptr<SafetyCheckObserverBridge> _safetyCheckManagerObserver;
   // Bridge to listen to pref changes.
@@ -80,9 +80,9 @@ int ImpressionsCount(const base::Value::List& impressions,
   // Registrar for user pref changes notifications.
   PrefChangeRegistrar _userPrefChangeRegistrar;
   // Local State prefs.
-  raw_ptr<PrefService> _localState;
+  raw_ptr<PrefService, DanglingUntriaged> _localState;
   // User prefs.
-  raw_ptr<PrefService> _userState;
+  raw_ptr<PrefService, DanglingUntriaged> _userState;
   ProfileState* _profileState;
   // Used by the Safety Check (Magic Stack) module for the current Safety Check
   // state.
@@ -172,6 +172,10 @@ int ImpressionsCount(const base::Value::List& impressions,
   _notificationsObserver = nil;
 
   _safetyCheckConsumer = nil;
+
+  _safetyCheckState.delegate = nil;
+  _safetyCheckState.audience = nil;
+  _safetyCheckState.safetyCheckConsumerSource = nil;
 
   _safetyCheckManagerObserver.reset();
 

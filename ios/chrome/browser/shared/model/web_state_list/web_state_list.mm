@@ -131,7 +131,7 @@ class WebStateList::WebStateWrapper {
  private:
   std::unique_ptr<web::WebState> web_state_;
   WebStateOpener opener_;
-  raw_ptr<const TabGroup> group_ = nullptr;
+  raw_ptr<const TabGroup, DanglingUntriaged> group_ = nullptr;
   bool should_reset_opener_ = false;
 };
 
@@ -1274,9 +1274,13 @@ void WebStateList::DeleteGroupIfEmpty(const TabGroup* group) {
   web::WebState* const active_web_state = GetActiveWebState();
   const WebStateListStatus status = {.old_active_web_state = active_web_state,
                                      .new_active_web_state = active_web_state};
-  const WebStateListChangeGroupDelete group_delete_change(group);
-  for (auto& observer : observers_) {
-    observer.WebStateListDidChange(this, group_delete_change, status);
+
+  // Scope `group_delete_change` so it is destroyed before `group` is.
+  {
+    const WebStateListChangeGroupDelete group_delete_change(group);
+    for (auto& observer : observers_) {
+      observer.WebStateListDidChange(this, group_delete_change, status);
+    }
   }
 
   // Actually delete the group.

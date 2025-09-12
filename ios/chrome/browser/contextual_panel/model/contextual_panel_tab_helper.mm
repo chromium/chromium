@@ -18,7 +18,8 @@
 
 ContextualPanelTabHelper::ContextualPanelTabHelper(
     web::WebState* web_state,
-    std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models)
+    std::map<ContextualPanelItemType,
+             raw_ptr<ContextualPanelModel, DanglingUntriaged>> models)
     : web_state_(web_state), models_(models), weak_ptr_factory_(this) {
   web_state_observation_.Observe(web_state_);
 }

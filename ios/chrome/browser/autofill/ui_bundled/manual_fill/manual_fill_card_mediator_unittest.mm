@@ -56,6 +56,8 @@ class ManualFillCardMediatorTest : public PlatformTest {
     mediator_.consumer = consumer_;
   }
 
+  void TearDown() override { [mediator_ disconnect]; }
+
   ManualFillCardMediator* mediator() { return mediator_; }
 
   id consumer() { return consumer_; }

@@ -286,13 +286,14 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   // is managed.
   BOOL _shouldConvertPersonalProfileToManaged;
 
-  raw_ptr<Browser> _browser;
+  raw_ptr<Browser, LeakedDanglingUntriaged> _browser;
   id<SystemIdentity> _identityToSignIn;
   signin_metrics::AccessPoint _accessPoint;
   BOOL _precedingHistorySync;
   NSString* _identityToSignInHostedDomain;
 
-  raw_ptr<Browser> _browserForAuthenticationFlowInProfile;
+  raw_ptr<Browser, LeakedDanglingUntriaged>
+      _browserForAuthenticationFlowInProfile;
 
   // This AuthenticationFlow keeps a reference to `self` while a sign-in flow is
   // is in progress to ensure it outlives any attempt to destroy it in
@@ -696,7 +697,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     id<SystemIdentity> identityToSignIn = _identityToSignIn;
     signin_metrics::AccessPoint accessPoint = _accessPoint;
     // In case of sign-in in same profile, we can reuse the same browser.
-    raw_ptr<Browser> browser = _browser;
+    raw_ptr<Browser, LeakedDanglingUntriaged> browser = _browser;
     // In case of same profile signin, the delegate simply allows
     // to update the view that started the authentication. If it gets
     // deallocated, it means the view is closed, so it’s acceptable

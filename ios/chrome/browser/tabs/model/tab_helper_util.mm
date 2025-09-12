@@ -349,8 +349,14 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   if (!for_lens_overlay && IsContextualPanelEnabled()) {
     ContextualPanelModelService* model_service =
         ContextualPanelModelServiceFactory::GetForProfile(profile);
-    ContextualPanelTabHelper::CreateForWebState(web_state,
-                                                model_service->models());
+    // Revert back to model_service->models() once DanglingUntriaged is removed.
+    std::map<ContextualPanelItemType,
+             raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+        models;
+    for (auto const& [key, val] : model_service->models()) {
+      models.emplace(key, val);
+    }
+    ContextualPanelTabHelper::CreateForWebState(web_state, models);
   }
 
   if (!for_lens_overlay && !is_off_the_record &&
