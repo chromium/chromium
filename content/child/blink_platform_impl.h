@@ -61,10 +61,6 @@ class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner_;
-  // TODO(crbug.com/40244430): Remove `media_stream_..._video_task_runner_`
-  // and use io_thread_task_runner_ directly instead.
-  scoped_refptr<base::SequencedTaskRunner>
-      media_stream_video_source_video_task_runner_;
   const scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_proxy_;
   webcrypto::WebCryptoImpl web_crypto_;

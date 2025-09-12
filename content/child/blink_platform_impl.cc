@@ -142,7 +142,6 @@ BlinkPlatformImpl::BlinkPlatformImpl() : BlinkPlatformImpl(nullptr) {}
 BlinkPlatformImpl::BlinkPlatformImpl(
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner)
     : io_thread_task_runner_(std::move(io_thread_task_runner)),
-      media_stream_video_source_video_task_runner_(io_thread_task_runner_),
       browser_interface_broker_proxy_(
           base::MakeRefCounted<ThreadSafeBrowserInterfaceBrokerProxyImpl>()) {}
 
@@ -274,7 +273,7 @@ scoped_refptr<base::SingleThreadTaskRunner> BlinkPlatformImpl::GetIOTaskRunner()
 
 scoped_refptr<base::SequencedTaskRunner>
 BlinkPlatformImpl::GetMediaStreamVideoSourceVideoTaskRunner() const {
-  return media_stream_video_source_video_task_runner_;
+  return io_thread_task_runner_;
 }
 
 std::unique_ptr<blink::Platform::NestedMessageLoopRunner>
