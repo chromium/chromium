@@ -244,6 +244,7 @@ concept ValidDenseSetTraits =
                  T> &&
     std::same_as<decltype(Traits::to_underlying(std::declval<T>())),
                  typename Traits::UnderlyingType> &&
+    std::same_as<decltype(Traits::is_valid(std::declval<T>())), bool> &&
     std::same_as<decltype(Traits::kMinValue), const T> &&
     std::same_as<decltype(Traits::kMaxValue), const T> &&
     std::same_as<decltype(Traits::kPacked), const bool>;
@@ -258,6 +259,7 @@ struct IntegralDenseSetTraits {
 
   static constexpr T from_underlying(UnderlyingType x) { return x; }
   static constexpr UnderlyingType to_underlying(T x) { return x; }
+  static constexpr bool is_valid(T x) { return true; }
 
   static constexpr T kMinValue = kMinValueT;
   static constexpr T kMaxValue = kMaxValueT;
@@ -276,6 +278,7 @@ struct EnumDenseSetTraits {
   static constexpr UnderlyingType to_underlying(T x) {
     return base::to_underlying(x);
   }
+  static constexpr bool is_valid(T x) { return true; }
 
   static constexpr T kMinValue = kMinValueT;
   static constexpr T kMaxValue = kMaxValueT;
@@ -477,13 +480,15 @@ class DenseSet {
 
   constexpr ~DenseSet() = default;
 
-  // Returns a set containing all values from `kMinValue` to `kMaxValue`,
-  // regardless of whether the values represent an existing enum.
+  // Returns a set containing all valid values from `kMinValue` to `kMaxValue`.
   static constexpr DenseSet all() {
     DenseSet set;
     for (Index x = value_to_index(Traits::kMinValue);
          x <= value_to_index(Traits::kMaxValue); ++x) {
-      set.insert(index_to_value(x));
+      T value = index_to_value(x);
+      if (Traits::is_valid(value)) {
+        set.insert(value);
+      }
     }
     return set;
   }

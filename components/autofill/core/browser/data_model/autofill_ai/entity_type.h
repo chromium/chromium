@@ -259,6 +259,7 @@ struct DenseSetTraits<AttributeType> {
   static constexpr UnderlyingType to_underlying(T x) {
     return base::to_underlying(x.name());
   }
+  static constexpr bool is_valid(T x) { return true; }
 
   static constexpr auto kMinValue = T(static_cast<N>(0));
   static constexpr auto kMaxValue = T(N::kMaxValue);
@@ -425,6 +426,7 @@ struct DenseSetTraits<EntityType> {
   static constexpr UnderlyingType to_underlying(T x) {
     return base::to_underlying(x.name());
   }
+  static constexpr bool is_valid(T x) { return true; }
 
   static constexpr auto kMinValue = T(static_cast<N>(0));
   static constexpr auto kMaxValue = T(N::kMaxValue);

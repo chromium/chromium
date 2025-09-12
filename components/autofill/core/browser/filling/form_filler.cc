@@ -86,7 +86,7 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
     case FillingProduct::kAddress: {
       static constexpr FieldTypeSet kFieldTypes = []() {
         FieldTypeSet field_types;
-        for (FieldType field_type : kAllFieldTypes) {
+        for (FieldType field_type : FieldTypeSet::all()) {
           if (IsAddressType(field_type)) {
             field_types.insert(field_type);
           }
@@ -98,7 +98,7 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
     case FillingProduct::kCreditCard: {
       static constexpr FieldTypeSet kFieldTypes = []() {
         FieldTypeSet field_types;
-        for (FieldType field_type : kAllFieldTypes) {
+        for (FieldType field_type : FieldTypeSet::all()) {
           if (FieldTypeGroupSet({FieldTypeGroup::kCreditCard,
                                  FieldTypeGroup::kStandaloneCvcField})
                   .contains(GroupTypeOfFieldType(field_type))) {
@@ -122,7 +122,7 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
     case FillingProduct::kPassword: {
       static constexpr FieldTypeSet kFieldTypes = []() {
         FieldTypeSet field_types;
-        for (FieldType field_type : kAllFieldTypes) {
+        for (FieldType field_type : FieldTypeSet::all()) {
           if (FieldTypeGroupSet({FieldTypeGroup::kUsernameField,
                                  FieldTypeGroup::kPasswordField})
                   .contains(GroupTypeOfFieldType(field_type))) {

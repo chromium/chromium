@@ -102,14 +102,6 @@ of FieldType, and similarly for FieldTypeGroupSet and HtmlFieldTypeSet."""
           input_api.re.compile(r'\bDenseSet<HtmlFieldType>'),
           'Use HtmlFieldTypeSet instead of DenseSet<HtmlFieldType>',
       ),
-      (
-          input_api.re.compile(r'\bFieldTypeSet::all()'),
-          'Use kAllFieldTypes instead of FieldTypeSet::all()',
-      ),
-      (
-          input_api.re.compile(r'\bHtmlFieldTypeSet::all()'),
-          'Use kAllHtmlFieldTypes instead of HtmlFieldTypeSet::all()',
-      ),
   ]
   warnings = []
   file_filter = lambda f: (

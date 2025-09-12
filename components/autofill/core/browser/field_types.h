@@ -584,9 +584,33 @@ enum class FieldTypeGroup {
   kMaxValue = kOneTimePassword,
 };
 
+constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
+                                    FieldType fallback_value);
+
+constexpr HtmlFieldType ToSafeHtmlFieldType(
+    std::underlying_type_t<HtmlFieldType> raw_value,
+    HtmlFieldType fallback_value);
+
 template <>
 struct DenseSetTraits<FieldType>
-    : EnumDenseSetTraits<FieldType, NO_SERVER_DATA, MAX_VALID_FIELD_TYPE> {};
+    : EnumDenseSetTraits<FieldType, NO_SERVER_DATA, MAX_VALID_FIELD_TYPE> {
+  static constexpr bool is_valid(FieldType x) {
+    return ToSafeFieldType(base::to_underlying(x), NO_SERVER_DATA) !=
+           NO_SERVER_DATA;
+  }
+};
+
+template <>
+struct DenseSetTraits<HtmlFieldType>
+    : EnumDenseSetTraits<HtmlFieldType,
+                         HtmlFieldType(0),
+                         HtmlFieldType::kMaxValue> {
+  static constexpr bool is_valid(HtmlFieldType x) {
+    return ToSafeHtmlFieldType(base::to_underlying(x),
+                               HtmlFieldType::kUnrecognized) !=
+           HtmlFieldType::kUnrecognized;
+  }
+};
 
 using FieldTypeSet = DenseSet<FieldType>;
 
@@ -689,31 +713,6 @@ constexpr HtmlFieldType ToSafeHtmlFieldType(
   return is_invalid(raw_value) ? fallback_value
                                : static_cast<HtmlFieldType>(raw_value);
 }
-
-constexpr inline FieldTypeSet kAllFieldTypes = [] {
-  FieldTypeSet fields;
-  for (std::underlying_type_t<FieldType> i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
-    if (FieldType field_type = ToSafeFieldType(i, NO_SERVER_DATA);
-        field_type != NO_SERVER_DATA) {
-      fields.insert(field_type);
-    }
-  }
-  return fields;
-}();
-
-constexpr HtmlFieldTypeSet kAllHtmlFieldTypes = [] {
-  HtmlFieldTypeSet fields;
-  using underlying_type_t = std::underlying_type_t<HtmlFieldType>;
-  for (underlying_type_t i = base::to_underlying(HtmlFieldType::kMinValue);
-       i < base::to_underlying(HtmlFieldType::kMaxValue); ++i) {
-    if (HtmlFieldType field_type =
-            ToSafeHtmlFieldType(i, HtmlFieldType::kUnrecognized);
-        field_type != HtmlFieldType::kUnrecognized) {
-      fields.insert(field_type);
-    }
-  }
-  return fields;
-}();
 
 constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
   switch (field_type) {
@@ -890,7 +889,7 @@ consteval std::array<FieldTypeSet,
 FieldTypesByGroupValue() {
   constexpr auto kMaxValue = base::to_underlying(FieldTypeGroup::kMaxValue);
   std::array<FieldTypeSet, kMaxValue + 1> map{};
-  for (FieldType field_type : kAllFieldTypes) {
+  for (FieldType field_type : FieldTypeSet::all()) {
     auto index = base::to_underlying(GroupTypeOfFieldType(field_type));
     map[index].insert(field_type);
   }

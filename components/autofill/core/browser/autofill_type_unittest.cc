@@ -94,7 +94,7 @@ TEST(AutofillTypeTest, TestConstraints) {
   EXPECT_TRUE(tc({USERNAME}));
   EXPECT_TRUE(tc({PASSWORD}));
   EXPECT_TRUE(tc({PHONE_HOME_WHOLE_NUMBER}));
-  for (FieldType field_type : kAllFieldTypes) {
+  for (FieldType field_type : FieldTypeSet::all()) {
     SCOPED_TRACE(testing::Message() << FieldTypeToStringView(field_type));
     EXPECT_TRUE(tc({field_type}));
   }
@@ -117,7 +117,7 @@ TEST(AutofillTypeTest, TestConstraints) {
   EXPECT_FALSE(tc({EMAIL_ADDRESS, LOYALTY_MEMBERSHIP_ID}));
   EXPECT_FALSE(tc({USERNAME, PASSWORD}));
   EXPECT_FALSE(tc({PHONE_HOME_WHOLE_NUMBER, PASSWORD}));
-  EXPECT_FALSE(tc(kAllFieldTypes));
+  EXPECT_FALSE(tc(FieldTypeSet::all()));
 }
 
 // Tests that GetTypes() returns the encapsulated types modulo normalization.
@@ -279,7 +279,7 @@ TEST(AutofillTypeTest, GetAddressType) {
   EXPECT_EQ(get_type(NAME_FULL), NAME_FULL);
   EXPECT_EQ(get_type(CREDIT_CARD_NAME_FULL), UNKNOWN_TYPE);
   EXPECT_EQ(get_type(ADDRESS_HOME_ZIP), ADDRESS_HOME_ZIP);
-  for (FieldType field_type : kAllFieldTypes) {
+  for (FieldType field_type : FieldTypeSet::all()) {
     SCOPED_TRACE(testing::Message()
                  << "field_type=" << FieldTypeToStringView(field_type));
     EXPECT_EQ(get_type(field_type) != UNKNOWN_TYPE, IsAddressType(field_type));
@@ -303,7 +303,7 @@ TEST(AutofillTypeTest, GetAutofillAiType) {
     FieldTypeSet hit1;
     FieldTypeSet hit2;
     for (EntityType entity : DenseSet<EntityType>::all()) {
-      for (FieldType field_type : kAllFieldTypes) {
+      for (FieldType field_type : FieldTypeSet::all()) {
         AutofillType type = AutofillType(field_type);
         if (type.GetAutofillAiType(entity) != UNKNOWN_TYPE) {
           hit1.insert(field_type);
@@ -343,7 +343,7 @@ TEST(AutofillTypeTest, GetCreditCardType) {
 TEST(AutofillTypeTest, GetIdentityCredentialType) {
   constexpr FieldTypeSet kPositive = {NAME_FIRST, NAME_FULL, EMAIL_ADDRESS,
                                       PHONE_HOME_WHOLE_NUMBER, PASSWORD};
-  for (const FieldType field_type : kAllFieldTypes) {
+  for (const FieldType field_type : FieldTypeSet::all()) {
     SCOPED_TRACE(testing::Message()
                  << "field_type=" << FieldTypeToStringView(field_type));
     const FieldType actual =
@@ -374,7 +374,7 @@ TEST(AutofillTypeTest, GetLoyaltyCardType) {
       LOYALTY_MEMBERSHIP_PROVIDER,
       EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
   };
-  for (const FieldType field_type : kAllFieldTypes) {
+  for (const FieldType field_type : FieldTypeSet::all()) {
     SCOPED_TRACE(testing::Message()
                  << "field_type=" << FieldTypeToStringView(field_type));
     const FieldType actual = AutofillType(field_type).GetLoyaltyCardType();
@@ -402,7 +402,7 @@ TEST(AutofillTypeTest, GetPasswordManagerType) {
                                       SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
                                       USERNAME,
                                       ONE_TIME_CODE};
-  for (const FieldType field_type : kAllFieldTypes) {
+  for (const FieldType field_type : FieldTypeSet::all()) {
     SCOPED_TRACE(testing::Message()
                  << "field_type=" << FieldTypeToStringView(field_type));
     const FieldType actual = AutofillType(field_type).GetPasswordManagerType();
@@ -452,7 +452,7 @@ TEST(AutofillTypeTest, AlmostAllFieldTypesAreCovered) {
                            IBAN_VALUE,          NUMERIC_QUANTITY,
                            MAX_VALID_FIELD_TYPE};
 
-  for (FieldType field_type : kAllFieldTypes) {
+  for (FieldType field_type : FieldTypeSet::all()) {
     SCOPED_TRACE(testing::Message()
                  << "field_type=" << FieldTypeToStringView(field_type));
     AutofillType t = AutofillType(field_type);

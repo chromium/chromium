@@ -146,7 +146,7 @@ TEST_F(AutofillFieldTest, GroupsOfHtmlTypes) {
   using enum HtmlFieldType;
   static constexpr DenseSet<HtmlFieldType> kInconsistent = {
       kTransactionAmount, kTransactionCurrency};
-  for (HtmlFieldType t : kAllHtmlFieldTypes) {
+  for (HtmlFieldType t : HtmlFieldTypeSet::all()) {
     SCOPED_TRACE(testing::Message()
                  << "HtmlFieldType: " << FieldTypeToStringView(t));
     if (kInconsistent.contains(t)) {
