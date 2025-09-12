@@ -41,8 +41,7 @@ class Point;
 
 namespace glic {
 class GlicInstanceCoordinatorImpl : public GlicWindowController,
-                                    public GlicInstance::AttachmentDelegate,
-                                    public BrowserListObserver {
+                                    public GlicInstance::AttachmentDelegate {
  public:
   GlicInstanceCoordinatorImpl(const GlicInstanceCoordinatorImpl&) = delete;
   GlicInstanceCoordinatorImpl& operator=(const GlicInstanceCoordinatorImpl&) =
@@ -53,10 +52,6 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
                               GlicKeyedService* service,
                               GlicEnabling* enabling);
   ~GlicInstanceCoordinatorImpl() override;
-
-  // BrowserListObserver implementation
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
 
   // GlicInstance::AttachmentDelegate implementation
   void AttachInstance(GlicInstance* instance) override;
@@ -126,7 +121,7 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   GlicInstance* GetOrCreateGlicInstanceForTab(tabs::TabInterface* tab);
   GlicInstance* GetInstanceFor(const InstanceId& id);
   GlicInstance* GetInstanceForTab(tabs::TabInterface* tab);
-  GlicInstance* CreateGlicInstance(BrowserWindowInterface* bwi);
+  GlicInstance* CreateGlicInstance();
 
   void ToggleFloaty();
   void ToggleSidePanel(BrowserWindowInterface* browser);
@@ -143,20 +138,12 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   mojom::PanelState panel_state_;
   const raw_ptr<Profile> profile_;
 
-  // TODO: This is a temporary solution to associate a
-  // instance with a browser window. This will be removed once there are
-  // affordances for users to manage their own instances.
-  std::map<BrowserWindowInterface*, InstanceId> browser_to_instance_map_;
-
   std::map<InstanceId, std::unique_ptr<GlicInstance>> instances_;
 
   // The instance ID of the one instance that is currently floating.
   std::optional<InstanceId> floating_instance_key_;
 
   std::unique_ptr<HostManager> host_manager_;
-
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
 
   base::WeakPtrFactory<GlicInstanceCoordinatorImpl> weak_ptr_factory_{this};
 };

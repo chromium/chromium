@@ -81,7 +81,6 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     GlicEnabling* enabling)
     : profile_(profile) {
   host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
-  browser_list_observation_.Observe(BrowserList::GetInstance());
 }
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
@@ -99,12 +98,6 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
   }
 
   return nullptr;
-}
-
-void GlicInstanceCoordinatorImpl::OnBrowserAdded(Browser* browser) {}
-
-void GlicInstanceCoordinatorImpl::OnBrowserRemoved(Browser* browser) {
-  browser_to_instance_map_.erase(browser);
 }
 
 void GlicInstanceCoordinatorImpl::OnInstanceOrphaned(GlicInstance* instance) {
@@ -369,17 +362,8 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceForTab(
   auto* helper = GlicInstanceHelper::From(tab);
   CHECK(helper);
 
-  // If the tab is not part of a conversation, we will check if the browser
-  // window is.
-  auto* bwi = tab->GetBrowserWindowInterface();
-  auto it = browser_to_instance_map_.find(bwi);
-  if (it != browser_to_instance_map_.end()) {
-    helper->SetInstanceId(it->second);
-    return GetInstanceFor(it->second);
-  }
-
   // Create a new conversation and instance.
-  auto* new_instance = CreateGlicInstance(bwi);
+  auto* new_instance = CreateGlicInstance();
   helper->SetInstanceId(new_instance->id());
   return new_instance;
 }
@@ -393,16 +377,12 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceFor(
   return nullptr;
 }
 
-GlicInstance* GlicInstanceCoordinatorImpl::CreateGlicInstance(
-    BrowserWindowInterface* bwi) {
+GlicInstance* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
   // TODO: Sync this id with the web client.
   InstanceId instance_id = base::Uuid::GenerateRandomV4();
   auto new_instance = std::make_unique<GlicInstance>(
       profile_, std::make_unique<Host>(profile_), instance_id,
       weak_ptr_factory_.GetWeakPtr());
-  if (bwi) {
-    browser_to_instance_map_[bwi] = instance_id;
-  }
   auto* instance_ptr = new_instance.get();
   instances_[instance_id] = std::move(new_instance);
   return instance_ptr;
@@ -410,7 +390,7 @@ GlicInstance* GlicInstanceCoordinatorImpl::CreateGlicInstance(
 
 void GlicInstanceCoordinatorImpl::ToggleFloaty() {
   if (!floating_instance_key_.has_value()) {
-    floating_instance_key_ = CreateGlicInstance(/*bwi=*/nullptr)->id();
+    floating_instance_key_ = CreateGlicInstance()->id();
   }
   auto instance_iter = instances_.find(*floating_instance_key_);
   CHECK(instance_iter != instances_.end());
