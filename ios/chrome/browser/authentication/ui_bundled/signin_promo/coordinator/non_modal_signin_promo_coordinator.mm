@@ -255,6 +255,17 @@ constexpr CGFloat kLogoSize = 22;
     // Double tap. Ignore
     return;
   }
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  if (signin::SigninIsPossible(authService)) {
+    // The promo is not scheduled if the user is signed-in or if sign-in is
+    // disabled. Still, due to asynchronicity, the state could have changed in
+    // the meantime, so we need to check again before displaying the sign-in
+    // coordinator.
+    [self cleanupUIAndDismiss];
+    return;
+  }
   _infobarUntapped = NO;
   // Log sign-in action when user taps the sign-in button
   LogNonModalSignInPromoAction(NonModalSignInPromoAction::kAccept, _promoType);
