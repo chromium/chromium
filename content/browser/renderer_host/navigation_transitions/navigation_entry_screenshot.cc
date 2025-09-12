@@ -252,11 +252,12 @@ void NavigationEntryScreenshot::ReadBack() {
     OnReadBack(false);
     return;
   }
-
-  gfx::Point src_point;
   if (!context_provider_) {
     OnReadBack(false);
+    return;
   }
+
+  gfx::Point src_point;
   auto* raster_interface = context_provider_->RasterInterface();
   DCHECK(raster_interface);
   auto scoped_access = shared_image_->BeginRasterAccess(
@@ -275,7 +276,13 @@ void NavigationEntryScreenshot::OnReadBack(bool success) {
   TRACE_EVENT("content", "NavigationEntryScreenshot::OnReadBack");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The context provider will no longer be used.
-  ResetContextProvider();
+  // This has to run after the readback is completed, otherwise, the destruction
+  // of the context provider will crash trying to clean up this request that is
+  // currently being processed.
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NavigationEntryScreenshot::ResetContextProvider,
+                     weak_factory_.GetWeakPtr()));
   if (!success) {
     read_back_bitmap_.reset();
     shared_image_.reset();
