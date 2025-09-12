@@ -9,7 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/download/status_text_builder_utils.h"
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/save_to_drive/save_to_drive_utils.h"
 #include "chrome/browser/save_to_drive/time_remaining_calculator.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "content/public/browser/render_frame_host.h"
@@ -17,48 +17,23 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/constants.h"
-#include "pdf/pdf_features.h"
 
 namespace save_to_drive {
 namespace {
 
 using extensions::api::pdf_viewer_private::SaveToDriveStatus;
 
-GURL GetStreamUrl(content::RenderFrameHost* render_frame_host) {
-  base::WeakPtr<extensions::StreamContainer> stream;
-  if (chrome_pdf::features::IsOopifPdfEnabled()) {
-    content::RenderFrameHost* embedder_host = render_frame_host->GetParent();
-    if (embedder_host) {
-      auto* pdf_viewer_stream_manager =
-          pdf::PdfViewerStreamManager::FromRenderFrameHost(embedder_host);
-      if (pdf_viewer_stream_manager) {
-        stream = pdf_viewer_stream_manager->GetStreamContainer(embedder_host);
-      }
-    }
-  } else {
-    auto* guest_view = extensions::MimeHandlerViewGuest::FromRenderFrameHost(
-        render_frame_host);
-    if (guest_view) {
-      stream = guest_view->GetStreamWeakPtr();
-    }
-  }
-  if (!stream) {
-    return GURL();
-  }
-  return stream->stream_url();
-}
-
 }  // namespace
 
 // static
 std::unique_ptr<SaveToDriveEventDispatcher> SaveToDriveEventDispatcher::Create(
     content::RenderFrameHost* render_frame_host) {
-  const GURL stream_url = GetStreamUrl(render_frame_host);
-  if (stream_url.spec().empty()) {
+  auto stream = GetStreamWeakPtr(render_frame_host);
+  if (!stream || stream->stream_url().spec().empty()) {
     return nullptr;
   }
   return base::WrapUnique(new SaveToDriveEventDispatcher(
-      render_frame_host, stream_url,
+      render_frame_host, stream->stream_url(),
       std::make_unique<TimeRemainingCalculator>()));
 }
 
@@ -67,12 +42,13 @@ std::unique_ptr<SaveToDriveEventDispatcher>
 SaveToDriveEventDispatcher::CreateForTesting(
     content::RenderFrameHost* render_frame_host,
     std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator) {
-  const GURL stream_url = GetStreamUrl(render_frame_host);
-  if (stream_url.spec().empty()) {
+  auto stream = GetStreamWeakPtr(render_frame_host);
+  if (!stream || stream->stream_url().spec().empty()) {
     return nullptr;
   }
-  return base::WrapUnique(new SaveToDriveEventDispatcher(
-      render_frame_host, stream_url, std::move(time_remaining_calculator)));
+  return base::WrapUnique(
+      new SaveToDriveEventDispatcher(render_frame_host, stream->stream_url(),
+                                     std::move(time_remaining_calculator)));
 }
 
 SaveToDriveEventDispatcher::~SaveToDriveEventDispatcher() = default;
