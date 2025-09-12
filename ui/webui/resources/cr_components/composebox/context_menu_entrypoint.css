@@ -32,15 +32,6 @@
   --cr-menu-border-radius: 16px;
 }
 
-#menu cr-button {
-  --iron-icon-height: 16px;
-  --iron-icon-width: 16px;
-  font-size: 13px;
-  height: 32px;
-  justify-content: flex-start;
-  max-width: 190px;
-}
-
 #tabHeader {
   color: var(--cr-primary-text-color);
   font-size: 11px;
@@ -51,7 +42,27 @@
 }
 
 .dropdown-item {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--cr-primary-text-color);
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  font-weight: 400;
+  gap: 8px;
+  height: 32px;
+  justify-content: flex-start;
+  max-width: 190px;
   padding: 6px 14px;
+  text-align: left;
+  width: 100%;
+}
+
+.dropdown-item:hover {
+  background-color: var(--cr-hover-background-color);
 }
 
 #menu hr {
