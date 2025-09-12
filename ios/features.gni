@@ -9,6 +9,10 @@ declare_args() {
   # WebKit for mac but incorrectly setting `target_os="ios"`.
   is_webkit_only_build = false
 
+  # Control whether iOS builds with DanglingRawPtrChecks when available.
+  # Temporarily disable for rollout -- see crbug.com/424376811 for details.
+  ios_enable_dangling_raw_ptr_checks = false
+
   # Control whether //ios/chrome and //ios/web targets are build. This
   # is used by bots from projects based on top of Chromium that want to
   # only reuse shared code (//ios/net, //remoting/ios, ...).

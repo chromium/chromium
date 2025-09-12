@@ -125,9 +125,11 @@ enable_dangling_raw_ptr_checks_default =
     # DCHECKd/Debug builds. In the future, given its neutral performance impact,
     # we could consider removing this restriction.
     (is_debug || dcheck_always_on) &&
-    # Fuchsia and iOS have never been tested against DanglingPointerDetector at
-    # the moment.
-    !is_ios && !is_fuchsia &&
+    # iOS is rolling out DanglingPointerDetection bot-by-bot.
+    (!is_ios || ios_enable_dangling_raw_ptr_checks) &&
+    # Fuchsia has never been tested against DanglingPointerDetector at the
+    #moment.
+    !is_fuchsia &&
     # Only the `android-rel` CQ bot has enforced DanglingPointerDetector checks
     # at the moment. The other Android bots are not ready for it yet.
     !is_android

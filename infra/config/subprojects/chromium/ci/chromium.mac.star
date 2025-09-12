@@ -1247,6 +1247,7 @@ ios_builder(
             "ios_simulator",
             "arm64",
             "xctest",
+            "ios_enable_dangling_raw_ptr_checks",
         ],
     ),
     targets = targets.bundle(

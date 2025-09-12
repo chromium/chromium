@@ -649,6 +649,16 @@ gn_args.config(
     },
 )
 
+# iOS can't use enable_dangling_raw_ptr_checks, since there are some configurations
+# that do not build with backup ref ptr. Instead, enable dangling_raw_ptr via
+# ios_enable_dangling_raw_ptr_checks
+gn_args.config(
+    name = "ios_enable_dangling_raw_ptr_checks",
+    args = {
+        "ios_enable_dangling_raw_ptr_checks": True,
+    },
+)
+
 # Changes the default of the dangling raw pointer detection feature flag,
 # enabling it on all runs.
 gn_args.config(
