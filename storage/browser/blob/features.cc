@@ -8,7 +8,6 @@ namespace features {
 
 // Please keep features in alphabetical order.
 BASE_FEATURE(kBlockCrossPartitionBlobUrlFetching,
-             "BlockCrossPartitionBlobUrlFetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Please keep features in alphabetical order.

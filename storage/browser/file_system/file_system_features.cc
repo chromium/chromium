@@ -9,7 +9,6 @@ namespace storage::features {
 // Creates FileSystemContexts in incognito mode. This is used to run web tests
 // in incognito mode to ensure feature parity for FileSystemAccessAccessHandles.
 BASE_FEATURE(kIncognitoFileSystemContextForTesting,
-             "IncognitoFileSystemContextForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace storage::features
