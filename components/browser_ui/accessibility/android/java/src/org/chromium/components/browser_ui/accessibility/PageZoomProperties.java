@@ -21,7 +21,7 @@ class PageZoomProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Callback<@Nullable Void>> RESET_ZOOM_CALLBACK =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<Callback<Integer>> SEEKBAR_CHANGE_CALLBACK =
+    static final WritableObjectPropertyKey<Callback<Integer>> BAR_VALUE_CHANGE_CALLBACK =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Callback<@Nullable Void>> USER_INTERACTION_CALLBACK =
             new WritableObjectPropertyKey<>();
@@ -41,7 +41,7 @@ class PageZoomProperties {
         DECREASE_ZOOM_CALLBACK,
         INCREASE_ZOOM_CALLBACK,
         RESET_ZOOM_CALLBACK,
-        SEEKBAR_CHANGE_CALLBACK,
+        BAR_VALUE_CHANGE_CALLBACK,
         USER_INTERACTION_CALLBACK,
         DECREASE_ZOOM_ENABLED,
         INCREASE_ZOOM_ENABLED,

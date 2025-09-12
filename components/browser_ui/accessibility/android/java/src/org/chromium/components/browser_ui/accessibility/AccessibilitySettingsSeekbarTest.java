@@ -38,6 +38,7 @@ import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /** Tests for the Accessibility Settings menu's Seekbar. */
@@ -82,9 +83,7 @@ public class AccessibilitySettingsSeekbarTest {
         mSettingsActivityTestRule.launchPreference(
                 AccessibilitySettings.class,
                 null,
-                (fragment) -> {
-                    ((AccessibilitySettings) fragment).setDelegate(mDelegate);
-                });
+                (fragment) -> ((AccessibilitySettings) fragment).setDelegate(mDelegate));
         mAccessibilitySettings =
                 (AccessibilitySettings) mSettingsActivityTestRule.getPreferenceFragment();
     }
@@ -114,10 +113,7 @@ public class AccessibilitySettingsSeekbarTest {
     @Feature({"Accessibility"})
     public void testPageZoomPreference_decreaseButtonProperlyDisabled() {
         getPageZoomPref();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setZoomValueForTesting(0);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mPageZoomPref.setZoomValueForTesting(0));
         onView(withId(R.id.page_zoom_decrease_zoom_button)).check(matches(sDisabled));
     }
 
@@ -138,9 +134,9 @@ public class AccessibilitySettingsSeekbarTest {
     public void testPageZoomPreference_increaseButtonProperlyDisabled() {
         getPageZoomPref();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setZoomValueForTesting(PageZoomUtils.PAGE_ZOOM_MAXIMUM_BAR_VALUE);
-                });
+                () ->
+                        mPageZoomPref.setZoomValueForTesting(
+                                PageZoomUtils.PAGE_ZOOM_MAXIMUM_BAR_VALUE));
         onView(withId(R.id.page_zoom_increase_zoom_button)).check(matches(sDisabled));
     }
 
@@ -152,6 +148,109 @@ public class AccessibilitySettingsSeekbarTest {
         int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
         onView(withId(R.id.page_zoom_slider)).perform(ViewActions.swipeRight());
         Assert.assertNotEquals(startingVal, mPageZoomPref.getZoomSliderForTesting().getProgress());
+    }
+
+    // Tests related to the Smart Zoom feature.
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testPageZoomPreference_smartZoom_hiddenWhenDisabled() {
+        getPageZoomPref();
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_title), ViewUtils.VIEW_GONE);
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_summary), ViewUtils.VIEW_GONE);
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_current_value_text), ViewUtils.VIEW_GONE);
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_decrease_zoom_button), ViewUtils.VIEW_GONE);
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_slider), ViewUtils.VIEW_GONE);
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_increase_zoom_button), ViewUtils.VIEW_GONE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @Features.EnableFeatures({ContentFeatureList.SMART_ZOOM})
+    public void testPageZoomPreference_smartZoom_visibleWhenEnabled() {
+        getPageZoomPref();
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_title), ViewUtils.VIEW_VISIBLE);
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_summary), ViewUtils.VIEW_VISIBLE);
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_current_value_text), ViewUtils.VIEW_VISIBLE);
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_decrease_zoom_button), ViewUtils.VIEW_VISIBLE);
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_slider), ViewUtils.VIEW_VISIBLE);
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.text_size_contrast_increase_zoom_button), ViewUtils.VIEW_VISIBLE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @Features.EnableFeatures({ContentFeatureList.SMART_ZOOM})
+    public void testPageZoomPreference_smartZoom_decreaseButtonUpdatesValue() {
+        getPageZoomPref();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mPageZoomPref.setTextContrastValueForTesting(20));
+        int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
+        onView(withId(R.id.text_size_contrast_decrease_zoom_button)).perform(click());
+        Assert.assertTrue(
+                startingVal > mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @Features.EnableFeatures({ContentFeatureList.SMART_ZOOM})
+    public void testPageZoomPreference_smartZoom_decreaseButtonProperlyDisabled() {
+        getPageZoomPref();
+        ThreadUtils.runOnUiThreadBlocking(() -> mPageZoomPref.setTextContrastValueForTesting(0));
+        onView(withId(R.id.text_size_contrast_decrease_zoom_button)).check(matches(sDisabled));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @Features.EnableFeatures({ContentFeatureList.SMART_ZOOM})
+    public void testPageZoomPreference_smartZoom_increaseButtonUpdatesValue() {
+        getPageZoomPref();
+
+        int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
+        onView(withId(R.id.text_size_contrast_increase_zoom_button)).perform(click());
+        Assert.assertTrue(
+                startingVal < mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @Features.EnableFeatures({ContentFeatureList.SMART_ZOOM})
+    public void testPageZoomPreference_smartZoom_increaseButtonProperlyDisabled() {
+        getPageZoomPref();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mPageZoomPref.setTextContrastValueForTesting(
+                                PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL));
+        onView(withId(R.id.text_size_contrast_increase_zoom_button)).check(matches(sDisabled));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @Features.EnableFeatures({ContentFeatureList.SMART_ZOOM})
+    public void testPageZoomPreference_smartZoom_zoomSliderUpdatesValue() {
+        getPageZoomPref();
+        int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
+        onView(withId(R.id.text_size_contrast_slider)).perform(ViewActions.swipeRight());
+        Assert.assertNotEquals(
+                startingVal, mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
     }
 
     // Helper methods.
@@ -171,9 +270,8 @@ public class AccessibilitySettingsSeekbarTest {
 
     private void getPageZoomPref() {
         mPageZoomPref =
-                (PageZoomSeekbarPreference)
-                        mAccessibilitySettings.findPreference(
-                                AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
+                mAccessibilitySettings.findPreference(
+                        AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
         Assert.assertNotNull(mPageZoomPref);
         Assert.assertTrue("Page Zoom pref should be visible.", mPageZoomPref.isVisible());
     }

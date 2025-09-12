@@ -62,14 +62,14 @@ class PageZoomViewBinder {
         } else if (PageZoomProperties.INCREASE_ZOOM_ENABLED == propertyKey) {
             view.findViewById(R.id.page_zoom_increase_zoom_button)
                     .setEnabled(model.get(PageZoomProperties.INCREASE_ZOOM_ENABLED));
-        } else if (PageZoomProperties.SEEKBAR_CHANGE_CALLBACK == propertyKey) {
+        } else if (PageZoomProperties.BAR_VALUE_CHANGE_CALLBACK == propertyKey) {
             seekBar.setOnSeekBarChangeListener(
                     new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(
                                 SeekBar seekBar, int progress, boolean fromUser) {
                             if (fromUser) {
-                                model.get(PageZoomProperties.SEEKBAR_CHANGE_CALLBACK)
+                                model.get(PageZoomProperties.BAR_VALUE_CHANGE_CALLBACK)
                                         .onResult(progress);
                                 model.get(PageZoomProperties.USER_INTERACTION_CALLBACK)
                                         .onResult(null);

@@ -36,7 +36,7 @@ public class PageZoomMediator {
         mModel.set(PageZoomProperties.DECREASE_ZOOM_CALLBACK, this::handleDecreaseClicked);
         mModel.set(PageZoomProperties.INCREASE_ZOOM_CALLBACK, this::handleIncreaseClicked);
         mModel.set(PageZoomProperties.RESET_ZOOM_CALLBACK, this::handleResetClicked);
-        mModel.set(PageZoomProperties.SEEKBAR_CHANGE_CALLBACK, this::handleBarValueChanged);
+        mModel.set(PageZoomProperties.BAR_VALUE_CHANGE_CALLBACK, this::handleBarValueChanged);
         mModel.set(PageZoomProperties.MAXIMUM_BAR_VALUE, PAGE_ZOOM_MAXIMUM_BAR_VALUE);
 
         // Update the stored system font scale based on OS-level configuration. |this| will be
