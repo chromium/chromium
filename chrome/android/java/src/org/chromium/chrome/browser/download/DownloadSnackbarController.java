@@ -49,7 +49,7 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
                                 this,
                                 Snackbar.TYPE_NOTIFICATION,
                                 Snackbar.UMA_DOWNLOAD_FAILED)
-                        .setSingleLine(false)
+                        .setDefaultLines(false)
                         .setDuration(SNACKBAR_DURATION_MS);
         if (showAllDownloads) {
             snackbar.setAction(
@@ -73,7 +73,7 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
                                 this,
                                 Snackbar.TYPE_NOTIFICATION,
                                 Snackbar.UMA_MISSING_FILES_NO_SD_CARD)
-                        .setSingleLine(false)
+                        .setDefaultLines(false)
                         .setDuration(SNACKBAR_DURATION_MS);
         getSnackbarManager().showSnackbar(snackbar);
     }

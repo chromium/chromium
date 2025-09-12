@@ -75,7 +75,7 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
             Object actionData) {
         var snackbar = Snackbar.make(text, controller, Snackbar.TYPE_ACTION, identifier);
         snackbar.setAction(getString(R.string.undo), actionData);
-        snackbar.setSingleLine(false);
+        snackbar.setDefaultLines(false);
 
         snackbarManager.showSnackbar(snackbar);
     }

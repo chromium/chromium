@@ -192,7 +192,7 @@ public class SignOutCoordinator {
                                 /* controller= */ null,
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_SIGN_OUT)
-                        .setSingleLine(false));
+                        .setDefaultLines(false));
     }
 
     @IntDef({

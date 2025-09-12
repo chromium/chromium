@@ -42,7 +42,7 @@ public class DownloadMessageBridge {
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_AUTO_LOGIN);
         snackbar.setAction(context.getString(R.string.ok), null);
-        snackbar.setSingleLine(false);
+        snackbar.setDefaultLines(false);
         snackbarManager.showSnackbar(snackbar);
     }
 }

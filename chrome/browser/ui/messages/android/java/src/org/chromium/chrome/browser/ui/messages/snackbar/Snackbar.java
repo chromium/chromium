@@ -138,7 +138,7 @@ public class Snackbar {
     private @Nullable Object mActionData;
     private int mBackgroundColor;
     private int mTextApperanceResId;
-    private boolean mSingleLine = true;
+    private boolean mDefaultLines = true;
     private int mDurationMs;
     private @Nullable Drawable mProfileImage;
     private final int mType;
@@ -216,10 +216,11 @@ public class Snackbar {
     }
 
     /**
-     * Sets whether the snackbar text should be limited to a single line and ellipsized if needed.
+     * Sets whether the snackbar text should be limited to 2, the default number of lines, and
+     * ellipsized if needed.
      */
-    public Snackbar setSingleLine(boolean singleLine) {
-        mSingleLine = singleLine;
+    public Snackbar setDefaultLines(boolean defaultLines) {
+        mDefaultLines = defaultLines;
         return this;
     }
 
@@ -284,8 +285,8 @@ public class Snackbar {
         return mActionData;
     }
 
-    boolean getSingleLine() {
-        return mSingleLine;
+    boolean getDefaultLines() {
+        return mDefaultLines;
     }
 
     public int getDuration() {

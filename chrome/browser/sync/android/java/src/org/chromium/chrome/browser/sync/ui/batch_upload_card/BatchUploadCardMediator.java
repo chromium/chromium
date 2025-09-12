@@ -192,7 +192,7 @@ class BatchUploadCardMediator
                                         mEntryPoint == EntryPoint.BOOKMARK_MANAGER
                                                 ? Snackbar.UMA_BOOKMARK_BATCH_UPLOAD
                                                 : Snackbar.UMA_SETTINGS_BATCH_UPLOAD)
-                                .setSingleLine(false));
+                                .setDefaultLines(false));
         immediatelyHideBatchUploadCardAndUpdateItsVisibility();
     }
 

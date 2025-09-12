@@ -304,7 +304,7 @@ public class WebFeedSnackbarController {
             int snackbarActionId) {
         Snackbar snackbar =
                 Snackbar.make(message, snackbarController, Snackbar.TYPE_ACTION, umaId)
-                        .setSingleLine(false)
+                        .setDefaultLines(false)
                         .setDuration(SNACKBAR_DURATION_MS);
         if (snackbarActionId != 0) {
             snackbar =

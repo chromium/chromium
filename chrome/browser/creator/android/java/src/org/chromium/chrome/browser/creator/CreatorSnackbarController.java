@@ -69,7 +69,7 @@ public class CreatorSnackbarController {
         }
         snackbar.setDuration(SNACKBAR_DURATION_MS);
         snackbar.setAction(mContext.getString(R.string.chrome_dismiss), null);
-        snackbar.setSingleLine(false);
+        snackbar.setDefaultLines(false);
         mSnackbarManager.showSnackbar(snackbar);
     }
 
@@ -102,7 +102,7 @@ public class CreatorSnackbarController {
         }
         snackbar.setDuration(SNACKBAR_DURATION_MS);
         snackbar.setAction(mContext.getString(R.string.chrome_dismiss), null);
-        snackbar.setSingleLine(false);
+        snackbar.setDefaultLines(false);
         mSnackbarManager.showSnackbar(snackbar);
     }
 }

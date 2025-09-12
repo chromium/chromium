@@ -225,7 +225,7 @@ public class BookmarkUtils {
                                     },
                                     Snackbar.TYPE_NOTIFICATION,
                                     Snackbar.UMA_BOOKMARK_ADDED)
-                            .setSingleLine(false);
+                            .setDefaultLines(false);
             RecordUserAction.record("EnhancedBookmarks.AddingFailed");
         } else {
             String folderName =
@@ -259,7 +259,7 @@ public class BookmarkUtils {
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_BOOKMARK_ADDED);
             }
-            snackbar.setSingleLine(false)
+            snackbar.setDefaultLines(false)
                     .setAction(activity.getString(R.string.bookmark_item_edit), null);
         }
         snackbarManager.showSnackbar(snackbar);
@@ -420,7 +420,7 @@ public class BookmarkUtils {
                         snackbarController,
                         Snackbar.TYPE_ACTION,
                         Snackbar.UMA_BOOKMARK_ADDED);
-        snackbar.setSingleLine(false)
+        snackbar.setDefaultLines(false)
                 .setAction(activity.getString(R.string.bookmark_item_edit), null);
         snackbarManager.showSnackbar(snackbar);
     }

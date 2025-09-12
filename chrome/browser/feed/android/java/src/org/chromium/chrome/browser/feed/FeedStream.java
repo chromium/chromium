@@ -537,7 +537,7 @@ public class FeedStream implements Stream {
                                     Snackbar.UMA_FEED_NTP_STREAM)
                             .setAction(actionLabel, /* actionData= */ null)
                             .setDuration(durationMs)
-                            .setSingleLine(false));
+                            .setDefaultLines(false));
         }
 
         @Override

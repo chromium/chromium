@@ -106,7 +106,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
         if (actionStringResId != 0) {
             snackbar.setAction(getResources().getString(actionStringResId), null);
         }
-        if (multiLine) snackbar.setSingleLine(false);
+        if (multiLine) snackbar.setDefaultLines(false);
         mSnackbarManagerSupplier.get().showSnackbar(snackbar);
     }
 
