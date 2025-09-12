@@ -64,9 +64,8 @@ inline constexpr char kForceCaptionStyle[] = "force-caption-style";
 // Forces dark mode in UI for platforms that support it.
 inline constexpr char kForceDarkMode[] = "force-dark-mode";
 
-// Forces high-contrast mode in native UI drawing, regardless of system
-// settings. Note that this has limited effect on Windows: only Aura colors will
-// be switched to high contrast, not other system colors.
+// Forces high-contrast mode for native UI and web content, regardless of system
+// settings.
 inline constexpr char kForceHighContrast[] = "force-high-contrast";
 
 // The language file that we want to try to open. Of the form

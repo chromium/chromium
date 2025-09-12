@@ -709,7 +709,7 @@ NativeThemeWin::CalculatePreferredColorScheme() const {
 
 NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
     const {
-  if (!forced_colors()) {
+  if (!forced_colors() || IsForcedHighContrast()) {
     return NativeTheme::CalculatePreferredContrast();
   }
 

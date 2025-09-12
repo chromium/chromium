@@ -258,6 +258,8 @@ base::TimeDelta NativeTheme::GetCaretBlinkInterval() const {
 NativeTheme::NativeTheme(ui::SystemTheme system_theme)
     : system_theme_(system_theme),
       forced_colors_(IsForcedHighContrast()),
+      page_colors_(forced_colors_ ? PageColors::kHighContrast
+                                  : PageColors::kOff),
       preferred_color_scheme_(IsForcedDarkMode()
                                   ? PreferredColorScheme::kDark
                                   : PreferredColorScheme::kLight),
