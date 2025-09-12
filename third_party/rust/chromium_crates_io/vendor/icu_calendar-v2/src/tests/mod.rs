@@ -3,3 +3,4 @@
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
 mod continuity_test;
+mod extrema;

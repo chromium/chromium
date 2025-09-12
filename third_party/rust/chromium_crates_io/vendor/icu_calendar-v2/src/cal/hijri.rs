@@ -27,7 +27,9 @@ use crate::provider::hijri::{CalendarHijriSimulatedMeccaV1, HijriData};
 use crate::types::EraYear;
 use crate::{types, Calendar, Date, DateDuration, DateDurationUnit};
 use crate::{AsCalendar, RangeError};
-use calendrical_calculations::islamic::{ISLAMIC_EPOCH_FRIDAY, ISLAMIC_EPOCH_THURSDAY};
+use calendrical_calculations::islamic::{
+    ISLAMIC_EPOCH_FRIDAY, ISLAMIC_EPOCH_THURSDAY, WELL_BEHAVED_ASTRONOMICAL_RANGE,
+};
 use calendrical_calculations::rata_die::RataDie;
 use icu_provider::marker::ErasedMarker;
 use icu_provider::prelude::*;
@@ -291,7 +293,7 @@ impl HijriYearInfo {
 
     fn md_from_rd(self, rd: RataDie) -> (u8, u8) {
         let day_of_year = (rd - self.start_day) as u16;
-        debug_assert!(day_of_year < 360);
+        debug_assert!(day_of_year < 360 || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&rd));
         // We divide by 30, not 29, to account for the case where all months before this
         // were length 30 (possible near the beginning of the year)
         let mut month = (day_of_year / 30) as u8 + 1;
@@ -310,7 +312,8 @@ impl HijriYearInfo {
             last_day_of_month = self.last_day_of_month(month);
         }
         debug_assert!(
-            day_of_year - last_day_of_prev_month <= 30,
+            day_of_year - last_day_of_prev_month <= 30
+                || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&rd),
             "Found day {} that doesn't fit in month!",
             day_of_year - last_day_of_prev_month
         );
@@ -526,7 +529,7 @@ impl HijriSimulatedLocation {
             }
             other => {
                 debug_assert!(
-                    false,
+                    !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&start_day),
                     "({}) Found year {extended_year} AH with length {}!",
                     HijriSimulated::DEBUG_NAME,
                     other
@@ -557,7 +560,7 @@ impl HijriSimulatedLocation {
                     }
                     _ => {
                         debug_assert!(
-                            false,
+                            !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&start_day),
                             "({}) Found year {extended_year} AH with month length {days_in_month} for month {}!",
                             HijriSimulated::DEBUG_NAME,
                             month_idx + 1
@@ -570,9 +573,8 @@ impl HijriSimulatedLocation {
             // a 31-day month, "move" the day to the first 29-day month in the
             // same year to maintain all months at 29 or 30 days.
             if excess_days != 0 {
-                debug_assert_eq!(
-                    excess_days,
-                    1,
+                debug_assert!(
+                    excess_days == 1 || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&start_day),
                     "({}) Found year {extended_year} AH with more than one excess day!",
                     HijriSimulated::DEBUG_NAME
                 );

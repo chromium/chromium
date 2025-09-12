@@ -1,0 +1,34 @@
+From dbb763618caab85a875af3c5b0f64f23691f414f Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Fri, 12 Sep 2025 20:14:43 +0000
+Subject: [PATCH] Uplift month_code=und patch
+
+https://github.com/boa-dev/temporal/pull/563
+
+Change-Id: I80f54aba226e28ec0be147c1a806f6a56fcbfede
+---
+ .../src/builtins/core/calendar/types.rs                   | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0_16/src/builtins/core/calendar/types.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0_16/src/builtins/core/calendar/types.rs
+index fa35cb037ae31..68952e358b22f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0_16/src/builtins/core/calendar/types.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0_16/src/builtins/core/calendar/types.rs
+@@ -481,6 +481,14 @@ impl MonthCode {
+ 
+     /// Returns the `MonthCode` as an integer
+     pub fn to_month_integer(&self) -> u8 {
++        // Sometimes icu_calendar returns "und"
++        // when the month is calculated to be out of range.
++        //
++        // Normalize to something sensible, since ascii_four_to_integer
++        // will assert for non-digits
++        if self.0 == tinystr!(4, "und") {
++            return 13;
++        }
+         ascii_four_to_integer(self.0)
+     }
+ 
+-- 
+2.51.0.384.g4c02a37b29-goog
+

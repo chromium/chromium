@@ -1,0 +1,248 @@
+From bd05c2501094a622f3c9a67dd40625b133e19d40 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Fri, 12 Sep 2025 16:58:48 +0000
+Subject: [PATCH] Uplift well-behaved-astronomical-range patch from ICU4X
+
+https://github.com/unicode-org/icu4x/pull/6876
+
+Prevents a bunch of debug assertions from being triggered for
+far-past/far-future dates where the astronomical calculations stop
+working.
+
+Change-Id: I417ded61d8e05a4086c4cd8672b9b5c810c7c162
+---
+ .../icu_calendar-v2/src/cal/chinese_based.rs  | 35 ++++++++++++++---
+ .../vendor/icu_calendar-v2/src/cal/hijri.rs   | 18 +++++----
+ .../src/provider/chinese_based.rs             | 38 +++++++++++++++++--
+ .../vendor/icu_calendar-v2/src/tests/mod.rs   |  1 +
+ 4 files changed, 75 insertions(+), 17 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/chinese_based.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/chinese_based.rs
+index 08ca5c8162010..c80e63a29e0f4 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/chinese_based.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/chinese_based.rs
+@@ -13,9 +13,12 @@ use crate::{
+     Calendar, Iso,
+ };
+ 
+-use calendrical_calculations::chinese_based::{self, ChineseBased, YearBounds};
++use calendrical_calculations::chinese_based::{
++    self, ChineseBased, YearBounds, WELL_BEHAVED_ASTRONOMICAL_RANGE,
++};
+ use calendrical_calculations::rata_die::RataDie;
+ use core::marker::PhantomData;
++use core::ops::Range;
+ use tinystr::tinystr;
+ 
+ /// The trait ChineseBased is used by Chinese-based calendars to perform computations shared by such calendar.
+@@ -125,6 +128,12 @@ impl From<ChineseBasedYearInfo> for i32 {
+     }
+ }
+ 
++/// An approximate way to check if a year is within the well-behaved astronomical range.
++/// This does not need to be exact.
++const WELL_BEHAVED_ASTRONOMICAL_YEAR_RANGE: Range<i64> =
++    (WELL_BEHAVED_ASTRONOMICAL_RANGE.start.to_i64_date() / 365)
++        ..(WELL_BEHAVED_ASTRONOMICAL_RANGE.end.to_i64_date() / 365);
++
+ impl ChineseBasedYearInfo {
+     /// Compute ChineseBasedYearInfo for a given extended year
+     fn compute<CB: ChineseBased>(related_iso: i32) -> Self {
+@@ -144,8 +153,19 @@ impl ChineseBasedYearInfo {
+             chinese_based::month_structure_for_year::<CB>(new_year, next_new_year);
+ 
+         let ny_offset = new_year - calendrical_calculations::iso::fixed_from_iso(related_iso, 1, 1);
++
++        #[cfg(debug_assertions)]
++        let out_of_valid_astronomical_range =
++            !WELL_BEHAVED_ASTRONOMICAL_YEAR_RANGE.contains(&i64::from(related_iso));
++        #[cfg(not(debug_assertions))]
++        let out_of_valid_astronomical_range = false;
+         Self {
+-            packed_data: PackedChineseBasedYearInfo::new(month_lengths, leap_month, ny_offset),
++            packed_data: PackedChineseBasedYearInfo::new(
++                month_lengths,
++                leap_month,
++                ny_offset,
++                out_of_valid_astronomical_range,
++            ),
+             related_iso,
+         }
+     }
+@@ -220,12 +240,15 @@ impl ChineseBasedYearInfo {
+ 
+     pub(crate) fn md_from_rd(self, rd: RataDie) -> (u8, u8) {
+         debug_assert!(
+-            rd < self.next_new_year(),
++            rd < self.next_new_year() || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&rd),
+             "Stored date {rd:?} out of bounds!"
+         );
+         // 1-indexed day of year
+         let day_of_year = u16::try_from(rd - self.new_year() + 1);
+-        debug_assert!(day_of_year.is_ok(), "Somehow got a very large year in data");
++        debug_assert!(
++            day_of_year.is_ok() || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&rd),
++            "Somehow got a very large year in data"
++        );
+         let day_of_year = day_of_year.unwrap_or(1);
+         let mut month = 1;
+         // TODO(#3933) perhaps use a binary search
+@@ -239,7 +262,9 @@ impl ChineseBasedYearInfo {
+         debug_assert!((1..=13).contains(&month), "Month out of bounds!");
+ 
+         debug_assert!(
+-            month < 13 || self.leap_month().is_some(),
++            month < 13
++                || self.leap_month().is_some()
++                || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&rd),
+             "Cannot have 13 months in a non-leap year!"
+         );
+         let day_before_month_start = self.last_day_of_previous_month(month);
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri.rs
+index 02a5d920269fa..5ecfdf8908154 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri.rs
+@@ -27,7 +27,9 @@ use crate::provider::hijri::{CalendarHijriSimulatedMeccaV1, HijriData};
+ use crate::types::EraYear;
+ use crate::{types, Calendar, Date, DateDuration, DateDurationUnit};
+ use crate::{AsCalendar, RangeError};
+-use calendrical_calculations::islamic::{ISLAMIC_EPOCH_FRIDAY, ISLAMIC_EPOCH_THURSDAY};
++use calendrical_calculations::islamic::{
++    ISLAMIC_EPOCH_FRIDAY, ISLAMIC_EPOCH_THURSDAY, WELL_BEHAVED_ASTRONOMICAL_RANGE,
++};
+ use calendrical_calculations::rata_die::RataDie;
+ use icu_provider::marker::ErasedMarker;
+ use icu_provider::prelude::*;
+@@ -291,7 +293,7 @@ impl HijriYearInfo {
+ 
+     fn md_from_rd(self, rd: RataDie) -> (u8, u8) {
+         let day_of_year = (rd - self.start_day) as u16;
+-        debug_assert!(day_of_year < 360);
++        debug_assert!(day_of_year < 360 || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&rd));
+         // We divide by 30, not 29, to account for the case where all months before this
+         // were length 30 (possible near the beginning of the year)
+         let mut month = (day_of_year / 30) as u8 + 1;
+@@ -310,7 +312,8 @@ impl HijriYearInfo {
+             last_day_of_month = self.last_day_of_month(month);
+         }
+         debug_assert!(
+-            day_of_year - last_day_of_prev_month <= 30,
++            day_of_year - last_day_of_prev_month <= 30
++                || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&rd),
+             "Found day {} that doesn't fit in month!",
+             day_of_year - last_day_of_prev_month
+         );
+@@ -526,7 +529,7 @@ impl HijriSimulatedLocation {
+             }
+             other => {
+                 debug_assert!(
+-                    false,
++                    !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&start_day),
+                     "({}) Found year {extended_year} AH with length {}!",
+                     HijriSimulated::DEBUG_NAME,
+                     other
+@@ -557,7 +560,7 @@ impl HijriSimulatedLocation {
+                     }
+                     _ => {
+                         debug_assert!(
+-                            false,
++                            !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&start_day),
+                             "({}) Found year {extended_year} AH with month length {days_in_month} for month {}!",
+                             HijriSimulated::DEBUG_NAME,
+                             month_idx + 1
+@@ -570,9 +573,8 @@ impl HijriSimulatedLocation {
+             // a 31-day month, "move" the day to the first 29-day month in the
+             // same year to maintain all months at 29 or 30 days.
+             if excess_days != 0 {
+-                debug_assert_eq!(
+-                    excess_days,
+-                    1,
++                debug_assert!(
++                    excess_days == 1 || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&start_day),
+                     "({}) Found year {extended_year} AH with more than one excess day!",
+                     HijriSimulated::DEBUG_NAME
+                 );
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/provider/chinese_based.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/provider/chinese_based.rs
+index da6fbd372b069..ca9563086f872 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/provider/chinese_based.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/provider/chinese_based.rs
+@@ -88,18 +88,46 @@ impl PackedChineseBasedYearInfo {
+     /// could occur after the Winter Solstice if the solstice is pinned to December 20.
+     const FIRST_NY: i64 = 18;
+ 
++    /// out_of_valid_astronomical_range is true when the data is for a date that is well
++    /// outside calendrical_calculations::chinese_based::WELL_BEHAVED_ASTRONOMICAL_RANGE.
++    /// It clamps some values to avoid debug assertions on calendrical invariants.
++    ///
++    /// It only needs to be set in debug-assertions mode, and is ignored in release.
+     pub(crate) fn new(
+         month_lengths: [bool; 13],
+         leap_month_idx: Option<u8>,
+         ny_offset: i64,
++        out_of_valid_astronomical_range: bool,
+     ) -> Self {
++        // This assertion is an API correctness assertion and even bad calendar arithmetic
++        // should not produce this
+         debug_assert!(
+             !month_lengths[12] || leap_month_idx.is_some(),
+             "Last month length should not be set for non-leap years"
+         );
+-        let ny_offset = ny_offset - Self::FIRST_NY;
+-        debug_assert!(ny_offset >= 0, "Year offset too small to store");
+-        debug_assert!(ny_offset < 34, "Year offset too big to store");
++        let mut ny_offset = ny_offset - Self::FIRST_NY;
++
++        // Assert the offset is in range, but allow it to be out of
++        // range when out_of_valid_astronomical_range=true
++        debug_assert!(
++            ny_offset >= 0 || out_of_valid_astronomical_range,
++            "Year offset too small to store"
++        );
++        // The maximum new-year's offset we have found is 33
++        debug_assert!(
++            ny_offset < 34 || out_of_valid_astronomical_range,
++            "Year offset too big to store"
++        );
++        // Just clamp to something we can represent when things get of range.
++        //
++        // This will typically happen when out_of_valid_astronomical_range
++        // is true.
++        //
++        // We can store up to 6 bytes for ny_offset, even if our
++        // maximum asserted value is otherwise 33.
++        ny_offset = ny_offset.clamp(0, 0x40);
++        // Also an API correctness assertion
++
+         debug_assert!(
+             leap_month_idx.map(|l| l <= 13).unwrap_or(true),
+             "Leap month indices must be 1 <= i <= 13"
+@@ -226,6 +254,7 @@ mod serialization {
+                 other.month_has_30_days,
+                 other.leap_month_idx,
+                 other.ny_offset as i64,
++                false,
+             )
+         }
+     }
+@@ -244,7 +273,8 @@ mod test {
+             // Avoid bad invariants
+             month_lengths[12] = false;
+         }
+-        let packed = PackedChineseBasedYearInfo::new(month_lengths, leap_month_idx, ny_offset);
++        let packed =
++            PackedChineseBasedYearInfo::new(month_lengths, leap_month_idx, ny_offset, false);
+ 
+         assert_eq!(
+             ny_offset,
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/mod.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/mod.rs
+index a4330b4af10b0..7cac2a901f8b5 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/mod.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/mod.rs
+@@ -3,3 +3,4 @@
+ // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
+ 
+ mod continuity_test;
++mod extrema;
+-- 
+2.51.0.384.g4c02a37b29-goog
+

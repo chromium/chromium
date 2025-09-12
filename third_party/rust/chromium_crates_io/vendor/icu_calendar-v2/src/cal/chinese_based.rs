@@ -13,9 +13,12 @@ use crate::{
     Calendar, Iso,
 };
 
-use calendrical_calculations::chinese_based::{self, ChineseBased, YearBounds};
+use calendrical_calculations::chinese_based::{
+    self, ChineseBased, YearBounds, WELL_BEHAVED_ASTRONOMICAL_RANGE,
+};
 use calendrical_calculations::rata_die::RataDie;
 use core::marker::PhantomData;
+use core::ops::Range;
 use tinystr::tinystr;
 
 /// The trait ChineseBased is used by Chinese-based calendars to perform computations shared by such calendar.
@@ -125,6 +128,12 @@ impl From<ChineseBasedYearInfo> for i32 {
     }
 }
 
+/// An approximate way to check if a year is within the well-behaved astronomical range.
+/// This does not need to be exact.
+const WELL_BEHAVED_ASTRONOMICAL_YEAR_RANGE: Range<i64> =
+    (WELL_BEHAVED_ASTRONOMICAL_RANGE.start.to_i64_date() / 365)
+        ..(WELL_BEHAVED_ASTRONOMICAL_RANGE.end.to_i64_date() / 365);
+
 impl ChineseBasedYearInfo {
     /// Compute ChineseBasedYearInfo for a given extended year
     fn compute<CB: ChineseBased>(related_iso: i32) -> Self {
@@ -144,8 +153,19 @@ impl ChineseBasedYearInfo {
             chinese_based::month_structure_for_year::<CB>(new_year, next_new_year);
 
         let ny_offset = new_year - calendrical_calculations::iso::fixed_from_iso(related_iso, 1, 1);
+
+        #[cfg(debug_assertions)]
+        let out_of_valid_astronomical_range =
+            !WELL_BEHAVED_ASTRONOMICAL_YEAR_RANGE.contains(&i64::from(related_iso));
+        #[cfg(not(debug_assertions))]
+        let out_of_valid_astronomical_range = false;
         Self {
-            packed_data: PackedChineseBasedYearInfo::new(month_lengths, leap_month, ny_offset),
+            packed_data: PackedChineseBasedYearInfo::new(
+                month_lengths,
+                leap_month,
+                ny_offset,
+                out_of_valid_astronomical_range,
+            ),
             related_iso,
         }
     }
@@ -220,12 +240,15 @@ impl ChineseBasedYearInfo {
 
     pub(crate) fn md_from_rd(self, rd: RataDie) -> (u8, u8) {
         debug_assert!(
-            rd < self.next_new_year(),
+            rd < self.next_new_year() || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&rd),
             "Stored date {rd:?} out of bounds!"
         );
         // 1-indexed day of year
         let day_of_year = u16::try_from(rd - self.new_year() + 1);
-        debug_assert!(day_of_year.is_ok(), "Somehow got a very large year in data");
+        debug_assert!(
+            day_of_year.is_ok() || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&rd),
+            "Somehow got a very large year in data"
+        );
         let day_of_year = day_of_year.unwrap_or(1);
         let mut month = 1;
         // TODO(#3933) perhaps use a binary search
@@ -239,7 +262,9 @@ impl ChineseBasedYearInfo {
         debug_assert!((1..=13).contains(&month), "Month out of bounds!");
 
         debug_assert!(
-            month < 13 || self.leap_month().is_some(),
+            month < 13
+                || self.leap_month().is_some()
+                || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&rd),
             "Cannot have 13 months in a non-leap year!"
         );
         let day_before_month_start = self.last_day_of_previous_month(month);

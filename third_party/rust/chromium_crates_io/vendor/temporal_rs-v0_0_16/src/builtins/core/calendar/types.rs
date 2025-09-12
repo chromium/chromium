@@ -481,6 +481,14 @@ impl MonthCode {
 
     /// Returns the `MonthCode` as an integer
     pub fn to_month_integer(&self) -> u8 {
+        // Sometimes icu_calendar returns "und"
+        // when the month is calculated to be out of range.
+        //
+        // Normalize to something sensible, since ascii_four_to_integer
+        // will assert for non-digits
+        if self.0 == tinystr!(4, "und") {
+            return 13;
+        }
         ascii_four_to_integer(self.0)
     }
 

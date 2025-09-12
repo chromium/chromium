@@ -3,11 +3,32 @@ use crate::helpers::i64_to_i32;
 use crate::iso::{fixed_from_iso, iso_from_fixed};
 use crate::rata_die::{Moment, RataDie};
 use core::num::NonZeroU8;
+use core::ops::Range;
 #[allow(unused_imports)]
 use core_maths::*;
 
 // Don't iterate more than 14 times (which accounts for checking for 13 months)
 const MAX_ITERS_FOR_MONTHS_OF_YEAR: u8 = 14;
+
+/// For astronomical calendars in this module, the range in which they are expected to be well-behaved.
+///
+/// With astronomical calendars, for dates in the far past or far future, floating point error, algorithm inaccuracies,
+/// and other issues may cause the calendar algorithm to behave unexpectedly.
+///
+/// Our code has a number of debug assertions for various calendrical invariants (for example, lunar calendar months
+/// must be 29 or 30 days), but it will turn these off outside of these ranges.
+///
+/// Consumers of this code are encouraged to disallow such out-of-range values; or, if allowing them, not expect too
+/// much in terms of calendrical invariants. Once we have proleptic approximations of these calendars (#5778),
+/// developers will be encouraged to use them when dates are out of range.
+///
+/// This value is not stable and may change. It's currently somewhat arbitrarily chosen to be
+/// approximately ±10,000 years from 0 CE.
+//
+// NOTE: this value is doc(inline)d in islamic.rs; if you wish to change this consider if you wish to also
+// change the value there, or if it should be split.
+pub const WELL_BEHAVED_ASTRONOMICAL_RANGE: Range<RataDie> =
+    RataDie::new(365 * -10_000)..RataDie::new(365 * 10_000);
 
 /// The trait ChineseBased is used by Chinese-based calendars to perform computations shared by such calendar.
 /// To do so, calendars should:
@@ -213,10 +234,16 @@ pub(crate) fn new_year_in_sui<C: ChineseBased>(prior_solstice: RataDie) -> (Rata
     let following_solstice =
         bind_winter_solstice::<C>(winter_solstice_on_or_before::<C>(prior_solstice + 370)); // s2
     let month_after_eleventh = new_moon_on_or_after::<C>((prior_solstice + 1).as_moment()); // m12
-    debug_assert!(month_after_eleventh - prior_solstice >= 0);
+    debug_assert!(
+        month_after_eleventh - prior_solstice >= 0
+            || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&prior_solstice)
+    );
     let month_after_twelfth = new_moon_on_or_after::<C>((month_after_eleventh + 1).as_moment()); // m13
     let month_after_thirteenth = new_moon_on_or_after::<C>((month_after_twelfth + 1).as_moment());
-    debug_assert!(month_after_twelfth - month_after_eleventh >= 29);
+    debug_assert!(
+        month_after_twelfth - month_after_eleventh >= 29
+            || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&prior_solstice)
+    );
     let next_eleventh_month = new_moon_before::<C>((following_solstice + 1).as_moment()); // next-m11
     let lhs_argument =
         ((next_eleventh_month - month_after_eleventh) as f64 / MEAN_SYNODIC_MONTH).round() as i64;
@@ -289,7 +316,7 @@ pub(crate) fn winter_solstice_on_or_before<C: ChineseBased>(date: RataDie) -> Ra
         day += 1.0;
     }
     debug_assert!(
-        iters < MAX_ITERS_FOR_MONTHS_OF_YEAR,
+        iters < MAX_ITERS_FOR_MONTHS_OF_YEAR || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&date),
         "Number of iterations was higher than expected"
     );
     day.as_rata_die()
@@ -479,7 +506,9 @@ pub fn days_in_month<C: ChineseBased>(
     };
     let next_new_moon = new_moon_on_or_after::<C>((approx + 15).as_moment());
     let result = (next_new_moon - prev_new_moon) as u8;
-    debug_assert!(result == 29 || result == 30);
+    debug_assert!(
+        result == 29 || result == 30 || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&new_year)
+    );
     (result, next_new_moon)
 }
 
@@ -513,7 +542,9 @@ pub fn month_structure_for_year<C: ChineseBased>(
         }
 
         let diff = next_month_start - current_month_start;
-        debug_assert!(diff == 29 || diff == 30);
+        debug_assert!(
+            diff == 29 || diff == 30 || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&new_year)
+        );
         #[expect(clippy::indexing_slicing)] // array is of length 13, we iterate till i=11
         if diff == 30 {
             ret[usize::from(i)] = true;
@@ -536,7 +567,9 @@ pub fn month_structure_for_year<C: ChineseBased>(
         leap_month_index = None;
     } else {
         let diff = next_new_year - current_month_start;
-        debug_assert!(diff == 29 || diff == 30);
+        debug_assert!(
+            diff == 29 || diff == 30 || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&new_year)
+        );
         if diff == 30 {
             ret[12] = true;
         }
@@ -544,7 +577,8 @@ pub fn month_structure_for_year<C: ChineseBased>(
     if current_month_start != next_new_year && leap_month_index.is_none() {
         leap_month_index = Some(13); // The last month is a leap month
         debug_assert!(
-            major_solar_term_from_fixed::<C>(current_month_start) == current_month_major_solar_term,
+            major_solar_term_from_fixed::<C>(current_month_start) == current_month_major_solar_term
+                || !WELL_BEHAVED_ASTRONOMICAL_RANGE.contains(&new_year),
             "A leap month is required here, but it had a major solar term!"
         );
     }

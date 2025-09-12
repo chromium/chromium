@@ -88,18 +88,46 @@ impl PackedChineseBasedYearInfo {
     /// could occur after the Winter Solstice if the solstice is pinned to December 20.
     const FIRST_NY: i64 = 18;
 
+    /// out_of_valid_astronomical_range is true when the data is for a date that is well
+    /// outside calendrical_calculations::chinese_based::WELL_BEHAVED_ASTRONOMICAL_RANGE.
+    /// It clamps some values to avoid debug assertions on calendrical invariants.
+    ///
+    /// It only needs to be set in debug-assertions mode, and is ignored in release.
     pub(crate) fn new(
         month_lengths: [bool; 13],
         leap_month_idx: Option<u8>,
         ny_offset: i64,
+        out_of_valid_astronomical_range: bool,
     ) -> Self {
+        // This assertion is an API correctness assertion and even bad calendar arithmetic
+        // should not produce this
         debug_assert!(
             !month_lengths[12] || leap_month_idx.is_some(),
             "Last month length should not be set for non-leap years"
         );
-        let ny_offset = ny_offset - Self::FIRST_NY;
-        debug_assert!(ny_offset >= 0, "Year offset too small to store");
-        debug_assert!(ny_offset < 34, "Year offset too big to store");
+        let mut ny_offset = ny_offset - Self::FIRST_NY;
+
+        // Assert the offset is in range, but allow it to be out of
+        // range when out_of_valid_astronomical_range=true
+        debug_assert!(
+            ny_offset >= 0 || out_of_valid_astronomical_range,
+            "Year offset too small to store"
+        );
+        // The maximum new-year's offset we have found is 33
+        debug_assert!(
+            ny_offset < 34 || out_of_valid_astronomical_range,
+            "Year offset too big to store"
+        );
+        // Just clamp to something we can represent when things get of range.
+        //
+        // This will typically happen when out_of_valid_astronomical_range
+        // is true.
+        //
+        // We can store up to 6 bytes for ny_offset, even if our
+        // maximum asserted value is otherwise 33.
+        ny_offset = ny_offset.clamp(0, 0x40);
+        // Also an API correctness assertion
+
         debug_assert!(
             leap_month_idx.map(|l| l <= 13).unwrap_or(true),
             "Leap month indices must be 1 <= i <= 13"
@@ -226,6 +254,7 @@ mod serialization {
                 other.month_has_30_days,
                 other.leap_month_idx,
                 other.ny_offset as i64,
+                false,
             )
         }
     }
@@ -244,7 +273,8 @@ mod test {
             // Avoid bad invariants
             month_lengths[12] = false;
         }
-        let packed = PackedChineseBasedYearInfo::new(month_lengths, leap_month_idx, ny_offset);
+        let packed =
+            PackedChineseBasedYearInfo::new(month_lengths, leap_month_idx, ny_offset, false);
 
         assert_eq!(
             ny_offset,
