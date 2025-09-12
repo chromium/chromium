@@ -25,10 +25,10 @@ class AllAppsLockDescription : public LockDescription {
   ~AllAppsLockDescription();
 };
 
-// Holding this lock means that no other lock-compatible operations are touching
-// the same app id/s. This does not ensure that the app/s are installed when the
-// lock is granted. Checks for that will need to be handled by the user of
-// the lock.
+// Holding this lock means that no other lock-compatible operations can run on
+// any app. This is useful for operations that need to inspect or modify the
+// entire set of web apps. This does not ensure that any apps are installed when
+// the lock is granted.
 //
 // See `WebAppLockManager` for how to use locks. Destruction of this class will
 // release the lock or cancel the lock request if it is not acquired yet.
