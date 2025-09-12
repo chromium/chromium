@@ -177,6 +177,10 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
     return app_->CreateCanMakePaymentEventData();
   }
 
+  bool CanMakePaymentEventSkipped() {
+    return app_->GetCanMakePaymentEventSkippedForTesting();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
@@ -276,8 +280,9 @@ TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePayment) {
         runloop.Quit();
       }));
   runloop.Run();
-
   EXPECT_FALSE(GetApp()->HasEnrolledInstrument());
+
+  EXPECT_TRUE(CanMakePaymentEventSkipped());
 }
 
 // Test that CanMakePaymentEvent is skipped if the `kCanMakePaymentEnabled` pref
@@ -294,8 +299,9 @@ TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePaymentWithPrefDisabled) {
         runloop.Quit();
       }));
   runloop.Run();
-
   EXPECT_FALSE(GetApp()->HasEnrolledInstrument());
+
+  EXPECT_TRUE(CanMakePaymentEventSkipped());
 }
 
 // Test that CanMakePaymentEvent is fired if the `kCanMakePaymentEnabled` pref
@@ -312,8 +318,9 @@ TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePaymentWithPrefEnabled) {
         runloop.Quit();
       }));
   runloop.Run();
-
   EXPECT_FALSE(GetApp()->HasEnrolledInstrument());
+
+  EXPECT_FALSE(CanMakePaymentEventSkipped());
 }
 
 TEST_F(ServiceWorkerPaymentAppTest, IsValidForModifier) {

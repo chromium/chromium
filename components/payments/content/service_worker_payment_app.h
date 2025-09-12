@@ -120,6 +120,11 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   void CallValidateCanMakePaymentCallback(
       ValidateCanMakePaymentCallback callback);
 
+  bool GetCanMakePaymentEventSkippedForTesting() const {
+    DCHECK(can_make_payment_result_);
+    return can_make_payment_event_skipped_;
+  }
+
   // Called from two places:
   // 1) From PaymentAppProvider after a just-in-time installable payment handler
   //    has been installed.
@@ -152,6 +157,7 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   // PaymentAppProvider::CanMakePayment result of this payment app.
   bool can_make_payment_result_;
   bool has_enrolled_instrument_result_;
+  bool can_make_payment_event_skipped_;
 
   // Below variables are used for installable ServiceWorkerPaymentApp
   // specifically.

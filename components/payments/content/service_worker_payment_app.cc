@@ -53,6 +53,7 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
       show_processing_spinner_(show_processing_spinner),
       can_make_payment_result_(false),
       has_enrolled_instrument_result_(false),
+      can_make_payment_event_skipped_(false),
       needs_installation_(false),
       web_contents_(web_contents->GetWeakPtr()) {
   DCHECK(web_contents);
@@ -85,6 +86,7 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
       show_processing_spinner_(show_processing_spinner),
       can_make_payment_result_(false),
       has_enrolled_instrument_result_(false),
+      can_make_payment_event_skipped_(false),
       needs_installation_(true),
       installable_web_app_info_(std::move(installable_payment_app_info)),
       installable_enabled_method_(enabled_method),
@@ -204,6 +206,7 @@ ServiceWorkerPaymentApp::CreateCanMakePaymentEventData() {
 
 void ServiceWorkerPaymentApp::OnCanMakePaymentEventSkipped(
     ValidateCanMakePaymentCallback callback) {
+  can_make_payment_event_skipped_ = true;
   // |can_make_payment| is true as long as there is a matching payment handler.
   can_make_payment_result_ = true;
   has_enrolled_instrument_result_ = false;
@@ -217,6 +220,7 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventSkipped(
 void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
     ValidateCanMakePaymentCallback callback,
     mojom::CanMakePaymentResponsePtr response) {
+  can_make_payment_event_skipped_ = false;
   // |can_make_payment| is true as long as there is a matching payment handler.
   can_make_payment_result_ = true;
   has_enrolled_instrument_result_ = response->can_make_payment;
