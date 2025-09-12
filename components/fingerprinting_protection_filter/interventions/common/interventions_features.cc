@@ -20,12 +20,31 @@ BASE_FEATURE_PARAM(bool,
                    "enable_in_regular_mode",
                    false);
 
+// [Experimental] Whether readback of canvases should be blocked.
+BASE_FEATURE(kBlockCanvasReadback,
+             "BlockCanvasReadback",
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kBlockCanvasReadbackInRegularMode,
+                   &kBlockCanvasReadback,
+                   "enable_in_regular_mode",
+                   false);
+
 bool IsCanvasInterventionsEnabledForIncognitoState(bool is_incognito) {
   if (is_incognito) {
     return base::FeatureList::IsEnabled(kCanvasNoise);
   }
   return base::FeatureList::IsEnabled(kCanvasNoise) &&
          kCanvasNoiseInRegularMode.Get();
+}
+
+bool ShouldBlockCanvasReadbackForIncognitoState(bool is_incognito) {
+  if (is_incognito) {
+    return base::FeatureList::IsEnabled(kBlockCanvasReadback);
+  }
+  return base::FeatureList::IsEnabled(kBlockCanvasReadback) &&
+         kBlockCanvasReadbackInRegularMode.Get();
 }
 
 }  // namespace fingerprinting_protection_interventions::features

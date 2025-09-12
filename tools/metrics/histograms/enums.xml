@@ -12987,6 +12987,7 @@ from previous Chrome versions.
       label="OminboxUIExperimentUseGenericSearchEngineIcon:enabled"/>
   <int value="-462404204" label="CryptAuthV2DeviceSync:disabled"/>
   <int value="-462205750" label="enable-service-worker-sync"/>
+  <int value="-462021085" label="BlockCanvasReadback:disabled"/>
   <int value="-461713516" label="ArcEnableVirtioBlkForData:enabled"/>
   <int value="-461568027" label="EcheSWADebugMode:disabled"/>
   <int value="-461292699" label="ContentSuggestionsCategoryOrder:enabled"/>
@@ -19928,6 +19929,7 @@ from previous Chrome versions.
   <int value="2009697597"
       label="DownloadServiceForegroundSessionIOSFeature:disabled"/>
   <int value="2009995411" label="GlicPanelResetOnSessionTimeout:enabled"/>
+  <int value="2010480310" label="BlockCanvasReadback:enabled"/>
   <int value="2011785323" label="EnableSchemeBoundCookies:enabled"/>
   <int value="2011873998" label="LiveCaptionMultiLanguage:enabled"/>
   <int value="2013589943" label="CrOSLateBootCrOSSOUL:disabled"/>

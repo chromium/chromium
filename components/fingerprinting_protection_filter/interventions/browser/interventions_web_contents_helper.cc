@@ -16,10 +16,6 @@ class WebContents;
 
 namespace fingerprinting_protection_interventions {
 
-// TODO(https://crbug.com/377325952): Remove InterventionsWebContentsHelper.
-// User bypass will now be set in ContentBrowserClient, as such, this class is
-// no longer needed.
-
 // static
 void InterventionsWebContentsHelper::CreateForWebContents(
     content::WebContents* web_contents,
@@ -33,6 +29,20 @@ void InterventionsWebContentsHelper::CreateForWebContents(
   content::WebContentsUserData<
       InterventionsWebContentsHelper>::CreateForWebContents(web_contents,
                                                             is_incognito);
+}
+
+void InterventionsWebContentsHelper::ReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  auto& mutable_runtime_feature_state =
+      navigation_handle->GetMutableRuntimeFeatureStateContext();
+  bool canvas_base_feature_enabled =
+      features::ShouldBlockCanvasReadbackForIncognitoState(is_incognito_);
+
+  if (mutable_runtime_feature_state.IsBlockCanvasReadbackEnabled() !=
+      canvas_base_feature_enabled) {
+    mutable_runtime_feature_state.SetBlockCanvasReadbackEnabled(
+        canvas_base_feature_enabled);
+  }
 }
 
 // private

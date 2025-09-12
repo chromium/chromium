@@ -16,10 +16,21 @@ BASE_DECLARE_FEATURE(kCanvasNoise);
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_INTERVENTIONS_FEATURES)
 BASE_DECLARE_FEATURE_PARAM(bool, kCanvasNoiseInRegularMode);
 
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_INTERVENTIONS_FEATURES)
+BASE_DECLARE_FEATURE(kBlockCanvasReadback);
+
 // Returns true if canvas interventions should be enabled for the provided
 // Incognito state.
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_INTERVENTIONS_FEATURES)
 bool IsCanvasInterventionsEnabledForIncognitoState(bool is_incognito);
+
+// Returns true if canvas readback should be blocked for the provided Incognito
+// state.
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_INTERVENTIONS_FEATURES)
+bool ShouldBlockCanvasReadbackForIncognitoState(bool is_incognito);
+
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_INTERVENTIONS_FEATURES)
+BASE_DECLARE_FEATURE_PARAM(bool, kBlockCanvasReadbackInRegularMode);
 
 // TODO(crbug.com/380463018): Add base::FeatureParams for signatures.
 

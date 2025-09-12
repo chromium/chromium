@@ -610,6 +610,7 @@ test("components_unittests") {
       "//components/blocked_content:unit_tests",
       "//components/content_settings/browser/ui:unit_tests",
       "//components/fingerprinting_protection_filter/browser:unit_tests",
+      "//components/fingerprinting_protection_filter/interventions/browser:unit_tests",
       "//components/fingerprinting_protection_filter/renderer:unit_tests",
       "//components/headless/test:unit_tests",
       "//components/ip_protection:unit_tests",

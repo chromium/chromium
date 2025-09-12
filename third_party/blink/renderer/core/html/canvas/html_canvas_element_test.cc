@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/recording_test_utils.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 
 using ::blink_testing::ClearRectFlags;
@@ -315,6 +317,56 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtree) {
   EXPECT_TRUE(nested_input->IsInCanvasSubtree());
   EXPECT_TRUE(nested_input_shadow->IsCanvasOrInCanvasSubtree());
   EXPECT_TRUE(nested_input_shadow->IsInCanvasSubtree());
+}
+
+TEST_P(HTMLCanvasElementTest, CanvasReadbackBlocked) {
+  V8TestingScope scope;
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML("<canvas id='c' width='10' height='20'></canvas>");
+
+  auto* canvas =
+      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+  canvas->GetCanvasRenderingContext(GetDocument().GetExecutionContext(), "2d",
+                                    CanvasContextCreationAttributesCore());
+  auto* callback = V8BlobCallback::Create(scope.GetContext()->Global());
+
+  {
+    // When the BlockCanvasReadback feature is enabled, reading back should
+    // throw a DOM exception.
+    ScopedBlockCanvasReadbackForTest scoped_feature(true);
+    DummyExceptionStateForTesting exception_state;
+    canvas->toDataURL("image/png", exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNotAllowedError);
+  }
+
+  {
+    // When the feature is disabled it should not throw.
+    ScopedBlockCanvasReadbackForTest scoped_feature(false);
+    DummyExceptionStateForTesting exception_state;
+    canvas->toDataURL("image/png", exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+  }
+
+  {
+    // When the BlockCanvasReadback feature is enabled, reading back should
+    // throw a DOM exception.
+    ScopedBlockCanvasReadbackForTest scoped_feature(true);
+    DummyExceptionStateForTesting exception_state;
+    canvas->toBlob(callback, "image/png", exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNotAllowedError);
+  }
+
+  {
+    // When the feature is disabled it should not throw.
+    ScopedBlockCanvasReadbackForTest scoped_feature(false);
+    DummyExceptionStateForTesting exception_state;
+    canvas->toBlob(callback, "image/png", exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+  }
 }
 
 class HTMLCanvasElementWithTracingTest : public RenderingTest {

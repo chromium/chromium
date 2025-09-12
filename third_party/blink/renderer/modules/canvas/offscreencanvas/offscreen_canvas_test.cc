@@ -9,6 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -194,6 +195,18 @@ TEST_F(OffscreenCanvasTest, AnimationUsesSyntheticTimerWhenHidden) {
       GetCanvasElement()->GetAnimationStateForTesting(),
       CanvasResourceDispatcher::AnimationState::kActiveWithSyntheticTiming);
   GetCanvasElement()->RemoveListener(listener);
+}
+
+TEST_F(OffscreenCanvasTest, BlockCanvasReadback) {
+  ScriptState::Scope scope(GetScriptState());
+  ScopedBlockCanvasReadbackForTest scoped_feature(true);
+  DummyExceptionStateForTesting exception_state;
+  auto* options = ImageEncodeOptions::Create();
+
+  offscreen_canvas().convertToBlob(GetScriptState(), options, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kNotAllowedError);
 }
 
 // Verifies that an offscreen_canvas()s PushFrame() has the appropriate

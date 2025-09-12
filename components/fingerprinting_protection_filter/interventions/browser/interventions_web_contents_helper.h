@@ -10,13 +10,15 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }  // namespace content
 
 namespace fingerprinting_protection_interventions {
 
-// TODO(https://crbug.com/377325952): Remove InterventionsWebContentsHelper as
-// it's no longer needed.
+// The InterventionsWebContentsHelper is used to control the BlockCanvasReadback
+// Runtime Enabled Feature for the navigations, based on whether the
+// browser-level feature is enabled and the user is in Incognito.
 
 class InterventionsWebContentsHelper
     : public content::WebContentsUserData<InterventionsWebContentsHelper>,
@@ -35,6 +37,10 @@ class InterventionsWebContentsHelper
  protected:
   InterventionsWebContentsHelper(content::WebContents* web_contents,
                                  bool is_incognito);
+
+  // content::WebContentsObserver:
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
  private:
   friend class content::WebContentsUserData<InterventionsWebContentsHelper>;

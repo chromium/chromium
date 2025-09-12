@@ -25,6 +25,12 @@ inline constexpr std::string_view kCanvasOperationMetricName =
 inline constexpr std::string_view kCanvasNoiseReadbacksPerContextMetricName =
     "FingerprintingProtection.CanvasNoise.NoisedReadbacksPerContext";
 
+inline constexpr std::string_view kBlockCanvasReadbackErrorMessage =
+    "https://issues.chromium.org/issues/"
+    "new?component=1456351&title=Breakage%20due%20to%20blocked%20canvas"
+    "%20readback. The feature can be disabled through "
+    "chrome://flags/#enable-block-canvas-readback";
+
 enum class CanvasNoiseReason {
   kAllConditionsMet = 0,
   kNoRenderContext = 1,  // Deprecated; this is now implied by the trigger.

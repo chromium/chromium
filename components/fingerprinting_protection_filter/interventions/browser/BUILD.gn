@@ -17,4 +17,17 @@ if (use_blink) {
       "//base",
     ]
   }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "interventions_web_contents_helper_unittest.cc" ]
+    public_deps = [ "//content/public/browser" ]
+    deps = [
+      ":browser",
+      "../common:features",
+      "//base",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

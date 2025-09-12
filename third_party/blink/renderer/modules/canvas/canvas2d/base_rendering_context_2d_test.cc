@@ -204,6 +204,21 @@ BeginLayerOptions* FilterOption(blink::V8TestingScope& scope,
   return options;
 }
 
+TEST(BaseRenderingContextTests, BlockCanvasReadback) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  // When the BlockCanvasReadback feature is enabled, reading back should
+  // throw a DOM exception.
+  DummyExceptionStateForTesting exception_state;
+  ScopedBlockCanvasReadbackForTest scoped_feature(true);
+  context->getImageData(0, 0, 10, 10, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kNotAllowedError);
+}
+
 TEST(BaseRenderingContextLayerTests, ContextLost) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);

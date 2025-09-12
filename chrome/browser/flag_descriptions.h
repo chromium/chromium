@@ -1078,6 +1078,9 @@ extern const char
 extern const char kEnableCanvasNoiseName[];
 extern const char kEnableCanvasNoiseDescription[];
 
+extern const char kEnableBlockCanvasReadbackName[];
+extern const char kEnableBlockCanvasReadbackDescription[];
+
 extern const char kEnableLensStandaloneFlagId[];
 extern const char kEnableLensStandaloneName[];
 extern const char kEnableLensStandaloneDescription[];

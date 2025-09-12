@@ -1731,6 +1731,12 @@ const char kEnableCanvasNoiseDescription[] =
     "Enable noising pixels when the contents of a canvas are read back by a "
     "script.";
 
+const char kEnableBlockCanvasReadbackName[] =
+    "Enable blocking canvas readbacks in Incognito";
+const char kEnableBlockCanvasReadbackDescription[] =
+    "Enable throwing an exception when the contents of a canvas are read back "
+    "by a script.";
+
 const char kEnablePeripheralCustomizationName[] =
     "Enable peripheral customization";
 const char kEnablePeripheralCustomizationDescription[] =
