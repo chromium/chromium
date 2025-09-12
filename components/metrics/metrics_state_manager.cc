@@ -171,7 +171,7 @@ class MetricsStateMetricsProvider : public MetricsProvider {
   }
 
  private:
-  const raw_ptr<PrefService> local_state_;
+  const raw_ptr<PrefService, DanglingUntriaged> local_state_;
   const bool metrics_ids_were_reset_;
   // |previous_client_id_| is set only (if known) when
   // |metrics_ids_were_reset_|
@@ -179,7 +179,8 @@ class MetricsStateMetricsProvider : public MetricsProvider {
   // The client id that was used to randomize field trials. An empty string if
   // the low entropy source was used to do randomization.
   const std::string initial_client_id_;
-  const raw_ref<const ClonedInstallDetector> cloned_install_detector_;
+  const raw_ref<const ClonedInstallDetector, DanglingUntriaged>
+      cloned_install_detector_;
 };
 
 bool ShouldEnableBenchmarking(bool force_benchmarking_mode) {
