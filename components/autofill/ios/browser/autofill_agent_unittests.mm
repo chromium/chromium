@@ -192,7 +192,7 @@ class AutofillAgentTests : public web::WebTest {
   // frames.
   std::unique_ptr<autofill::TestAutofillClientIOS> client_;
   web::FakeWebState fake_web_state_;
-  raw_ptr<web::FakeWebFrame> fake_main_frame_ = nullptr;
+  raw_ptr<web::FakeWebFrame, DanglingUntriaged> fake_main_frame_ = nullptr;
   raw_ptr<web::FakeWebFramesManager> fake_web_frames_manager_ = nullptr;
   AutofillAgent* autofill_agent_;
   autofill::MockPasswordAutofillAgentDelegate delegate_mock_;

@@ -102,7 +102,7 @@ class TestAutofillManagerInjector : public AutofillDriverIOSFactory::Observer {
     test_api(driver).SetAutofillManager(std::make_unique<T>(&driver));
   }
 
-  raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_;
   // Non-null until OnAutofillDriverIOSFactoryDestroyed().
   raw_ptr<AutofillDriverIOSFactory> factory_;
 };

@@ -28,7 +28,7 @@ class AutofillClientIOSHandle
   AutofillClientIOSHandle(web::WebState* web_state, AutofillClientIOS* client)
       : client_(client) {}
 
-  raw_ptr<AutofillClientIOS> client_;
+  raw_ptr<AutofillClientIOS, DanglingUntriaged> client_;
 };
 
 }  // namespace

@@ -26,7 +26,7 @@ class NewFrameCatcher : public web::WebFramesManager::Observer {
   void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
                                web::WebFrame* web_frame) override;
 
-  raw_ptr<web::WebFrame> latest_new_frame_ = nullptr;
+  raw_ptr<web::WebFrame, DanglingUntriaged> latest_new_frame_ = nullptr;
   base::ScopedObservation<web::WebFramesManager,
                           web::WebFramesManager::Observer>
       scoped_observer_{this};

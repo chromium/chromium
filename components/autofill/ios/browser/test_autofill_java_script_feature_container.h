@@ -52,12 +52,13 @@ class TestAutofillJavaScriptFeatureContainer {
   TestAutofillJavaScriptFeatureContainer& operator=(
       const TestAutofillJavaScriptFeatureContainer&) = delete;
 
-  raw_ptr<FormHandlersJavaScriptFeature> form_handlers_java_script_feature_ =
-      nullptr;
-  raw_ptr<AutofillRendererIDJavaScriptFeature>
+  raw_ptr<FormHandlersJavaScriptFeature, DanglingUntriaged>
+      form_handlers_java_script_feature_ = nullptr;
+  raw_ptr<AutofillRendererIDJavaScriptFeature, DanglingUntriaged>
       autofill_renderer_id_java_script_feature_ = nullptr;
-  raw_ptr<AutofillJavaScriptFeature> autofill_java_script_feature_ = nullptr;
-  raw_ptr<RemoteFrameRegistrationJavaScriptFeature>
+  raw_ptr<AutofillJavaScriptFeature, DanglingUntriaged>
+      autofill_java_script_feature_ = nullptr;
+  raw_ptr<RemoteFrameRegistrationJavaScriptFeature, DanglingUntriaged>
       remote_frame_registration_java_script_feature_ = nullptr;
 };
 

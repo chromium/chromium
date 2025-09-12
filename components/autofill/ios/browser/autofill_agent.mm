@@ -160,7 +160,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       _webFramesManagerObserverBridge;
 
   // The pref service for which this agent was created.
-  raw_ptr<PrefService> _prefService;
+  raw_ptr<PrefService, DanglingUntriaged> _prefService;
 
   // The unique renderer ID of the most recent autocomplete field;
   // tracks the currently-focused form element in order to force filling of
