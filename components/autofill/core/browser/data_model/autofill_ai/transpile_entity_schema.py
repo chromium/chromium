@@ -230,6 +230,16 @@ def generate_cpp_functions(schema):
   yield '  NOTREACHED();'
   yield '}'
   yield ''
+  yield 'bool EntityType::read_only() const {'
+  yield '  switch (name_) {'
+  for entity, read_only in ((entity['name'], entity['read only'])
+                            for entity in schema):
+    yield f'    case {entity_name(entity)}:'
+    yield f'      return {"true" if read_only else "false"};'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
   yield '// static'
   yield 'bool AttributeType::DisambiguationOrder(const AttributeType& lhs, const AttributeType& rhs) {'
   yield '  constexpr auto rank = [](const AttributeType& a) {'
@@ -291,7 +301,7 @@ namespace autofill {{
   yield f"""
 }}  // namespace autofill"""
 
-REQUIRED_KEYS = {'name', 'attributes', 'obfuscated attributes', 'required fields', 'import constraints', 'merge constraints', 'strike keys', 'disambiguation order', 'syncable'}
+REQUIRED_KEYS = {'name', 'attributes', 'obfuscated attributes', 'required fields', 'import constraints', 'merge constraints', 'strike keys', 'disambiguation order', 'syncable', 'read only'}
 OPTIONAL_KEYS = {'experiment feature', 'excluded geo-ips'}
 CONSTRAINTS_KEYS = {'import constraints', 'merge constraints', 'strike keys', 'required fields'}
 
@@ -357,6 +367,14 @@ def validate_schema(schema):
 
     if entity['name'] == '':
       report('"name": value is the empty string')
+
+    if entity['read only']:
+      if entity['import constraints'] != []:
+        report('"import constraints": value must be empty if "read only" is true')
+      if entity['merge constraints'] != []:
+        report('"merge constraints": value must be empty if "read only" is true')
+      if entity['strike keys'] != []:
+        report('"strike keys": value must be empty if "read only" is true')
 
     known_attributes = set(entity['attributes'])
     for attribute in known_attributes:

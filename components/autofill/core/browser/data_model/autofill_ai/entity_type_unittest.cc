@@ -147,5 +147,11 @@ TEST(AutofillEntityTypeTest, DataType) {
   EXPECT_EQ(e.data_type(), AttributeType::DataType::kString);
 }
 
+TEST(AutofillEntityTypeTest, ReadOnly) {
+  using enum EntityTypeName;
+  EXPECT_FALSE(EntityType(kPassport).read_only());
+  EXPECT_TRUE(EntityType(kFlightReservation).read_only());
+}
+
 }  // namespace
 }  // namespace autofill
