@@ -89,6 +89,8 @@ std::string CreateReasonToString(
       return "Reason: Independent log";
     case MetricsLogsEventManager::CreateReason::kOutOfBand:
       return "Reason: Manually triggered by client";
+    case MetricsLogsEventManager::CreateReason::kFlush:
+      return "Reason: Flush";
   }
 }
 

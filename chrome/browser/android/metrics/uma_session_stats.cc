@@ -132,6 +132,18 @@ void UmaSessionStats::UmaEndSession(JNIEnv* env) {
   }
 }
 
+void UmaSessionStats::FlushSession(JNIEnv* env) {
+  metrics::MetricsService* metrics = g_browser_process->metrics_service();
+  if (metrics) {
+    metrics->Flush();
+  }
+  ukm::UkmService* ukm_service =
+      g_browser_process->GetMetricsServicesManager()->GetUkmService();
+  if (ukm_service) {
+    ukm_service->Flush(metrics::MetricsLogsEventManager::CreateReason::kFlush);
+  }
+}
+
 void UmaSessionStats::ProvideCurrentSessionData() {
   base::UmaHistogramBoolean("Session.IsActive", active_session_count_ != 0);
 

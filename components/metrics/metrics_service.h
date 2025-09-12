@@ -172,7 +172,13 @@ class MetricsService {
 
   // Called when the application is coming out of background mode.
   void OnAppEnterForeground(bool force_open_new_log = false);
+
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+  // Flushes state that would be lost if the browser were to be killed. On
+  // Android, this should be called when an Activity pauses, as Android could
+  // suddenly kill the app at that point.
+  void Flush();
 
   // Called when a document first starts loading.
   void OnPageLoadStarted();

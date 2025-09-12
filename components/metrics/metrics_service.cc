@@ -218,7 +218,6 @@ class DiscardingFlattener : public base::HistogramFlattener {
   }
 };
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Emits a histogram upon instantiation, and on destruction. Used to measure how
 // often the browser is ungracefully killed between two different points. In
 // particular, currently, this is used on mobile to measure how often the
@@ -279,7 +278,6 @@ class ScopedTerminationChecker {
   // this object will do nothing.
   bool active_ = false;
 };
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // The delay, in seconds, after starting recording before doing expensive
 // initialization work.
@@ -705,6 +703,24 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+void MetricsService::Flush() {
+  if (recording_active() && !IsTooEarlyToCloseLog()) {
+#if BUILDFLAG(IS_ANDROID)
+    client_->MergeSubprocessHistograms();
+#endif  // BUILDFLAG(IS_ANDROID)
+    {
+      ScopedTerminationChecker scoped_termination_checker(
+          "UMA.MetricsService.OnFlushScopedTerminationChecker");
+      PushPendingLogsToPersistentStorage(
+          MetricsLogsEventManager::CreateReason::kFlush);
+    }
+
+    // Persisting logs closes the current log, so start recording a new log
+    // immediately.
+    OpenNewLog();
+  }
+}
 
 void MetricsService::OnPageLoadStarted() {
   delegating_provider_.OnPageLoadStarted();

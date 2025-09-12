@@ -188,6 +188,10 @@ public class UmaSessionStats {
         UmaSessionStatsJni.get().umaEndSession(sNativeUmaSessionStats);
     }
 
+    public void flushSession() {
+        UmaSessionStatsJni.get().flushSession(sNativeUmaSessionStats);
+    }
+
     /**
      * Updates the metrics services based on a change of consent. This can happen during first-run
      * flow, and when the user changes their preferences.
@@ -314,6 +318,8 @@ public class UmaSessionStats {
         void umaResumeSession(long nativeUmaSessionStats);
 
         void umaEndSession(long nativeUmaSessionStats);
+
+        void flushSession(long nativeUmaSessionStats);
 
         void registerExternalExperiment(int[] experimentIds, boolean overrideExistingIds);
 

@@ -22,6 +22,7 @@ class UmaSessionStats {
  public:
   void UmaResumeSession(JNIEnv* env);
   void UmaEndSession(JNIEnv* env);
+  void FlushSession(JNIEnv* env);
 
   // Called before an UMA log is completed to record associated metrics.
   void ProvideCurrentSessionData();

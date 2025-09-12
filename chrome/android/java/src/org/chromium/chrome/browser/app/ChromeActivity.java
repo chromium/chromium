@@ -150,6 +150,7 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.provider.PageContentProviderImpl;
 import org.chromium.chrome.browser.provider.PageContentProviderMetrics;
@@ -1305,6 +1306,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         super.onPauseWithNative();
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
             endUmaSession();
+        } else {
+            mUmaActivityObserver.flushUmaSession();
+            ProfileManagerUtils.flushPersistentDataForAllProfiles();
         }
     }
 
