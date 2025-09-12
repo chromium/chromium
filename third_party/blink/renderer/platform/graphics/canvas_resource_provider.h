@@ -532,10 +532,7 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
       FlushReason reason,
       ImageOrientation orientation) override;
 
-  base::WeakPtr<CanvasResourceProviderBitmap> CreateWeakPtr();
   sk_sp<SkSurface> CreateSkSurface() const override;
-
-  base::WeakPtrFactory<CanvasResourceProviderBitmap> weak_ptr_factory_{this};
 };
 
 // * Renders to a SharedImage, which manages memory internally.

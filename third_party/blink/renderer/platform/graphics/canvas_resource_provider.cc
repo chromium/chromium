@@ -179,11 +179,6 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
   return SnapshotInternal(orientation, reason);
 }
 
-base::WeakPtr<CanvasResourceProviderBitmap>
-CanvasResourceProviderBitmap::CreateWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 sk_sp<SkSurface> CanvasResourceProviderBitmap::CreateSkSurface() const {
   TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::CreateSkSurface");
 
