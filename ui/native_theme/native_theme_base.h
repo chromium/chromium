@@ -268,9 +268,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   SkColor GetArrowColor(State state,
                         bool dark_mode,
                         const ColorProvider* color_provider) const;
-  SkColor GetControlColor(ControlColorId color_id,
-                          bool dark_mode,
-                          const ColorProvider* color_provider) const;
+  virtual SkColor GetControlColor(ControlColorId color_id,
+                                  bool dark_mode,
+                                  const ColorProvider* color_provider) const;
 
   // Adjust the colors set in `extra_params` for scrollbar buttons and thumb
   // when the parts are hovered or pressed. The function returns a darker or
@@ -337,25 +337,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       State state,
       bool dark_mode,
       const ColorProvider* color_provider) const;
-  SkColor GetDarkModeControlColor(ControlColorId color_id) const;
-
-  SkColor GetControlColorFromColorProvider(
-      ControlColorId color_id,
-      const ColorProvider* color_provider) const;
 
   SkRect AlignSliderTrack(const gfx::Rect& slider_rect,
                           const NativeTheme::SliderExtraParams& slider,
                           bool is_value,
                           float track_height) const;
-
-  // Returns true if the ColorProvider color map is not empty and a color
-  // represented by the ControlColorId is added to the ui color mixer.
-  // TODO(crbug.com/40242489): Remove this function when the NativeThemeBase
-  // class is fully transitioned to the color pipeline and the GetControlColor()
-  // is deleted.
-  bool IsColorPipelineSupportedForControlColorId(
-      const ColorProvider* color_provider,
-      ControlColorId color_id) const;
 
   // The length of the arrow buttons, 0 means no buttons are drawn.
   int scrollbar_button_length_ = 14;

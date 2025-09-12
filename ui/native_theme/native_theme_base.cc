@@ -11,7 +11,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/fixed_flat_set.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -1291,273 +1291,54 @@ SkColor NativeThemeBase::GetControlColor(
     ControlColorId color_id,
     bool dark_mode,
     const ColorProvider* color_provider) const {
-  if (IsColorPipelineSupportedForControlColorId(color_provider, color_id)) {
-    return GetControlColorFromColorProvider(color_id, color_provider);
-  }
-
-  if (dark_mode) {
-    return GetDarkModeControlColor(color_id);
-  }
-
-  switch (color_id) {
-    case kBorder:
-    case kButtonBorder:
-      return SkColorSetRGB(0x76, 0x76, 0x76);
-    case kHoveredBorder:
-    case kButtonHoveredBorder:
-      return SkColorSetRGB(0x4F, 0x4F, 0x4F);
-    case kPressedBorder:
-    case kButtonPressedBorder:
-      return SkColorSetRGB(0x8D, 0x8D, 0x8D);
-    case kDisabledBorder:
-    case kButtonDisabledBorder:
-      return SkColorSetARGB(0x4D, 0x76, 0x76, 0x76);
-    case kAccent:
-      return SkColorSetRGB(0x00, 0x75, 0xFF);
-    case kHoveredAccent:
-      return SkColorSetRGB(0x00, 0x5C, 0xC8);
-    case kPressedAccent:
-      return SkColorSetRGB(0x37, 0x93, 0xFF);
-    case kDisabledAccent:
-      return SkColorSetARGB(0x4D, 0x76, 0x76, 0x76);
-    case kBackground:
-      return SK_ColorWHITE;
-    case kDisabledBackground:
-      return SkColorSetA(SK_ColorWHITE, 0x99);
-    case kFill:
-    case kButtonFill:
-      return SkColorSetRGB(0xEF, 0xEF, 0xEF);
-    case kHoveredFill:
-    case kButtonHoveredFill:
-      return SkColorSetRGB(0xE5, 0xE5, 0xE5);
-    case kPressedFill:
-    case kButtonPressedFill:
-      return SkColorSetRGB(0xF5, 0xF5, 0xF5);
-    case kDisabledFill:
-    case kButtonDisabledFill:
-      return SkColorSetARGB(0x4D, 0xEF, 0xEF, 0xEF);
-    case kLightenLayer:
-      return SkColorSetARGB(0x33, 0xA9, 0xA9, 0xA9);
-    case kProgressValue:
-      return SkColorSetRGB(0x00, 0x75, 0xFF);
-    case kSlider:
-      return SkColorSetRGB(0x00, 0x75, 0xFF);
-    case kHoveredSlider:
-      return SkColorSetRGB(0x00, 0x5C, 0xC8);
-    case kPressedSlider:
-      return SkColorSetRGB(0x37, 0x93, 0xFF);
-    case kDisabledSlider:
-      return SkColorSetRGB(0xCB, 0xCB, 0xCB);
-    case kAutoCompleteBackground:
-      return SkColorSetRGB(0xE8, 0xF0, 0xFE);
-    case kScrollbarArrowBackground:
-    case kScrollbarTrack:
-      return SkColorSetRGB(0xF1, 0xF1, 0xF1);
-    case kScrollbarArrowBackgroundHovered:
-      return SkColorSetRGB(0xD2, 0xD2, 0xD2);
-    case kScrollbarArrowBackgroundPressed:
-      return SkColorSetRGB(0x78, 0x78, 0x78);
-    case kScrollbarArrowHovered:
-    case kScrollbarArrow:
-      return SkColorSetRGB(0x50, 0x50, 0x50);
-    case kScrollbarArrowPressed:
-      return SK_ColorWHITE;
-    case kScrollbarCornerControlColorId:
-      return SkColorSetRGB(0xDC, 0xDC, 0xDC);
-    case kScrollbarThumbInactive:
-      return SkColorSetRGB(0xEA, 0xEA, 0xEA);
-    case kScrollbarThumbHovered:
-      return SkColorSetA(SK_ColorBLACK, 0x4D);
-    case kScrollbarThumbPressed:
-      return SkColorSetA(SK_ColorBLACK, 0x80);
-    case kScrollbarThumb:
-      return SkColorSetA(SK_ColorBLACK, 0x33);
-  }
-  NOTREACHED();
-}
-
-SkColor NativeThemeBase::GetDarkModeControlColor(
-    ControlColorId color_id) const {
-  switch (color_id) {
-    case kAccent:
-      return SkColorSetRGB(0x99, 0xC8, 0xFF);
-    case kHoveredAccent:
-      return SkColorSetRGB(0xD1, 0xE6, 0xFF);
-    case kPressedAccent:
-      return SkColorSetRGB(0x61, 0xA9, 0xFF);
-    case kDisabledAccent:
-      return SkColorSetRGB(0x75, 0x75, 0x75);
-    case kProgressValue:
-      return SkColorSetRGB(0x63, 0xAD, 0xE5);
-    case kFill:
-      return SkColorSetRGB(0x3B, 0x3B, 0x3B);
-    case kButtonBorder:
-    case kButtonFill:
-      return SkColorSetRGB(0x6B, 0x6B, 0x6B);
-    case kAutoCompleteBackground:
-      return SkColorSetARGB(0x66, 0x46, 0x5a, 0x7e);
-    case kLightenLayer:
-    case kBackground:
-      return SkColorSetRGB(0x3B, 0x3B, 0x3B);
-    case kBorder:
-      return SkColorSetRGB(0x85, 0x85, 0x85);
-    case kSlider:
-      return SkColorSetRGB(0x99, 0xC8, 0xFF);
-    case kHoveredSlider:
-      return SkColorSetRGB(0xD1, 0xE6, 0xFF);
-    case kPressedSlider:
-      return SkColorSetRGB(0x61, 0xA9, 0xFF);
-    case kDisabledSlider:
-      return SkColorSetRGB(0x75, 0x75, 0x75);
-    case kDisabledBackground:
-      return SkColorSetRGB(0x3B, 0x3B, 0x3B);
-    case kHoveredBorder:
-      return SkColorSetRGB(0xAC, 0xAC, 0xAC);
-    case kPressedBorder:
-      return SkColorSetRGB(0x6E, 0x6E, 0x6E);
-    case kDisabledBorder:
-      return SkColorSetRGB(0x62, 0x62, 0x62);
-    case kHoveredFill:
-      return SkColorSetRGB(0x3B, 0x3B, 0x3B);
-    case kButtonHoveredBorder:
-    case kButtonHoveredFill:
-      return SkColorSetRGB(0x7B, 0x7B, 0x7B);
-    case kPressedFill:
-      return SkColorSetRGB(0x3B, 0x3B, 0x3B);
-    case kButtonPressedBorder:
-    case kButtonPressedFill:
-      return SkColorSetRGB(0x61, 0x61, 0x61);
-    case kDisabledFill:
-    case kButtonDisabledBorder:
-    case kButtonDisabledFill:
-      return SkColorSetRGB(0x36, 0x36, 0x36);
-    case kScrollbarArrowBackground:
-      return SkColorSetRGB(0x42, 0x42, 0x42);
-    case kScrollbarArrowBackgroundHovered:
-      return SkColorSetRGB(0x4F, 0x4F, 0x4F);
-    case kScrollbarArrowBackgroundPressed:
-      return SkColorSetRGB(0xB1, 0xB1, 0xB1);
-    case kScrollbarArrowHovered:
-    case kScrollbarArrow:
-      return SK_ColorWHITE;
-    case kScrollbarArrowPressed:
-      return SK_ColorBLACK;
-    case kScrollbarCornerControlColorId:
-      return SkColorSetRGB(0x12, 0x12, 0x12);
-    case kScrollbarTrack:
-      return SkColorSetRGB(0x42, 0x42, 0x42);
-    case kScrollbarThumbInactive:
-      return SK_ColorWHITE;
-    case kScrollbarThumbHovered:
-      return SkColorSetA(SK_ColorWHITE, 0x4D);
-    case kScrollbarThumbPressed:
-      return SkColorSetA(SK_ColorWHITE, 0x80);
-    case kScrollbarThumb:
-      return SkColorSetA(SK_ColorWHITE, 0x33);
-  }
-  NOTREACHED();
-}
-
-SkColor NativeThemeBase::GetControlColorFromColorProvider(
-    ControlColorId color_id,
-    const ColorProvider* color_provider) const {
-  DCHECK(IsColorPipelineSupportedForControlColorId(color_provider, color_id));
-  switch (color_id) {
-    case kBorder:
-      return color_provider->GetColor(kColorWebNativeControlBorder);
-    case kDisabledBorder:
-      return color_provider->GetColor(kColorWebNativeControlBorderDisabled);
-    case kHoveredBorder:
-      return color_provider->GetColor(kColorWebNativeControlBorderHovered);
-    case kPressedBorder:
-      return color_provider->GetColor(kColorWebNativeControlBorderPressed);
-    case kAccent:
-      return color_provider->GetColor(kColorWebNativeControlAccent);
-    case kDisabledAccent:
-      return color_provider->GetColor(kColorWebNativeControlAccentDisabled);
-    case kHoveredAccent:
-      return color_provider->GetColor(kColorWebNativeControlAccentHovered);
-    case kPressedAccent:
-      return color_provider->GetColor(kColorWebNativeControlAccentPressed);
-    case kBackground:
-      return color_provider->GetColor(kColorWebNativeControlBackground);
-    case kDisabledBackground:
-      return color_provider->GetColor(kColorWebNativeControlBackgroundDisabled);
-    case kFill:
-      return color_provider->GetColor(kColorWebNativeControlFill);
-    case kDisabledFill:
-      return color_provider->GetColor(kColorWebNativeControlFillDisabled);
-    case kHoveredFill:
-      return color_provider->GetColor(kColorWebNativeControlFillHovered);
-    case kPressedFill:
-      return color_provider->GetColor(kColorWebNativeControlFillPressed);
-    case kLightenLayer:
-      return color_provider->GetColor(kColorWebNativeControlLightenLayer);
-    case kProgressValue:
-      return color_provider->GetColor(kColorWebNativeControlProgressValue);
-    case kSlider:
-      return color_provider->GetColor(kColorWebNativeControlSlider);
-    case kDisabledSlider:
-      return color_provider->GetColor(kColorWebNativeControlSliderDisabled);
-    case kHoveredSlider:
-      return color_provider->GetColor(kColorWebNativeControlSliderHovered);
-    case kPressedSlider:
-      return color_provider->GetColor(kColorWebNativeControlSliderPressed);
-    case kAutoCompleteBackground:
-      return color_provider->GetColor(
-          kColorWebNativeControlAutoCompleteBackground);
-    case kScrollbarArrowBackground:
-    case kScrollbarTrack:
-      return color_provider->GetColor(kColorWebNativeControlScrollbarTrack);
-    case kScrollbarArrowBackgroundHovered:
-      return color_provider->GetColor(
-          kColorWebNativeControlScrollbarArrowBackgroundHovered);
-    case kScrollbarArrowBackgroundPressed:
-      return color_provider->GetColor(
-          kColorWebNativeControlScrollbarArrowBackgroundPressed);
-    case kScrollbarArrow:
-    case kScrollbarArrowHovered:
-      return color_provider->GetColor(
-          kColorWebNativeControlScrollbarArrowForeground);
-    case kScrollbarArrowPressed:
-      return color_provider->GetColor(
-          kColorWebNativeControlScrollbarArrowForegroundPressed);
-    case kScrollbarCornerControlColorId:
-      return color_provider->GetColor(kColorWebNativeControlScrollbarCorner);
-    case kScrollbarThumb:
-      return color_provider->GetColor(kColorWebNativeControlScrollbarThumb);
-    case kScrollbarThumbHovered:
-      return color_provider->GetColor(
-          kColorWebNativeControlScrollbarThumbHovered);
-    case kScrollbarThumbInactive:
-      return color_provider->GetColor(
-          kColorWebNativeControlScrollbarThumbInactive);
-    case kScrollbarThumbPressed:
-      return color_provider->GetColor(
-          kColorWebNativeControlScrollbarThumbPressed);
-    case kButtonBorder:
-      return color_provider->GetColor(kColorWebNativeControlButtonBorder);
-    case kButtonDisabledBorder:
-      return color_provider->GetColor(
-          kColorWebNativeControlButtonBorderDisabled);
-    case kButtonHoveredBorder:
-      return color_provider->GetColor(
-          kColorWebNativeControlButtonBorderHovered);
-    case kButtonPressedBorder:
-      return color_provider->GetColor(
-          kColorWebNativeControlButtonBorderPressed);
-    case kButtonFill:
-      return color_provider->GetColor(kColorWebNativeControlButtonFill);
-    case kButtonDisabledFill:
-      return color_provider->GetColor(kColorWebNativeControlButtonFillDisabled);
-    case kButtonHoveredFill:
-      return color_provider->GetColor(kColorWebNativeControlButtonFillHovered);
-    case kButtonPressedFill:
-      return color_provider->GetColor(kColorWebNativeControlButtonFillPressed);
-    default:
-      break;
-  }
-  NOTREACHED();
+  static constexpr auto kColorMap = base::MakeFixedFlatMap<ControlColorId,
+                                                           ColorId>(
+      {{kBorder, kColorWebNativeControlBorder},
+       {kDisabledBorder, kColorWebNativeControlBorderDisabled},
+       {kHoveredBorder, kColorWebNativeControlBorderHovered},
+       {kPressedBorder, kColorWebNativeControlBorderPressed},
+       {kAccent, kColorWebNativeControlAccent},
+       {kDisabledAccent, kColorWebNativeControlAccentDisabled},
+       {kHoveredAccent, kColorWebNativeControlAccentHovered},
+       {kPressedAccent, kColorWebNativeControlAccentPressed},
+       {kBackground, kColorWebNativeControlBackground},
+       {kDisabledBackground, kColorWebNativeControlBackgroundDisabled},
+       {kFill, kColorWebNativeControlFill},
+       {kDisabledFill, kColorWebNativeControlFillDisabled},
+       {kHoveredFill, kColorWebNativeControlFillHovered},
+       {kPressedFill, kColorWebNativeControlFillPressed},
+       {kLightenLayer, kColorWebNativeControlLightenLayer},
+       {kProgressValue, kColorWebNativeControlProgressValue},
+       {kSlider, kColorWebNativeControlSlider},
+       {kDisabledSlider, kColorWebNativeControlSliderDisabled},
+       {kHoveredSlider, kColorWebNativeControlSliderHovered},
+       {kPressedSlider, kColorWebNativeControlSliderPressed},
+       {kAutoCompleteBackground, kColorWebNativeControlAutoCompleteBackground},
+       {kScrollbarArrowBackground, kColorWebNativeControlScrollbarTrack},
+       {kScrollbarArrowBackgroundHovered,
+        kColorWebNativeControlScrollbarArrowBackgroundHovered},
+       {kScrollbarArrowBackgroundPressed,
+        kColorWebNativeControlScrollbarArrowBackgroundPressed},
+       {kScrollbarArrow, kColorWebNativeControlScrollbarArrowForeground},
+       {kScrollbarArrowHovered, kColorWebNativeControlScrollbarArrowForeground},
+       {kScrollbarArrowPressed,
+        kColorWebNativeControlScrollbarArrowForegroundPressed},
+       {kScrollbarCornerControlColorId, kColorWebNativeControlScrollbarCorner},
+       {kScrollbarTrack, kColorWebNativeControlScrollbarTrack},
+       {kScrollbarThumb, kColorWebNativeControlScrollbarThumb},
+       {kScrollbarThumbHovered, kColorWebNativeControlScrollbarThumbHovered},
+       {kScrollbarThumbInactive, kColorWebNativeControlScrollbarThumbInactive},
+       {kScrollbarThumbPressed, kColorWebNativeControlScrollbarThumbPressed},
+       {kButtonBorder, kColorWebNativeControlButtonBorder},
+       {kButtonDisabledBorder, kColorWebNativeControlButtonBorderDisabled},
+       {kButtonHoveredBorder, kColorWebNativeControlButtonBorderHovered},
+       {kButtonPressedBorder, kColorWebNativeControlButtonBorderPressed},
+       {kButtonFill, kColorWebNativeControlButtonFill},
+       {kButtonDisabledFill, kColorWebNativeControlButtonFillDisabled},
+       {kButtonHoveredFill, kColorWebNativeControlButtonFillHovered},
+       {kButtonPressedFill, kColorWebNativeControlButtonFillPressed}});
+  CHECK(color_provider);
+  return color_provider->GetColor(kColorMap.at(color_id));
 }
 
 void NativeThemeBase::PaintLightenLayer(cc::PaintCanvas* canvas,
@@ -1611,60 +1392,6 @@ SkRect NativeThemeBase::AlignSliderTrack(
   }
 
   return aligned_rect;
-}
-
-bool NativeThemeBase::IsColorPipelineSupportedForControlColorId(
-    const ColorProvider* color_provider,
-    ControlColorId color_id) const {
-  // Color providers are not yet supported on Android so we need to check that
-  // the color_provider is not null here.
-  if (!color_provider) {
-    return false;
-  }
-
-  static constexpr auto kControlColorIdsSet =
-      base::MakeFixedFlatSet<ControlColorId>({kBorder,
-                                              kDisabledBorder,
-                                              kHoveredBorder,
-                                              kPressedBorder,
-                                              kAccent,
-                                              kDisabledAccent,
-                                              kHoveredAccent,
-                                              kPressedAccent,
-                                              kBackground,
-                                              kDisabledBackground,
-                                              kFill,
-                                              kDisabledFill,
-                                              kHoveredFill,
-                                              kPressedFill,
-                                              kLightenLayer,
-                                              kProgressValue,
-                                              kSlider,
-                                              kDisabledSlider,
-                                              kHoveredSlider,
-                                              kPressedSlider,
-                                              kAutoCompleteBackground,
-                                              kScrollbarArrowBackground,
-                                              kScrollbarArrowBackgroundHovered,
-                                              kScrollbarArrowBackgroundPressed,
-                                              kScrollbarArrow,
-                                              kScrollbarArrowHovered,
-                                              kScrollbarArrowPressed,
-                                              kScrollbarCornerControlColorId,
-                                              kScrollbarTrack,
-                                              kScrollbarThumb,
-                                              kScrollbarThumbHovered,
-                                              kScrollbarThumbPressed,
-                                              kScrollbarThumbInactive,
-                                              kButtonBorder,
-                                              kButtonDisabledBorder,
-                                              kButtonHoveredBorder,
-                                              kButtonPressedBorder,
-                                              kButtonFill,
-                                              kButtonDisabledFill,
-                                              kButtonHoveredFill,
-                                              kButtonPressedFill});
-  return kControlColorIdsSet.contains(color_id);
 }
 
 }  // namespace ui

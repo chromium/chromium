@@ -26,6 +26,9 @@ class NativeThemeMobile : public NativeThemeBase {
 
   // NativeThemeBase:
   void AdjustCheckboxRadioRectForPadding(SkRect* rect) const override;
+  SkColor GetControlColor(ControlColorId color_id,
+                          bool dark_mode,
+                          const ColorProvider* color_provider) const override;
 
  private:
   NativeThemeMobile();
