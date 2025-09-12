@@ -110,11 +110,16 @@ public class BasicListMenu implements ListMenu {
         return new ListItem(ListItemType.MENU_ITEM, modelBuilder.build());
     }
 
-    private final ListView mListView;
-    private final ModelList mHeaderModelList = new ModelList();
+    private final View mListMenuLayout;
+
+    private final ListView mHeaderListView;
+    private final ModelList mHeaderModelList;
+    private final ModelListAdapter mHeaderAdapter;
+
+    private final ListView mContentListView;
     private final ModelList mContentModelList;
-    private final ModelListAdapter mAdapter;
-    private final View mContentView;
+    private final ModelListAdapter mContentAdapter;
+
     private final List<Runnable> mClickRunnables = new LinkedList<>();
 
     /**
@@ -136,31 +141,31 @@ public class BasicListMenu implements ListMenu {
             @DrawableRes int backgroundDrawable,
             @ColorRes int backgroundTintColor,
             @Nullable @ColorInt Integer bottomHairlineColor) {
-        View contentView = LayoutInflater.from(context).inflate(R.layout.list_menu_layout, null);
-        View hairline = contentView.findViewById(R.id.menu_header_bottom_hairline);
-        ListView listView = contentView.findViewById(R.id.menu_list);
-        mAdapter = createAdapter(data, Set.of(), (model) -> callDelegate(delegate, model));
-        mContentView = contentView;
-        mContentModelList = data;
-        mListView = listView;
-        mListView.setAdapter(mAdapter);
-        mListView.setDivider(null);
+        mListMenuLayout = LayoutInflater.from(context).inflate(R.layout.list_menu_layout, null);
+        View hairline = mListMenuLayout.findViewById(R.id.menu_header_bottom_hairline);
 
-        ListView headerListView = mContentView.findViewById(R.id.menu_header);
-        headerListView.setAdapter(
-                createAdapter(
-                        mHeaderModelList, Set.of(), (model) -> callDelegate(delegate, model)));
+        mContentModelList = data;
+        mContentAdapter = createAdapter(data, Set.of(), (model) -> callDelegate(delegate, model));
+        mContentListView = mListMenuLayout.findViewById(R.id.menu_list);
+        mContentListView.setAdapter(mContentAdapter);
+        mContentListView.setDivider(null);
+
+        mHeaderModelList = new ModelList();
+        mHeaderAdapter =
+                createAdapter(mHeaderModelList, Set.of(), (model) -> callDelegate(delegate, model));
+        mHeaderListView = mListMenuLayout.findViewById(R.id.menu_header);
+        mHeaderListView.setAdapter(mHeaderAdapter);
 
         // Allow keyboard focus + keyboard clicks on list items.
-        headerListView.setItemsCanFocus(true);
-        listView.setItemsCanFocus(true);
+        mHeaderListView.setItemsCanFocus(true);
+        mContentListView.setItemsCanFocus(true);
 
         if (backgroundDrawable != Resources.ID_NULL) {
-            contentView.setBackgroundResource(backgroundDrawable);
+            mListMenuLayout.setBackgroundResource(backgroundDrawable);
         }
         if (backgroundTintColor != 0) {
             ViewCompat.setBackgroundTintList(
-                    mContentView,
+                    mListMenuLayout,
                     ColorStateList.valueOf(ContextCompat.getColor(context, backgroundTintColor)));
         }
         if (bottomHairlineColor != null) {
@@ -168,21 +173,20 @@ public class BasicListMenu implements ListMenu {
         }
 
         AccessibilityListObserver observer =
-                new AccessibilityListObserver(mContentView, mHeaderModelList, mContentModelList);
-        if (mHeaderModelList != null) {
-            mHeaderModelList.addObserver(observer);
-        }
+                new AccessibilityListObserver(mListMenuLayout, mHeaderModelList, mContentModelList);
+        mHeaderModelList.addObserver(observer);
         mContentModelList.addObserver(observer);
-        mListView.setOnScrollChangeListener(new ContentListOnScrollChangeListener(hairline));
+
+        mContentListView.setOnScrollChangeListener(new ContentListOnScrollChangeListener(hairline));
     }
 
     @Override
     public View getContentView() {
-        return mContentView;
+        return mListMenuLayout;
     }
 
     public ListView getListView() {
-        return mListView;
+        return mContentListView;
     }
 
     @Override
@@ -192,7 +196,7 @@ public class BasicListMenu implements ListMenu {
 
     @Override
     public int getMaxItemWidth() {
-        return UiUtils.computeListAdapterContentDimensions(mAdapter, mListView)[0];
+        return UiUtils.computeListAdapterContentDimensions(mContentAdapter, mContentListView)[0];
     }
 
     /**
@@ -201,16 +205,29 @@ public class BasicListMenu implements ListMenu {
      * @return an array with the menu's width stored at index 0, and the height stored at index 1.
      */
     public int[] getMenuDimensions() {
-        int[] result = UiUtils.computeListAdapterContentDimensions(mAdapter, mListView);
-        int horizontalPadding = mContentView.getPaddingLeft() + mContentView.getPaddingRight();
-        int verticalPadding = mContentView.getPaddingTop() + mContentView.getPaddingBottom();
+        // Compute vertical size of header + content.
+        int[] headerDimensions =
+                UiUtils.computeListAdapterContentDimensions(mHeaderAdapter, mHeaderListView);
+        int[] contentDimensions =
+                UiUtils.computeListAdapterContentDimensions(mContentAdapter, mContentListView);
+        // The header is above the content, so the result width is the max of the 2 widths and the
+        // result height is the addition of the 2 heights.
+        int[] result = {
+            Math.max(headerDimensions[0], contentDimensions[0]),
+            headerDimensions[1] + contentDimensions[1]
+        };
+        // Now add padding from the listMenuLayout (which contains the header and content -- note
+        // that the header and content don't have padding individually).
+        int horizontalPadding =
+                mListMenuLayout.getPaddingLeft() + mListMenuLayout.getPaddingRight();
+        int verticalPadding = mListMenuLayout.getPaddingTop() + mListMenuLayout.getPaddingBottom();
         result[0] += horizontalPadding;
         result[1] += verticalPadding;
         return result;
     }
 
-    public ModelListAdapter getAdapterForTesting() {
-        return mAdapter;
+    public ModelListAdapter getContentAdapterForTesting() {
+        return mContentAdapter;
     }
 
     /**
@@ -260,7 +277,8 @@ public class BasicListMenu implements ListMenu {
     }
 
     public void clickItemForTesting(int i) {
-        mAdapter.getView(i, new View(mContentView.getContext()), (ViewGroup) mContentView)
+        mContentAdapter
+                .getView(i, new View(mListMenuLayout.getContext()), (ViewGroup) mListMenuLayout)
                 .performClick();
     }
 }
