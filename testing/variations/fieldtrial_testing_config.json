@@ -8099,7 +8099,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithFullPrewarmPage",
+                    "name": "EnabledWithRPHReuse",
                     "params": {
                         "reuse_search_host": "true",
                         "url": "https://www.google.com/warmup.html",
