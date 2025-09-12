@@ -71,6 +71,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewUseRenderingHeuristic,
     &features::kWebViewUseStartupTasksLogic,
     &features::kWebViewUseStartupTasksLogicP2,
+    &features::kWebViewUseViewPositionObserverForInsets,
     &features::kWebViewWebauthn,
     &features::kWebViewXRequestedWithHeaderControl,
     // keep-sorted end

@@ -9,6 +9,7 @@ import android.view.ViewTreeObserver;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /** Used to register listeners that can be notified of changes to the position of a view. */
@@ -19,7 +20,7 @@ public class ViewPositionObserver {
         void onPositionChanged(int positionX, int positionY);
     }
 
-    private final View mView;
+    private final WeakReference<View> mView;
     // Absolute position of the container view relative to its parent window.
     private final int[] mPosition = new int[2];
 
@@ -30,7 +31,7 @@ public class ViewPositionObserver {
      * @param view The view to observe.
      */
     public ViewPositionObserver(View view) {
-        mView = view;
+        mView = new WeakReference<>(view);
         updatePosition();
         mPreDrawListener =
                 () -> {
@@ -58,7 +59,9 @@ public class ViewPositionObserver {
         if (mListeners.contains(listener)) return;
 
         if (mListeners.isEmpty()) {
-            mView.getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
+            View view = mView.get();
+            if (view == null) return;
+            view.getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
             updatePosition();
         }
 
@@ -72,7 +75,9 @@ public class ViewPositionObserver {
         mListeners.remove(listener);
 
         if (mListeners.isEmpty()) {
-            mView.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
+            View view = mView.get();
+            if (view == null) return;
+            view.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
         }
     }
 
@@ -85,7 +90,9 @@ public class ViewPositionObserver {
     private void updatePosition() {
         int previousPositionX = mPosition[0];
         int previousPositionY = mPosition[1];
-        mView.getLocationInWindow(mPosition);
+        View view = mView.get();
+        if (view == null) return;
+        view.getLocationInWindow(mPosition);
         if (mPosition[0] != previousPositionX || mPosition[1] != previousPositionY) {
             notifyListeners();
         }

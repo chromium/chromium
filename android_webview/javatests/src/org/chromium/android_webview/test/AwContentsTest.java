@@ -28,6 +28,9 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.webkit.JavascriptInterface;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
@@ -47,6 +50,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -1920,5 +1924,70 @@ public class AwContentsTest extends AwParameterizedTest {
         CriteriaHelper.pollUiThread(
                 () -> awContents.getViewAndroidDelegateForTesting().getViewportInsetBottom() > 0,
                 "Viewport bottom inset was not updated after the soft keyboard was displayed.");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    @Features.EnableFeatures({
+        AwFeatures.WEBVIEW_REPORT_IME_INSETS,
+        AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS,
+        AwFeatures.WEBVIEW_USE_VIEW_POSITION_OBSERVER_FOR_INSETS
+    })
+    public void testInsetsAreUpdatedInScrollView() throws Exception {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView containerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AtomicInteger oldInset = new AtomicInteger();
+        int scrollAmount = 2000;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().removeAllViews();
+                    ScrollView scrollView = new ScrollView(mActivityTestRule.getActivity());
+                    int width = mActivityTestRule.getActivity().getRootLayoutWidth();
+
+                    // Create a ScrollView containing both a FrameLayout and an AwTestContainerView
+                    // inside a LinearLayout. The FrameLayout acts as a spacer pushing the WebView
+                    // off-screen then we scroll the ScrollView by 2000dp to bring the WebView into
+                    // view. We expect to see the bottom inset reduce by 2000dp.
+                    FrameLayout spacer = new FrameLayout(mActivityTestRule.getActivity());
+                    LinearLayout container = new LinearLayout(mActivityTestRule.getActivity());
+                    container.setOrientation(LinearLayout.VERTICAL);
+                    container.addView(spacer, new LinearLayout.LayoutParams(width, 2000, 1));
+                    container.addView(containerView, new LinearLayout.LayoutParams(width, 4000, 1));
+                    scrollView.addView(container, new FrameLayout.LayoutParams(width, 6000));
+                    mActivityTestRule.getActivity().addView(scrollView);
+
+                    View.OnLayoutChangeListener listener =
+                            (view,
+                                    left,
+                                    top,
+                                    right,
+                                    bottom,
+                                    oldLeft,
+                                    oldTop,
+                                    oldRight,
+                                    oldBottom) -> {
+                                if (oldInset.get() == 0) {
+                                    oldInset.set(
+                                            containerView
+                                                    .getAwContents()
+                                                    .getViewAndroidDelegateForTesting()
+                                                    .getViewportInsetBottom());
+                                }
+                                scrollView.scrollBy(0, scrollAmount);
+                                scrollView.getViewTreeObserver().dispatchOnPreDraw();
+                            };
+                    containerView.addOnLayoutChangeListener(listener);
+                });
+        CriteriaHelper.pollUiThread(
+                () ->
+                        containerView
+                                        .getAwContents()
+                                        .getViewAndroidDelegateForTesting()
+                                        .getViewportInsetBottom()
+                                == oldInset.get() - scrollAmount,
+                "Insets never updated after scroll");
     }
 }

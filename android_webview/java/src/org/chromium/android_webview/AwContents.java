@@ -3314,7 +3314,7 @@ public class AwContents implements SmartClipProvider {
         if (mDisplayCutoutController != null) {
             return mDisplayCutoutController.onApplyWindowInsets(insets);
         }
-        return null;
+        return insets;
     }
 
     /**
@@ -4610,6 +4610,10 @@ public class AwContents implements SmartClipProvider {
                             mAwFrameMetricsListener,
                             mContainerView,
                             mWindowAndroid.getWindowAndroid());
+
+            if (mDisplayCutoutController != null) {
+                mDisplayCutoutController.onDetachedFromWindow();
+            }
         }
 
         private void detachWindowCoverageTracker() {

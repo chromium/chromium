@@ -18,6 +18,10 @@ import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Display cutout controller for WebView.
@@ -117,8 +121,43 @@ public class AwDisplayCutoutController {
         }
     }
 
+    /**
+     * This listener is a separate, static class as the listener will be added to the
+     * ViewTreeObserver and may outlive the WebView. It should therefore not hold any strong
+     * references to the WebView or the Delegate which would prevent the WebView from being garbage
+     * collected.
+     */
+    private static class Listener implements ViewPositionObserver.Listener {
+        // The minimum amount of time between subsequent calls to mDelegate.bottomImeInsetChanged()
+        // when invoked from this listener.
+        private static final long MIN_VIEWPORT_UPDATE_TIME_MILLIS = 200;
+
+        private final WeakReference<Delegate> mDelegate;
+        private boolean mUpdatePending;
+
+        private Listener(Delegate delegate) {
+            mDelegate = new WeakReference<>(delegate);
+        }
+
+        @Override
+        public void onPositionChanged(int positionX, int positionY) {
+            Delegate delegate = mDelegate.get();
+            if (delegate == null || mUpdatePending) return;
+            mUpdatePending = true;
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        mUpdatePending = false;
+                        delegate.bottomImeInsetChanged();
+                    },
+                    MIN_VIEWPORT_UPDATE_TIME_MILLIS);
+        }
+    }
+
     private final Delegate mDelegate;
+    private final Listener mViewMovedListener;
     private View mContainerView;
+    private ViewPositionObserver mPositionObserver;
     private final boolean mIncludeSystemBars;
     // The amount the IME is currently imposing into the parent Window.
     private int mBottomImeInset;
@@ -137,6 +176,11 @@ public class AwDisplayCutoutController {
         mIncludeSystemBars =
                 AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS);
         registerContainerView(containerView);
+        mViewMovedListener = new Listener(mDelegate);
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_VIEW_POSITION_OBSERVER_FOR_INSETS)) {
+            mPositionObserver = new ViewPositionObserver(mContainerView);
+            mPositionObserver.addListener(mViewMovedListener);
+        }
     }
 
     /**
@@ -176,6 +220,11 @@ public class AwDisplayCutoutController {
     public void setCurrentContainerView(View containerView) {
         if (DEBUG) Log.i(TAG, "setCurrentContainerView: " + containerView);
         mContainerView = containerView;
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_VIEW_POSITION_OBSERVER_FOR_INSETS)) {
+            mPositionObserver.removeListener(mViewMovedListener);
+            mPositionObserver = new ViewPositionObserver(mContainerView);
+            mPositionObserver.addListener(mViewMovedListener);
+        }
         // Ensure that we get new insets for the new container view.
         mContainerView.requestApplyInsets();
     }
@@ -271,6 +320,11 @@ public class AwDisplayCutoutController {
         // WebView that is visible in the Window.
         int result =
                 Math.max(0, (viewRectInWindow.bottom - (windowBounds.height() - mBottomImeInset)));
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_VIEW_POSITION_OBSERVER_FOR_INSETS)) {
+            return result;
+        }
+        // If not using the new listener, we still need this workaround.
+        // TODO(crbug.com/441480125): Clean this up once we're certain the new listener works.
         if (result != mLastBottomImeInset) {
             mLastBottomImeInset = result;
             mDelegate.bottomImeInsetChanged();
@@ -297,6 +351,18 @@ public class AwDisplayCutoutController {
     public void onAttachedToWindow() {
         if (DEBUG) Log.i(TAG, "onAttachedToWindow");
         onUpdateWindowInsets();
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_VIEW_POSITION_OBSERVER_FOR_INSETS)) {
+            mPositionObserver.addListener(mViewMovedListener);
+        }
+    }
+
+    /**
+     * @see View#onDetachedFromWindow()
+     */
+    public void onDetachedFromWindow() {
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_VIEW_POSITION_OBSERVER_FOR_INSETS)) {
+            mPositionObserver.removeListener(mViewMovedListener);
+        }
     }
 
     private static void adjustInsetsForScale(Insets insets, float dipScale) {

@@ -38,12 +38,18 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 
 /** JUnit tests for AwDisplayCutoutController. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS)
+@EnableFeatures({
+    AwFeatures.WEBVIEW_REPORT_IME_INSETS,
+    AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS
+})
+// This feature is tested in AwContentsTest.
+@Features.DisableFeatures({AwFeatures.WEBVIEW_USE_VIEW_POSITION_OBSERVER_FOR_INSETS})
 public class AwDisplayCutoutControllerTest {
     private static final String TAG = "DisplayCutoutTest";
     private static final boolean DEBUG = false;

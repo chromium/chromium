@@ -40,6 +40,8 @@ import org.chromium.base.test.util.Features;
     AwFeatures.WEBVIEW_REPORT_IME_INSETS,
     AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS
 })
+// This feature is tested in AwContentsTest.
+@Features.DisableFeatures({AwFeatures.WEBVIEW_USE_VIEW_POSITION_OBSERVER_FOR_INSETS})
 public class AwInsetsTest {
     @Test
     @SmallTest

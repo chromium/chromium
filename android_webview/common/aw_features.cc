@@ -199,6 +199,11 @@ BASE_FEATURE(kWebViewUseRenderingHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
 // also enable the same behaviour as this flag.
 BASE_FEATURE(kWebViewUseStartupTasksLogic, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, observe WebView movements with a PreDrawListener and use those
+// events to re-calculate the visual viewport of the web contents.
+BASE_FEATURE(kWebViewUseViewPositionObserverForInsets,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, records histograms relating to app's cache size.
 BASE_FEATURE(kWebViewRecordAppCacheHistograms,
              base::FEATURE_DISABLED_BY_DEFAULT);
