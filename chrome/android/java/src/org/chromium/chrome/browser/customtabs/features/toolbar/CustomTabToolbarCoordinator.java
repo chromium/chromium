@@ -8,6 +8,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -17,7 +18,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
@@ -214,7 +214,7 @@ public class CustomTabToolbarCoordinator {
      */
     private void showCustomButtonsOnToolbar() {
         for (CustomButtonParams params : mIntentDataProvider.getCustomButtonsOnToolbar()) {
-            View.OnClickListener onClickListener = v -> onCustomButtonClick(params);
+            View.OnClickListener onClickListener = v -> onCustomButtonClick(v.getContext(), params);
             mToolbarManager.addCustomActionButton(
                     params.getIcon(mActivity),
                     params.getDescription(),
@@ -223,7 +223,7 @@ public class CustomTabToolbarCoordinator {
         }
     }
 
-    public void onCustomButtonClick(CustomButtonParams params) {
+    public void onCustomButtonClick(Context context, CustomButtonParams params) {
         Tab tab = mTabProvider.getTab();
         if (tab == null) return;
 
@@ -249,7 +249,8 @@ public class CustomTabToolbarCoordinator {
                     .notifyOpenInBrowser(mIntentDataProvider.getSession(), tab);
             mNavigationController.openCurrentUrlInBrowser();
         } else {
-            sendButtonPendingIntentWithUrlAndTitle(params, tab.getOriginalUrl(), tab.getTitle());
+            sendButtonPendingIntentWithUrlAndTitle(
+                    context, params, tab.getOriginalUrl(), tab.getTitle());
         }
 
         RecordUserAction.record("CustomTabsCustomActionButtonClick");
@@ -265,12 +266,13 @@ public class CustomTabToolbarCoordinator {
      * Sends the pending intent for the custom button on the toolbar with the given {@code params},
      * with the given {@code url} as data.
      *
+     * @param context Activity context to use for {@link PendingIntent}.
      * @param params The parameters for the custom button.
      * @param url The URL to attach as additional data to the {@link PendingIntent}.
      * @param title The title to attach as additional data to the {@link PendingIntent}.
      */
     private void sendButtonPendingIntentWithUrlAndTitle(
-            CustomButtonParams params, GURL url, String title) {
+            Context context, CustomButtonParams params, GURL url, String title) {
         Intent addedIntent = new Intent();
         addedIntent.setData(Uri.parse(url.getSpec()));
         addedIntent.putExtra(Intent.EXTRA_SUBJECT, title);
@@ -279,7 +281,7 @@ public class CustomTabToolbarCoordinator {
             ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
             params.getPendingIntent()
                     .send(
-                            ContextUtils.getApplicationContext(),
+                            context,
                             0,
                             addedIntent,
                             mButtonClickOnFinishedForTesting,
