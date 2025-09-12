@@ -111,10 +111,12 @@ std::unique_ptr<views::View> AccountChooserView::CreateDriveLogoView() {
           omnibox::kDriveLogoIcon, ui::kColorIcon,
           ChromeLayoutProvider::Get()->GetDistanceMetric(
               DISTANCE_TOAST_BUBBLE_ICON_SIZE))));
-  drive_logo_view->AddChildView(std::make_unique<views::Label>(
+  auto drive_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ACCOUNT_CHOOSER_DRIVE),
       views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_BODY_3_MEDIUM));
+      views::style::STYLE_BODY_3_MEDIUM);
+  drive_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
+  drive_logo_view->AddChildView(std::move(drive_label));
   return drive_logo_view;
 }
 
@@ -208,7 +210,8 @@ std::unique_ptr<views::Label> AccountChooserView::CreateTitleLabel(
     const std::vector<AccountInfo>& accounts) {
   auto title_label = std::make_unique<views::Label>(
       GetTitle(accounts), views::style::CONTEXT_DIALOG_TITLE,
-      views::style::STYLE_HEADLINE_4_BOLD);
+      views::style::STYLE_HEADLINE_4);
+  title_label->SetEnabledColor(ui::kColorSysOnSurface);
   SetLabelProperties(title_label.get());
   return title_label;
 }
@@ -217,6 +220,7 @@ std::unique_ptr<views::StyledLabel> AccountChooserView::CreateSubtitleLabel() {
   auto subtitle_label = std::make_unique<views::StyledLabel>();
 
   subtitle_label->SetDefaultTextStyle(views::style::STYLE_BODY_3);
+  subtitle_label->SetDefaultEnabledColorId(ui::kColorSysOnSurface);
   subtitle_label->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
 
   std::u16string saved_from_chrome =
