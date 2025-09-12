@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -37,12 +38,6 @@
 // functionality once blocking is fully implemented.
 namespace fingerprinting_protection_filter {
 
-GURL GetURLWithFragment(const GURL& url, std::string_view fragment) {
-  GURL::Replacements replacements;
-  replacements.SetRefStr(fragment);
-  return url.ReplaceComponents(replacements);
-}
-
 // =================================== Tests ==================================
 //
 // Note: Similar to the FPF component, these tests leverage Subresource Filter
@@ -51,14 +46,13 @@ GURL GetURLWithFragment(const GURL& url, std::string_view fragment) {
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        MainFrameActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a = GetTestUrl("/frame_with_included_script.html");
-  GURL url_b = GetCrossSiteTestUrl("/included_script.js");
+  GURL test_url =
+      GetFrameWithScriptUrl(GetTestUrl("/frame_with_included_script.html"),
+                            GetCrossSiteTestUrl("/included_script.js"));
 
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithSubstring(
       "suffix-that-does-not-match-anything"));
-  ASSERT_TRUE(NavigateToDestination(url_a));
-  // Update the source of the script to be from non-localhost.
-  UpdateIncludedScriptSource(url_b);
+  ASSERT_TRUE(NavigateToDestination(test_url));
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
@@ -68,11 +62,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithSubstring("included_script.js"));
-  // Use frame_with_no_subresources.html so the only version of
-  // "/included_script.js" navigated to is on domain cross-origin.test.
-  ASSERT_TRUE(
-      NavigateToDestination(GetTestUrl("/frame_with_no_subresources.html")));
-  UpdateIncludedScriptSource(url_b);
+  ASSERT_TRUE(NavigateToDestination(test_url));
   EXPECT_FALSE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
@@ -80,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // the next check.
   ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
   SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html");
-  ASSERT_TRUE(NavigateToDestination(url_a));
+  ASSERT_TRUE(NavigateToDestination(test_url));
 
   // The root frame document should never be filtered.
   EXPECT_TRUE(
@@ -93,11 +83,11 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        NoMainFrameActivation_Localhost) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Uses localhost without `UpdateIncludedScriptSource`.
-  GURL url_a = GetTestUrl("/frame_with_included_script.html");
+  GURL test_url = GetTestUrl("/frame_with_included_script.html");
 
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithSubstring(
       "suffix-that-does-not-match-anything"));
-  ASSERT_TRUE(NavigateToDestination(url_a));
+  ASSERT_TRUE(NavigateToDestination(test_url));
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
@@ -116,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // the next check.
   ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
   SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html");
-  ASSERT_TRUE(NavigateToDestination(url_a));
+  ASSERT_TRUE(NavigateToDestination(test_url));
 
   // The root frame document should never be filtered.
   EXPECT_TRUE(
@@ -126,11 +116,11 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        MainFrameActivation_NotActivatedSameSite) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a = GetTestUrl("/frame_with_included_script.html");
+  GURL test_url = GetTestUrl("/frame_with_included_script.html");
 
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithSubstring(
       "suffix-that-does-not-match-anything"));
-  ASSERT_TRUE(NavigateToDestination(url_a));
+  ASSERT_TRUE(NavigateToDestination(test_url));
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
@@ -140,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithSubstring("included_script.js"));
-  ASSERT_TRUE(NavigateToDestination(url_a));
+  ASSERT_TRUE(NavigateToDestination(test_url));
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
@@ -148,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // the next check.
   ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
   SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html");
-  ASSERT_TRUE(NavigateToDestination(url_a));
+  ASSERT_TRUE(NavigateToDestination(test_url));
 
   // The root frame document should never be filtered.
   EXPECT_TRUE(

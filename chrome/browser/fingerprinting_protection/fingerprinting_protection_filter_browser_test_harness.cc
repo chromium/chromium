@@ -18,6 +18,7 @@
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -59,6 +60,12 @@ GURL FingerprintingProtectionFilterBrowserTest::GetCrossSiteTestUrl(
   return embedded_test_server()->GetURL(cross_site_base, relative_url);
 }
 
+GURL FingerprintingProtectionFilterBrowserTest::GetFrameWithScriptUrl(
+    const GURL& frame_url,
+    const GURL& script_url) const {
+  return net::AppendQueryParameter(frame_url, "script_url", script_url.spec());
+}
+
 void FingerprintingProtectionFilterBrowserTest::
     NavigateSubframesToCrossOriginSite() {
   NavigateFrame(kSubframeNames[0],
@@ -68,16 +75,6 @@ void FingerprintingProtectionFilterBrowserTest::
   NavigateFrame(kSubframeNames[2],
                 GetCrossSiteTestUrl("/frame_with_included_script.html"));
 }
-void FingerprintingProtectionFilterBrowserTest::UpdateIncludedScriptSource(
-    const GURL& url) {
-  ASSERT_TRUE(content::ExecJs(web_contents()->GetPrimaryMainFrame(),
-                              (content::JsReplace(
-                                  R"(script_element = document.querySelector(
-      'script[src=\"included_script.js\"]');
-      script_element = '$1';)",
-                                  url))));
-}
-
 void FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread() {
   SubresourceFilterSharedBrowserTest::SetUpOnMainThread();
   content::SetupCrossSiteRedirector(embedded_test_server());
@@ -189,16 +186,18 @@ void FingerprintingProtectionFilterBrowserTest::ExpectFpfExceptionUkms(
 
 void FingerprintingProtectionFilterBrowserTest::
     NavigateMultiFrameSubframesAndLoad3pScripts() {
-  NavigateFrame(kSubframeNames[0],
-                GetTestUrl("/frame_with_included_script.html"));
-  UpdateIncludedScriptSource(GetCrossSiteTestUrl("/included_script.js"));
+  NavigateFrame(
+      kSubframeNames[0],
+      GetFrameWithScriptUrl(GetTestUrl("/frame_with_included_script.html"),
+                            GetCrossSiteTestUrl("/included_script.js")));
   NavigateFrame(kSubframeNames[1],
-                GetTestUrl("/frame_with_allowed_script.html"));
-  UpdateIncludedScriptSource(
-      GetCrossSiteTestUrl("/included_allowed_script.js"));
-  NavigateFrame(kSubframeNames[2],
-                GetTestUrl("/frame_with_included_script.html"));
-  UpdateIncludedScriptSource(GetCrossSiteTestUrl("/included_script.js"));
+                GetFrameWithScriptUrl(
+                    GetTestUrl("/frame_with_allowed_script.html"),
+                    GetCrossSiteTestUrl("/included_allowed_script.js")));
+  NavigateFrame(
+      kSubframeNames[2],
+      GetFrameWithScriptUrl(GetTestUrl("/frame_with_included_script.html"),
+                            GetCrossSiteTestUrl("/included_script.js")));
 }
 
 // ============= FingerprintingProtectionFilterDryRunBrowserTest ==============
