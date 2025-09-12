@@ -114,7 +114,7 @@ TEST_F(WhatsNewHandlerTest, GetServerUrl) {
   base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
 
   const GURL expected_url = GURL(base::StringPrintf(
-      "https://www.google.com/chrome/v2/whats-new/?version=%d&internal=true",
+      "https://www.google.com/chrome/whats-new/?version=%d&internal=true",
       CHROME_VERSION_MAJOR));
 
   EXPECT_CALL(callback, Run).Times(1).WillOnce([&](GURL actual_url) {

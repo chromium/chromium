@@ -12,7 +12,7 @@ class Browser;
 
 namespace whats_new {
 
-extern const char kChromeWhatsNewV2URL[];
+extern const char kChromeWhatsNewURL[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -27,15 +27,13 @@ enum class LoadEvent {
   kMaxValue = kLoadAbort,
 };
 
-// Whats New V2 API
 // Gets the server side URL for the What's New page for the current version
 // of Chrome.
-GURL GetV2ServerURL(bool is_staging = false);
+GURL GetServerURL(bool is_staging = false);
 
-// Whats New V2 API
 // Gets the server side URL for the What's New page including all
 // query parameters necessary to render the page.
-GURL GetV2ServerURLForRender(
+GURL GetServerURLForRender(
     const whats_new::WhatsNewRegistry& whats_new_registry,
     bool is_staging = false);
 

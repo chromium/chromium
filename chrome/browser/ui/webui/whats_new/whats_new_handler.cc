@@ -198,8 +198,7 @@ void WhatsNewHandler::GetServerUrl(bool is_staging,
                                    GetServerUrlCallback callback) {
   GURL result = GURL("");
   if (!whats_new::IsRemoteContentDisabled()) {
-    result =
-        whats_new::GetV2ServerURLForRender(*whats_new_registry_, is_staging);
+    result = whats_new::GetServerURLForRender(*whats_new_registry_, is_staging);
   }
   std::move(callback).Run(result);
 
