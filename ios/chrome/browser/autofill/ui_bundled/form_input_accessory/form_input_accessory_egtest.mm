@@ -939,12 +939,10 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
   [self loadAddressPage];
 
-#if TARGET_OS_SIMULATOR
   // Synchronization off because the tap on element 'kFormZip' completes only
   // after the IPH has already disappeared. This leads to a subsequent error
   // when trying to verify that the IPH appeared.
   ScopedSynchronizationDisabler disabler;
-#endif
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormZip)];
