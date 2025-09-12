@@ -918,10 +918,13 @@ class CrossbenchTest(object):
     return default_args
 
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
+    # Note: benchmark_args must be at the end of the list, as it may
+    # contain '--' followed by arguments that are passed directly to Chrome.
+    # Such arguments must be at the end of crossbench command line to work.
     return (['vpython3', '-Xutf8'] + [self.options.executable] + [benchmark] +
             ['--env-validation=throw'] + [self.OUTDIR % working_dir] +
-            [self.browser] + benchmark_args + self.driver_path_arg +
-            self.network + self.env + self._get_default_args())
+            [self.browser] + self.driver_path_arg + self.network + self.env +
+            self._get_default_args() + benchmark_args)
 
   def execute_benchmark(self,
                         benchmark,

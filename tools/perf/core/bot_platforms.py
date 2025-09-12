@@ -416,6 +416,19 @@ def _speedometer_main_crossbench(estimated_runtime=60, arguments=()):
                           arguments=arguments)
 
 
+def _speedometer3_a11y_crossbench(estimated_runtime=60, arguments=()):
+  """Latest Speedometer 3 with accessibility flag enabled."""
+  # TODO(crbug.com/444653101): This configuration runs the same speedometer_3
+  # benchmark as _speedometer3_crossbench, but since the benchmark name is used
+  # as the dict key inside the shard maps, we can't pass 'speedometer_3' to
+  # CrossbenchConfig constructor. We work around this by using alias 'sp3'.
+  arguments += ('--', '--force-renderer-accessibility')
+  return CrossbenchConfig('speedometer3.a11y.crossbench',
+                          'sp3',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
 # MotionMark:
 def _motionmark1_2_crossbench(estimated_runtime=360, arguments=()):
   return CrossbenchConfig('motionmark1.2.crossbench',
@@ -976,7 +989,8 @@ WIN_11 = PerfPlatform('win-11-perf',
                       20,
                       'win',
                       executables=_WIN_11_EXECUTABLE_CONFIGS,
-                      crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+                      crossbench=_CROSSBENCH_BENCHMARKS_ALL
+                      | {_speedometer3_a11y_crossbench()})
 WIN_11_PGO = PerfPlatform('win-11-perf-pgo',
                           'Windows Dell PowerEdge R350',
                           _WIN_11_BENCHMARK_CONFIGS,
