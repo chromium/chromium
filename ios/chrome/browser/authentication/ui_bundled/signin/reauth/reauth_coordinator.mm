@@ -97,15 +97,15 @@
 }
 
 - (void)stop {
+  [super stop];
   if (_identityInteractionManager) {
     // The operation hasn't finished yet - cancel.
     [_identityInteractionManager cancelAuthActivityAnimated:NO];
     _identityInteractionManager = nil;
-    [self.delegate reauthFinishedWithResult:ReauthResult::kInterrupted];
     [self recordReauthFlowEvent:signin_metrics::ReauthFlowEvent::kInterrupted];
+    // Do not use self after this line, the owner might delete this coordinator.
+    [self.delegate reauthFinishedWithResult:ReauthResult::kInterrupted];
   }
-
-  [super stop];
 }
 
 #pragma mark - Private
@@ -134,6 +134,7 @@
     [self recordReauthFlowEvent:signin_metrics::ReauthFlowEvent::kCancelled];
   }
 
+  // Do not use self after this line, the owner might delete this coordinator.
   [self.delegate reauthFinishedWithResult:result];
 }
 
