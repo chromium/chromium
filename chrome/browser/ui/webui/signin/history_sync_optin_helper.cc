@@ -96,7 +96,6 @@ void SyncServiceStartupStateObserver::OnSyncStartupStateChanged(
     case SyncStartupTracker::ServiceStartupState::kPending:
       NOTREACHED();
     case SyncStartupTracker::ServiceStartupState::kTimeout:
-      DVLOG(1) << "Waiting for Sync Service to start timed out.";
       [[fallthrough]];
     case SyncStartupTracker::ServiceStartupState::kError:
     case SyncStartupTracker::ServiceStartupState::kComplete:
@@ -210,7 +209,7 @@ void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
 
 void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
   if (GetSyncService(profile_)) {
-    delegate_->ShowHistorySyncOptinScreen(profile_);
+    delegate_->ShowHistorySyncOptinScreen(profile());
     return;
   }
   // TODO(crbug.com/435191375): If the purpose of the flow is to enable

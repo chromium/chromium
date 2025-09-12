@@ -110,6 +110,8 @@ source_set("signin") {
   if (!is_chromeos) {
     sources += [
       "history_sync_optin_helper.h",
+      "history_sync_optin_service.h",
+      "history_sync_optin_service_factory.h",
       "signin_email_confirmation_dialog.h",
       "signin_email_confirmation_ui.h",
       "signin_error_handler.h",
@@ -183,6 +185,8 @@ source_set("signin_impl") {
   if (!is_chromeos) {
     sources += [
       "history_sync_optin_helper.cc",
+      "history_sync_optin_service.cc",
+      "history_sync_optin_service_factory.cc",
       "signin_email_confirmation_dialog.cc",
       "signin_email_confirmation_ui.cc",
       "signin_error_handler.cc",
@@ -288,8 +292,8 @@ source_set("login_impl") {
       "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
       "//chrome/browser/password_manager/factories",
       "//chrome/browser/profiles",
-      "//chrome/browser/themes",
       "//chrome/browser/signin:signin_promo",
+      "//chrome/browser/themes",
       "//components/password_manager/core/browser",
       "//components/signin/core/browser",
     ]
@@ -468,6 +472,7 @@ source_set("unit_tests") {
 
   if (!is_chromeos) {
     sources += [
+      "history_sync_optin_service_unittest.cc",
       "managed_user_profile_notice_handler_unittest.cc",
       "profile_picker_handler_unittest.cc",
       "turn_sync_on_helper_unittest.cc",
@@ -475,6 +480,7 @@ source_set("unit_tests") {
     deps += [
       ":signin_ui_error",
       "//chrome/browser/search_engines",
+      "//chrome/browser/sync",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/webui/signin:profile",
       "//components/unified_consent",

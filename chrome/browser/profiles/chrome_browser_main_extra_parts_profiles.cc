@@ -234,6 +234,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -1061,6 +1062,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   PreloadingModelKeyedServiceFactory::GetInstance();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  HistorySyncOptinServiceFactory::GetInstance();
   ProfileManagementDisclaimerServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
