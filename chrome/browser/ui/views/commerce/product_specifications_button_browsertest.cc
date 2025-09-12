@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -133,7 +134,15 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ProductSpecificationsButtonOrder) {
-  auto* tab_strip_region_view = browser_view()->tab_strip_region_view();
+  if (tabs::AreVerticalTabsEnabled()) {
+    // TODO(crbug.com/444520866): The order of buttons will be different in
+    // verticals tabs so this test will need to be rewritten when we get to that
+    // point.
+    GTEST_SKIP();
+  }
+
+  auto* tab_strip_region_view =
+      views::AsViewClass<TabStripRegionView>(browser_view()->tab_strip_view());
 
   if (features::HasTabSearchToolbarButton()) {
     TabStripActionContainer* action_container =
