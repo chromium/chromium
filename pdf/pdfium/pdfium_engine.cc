@@ -1825,7 +1825,7 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
   }
 
   SelectionChangeInvalidator selection_invalidator(this);
-  return ExtendSelection(point_data.page_index, point_data.char_index);
+  return ExtendSelection(point_data);
 }
 
 ui::mojom::CursorType PDFiumEngine::DetermineCursorType(PDFiumPage::Area area,
@@ -1881,9 +1881,12 @@ void PDFiumEngine::OnMouseEnter(const blink::WebMouseEvent& event) {
   }
 }
 
-bool PDFiumEngine::ExtendSelection(int page_index, int char_index) {
-  DCHECK_GE(page_index, 0);
-  DCHECK_GE(char_index, 0);
+bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
+  DCHECK_GE(point_data.page_index, 0);
+  DCHECK_GE(point_data.char_index, 0);
+
+  const int page_index = point_data.page_index;
+  const int char_index = point_data.char_index;
 
   // Check if the user has decreased their selection area and we need to remove
   // pages from `selection_`.
@@ -4376,7 +4379,7 @@ void PDFiumEngine::MoveRangeSelectionExtent(const gfx::Point& extent) {
 
   SelectionChangeInvalidator selection_invalidator(this);
   if (range_selection_direction_ == RangeSelectionDirection::Right) {
-    ExtendSelection(point_data.page_index, point_data.char_index);
+    ExtendSelection(point_data);
     return;
   }
 
@@ -4389,8 +4392,7 @@ void PDFiumEngine::MoveRangeSelectionExtent(const gfx::Point& extent) {
 
   // This should always succeeed because the range selection base should have
   // already been selected.
-  point_data = GetPointData(gfx::PointF(range_selection_base_));
-  ExtendSelection(point_data.page_index, point_data.char_index);
+  ExtendSelection(GetPointData(gfx::PointF(range_selection_base_)));
 }
 
 void PDFiumEngine::SetSelectionBounds(const gfx::Point& base,
@@ -4913,7 +4915,7 @@ bool PDFiumEngine::ExtendSelectionByPoint(const gfx::PointF& point) {
   }
 
   SelectionChangeInvalidator selection_invalidator(this);
-  return ExtendSelection(point_data.page_index, point_data.char_index);
+  return ExtendSelection(point_data);
 }
 
 gfx::Transform PDFiumEngine::GetCanonicalToPdfTransform(int page_index) {

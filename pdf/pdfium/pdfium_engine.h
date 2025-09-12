@@ -819,7 +819,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   ui::mojom::CursorType DetermineCursorType(PDFiumPage::Area area,
                                             int form_type) const;
 
-  bool ExtendSelection(int page_index, int char_index);
+  bool ExtendSelection(const PointData& point_data);
 
   std::vector<uint8_t> PrintPagesAsRasterPdf(
       base::span<const int> page_indices,
