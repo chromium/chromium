@@ -29,6 +29,8 @@ import android.os.Bundle;
 import android.view.WindowInsets;
 import android.view.WindowMetrics;
 
+import androidx.core.view.WindowInsetsCompat;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +51,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.Arrays;
 
@@ -629,16 +632,20 @@ public class ChromeAndroidTaskImplUnitTest {
                         /* taskId= */ 1);
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockActivityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
         var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
         var mockWindowManager =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
 
-        // Mock isInDesktopWindowing() to return true.
-        var mockWindowMetrics = mock(WindowMetrics.class);
-        var mockWindowInsets = mock(WindowInsets.class);
-        when(mockWindowManager.getCurrentWindowMetrics()).thenReturn(mockWindowMetrics);
-        when(mockWindowMetrics.getWindowInsets()).thenReturn(mockWindowInsets);
-        when(mockWindowInsets.isVisible(WindowInsets.Type.captionBar())).thenReturn(true);
+        // Mock isInDesktopWindowingMode() to return true.
+        var mockWindowInsetsCompat = mock(WindowInsetsCompat.class);
+        var mockInsetObserver = mock(InsetObserver.class);
+        when(mockActivityWindowAndroid.getInsetObserver()).thenReturn(mockInsetObserver);
+        when(mockInsetObserver.getLastRawWindowInsets()).thenReturn(mockWindowInsetsCompat);
+        when(mockWindowInsetsCompat.isVisible(WindowInsets.Type.captionBar())).thenReturn(true);
 
         // Mock getMaximizedBounds().
         var mockMaxWindowMetrics = mock(WindowMetrics.class);
@@ -680,18 +687,25 @@ public class ChromeAndroidTaskImplUnitTest {
                         /* taskId= */ 1);
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockActivityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
         var mockWindowManager =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
 
-        // Mock isInDesktopWindowing() to return true.
+        // Mock isInDesktopWindowingMode() to return true.
         var mockWindowMetrics = mock(WindowMetrics.class);
-        var mockWindowInsets = mock(WindowInsets.class);
-        when(mockWindowManager.getCurrentWindowMetrics()).thenReturn(mockWindowMetrics);
-        when(mockWindowMetrics.getWindowInsets()).thenReturn(mockWindowInsets);
+        var mockWindowInsets = mock(WindowInsetsCompat.class);
+        var mockInsetObserver = mock(InsetObserver.class);
+        when(mockActivityWindowAndroid.getInsetObserver()).thenReturn(mockInsetObserver);
+        when(mockInsetObserver.getLastRawWindowInsets()).thenReturn(mockWindowInsets);
         when(mockWindowInsets.isVisible(WindowInsets.Type.captionBar())).thenReturn(true);
+
 
         // Mock getBounds() to return non-maximized bounds.
         var currentBounds = new Rect(0, 0, 800, 600);
+        when(mockWindowManager.getCurrentWindowMetrics()).thenReturn(mockWindowMetrics);
         when(mockWindowMetrics.getBounds()).thenReturn(currentBounds);
 
         // Mock getMaximizedBounds().
