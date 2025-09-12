@@ -66,6 +66,7 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(kUseCRPSIForLowLatencyOnWindows);
 
 class CanvasResource;
 class CanvasResourceSharedImage;
+class CanvasResourceProviderBitmap;
 class CanvasResourceProviderSharedImage;
 class ExternalCanvasResource;
 class MemoryManagedPaintCanvas;
@@ -133,7 +134,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Used to determine if the provider is going to be initialized or not.
   enum class ShouldInitialize { kNo, kCallClear };
 
-  static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
+  static std::unique_ptr<CanvasResourceProviderBitmap> CreateBitmapProvider(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -527,6 +528,9 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
       override {
     draw_callback(Canvas());
   }
+  scoped_refptr<StaticBitmapImage> Snapshot(
+      FlushReason reason,
+      ImageOrientation = ImageOrientationEnum::kDefault) override;
 
  private:
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
@@ -534,9 +538,6 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
     // not supported by this class.
     return nullptr;
   }
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      FlushReason reason,
-      ImageOrientation orientation) override;
   sk_sp<SkSurface> CreateSkSurface() const override;
 };
 

@@ -207,7 +207,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   gfx::Size scaled_image_size =
       gfx::ScaleToFlooredSize(image_size, device_scale_factor);
   // TODO(fserb): are we sure this should be software?
-  std::unique_ptr<CanvasResourceProvider> resource_provider(
+  std::unique_ptr<CanvasResourceProviderBitmap> resource_provider(
       CanvasResourceProvider::CreateBitmapProvider(
           scaled_image_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB(),

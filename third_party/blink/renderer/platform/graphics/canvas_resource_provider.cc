@@ -1223,7 +1223,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
   base::WeakPtrFactory<CanvasResourceProviderSwapChain> weak_ptr_factory_{this};
 };
 
-std::unique_ptr<CanvasResourceProvider>
+std::unique_ptr<CanvasResourceProviderBitmap>
 CanvasResourceProvider::CreateBitmapProvider(gfx::Size size,
                                              viz::SharedImageFormat format,
                                              SkAlphaType alpha_type,
