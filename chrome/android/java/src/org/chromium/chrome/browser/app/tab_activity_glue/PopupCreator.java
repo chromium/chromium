@@ -23,7 +23,6 @@ import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -85,8 +84,7 @@ public class PopupCreator {
             return sArePopupsEnabledForTesting;
         }
 
-        AconfigFlaggedApiDelegate delegate =
-                ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         if (delegate == null) {
             return false;
         }
@@ -224,8 +222,7 @@ public class PopupCreator {
                         + ", target bounds = "
                         + targetWindowBoundsPx);
 
-        final AconfigFlaggedApiDelegate delegate =
-                ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         if (delegate == null) {
             Log.w(TAG, "adjustWindowBounds: AconfigFlaggedApiDelegate is null -- bailing out");
             return;

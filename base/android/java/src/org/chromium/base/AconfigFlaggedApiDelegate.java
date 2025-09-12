@@ -21,6 +21,19 @@ import java.util.concurrent.Executor;
 @NullMarked
 public interface AconfigFlaggedApiDelegate {
     /**
+     * Prefer to use this to get a instance instead of calling ServiceLoaderUtil. If possible, avoid
+     * caching the return value in member or global variables as it allows more compile time
+     * optimizations.
+     */
+    static @Nullable AconfigFlaggedApiDelegate getInstance() {
+        return ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+    }
+
+    static void setInstanceForTesting(AconfigFlaggedApiDelegate testInstance) {
+        ServiceLoaderUtil.setInstanceForTesting(AconfigFlaggedApiDelegate.class, testInstance);
+    }
+
+    /**
      * Calls the {@link android.app.ActivityManager#isTaskMoveAllowedOnDisplay} method if supported,
      * otherwise returns false.
      *

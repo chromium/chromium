@@ -5324,6 +5324,7 @@ if (is_android) {
   }
 
   android_library("flagged_apis_java") {
+    deps = [ ":service_loader_java" ]
     sources =
         [ "android/java/src/org/chromium/base/AconfigFlaggedApiDelegate.java" ]
   }

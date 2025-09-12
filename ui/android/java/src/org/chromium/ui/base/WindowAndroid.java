@@ -48,7 +48,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.lifetime.Destroyable;
@@ -215,8 +214,6 @@ public class WindowAndroid
 
     private boolean mIsTopResumedActivity;
     private final boolean mActivityTopResumedSupported;
-
-    private @Nullable AconfigFlaggedApiDelegate mAconfigFlaggedApiDelegate;
 
     private @Nullable WindowInsetObserver mWindowInsetObserver;
     private @Nullable Rect mLastWindowBounds;
@@ -1382,12 +1379,10 @@ public class WindowAndroid
     private boolean setHasKeyboardCapture(boolean hasCapture) {
         Window window = getWindow();
         if (window == null) return false;
-        if (mAconfigFlaggedApiDelegate == null) {
-            mAconfigFlaggedApiDelegate =
-                    ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
-            if (mAconfigFlaggedApiDelegate == null) return false;
-        }
-        return mAconfigFlaggedApiDelegate.setKeyboardCaptureEnabled(window, hasCapture);
+        AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
+                AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate == null) return false;
+        return aconfigFlaggedApiDelegate.setKeyboardCaptureEnabled(window, hasCapture);
     }
 
     @CalledByNative

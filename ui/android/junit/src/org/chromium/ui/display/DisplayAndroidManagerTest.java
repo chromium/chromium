@@ -34,7 +34,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -67,8 +66,7 @@ public class DisplayAndroidManagerTest {
 
         mBounds.put(Display.DEFAULT_DISPLAY, new RectF(0, 0, 1920, 1080));
 
-        ServiceLoaderUtil.setInstanceForTesting(
-                AconfigFlaggedApiDelegate.class, mAconfigFlaggedApiDelegate);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(mAconfigFlaggedApiDelegate);
         doReturn(true).when(mAconfigFlaggedApiDelegate).isDisplayTopologyAvailable(mDisplayManager);
 
         doReturn(mBounds.clone())

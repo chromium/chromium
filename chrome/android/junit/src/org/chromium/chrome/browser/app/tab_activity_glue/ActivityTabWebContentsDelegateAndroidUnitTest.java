@@ -36,7 +36,6 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -348,8 +347,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mTabWebContentsDelegateAndroid.setIsPopup(true);
         final AppTask mockAppTask = mock(AppTask.class);
         AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
-        ServiceLoaderUtil.setInstanceForTesting(
-                AconfigFlaggedApiDelegate.class, mFlaggedApiDelegate);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
 
         mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
 
@@ -362,8 +360,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mTabWebContentsDelegateAndroid.setIsPopup(true);
         final AppTask mockAppTask = mock(AppTask.class);
         AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
-        ServiceLoaderUtil.setInstanceForTesting(
-                AconfigFlaggedApiDelegate.class, mFlaggedApiDelegate);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
 
         mTabWebContentsDelegateAndroid.setContentsBounds(
                 mWebContents, new Rect(-100, -100, 2000, 2000));
@@ -382,8 +379,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mTabWebContentsDelegateAndroid.setIsPopup(true);
         final AppTask mockAppTask = mock(AppTask.class);
         AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
-        ServiceLoaderUtil.setInstanceForTesting(
-                AconfigFlaggedApiDelegate.class, mFlaggedApiDelegate);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
 
         mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
 
@@ -396,7 +392,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mTabWebContentsDelegateAndroid.setIsPopup(true);
         final AppTask mockAppTask = mock(AppTask.class);
         AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
-        ServiceLoaderUtil.setInstanceForTesting(AconfigFlaggedApiDelegate.class, null);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
 
         mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
         // No assertions -- just verifying that there is no NPE thrown.
@@ -408,8 +404,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mTabWebContentsDelegateAndroid.setIsPopup(false);
         final AppTask mockAppTask = mock(AppTask.class);
         AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
-        ServiceLoaderUtil.setInstanceForTesting(
-                AconfigFlaggedApiDelegate.class, mFlaggedApiDelegate);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
 
         mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
 

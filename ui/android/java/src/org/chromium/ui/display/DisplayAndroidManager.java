@@ -28,7 +28,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -87,7 +86,7 @@ public class DisplayAndroidManager {
     class DisplayTopologyListenerBackend
             implements AconfigFlaggedApiDelegate.DisplayTopologyListener {
         public void startListening() {
-            assumeNonNull(mAconfigFlaggedApiDelegate)
+            assumeNonNull(AconfigFlaggedApiDelegate.getInstance())
                     .registerTopologyListener(
                             getDisplayManager(), getContext().getMainExecutor(), this);
         }
@@ -117,8 +116,6 @@ public class DisplayAndroidManager {
     private final HashSet<Integer> mNullDisplayIds = new HashSet<>();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    private final @Nullable AconfigFlaggedApiDelegate mAconfigFlaggedApiDelegate =
-            ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
     @VisibleForTesting @Nullable DisplayTopologyListenerBackend mDisplayTopologyListenerBackend;
     private @Nullable SparseArray<RectF> mDisplaysAbsoluteCoordinates;
 
@@ -200,7 +197,7 @@ public class DisplayAndroidManager {
         if (isWindowManagementEnabled()) {
             mDisplaysAbsoluteCoordinates =
                     assumeNonNull(
-                            assumeNonNull(mAconfigFlaggedApiDelegate)
+                            assumeNonNull(AconfigFlaggedApiDelegate.getInstance())
                                     .getAbsoluteBounds(getDisplayManager()));
             for (int i = 0; i < mDisplaysAbsoluteCoordinates.size(); ++i) {
                 int sdkDisplayId = mDisplaysAbsoluteCoordinates.keyAt(i);
@@ -227,8 +224,9 @@ public class DisplayAndroidManager {
 
     /* package */ boolean isWindowManagementEnabled() {
         return UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()
-                && mAconfigFlaggedApiDelegate != null
-                && mAconfigFlaggedApiDelegate.isDisplayTopologyAvailable(getDisplayManager());
+                && AconfigFlaggedApiDelegate.getInstance() != null
+                && AconfigFlaggedApiDelegate.getInstance()
+                        .isDisplayTopologyAvailable(getDisplayManager());
     }
 
     /* package */ DisplayAndroid getDisplayAndroid(Display display) {

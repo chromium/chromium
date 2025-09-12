@@ -36,7 +36,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -93,8 +92,7 @@ public class PopupCreatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testPopupsDisabledWhenDelegateReturnsFalse() {
-        ServiceLoaderUtil.setInstanceForTesting(
-                AconfigFlaggedApiDelegate.class, mFlaggedApiDelegate);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
         doReturn(false)
                 .when(mFlaggedApiDelegate)
                 .isTaskMoveAllowedOnDisplay(any(ActivityManager.class), eq(DISPLAY_ID));
@@ -108,18 +106,16 @@ public class PopupCreatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testPopupsDisabledWhenFlaggedApiDelegateNull() {
-        ServiceLoaderUtil.setInstanceForTesting(AconfigFlaggedApiDelegate.class, null);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
         Assert.assertFalse(
-                "Popups should not be enabled if the delegate returned by ServiceLoaderUtil is"
-                        + " null",
+                "Popups should not be enabled if the delegate is null",
                 PopupCreator.arePopupsEnabled(mDisplay));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testPopupsEnabledWhenDelegateReturnsTrue() {
-        ServiceLoaderUtil.setInstanceForTesting(
-                AconfigFlaggedApiDelegate.class, mFlaggedApiDelegate);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
         doReturn(true)
                 .when(mFlaggedApiDelegate)
                 .isTaskMoveAllowedOnDisplay(any(ActivityManager.class), eq(DISPLAY_ID));
