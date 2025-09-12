@@ -1134,6 +1134,7 @@ if (use_blink) {
       "//components/ukm:test_support",
       "//components/ukm/content",
       "//components/url_rewrite/browser",
+      "//components/wallet/content/renderer:browser_tests",
       "//content/public/browser",
       "//content/shell:content_shell_lib",
       "//content/test:browsertest_support",
