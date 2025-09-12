@@ -66,7 +66,6 @@ namespace {
 constinit thread_local bool off_sequence_binding_allowed = false;
 
 BASE_FEATURE(kMojoChannelAssociatedSendUsesRunOrPostTask,
-             "MojoChannelAssociatedSendUsesRunOrPostTask",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Used to track some internal Channel state in pursuit of message leaks.
