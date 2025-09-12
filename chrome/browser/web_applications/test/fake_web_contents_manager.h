@@ -98,9 +98,16 @@ class FakeWebContentsManager : public WebContentsManager {
   struct FakeIconState {
     FakeIconState();
     ~FakeIconState();
+    FakeIconState(FakeIconState&&);
+    FakeIconState& operator=(FakeIconState&&);
 
     int http_status_code = 200;
     std::vector<SkBitmap> bitmaps;
+
+    // Runs whenever `WebAppIconDownloader::Start()` is called, can be used to
+    // mimic things like system shutdown happening asynchronously.
+    base::OnceClosure on_icon_fetched;
+
     // This can be used to test the early-exit normally caused by the
     // WebContents closing or navigating away.
     bool trigger_primary_page_changed_if_fetched = false;
@@ -117,7 +124,7 @@ class FakeWebContentsManager : public WebContentsManager {
 
   // Set the behavior for calls to `GetIcons` from wrappers returned by this
   // fake class.
-  void SetIconState(const GURL& icon_url, const FakeIconState& icon_state);
+  void SetIconState(const GURL& icon_url, FakeIconState icon_state);
   FakeIconState& GetOrCreateIconState(const GURL& icon_url);
   void DeleteIconState(const GURL& icon_url);
 

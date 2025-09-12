@@ -152,7 +152,7 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
     FakeWebContentsManager::FakeIconState icon_state;
     icon_state.bitmaps.emplace_back(CreateSquareIcon(256, SK_ColorBLUE));
     fake_web_contents_manager.SetIconState(GURL("https://example.com/icon.png"),
-                                           icon_state);
+                                           std::move(icon_state));
   }
 
   void SimulateRestart(FakeWebAppProvider& provider) {

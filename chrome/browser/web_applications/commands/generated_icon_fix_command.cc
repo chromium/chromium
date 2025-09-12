@@ -106,7 +106,6 @@ void GeneratedIconFixCommand::OnIconsDownloaded(
     return;
   }
 
-  // Note: Empty params are noops, WriteData() never deletes icons.
   lock_->icon_manager().WriteData(
       app_id_, install_info_->icon_bitmaps, install_info_->trusted_icon_bitmaps,
       /*shortcuts_menu_icons=*/{},

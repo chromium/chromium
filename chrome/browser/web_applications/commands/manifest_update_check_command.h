@@ -160,6 +160,7 @@ class ManifestUpdateCheckCommand
   std::unique_ptr<WebAppInstallInfo> new_install_info_;
   blink::mojom::ManifestPtr opt_manifest_;
   IconBitmaps existing_app_icon_bitmaps_;
+  IconBitmaps existing_app_icon_trusted_bitmaps_;
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
   ManifestDataChanges manifest_data_changes_;
 

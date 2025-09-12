@@ -18,13 +18,16 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
 
 namespace {
-using Param = std::tuple<bool /*wait_8_days*/, bool /*sync_broken_icons*/>;
-}
+using Param = std::tuple<bool /*wait_8_days*/,
+                         bool /*sync_broken_icons*/,
+                         bool /*trusted_icons_enabled*/>;
+}  // namespace
 
 class SingleClientWebAppsSyncGeneratedIconFixSyncTest
     : public WebAppsSyncTestBase,
@@ -35,16 +38,26 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
         std::get<0>(param.param) ? "Wait8Days" : "NoWait",
         "_",
         std::get<1>(param.param) ? "SyncBrokenIcons" : "SyncNormalIcons",
+        "_",
+        std::get<2>(param.param) ? "TrustedIconsEnabled"
+                                 : "TrustedIconsDisabled",
     });
   }
 
   SingleClientWebAppsSyncGeneratedIconFixSyncTest()
-      : WebAppsSyncTestBase(SINGLE_CLIENT) {}
+      : WebAppsSyncTestBase(SINGLE_CLIENT) {
+    if (trusted_icons_enabled()) {
+      feature_list_.InitAndEnableFeature(features::kWebAppUsePrimaryIcon);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kWebAppUsePrimaryIcon);
+    }
+  }
 
   ~SingleClientWebAppsSyncGeneratedIconFixSyncTest() override = default;
 
   bool wait_8_days() const { return std::get<0>(GetParam()); }
   bool sync_broken_icons() const { return std::get<1>(GetParam()); }
+  bool trusted_icons_enabled() const { return std::get<2>(GetParam()); }
 
   WebAppProvider& provider(int index) {
     return *WebAppProvider::GetForTest(GetProfile(index));
@@ -75,6 +88,7 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
  private:
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   net::test_server::EmbeddedTestServerHandle embedded_test_server_handle_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
@@ -91,14 +105,14 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
   // Insert web app into sync profile.
   // Fields copied from chrome/test/data/web_apps/basic.json.
   GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   sync_pb::EntitySpecifics specifics;
   sync_pb::WebAppSpecifics& web_app_specifics = *specifics.mutable_web_app();
   web_app_specifics.set_start_url(start_url.spec());
   web_app_specifics.set_user_display_mode_default(
       sync_pb::WebAppSpecifics::STANDALONE);
   web_app_specifics.set_name("Basic web app");
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   GetFakeServer()->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
           /*non_unique_name=*/app_id,
@@ -108,10 +122,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
   // Await sync install.
   EXPECT_EQ(install_observer.Wait(), app_id);
 
-  // Icons should be generated if icon downloading was disabled.
+  // Icons should be generated always now that sync follows the fallback
+  // installation path once the trusted icons architecture lands.
   EXPECT_EQ(
       provider(0).registrar_unsafe().GetAppById(app_id)->is_generated_icon(),
-      sync_broken_icons());
+      trusted_icons_enabled() || sync_broken_icons());
 
   // Ensure installed locally to enable manifest updating.
   {
@@ -137,9 +152,21 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
                                      ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
   std::optional<ManifestUpdateResult> update_result = update_future.Get<1>();
 
-  // Check icons fixed in time window.
-  bool expect_fix_applied = !wait_8_days() && sync_broken_icons();
-  bool expect_generated_icons = !expect_fix_applied && sync_broken_icons();
+  // Check icons fixed in time window, provided trusted icons architecture is
+  // not enabled. With trusted icons enabled, sync installs always install from
+  // fallback and have generated icons, so the fix is always applied as part of
+  // the manifest update process.
+  bool expect_fix_applied =
+      (trusted_icons_enabled() || (!wait_8_days() && sync_broken_icons()));
+
+  // The only time generated icons are still expected are:
+  // 1. The fix is not applied (like if it's more than 8 days which is the
+  // threshold for the GeneratedIconFixManager).
+  // 2. If there is a generated icon in the first case, which can either be from
+  // the trusted icon infrastructure installing from empty icons in this case,
+  // or if broken icons were synced.
+  bool expect_generated_icons =
+      wait_8_days() && (trusted_icons_enabled() || sync_broken_icons());
   EXPECT_EQ(update_result, expect_fix_applied
                                ? ManifestUpdateResult::kAppUpdated
                                : ManifestUpdateResult::kAppUpToDate);
@@ -152,8 +179,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SingleClientWebAppsSyncGeneratedIconFixSyncTest,
     testing::Combine(
-        /*wait_8_days=*/testing::Values(true, false),
-        /*sync_broken_icons=*/testing::Values(true, false)),
+        /*wait_8_days=*/testing::Bool(),
+        /*sync_broken_icons=*/testing::Bool(),
+        /*trusted_icons_enabled=*/testing::Bool()),
     SingleClientWebAppsSyncGeneratedIconFixSyncTest::ParamToString);
 
 }  // namespace web_app

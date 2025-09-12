@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -62,9 +64,12 @@ class DisplayModeChangeWaiter : public WebAppRegistrarObserver {
 
 }  // namespace
 
-class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
+class TwoClientWebAppsSyncTest : public base::test::WithFeatureOverride,
+                                 public WebAppsSyncTestBase {
  public:
-  TwoClientWebAppsSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {}
+  TwoClientWebAppsSyncTest()
+      : base::test::WithFeatureOverride(features::kWebAppUsePrimaryIcon),
+        WebAppsSyncTestBase(TWO_CLIENT) {}
 
   TwoClientWebAppsSyncTest(const TwoClientWebAppsSyncTest&) = delete;
   TwoClientWebAppsSyncTest& operator=(const TwoClientWebAppsSyncTest&) = delete;
@@ -114,7 +119,7 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
       override_registration_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Basic) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
 
@@ -136,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Minimal) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Minimal) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
 
@@ -151,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Minimal) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, ThemeColor) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, ThemeColor) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
 
@@ -175,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, ThemeColor) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
 
@@ -204,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
 #else
 #define MAYBE_AppFieldsChangeDoesNotSync AppFieldsChangeDoesNotSync
 #endif
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest,
                        MAYBE_AppFieldsChangeDoesNotSync) {
   const WebAppRegistrar& registrar0 = GetRegistrar(GetProfile(0));
   const WebAppRegistrar& registrar1 = GetRegistrar(GetProfile(1));
@@ -270,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest,
 
 // Tests that we don't crash when syncing an icon info with no size.
 // Context: https://crbug.com/1058283
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* sourceProfile = GetProfile(0);
@@ -322,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
 
 // Tests that we don't use the manifest start_url if it differs from what came
 // through sync.
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* source_profile = GetProfile(0);
@@ -350,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
 // Pages without a manifest are usually not the correct page to draw information
 // from e.g. login redirects or loading pages.
 // Context: https://crbug.com/1078286
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* source_profile = GetProfile(0);
@@ -374,8 +379,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
 }
 
 // Negative test of SyncUsingNameFallback above. Don't use the app name fallback
-// if there's a name provided by the manifest during sync.
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
+// if there's a name provided by the manifest during sync, except for the
+// trusted icons infrastructure.
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* source_profile = GetProfile(0);
@@ -394,11 +400,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
   // Wait for app to sync across.
   webapps::AppId synced_app_id = dest_install_observer.Wait();
   EXPECT_EQ(synced_app_id, app_id);
-  EXPECT_EQ(GetRegistrar(dest_profile).GetAppShortName(app_id),
-            "Basic web app");
+
+  // Post trusted icons infrastructure launch, sync installs always use fallback
+  // information.
+  std::string app_name = GetParam() ? "Incorrect App Name" : "Basic web app";
+  EXPECT_EQ(GetRegistrar(dest_profile).GetAppShortName(app_id), app_name);
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* source_profile = GetProfile(0);
@@ -452,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
 // TODO(crbug.com/352333561): Fix test once user display mode stops syncing.
 // On non ChromeOS platforms, synced apps will always return kBrowser if install
 // state is anything except `INSTALLED_WITH_OS_INTEGRATION`.
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
 
@@ -492,5 +501,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
             mojom::UserDisplayMode::kBrowser);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(TwoClientWebAppsSyncTest);
 
 }  // namespace web_app

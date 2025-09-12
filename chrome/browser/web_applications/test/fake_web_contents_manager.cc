@@ -153,6 +153,11 @@ class FakeWebContentsManager::FakeWebAppIconDownloader
       // too.
       CHECK_LE(100, icon.http_status_code);
       CHECK_GT(600, icon.http_status_code);
+
+      if (icon.on_icon_fetched) {
+        std::move(icon.on_icon_fetched).Run();
+      }
+
       if (icon.trigger_primary_page_changed_if_fetched) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
@@ -361,6 +366,9 @@ FakeWebContentsManager::FakePageState::operator=(FakePageState&&) = default;
 
 FakeWebContentsManager::FakeIconState::FakeIconState() = default;
 FakeWebContentsManager::FakeIconState::~FakeIconState() = default;
+FakeWebContentsManager::FakeIconState::FakeIconState(FakeIconState&&) = default;
+FakeWebContentsManager::FakeIconState&
+FakeWebContentsManager::FakeIconState::operator=(FakeIconState&&) = default;
 
 FakeWebContentsManager::FakeWebContentsManager() = default;
 FakeWebContentsManager::~FakeWebContentsManager() = default;
@@ -387,8 +395,8 @@ FakeWebContentsManager::CreateIconDownloader() {
 
 void FakeWebContentsManager::SetIconState(
     const GURL& icon_url,
-    const FakeWebContentsManager::FakeIconState& icon_state) {
-  icon_state_[icon_url] = icon_state;
+    FakeWebContentsManager::FakeIconState icon_state) {
+  icon_state_[icon_url] = std::move(icon_state);
 }
 FakeWebContentsManager::FakeIconState&
 FakeWebContentsManager::GetOrCreateIconState(const GURL& icon_url) {
