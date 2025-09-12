@@ -47,11 +47,11 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
                                 tabs::TabInterface* tab) override;
   void SetActorTaskPaused() override;
   void SetActorTaskResume() override;
-  void SetOverlayHoverStatus(bool is_hovering) override;
-  void SetHandoffButtonHoverStatus(bool is_hovering) override;
-  void SetCallbackForTesting(base::OnceClosure callback) override;
+  void OnOverlayHoverStatusChanged() override;
+  void OnHandoffButtonHoverStatusChanged() override;
   UiTabState GetCurrentUiTabState() const override;
   bool ShouldShowActorTabIndicator() override;
+  ActorOverlayViewController* GetActorOverlayViewController() override;
 
   // ImmersiveModeController::Observer
   void OnImmersiveFullscreenEntered() override;
@@ -74,7 +74,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   void RegisterTabSubscriptions();
 
   // Called to propagate state and visibility changes to UI controllers.
-  void UpdateUi();
+  void UpdateUi(UiResultCallback callback);
 
   // Computes whether the Actor Overlay is visible based on the current state.
   bool ComputeActorOverlayVisibility();
@@ -94,12 +94,14 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // Sets the Border Glow visibility.
   void SetBorderGlowVisibility();
 
-  // Updates the visibility of the scrim background. This is determined by the
-  // hover status of the overlay and the handoff button.
-  void UpdateScrimBackground();
-
   // Initialize and start observing ImmersiveModeController.
   void InitializeImmersiveModeObserver();
+
+  // Updates the visibility of the scrim background. This method is debounced to
+  // consolidate rapid hover events from the overlay and the handoff button. It
+  // determines if the scrim background should be visible if the mouse is
+  // hovering over either the overlay or the handoff button.
+  void UpdateScrimBackground();
 
   // The current UiTabState.
   UiTabState current_ui_tab_state_ = {
@@ -110,13 +112,9 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // The current active status of the tab.
   bool current_tab_active_status_ = false;
 
-  bool is_hovering_overlay_ = false;
-  bool is_hovering_button_ = false;
-
-  // How many outstanding UpdateUi calls are pending for the debounce timer.
-  int in_progress_updates_int_ = 0;
-  // How many outstanding callbacks are pending, used for metrics/tracking.
-  int pending_update_ui_callbacks_size_ = 0;
+  // Determines if the scrim background should be visible. This is set to true
+  // if the mouse is hovering over either the overlay or the handoff button.
+  bool should_show_scrim_background_ = false;
 
   // Owns this class via TabModel.
   const raw_ref<tabs::TabInterface> tab_;
@@ -139,12 +137,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory_;
 
   bool should_show_actor_tab_indicator_ = false;
-  base::RetainingOneShotTimer update_ui_debounce_timer_;
-  base::OnceClosure on_idle_for_testing_;
-
-  base::OnceCallbackList<void(bool)> pending_update_ui_callbacks_;
-  // Holds subscriptions for pending update ui callbacks.
-  std::vector<base::CallbackListSubscription> update_ui_callback_subscription_;
+  base::RetainingOneShotTimer update_scrim_background_debounce_timer_;
 
   ::ui::ScopedUnownedUserData<ActorUiTabController> scoped_unowned_user_data_;
 

@@ -92,14 +92,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   EXPECT_TRUE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
 
-  TestFuture<void> future;
-  static_cast<ActorUiTabController*>(controller)
-      ->SetCallbackForTesting(future.GetCallback());
-
   // Stop acting on the tab.
   state_manager->OnUiEvent(StoppedActingOnTab(tab->GetHandle()));
-
-  ASSERT_TRUE(future.Wait());
 
   // The indicator should be hidden again.
   EXPECT_FALSE(
@@ -117,10 +111,6 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab);
   ASSERT_NE(controller, nullptr);
 
-  TestFuture<void> future;
-  static_cast<ActorUiTabController*>(controller)
-      ->SetCallbackForTesting(future.GetCallback());
-
   // Initially, the indicator should not be visible.
   tabs::TabAlertController* const tab_alert_controller =
       tabs::TabAlertController::From(tab);
@@ -134,7 +124,6 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
       result.GetCallback());
   actor::ExpectOkResult(result);
 
-  ASSERT_TRUE(future.Wait());
   // The indicator should still not be visible.
   EXPECT_FALSE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
@@ -197,10 +186,6 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
   ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab);
   ASSERT_NE(controller, nullptr);
 
-  TestFuture<void> future;
-  static_cast<ActorUiTabController*>(controller)
-      ->SetCallbackForTesting(future.GetCallback());
-
   // Initially, the indicator should not be visible.
   tabs::TabAlertController* const tab_alert_controller =
       tabs::TabAlertController::From(tab);
@@ -214,7 +199,6 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
       result.GetCallback());
   actor::ExpectOkResult(result);
 
-  ASSERT_TRUE(future.Wait());
   // The indicator should still not be visible.
   EXPECT_FALSE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));

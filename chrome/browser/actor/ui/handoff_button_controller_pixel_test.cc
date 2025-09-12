@@ -57,16 +57,13 @@ class ActorUiHandoffButtonControllerPixelTest : public DialogBrowserTest {
     auto* tab_controller = ActorUiTabController::From(
         browser()->tab_strip_model()->GetActiveTab());
     ASSERT_TRUE(tab_controller);
-    base::test::TestFuture<void> ui_update_future;
-    tab_controller->SetCallbackForTesting(ui_update_future.GetCallback());
 
     UiTabState ui_tab_state;
     ui_tab_state.handoff_button = {.is_active = true, .controller = ownership_};
     base::test::TestFuture<bool> tab_state_change_future;
     tab_controller->OnUiTabStateChange(ui_tab_state,
                                        tab_state_change_future.GetCallback());
-    tab_controller->SetOverlayHoverStatus(true);
-    ASSERT_TRUE(ui_update_future.Wait());
+    tab_controller->GetActorOverlayViewController()->OnHoverStatusChanged(true);
     EXPECT_TRUE(tab_state_change_future.Get());
   }
 

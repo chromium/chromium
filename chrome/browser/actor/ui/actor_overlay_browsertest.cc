@@ -178,16 +178,10 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, SendStartEventAndStopEvent) {
       ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
   tabs::TabHandle tab_handle = browser()->GetActiveTabInterface()->GetHandle();
-  TestFuture<void> future;
-  ActorUiTabControllerInterface* controller =
-      ActorUiTabController::From(browser()->GetActiveTabInterface());
-  controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
                            result.GetCallback());
   ExpectOkResult(result);
-  // Ensure callback is done.
-  ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
   EXPECT_TRUE(IsActorOverlayChildVisible(browser()));
@@ -203,17 +197,10 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
       ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
   tabs::TabHandle tab_handle = browser()->GetActiveTabInterface()->GetHandle();
-  // Set up callback logic.
-  TestFuture<void> future;
-  ActorUiTabControllerInterface* controller =
-      ActorUiTabController::From(browser()->GetActiveTabInterface());
-  controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
                            result.GetCallback());
   ExpectOkResult(result);
-  // Ensure callback is done.
-  ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
   EXPECT_TRUE(IsActorOverlayChildVisible(browser()));
@@ -242,11 +229,6 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
       tabs::TabInterface::GetFromContents(&chrome::NewTab(browser()));
   ASSERT_NE(tab_2, nullptr);
 
-  // Set up callback logic after tab_2 is created.
-  TestFuture<void> future;
-  ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab_2);
-  controller->SetCallbackForTesting(future.GetCallback());
-
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   tabs::TabInterface* tab_3 =
       tabs::TabInterface::GetFromContents(&chrome::NewTab(browser()));
@@ -271,8 +253,6 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
   state_manager->OnUiEvent(StartingToActOnTab(tab_2->GetHandle(), TaskId(1)),
                            result.GetCallback());
   ExpectOkResult(result);
-  // Ensure callback is done.
-  ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsActorOverlayVisible(browser_1); }));
   // Loop to repeatedly move the actuated tab between the two windows.
@@ -333,16 +313,10 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
   tabs::TabInterface* tab_1 = browser()->GetActiveTabInterface();
   ASSERT_NE(tab_1, nullptr);
-  // Set up callback logic after tab_1 is created.
-  TestFuture<void> future;
-  ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab_1);
-  controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(StartingToActOnTab(tab_1->GetHandle(), TaskId(1)),
                            result.GetCallback());
   ExpectOkResult(result);
-  // Ensure callback is done.
-  ASSERT_TRUE(future.Wait());
   Browser* browser_with_actuated_tab;
   // Loop to repeatedly move the actuated tab to new browser windows. This
   // verifies the overlay's persistence and re-parenting across window changes.
@@ -370,10 +344,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
     ASSERT_EQ(browser_with_actuated_tab->tab_strip_model()->count(), 2);
 
     // Move the actuated tab (at index 0) to a new browser window.
-    TestFuture<void> move_future;
-    controller->SetCallbackForTesting(move_future.GetCallback());
     chrome::MoveTabsToNewWindow(browser_with_actuated_tab, {0});
-    ASSERT_TRUE(move_future.Wait());
   }
   // After the final move in the loop, update the browser pointer.
   browser_with_actuated_tab =

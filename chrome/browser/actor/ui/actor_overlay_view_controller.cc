@@ -39,12 +39,20 @@ void ActorOverlayViewController::BindOverlay(
   page_.Bind(std::move(page));
 }
 
+bool ActorOverlayViewController::IsHovering() {
+  return is_hovering_;
+}
+
 // TODO(crbug.com/422540636): Might not be sufficient to determine when the
 // handoff button should be visible. Look into ways of tracking mouse movements
 // directly.
 void ActorOverlayViewController::OnHoverStatusChanged(bool is_hovering) {
+  if (is_hovering_ == is_hovering) {
+    return;
+  }
+  is_hovering_ = is_hovering;
   ActorUiTabControllerInterface::From(&tab_interface_.get())
-      ->SetOverlayHoverStatus(is_hovering);
+      ->OnOverlayHoverStatusChanged();
 }
 
 void ActorOverlayViewController::SetScrimBackground(bool is_visible) {

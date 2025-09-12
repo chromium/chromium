@@ -20,6 +20,7 @@ class MockHandoffButtonController : public HandoffButtonController {
               UpdateState,
               (const HandoffButtonState& state, bool is_visible),
               (override));
+  MOCK_METHOD(bool, IsHovering, (), (override));
 };
 
 }  // namespace actor::ui

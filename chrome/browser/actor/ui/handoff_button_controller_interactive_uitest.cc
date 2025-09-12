@@ -69,7 +69,8 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
   auto HoverOverlay(bool is_hovering) {
     return Do([=, this]() {
       ActorUiTabController::From(browser()->tab_strip_model()->GetActiveTab())
-          ->SetHandoffButtonHoverStatus(is_hovering);
+          ->GetActorOverlayViewController()
+          ->OnHoverStatusChanged(is_hovering);
     });
   }
 
@@ -81,8 +82,9 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
                      AsInstrumentedWebContents(tracked_element)->web_contents();
                  auto* const tab =
                      tabs::TabInterface::GetFromContents(web_contents);
-                 ActorUiTabController::From(tab)->SetHandoffButtonHoverStatus(
-                     is_hovering);
+                 ActorUiTabController::From(tab)
+                     ->GetActorOverlayViewController()
+                     ->OnHoverStatusChanged(is_hovering);
                })
         .SetMustBeVisibleAtStart(false);
   }

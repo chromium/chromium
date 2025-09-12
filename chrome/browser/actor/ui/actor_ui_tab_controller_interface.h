@@ -35,7 +35,7 @@ inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
             << "}";
 }
 
-static constexpr base::TimeDelta kUpdateUiDebounceDelay =
+static constexpr base::TimeDelta kUpdateScrimBackgroundDebounceDelay =
     base::Milliseconds(150);
 
 class ActorUiTabControllerFactoryInterface {
@@ -73,9 +73,11 @@ class ActorUiTabControllerInterface {
   virtual void OnTabActiveStatusChanged(bool tab_active_status,
                                         tabs::TabInterface* tab) = 0;
 
-  // Called when the hover status changes on the overlay and handoff button.
-  virtual void SetOverlayHoverStatus(bool is_hovering) = 0;
-  virtual void SetHandoffButtonHoverStatus(bool is_hovering) = 0;
+  // Called when the hover status changes on the overlay.
+  virtual void OnOverlayHoverStatusChanged() = 0;
+
+  // Called when the hover status changes on the handoff button.
+  virtual void OnHandoffButtonHoverStatusChanged() = 0;
 
   // Returns whether the tab should show the actor tab indicator.
   virtual bool ShouldShowActorTabIndicator() = 0;
@@ -85,14 +87,13 @@ class ActorUiTabControllerInterface {
       mojo::PendingRemote<mojom::ActorOverlayPage> page,
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) = 0;
 
-  // Sets a callback to run when the controller is idle, for tests.
-  virtual void SetCallbackForTesting(base::OnceClosure callback) = 0;
-
   // Retrieves an ActorUiTabControllerInterface from the provided tab, or
   // nullptr if it does not exist.
   static ActorUiTabControllerInterface* From(tabs::TabInterface* tab);
   // Returns the current UiTabState.
   virtual UiTabState GetCurrentUiTabState() const = 0;
+  // Returns the Actor Overlay View Controller.
+  virtual ActorOverlayViewController* GetActorOverlayViewController() = 0;
 
   using ActorTabIndicatorStateChangedCallback =
       base::RepeatingCallback<void(bool)>;

@@ -58,6 +58,9 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // Forwards the scrim background visibility to WebUI.
   virtual void SetScrimBackground(bool is_visible);
 
+  // Returns true if the mouse is currently hovering over the overlay.
+  virtual bool IsHovering();
+
  private:
   // Tab subscriptions:
   // Called when the tab is detached.
@@ -117,6 +120,7 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   mojo::Receiver<mojom::ActorOverlayPageHandler> receiver_{this};
   mojo::Remote<mojom::ActorOverlayPage> page_;
   const raw_ref<tabs::TabInterface> tab_interface_;
+  bool is_hovering_ = false;
 };
 
 }  // namespace actor::ui

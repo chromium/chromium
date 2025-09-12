@@ -75,11 +75,12 @@ class ActorOverlayViewControllerTest : public testing::Test {
 };
 
 TEST_F(ActorOverlayViewControllerTest, OnHoverStatusChanged) {
-  EXPECT_CALL(*mock_actor_ui_tab_controller(), SetOverlayHoverStatus(true))
-      .Times(1);
-  EXPECT_CALL(*mock_actor_ui_tab_controller(), SetOverlayHoverStatus(false))
-      .Times(1);
+  EXPECT_CALL(*mock_actor_ui_tab_controller(), OnOverlayHoverStatusChanged())
+      .Times(2);
   overlay_view_controller_->OnHoverStatusChanged(true);
+  overlay_view_controller_->OnHoverStatusChanged(false);
+  // Verify that if the same hover status is sent, we return early and don't
+  // call the tab controller's OnOverlayHoverStatusChanged function.
   overlay_view_controller_->OnHoverStatusChanged(false);
 }
 

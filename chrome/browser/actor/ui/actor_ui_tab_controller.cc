@@ -27,6 +27,13 @@ namespace actor::ui {
 using ::tabs::TabInterface;
 using enum actor::ui::HandoffButtonState::ControlOwnership;
 
+void LogAndIgnoreCallbackError(const std::string_view source_name,
+                               bool result) {
+  if (!result) {
+    LOG(DFATAL) << "Unexpected error in callback from " << source_name;
+  }
+}
+
 std::unique_ptr<HandoffButtonController>
 ActorUiTabControllerFactory::CreateHandoffButtonController(
     tabs::TabInterface& tab) {
@@ -47,10 +54,10 @@ ActorUiTabController::ActorUiTabController(
       tab_(tab),
       actor_keyed_service_(actor_keyed_service),
       controller_factory_(std::move(controller_factory)),
-      update_ui_debounce_timer_(
+      update_scrim_background_debounce_timer_(
           FROM_HERE,
-          kUpdateUiDebounceDelay,
-          base::BindRepeating(&ActorUiTabController::UpdateUi,
+          kUpdateScrimBackgroundDebounceDelay,
+          base::BindRepeating(&ActorUiTabController::UpdateScrimBackground,
                               base::Unretained(this))),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   CHECK(actor_keyed_service_);
@@ -84,12 +91,7 @@ void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
           << "\n";
 
   current_ui_tab_state_ = ui_tab_state;
-  if (callback) {
-    pending_update_ui_callbacks_size_++;
-    update_ui_callback_subscription_.push_back(
-        pending_update_ui_callbacks_.Add(std::move(callback)));
-  }
-  update_ui_debounce_timer_.Reset();
+  UpdateUi(std::move(callback));
 }
 
 void ActorUiTabController::OnTabActiveStatusChanged(bool tab_active_status,
@@ -102,7 +104,8 @@ void ActorUiTabController::OnTabActiveStatusChanged(bool tab_active_status,
           << tab_active_status << "\n";
 
   current_tab_active_status_ = tab_active_status;
-  update_ui_debounce_timer_.Reset();
+  UpdateUi(
+      base::BindOnce(&LogAndIgnoreCallbackError, "OnTabActiveStatusChanged"));
 }
 
 bool ActorUiTabController::ShouldShowActorTabIndicator() {
@@ -135,8 +138,7 @@ void ActorUiTabController::SetActorTabIndicatorVisibility(
   return;
 }
 
-void ActorUiTabController::UpdateUi() {
-  in_progress_updates_int_++;
+void ActorUiTabController::UpdateUi(UiResultCallback callback) {
   // TODO(crbug.com/428216197): Only notify relevant UI components on change and
   // decouple visibility + state changes into 2 functions.
   if (features::kGlicActorUiOverlay.Get()) {
@@ -156,14 +158,10 @@ void ActorUiTabController::UpdateUi() {
   if (features::kGlicActorUiBorderGlow.Get()) {
     SetBorderGlowVisibility();
   }
-
-  base::UmaHistogramCounts100("Actor.UiTabController.NumberOfPendingCallbacks",
-                              pending_update_ui_callbacks_size_);
-
-  pending_update_ui_callbacks_.Notify(true);
-  pending_update_ui_callbacks_size_ = 0;
-
-  OnUpdateFinished();
+  if (callback) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+  }
 }
 
 void ActorUiTabController::InitializeImmersiveModeObserver() {
@@ -178,14 +176,16 @@ void ActorUiTabController::OnImmersiveFullscreenEntered() {
   if (!actor_keyed_service_->IsAnyTaskActingOnTab(*tab_)) {
     return;
   }
-  update_ui_debounce_timer_.Reset();
+  UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError,
+                          "OnImmersiveFullscreenEntered"));
 }
 
 void ActorUiTabController::OnImmersiveFullscreenExited() {
   if (!actor_keyed_service_->IsAnyTaskActingOnTab(*tab_)) {
     return;
   }
-  update_ui_debounce_timer_.Reset();
+  UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError,
+                          "OnImmersiveFullscreenExited"));
 }
 
 void ActorUiTabController::OnImmersiveModeControllerDestroyed() {
@@ -234,7 +234,7 @@ bool ActorUiTabController::ComputeHandoffButtonVisibility() {
   //    over the overlay or the button.
   // 2. Its state and the associated tab is active and the client is in control.
   return current_tab_active_status_ && is_button_active &&
-         (is_hovering_overlay_ || is_hovering_button_ || is_client_control);
+         (should_show_scrim_background_ || is_client_control);
 }
 
 void ActorUiTabController::SetActorTaskPaused() {
@@ -271,41 +271,26 @@ void ActorUiTabController::BindActorOverlay(
 }
 
 void ActorUiTabController::UpdateScrimBackground() {
+  bool should_show_scrim_background =
+      actor_overlay_view_controller_->IsHovering() ||
+      handoff_button_controller_->IsHovering();
+  if (should_show_scrim_background_ == should_show_scrim_background) {
+    return;
+  }
+  should_show_scrim_background_ = should_show_scrim_background;
   if (features::kGlicActorUiOverlay.Get()) {
-    actor_overlay_view_controller_->SetScrimBackground(is_hovering_overlay_ ||
-                                                       is_hovering_button_);
+    actor_overlay_view_controller_->SetScrimBackground(
+        should_show_scrim_background_);
   }
+  UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError, "UpdateScrimBackground"));
 }
 
-void ActorUiTabController::SetOverlayHoverStatus(bool is_hovering) {
-  if (is_hovering_overlay_ == is_hovering) {
-    return;
-  }
-  is_hovering_overlay_ = is_hovering;
-  UpdateScrimBackground();
-  update_ui_debounce_timer_.Reset();
+void ActorUiTabController::OnOverlayHoverStatusChanged() {
+  update_scrim_background_debounce_timer_.Reset();
 }
 
-void ActorUiTabController::SetHandoffButtonHoverStatus(bool is_hovering) {
-  if (is_hovering_button_ == is_hovering) {
-    return;
-  }
-  is_hovering_button_ = is_hovering;
-  UpdateScrimBackground();
-  update_ui_debounce_timer_.Reset();
-}
-
-void ActorUiTabController::OnUpdateFinished() {
-  in_progress_updates_int_--;
-
-  // If the controller is now idle, notify the waiting test.
-  if (in_progress_updates_int_ == 0 && on_idle_for_testing_) {
-    std::move(on_idle_for_testing_).Run();
-  }
-}
-
-void ActorUiTabController::SetCallbackForTesting(base::OnceClosure callback) {
-  on_idle_for_testing_ = std::move(callback);
+void ActorUiTabController::OnHandoffButtonHoverStatusChanged() {
+  update_scrim_background_debounce_timer_.Reset();
 }
 
 base::WeakPtr<ActorUiTabControllerInterface>
@@ -315,6 +300,11 @@ ActorUiTabController::GetWeakPtr() {
 
 UiTabState ActorUiTabController::GetCurrentUiTabState() const {
   return current_ui_tab_state_;
+}
+
+ActorOverlayViewController*
+ActorUiTabController::GetActorOverlayViewController() {
+  return actor_overlay_view_controller_.get();
 }
 
 }  // namespace actor::ui

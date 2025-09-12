@@ -310,7 +310,8 @@ void HandoffButtonController::CloseButton(views::Widget::ClosedReason reason) {
 }
 
 void HandoffButtonController::UpdateButtonHoverStatus(bool is_hovered) {
-  GetTabController()->SetHandoffButtonHoverStatus(is_hovered);
+  is_hovering_ = is_hovered;
+  GetTabController()->OnHandoffButtonHoverStatusChanged();
 }
 
 void HandoffButtonController::OnButtonPressed() {
@@ -340,6 +341,10 @@ tabs::TabDialogManager* HandoffButtonController::GetTabDialogManager() {
 
 ActorUiTabControllerInterface* HandoffButtonController::GetTabController() {
   return ActorUiTabControllerInterface::From(&tab_interface_.get());
+}
+
+bool HandoffButtonController::IsHovering() {
+  return is_hovering_;
 }
 
 }  // namespace actor::ui

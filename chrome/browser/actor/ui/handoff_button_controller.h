@@ -63,6 +63,8 @@ class HandoffButtonController {
   HandoffButtonController& operator=(const HandoffButtonController&) = delete;
 
   virtual void UpdateState(const HandoffButtonState& state, bool is_visible);
+  // Returns true if the mouse is currently hovering over the handoff button.
+  virtual bool IsHovering();
 
  protected:
   void OnButtonPressed();
@@ -85,6 +87,7 @@ class HandoffButtonController {
   tabs::TabDialogManager* GetTabDialogManager();
 
   bool is_visible_ = false;
+  bool is_hovering_ = false;
   HandoffButtonState::ControlOwnership ownership_ =
       HandoffButtonState::ControlOwnership::kActor;
   const raw_ref<tabs::TabInterface> tab_interface_;
