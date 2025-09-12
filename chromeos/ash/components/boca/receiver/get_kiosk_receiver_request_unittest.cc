@@ -28,16 +28,14 @@ TEST(GetKioskReceiverRequestTest, RelativeUrlWithConnectionId) {
   GetKioskReceiverRequest request(
       std::string(kReceiverId), std::string(kConnectionId), base::DoNothing());
   EXPECT_EQ(request.GetRelativeUrl(),
-            "/v1/receiverId/receiver_id/"
-            "kioskReceivers:get?connectionId=connection_id");
+            "/v1/receivers/receiver_id?connectionId=connection_id");
 }
 
 TEST(GetKioskReceiverRequestTest, RelativeUrlWithoutConnectionId) {
   GetKioskReceiverRequest request(std::string(kReceiverId),
                                   /*connection_id=*/std::nullopt,
                                   base::DoNothing());
-  EXPECT_EQ(request.GetRelativeUrl(),
-            "/v1/receiverId/receiver_id/kioskReceivers:get");
+  EXPECT_EQ(request.GetRelativeUrl(), "/v1/receivers/receiver_id");
 }
 
 TEST(GetKioskReceiverRequestTest, OnSuccess) {
