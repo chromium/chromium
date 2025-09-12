@@ -1244,6 +1244,14 @@ class WaylandDesktop(Desktop):
       os.remove(display_layout_file)
     except FileNotFoundError:
       pass
+
+    # Remove variables from the systemd environment that are known to cause
+    # problems in the GNOME Wayland session if present - see
+    # http://crbug.com/444255720.
+    subprocess.call(["systemctl", "--user", "unset-environment",
+                     "GDK_BACKEND", "SSH_CONNECTION"],
+                    stdout=subprocess.DEVNULL)
+
     self.server_proc = subprocess.Popen([GNOME_SESSION],
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.STDOUT,
