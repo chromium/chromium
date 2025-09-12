@@ -9,17 +9,17 @@
 
 #include "cc/layers/layer.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
-
-#include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
 // Integration tests of canvas painting code.
 
@@ -40,8 +40,10 @@ class HTMLCanvasPainterTest : public PaintControllerPaintTestBase {
   void SetUp() override {
     accelerated_compositing_scope_ = std::make_unique<
         ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
-    test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
+        true);
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
     PaintControllerPaintTestBase::SetUp();
   }
 
