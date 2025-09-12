@@ -86,6 +86,9 @@ BASE_FEATURE(kUseAlternativePortForGloballyReachableCheck,
 BASE_FEATURE(kEnableIPv6ReachabilityOverride,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMaintainConnectionsOnIpv6TempAddrChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableTLS13EarlyData, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNetworkQualityEstimator, base::FEATURE_DISABLED_BY_DEFAULT);

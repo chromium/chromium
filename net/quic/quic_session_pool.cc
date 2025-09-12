@@ -1309,6 +1309,13 @@ void QuicSessionPool::OnIPAddressChanged(
     return;
   }
 
+  // Ignore changes to randomly generated IPv6 temporary addresses.
+  if (!base::FeatureList::IsEnabled(
+          net::features::kMaintainConnectionsOnIpv6TempAddrChange) &&
+      change_type == NetworkChangeNotifier::IP_ADDRESS_CHANGE_IPV6_TEMPADDR) {
+    return;
+  }
+
   connectivity_monitor_.OnIPAddressChanged();
 
   set_has_quic_ever_worked_on_current_network(false);

@@ -94,39 +94,62 @@ class AddressTrackerLinuxTest : public testing::Test {
 
   bool HandleAddressMessage(const NetlinkBuffer& buf) {
     NetlinkBuffer writable_buf = buf;
-    bool address_changed = false;
+    NetworkChangeNotifier::IPAddressChangeType address_change_type =
+        NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE;
     bool link_changed = false;
     bool tunnel_changed = false;
-    tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_changed,
+    tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_change_type,
                             &link_changed, &tunnel_changed);
     UpdateCache();
     EXPECT_FALSE(link_changed);
-    return address_changed;
+
+    if (buf.size() < sizeof(nlmsghdr) + sizeof(ifaddrmsg)) {
+      ADD_FAILURE() << "Message too small to read flags";
+      return false;
+    }
+    const ifaddrmsg* msg = UNSAFE_BUFFERS(
+        reinterpret_cast<const ifaddrmsg*>(buf.data() + sizeof(nlmsghdr)));
+    bool ipv6_tempaddr_changed =
+        msg->ifa_family == AF_INET6 && msg->ifa_flags & IFA_F_TEMPORARY;
+    EXPECT_TRUE(address_change_type ==
+                    NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE ||
+                (address_change_type ==
+                     NetworkChangeNotifier::IP_ADDRESS_CHANGE_IPV6_TEMPADDR &&
+                 ipv6_tempaddr_changed) ||
+                (address_change_type ==
+                     NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL &&
+                 !ipv6_tempaddr_changed));
+
+    return address_change_type != NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE;
   }
 
   bool HandleLinkMessage(const NetlinkBuffer& buf) {
     NetlinkBuffer writable_buf = buf;
-    bool address_changed = false;
+    NetworkChangeNotifier::IPAddressChangeType address_change_type =
+        NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE;
     bool link_changed = false;
     bool tunnel_changed = false;
-    tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_changed,
+    tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_change_type,
                             &link_changed, &tunnel_changed);
     UpdateCache();
-    EXPECT_FALSE(address_changed);
+    EXPECT_TRUE(address_change_type ==
+                NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE);
     return link_changed;
   }
 
   bool HandleTunnelMessage(const NetlinkBuffer& buf) {
     NetlinkBuffer writable_buf = buf;
-    bool address_changed = false;
+    NetworkChangeNotifier::IPAddressChangeType address_change_type =
+        NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE;
     bool link_changed = false;
     bool tunnel_changed = false;
     AddressMapOwnerLinux::AddressMapDiff address_map_diff_;
     AddressMapOwnerLinux::OnlineLinksDiff online_links_diff_;
-    tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_changed,
+    tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_change_type,
                             &link_changed, &tunnel_changed);
     UpdateCache();
-    EXPECT_FALSE(address_changed);
+    EXPECT_TRUE(address_change_type ==
+                NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE);
     return tunnel_changed;
   }
 
@@ -180,6 +203,9 @@ const unsigned char kAddress1[] = { 10, 0, 0, 1 };
 const unsigned char kAddress2[] = { 192, 168, 0, 1 };
 const unsigned char kAddress3[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                     0, 0, 0, 1 };
+const unsigned char kAddress4[] = {0xfd, 0x00, 0,    0,    0,    0,
+                                   0,    0,    0xe9, 0xb2, 0x0b, 0x84,
+                                   0xb3, 0xd5, 0xff, 0x0b};
 
 TEST_F(AddressTrackerLinuxTest, NewAddress) {
   InitializeAddressTracker(true);
@@ -189,6 +215,7 @@ TEST_F(AddressTrackerLinuxTest, NewAddress) {
   const IPAddress kAddr1(kAddress1);
   const IPAddress kAddr2(kAddress2);
   const IPAddress kAddr3(kAddress3);
+  const IPAddress kAddr4(kAddress4);
 
   NetlinkBuffer buffer;
   MakeAddrMessage(RTM_NEWADDR, IFA_F_TEMPORARY, AF_INET, kTestInterfaceEth,
@@ -216,6 +243,15 @@ TEST_F(AddressTrackerLinuxTest, NewAddress) {
   map = GetAddressMap();
   EXPECT_EQ(3u, map.size());
   EXPECT_EQ(1u, map.count(kAddr3));
+
+  buffer.clear();
+  MakeAddrMessage(RTM_NEWADDR, IFA_F_TEMPORARY, AF_INET6, kTestInterfaceEth,
+                  kEmpty, kAddr4, &buffer);
+  EXPECT_TRUE(HandleAddressMessage(buffer));
+  map = GetAddressMap();
+  EXPECT_EQ(4u, map.size());
+  EXPECT_EQ(1u, map.count(kAddr4));
+  EXPECT_EQ(IFA_F_TEMPORARY, map[kAddr4].ifa_flags);
 }
 
 TEST_F(AddressTrackerLinuxTest, NewAddressChange) {

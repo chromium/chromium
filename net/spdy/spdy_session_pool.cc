@@ -539,6 +539,14 @@ std::unique_ptr<base::Value> SpdySessionPool::SpdySessionPoolInfoToValue()
 void SpdySessionPool::OnIPAddressChanged(
     NetworkChangeNotifier::IPAddressChangeType change_type) {
   DCHECK(cleanup_sessions_on_ip_address_changed_);
+
+  // Ignore changes to randomly generated IPv6 temporary addresses.
+  if (base::FeatureList::IsEnabled(
+          net::features::kMaintainConnectionsOnIpv6TempAddrChange) &&
+      change_type == NetworkChangeNotifier::IP_ADDRESS_CHANGE_IPV6_TEMPADDR) {
+    return;
+  }
+
   if (go_away_on_ip_change_) {
     MakeCurrentSessionsGoingAway(ERR_NETWORK_CHANGED);
   } else {

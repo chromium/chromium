@@ -276,6 +276,14 @@ void HttpStreamPool::DecrementTotalConnectingStreamCount(size_t amount) {
 void HttpStreamPool::OnIPAddressChanged(
     NetworkChangeNotifier::IPAddressChangeType change_type) {
   CHECK(cleanup_on_ip_address_change_);
+
+  // Ignore changes to randomly generated IPv6 temporary addresses.
+  if (base::FeatureList::IsEnabled(
+          net::features::kMaintainConnectionsOnIpv6TempAddrChange) &&
+      change_type == NetworkChangeNotifier::IP_ADDRESS_CHANGE_IPV6_TEMPADDR) {
+    return;
+  }
+
   for (const auto& group : groups_) {
     group.second->FlushWithError(ERR_NETWORK_CHANGED,
                                  StreamSocketCloseReason::kIpAddressChanged,
