@@ -35,6 +35,9 @@ class TestWebContentsModalDialogManagerDelegate
 
   bool IsWebContentsVisible(content::WebContents* web_contents) override;
 
+  void OnWebContentsModalDialogShown(
+      content::WebContents* web_contents) override;
+
   void set_web_contents_visible(bool visible) {
     web_contents_visible_ = visible;
   }
@@ -45,9 +48,12 @@ class TestWebContentsModalDialogManagerDelegate
 
   bool web_contents_blocked() const { return web_contents_blocked_; }
 
+  bool web_contents_activated() const { return web_contents_activated_; }
+
  private:
   bool web_contents_visible_;
   bool web_contents_blocked_;
+  bool web_contents_activated_;
   raw_ptr<WebContentsModalDialogHost>
       web_contents_modal_dialog_host_;  // Not owned.
 };

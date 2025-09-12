@@ -122,6 +122,8 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
 
   bool IsWebContentsVisible() const;
 
+  void ShowNextDialog();
+
   // Overridden from content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
