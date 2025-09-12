@@ -10,7 +10,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/events/tab_strip_event_recorder.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
@@ -27,7 +27,8 @@ class TabStripModel;
 // tabs_api::mojom::TabStripController is an experimental TabStrip Api between
 // any view and the TabStripModel.
 class TabStripServiceMojoHandler
-    : public tabs_api::mojom::TabStripService,
+    : public tabs_api::observation::TabStripApiObserver,
+      public tabs_api::mojom::TabStripService,
       public tabs_api::mojom::TabStripExperimentService,
       public TabStripModelObserver,
       public TabStripServiceFeature {
@@ -75,15 +76,14 @@ class TabStripServiceMojoHandler
                             const tab_groups::TabGroupVisualData& visual_data,
                             UpdateTabGroupVisualCallback) override;
 
+  // tabs_api::observation::TabStripApiObserver overrides
+  void OnTabEvents(
+      const std::vector<tabs_api::mojom::TabsEventPtr>& events) override;
+
   tabs_api::TabStripService* GetTabStripService() const override;
 
  private:
-  void BroadcastEvents(
-      const std::vector<tabs_api::events::Event>& events) const;
-
   std::unique_ptr<tabs_api::TabStripService> tab_strip_service_;
-  std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter_;
-  std::unique_ptr<tabs_api::events::TabStripEventRecorder> recorder_;
 
   // Mojo plumbing.
   mojo::ReceiverSet<tabs_api::mojom::TabStripService> clients_;

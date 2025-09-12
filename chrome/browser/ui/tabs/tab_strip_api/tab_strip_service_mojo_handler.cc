@@ -10,25 +10,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
-// Starts a mutation session that suppresses incoming messages to prevent
-// re-entrancy and replays all recorded mutations on session destruction.
-class MutationSession {
- public:
-  explicit MutationSession(tabs_api::events::TabStripEventRecorder* recorder)
-      : recorder_(recorder) {
-    recorder_->StopNotificationAndStartRecording();
-  }
-
-  ~MutationSession() { recorder_->PlayRecordingsAndStartNotification(); }
-
-  // Disallow copy and assign.
-  MutationSession(const MutationSession&) = delete;
-  MutationSession& operator=(const MutationSession&) = delete;
-
- private:
-  raw_ptr<tabs_api::events::TabStripEventRecorder> recorder_;
-};
-
 TabStripServiceMojoHandler::TabStripServiceMojoHandler(
     BrowserWindowInterface* browser,
     TabStripModel* tab_strip_model)
@@ -41,23 +22,12 @@ TabStripServiceMojoHandler::TabStripServiceMojoHandler(
 TabStripServiceMojoHandler::TabStripServiceMojoHandler(
     std::unique_ptr<tabs_api::TabStripService> service,
     std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter)
-    : tab_strip_service_(std::move(service)),
-      tab_strip_model_adapter_(std::move(tab_strip_model_adapter)) {
-  recorder_ = std::make_unique<tabs_api::events::TabStripEventRecorder>(
-      tab_strip_model_adapter_.get(),
-      base::BindRepeating(&TabStripServiceMojoHandler::BroadcastEvents,
-                          base::Unretained(this)));
-  tab_strip_model_adapter_->AddObserver(recorder_.get());
-}
-
-void TabStripServiceMojoHandler::BroadcastEvents(
-    const std::vector<tabs_api::events::Event>& events) const {
-  tabs_api::EventBroadcaster broadcaster;
-  broadcaster.Broadcast(observers_, events);
+    : tab_strip_service_(std::move(service)) {
+  tab_strip_service_->AddObserver(this);
 }
 
 TabStripServiceMojoHandler::~TabStripServiceMojoHandler() {
-  tab_strip_model_adapter_->RemoveObserver(recorder_.get());
+  tab_strip_service_->RemoveObserver(this);
 
   // Clear all observers
   // TODO (crbug.com/412955607): Implement a removal mechanism similar to
@@ -67,8 +37,6 @@ TabStripServiceMojoHandler::~TabStripServiceMojoHandler() {
 }
 
 void TabStripServiceMojoHandler::GetTabs(GetTabsCallback callback) {
-  MutationSession recorder_session(recorder_.get());
-
   auto snapshot = tabs_api::mojom::TabsSnapshot::New();
   auto result = tab_strip_service_->GetTabs();
   if (!result.has_value()) {
@@ -86,8 +54,6 @@ void TabStripServiceMojoHandler::GetTabs(GetTabsCallback callback) {
 
 void TabStripServiceMojoHandler::GetTab(const tabs_api::NodeId& tab_mojom_id,
                                         GetTabCallback callback) {
-  MutationSession recorder_session(recorder_.get());
-
   std::move(callback).Run(tab_strip_service_->GetTab(tab_mojom_id));
 }
 
@@ -95,23 +61,17 @@ void TabStripServiceMojoHandler::CreateTabAt(
     const std::optional<tabs_api::Position>& pos,
     const std::optional<GURL>& url,
     CreateTabAtCallback callback) {
-  MutationSession recorder_session(recorder_.get());
-
   std::move(callback).Run(tab_strip_service_->CreateTabAt(pos, url));
 }
 
 void TabStripServiceMojoHandler::CloseTabs(
     const std::vector<tabs_api::NodeId>& ids,
     CloseTabsCallback callback) {
-  MutationSession recorder_session(recorder_.get());
-
   std::move(callback).Run(tab_strip_service_->CloseTabs(ids));
 }
 
 void TabStripServiceMojoHandler::ActivateTab(const tabs_api::NodeId& id,
                                              ActivateTabCallback callback) {
-  MutationSession recorder_session(recorder_.get());
-
   std::move(callback).Run(tab_strip_service_->ActivateTab(id));
 }
 
@@ -119,8 +79,6 @@ void TabStripServiceMojoHandler::SetSelectedTabs(
     const std::vector<tabs_api::NodeId>& selection,
     const tabs_api::NodeId& tab_to_activate,
     SetSelectedTabsCallback callback) {
-  MutationSession recorder_session(recorder_.get());
-
   std::move(callback).Run(
       tab_strip_service_->SetSelectedTabs(selection, tab_to_activate));
 }
@@ -128,8 +86,6 @@ void TabStripServiceMojoHandler::SetSelectedTabs(
 void TabStripServiceMojoHandler::MoveTab(const tabs_api::NodeId& id,
                                          const tabs_api::Position& position,
                                          MoveTabCallback callback) {
-  MutationSession recorder_session(recorder_.get());
-
   std::move(callback).Run(tab_strip_service_->MoveTab(id, position));
 }
 
@@ -137,10 +93,19 @@ void TabStripServiceMojoHandler::UpdateTabGroupVisual(
     const tabs_api::NodeId& id,
     const tab_groups::TabGroupVisualData& visual_data,
     UpdateTabGroupVisualCallback callback) {
-  MutationSession recorder_session(recorder_.get());
-
   std::move(callback).Run(
       tab_strip_service_->UpdateTabGroupVisual(id, visual_data));
+}
+
+void TabStripServiceMojoHandler::OnTabEvents(
+    const std::vector<tabs_api::mojom::TabsEventPtr>& events) {
+  for (auto& observer : observers_) {
+    std::vector<tabs_api::mojom::TabsEventPtr> copy;
+    for (auto& event : events) {
+      copy.push_back(event.Clone());
+    }
+    observer->OnTabEvents(std::move(copy));
+  }
 }
 
 tabs_api::TabStripService* TabStripServiceMojoHandler::GetTabStripService()

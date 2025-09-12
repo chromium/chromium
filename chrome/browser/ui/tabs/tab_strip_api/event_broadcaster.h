@@ -25,9 +25,6 @@ class EventBroadcaster {
   EventBroadcaster& operator=(EventBroadcaster&) = delete;
   ~EventBroadcaster() = default;
 
-  void Broadcast(
-      const mojo::AssociatedRemoteSet<tabs_api::mojom::TabsObserver>& targets,
-      const std::vector<events::Event>& event);
   void Broadcast(const std::vector<observation::TabStripApiObserver*>& targets,
                  const std::vector<events::Event>& event);
 };

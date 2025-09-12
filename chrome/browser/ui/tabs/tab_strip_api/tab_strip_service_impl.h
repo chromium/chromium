@@ -64,13 +64,13 @@ class TabStripServiceImpl : public TabStripService {
   // A session represents an ongoing API invocation.
   class Session {
    public:
-    virtual ~Session() {}
+    virtual ~Session() = default;
   };
 
   // Used to create sessions.
   class SessionController {
    public:
-    virtual ~SessionController() {}
+    virtual ~SessionController() = default;
     virtual std::unique_ptr<Session> CreateSession() = 0;
   };
 

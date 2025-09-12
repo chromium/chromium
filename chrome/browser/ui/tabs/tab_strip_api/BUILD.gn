@@ -135,6 +135,7 @@ source_set("impl_header") {
     ":mojom_experiment",
     ":tab_strip_api",
     "adapters",
+    "observation",
     "//chrome/browser/ui/tabs/tab_strip_api/events",
   ]
 }

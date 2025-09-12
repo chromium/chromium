@@ -47,14 +47,6 @@ std::vector<mojom::TabsEventPtr> Transform(
 }
 
 void EventBroadcaster::Broadcast(
-    const mojo::AssociatedRemoteSet<tabs_api::mojom::TabsObserver>& targets,
-    const std::vector<events::Event>& events) {
-  for (auto& target : targets) {
-    target->OnTabEvents(Transform(events));
-  }
-}
-
-void EventBroadcaster::Broadcast(
     const std::vector<observation::TabStripApiObserver*>& observers,
     const std::vector<events::Event>& events) {
   for (auto* observer : observers) {
