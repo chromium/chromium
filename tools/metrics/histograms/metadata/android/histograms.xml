@@ -6226,6 +6226,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.AppliedProcessGlobalCacheDirectoryBasePath"
+    enum="Boolean" expires_after="2026-02-01">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Whether a cache directory base path, provided through the process global
+    config, was applied when loading the WebView library. Recorded once per
+    WebView startup.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.AppliedProcessGlobalDataDirectoryBasePath"
+    enum="Boolean" expires_after="2026-02-01">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Whether a data directory base path, provided through the process global
+    config, was applied when loading the WebView library. Recorded once per
+    WebView startup.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.AssetPathWorkaroundUsed.FactoryInit"
     enum="Boolean" expires_after="2026-03-11">
   <owner>alexmitra@chromium.org</owner>

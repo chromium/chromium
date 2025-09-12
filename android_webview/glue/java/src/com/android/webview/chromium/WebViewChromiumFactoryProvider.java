@@ -593,7 +593,16 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     String dataDirectoryBasePath = androidXConfig.getDataDirectoryBasePathOrNull();
                     String cacheDirectoryBasePath =
                             androidXConfig.getCacheDirectoryBasePathOrNull();
+
+                    RecordHistogram.recordBooleanHistogram(
+                            "Android.WebView.AppliedProcessGlobalDataDirectoryBasePath",
+                            dataDirectoryBasePath != null);
+                    RecordHistogram.recordBooleanHistogram(
+                            "Android.WebView.AppliedProcessGlobalCacheDirectoryBasePath",
+                            cacheDirectoryBasePath != null);
+
                     String dataDirectorySuffix = webViewDelegate.getDataDirectorySuffix();
+
                     AwBrowserProcess.loadLibrary(
                             dataDirectoryBasePath, cacheDirectoryBasePath, dataDirectorySuffix);
                 }
