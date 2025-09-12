@@ -184,9 +184,8 @@ bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
       }
       case kTransform: {
         auto* transform = MakeGarbageCollected<SVGTransformList>();
-        transform->Parse(ptr, end);
+        transform->Parse(chars, position);
         transform_ = transform;
-        position = ptr - chars.data();
         break;
       }
       default:

@@ -71,6 +71,15 @@ inline bool SkipOptionalSVGSpaces(const CharType*& ptr, const CharType* end) {
 }
 
 template <typename CharType>
+inline bool SkipOptionalSVGSpaces(const base::span<const CharType> chars,
+                                  size_t& position) {
+  while (position < chars.size() && IsHTMLSpace<CharType>(chars[position])) {
+    ++position;
+  }
+  return position < chars.size();
+}
+
+template <typename CharType>
 constexpr inline bool SkipOptionalSVGSpaces(base::span<const CharType>& span) {
   auto iter = std::ranges::find_if(
       span, [](const CharType c) { return !IsHTMLSpace<CharType>(c); });

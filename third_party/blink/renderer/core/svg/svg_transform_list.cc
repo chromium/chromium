@@ -115,10 +115,11 @@ SVGTransformData MatrixTransformValue(const TransformArguments& arguments) {
 }
 
 template <typename CharType>
-SVGParseStatus ParseTransformArgumentsForType(SVGTransformType type,
-                                              const CharType*& ptr,
-                                              const CharType* end,
-                                              TransformArguments& arguments) {
+SVGParseStatus ParseTransformArgumentsForType(
+    SVGTransformType type,
+    const base::span<const CharType> chars,
+    size_t& position,
+    TransformArguments& arguments) {
   const size_t required = kRequiredValuesForType[static_cast<int>(type)];
   const size_t optional = kOptionalValuesForType[static_cast<int>(type)];
   const size_t required_with_optional = required + optional;
@@ -129,8 +130,11 @@ SVGParseStatus ParseTransformArgumentsForType(SVGTransformType type,
 
   while (arguments.size() < required_with_optional) {
     float argument_value = 0;
-    if (!ParseNumber(ptr, end, argument_value, kAllowLeadingWhitespace))
+    auto span = chars.subspan(position);
+    if (!ParseNumber(span, argument_value, kAllowLeadingWhitespace)) {
       break;
+    }
+    position = span.data() - chars.data();
 
     arguments.push_back(argument_value);
     trailing_delimiter = false;
@@ -138,8 +142,8 @@ SVGParseStatus ParseTransformArgumentsForType(SVGTransformType type,
     if (arguments.size() == required_with_optional)
       break;
 
-    if (SkipOptionalSVGSpaces(ptr, end) && *ptr == ',') {
-      UNSAFE_TODO(++ptr);
+    if (SkipOptionalSVGSpaces(chars, position) && chars[position] == ',') {
+      ++position;
       trailing_delimiter = true;
     }
   }
@@ -196,15 +200,13 @@ SVGTransformList::SVGTransformList(SVGTransformType transform_type,
   if (value.empty())
     return;
   TransformArguments arguments;
-  bool success =
-      VisitCharacters(value, [&](auto chars) {
-        const auto* ptr = chars.data();
-        const auto* end = ptr + chars.size();
-        SVGParseStatus status =
-            ParseTransformArgumentsForType(transform_type, ptr, end, arguments);
-        return status == SVGParseStatus::kNoError &&
-               !SkipOptionalSVGSpaces(ptr, end);
-      });
+  size_t position = 0;
+  bool success = VisitCharacters(value, [&](auto chars) {
+    SVGParseStatus status = ParseTransformArgumentsForType(
+        transform_type, chars, position, arguments);
+    return status == SVGParseStatus::kNoError &&
+           !SkipOptionalSVGSpaces(chars, position);
+  });
   if (success)
     Append(CreateTransformFromValues(transform_type, arguments));
 }
@@ -318,31 +320,33 @@ const CSSValue* SVGTransformList::CssValue() const {
 namespace {
 
 template <typename CharType>
-SVGTransformType ParseAndSkipTransformType(const CharType*& ptr,
-                                           const CharType* end) {
-  if (ptr >= end)
+SVGTransformType ParseAndSkipTransformType(
+    const base::span<const CharType> chars,
+    size_t& position) {
+  if (position >= chars.size()) {
     return SVGTransformType::kUnknown;
+  }
 
-  if (*ptr == 's') {
-    if (UNSAFE_TODO(SkipToken(ptr, end, "skewX"))) {
+  if (chars[position] == 's') {
+    if (SkipToken(chars, "skewX", position)) {
       return SVGTransformType::kSkewx;
     }
-    if (UNSAFE_TODO(SkipToken(ptr, end, "skewY"))) {
+    if (SkipToken(chars, "skewY", position)) {
       return SVGTransformType::kSkewy;
     }
-    if (UNSAFE_TODO(SkipToken(ptr, end, "scale"))) {
+    if (SkipToken(chars, "scale", position)) {
       return SVGTransformType::kScale;
     }
 
     return SVGTransformType::kUnknown;
   }
-  if (UNSAFE_TODO(SkipToken(ptr, end, "translate"))) {
+  if (SkipToken(chars, "translate", position)) {
     return SVGTransformType::kTranslate;
   }
-  if (UNSAFE_TODO(SkipToken(ptr, end, "rotate"))) {
+  if (SkipToken(chars, "rotate", position)) {
     return SVGTransformType::kRotate;
   }
-  if (UNSAFE_TODO(SkipToken(ptr, end, "matrix"))) {
+  if (SkipToken(chars, "matrix", position)) {
     return SVGTransformType::kMatrix;
   }
 
@@ -352,69 +356,71 @@ SVGTransformType ParseAndSkipTransformType(const CharType*& ptr,
 }  // namespace
 
 template <typename CharType>
-SVGParsingError SVGTransformList::ParseInternal(const CharType*& ptr,
-                                                const CharType* end) {
+SVGParsingError SVGTransformList::ParseInternal(
+    const base::span<const CharType> chars,
+    size_t& position) {
   Clear();
 
-  const CharType* start = ptr;
   bool delim_parsed = false;
-  while (SkipOptionalSVGSpaces(ptr, end)) {
+  while (SkipOptionalSVGSpaces(chars, position)) {
     delim_parsed = false;
 
-    SVGTransformType transform_type = ParseAndSkipTransformType(ptr, end);
+    SVGTransformType transform_type =
+        ParseAndSkipTransformType(chars, position);
     if (transform_type == SVGTransformType::kUnknown) {
       return SVGParsingError(SVGParseStatus::kExpectedTransformFunction,
-                             ptr - start);
+                             position);
     }
 
-    if (!SkipOptionalSVGSpaces(ptr, end) || *ptr != '(') {
+    if (!SkipOptionalSVGSpaces(chars, position) || chars[position] != '(') {
       return SVGParsingError(SVGParseStatus::kExpectedStartOfArguments,
-                             ptr - start);
+                             position);
     }
-    UNSAFE_TODO(ptr++);
+    ++position;
 
     TransformArguments arguments;
-    SVGParseStatus status =
-        ParseTransformArgumentsForType(transform_type, ptr, end, arguments);
+    SVGParseStatus status = ParseTransformArgumentsForType(
+        transform_type, chars, position, arguments);
     if (status != SVGParseStatus::kNoError) {
-      return SVGParsingError(status, ptr - start);
+      return SVGParsingError(status, position);
     }
     DCHECK_GE(arguments.size(),
               kRequiredValuesForType[static_cast<int>(transform_type)]);
 
-    if (!SkipOptionalSVGSpaces(ptr, end) || *ptr != ')') {
-      return SVGParsingError(SVGParseStatus::kExpectedEndOfArguments,
-                             ptr - start);
+    if (!SkipOptionalSVGSpaces(chars, position) || chars[position] != ')') {
+      return SVGParsingError(SVGParseStatus::kExpectedEndOfArguments, position);
     }
-    UNSAFE_TODO(ptr++);
+    ++position;
 
     Append(CreateTransformFromValues(transform_type, arguments));
 
-    if (SkipOptionalSVGSpaces(ptr, end) && *ptr == ',') {
-      UNSAFE_TODO(++ptr);
+    if (SkipOptionalSVGSpaces(chars, position) && chars[position] == ',') {
+      ++position;
       delim_parsed = true;
     }
   }
   if (delim_parsed) {
-    return SVGParsingError(SVGParseStatus::kTrailingGarbage, ptr - start);
+    return SVGParsingError(SVGParseStatus::kTrailingGarbage, position);
   }
   return SVGParseStatus::kNoError;
 }
 
-bool SVGTransformList::Parse(const UChar*& ptr, const UChar* end) {
-  return ParseInternal(ptr, end) == SVGParseStatus::kNoError;
+bool SVGTransformList::Parse(const base::span<const UChar> chars,
+                             size_t& position) {
+  return ParseInternal(chars, position) == SVGParseStatus::kNoError;
 }
 
-bool SVGTransformList::Parse(const LChar*& ptr, const LChar* end) {
-  return ParseInternal(ptr, end) == SVGParseStatus::kNoError;
+bool SVGTransformList::Parse(const base::span<const LChar> chars,
+                             size_t& position) {
+  return ParseInternal(chars, position) == SVGParseStatus::kNoError;
 }
 
 SVGTransformType ParseTransformType(const String& string) {
   if (string.empty())
     return SVGTransformType::kUnknown;
+  size_t position = 0;
   return VisitCharacters(string, [&](auto chars) {
-    const auto* start = chars.data();
-    return ParseAndSkipTransformType(start, start + chars.size());
+    return ParseAndSkipTransformType(chars, position);
   });
 }
 
@@ -423,10 +429,9 @@ SVGParsingError SVGTransformList::SetValueAsString(const String& value) {
     Clear();
     return SVGParseStatus::kNoError;
   }
-  SVGParsingError parse_error = VisitCharacters(value, [&](auto chars) {
-    const auto* start = chars.data();
-    return ParseInternal(start, start + chars.size());
-  });
+  size_t position = 0;
+  SVGParsingError parse_error = VisitCharacters(
+      value, [&](auto chars) { return ParseInternal(chars, position); });
   if (parse_error != SVGParseStatus::kNoError)
     Clear();
   return parse_error;
