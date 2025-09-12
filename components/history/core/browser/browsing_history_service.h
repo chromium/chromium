@@ -297,11 +297,11 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // Whether there are other forms of browsing history on the history server.
   bool has_other_forms_of_browsing_history_ = false;
 
-  raw_ptr<BrowsingHistoryDriver> driver_;
+  raw_ptr<BrowsingHistoryDriver, DanglingUntriaged> driver_;
 
-  raw_ptr<HistoryService> local_history_;
+  raw_ptr<HistoryService, DanglingUntriaged> local_history_;
 
-  raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_;
 
   // The clock used to vend times.
   std::unique_ptr<base::Clock> clock_;
