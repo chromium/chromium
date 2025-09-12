@@ -43,6 +43,7 @@ public class BaseSuggestionViewTest {
     private int mCompactSuggestionViewHeight;
     private int mDecorationIconWidthPx;
     private int mLargeDecorationIconWidthPx;
+    private int mSuggestionEndPaddingNoActionButtonPx;
 
     private BaseSuggestionViewForTest mView;
     private Activity mActivity;
@@ -116,6 +117,12 @@ public class BaseSuggestionViewTest {
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size_large);
+
+        mSuggestionEndPaddingNoActionButtonPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_suggestion_end_padding_no_action_button);
     }
 
     /**
@@ -374,7 +381,8 @@ public class BaseSuggestionViewTest {
         final int paddingEnd = 22;
 
         final int expectedContentLeft = paddingStart + mDecorationIconWidthPx;
-        final int expectedContentRight = giveSuggestionWidth - paddingEnd;
+        final int expectedContentRight =
+                giveSuggestionWidth - paddingEnd - mSuggestionEndPaddingNoActionButtonPx;
 
         mView.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
         executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_LTR);
@@ -402,7 +410,7 @@ public class BaseSuggestionViewTest {
         final int paddingStart = 57;
         final int paddingEnd = 31;
 
-        final int expectedContentLeft = paddingEnd;
+        final int expectedContentLeft = paddingEnd + mSuggestionEndPaddingNoActionButtonPx;
         final int expectedContentRight =
                 giveSuggestionWidth - paddingStart - mDecorationIconWidthPx;
 
