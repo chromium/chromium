@@ -42,6 +42,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -115,6 +116,8 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/420290639")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/420290639")
     public void testAccessorySheetHiddenUntilManuallyTriggered() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
@@ -157,6 +160,8 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/420290639")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/420290639")
     public void testAccessorySheetHiddenWhenRefocusingField() throws TimeoutException {
         AtomicReference<ViewGroup.MarginLayoutParams> accessoryMargins = new AtomicReference<>();
         AtomicReference<View> accessorySheetView = new AtomicReference<>();
@@ -293,6 +298,8 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/420290639")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/420290639")
     public void testResumingTheAppDismissesAllInputMethods() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
@@ -346,6 +353,8 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/420290639")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/420290639")
     public void testPressingBackButtonHidesAccessorySheet() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
