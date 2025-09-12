@@ -98,6 +98,14 @@ const Extension* RendererExtensionRegistry::GetExtensionOrAppByURL(
   return extensions_.GetExtensionOrAppByURL(url, include_guid);
 }
 
+scoped_refptr<const Extension>
+RendererExtensionRegistry::GetRefCountedExtensionOrAppByURL(
+    const GURL& url,
+    bool include_guid) const {
+  base::AutoLock lock(lock_);
+  return extensions_.GetExtensionOrAppByURL(url, include_guid);
+}
+
 const Extension* RendererExtensionRegistry::GetHostedAppByURL(
     const GURL& url) const {
   base::AutoLock lock(lock_);

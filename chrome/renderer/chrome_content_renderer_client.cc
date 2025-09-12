@@ -1630,9 +1630,11 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
 
   DCHECK(csp);
   GURL gurl(url);
-  const extensions::Extension* extension =
-      extensions::RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(
-          gurl);
+  // Use a scoped_refptr to keep the extension alive, since this code can be
+  // executed on a worker thread. See https://crbug.com/443038597.
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::RendererExtensionRegistry::Get()
+          ->GetRefCountedExtensionOrAppByURL(gurl);
   if (!extension)
     return;
 
