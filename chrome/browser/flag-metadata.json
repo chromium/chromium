@@ -5715,6 +5715,12 @@
     "expiry_milestone": 150
   },
   {
+    "name": "hide-toolbars-in-overflow-menu",
+    "owners": [
+    "alionadangla@chromium.org", "bling-flags@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "history-embeddings",
     "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
     "expiry_milestone": 145

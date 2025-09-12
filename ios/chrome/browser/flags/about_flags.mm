@@ -2930,6 +2930,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kAppBundlePromoEphemeralCard)},
+    {"hide-toolbars-in-overflow-menu",
+     flag_descriptions::kHideToolbarsInOverflowMenuName,
+     flag_descriptions::kHideToolbarsInOverflowMenuDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kHideToolbarsInOverflowMenu),
+    },
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

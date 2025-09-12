@@ -392,6 +392,9 @@ extern const char kBottomOmniboxDefaultSettingParamSafariSwitcher[];
 // Feature flag to change the default position of the omnibox.
 BASE_DECLARE_FEATURE(kBottomOmniboxDefaultSetting);
 
+// Feature flag the "Hide Toolbar" button in the overflow menu.
+BASE_DECLARE_FEATURE(kHideToolbarsInOverflowMenu);
+
 // Feature flag to enable improvdements in the bottom omnibox.
 BASE_DECLARE_FEATURE(kBottomOmniboxEvolution);
 
