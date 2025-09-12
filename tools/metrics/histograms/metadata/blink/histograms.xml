@@ -2867,7 +2867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.InputCharacterCount4" units="characters"
-    expires_after="2025-09-14">
+    expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <summary>
@@ -2882,7 +2882,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.IsParserPausingCalledAfterResuming"
-    enum="Boolean" expires_after="2026-01-25">
+    enum="Boolean" expires_after="2026-02-22">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2896,7 +2896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.IsParserResumingCalledBeforePausing"
-    enum="Boolean" expires_after="2026-01-11">
+    enum="Boolean" expires_after="2026-02-22">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2909,7 +2909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeMax4" units="microseconds"
-    expires_after="2026-01-18">
+    expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2925,7 +2925,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeMin4" units="microseconds"
-    expires_after="2025-09-14">
+    expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2983,7 +2983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TimeToDeferredPumpTokenizer4"
-    units="microseconds" expires_after="2024-12-24">
+    units="microseconds" expires_after="2026-02-22">
   <owner>sky@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <summary>
@@ -2994,11 +2994,14 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    WARNING: This histogram was expired from 2024-12-24 to 2025-09-12; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedAverage4" units="tokens"
-    expires_after="2025-09-14">
+    expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <summary>
@@ -3011,7 +3014,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedMax4" units="tokens"
-    expires_after="2025-01-31">
+    expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <summary>
@@ -3020,11 +3023,14 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    WARNING: This histogram was expired from 2025-01-31 to 2025-09-12; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedMin4" units="tokens"
-    expires_after="2025-01-31">
+    expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <summary>
@@ -3033,6 +3039,9 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    WARNING: This histogram was expired from 2025-01-31 to 2025-09-12; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -3062,7 +3071,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeAverage4" units="microseconds"
-    expires_after="2025-01-31">
+    expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <summary>
@@ -3072,11 +3081,14 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    WARNING: This histogram was expired from 2025-01-31 to 2025-09-12; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeByUserTiming" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-02-22">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3084,11 +3096,14 @@ chromium-metrics-reviews@google.com.
     and when it's resumed. Both pause and resume signals are triggered via
     performance.mark(). This is measured for the experiment in
     crbug.com/416543903.
+
+    WARNING: This histogram was expired from 2025-02-01 to 2025-09-12; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeMax4" units="microseconds"
-    expires_after="2025-01-31">
+    expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <summary>
@@ -3098,11 +3113,14 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    WARNING: This histogram was expired from 2025-01-31 to 2025-09-12; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeMin4" units="microseconds"
-    expires_after="2025-01-31">
+    expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <summary>
@@ -3112,6 +3130,9 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    WARNING: This histogram was expired from 2025-01-31 to 2025-09-12; data may
+    be missing.
   </summary>
 </histogram>
 
