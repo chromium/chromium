@@ -37,6 +37,12 @@
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
+
+// There is a circular GN dependency that is tricky to resolve. As the two GN
+// targets here are always built together in production and test contexts,
+// just allow this until we eliminate GpuMemoryBufferFactory entirely.
+// TODO(crbug.com/404905709): Eliminate GpuMemoryBufferFactory.
+#include "gpu/ipc/service/gpu_memory_buffer_factory.h"  // nogncheck
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -688,6 +694,18 @@ bool SharedImageFactory::CopyToGpuMemoryBuffer(const Mailbox& mailbox) {
   }
   return shared_image->CopyToGpuMemoryBuffer();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+gfx::GpuMemoryBufferHandle
+SharedImageFactory::CreateNativeGpuMemoryBufferHandle(
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    gfx::BufferUsage usage) {
+  auto* gmb_factory = shared_image_manager_->gpu_memory_buffer_factory();
+  CHECK(gmb_factory);
+  return gmb_factory->CreateNativeGmbHandle(size, format, usage);
+}
+#endif
 
 #if BUILDFLAG(IS_WIN)
 bool SharedImageFactory::CopyToGpuMemoryBufferAsync(

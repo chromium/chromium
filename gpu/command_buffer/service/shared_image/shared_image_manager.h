@@ -27,6 +27,7 @@ class D3DSharedFence;
 
 namespace gpu {
 class DXGISharedHandleManager;
+class GpuMemoryBufferFactory;
 class SharedImageRepresentationFactoryRef;
 
 class GPU_GLES2_EXPORT SharedImageManager
@@ -39,8 +40,10 @@ class GPU_GLES2_EXPORT SharedImageManager
   // SharedImages that will be used in the display context have thread-safe
   // backings and therefore it is safe to create representations on the thread
   // that holds the display context.
-  explicit SharedImageManager(bool thread_safe = false,
-                              bool display_context_on_another_thread = false);
+  explicit SharedImageManager(
+      bool thread_safe = false,
+      bool display_context_on_another_thread = false,
+      GpuMemoryBufferFactory* gpu_memory_buffer_factory = nullptr);
 
   SharedImageManager(const SharedImageManager&) = delete;
   SharedImageManager& operator=(const SharedImageManager&) = delete;
@@ -153,6 +156,13 @@ class GPU_GLES2_EXPORT SharedImageManager
     return display_context_on_another_thread_;
   }
 
+  GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
+    return gpu_memory_buffer_factory_;
+  }
+  void clear_gpu_memory_buffer_factory() {
+    gpu_memory_buffer_factory_ = nullptr;
+  }
+
   bool SupportsScanoutImages();
 
   // Returns the NativePixmap backing |mailbox|. Returns null if the SharedImage
@@ -192,6 +202,8 @@ class GPU_GLES2_EXPORT SharedImageManager
 #if BUILDFLAG(IS_OZONE)
   bool supports_overlays_on_ozone_ = false;
 #endif
+
+  raw_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 
   THREAD_CHECKER(thread_checker_);
 };

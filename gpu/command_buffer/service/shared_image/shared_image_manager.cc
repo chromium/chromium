@@ -239,15 +239,16 @@ class SCOPED_LOCKABLE SharedImageManager::AutoLock {
   base::AutoLockMaybe auto_lock_;
 };
 
-SharedImageManager::SharedImageManager(bool thread_safe,
-                                       bool display_context_on_another_thread)
-    : display_context_on_another_thread_(display_context_on_another_thread)
+SharedImageManager::SharedImageManager(
+    bool thread_safe,
+    bool display_context_on_another_thread,
+    GpuMemoryBufferFactory* gpu_memory_buffer_factory)
+    : display_context_on_another_thread_(display_context_on_another_thread),
 #if BUILDFLAG(IS_WIN)
-      ,
       dxgi_shared_handle_manager_(
-          base::MakeRefCounted<DXGISharedHandleManager>())
+          base::MakeRefCounted<DXGISharedHandleManager>()),
 #endif
-{
+      gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {
   DCHECK(!display_context_on_another_thread || thread_safe);
   if (thread_safe) {
     lock_.emplace();
