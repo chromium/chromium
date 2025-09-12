@@ -2368,12 +2368,6 @@ BASE_FEATURE(kInputMethodDeadKeyFixForNoInputField,
 // When enabled, dead keys correctly emit the 'Dead' event on key down.
 BASE_FEATURE(kInputMethodDeadKeyFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables bug fix for right alt keys for Korean input method.
-// When enabled, Right Alt will immediately toggle between Korean and English on
-// key down.
-BASE_FEATURE(kInputMethodKoreanRightAltKeyDownFix,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables peripheral customization to be split per device.
 BASE_FEATURE(kPeripheralCustomization, base::FEATURE_ENABLED_BY_DEFAULT);
 
