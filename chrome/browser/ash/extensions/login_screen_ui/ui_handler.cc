@@ -40,7 +40,7 @@ const char kErrorInvalidURL[] = "Login screen URL is not valid.";
 const char kErrorNotOnLoginOrLockScreen[] =
     "Windows can only be created on the login and lock screen.";
 
-const char kExtensionNameImprivata[] = "Imprivata OneSign";
+const char kExtensionNameImprivata[] = "Imprivata Enterprise Access Management";
 const char kExtensionNameImprivataTest[] = "LoginScreenUi test extension";
 
 std::string GetHardcodedExtensionName(const extensions::Extension* extension) {
