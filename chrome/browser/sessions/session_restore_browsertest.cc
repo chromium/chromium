@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <array>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/base_switches.h"
@@ -226,7 +222,8 @@ class SessionRestoreTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    if (strcmp(test_info->name(), "NoSessionRestoreNewWindowChromeOS") != 0) {
+    if (std::string_view(test_info->name()) !=
+        "NoSessionRestoreNewWindowChromeOS") {
       // Undo the effect of kBrowserAliveWithNoWindows in defaults.cc so that we
       // can get these test to work without quitting.
       SessionServiceTestHelper helper(browser()->profile());
@@ -416,7 +413,7 @@ class SmartSessionRestoreTest : public SessionRestoreTest {
 
  protected:
   static const size_t kExpectedNumTabs;
-  static const char* const kUrls[];
+  static const std::array<const char*, 6> kUrls;
 
  private:
   testing::ScopedAlwaysLoadSessionRestoreTestPolicy test_policy_;
@@ -425,7 +422,7 @@ class SmartSessionRestoreTest : public SessionRestoreTest {
 // static
 const size_t SmartSessionRestoreTest::kExpectedNumTabs = 6;
 // static
-const char* const SmartSessionRestoreTest::kUrls[] = {
+const std::array<const char*, 6> SmartSessionRestoreTest::kUrls = {
     "https://google.com/1", "https://google.com/2", "https://google.com/3",
     "https://google.com/4", "https://google.com/5", "https://google.com/6"};
 
