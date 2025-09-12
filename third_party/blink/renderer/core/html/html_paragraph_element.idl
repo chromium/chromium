@@ -19,9 +19,9 @@
 
 // https://html.spec.whatwg.org/C/#the-p-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLParagraphElement : HTMLElement {
+    [HTMLConstructor] constructor();
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLParagraphElement-partial
     [CEReactions, Reflect] attribute DOMString align;

@@ -19,9 +19,9 @@
 
 // https://html.spec.whatwg.org/C/#the-param-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLParamElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect] attribute DOMString value;
 

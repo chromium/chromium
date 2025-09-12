@@ -19,9 +19,9 @@
 
 // https://html.spec.whatwg.org/C/#the-script-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLScriptElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, URL, RaisesException=Setter] attribute (TrustedScriptURL or USVString) src;
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute boolean noModule;

@@ -24,9 +24,9 @@
 [
     Exposed=Window,
     LegacyOverrideBuiltIns,
-    ActiveScriptWrappable,
-    HTMLConstructor
+    ActiveScriptWrappable
 ] interface HTMLObjectElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, RaisesException=Setter, URL] attribute (TrustedScriptURL or USVString) data;
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute DOMString name;

@@ -20,9 +20,9 @@
 
 // https://html.spec.whatwg.org/C/#the-style-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLStyleElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [Measure] attribute boolean disabled;
     [CEReactions, Reflect] attribute DOMString media;
     [CEReactions, Reflect] attribute DOMString type;
