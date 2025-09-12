@@ -8169,50 +8169,43 @@
             return this.#windowId ?? 0;
         }
         async #unblock() {
-            try {
-                await Promise.all([
-                    this.#cdpClient.sendCommand('Page.enable', {
-                        enableFileChooserOpenedEvent: true,
-                    }),
-                    ...(this.#ignoreFileDialog()
-                        ? []
-                        : [
-                            this.#cdpClient.sendCommand('Page.setInterceptFileChooserDialog', {
-                                enabled: true,
-                                cancel: true,
-                            }),
-                        ]),
-                    this.#cdpClient
-                        .sendCommand('Page.getFrameTree')
-                        .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
-                    this.#cdpClient.sendCommand('Runtime.enable'),
-                    this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-                        enabled: true,
-                    }),
-                    this.#cdpClient
-                        .sendCommand('Network.enable')
-                        .then(() => this.toggleNetworkIfNeeded()),
-                    this.#cdpClient.sendCommand('Target.setAutoAttach', {
-                        autoAttach: true,
-                        waitForDebuggerOnStart: true,
-                        flatten: true,
-                    }),
-                    this.#updateWindowId(),
-                    this.#setUserContextConfig(),
-                    this.#initAndEvaluatePreloadScripts(),
-                    this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-                    this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-                    this.toggleDeviceAccessIfNeeded(),
-                ]);
-            }
-            catch (error) {
-                this.#logger?.(LogType.debugError, 'Failed to unblock target', error);
-                if (!this.#cdpClient.isCloseError(error)) {
-                    this.#unblocked.resolve({
-                        kind: 'error',
-                        error,
-                    });
-                    return;
+            const results = await Promise.allSettled([
+                this.#cdpClient.sendCommand('Page.enable', {
+                    enableFileChooserOpenedEvent: true,
+                }),
+                ...(this.#ignoreFileDialog()
+                    ? []
+                    : [
+                        this.#cdpClient.sendCommand('Page.setInterceptFileChooserDialog', {
+                            enabled: true,
+                            cancel: true,
+                        }),
+                    ]),
+                this.#cdpClient
+                    .sendCommand('Page.getFrameTree')
+                    .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
+                this.#cdpClient.sendCommand('Runtime.enable'),
+                this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+                    enabled: true,
+                }),
+                this.#cdpClient
+                    .sendCommand('Network.enable')
+                    .then(() => this.toggleNetworkIfNeeded()),
+                this.#cdpClient.sendCommand('Target.setAutoAttach', {
+                    autoAttach: true,
+                    waitForDebuggerOnStart: true,
+                    flatten: true,
+                }),
+                this.#updateWindowId(),
+                this.#setUserContextConfig(),
+                this.#initAndEvaluatePreloadScripts(),
+                this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+                this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+                this.toggleDeviceAccessIfNeeded(),
+            ]);
+            for (const result of results) {
+                if (result instanceof Error) {
+                    this.#logger?.(LogType.debugError, 'Error happened when configuring a new target', result);
                 }
             }
             this.#unblocked.resolve({
@@ -8751,6 +8744,7 @@
                 case 'worker': {
                     const realm = this.#realmStorage.findRealm({
                         cdpSessionId: parentSessionCdpClient.sessionId,
+                        sandbox: null,
                     });
                     if (!realm) {
                         void detach();
@@ -9051,6 +9045,12 @@
         }
         get cdpTarget() {
             return this.#cdpTarget;
+        }
+        updateCdpTarget(cdpTarget) {
+            if (cdpTarget !== this.#cdpTarget) {
+                this.#logger?.(LogType.debugInfo, `Request ${this.id} was moved from ${this.#cdpTarget.id} to ${cdpTarget.id}`);
+                this.#cdpTarget = cdpTarget;
+            }
         }
         get cdpClient() {
             return this.#cdpTarget.cdpClient;
@@ -9510,10 +9510,12 @@
             if (this.#response.info?.fromDiskCache) {
                 this.#response.extraInfo = undefined;
             }
-            const headers = [
-                ...bidiNetworkHeadersFromCdpNetworkHeaders(this.#response.info?.headers),
-                ...bidiNetworkHeadersFromCdpNetworkHeaders(this.#response.extraInfo?.headers),
-            ];
+            const cdpHeaders = this.#response.info?.headers ?? {};
+            const cdpRawHeaders = this.#response.extraInfo?.headers ?? {};
+            for (const [key, value] of Object.entries(cdpRawHeaders)) {
+                cdpHeaders[key] = value;
+            }
+            const headers = bidiNetworkHeadersFromCdpNetworkHeaders(cdpHeaders);
             const authChallenges = this.#authChallenges;
             const response = {
                 url: this.url,
@@ -9726,6 +9728,7 @@
                     'Network.requestWillBeSent',
                     (params) => {
                         const request = this.getRequestById(params.requestId);
+                        request?.updateCdpTarget(cdpTarget);
                         if (request && request.isRedirecting()) {
                             request.handleRedirect(params);
                             this.disposeRequest(params.requestId);
@@ -9739,38 +9742,50 @@
                 [
                     'Network.requestWillBeSentExtraInfo',
                     (params) => {
-                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onRequestWillBeSentExtraInfoEvent(params);
+                        const request = this.#getOrCreateNetworkRequest(params.requestId, cdpTarget);
+                        request.updateCdpTarget(cdpTarget);
+                        request.onRequestWillBeSentExtraInfoEvent(params);
                     },
                 ],
                 [
                     'Network.responseReceived',
                     (params) => {
-                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onResponseReceivedEvent(params);
+                        const request = this.#getOrCreateNetworkRequest(params.requestId, cdpTarget);
+                        request.updateCdpTarget(cdpTarget);
+                        request.onResponseReceivedEvent(params);
                     },
                 ],
                 [
                     'Network.responseReceivedExtraInfo',
                     (params) => {
-                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onResponseReceivedExtraInfoEvent(params);
+                        const request = this.#getOrCreateNetworkRequest(params.requestId, cdpTarget);
+                        request.updateCdpTarget(cdpTarget);
+                        request.onResponseReceivedExtraInfoEvent(params);
                     },
                 ],
                 [
                     'Network.requestServedFromCache',
                     (params) => {
-                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onServedFromCache();
+                        const request = this.#getOrCreateNetworkRequest(params.requestId, cdpTarget);
+                        request.updateCdpTarget(cdpTarget);
+                        request.onServedFromCache();
                     },
                 ],
                 [
                     'Network.loadingFailed',
                     (params) => {
-                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onLoadingFailedEvent(params);
+                        const request = this.#getOrCreateNetworkRequest(params.requestId, cdpTarget);
+                        request.updateCdpTarget(cdpTarget);
+                        request.onLoadingFailedEvent(params);
                     },
                 ],
                 [
                     'Fetch.requestPaused',
                     (event) => {
-                        this.#getOrCreateNetworkRequest(
-                        event.networkId ?? event.requestId, cdpTarget).onRequestPaused(event);
+                        const request = this.#getOrCreateNetworkRequest(
+                        event.networkId ?? event.requestId, cdpTarget);
+                        request.updateCdpTarget(cdpTarget);
+                        request.onRequestPaused(event);
                     },
                 ],
                 [
@@ -9780,7 +9795,20 @@
                         if (!request) {
                             request = this.#getOrCreateNetworkRequest(event.requestId, cdpTarget);
                         }
+                        request.updateCdpTarget(cdpTarget);
                         request.onAuthRequired(event);
+                    },
+                ],
+                [
+                    'Network.dataReceived',
+                    (params) => {
+                        this.getRequestById(params.requestId)?.updateCdpTarget(cdpTarget);
+                    },
+                ],
+                [
+                    'Network.loadingFinished',
+                    (params) => {
+                        this.getRequestById(params.requestId)?.updateCdpTarget(cdpTarget);
                     },
                 ],
             ];
@@ -9831,8 +9859,11 @@
             }
             const responseBody = await request.cdpClient.sendCommand('Network.getResponseBody', { requestId: request.id });
             if (params.disown && params.collector !== undefined) {
-                this.#requestCollectors.delete(params.request);
-                this.disposeRequest(request.id);
+                requestCollectors.delete(params.collector);
+                if (requestCollectors.size === 0) {
+                    this.#requestCollectors.delete(params.request);
+                    this.disposeRequest(request.id);
+                }
             }
             return {
                 bytes: {
@@ -10082,6 +10113,7 @@
             this.#realmMap.set(realm.realmId, realm);
         }
         findRealms(filter) {
+            const sandboxFilterValue = filter.sandbox === null ? undefined : filter.sandbox;
             return Array.from(this.#realmMap.values()).filter((realm) => {
                 if (filter.realmId !== undefined && filter.realmId !== realm.realmId) {
                     return false;
@@ -10093,7 +10125,8 @@
                     return false;
                 }
                 if (filter.sandbox !== undefined &&
-                    (!(realm instanceof WindowRealm) || filter.sandbox !== realm.sandbox)) {
+                    (!(realm instanceof WindowRealm) ||
+                        sandboxFilterValue !== realm.sandbox)) {
                     return false;
                 }
                 if (filter.executionContextId !== undefined &&
@@ -10118,11 +10151,7 @@
             });
         }
         findRealm(filter) {
-            const maybeRealms = this.findRealms(filter);
-            if (maybeRealms.length !== 1) {
-                return undefined;
-            }
-            return maybeRealms[0];
+            return this.findRealms(filter)[0];
         }
         getRealm(filter) {
             const maybeRealm = this.findRealm(filter);
@@ -15436,32 +15465,12 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    const EventSchema = z.lazy(() => z
-        .object({
-        type: z.literal('event'),
-    })
-        .and(EventDataSchema)
-        .and(ExtensibleSchema));
     z.lazy(() => z
         .object({
         id: JsUintSchema,
     })
         .and(CommandDataSchema)
         .and(ExtensibleSchema));
-    const CommandResponseSchema = z.lazy(() => z
-        .object({
-        type: z.literal('success'),
-        id: JsUintSchema,
-        result: ResultDataSchema,
-    })
-        .and(ExtensibleSchema));
-    const EventDataSchema = z.lazy(() => z.union([
-        BrowsingContextEventSchema,
-        InputEventSchema,
-        LogEventSchema,
-        NetworkEventSchema,
-        ScriptEventSchema,
-    ]));
     const CommandDataSchema = z.lazy(() => z.union([
         BrowserCommandSchema,
         BrowsingContextCommandSchema,
@@ -15473,17 +15482,15 @@
         StorageCommandSchema,
         WebExtensionCommandSchema,
     ]));
-    const ResultDataSchema = z.lazy(() => z.union([
-        BrowsingContextResultSchema,
-        EmptyResultSchema,
-        NetworkResultSchema,
-        ScriptResultSchema,
-        SessionResultSchema,
-        StorageResultSchema,
-        WebExtensionResultSchema,
-    ]));
     const EmptyParamsSchema = z.lazy(() => ExtensibleSchema);
     z.lazy(() => z.union([CommandResponseSchema, ErrorResponseSchema, EventSchema]));
+    const CommandResponseSchema = z.lazy(() => z
+        .object({
+        type: z.literal('success'),
+        id: JsUintSchema,
+        result: ResultDataSchema,
+    })
+        .and(ExtensibleSchema));
     const ErrorResponseSchema = z.lazy(() => z
         .object({
         type: z.literal('error'),
@@ -15493,7 +15500,29 @@
         stacktrace: z.string().optional(),
     })
         .and(ExtensibleSchema));
+    const ResultDataSchema = z.lazy(() => z.union([
+        BrowsingContextResultSchema,
+        EmptyResultSchema,
+        NetworkResultSchema,
+        ScriptResultSchema,
+        SessionResultSchema,
+        StorageResultSchema,
+        WebExtensionResultSchema,
+    ]));
     const EmptyResultSchema = z.lazy(() => ExtensibleSchema);
+    const EventSchema = z.lazy(() => z
+        .object({
+        type: z.literal('event'),
+    })
+        .and(EventDataSchema)
+        .and(ExtensibleSchema));
+    const EventDataSchema = z.lazy(() => z.union([
+        BrowsingContextEventSchema,
+        InputEventSchema,
+        LogEventSchema,
+        NetworkEventSchema,
+        ScriptEventSchema,
+    ]));
     const ExtensibleSchema = z.lazy(() => z.record(z.string(), z.any()));
     const JsIntSchema = z
         .number()
@@ -15544,21 +15573,12 @@
         Session$1.SubscribeSchema,
         Session$1.UnsubscribeSchema,
     ]));
-    var Session$1;
-    (function (Session) {
-        Session.ProxyConfigurationSchema = z.lazy(() => z.union([
-            Session.AutodetectProxyConfigurationSchema,
-            Session.DirectProxyConfigurationSchema,
-            Session.ManualProxyConfigurationSchema,
-            Session.PacProxyConfigurationSchema,
-            Session.SystemProxyConfigurationSchema,
-        ]));
-    })(Session$1 || (Session$1 = {}));
     const SessionResultSchema = z.lazy(() => z.union([
         Session$1.NewResultSchema,
         Session$1.StatusResultSchema,
         Session$1.SubscribeResultSchema,
     ]));
+    var Session$1;
     (function (Session) {
         Session.CapabilitiesRequestSchema = z.lazy(() => z.object({
             alwaysMatch: Session.CapabilityRequestSchema.optional(),
@@ -15576,6 +15596,15 @@
             unhandledPromptBehavior: Session.UserPromptHandlerSchema.optional(),
         })
             .and(ExtensibleSchema));
+    })(Session$1 || (Session$1 = {}));
+    (function (Session) {
+        Session.ProxyConfigurationSchema = z.lazy(() => z.union([
+            Session.AutodetectProxyConfigurationSchema,
+            Session.DirectProxyConfigurationSchema,
+            Session.ManualProxyConfigurationSchema,
+            Session.PacProxyConfigurationSchema,
+            Session.SystemProxyConfigurationSchema,
+        ]));
     })(Session$1 || (Session$1 = {}));
     (function (Session) {
         Session.AutodetectProxyConfigurationSchema = z.lazy(() => z
@@ -15869,6 +15898,15 @@
         BrowsingContext$1.SetViewportSchema,
         BrowsingContext$1.TraverseHistorySchema,
     ]));
+    const BrowsingContextResultSchema = z.lazy(() => z.union([
+        BrowsingContext$1.CaptureScreenshotResultSchema,
+        BrowsingContext$1.CreateResultSchema,
+        BrowsingContext$1.GetTreeResultSchema,
+        BrowsingContext$1.LocateNodesResultSchema,
+        BrowsingContext$1.NavigateResultSchema,
+        BrowsingContext$1.PrintResultSchema,
+        BrowsingContext$1.TraverseHistoryResultSchema,
+    ]));
     const BrowsingContextEventSchema = z.lazy(() => z.union([
         BrowsingContext$1.ContextCreatedSchema,
         BrowsingContext$1.ContextDestroyedSchema,
@@ -15884,15 +15922,6 @@
         BrowsingContext$1.NavigationStartedSchema,
         BrowsingContext$1.UserPromptClosedSchema,
         BrowsingContext$1.UserPromptOpenedSchema,
-    ]));
-    const BrowsingContextResultSchema = z.lazy(() => z.union([
-        BrowsingContext$1.CaptureScreenshotResultSchema,
-        BrowsingContext$1.CreateResultSchema,
-        BrowsingContext$1.GetTreeResultSchema,
-        BrowsingContext$1.LocateNodesResultSchema,
-        BrowsingContext$1.NavigateResultSchema,
-        BrowsingContext$1.PrintResultSchema,
-        BrowsingContext$1.TraverseHistoryResultSchema,
     ]));
     var BrowsingContext$1;
     (function (BrowsingContext) {
@@ -15996,17 +16025,17 @@
         }));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
+        BrowsingContext.CaptureScreenshotSchema = z.lazy(() => z.object({
+            method: z.literal('browsingContext.captureScreenshot'),
+            params: BrowsingContext.CaptureScreenshotParametersSchema,
+        }));
+    })(BrowsingContext$1 || (BrowsingContext$1 = {}));
+    (function (BrowsingContext) {
         BrowsingContext.CaptureScreenshotParametersSchema = z.lazy(() => z.object({
             context: BrowsingContext.BrowsingContextSchema,
             origin: z.enum(['viewport', 'document']).default('viewport').optional(),
             format: BrowsingContext.ImageFormatSchema.optional(),
             clip: BrowsingContext.ClipRectangleSchema.optional(),
-        }));
-    })(BrowsingContext$1 || (BrowsingContext$1 = {}));
-    (function (BrowsingContext) {
-        BrowsingContext.CaptureScreenshotSchema = z.lazy(() => z.object({
-            method: z.literal('browsingContext.captureScreenshot'),
-            params: BrowsingContext.CaptureScreenshotParametersSchema,
         }));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
@@ -16106,18 +16135,18 @@
         }));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
+        BrowsingContext.LocateNodesSchema = z.lazy(() => z.object({
+            method: z.literal('browsingContext.locateNodes'),
+            params: BrowsingContext.LocateNodesParametersSchema,
+        }));
+    })(BrowsingContext$1 || (BrowsingContext$1 = {}));
+    (function (BrowsingContext) {
         BrowsingContext.LocateNodesParametersSchema = z.lazy(() => z.object({
             context: BrowsingContext.BrowsingContextSchema,
             locator: BrowsingContext.LocatorSchema,
             maxNodeCount: JsUintSchema.gte(1).optional(),
             serializationOptions: Script$1.SerializationOptionsSchema.optional(),
             startNodes: z.array(Script$1.SharedReferenceSchema).min(1).optional(),
-        }));
-    })(BrowsingContext$1 || (BrowsingContext$1 = {}));
-    (function (BrowsingContext) {
-        BrowsingContext.LocateNodesSchema = z.lazy(() => z.object({
-            method: z.literal('browsingContext.locateNodes'),
-            params: BrowsingContext.LocateNodesParametersSchema,
         }));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
@@ -16539,6 +16568,7 @@
         Network$1.SetCacheBehaviorSchema,
         Network$1.SetExtraHeadersSchema,
     ]));
+    const NetworkResultSchema = z.lazy(() => Network$1.AddInterceptResultSchema);
     const NetworkEventSchema = z.lazy(() => z.union([
         Network$1.AuthRequiredSchema,
         Network$1.BeforeRequestSentSchema,
@@ -16546,7 +16576,6 @@
         Network$1.ResponseCompletedSchema,
         Network$1.ResponseStartedSchema,
     ]));
-    const NetworkResultSchema = z.lazy(() => Network$1.AddInterceptResultSchema);
     var Network$1;
     (function (Network) {
         Network.AuthChallengeSchema = z.lazy(() => z.object({
@@ -16749,6 +16778,12 @@
         }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
+        Network.AddInterceptSchema = z.lazy(() => z.object({
+            method: z.literal('network.addIntercept'),
+            params: Network.AddInterceptParametersSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
         Network.AddInterceptParametersSchema = z.lazy(() => z.object({
             phases: z.array(Network.InterceptPhaseSchema).min(1),
             contexts: z
@@ -16756,12 +16791,6 @@
                 .min(1)
                 .optional(),
             urlPatterns: z.array(Network.UrlPatternSchema).optional(),
-        }));
-    })(Network$1 || (Network$1 = {}));
-    (function (Network) {
-        Network.AddInterceptSchema = z.lazy(() => z.object({
-            method: z.literal('network.addIntercept'),
-            params: Network.AddInterceptParametersSchema,
         }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
@@ -16943,15 +16972,22 @@
             userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
         }));
     })(Network$1 || (Network$1 = {}));
-    const ScriptEventSchema = z.lazy(() => z.union([
-        Script$1.MessageSchema,
-        Script$1.RealmCreatedSchema,
-        Script$1.RealmDestroyedSchema,
-    ]));
+    (function (Network) {
+        Network.AuthRequiredSchema = z.lazy(() => z.object({
+            method: z.literal('network.authRequired'),
+            params: Network.AuthRequiredParametersSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.AuthRequiredParametersSchema = z.lazy(() => Network.BaseParametersSchema.and(z.object({
             response: Network.ResponseDataSchema,
         })));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.BeforeRequestSentSchema = z.lazy(() => z.object({
+            method: z.literal('network.beforeRequestSent'),
+            params: Network.BeforeRequestSentParametersSchema,
+        }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.BeforeRequestSentParametersSchema = z.lazy(() => Network.BaseParametersSchema.and(z.object({
@@ -16959,14 +16995,32 @@
         })));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
+        Network.FetchErrorSchema = z.lazy(() => z.object({
+            method: z.literal('network.fetchError'),
+            params: Network.FetchErrorParametersSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
         Network.FetchErrorParametersSchema = z.lazy(() => Network.BaseParametersSchema.and(z.object({
             errorText: z.string(),
         })));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
+        Network.ResponseCompletedSchema = z.lazy(() => z.object({
+            method: z.literal('network.responseCompleted'),
+            params: Network.ResponseCompletedParametersSchema,
+        }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
         Network.ResponseCompletedParametersSchema = z.lazy(() => Network.BaseParametersSchema.and(z.object({
             response: Network.ResponseDataSchema,
         })));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.ResponseStartedSchema = z.lazy(() => z.object({
+            method: z.literal('network.responseStarted'),
+            params: Network.ResponseStartedParametersSchema,
+        }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.ResponseStartedParametersSchema = z.lazy(() => Network.BaseParametersSchema.and(z.object({
@@ -16986,55 +17040,14 @@
         Script$1.EvaluateResultSchema,
         Script$1.GetRealmsResultSchema,
     ]));
-    (function (Network) {
-        Network.AuthRequiredSchema = z.lazy(() => z.object({
-            method: z.literal('network.authRequired'),
-            params: Network.AuthRequiredParametersSchema,
-        }));
-    })(Network$1 || (Network$1 = {}));
-    (function (Network) {
-        Network.BeforeRequestSentSchema = z.lazy(() => z.object({
-            method: z.literal('network.beforeRequestSent'),
-            params: Network.BeforeRequestSentParametersSchema,
-        }));
-    })(Network$1 || (Network$1 = {}));
-    (function (Network) {
-        Network.FetchErrorSchema = z.lazy(() => z.object({
-            method: z.literal('network.fetchError'),
-            params: Network.FetchErrorParametersSchema,
-        }));
-    })(Network$1 || (Network$1 = {}));
-    (function (Network) {
-        Network.ResponseCompletedSchema = z.lazy(() => z.object({
-            method: z.literal('network.responseCompleted'),
-            params: Network.ResponseCompletedParametersSchema,
-        }));
-    })(Network$1 || (Network$1 = {}));
-    (function (Network) {
-        Network.ResponseStartedSchema = z.lazy(() => z.object({
-            method: z.literal('network.responseStarted'),
-            params: Network.ResponseStartedParametersSchema,
-        }));
-    })(Network$1 || (Network$1 = {}));
+    const ScriptEventSchema = z.lazy(() => z.union([
+        Script$1.MessageSchema,
+        Script$1.RealmCreatedSchema,
+        Script$1.RealmDestroyedSchema,
+    ]));
     var Script$1;
     (function (Script) {
         Script.ChannelSchema = z.lazy(() => z.string());
-    })(Script$1 || (Script$1 = {}));
-    (function (Script) {
-        Script.EvaluateResultSuccessSchema = z.lazy(() => z.object({
-            type: z.literal('success'),
-            result: Script.RemoteValueSchema,
-            realm: Script.RealmSchema,
-        }));
-    })(Script$1 || (Script$1 = {}));
-    (function (Script) {
-        Script.ExceptionDetailsSchema = z.lazy(() => z.object({
-            columnNumber: JsUintSchema,
-            exception: Script.RemoteValueSchema,
-            lineNumber: JsUintSchema,
-            stackTrace: Script.StackTraceSchema,
-            text: z.string(),
-        }));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
         Script.ChannelValueSchema = z.lazy(() => z.object({
@@ -17056,6 +17069,13 @@
         ]));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
+        Script.EvaluateResultSuccessSchema = z.lazy(() => z.object({
+            type: z.literal('success'),
+            result: Script.RemoteValueSchema,
+            realm: Script.RealmSchema,
+        }));
+    })(Script$1 || (Script$1 = {}));
+    (function (Script) {
         Script.EvaluateResultExceptionSchema = z.lazy(() => z.object({
             type: z.literal('exception'),
             exceptionDetails: Script.ExceptionDetailsSchema,
@@ -17063,13 +17083,19 @@
         }));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
+        Script.ExceptionDetailsSchema = z.lazy(() => z.object({
+            columnNumber: JsUintSchema,
+            exception: Script.RemoteValueSchema,
+            lineNumber: JsUintSchema,
+            stackTrace: Script.StackTraceSchema,
+            text: z.string(),
+        }));
+    })(Script$1 || (Script$1 = {}));
+    (function (Script) {
         Script.HandleSchema = z.lazy(() => z.string());
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
         Script.InternalIdSchema = z.lazy(() => z.string());
-    })(Script$1 || (Script$1 = {}));
-    (function (Script) {
-        Script.ListLocalValueSchema = z.lazy(() => z.array(Script.LocalValueSchema));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
         Script.LocalValueSchema = z.lazy(() => z.union([
@@ -17083,6 +17109,9 @@
             Script.RegExpLocalValueSchema,
             Script.SetLocalValueSchema,
         ]));
+    })(Script$1 || (Script$1 = {}));
+    (function (Script) {
+        Script.ListLocalValueSchema = z.lazy(() => z.array(Script.LocalValueSchema));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
         Script.ArrayLocalValueSchema = z.lazy(() => z.object({
@@ -17259,13 +17288,23 @@
         ]));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
-        Script.ListRemoteValueSchema = z.lazy(() => z.array(Script.RemoteValueSchema));
+        Script.RemoteReferenceSchema = z.lazy(() => z.union([Script.SharedReferenceSchema, Script.RemoteObjectReferenceSchema]));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
-        Script.MappingRemoteValueSchema = z.lazy(() => z.array(z.tuple([
-            z.union([Script.RemoteValueSchema, z.string()]),
-            Script.RemoteValueSchema,
-        ])));
+        Script.SharedReferenceSchema = z.lazy(() => z
+            .object({
+            sharedId: Script.SharedIdSchema,
+            handle: Script.HandleSchema.optional(),
+        })
+            .and(ExtensibleSchema));
+    })(Script$1 || (Script$1 = {}));
+    (function (Script) {
+        Script.RemoteObjectReferenceSchema = z.lazy(() => z
+            .object({
+            handle: Script.HandleSchema,
+            sharedId: Script.SharedIdSchema.optional(),
+        })
+            .and(ExtensibleSchema));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
         Script.RemoteValueSchema = z.lazy(() => z.union([
@@ -17293,23 +17332,13 @@
         ]));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
-        Script.RemoteReferenceSchema = z.lazy(() => z.union([Script.SharedReferenceSchema, Script.RemoteObjectReferenceSchema]));
+        Script.ListRemoteValueSchema = z.lazy(() => z.array(Script.RemoteValueSchema));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
-        Script.SharedReferenceSchema = z.lazy(() => z
-            .object({
-            sharedId: Script.SharedIdSchema,
-            handle: Script.HandleSchema.optional(),
-        })
-            .and(ExtensibleSchema));
-    })(Script$1 || (Script$1 = {}));
-    (function (Script) {
-        Script.RemoteObjectReferenceSchema = z.lazy(() => z
-            .object({
-            handle: Script.HandleSchema,
-            sharedId: Script.SharedIdSchema.optional(),
-        })
-            .and(ExtensibleSchema));
+        Script.MappingRemoteValueSchema = z.lazy(() => z.array(z.tuple([
+            z.union([Script.RemoteValueSchema, z.string()]),
+            Script.RemoteValueSchema,
+        ])));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
         Script.SymbolRemoteValueSchema = z.lazy(() => z.object({
@@ -17564,6 +17593,12 @@
         }));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
+        Script.CallFunctionSchema = z.lazy(() => z.object({
+            method: z.literal('script.callFunction'),
+            params: Script.CallFunctionParametersSchema,
+        }));
+    })(Script$1 || (Script$1 = {}));
+    (function (Script) {
         Script.CallFunctionParametersSchema = z.lazy(() => z.object({
             functionDeclaration: z.string(),
             awaitPromise: z.boolean(),
@@ -17573,12 +17608,6 @@
             serializationOptions: Script.SerializationOptionsSchema.optional(),
             this: Script.LocalValueSchema.optional(),
             userActivation: z.boolean().default(false).optional(),
-        }));
-    })(Script$1 || (Script$1 = {}));
-    (function (Script) {
-        Script.CallFunctionSchema = z.lazy(() => z.object({
-            method: z.literal('script.callFunction'),
-            params: Script.CallFunctionParametersSchema,
         }));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
@@ -17626,6 +17655,12 @@
         }));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
+        Script.MessageSchema = z.lazy(() => z.object({
+            method: z.literal('script.message'),
+            params: Script.MessageParametersSchema,
+        }));
+    })(Script$1 || (Script$1 = {}));
+    (function (Script) {
         Script.MessageParametersSchema = z.lazy(() => z.object({
             channel: Script.ChannelSchema,
             data: Script.RemoteValueSchema,
@@ -17636,12 +17671,6 @@
         Script.RealmCreatedSchema = z.lazy(() => z.object({
             method: z.literal('script.realmCreated'),
             params: Script.RealmInfoSchema,
-        }));
-    })(Script$1 || (Script$1 = {}));
-    (function (Script) {
-        Script.MessageSchema = z.lazy(() => z.object({
-            method: z.literal('script.message'),
-            params: Script.MessageParametersSchema,
         }));
     })(Script$1 || (Script$1 = {}));
     (function (Script) {
@@ -17834,37 +17863,15 @@
         }));
     })(Input$1 || (Input$1 = {}));
     (function (Input) {
-        Input.PerformActionsParametersSchema = z.lazy(() => z.object({
-            context: BrowsingContext$1.BrowsingContextSchema,
-            actions: z.array(Input.SourceActionsSchema),
-        }));
-    })(Input$1 || (Input$1 = {}));
-    (function (Input) {
-        Input.NoneSourceActionsSchema = z.lazy(() => z.object({
-            type: z.literal('none'),
-            id: z.string(),
-            actions: z.array(Input.NoneSourceActionSchema),
-        }));
-    })(Input$1 || (Input$1 = {}));
-    (function (Input) {
-        Input.KeySourceActionsSchema = z.lazy(() => z.object({
-            type: z.literal('key'),
-            id: z.string(),
-            actions: z.array(Input.KeySourceActionSchema),
-        }));
-    })(Input$1 || (Input$1 = {}));
-    (function (Input) {
-        Input.PointerSourceActionsSchema = z.lazy(() => z.object({
-            type: z.literal('pointer'),
-            id: z.string(),
-            parameters: Input.PointerParametersSchema.optional(),
-            actions: z.array(Input.PointerSourceActionSchema),
-        }));
-    })(Input$1 || (Input$1 = {}));
-    (function (Input) {
         Input.PerformActionsSchema = z.lazy(() => z.object({
             method: z.literal('input.performActions'),
             params: Input.PerformActionsParametersSchema,
+        }));
+    })(Input$1 || (Input$1 = {}));
+    (function (Input) {
+        Input.PerformActionsParametersSchema = z.lazy(() => z.object({
+            context: BrowsingContext$1.BrowsingContextSchema,
+            actions: z.array(Input.SourceActionsSchema),
         }));
     })(Input$1 || (Input$1 = {}));
     (function (Input) {
@@ -17876,7 +17883,21 @@
         ]));
     })(Input$1 || (Input$1 = {}));
     (function (Input) {
+        Input.NoneSourceActionsSchema = z.lazy(() => z.object({
+            type: z.literal('none'),
+            id: z.string(),
+            actions: z.array(Input.NoneSourceActionSchema),
+        }));
+    })(Input$1 || (Input$1 = {}));
+    (function (Input) {
         Input.NoneSourceActionSchema = z.lazy(() => Input.PauseActionSchema);
+    })(Input$1 || (Input$1 = {}));
+    (function (Input) {
+        Input.KeySourceActionsSchema = z.lazy(() => z.object({
+            type: z.literal('key'),
+            id: z.string(),
+            actions: z.array(Input.KeySourceActionSchema),
+        }));
     })(Input$1 || (Input$1 = {}));
     (function (Input) {
         Input.KeySourceActionSchema = z.lazy(() => z.union([
@@ -17884,6 +17905,14 @@
             Input.KeyDownActionSchema,
             Input.KeyUpActionSchema,
         ]));
+    })(Input$1 || (Input$1 = {}));
+    (function (Input) {
+        Input.PointerSourceActionsSchema = z.lazy(() => z.object({
+            type: z.literal('pointer'),
+            id: z.string(),
+            parameters: Input.PointerParametersSchema.optional(),
+            actions: z.array(Input.PointerSourceActionSchema),
+        }));
     })(Input$1 || (Input$1 = {}));
     (function (Input) {
         Input.PointerTypeSchema = z.lazy(() => z.enum(['mouse', 'pen', 'touch']));
@@ -17894,19 +17923,19 @@
         }));
     })(Input$1 || (Input$1 = {}));
     (function (Input) {
-        Input.WheelSourceActionsSchema = z.lazy(() => z.object({
-            type: z.literal('wheel'),
-            id: z.string(),
-            actions: z.array(Input.WheelSourceActionSchema),
-        }));
-    })(Input$1 || (Input$1 = {}));
-    (function (Input) {
         Input.PointerSourceActionSchema = z.lazy(() => z.union([
             Input.PauseActionSchema,
             Input.PointerDownActionSchema,
             Input.PointerUpActionSchema,
             Input.PointerMoveActionSchema,
         ]));
+    })(Input$1 || (Input$1 = {}));
+    (function (Input) {
+        Input.WheelSourceActionsSchema = z.lazy(() => z.object({
+            type: z.literal('wheel'),
+            id: z.string(),
+            actions: z.array(Input.WheelSourceActionSchema),
+        }));
     })(Input$1 || (Input$1 = {}));
     (function (Input) {
         Input.WheelSourceActionSchema = z.lazy(() => z.union([Input.PauseActionSchema, Input.WheelScrollActionSchema]));
@@ -18044,14 +18073,14 @@
         WebExtension.ExtensionSchema = z.lazy(() => z.string());
     })(WebExtension || (WebExtension = {}));
     (function (WebExtension) {
-        WebExtension.InstallParametersSchema = z.lazy(() => z.object({
-            extensionData: WebExtension.ExtensionDataSchema,
-        }));
-    })(WebExtension || (WebExtension = {}));
-    (function (WebExtension) {
         WebExtension.InstallSchema = z.lazy(() => z.object({
             method: z.literal('webExtension.install'),
             params: WebExtension.InstallParametersSchema,
+        }));
+    })(WebExtension || (WebExtension = {}));
+    (function (WebExtension) {
+        WebExtension.InstallParametersSchema = z.lazy(() => z.object({
+            extensionData: WebExtension.ExtensionDataSchema,
         }));
     })(WebExtension || (WebExtension = {}));
     (function (WebExtension) {
