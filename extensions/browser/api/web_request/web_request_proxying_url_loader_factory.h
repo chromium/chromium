@@ -360,6 +360,7 @@ class WebRequestProxyingURLLoaderFactory
 
   bool IsForServiceWorkerScript() const;
   bool IsForDownload() const;
+  bool IsForPrefetch() const;
 
   static void EnsureAssociatedFactoryBuilt();
 
