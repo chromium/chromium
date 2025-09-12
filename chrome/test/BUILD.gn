@@ -1524,13 +1524,11 @@ source_set("platform_browser_tests") {
         [ "//chrome/browser/web_applications:web_applications_test_support" ]
   }
 
-  if (!is_chromeos) {
-    sources += [ "../browser/enterprise/remote_commands/user_remote_commands_service_browsertest.cc" ]
-  }
-
   if (is_chromeos) {
     sources +=
         [ "../browser/metrics/cros_pre_consent_metrics_manager_browsertest.cc" ]
+  } else {
+    sources += [ "../browser/enterprise/remote_commands/user_remote_commands_service_browsertest.cc" ]
   }
 
   if (!is_android || enable_desktop_android_extensions) {
@@ -1670,15 +1668,17 @@ source_set("platform_browser_tests") {
       "//ui/base/idle:test_support",
       "//ui/webui:test_support",
     ]
+
+    data += [
+      "//chrome/test/data/extensions/",
+      "//extensions/test/data/",
+    ]
+
     if (!is_android) {
       deps += [
         "//chrome/browser/ui/search:test_support_ui",
         "//chrome/browser/ui/views/location_bar",
       ]
-    }
-
-    if (!is_chromeos) {
-      sources += [ "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc" ]
     }
 
     if (is_chromeos) {
@@ -1689,12 +1689,10 @@ source_set("platform_browser_tests") {
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/services/tts",
       ]
+    } else {
+      sources += [ "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc" ]
     }
 
-    data += [
-      "//chrome/test/data/extensions/",
-      "//extensions/test/data/",
-    ]
     if (enable_service_discovery) {
       sources += [ "../browser/extensions/api/mdns/mdns_apitest.cc" ]
       deps += [ "../browser/media/router:test_support" ]
