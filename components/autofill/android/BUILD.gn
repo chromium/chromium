@@ -146,6 +146,8 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable-xxxhdpi/verve_card.png",
     "payments/java/res/drawable-xxxhdpi/verve_metadata_card.png",
     "payments/java/res/drawable-xxxhdpi/visa_metadata_card.png",
+    "payments/java/res/drawable/affirm_linked.xml",
+    "payments/java/res/drawable/affirm_unlinked.xml",
     "payments/java/res/drawable/bnpl_icon_generic.xml",
     "payments/java/res/drawable/discover_card.xml",
     "payments/java/res/drawable/elo_card.xml",
@@ -153,8 +155,12 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable/ic_credit_card_black.xml",
     "payments/java/res/drawable/ic_credit_card_primary.xml",
     "payments/java/res/drawable/ic_offer_tag.xml",
+    "payments/java/res/drawable/klarna_linked.xml",
+    "payments/java/res/drawable/klarna_unlinked.xml",
     "payments/java/res/drawable/mir_card.xml",
     "payments/java/res/drawable/visa_card.xml",
+    "payments/java/res/drawable/zip_linked.xml",
+    "payments/java/res/drawable/zip_unlinked.xml",
   ]
   deps = [ "//ui/android:ui_java_resources" ]
 }
