@@ -1280,6 +1280,21 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_slidingpanelayout_slidingpanelayout_java") {
+    aar_path = "../androidx/cipd/libs/androidx_slidingpanelayout_slidingpanelayout/slidingpanelayout-1.3.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_slidingpanelayout_slidingpanelayout/androidx_slidingpanelayout_slidingpanelayout.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_core_core_ktx_java",
+      ":androidx_customview_customview_java",
+      ":androidx_transition_transition_java",
+      ":androidx_window_window_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_sqlite_sqlite_android_java") {
     aar_path = "../androidx/cipd/libs/androidx_sqlite_sqlite_android/sqlite.aar"
     info_path = "../androidx/committed/libs/androidx_sqlite_sqlite_android/androidx_sqlite_sqlite_android.info"
@@ -3440,28 +3455,6 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_savedstate_savedstate_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_android_aar_prebuilt(
-      "androidx_slidingpanelayout_slidingpanelayout_java") {
-    aar_path = "../androidx/cipd/libs/androidx_slidingpanelayout_slidingpanelayout/slidingpanelayout-1.3.0-SNAPSHOT.aar"
-    info_path = "../androidx/committed/libs/androidx_slidingpanelayout_slidingpanelayout/androidx_slidingpanelayout_slidingpanelayout.info"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/android_deps:*",
-    ]
-    deps = [
-      ":androidx_annotation_annotation_java",
-      ":androidx_core_core_ktx_java",
-      ":androidx_customview_customview_java",
-      ":androidx_transition_transition_java",
-      ":androidx_window_window_java",
     ]
   }
 
