@@ -3424,7 +3424,8 @@ int AXNodeObject::HeadingLevel() const {
   // if IsAccessibilityExposeSummaryAsHeadingEnabled(), we should expose
   // a default heading level that makes sense in the context of the document.
   // Will likely be easier to do on the browser side.
-  if (ui::IsHeading(RoleValue())) {
+  if (::features::IsAccessibilityExposeSummaryAsHeadingEnabled() &&
+      ui::IsHeading(RoleValue())) {
     return 5;
   }
 
