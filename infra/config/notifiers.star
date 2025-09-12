@@ -427,3 +427,9 @@ luci.builder_health_notifier(
     ignore_buckets = ["try"],
     notify_all_healthy = False,
 )
+
+luci.builder_health_notifier(
+    owner_email = "chromeos-chrome-build@google.com",
+    ignore_buckets = ["try"],
+    notify_all_healthy = False,
+)
