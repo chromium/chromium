@@ -59,9 +59,6 @@ ActorUiTabController::ActorUiTabController(
   handoff_button_controller_ =
       controller_factory_->CreateHandoffButtonController(tab);
   RegisterTabSubscriptions();
-  if (auto* helper = OmniboxTabHelper::FromWebContents(tab_->GetContents())) {
-    omnibox_tab_helper_observer_.Observe(helper);
-  }
 }
 
 ActorUiTabController::~ActorUiTabController() = default;
@@ -73,11 +70,6 @@ void ActorUiTabController::RegisterTabSubscriptions() {
   tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
       base::BindRepeating(&ActorUiTabController::OnTabActiveStatusChanged,
                           weak_factory_.GetWeakPtr(), /*is_activated=*/false)));
-  tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
-      &ActorUiTabController::OnTabWillDetach, weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
-      base::BindRepeating(&ActorUiTabController::OnTabWillDiscard,
-                          weak_factory_.GetWeakPtr())));
 }
 
 void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
@@ -122,23 +114,6 @@ base::CallbackListSubscription
 ActorUiTabController::RegisterActorTabIndicatorStateChangedCallback(
     ActorTabIndicatorStateChangedCallback callback) {
   return on_actor_tab_indicator_changed_callbacks_.Add(std::move(callback));
-}
-
-void ActorUiTabController::OnTabWillDetach(
-    tabs::TabInterface* tab_interface,
-    tabs::TabInterface::DetachReason reason) {
-  // Reset the omnibox tab helper observation to ensure that it doesn't live
-  // longer than the web contents it is observing.
-  omnibox_tab_helper_observer_.Reset();
-}
-
-void ActorUiTabController::OnTabWillDiscard(
-    tabs::TabInterface* tab_interface,
-    content::WebContents* old_contents,
-    content::WebContents* new_contents) {
-  // Reset the observation of the omnibox tab helper since it is possible for
-  // the active tab to be discarded on CrOS.
-  omnibox_tab_helper_observer_.Reset();
 }
 
 void ActorUiTabController::SetActorTabIndicatorVisibility(
@@ -189,13 +164,6 @@ void ActorUiTabController::UpdateUi() {
   pending_update_ui_callbacks_size_ = 0;
 
   OnUpdateFinished();
-}
-
-void ActorUiTabController::OnOmniboxFocusChanged(
-    OmniboxFocusState state,
-    OmniboxFocusChangeReason reason) {
-  is_focusing_omnibox_ = state != OmniboxFocusState::OMNIBOX_FOCUS_NONE;
-  update_ui_debounce_timer_.Reset();
 }
 
 void ActorUiTabController::InitializeImmersiveModeObserver() {
@@ -254,10 +222,6 @@ bool ActorUiTabController::ComputeHandoffButtonVisibility() {
   if (tab_->GetBrowserWindowInterface()
           ->GetImmersiveModeController()
           ->IsEnabled()) {
-    return false;
-  }
-
-  if (is_focusing_omnibox_) {
     return false;
   }
 
