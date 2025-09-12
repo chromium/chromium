@@ -349,7 +349,12 @@ FullscreenModel::ScrollAction FullscreenModel::ActionForScrollFromOffset(
   bool scrolling_past_top = y_content_offset_ <= -top_inset_;
   bool content_fits = content_height_ <= scroll_view_height_ - top_inset_;
   bool scrolling_past_bottom =
-      y_content_offset_ + scroll_view_height_ + top_inset_ >= content_height_;
+      y_content_offset_ + scroll_view_height_ + top_inset_ +
+          toolbars_size_.expandedTopToolbarHeight +
+          toolbars_size_.expandedBottomToolbarHeight -
+          (toolbars_size_.collapsedTopToolbarHeight -
+           toolbars_size_.collapsedBottomToolbarHeight) >=
+      content_height_;
   if (ignoring_current_scroll_ ||
       (scrolling_past_top && !scrolling_content_down) ||
       (content_fits && !scrolling_content_down) ||

@@ -126,6 +126,9 @@ class FullscreenMediator : public FullscreenModelObserver {
   base::ObserverList<FullscreenControllerObserver, true> observers_;
   // Type of entrypoint that triggers the exit of fullscreen mode.
   std::optional<FullscreenExitReason> fullscreen_exit_reason_;
+  // Whether the user has scrolled to the bottom of the page for the first time
+  // on the current page. This is reset to false as soon as the user scrolls up.
+  bool has_reached_bottom_once_ = false;
   base::WeakPtrFactory<FullscreenMediator> weak_factory_{this};
 };
 

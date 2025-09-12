@@ -40,6 +40,16 @@ void SimulateFullscreenUserScrollForProgress(FullscreenModel* model,
       model, GetFullscreenOffsetDeltaForProgress(model, progress));
 }
 
+// Simulates a user scroll to the bottom of the scroll view.
+void SimulateScrollToBottom(FullscreenModel* model) {
+  model->SetScrollViewIsDragging(true);
+  model->SetScrollViewIsScrolling(true);
+  CGFloat max_offset = model->GetContentHeight() - model->GetScrollViewHeight();
+  model->SetYContentOffset(max_offset);
+  model->SetScrollViewIsDragging(false);
+  model->SetScrollViewIsScrolling(false);
+}
+
 CGFloat GetFullscreenOffsetDeltaForProgress(FullscreenModel* model,
                                             CGFloat progress) {
   CGFloat height_delta = model->get_toolbar_height_delta();

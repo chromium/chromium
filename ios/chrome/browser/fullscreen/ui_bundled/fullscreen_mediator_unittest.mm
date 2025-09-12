@@ -50,14 +50,29 @@ class FullscreenMediatorTest : public PlatformTest {
   std::unique_ptr<TestFullscreenControllerObserver> observer_;
 };
 
-// Tests that progress and scroll end animator are correctly forwarded to the
-// observer.
-TEST_F(FullscreenMediatorTest, ObserveProgressAndScrollEnd) {
-  SimulateFullscreenUserScrollForProgress(model(), 0.5);
-  EXPECT_EQ(observer().progress(), 0.5);
+// Tests that the browser remains in fullscreen after the first scroll to
+// bottom.
+TEST_F(FullscreenMediatorTest, StaysFullscreenOnFirstScrollToBottom) {
+  SimulateFullscreenUserScrollForProgress(model(), 1.0);
+  EXPECT_EQ(model()->progress(), 1.0);
+
+  SimulateScrollToBottom(model());
+
+  EXPECT_EQ(model()->progress(), 0.0);
+  EXPECT_FALSE(observer().animator());
+}
+
+// Tests that the browser exits fullscreen on the second scroll to the bottom.
+TEST_F(FullscreenMediatorTest, ExitsFullscreenOnSecondScrollToBottom) {
+  SimulateFullscreenUserScrollForProgress(model(), 1.0);
+  SimulateScrollToBottom(model());
+
+  SimulateFullscreenUserScrollForProgress(model(), 0.9);
+
+  SimulateScrollToBottom(model());
+
   FullscreenAnimator* animator = observer().animator();
   EXPECT_TRUE(animator);
-  EXPECT_EQ(animator.startProgress, 0.5);
   EXPECT_EQ(animator.finalProgress, 1.0);
 }
 
