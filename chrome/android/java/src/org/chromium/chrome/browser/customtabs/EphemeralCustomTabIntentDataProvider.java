@@ -53,6 +53,7 @@ public class EphemeralCustomTabIntentDataProvider extends CustomTabIntentDataPro
         return IntentUtils.safeGetBooleanExtra(intent, EXTRA_ENABLE_EPHEMERAL_BROWSING, false);
     }
 
+    @Override
     public @IntentHandler.IncognitoCctCallerId int getFeatureIdForMetricsCollection() {
         return IncognitoCctCallerId.EPHEMERAL_TAB;
     }

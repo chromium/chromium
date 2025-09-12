@@ -188,6 +188,15 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
         return mRedirectScheme;
     }
 
+    @Override
+    public int getFeatureIdForMetricsCollection() {
+        if (mCustomTabMode == CustomTabProfileType.EPHEMERAL) {
+            return IntentHandler.IncognitoCctCallerId.EPHEMERAL_TAB;
+        }
+
+        return super.getFeatureIdForMetricsCollection();
+    }
+
     /**
      * Logs the usage of Auth Tab features to a large enum histogram in order to track usage by
      * apps.

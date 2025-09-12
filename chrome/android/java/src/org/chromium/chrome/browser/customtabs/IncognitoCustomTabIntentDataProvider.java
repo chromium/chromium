@@ -188,6 +188,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         intent.putExtra(IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID, chromeCallerId);
     }
 
+    @Override
     public @IntentHandler.IncognitoCctCallerId int getFeatureIdForMetricsCollection() {
         if (isIntentFromChrome(mIntent)) {
             assert mIntent.hasExtra(IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID)
