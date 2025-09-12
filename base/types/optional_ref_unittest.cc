@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/test/gtest_util.h"
+#include "base/test/memory/dangling_ptr_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -633,6 +634,48 @@ TEST(OptionalRefTest, ClassTemplateArgumentDeduction) {
     int* p = nullptr;
     static_assert(std::is_same_v<decltype(optional_ref(p)), optional_ref<int>>);
   }
+}
+
+// TODO(dcheng): It's not yet clear if it's desirable to have optional_ref embed
+// a raw_ptr. While it is certainly nice from a certain perspective, there is
+// also separate guidance to use native C++ pointers when passing things as
+// arguments, and `base::optional_ref` is intended to be an argument type.
+TEST(OptionalRefTest, DanglingPointerDetector) {
+  auto instrumentation = test::DanglingPtrInstrumentation::Create();
+  if (!instrumentation.has_value()) {
+    GTEST_SKIP() << instrumentation.error();
+  }
+  {
+    auto owned = std::make_unique<int>();
+    optional_ref<int> ref = *owned;
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+
+    owned.reset();
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+  }
+  EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+  EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
+}
+
+TEST(OptionalRefTest, DanglingUntriaged) {
+  auto instrumentation = test::DanglingPtrInstrumentation::Create();
+  if (!instrumentation.has_value()) {
+    GTEST_SKIP() << instrumentation.error();
+  }
+  {
+    auto owned = std::make_unique<int>();
+    optional_ref<int, DanglingUntriaged> ref = *owned;
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+
+    owned.reset();
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+  }
+  EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+  EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
 }
 
 }  // namespace

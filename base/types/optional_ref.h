@@ -67,13 +67,22 @@ namespace base {
 //
 // `optional_ref<T>` is lightweight and should be passed by value. It is copy
 // constructible but not copy assignable, to reduce the risk of lifetime bugs.
-template <typename T>
+template <typename T,
+          // TODO(crbug.com/444482512): Decide how to update optional_ref and
+          // disallow optional_ref from being optionally marked as dangling.
+          base::RawPtrTraits kRawPtrTraits = base::RawPtrTraits::kEmpty>
 class optional_ref {
  private:
   // Disallowed because `std::optional` does not allow its template argument to
   // be a reference type.
   static_assert(!std::is_reference_v<T>,
                 "T must not be a reference type (use a pointer?)");
+
+  // DanglingUntriaged is really just base::RawPtrTraits::kMayDangle, but
+  // ideally no one should be intentionally dangling pointers and then disabling
+  // detection...
+  static_assert(kRawPtrTraits == base::RawPtrTraits::kEmpty ||
+                kRawPtrTraits == DanglingUntriaged);
 
   // Both checks are important here, as:
   // - optional_ref does not allow silent implicit conversions between types,
@@ -211,7 +220,7 @@ class optional_ref {
   }
 
  private:
-  raw_ptr<T> const ptr_ = nullptr;
+  raw_ptr<T, kRawPtrTraits> const ptr_ = nullptr;
 };
 
 template <typename T>
