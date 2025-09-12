@@ -39,7 +39,6 @@
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata/common/webdata_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/device_form_factor.h"
 
 namespace {
@@ -50,14 +49,7 @@ using search_engines::SearchEngineChoiceScreenConditions;
 using search_engines::SearchEngineChoiceWipeReason;
 using search_engines::SearchEnginesTestEnvironment;
 using search_engines::WipeSearchEngineChoicePrefs;
-using TemplateURLPrepopulateData::PrepopulatedEngine;
 using ChoiceStatus = search_engines::SearchEngineChoiceService::ChoiceStatus;
-
-struct PersistedState {
-  std::string country_code;
-  bool was_choice_made;
-  raw_ptr<const PrepopulatedEngine> dse;
-};
 
 class KeywordsDatabaseHolder {
  public:
@@ -138,27 +130,6 @@ class SearchEngineChoiceEligibilityTest
   void ResetDeps() {
     ResetServices();  // Depends on db_holder, so reset it first.
     keywords_db_holder_.reset();
-  }
-
-  void ApplyPersistedState(PersistedState persisted_state) {
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->RemoveSwitch(switches::kSearchEngineChoiceCountry);
-    command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
-                                    persisted_state.country_code);
-
-    if (persisted_state.was_choice_made) {
-      search_engines::MarkSearchEngineChoiceCompletedForTesting(
-          *pref_service());
-    }
-
-    FinalizeEnvironmentInit();
-
-    if (persisted_state.dse != nullptr) {
-      auto* turl = template_url_service().GetTemplateURLForKeyword(
-          persisted_state.dse->keyword);
-      ASSERT_TRUE(turl);
-      template_url_service().SetUserSelectedDefaultSearchProvider(turl);
-    }
   }
 
   void PopulateLazyFactories(
