@@ -24,7 +24,6 @@
 #include "skia/ext/codec_utils.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkImage.h"

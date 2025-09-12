@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -274,7 +274,7 @@ TEST(MetafileSkiaTest, SerializeUnencodedRasterImageAsPNG) {
     // We expect unencoded images to be encoded as PNG.
     auto encoded_image = reader.remaining_span();
     ASSERT_TRUE(
-        SkPngDecoder::IsPng(encoded_image.data(), encoded_image.size()));
+        SkPngRustDecoder::IsPng(encoded_image.data(), encoded_image.size()));
 }
 
 TEST(MetafileSkiaTest, SkipEncodingAsPngWhenImageIsAlreadyEncoded) {
@@ -359,7 +359,7 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
     auto encoded_image = reader.remaining_span();
     ASSERT_FALSE(encoded_image.empty());
     ASSERT_TRUE(
-        SkPngDecoder::IsPng(encoded_image.data(), encoded_image.size()));
+        SkPngRustDecoder::IsPng(encoded_image.data(), encoded_image.size()));
   }
 
   // Call the serialization proc on the image for the second time.
@@ -378,7 +378,7 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
   }
 
   // Deserialization.
-  SkCodecs::Register(SkPngDecoder::Decoder());
+  SkCodecs::Register(SkPngRustDecoder::Decoder());
   PictureDeserializationContext d_subframes;
   ImageDeserializationContext d_images;
   SkDeserialProcs d_procs =
