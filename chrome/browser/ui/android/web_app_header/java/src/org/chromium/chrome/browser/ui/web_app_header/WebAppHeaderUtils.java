@@ -13,6 +13,7 @@ import androidx.annotation.LayoutRes;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -147,7 +148,7 @@ public class WebAppHeaderUtils {
      */
     public static boolean isMinimalUiVisible(
             BrowserServicesIntentDataProvider intentDataProvider,
-            DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         return isMinimalUiEnabled(intentDataProvider)
                 && AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager);
     }
