@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -1418,7 +1419,7 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
       mojom::blink::NavigationTypeForNavigationApi::kPush;
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
       GetDocument(), blink::ViewTransitionToken(), std::move(page_swap_params),
-      base::BindOnce([](const ViewTransitionState&) {}));
+      BindOnce([](const ViewTransitionState&) {}));
 
   ASSERT_TRUE(ViewTransitionSupplement::From(GetDocument())->GetTransition());
 

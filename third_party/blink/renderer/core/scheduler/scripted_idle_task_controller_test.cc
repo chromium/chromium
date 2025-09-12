@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/scoped_scheduler_overrider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 namespace {
@@ -68,8 +69,8 @@ class TestTaskRunner : public scheduler::FakeTaskRunner {
         pass_key, from_here, std::move(task), delay);
     return base::DelayedTaskHandle(
         std::make_unique<DelayedTaskHandleDelegateFacade>(
-            std::move(handle),
-            base::BindOnce(&TestTaskRunner::OnTaskCancelled, this)));
+            std::move(handle), blink::BindOnce(&TestTaskRunner::OnTaskCancelled,
+                                               blink::Unretained(this))));
   }
 
   void OnTaskCancelled() { ++task_cancelled_count_; }

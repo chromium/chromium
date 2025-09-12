@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -894,9 +895,9 @@ class WebFrameWidgetProximateBoundsCollectionSimTestBase
   void OnStartStylusWriting(const gfx::Rect& focus_widget_rect_in_dips) {
     MockMainFrameWidget()->OnStartStylusWriting(
         focus_widget_rect_in_dips,
-        base::BindOnce(&WebFrameWidgetProximateBoundsCollectionSimTestBase::
-                           OnStartStylusWritingComplete,
-                       weak_factory_.GetWeakPtr()));
+        blink::BindOnce(&WebFrameWidgetProximateBoundsCollectionSimTestBase::
+                            OnStartStylusWritingComplete,
+                        weak_factory_.GetWeakPtr()));
   }
 
   Element* GetElementById(const char* id) {
