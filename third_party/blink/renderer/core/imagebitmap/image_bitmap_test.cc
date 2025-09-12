@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 
 #include "build/build_config.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -84,8 +85,10 @@ class ImageBitmapTest : public testing::Test {
         ReplaceMemoryCacheForTesting(MakeGarbageCollected<MemoryCache>(
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
 
-    test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
+        true);
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
   }
 
   void TearDown() override {
