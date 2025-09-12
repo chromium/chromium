@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -904,6 +905,13 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     if (!current_surface) {
       TRACE_EVENT_INSTANT0("viz", "Surface belongs to another client",
                            TRACE_EVENT_SCOPE_THREAD);
+      SCOPED_CRASH_KEY_STRING32("viz", "Local surface id",
+                                local_surface_id.ToString());
+      SCOPED_CRASH_KEY_STRING32(
+          "viz", "Last created local surface id",
+          last_created_surface_id_.local_surface_id().ToString());
+      SCOPED_CRASH_KEY_STRING32("viz", "Prev surface",
+                                prev_surface ? "exist" : "not_exist");
       return SubmitResult::SURFACE_OWNED_BY_ANOTHER_CLIENT;
     }
     last_created_surface_id_ = SurfaceId(frame_sink_id_, local_surface_id);
