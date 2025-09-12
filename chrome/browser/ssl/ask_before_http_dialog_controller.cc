@@ -127,6 +127,16 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AskBeforeHttpDialogController,
 AskBeforeHttpDialogController::AskBeforeHttpDialogController(
     tabs::TabInterface* tab_interface)
     : tab_interface_(tab_interface) {
+  // Configure the metrics helper, shared across instances of the prompt for
+  // this controller. This avoids cases where the metrics helper could be reset
+  // while another call was trying to use it to record a user decision (such as
+  // multiple concurrent calls to CloseDialogWidget()). See crbug.com/440547265.
+  security_interstitials::MetricsHelper::ReportDetails settings;
+  settings.metric_prefix = "https_first_mode";
+  // TODO(crbug.com/351990829): Consider if we want to record repeated
+  // visit metrics (for both the new dialog UI and for the old interstitial UI).
+  metrics_helper_ = std::make_unique<security_interstitials::MetricsHelper>(
+      GURL(), settings, nullptr);
   tab_will_detach_subscription_ = tab_interface_->RegisterWillDetach(
       base::BindRepeating(&AskBeforeHttpDialogController::TabWillDetach,
                           base::Unretained(this)));
@@ -176,14 +186,6 @@ void AskBeforeHttpDialogController::ShowDialog(
   // Track the source ID for the navigation that triggered the dialog.
   navigation_source_id_ = navigation_source_id;
 
-  // Configure the metrics helper for this instance of the warning dialog.
-  security_interstitials::MetricsHelper::ReportDetails settings;
-  settings.metric_prefix = "https_first_mode";
-  // TODO(crbug.com/351990829): Consider if we want to record repeated
-  // visit metrics (for both the new dialog UI and for the old interstitial UI).
-  metrics_helper_ = std::make_unique<security_interstitials::MetricsHelper>(
-      request_url, settings, nullptr);
-
   metrics_helper_->RecordUserDecision(
       security_interstitials::MetricsHelper::SHOW);
   metrics_helper_->RecordUserInteraction(
@@ -230,7 +232,6 @@ void AskBeforeHttpDialogController::CloseDialogWidget(
         security_interstitials::MetricsHelper::DONT_PROCEED);
   }
   navigation_source_id_ = ukm::kInvalidSourceId;
-  metrics_helper_.reset();
   dialog_widget_.reset();
 }
 
