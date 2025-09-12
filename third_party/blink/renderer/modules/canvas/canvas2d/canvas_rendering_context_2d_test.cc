@@ -601,7 +601,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
                int y));
 
  private:
-  base::WeakPtr<FakeCanvasResourceProvider> CreateWeakPtr() {
+  base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 

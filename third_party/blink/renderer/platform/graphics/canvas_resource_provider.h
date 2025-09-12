@@ -529,6 +529,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   bool IsAccelerated() const final { return is_accelerated_; }
   bool SupportsDirectCompositing() const override { return true; }
+  bool UseOopRasterization() final { return use_oop_rasterization_; }
   bool unused_resources_reclaim_timer_is_running_for_testing() const override {
     return unused_resources_reclaim_timer_.IsRunning();
   }
@@ -536,7 +537,11 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     return num_inflight_resources_;
   }
 
+  void NotifyTexParamsModified(const CanvasResource* resource) override;
+
  protected:
+  scoped_refptr<CanvasResourceSharedImage> CreateResource();
+
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
@@ -579,6 +584,9 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       cc::PaintImage::kInvalidContentId;
 
   bool notified_context_lost_ = false;
+
+ private:
+  virtual base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr() = 0;
 };
 
 }  // namespace blink

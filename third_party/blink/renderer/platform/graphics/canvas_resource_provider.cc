@@ -238,6 +238,43 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
       use_oop_rasterization_(false),
       is_software_(true) {}
 
+scoped_refptr<CanvasResourceSharedImage>
+CanvasResourceProviderSharedImage::CreateResource() {
+  TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateResource");
+
+  if (is_software_) {
+    return CanvasResourceSharedImage::CreateSoftware(
+        Size(), viz::SinglePlaneFormat::kBGRA_8888, GetAlphaType(),
+        GetColorSpace(), CreateWeakPtr(), shared_image_interface_provider_);
+  }
+
+  if (IsGpuContextLost()) {
+    return nullptr;
+  }
+
+  return CanvasResourceSharedImage::Create(
+      Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
+      ContextProviderWrapper(), CreateWeakPtr(), is_accelerated_,
+      shared_image_usage_flags_);
+}
+
+void CanvasResourceProviderSharedImage::NotifyTexParamsModified(
+    const CanvasResource* resource) {
+  if (!is_accelerated_ || use_oop_rasterization_) {
+    return;
+  }
+
+  if (resource_.get() == resource) {
+    DCHECK(!current_resource_has_write_access_);
+    // Note that the call below is guarenteed to not issue any GPU work for
+    // the backend texture since we ensure that all skia work on the resource
+    // is issued before releasing write access.
+    auto tex = SkSurfaces::GetBackendTexture(
+        surface_.get(), SkSurfaces::BackendHandleAccess::kFlushRead);
+    GrBackendTextures::GLTextureParametersModified(&tex);
+  }
+}
+
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
 class CanvasResourceProviderSharedImageImpl
@@ -430,41 +467,6 @@ class CanvasResourceProviderSharedImageImpl
       is_cleared_ = true;
 
     return true;
-  }
-
-  scoped_refptr<CanvasResourceSharedImage> CreateResource() {
-    TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateResource");
-
-    if (is_software_) {
-      return CanvasResourceSharedImage::CreateSoftware(
-          Size(), viz::SinglePlaneFormat::kBGRA_8888, GetAlphaType(),
-          GetColorSpace(), CreateWeakPtr(), shared_image_interface_provider_);
-    }
-
-    if (IsGpuContextLost())
-      return nullptr;
-
-    return CanvasResourceSharedImage::Create(
-        Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-        ContextProviderWrapper(), CreateWeakPtr(), is_accelerated_,
-        shared_image_usage_flags_);
-  }
-
-  bool UseOopRasterization() final { return use_oop_rasterization_; }
-
-  void NotifyTexParamsModified(const CanvasResource* resource) override {
-    if (!is_accelerated_ || use_oop_rasterization_)
-      return;
-
-    if (resource_.get() == resource) {
-      DCHECK(!current_resource_has_write_access_);
-      // Note that the call below is guarenteed to not issue any GPU work for
-      // the backend texture since we ensure that all skia work on the resource
-      // is issued before releasing write access.
-      auto tex = SkSurfaces::GetBackendTexture(
-          surface_.get(), SkSurfaces::BackendHandleAccess::kFlushRead);
-      GrBackendTextures::GLTextureParametersModified(&tex);
-    }
   }
 
   bool OverwriteImage(const scoped_refptr<gpu::ClientSharedImage>& shared_image,
@@ -1056,7 +1058,7 @@ class CanvasResourceProviderSharedImageImpl
     }
   }
 
-  base::WeakPtr<CanvasResourceProviderSharedImageImpl> CreateWeakPtr() {
+  base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
