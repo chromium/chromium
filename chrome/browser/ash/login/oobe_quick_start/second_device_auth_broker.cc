@@ -15,6 +15,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -38,7 +39,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -196,13 +196,12 @@ constexpr net::NetworkTrafficAnnotationTag kStartSessionAnnotation =
 //   }
 // }
 Base64UrlString GetChallengeBytesFromParsedResponse(
-    data_decoder::DataDecoder::ValueOrError response) {
-  if (!response.has_value() || !response->is_dict()) {
+    std::optional<base::Value::Dict> response) {
+  if (!response.has_value()) {
     return Base64UrlString();
   }
 
-  base::Value::Dict* challenge_dict =
-      response->GetDict().FindDict(kChallengeDataKey);
+  base::Value::Dict* challenge_dict = response->FindDict(kChallengeDataKey);
   if (!challenge_dict) {
     return Base64UrlString();
   }
@@ -354,15 +353,16 @@ std::string CreateStartSessionRequestData(
 void RunAuthCodeCallbackWithRejectionResponse(
     QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    base::Value::Dict* response) {
+    const base::Value::Dict& response) {
   SecondDeviceAuthBroker::AuthCodeRejectionResponse rejection_response;
 
-  std::string* email_ptr = response->FindString(kEmailKey);
+  const std::string* email_ptr = response.FindString(kEmailKey);
   // Note that email may be empty.
   rejection_response.email = email_ptr ? *email_ptr : std::string();
   rejection_response.reason =
       SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::kUnknownReason;
-  std::string* rejection_reason = response->FindString(kRejectionReasonKey);
+  const std::string* rejection_reason =
+      response.FindString(kRejectionReasonKey);
   if (!rejection_reason) {
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request rejected "
@@ -392,14 +392,14 @@ void RunAuthCodeCallbackWithRejectionResponse(
 void RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
     QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    base::Value::Dict* response) {
+    const base::Value::Dict& response) {
   SecondDeviceAuthBroker::AuthCodeAdditionalChallengesOnTargetResponse
       additional_challenges_response;
 
   // Note that email may be empty.
-  additional_challenges_response.email = *response->FindString(kEmailKey);
-  std::string* target_fallback_url =
-      response->FindString(kTargetFallbackUrlKey);
+  additional_challenges_response.email = *response.FindString(kEmailKey);
+  const std::string* target_fallback_url =
+      response.FindString(kTargetFallbackUrlKey);
   if (!target_fallback_url) {
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request required "
@@ -420,17 +420,17 @@ void RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
 void RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
     QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    base::Value::Dict* response) {
+    const base::Value::Dict& response) {
   SecondDeviceAuthBroker::AuthCodeAdditionalChallengesOnSourceResponse
       additional_challenges_response;
 
   // Note that email may be empty.
-  additional_challenges_response.email = *response->FindString(kEmailKey);
+  additional_challenges_response.email = *response.FindString(kEmailKey);
   // May be empty.
   additional_challenges_response.target_session_identifier =
-      *response->FindString(kTargetSessionIdentifierKey);
-  std::string* source_device_fallback_url =
-      response->FindString(kSourceDeviceFallbackUrlKey);
+      *response.FindString(kTargetSessionIdentifierKey);
+  const std::string* source_device_fallback_url =
+      response.FindString(kSourceDeviceFallbackUrlKey);
   if (!source_device_fallback_url) {
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request required "
@@ -467,8 +467,9 @@ void RunAuthCodeCallback(
 void ParseAuthCodeAndRunCallback(
     QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    base::Value::Dict* response) {
-  base::Value::Dict* credential_data = response->FindDict(kCredentialDataKey);
+    const base::Value::Dict& response) {
+  const base::Value::Dict* credential_data =
+      response.FindDict(kCredentialDataKey);
   if (!credential_data) {
     QS_LOG(ERROR) << "Could not fetch OAuth auth code. Could not find "
                      "credential_data";
@@ -478,7 +479,7 @@ void ParseAuthCodeAndRunCallback(
     return;
   }
 
-  std::string* auth_code = credential_data->FindString(kOauthTokenKey);
+  const std::string* auth_code = credential_data->FindString(kOauthTokenKey);
   if (!auth_code) {
     QS_LOG(ERROR)
         << "Could not fetch OAuth auth code. Could not find oauth_token";
@@ -488,12 +489,12 @@ void ParseAuthCodeAndRunCallback(
     return;
   }
 
-  std::string* gaia_id_ptr = response->FindString(kObfuscatedGaiaIdKey);
+  const std::string* gaia_id_ptr = response.FindString(kObfuscatedGaiaIdKey);
   // Gaia id may be empty. We need to handle this gracefully.
   GaiaId gaia_id = gaia_id_ptr ? GaiaId(*gaia_id_ptr) : GaiaId();
 
   RunAuthCodeCallback(metrics, std::move(auth_code_callback),
-                      /*email=*/*response->FindString(kEmailKey), *auth_code,
+                      /*email=*/*response.FindString(kEmailKey), *auth_code,
                       gaia_id);
 }
 
@@ -561,12 +562,11 @@ void SecondDeviceAuthBroker::OnChallengeBytesFetched(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      response->response,
-      base::BindOnce(&GetChallengeBytesFromParsedResponse)
-          .Then(base::BindOnce(
-              &SecondDeviceAuthBroker::RunChallengeBytesCallback,
-              weak_ptr_factory_.GetWeakPtr(), std::move(challenge_callback))));
+  std::optional<base::Value::Dict> response_value =
+      base::JSONReader::ReadDict(response->response, base::JSON_PARSE_RFC);
+  RunChallengeBytesCallback(
+      std::move(challenge_callback),
+      GetChallengeBytesFromParsedResponse(std::move(response_value)));
 }
 
 void SecondDeviceAuthBroker::FetchAttestationCertificate(
@@ -622,14 +622,9 @@ void SecondDeviceAuthBroker::OnAuthorizationCodeFetched(
         << response->http_status_code;
   }
 
-  // Creating a copy here because we are going to move `response` soon.
-  std::string unparsed_response = response->response;
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      unparsed_response,
-      base::BindOnce(
-          &SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse,
-          weak_ptr_factory_.GetWeakPtr(), std::move(auth_code_callback),
-          std::move(response)));
+  RunAuthCodeCallbackFromParsedResponse(
+      std::move(auth_code_callback), response->error_type,
+      base::JSONReader::ReadDict(response->response, base::JSON_PARSE_RFC));
 }
 
 void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
@@ -719,14 +714,13 @@ void SecondDeviceAuthBroker::RunAttestationCertificateCallback(
 
 void SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse(
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    std::unique_ptr<EndpointResponse> unparsed_response,
-    data_decoder::DataDecoder::ValueOrError response) {
-  if (!response.has_value() || !response->is_dict()) {
+    std::optional<FetchErrorType> error_type,
+    std::optional<base::Value::Dict> response) {
+  if (!response.has_value()) {
     // When we can't even parse the response, it most probably is an error from
     // Google's FrontEnd (GFE) - which may not be sending JSON responses. Check
     // if it's an auth error from GFE.
-    if (unparsed_response->error_type &&
-        unparsed_response->error_type.value() == FetchErrorType::kAuthError) {
+    if (error_type == FetchErrorType::kAuthError) {
       SecondDeviceAuthBroker::AuthCodeRejectionResponse rejection_response;
       rejection_response.reason = SecondDeviceAuthBroker::
           AuthCodeRejectionResponse::Reason::kUnknownReason;
@@ -746,8 +740,7 @@ void SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse(
     return;
   }
 
-  std::string* session_status =
-      response->GetDict().FindString(kSessionStatusKey);
+  std::string* session_status = response->FindString(kSessionStatusKey);
   if (!session_status) {
     QS_LOG(ERROR) << "Could not fetch OAuth authorization code. Error parsing "
                      "session status";
@@ -757,21 +750,23 @@ void SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse(
     return;
   }
 
-  if (base::ToLowerASCII(*session_status) == "rejected") {
+  if (base::EqualsCaseInsensitiveASCII(*session_status, "rejected")) {
     RunAuthCodeCallbackWithRejectionResponse(
-        metrics_, std::move(auth_code_callback), &response->GetDict());
+        metrics_, std::move(auth_code_callback), *response);
     return;
-  } else if (base::ToLowerASCII(*session_status) == "continue_on_target") {
+  } else if (base::EqualsCaseInsensitiveASCII(*session_status,
+                                              "continue_on_target")) {
     RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
-        metrics_, std::move(auth_code_callback), &response->GetDict());
+        metrics_, std::move(auth_code_callback), *response);
     return;
-  } else if (base::ToLowerASCII(*session_status) == "pending") {
+  } else if (base::EqualsCaseInsensitiveASCII(*session_status, "pending")) {
     RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
-        metrics_, std::move(auth_code_callback), &response->GetDict());
+        metrics_, std::move(auth_code_callback), *response);
     return;
-  } else if (base::ToLowerASCII(*session_status) == "authenticated") {
+  } else if (base::EqualsCaseInsensitiveASCII(*session_status,
+                                              "authenticated")) {
     ParseAuthCodeAndRunCallback(metrics_, std::move(auth_code_callback),
-                                &response->GetDict());
+                                *response);
     return;
   }
 
