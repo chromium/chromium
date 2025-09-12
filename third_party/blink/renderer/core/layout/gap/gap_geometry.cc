@@ -102,7 +102,7 @@ PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
   block_start -= block_thickness / 2;
   block_size += block_thickness;
 
-  LogicalRect logical_rect(inline_size, block_start, inline_size, block_size);
+  LogicalRect logical_rect(inline_start, block_start, inline_size, block_size);
   WritingModeConverter converter(writing_direction, container_size);
   PhysicalRect physical_rect = converter.ToPhysical(logical_rect);
 
