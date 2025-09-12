@@ -681,6 +681,117 @@ TEST(CSSSelectorParserTest, PseudoChild_NoOriginating) {
   EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[1].Relation());
 }
 
+TEST(CSSSelectorParserTest, PseudoChild_InPseudoIs) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+
+  HeapVector<CSSSelector> vector = ParseSelector(":is(div::after)");
+  ASSERT_EQ(1u, vector.size());
+
+  // :is()
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoClass, vector[0].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[0].Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoIs, vector[0].GetPseudoType());
+  ASSERT_TRUE(vector[0].SelectorList());
+
+  // Inside :is():
+
+  // ::after
+  const CSSSelector* first = vector[0].SelectorList()->First();
+  ASSERT_TRUE(first);
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoElement, first->Match());
+  EXPECT_EQ(CSSSelector::RelationType::kPseudoChild, first->Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoAfter, first->GetPseudoType());
+
+  // div
+  const CSSSelector* second = first->NextSimpleSelector();
+  ASSERT_TRUE(second);
+  EXPECT_EQ(CSSSelector::MatchType::kTag, second->Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, second->Relation());
+}
+
+TEST(CSSSelectorParserTest, PseudoChild_InPseudoWhere) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+
+  HeapVector<CSSSelector> vector = ParseSelector(":where(div::after)");
+  ASSERT_EQ(1u, vector.size());
+
+  // :where()
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoClass, vector[0].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[0].Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoWhere, vector[0].GetPseudoType());
+  ASSERT_TRUE(vector[0].SelectorList());
+
+  // Inside :where():
+
+  // ::after
+  const CSSSelector* first = vector[0].SelectorList()->First();
+  ASSERT_TRUE(first);
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoElement, first->Match());
+  EXPECT_EQ(CSSSelector::RelationType::kPseudoChild, first->Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoAfter, first->GetPseudoType());
+
+  // div
+  const CSSSelector* second = first->NextSimpleSelector();
+  ASSERT_TRUE(second);
+  EXPECT_EQ(CSSSelector::MatchType::kTag, second->Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, second->Relation());
+}
+
+TEST(CSSSelectorParserTest, PseudoChild_InPseudoNot) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+
+  HeapVector<CSSSelector> vector = ParseSelector(":not(div::after)");
+  ASSERT_EQ(1u, vector.size());
+
+  // :not()
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoClass, vector[0].Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, vector[0].Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoNot, vector[0].GetPseudoType());
+  ASSERT_TRUE(vector[0].SelectorList());
+
+  // Inside :not():
+
+  // ::after
+  const CSSSelector* first = vector[0].SelectorList()->First();
+  ASSERT_TRUE(first);
+  EXPECT_EQ(CSSSelector::MatchType::kPseudoElement, first->Match());
+  EXPECT_EQ(CSSSelector::RelationType::kPseudoChild, first->Relation());
+  EXPECT_EQ(CSSSelector::PseudoType::kPseudoAfter, first->GetPseudoType());
+
+  // div
+  const CSSSelector* second = first->NextSimpleSelector();
+  ASSERT_TRUE(second);
+  EXPECT_EQ(CSSSelector::MatchType::kTag, second->Match());
+  EXPECT_EQ(CSSSelector::RelationType::kSubSelector, second->Relation());
+}
+
+TEST(CSSSelectorParserTest, PseudoChild_InPseudoList_FeatureDisabled) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(false);
+  test::TaskEnvironment task_environment;
+
+  // Note: :is()/:where() parses a *forgiving* selector list,
+  // which means an invalid argument doesn't make the outer selector
+  // invalid.
+
+  // :is()
+  HeapVector<CSSSelector> is = ParseSelector(":is(div::after)");
+  ASSERT_EQ(1u, is.size());
+  ASSERT_TRUE(is[0].SelectorList());
+  EXPECT_FALSE(is[0].SelectorList()->IsValid());
+
+  // :where()
+  HeapVector<CSSSelector> where = ParseSelector(":where(div::after)");
+  ASSERT_EQ(1u, where.size());
+  ASSERT_TRUE(where[0].SelectorList());
+  EXPECT_FALSE(where[0].SelectorList()->IsValid());
+
+  // :not() (unforgiving)
+  EXPECT_TRUE(ParseSelector(":not(div::after)").empty());
+}
+
 // Pseudo-elements are not valid within :is() as per the spec:
 // https://drafts.csswg.org/selectors-4/#matches
 static const SelectorTestCase invalid_pseudo_is_argments_data[] = {

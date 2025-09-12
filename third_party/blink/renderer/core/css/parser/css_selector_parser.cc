@@ -1589,7 +1589,10 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
 
   switch (selector.GetPseudoType()) {
     case CSSSelector::kPseudoIs: {
-      DisallowPseudoElementsScope scope(this);
+      std::optional<DisallowPseudoElementsScope> disallow_pseudo_elements;
+      if (!RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled()) {
+        disallow_pseudo_elements.emplace(this);
+      }
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
       CSSSelectorList* selector_list =
           ConsumeForgivingNestedSelectorList(stream, result_flags);
@@ -1601,7 +1604,10 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       return true;
     }
     case CSSSelector::kPseudoWhere: {
-      DisallowPseudoElementsScope scope(this);
+      std::optional<DisallowPseudoElementsScope> disallow_pseudo_elements;
+      if (!RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled()) {
+        disallow_pseudo_elements.emplace(this);
+      }
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
       CSSSelectorList* selector_list =
           ConsumeForgivingNestedSelectorList(stream, result_flags);
@@ -1668,7 +1674,10 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       return true;
     }
     case CSSSelector::kPseudoNot: {
-      DisallowPseudoElementsScope scope(this);
+      std::optional<DisallowPseudoElementsScope> disallow_pseudo_elements;
+      if (!RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled()) {
+        disallow_pseudo_elements.emplace(this);
+      }
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
       CSSSelectorList* selector_list =
           ConsumeNestedSelectorList(stream, result_flags);
