@@ -42,7 +42,6 @@ import "components/sync/protocol/password_sharing_invitation_specifics.proto";
 import "components/sync/protocol/password_specifics.proto";
 import "components/sync/protocol/plus_address_setting_specifics.proto";
 import "components/sync/protocol/plus_address_specifics.proto";
-import "components/sync/protocol/power_bookmark_specifics.proto";
 import "components/sync/protocol/preference_specifics.proto";
 import "components/sync/protocol/printer_specifics.proto";
 import "components/sync/protocol/printers_authorization_server_specifics.proto";
@@ -147,7 +146,6 @@ message EntitySpecifics {
     SavedTabGroupSpecifics saved_tab_group = 1004874;
     AutofillWalletUsageSpecifics autofill_wallet_usage = 1033580;
     ContactInfoSpecifics contact_info = 1034378;
-    PowerBookmarkSpecifics power_bookmark = 1073150;
     IncomingPasswordSharingInvitationSpecifics
         incoming_password_sharing_invitation = 1141935;
     OutgoingPasswordSharingInvitationSpecifics
@@ -194,6 +192,8 @@ message EntitySpecifics {
   reserved "mountain_share";
   reserved 1026052;
   reserved "segmentation";
+  reserved 1073150;
+  reserved "power_bookmark";
 }
 
 message EmptySpecifics {}
