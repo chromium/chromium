@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -77,8 +78,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               ShowPaymentLinkPrompt,
               (base::span<const autofill::Ewallet> ewallet_suggestions,
                std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-               base::OnceCallback<void(int64_t)>,
-               base::OnceCallback<void(std::string_view, std::string_view)>),
+               base::OnceCallback<void(SelectedFopData)>),
               (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));

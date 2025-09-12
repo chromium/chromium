@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/facilitated_payments/core/browser/device_delegate.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
@@ -117,9 +118,7 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   virtual void ShowPaymentLinkPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
       std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-      base::OnceCallback<void(int64_t)> on_ewallet_account_selected,
-      base::OnceCallback<void(std::string_view, std::string_view)>
-          on_payment_app_selected);
+      base::OnceCallback<void(SelectedFopData)> on_fop_selected);
 
   // Shows a progress bar while users wait for server response after selecting a
   // payment account.

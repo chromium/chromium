@@ -984,8 +984,7 @@ TEST_F(PaymentLinkManagerTest,
   FastForwardBy(base::Seconds(2));
   // Simulate that the FOP selector was shown successfully.
   test_api(*payment_link_manager_)
-      .ShowPaymentLinkPrompt({supported_ewallet}, {}, base::DoNothing(),
-                             base::DoNothing());
+      .ShowPaymentLinkPrompt({supported_ewallet}, {}, base::DoNothing());
   test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
 
   // Verify that when the eWallet FOP selector is shown, latency histogram is
@@ -1033,8 +1032,7 @@ class PaymentLinkManagerTestForUiScreens
         const std::vector<autofill::Ewallet> ewallets = {
             autofill::test::CreateEwalletAccount(100L)};
         test_api(*payment_link_manager_)
-            .ShowPaymentLinkPrompt(std::move(ewallets), {}, base::DoNothing(),
-                                   base::DoNothing());
+            .ShowPaymentLinkPrompt(std::move(ewallets), {}, base::DoNothing());
         break;
       }
       case UiState::kProgressScreen:
@@ -1389,8 +1387,7 @@ TEST_F(PaymentLinkManagerTest, ScreenClosedByUser_FopSelectorRejected) {
   const std::vector<autofill::Ewallet> ewallets = {
       autofill::test::CreateEwalletAccount(100L)};
   test_api(*payment_link_manager_)
-      .ShowPaymentLinkPrompt(std::move(ewallets), {}, base::DoNothing(),
-                             base::DoNothing());
+      .ShowPaymentLinkPrompt(std::move(ewallets), {}, base::DoNothing());
   // Simulate new screen was shown successfully.
   test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed by the user.
@@ -1689,7 +1686,7 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, PaymentPromptShown_A2AAndEwallet) {
       client_,
       ShowPaymentLinkPrompt(
           testing::Eq(std::vector<autofill::Ewallet>{supported_ewallet}),
-          testing::_, testing::_, testing::_));
+          testing::_, testing::_));
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),

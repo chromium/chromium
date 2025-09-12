@@ -24,6 +24,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/browser/strike_databases/payment_link_suggestion_strike_database.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
@@ -113,12 +114,9 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
     supported_apps.reset();
   }
 
-  ShowPaymentLinkPrompt(
-      supported_ewallets_, std::move(supported_apps),
-      base::BindOnce(&PaymentLinkManager::OnEwalletAccountSelected,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&PaymentLinkManager::OnPaymentAppSelected,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ShowPaymentLinkPrompt(supported_ewallets_, std::move(supported_apps),
+                        base::BindOnce(&PaymentLinkManager::OnFopSelected,
+                                       weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool PaymentLinkManager::CanTriggerEwalletPaymentFlow(const GURL& page_url) {
@@ -230,6 +228,20 @@ FacilitatedPaymentsApiClient* PaymentLinkManager::GetApiClient() {
   }
 
   return api_client_.get();
+}
+
+void PaymentLinkManager::OnFopSelected(SelectedFopData selected_fop_data) {
+  switch (selected_fop_data.fop_type) {
+    case FopType::kGPayInstrument:
+      // GPayInstrument are Pix and eWallet, in PaymentLinkManger only eWallet
+      // and Payment app are handled.
+      OnEwalletAccountSelected(selected_fop_data.instrument_id);
+      break;
+    case FopType::kExternalPaymentApp:
+      OnPaymentAppSelected(selected_fop_data.package_name,
+                           selected_fop_data.activity_name);
+      break;
+  }
 }
 
 void PaymentLinkManager::OnEwalletAccountSelected(
@@ -477,9 +489,8 @@ void PaymentLinkManager::DismissPrompt() {
 void PaymentLinkManager::ShowPaymentLinkPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
     std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-    base::OnceCallback<void(int64_t)> on_ewallet_account_selected,
-    base::OnceCallback<void(std::string_view, std::string_view)>
-        on_payment_app_selected) {
+    base::OnceCallback<void(payments::facilitated::SelectedFopData)>
+        on_fop_selected) {
   is_ewallet_available_ = ewallet_suggestions.size() > 0;
   is_payment_app_available_ =
       (app_suggestions != nullptr) && app_suggestions->Size() > 0;
@@ -495,8 +506,7 @@ void PaymentLinkManager::ShowPaymentLinkPrompt(
   ui_state_ = UiState::kFopSelector;
   client_->ShowPaymentLinkPrompt(std::move(ewallet_suggestions),
                                  std::move(app_suggestions),
-                                 std::move(on_ewallet_account_selected),
-                                 std::move(on_payment_app_selected));
+                                 std::move(on_fop_selected));
 }
 
 void PaymentLinkManager::ShowProgressScreen() {

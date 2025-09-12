@@ -26,6 +26,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -155,14 +156,13 @@ void ChromeFacilitatedPaymentsClient::ShowPaymentLinkPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
     std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
         app_suggestions,
-    base::OnceCallback<void(int64_t)> on_payment_account_selected,
-    base::OnceCallback<void(std::string_view, std::string_view)>
-        on_payment_app_selected) {
+    base::OnceCallback<void(payments::facilitated::SelectedFopData)>
+        on_fop_selected) {
   facilitated_payments_controller_->ShowForPaymentLink(
       ewallet_suggestions, std::move(app_suggestions),
-      std::move(on_payment_account_selected),
-      std::move(on_payment_app_selected));
+      std::move(on_fop_selected));
 }
+
 void ChromeFacilitatedPaymentsClient::ShowProgressScreen() {
   facilitated_payments_controller_->ShowProgressScreen();
 }

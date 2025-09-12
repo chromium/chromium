@@ -243,7 +243,7 @@ TEST_F(FacilitatedPaymentsControllerTest,
                   testing::ElementsAreArray(ewallets_), testing::_));
 
   controller_->ShowForPaymentLink(ewallets_, std::move(apps_),
-                                  base::DoNothing(), base::DoNothing());
+                                  base::DoNothing());
 }
 
 // Test controller forwards call for showing the payment link FOP selector to
@@ -253,9 +253,7 @@ TEST_F(FacilitatedPaymentsControllerTest,
   EXPECT_CALL(*mock_view_,
               RequestShowContentForPaymentLink(testing::IsEmpty(), testing::_));
   EXPECT_CALL(*apps_, Size).WillOnce(testing::Return(2));
-
-  controller_->ShowForPaymentLink({}, std::move(apps_), base::DoNothing(),
-                                  base::DoNothing());
+  controller_->ShowForPaymentLink({}, std::move(apps_), base::DoNothing());
 }
 
 // Test controller forwards call for showing the payment link FOP selector to
@@ -268,7 +266,7 @@ TEST_F(FacilitatedPaymentsControllerTest,
                   testing::ElementsAreArray(ewallets_), testing::_));
 
   controller_->ShowForPaymentLink(ewallets_, std::move(apps_),
-                                  base::DoNothing(), base::DoNothing());
+                                  base::DoNothing());
 }
 
 // Test controller does not forward call for showing the payment link FOP
@@ -278,24 +276,28 @@ TEST_F(FacilitatedPaymentsControllerTest,
   EXPECT_CALL(*mock_view_, RequestShowContentForPaymentLink).Times(0);
   EXPECT_CALL(*apps_, Size).WillOnce(testing::Return(0));
 
-  controller_->ShowForPaymentLink({}, std::move(apps_), base::DoNothing(),
-                                  base::DoNothing());
+  controller_->ShowForPaymentLink({}, std::move(apps_), base::DoNothing());
 }
 
 // Test OnEwalletSelected method.
 TEST_F(FacilitatedPaymentsControllerTest, OnEwalletSelected) {
-  base::MockCallback<base::OnceCallback<void(int64_t)>>
-      mock_on_payment_account_selected;
+  base::MockCallback<
+      base::OnceCallback<void(payments::facilitated::SelectedFopData)>>
+      mock_on_fop_selected;
 
   // view_ is assigned when the bottom sheet is shown.
   controller_->ShowForPaymentLink(ewallets_, std::move(apps_),
-                                  mock_on_payment_account_selected.Get(),
-                                  base::DoNothing());
+                                  mock_on_fop_selected.Get());
 
   // When an eWallet is selected, call back should be called with the instrument
   // id of the selected eWallet.
-  EXPECT_CALL(mock_on_payment_account_selected,
-              Run(/*selected_ewallet_instrument_id=*/100L));
+  EXPECT_CALL(
+      mock_on_fop_selected,
+      Run(testing::AllOf(
+          testing::Field(&payments::facilitated::SelectedFopData::fop_type,
+                         payments::facilitated::FopType::kGPayInstrument),
+          testing::Field(&payments::facilitated::SelectedFopData::instrument_id,
+                         100L))));
 
   controller_->OnEwalletSelected(nullptr, 100L);
 }
@@ -303,20 +305,28 @@ TEST_F(FacilitatedPaymentsControllerTest, OnEwalletSelected) {
 // Test OnPaymentAppSelected method.
 TEST_F(FacilitatedPaymentsControllerTest, OnPaymentAppSelected) {
   base::MockCallback<
-      base::OnceCallback<void(std::string_view, std::string_view)>>
-      mock_on_payment_app_selected;
+      base::OnceCallback<void(payments::facilitated::SelectedFopData)>>
+      mock_on_fop_selected;
   const std::string package_name = "com.example.app";
   const std::string activity_name = "com.example.app.activity";
 
   ON_CALL(*apps_, Size).WillByDefault(testing::Return(1));
 
   // view_ is assigned when the bottom sheet is shown.
-  controller_->ShowForPaymentLink({}, std::move(apps_), base::DoNothing(),
-                                  mock_on_payment_app_selected.Get());
+  controller_->ShowForPaymentLink({}, std::move(apps_),
+                                  mock_on_fop_selected.Get());
 
   // When a payment app is selected, callback should be called with the package
   // name and activity name of the selected payment app.
-  EXPECT_CALL(mock_on_payment_app_selected, Run(package_name, activity_name));
+  EXPECT_CALL(
+      mock_on_fop_selected,
+      Run(testing::AllOf(
+          testing::Field(&payments::facilitated::SelectedFopData::fop_type,
+                         payments::facilitated::FopType::kExternalPaymentApp),
+          testing::Field(&payments::facilitated::SelectedFopData::package_name,
+                         package_name),
+          testing::Field(&payments::facilitated::SelectedFopData::activity_name,
+                         activity_name))));
 
   JNIEnv* env = base::android::AttachCurrentThread();
   controller_->OnPaymentAppSelected(

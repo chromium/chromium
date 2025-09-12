@@ -38,6 +38,36 @@ class Ewallet;
 
 namespace payments::facilitated {
 
+// The different types of FOP that can be selected by the user.
+enum FopType {
+  // An external payment app that is not integrated with GPay.
+  kExternalPaymentApp = 0,
+  // A GPay payment instrument, such as an eWallet.
+  kGPayInstrument = 1,
+};
+
+// Contains information about the FOP selected by the user.
+// Based on the fop_type, different fields in this struct will be populated.
+// If fop_type is kGPayInstrument, instrument_id will be set.
+// If fop_type is kExternalPaymentApp, package_name and activity_name will be
+// set.
+struct SelectedFopData {
+  explicit SelectedFopData(int64_t instrument_id)
+      : fop_type(kGPayInstrument), instrument_id(instrument_id) {}
+
+  SelectedFopData(const std::string& package_name,
+                  const std::string& activity_name)
+      : fop_type(kExternalPaymentApp),
+        instrument_id(0),
+        package_name(package_name),
+        activity_name(activity_name) {}
+
+  const FopType fop_type;
+  const int64_t instrument_id;
+  const std::string package_name;
+  const std::string activity_name;
+};
+
 class FacilitatedPaymentsClient;
 class FacilitatedPaymentsInitiatePaymentResponseDetails;
 enum class AvailableEwalletsConfiguration;
@@ -84,6 +114,9 @@ class PaymentLinkManager {
   // `nullptr` if the API client fails to initialize, e.g., if the
   // `RenderFrameHost` has been destroyed.
   FacilitatedPaymentsApiClient* GetApiClient();
+
+  // Called when user selects any FOP to pay with.
+  void OnFopSelected(SelectedFopData selected_fop_data);
 
   // Called when user selects the eWallet account to pay with.
   void OnEwalletAccountSelected(int64_t selected_instrument_id);
@@ -132,9 +165,8 @@ class PaymentLinkManager {
   void ShowPaymentLinkPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
       std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-      base::OnceCallback<void(int64_t)> on_ewallet_account_selected,
-      base::OnceCallback<void(std::string_view, std::string_view)>
-          on_payment_app_selected);
+      base::OnceCallback<void(payments::facilitated::SelectedFopData)>
+          on_fop_selected);
 
   // Updates the `ui_state_` value and triggers showing the progress screen.
   void ShowProgressScreen();

@@ -36,9 +36,8 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
       (base::span<const autofill::Ewallet> ewallet_suggestions,
        std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
            app_suggestions,
-       base::OnceCallback<void(int64_t)> on_payment_account_selected,
-       base::OnceCallback<void(std::string_view, std::string_view)>
-           on_payment_app_selected),
+       base::OnceCallback<void(payments::facilitated::SelectedFopData)>
+           on_fop_selected),
       (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
@@ -225,8 +224,7 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, IsWebContentsVisibleOrOccluded) {
 TEST_F(ChromeFacilitatedPaymentsClientTest,
        ShowPaymentLinkPrompt_ControllerInvoked) {
   EXPECT_CALL(controller(), ShowForPaymentLink);
-  base_client().ShowPaymentLinkPrompt({}, {}, base::DoNothing(),
-                                      base::DoNothing());
+  base_client().ShowPaymentLinkPrompt({}, {}, base::DoNothing());
 }
 
 // Test that the client forwards call to initiate Pix account linking flow to

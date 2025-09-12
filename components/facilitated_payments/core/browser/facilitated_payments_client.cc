@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "url/origin.h"
@@ -32,9 +33,7 @@ void FacilitatedPaymentsClient::ShowPixPaymentPrompt(
 void FacilitatedPaymentsClient::ShowPaymentLinkPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
     std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-    base::OnceCallback<void(int64_t)> on_ewallet_account_selected,
-    base::OnceCallback<void(std::string_view, std::string_view)>
-        on_payment_app_selected) {}
+    base::OnceCallback<void(SelectedFopData)> on_fop_selected) {}
 
 void FacilitatedPaymentsClient::ShowProgressScreen() {}
 

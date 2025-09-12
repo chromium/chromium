@@ -18,6 +18,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -97,9 +98,8 @@ class ChromeFacilitatedPaymentsClient
       base::span<const autofill::Ewallet> ewallet_suggestions,
       std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
           app_suggestions,
-      base::OnceCallback<void(int64_t)> on_payment_account_selected,
-      base::OnceCallback<void(std::string_view, std::string_view)>
-          on_payment_app_selected) final;
+      base::OnceCallback<void(payments::facilitated::SelectedFopData)>
+          on_fop_selected) final;
   void ShowProgressScreen() final;
   void ShowErrorScreen() final;
   void DismissPrompt() final;
