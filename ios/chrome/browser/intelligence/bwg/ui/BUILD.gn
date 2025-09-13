@@ -42,3 +42,17 @@ bundle_data("bwg_lottie_resources") {
   sources = [ "resources/FRE_Banner.json" ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "gemini_fre_wrapper_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//ios/chrome/browser/intelligence/bwg/ui",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//url",
+  ]
+}
