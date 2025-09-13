@@ -67,6 +67,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -930,6 +931,25 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(115, "jocelyntran@chromium.org",
                        "Triggered to encourage users to try out the reading "
                        "mode feature.")));
+
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHSideBySidePinnableFeature,
+          kToolbarSplitTabsToolbarButtonElementId, IDS_SPLIT_VIEW_BODY_IPH,
+          IDS_SPLIT_VIEW_PIN_ACTION_IPH,
+          base::BindRepeating(
+              [](ContextPtr ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                GetBrowser(ctx)->GetProfile()->GetPrefs()->SetBoolean(
+                    prefs::kPinSplitTabButton, true);
+              }))
+          .SetBubbleTitleText(IDS_SPLIT_VIEW_TITLE_IPH)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetCustomActionDismissText(IDS_SPLIT_VIEW_DISMISS_ACTION_IPH)
+          .SetCustomActionIsDefault(true)
+          .SetMetadata(
+              141, "lugli@google.com",
+              "Triggered when user tried to create split view twice.")));
 
   // kIPHSidePanelGenericPinnableFeature:
   registry.RegisterFeature(std::move(
