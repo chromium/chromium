@@ -23,6 +23,7 @@ class XRCylinderLayerInit;
 class XREquirectLayer;
 class XREquirectLayerInit;
 class XRFrame;
+class XRLayerInit;
 class XRLightProbe;
 class XRSession;
 class XRView;
@@ -31,6 +32,7 @@ class XRProjectionLayer;
 class XRProjectionLayerInit;
 class XRQuadLayer;
 class XRQuadLayerInit;
+class V8XRTextureType;
 class XRWebGLSubImage;
 class XRWebGLSwapChain;
 
@@ -84,11 +86,14 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   void Trace(Visitor*) const override;
 
  private:
-  bool CanCreateLayer(ExceptionState& exception_state);
+  bool ValidateSessionAndContext(ExceptionState&);
   bool ValidateLayerColorFormat(GLenum color_format,
                                 ExceptionState& exception_state);
   bool ValidateLayerDepthStencilFormat(GLenum depth_stencil_format,
                                        ExceptionState& exception_state);
+  bool CanCreateShapedLayer(const XRLayerInit*, ExceptionState&);
+  bool ValidateShapedLayerTextureType(const V8XRTextureType, ExceptionState&);
+  bool ValidateShapedLayerData(const XRLayerInit*, ExceptionState&);
   GLenum FormatForLayerFormat(GLenum format);
   GLenum InternalFormatForLayerFormat(GLenum format);
   GLenum TypeForLayerFormat(GLenum format);

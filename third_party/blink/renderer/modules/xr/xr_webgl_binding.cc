@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
 #include "third_party/blink/renderer/modules/xr/xr_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_quad_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_render_state.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
@@ -107,7 +108,7 @@ bool XRWebGLBinding::usesDepthValues() const {
 XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
     const XRProjectionLayerInit* init,
     ExceptionState& exception_state) {
-  if (!CanCreateLayer(exception_state) ||
+  if (!ValidateSessionAndContext(exception_state) ||
       !ValidateLayerColorFormat(init->colorFormat(), exception_state) ||
       !ValidateLayerDepthStencilFormat(init->depthFormat(), exception_state)) {
     return nullptr;
@@ -212,9 +213,12 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
 
 XRQuadLayer* XRWebGLBinding::createQuadLayer(const XRQuadLayerInit* init,
                                              ExceptionState& exception_state) {
-  // TODO(crbug.com/443787995): Implement quad layer initialization sequence
-  // https://www.w3.org/TR/webxrlayers-1/#dom-xrwebglbinding-createquadlayer
+  if (!CanCreateShapedLayer(init, exception_state) ||
+      !ValidateShapedLayerTextureType(init->textureType(), exception_state)) {
+    return nullptr;
+  }
 
+  // TODO(crbug.com/444020394): create layer instance.
   exception_state.ThrowTypeError(
       "XRQuadLayer was not implemented for the platform.");
   return nullptr;
@@ -223,10 +227,12 @@ XRQuadLayer* XRWebGLBinding::createQuadLayer(const XRQuadLayerInit* init,
 XRCylinderLayer* XRWebGLBinding::createCylinderLayer(
     const XRCylinderLayerInit* init,
     ExceptionState& exception_state) {
-  // TODO(crbug.com/443787995): Implement cylinder layer initialization
-  // sequence
-  // https://www.w3.org/TR/webxrlayers-1/#dom-xrwebglbinding-createcylinderlayer
+  if (!CanCreateShapedLayer(init, exception_state) ||
+      !ValidateShapedLayerTextureType(init->textureType(), exception_state)) {
+    return nullptr;
+  }
 
+  // TODO(crbug.com/444020394): create layer instance.
   exception_state.ThrowTypeError(
       "XRCylinderLayer was not implemented for the platform.");
   return nullptr;
@@ -235,9 +241,26 @@ XRCylinderLayer* XRWebGLBinding::createCylinderLayer(
 XREquirectLayer* XRWebGLBinding::createEquirectLayer(
     const XREquirectLayerInit* init,
     ExceptionState& exception_state) {
-  // TODO(crbug.com/443787995): Implement equirect layer initialization sequence
-  // https://www.w3.org/TR/webxrlayers-1/#dom-xrwebglbinding-createequirectlayer
+  if (!CanCreateShapedLayer(init, exception_state) ||
+      !ValidateShapedLayerTextureType(init->textureType(), exception_state)) {
+    return nullptr;
+  }
 
+  // Validating parameters specific to XREquirectLayer.
+  auto* space = DynamicTo<XRReferenceSpace>(init->space());
+  if (!space) {
+    exception_state.ThrowTypeError(
+        "The 'space' parameter must be an XRReferenceSpace.");
+    return nullptr;
+  }
+
+  if (!space->IsStationary()) {
+    exception_state.ThrowTypeError(
+        "The 'space' parameter cannot be of type 'viewer'.");
+    return nullptr;
+  }
+
+  // TODO(crbug.com/444020394): create layer instance.
   exception_state.ThrowTypeError(
       "XREquirectLayer was not implemented for the platform.");
   return nullptr;
@@ -287,6 +310,9 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
                                              ExceptionState& exception_state) {
   CHECK(layer);
   CHECK(frame);
+  if (!ValidateSessionAndContext(exception_state)) {
+    return nullptr;
+  }
 
   if (layer->session() != session()) {
     exception_state.ThrowDOMException(
@@ -295,17 +321,38 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
     return nullptr;
   }
 
-  // Check the frame state
-  if (frame->session() != layer->session() || !frame->IsActive() ||
+  if (!OwnsLayer(layer)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Layer was not created with this binding.");
+    return nullptr;
+  }
+
+  // Check the frame state.
+  if (frame->session() != session() || !frame->IsActive() ||
       !frame->IsAnimationFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid frame state.");
     return nullptr;
   }
 
-  // TODO(crbug.com/443787995): Implement all 21 steps according to the spec
-  // https://www.w3.org/TR/webxrlayers-1/#dom-xrwebglbinding-getsubimage
+  // TODO(crbug.com/444018463): check that layer is not XRProjectionLayer and
+  // has shared image.
 
+  if (layer->layout() == V8XRLayerLayout::Enum::kDefault) {
+    exception_state.ThrowTypeError("Invalid layer's layout type.");
+    return nullptr;
+  }
+
+  if (layer->layout() == V8XRLayerLayout::Enum::kStereo) {
+    if (eye == V8XREye::Enum::kNone) {
+      exception_state.ThrowTypeError(
+          "The 'eye' parameter cannot be 'none' for the stereo layout.");
+      return nullptr;
+    }
+  }
+
+  // TODO(crbug.com/444020394): create XRWebGLSubImage.
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     "Invalid frame state.");
   return nullptr;
@@ -499,7 +546,8 @@ gfx::Rect XRWebGLBinding::GetViewportForView(XRProjectionLayer* layer,
                    layer->textureHeight() * view->CurrentViewportScale());
 }
 
-bool XRWebGLBinding::CanCreateLayer(ExceptionState& exception_state) {
+bool XRWebGLBinding::ValidateSessionAndContext(
+    ExceptionState& exception_state) {
   if (session()->ended()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot create a new layer for an "
@@ -657,6 +705,94 @@ GLenum XRWebGLBinding::TypeForLayerFormat(GLenum layer_format) {
     default:
       NOTREACHED();
   }
+}
+
+bool XRWebGLBinding::CanCreateShapedLayer(const XRLayerInit* init,
+                                          ExceptionState& exception_state) {
+  // Check that 'layers' feature was requested for session
+  if (!session()->IsFeatureEnabled(device::mojom::XRSessionFeature::LAYERS)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "'layers' feature was not requested on session start.");
+    return false;
+  }
+
+  if (!ValidateSessionAndContext(exception_state) ||
+      !ValidateShapedLayerData(init, exception_state)) {
+    return false;
+  }
+  return true;
+}
+
+bool XRWebGLBinding::ValidateShapedLayerTextureType(
+    const V8XRTextureType texture_type,
+    ExceptionState& exception_state) {
+  if (!webgl2_ &&
+      texture_type.AsEnum() == V8XRTextureType::Enum::kTextureArray) {
+    exception_state.ThrowTypeError(
+        "textureType of 'texture-array' is only available with WebGL 2 "
+        "contexts.");
+    return false;
+  }
+  return true;
+}
+
+bool XRWebGLBinding::ValidateShapedLayerData(const XRLayerInit* init,
+                                             ExceptionState& exception_state) {
+  if (!ValidateLayerColorFormat(init->colorFormat(), exception_state)) {
+    return false;
+  }
+
+  if (init->layout() == V8XRLayerLayout::Enum::kDefault) {
+    exception_state.ThrowTypeError("Invalid layout type.");
+    return false;
+  }
+
+  // TODO(crbug.com/444681345): Add stereo layout support.
+  if (init->layout() != V8XRLayerLayout::Enum::kMono) {
+    exception_state.ThrowTypeError("Platform only supports 'mono' layout.");
+    return false;
+  }
+
+  if (!init->hasSpace() || init->space() == nullptr) {
+    exception_state.ThrowTypeError("XRSpace can't be null for Layer.");
+    return false;
+  }
+
+  // XRSpace should belong to the same session
+  if (init->space()->session() != session()) {
+    exception_state.ThrowTypeError(
+        "XRSpace is associated with a different XRSession.");
+    return false;
+  }
+
+  if (!init->hasViewPixelHeight() || init->viewPixelHeight() == 0) {
+    exception_state.ThrowTypeError("viewPixelHeight is required.");
+    return false;
+  }
+
+  if (!init->hasViewPixelWidth() || init->viewPixelWidth() == 0) {
+    exception_state.ThrowTypeError("viewPixelWidth is required.");
+    return false;
+  }
+
+  GLint max_texture_size = 0;
+  webgl_context_->ContextGL()->GetIntegerv(GL_MAX_TEXTURE_SIZE,
+                                           &max_texture_size);
+
+  if (init->viewPixelHeight() > static_cast<uint32_t>(max_texture_size)) {
+    exception_state.ThrowTypeError(
+        "ViewPixelHeight exceeds the maximum texture size.");
+    return false;
+  }
+
+  if (init->viewPixelWidth() > static_cast<uint32_t>(max_texture_size)) {
+    exception_state.ThrowTypeError(
+        "ViewPixelWidth exceeds the maximum texture size.");
+    return false;
+  }
+
+  return true;
 }
 
 void XRWebGLBinding::Trace(Visitor* visitor) const {

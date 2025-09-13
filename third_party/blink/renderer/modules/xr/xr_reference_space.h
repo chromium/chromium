@@ -11,6 +11,7 @@
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_reference_space_type.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
@@ -55,6 +56,8 @@ class XRReferenceSpace : public XRSpace {
 
   std::string ToString() const override;
 
+  bool IsReferenceSpace() const override { return true; }
+
   void Trace(Visitor*) const override;
 
   virtual void OnReset();
@@ -67,6 +70,13 @@ class XRReferenceSpace : public XRSpace {
 
   Member<XRRigidTransform> origin_offset_;
   device::mojom::blink::XRReferenceSpaceType type_;
+};
+
+template <>
+struct DowncastTraits<XRReferenceSpace> {
+  static bool AllowFrom(const XRSpace& space) {
+    return space.IsReferenceSpace();
+  }
 };
 
 }  // namespace blink

@@ -104,6 +104,8 @@ class XRSpace : public EventTarget {
   virtual device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const = 0;
 
+  virtual bool IsReferenceSpace() const { return false; }
+
   void Trace(Visitor* visitor) const override;
 
  private:
