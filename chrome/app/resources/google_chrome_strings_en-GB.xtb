@@ -85,6 +85,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1880677175115548835">Select text</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
 <translation id="1953553007165777902">Downloading… <ph name="MINUTE" /> minute(s) remaining</translation>
+<translation id="1979600810166324878">Stay safer on the go with Enhanced Safe Browsing on Chrome for iOS</translation>
 <translation id="2001586581944147178">Make it harder for people with access to your Internet traffic to see which sites you visit. Chrome uses a secure connection to look up a site's IP address in the DNS (Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{This extension is no longer supported. Chrome recommends that you remove it.}other{These extensions are no longer supported. Chrome recommends that you remove them.}}</translation>
 <translation id="2018528049276128029">Each profile holds its own Chrome info, like bookmarks, history, passwords and more</translation>
@@ -383,6 +384,7 @@ Some features may be unavailable. Please specify a different profile directory o
 
 Google Chrome is unable to recover your settings.</translation>
 <translation id="5468572406162360320">To help improve these features, Chrome sends your interactions with them to Google. This data may be read, processed and annotated by human reviewers.</translation>
+<translation id="5510398294750420479">Download Chrome on your phone to add an extra layer of protection when you're on the go</translation>
 <translation id="5524761631371622910">When trials are on and if Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month.</translation>
 <translation id="5524890928877629608">top-left corner of search area: left <ph name="LEFT" />%, top <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Make Chrome Faster</translation>
@@ -495,6 +497,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6760235774835597023">Speeds up sites with Chrome's V8 engine but makes Chrome slightly less resistant to attacks. This setting is on.</translation>
 <translation id="677276454032249905">Exit Chrome anyway?</translation>
 <translation id="6794858689789885890">Always delete site data from your device when you close Chrome</translation>
+<translation id="6800285125190089494">Sign in faster to sites using saved passwords for Chrome on iOS</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="683440813066116847">Inbound rule for Google Chrome Canary to allow mDNS traffic.</translation>
 <translation id="684888714667046800">Unable to connect to the Internet. If you use a firewall, please ensure that <ph name="PRODUCT_EXE_NAME" /> is in the allowlist.</translation>
@@ -632,6 +635,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8336463659890584292">When a site asks to privately preload links on their page, Chrome uses Google servers. This hides your identity from the preloaded site, but Google learns what sites get preloaded.</translation>
 <translation id="8342675569599923794">This file is dangerous, so Chrome has blocked it.</translation>
 <translation id="8349094670477064572">You'll save and use passwords and more in your Google Account whenever you're signed in to Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Ask Google</translation>
 <translation id="8362914115861174987">Translate to</translation>
 <translation id="8366770919198174997">Reduces performance but makes Chrome more resistant to attacks</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>

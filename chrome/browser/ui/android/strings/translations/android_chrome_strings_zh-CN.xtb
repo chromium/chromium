@@ -218,7 +218,7 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">尽可能使用 HTTPS，并在加载不支持 HTTPS 的网站前收到警告。您无法更改此设置，因为您已启用“高级保护”。</translation>
 <translation id="2056878612599315956">网站已被暂停</translation>
-<translation id="2063047797624276601">贵组织已开启“增强型安全浏览”功能</translation>
+<translation id="2063047797624276601">您的组织已开启“增强型安全浏览”功能</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 项下载失败}other{# 项下载失败}}</translation>
 <translation id="2067805253194386918">文本</translation>
 <translation id="2074527029802029717">取消固定标签页</translation>
@@ -492,7 +492,7 @@
 <translation id="331080746368555063">私密网站可能包括公司内网等</translation>
 <translation id="3311330810461485557">按应用、日期等进行搜索。</translation>
 <translation id="3334729583274622784">更改文件扩展名？</translation>
-<translation id="333863344734218290">在您访问不安全的公共网站和私密网站时发出警告</translation>
+<translation id="333863344734218290">在您访问不安全的公共网站和私有网站时发出警告</translation>
 <translation id="3341262203274374114">无法取消关注。出了点问题。</translation>
 <translation id="3351165113450806415">全新滑动方式</translation>
 <translation id="3359667936385849800">使用您当前的服务提供商</translation>
@@ -974,7 +974,7 @@
 <translation id="5601180634394228718">如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
 <translation id="5611398002774823980">保存到账号</translation>
 <translation id="5614625640221885312">登录后即可在任何设备上使用您的书签、密码等信息</translation>
-<translation id="5619633276517849615">贵组织已开启“安全浏览”功能</translation>
+<translation id="5619633276517849615">您的组织已开启“安全浏览”功能</translation>
 <translation id="5620163320393916465">尚未保存任何密码</translation>
 <translation id="5620928963363755975">通过“更多选项”按钮在“下载内容”中查找您的文件和网页</translation>
 <translation id="5626134646977739690">名字：</translation>
@@ -1414,7 +1414,7 @@
 <translation id="7439749340204407129">打开书签管理器</translation>
 <translation id="7453810262525006706">合拢为侧边视图</translation>
 <translation id="7454641608352164238">空间不足</translation>
-<translation id="7454744349230173024">贵组织已关闭密码保存功能</translation>
+<translation id="7454744349230173024">您的组织已关闭密码保存功能</translation>
 <translation id="7455988709578031708">根据您的浏览记录推测得出。此设置已开启。</translation>
 <translation id="7456774706094330779">扩展型预加载</translation>
 <translation id="7466328545712777810">任一网站上的商品降价时，您都会收到通知</translation>
@@ -1518,7 +1518,7 @@
 <translation id="7886917304091689118">正在 Chrome 中运行</translation>
 <translation id="7887174313503389866">观看导览，了解重要的隐私控制设置和安全控件。如需查看更多选项，请转到各项设置。</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
-<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 个下载项已被贵组织屏蔽}other{# 个下载项已被贵组织屏蔽}}</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 个下载项已被您的组织屏蔽}other{# 个下载项已被您的组织屏蔽}}</translation>
 <translation id="7914399737746719723">已安装应用</translation>
 <translation id="7917574899775263813">跳转到最后一个标签页</translation>
 <translation id="7919123827536834358">自动翻译以下语言</translation>

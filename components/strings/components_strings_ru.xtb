@@ -1779,6 +1779,7 @@
 <translation id="3941630233824954464">Включить обязательную повторную аутентификацию</translation>
 <translation id="3942048175062210325">Попробуйте открыть файлы ещё раз.</translation>
 <translation id="3943857333388298514">Вставить</translation>
+<translation id="3945937463338223066">Предоставить доступ к устройствам аутентификации типа <ph name="READERNAME" /> и смарт-картам, подключенным к ним.</translation>
 <translation id="3946209740501886391">Всегда спрашивать на этом сайте</translation>
 <translation id="3948588869002647271">Это приложение отсутствует или повреждено.</translation>
 <translation id="3949297482798028668">Администратор запретил вставлять этот контент.</translation>
@@ -4218,7 +4219,7 @@
 <translation id="7975858430722947486">Добавлено для сравнения</translation>
 <translation id="7976214039405368314">слишком много запросов</translation>
 <translation id="7977538094055660992">Устройство вывода</translation>
-<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> минут назад}=1{<ph name="TIME_COUNT" /> час назад}one{<ph name="TIME_COUNT" /> день назад}few{<ph name="TIME_COUNT" /> дня назад}many{<ph name="TIME_COUNT" /> дней назад}other{<ph name="TIME_COUNT" /> дня назад}}</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> мин. назад}=1{<ph name="TIME_COUNT" /> ч. назад}one{<ph name="TIME_COUNT" /> дн. назад}few{<ph name="TIME_COUNT" /> дн. назад}many{<ph name="TIME_COUNT" /> дн. назад}other{<ph name="TIME_COUNT" /> дн. назад}}</translation>
 <translation id="7979595116210197019">Общественное питание</translation>
 <translation id="798134797138789862">Разрешено отправлять запрос на использование устройств и данных виртуальной реальности</translation>
 <translation id="7983008347525536475">Внедорожники</translation>

@@ -681,6 +681,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3695446226812920698">Sånn gjør du det</translation>
 <translation id="3700134753671613714">Logg på for å få bokmerkene dine på alle enhetene du bruker.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din ({EMAIL}).}other{{COUNT} passord lagres bare på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({EMAIL}).}}</translation>
+<translation id="3709621342136814217">Velg skrifttype, tekststørrelse med mer her</translation>
 <translation id="371230970611282515">Forutser og advarer deg om farlige hendelser før de inntreffer.</translation>
 <translation id="372115889256123713">bufrede filer</translation>
 <translation id="3725081662140949903">For å forhindre andre fra å bruke passordet ditt, åpne appen <ph name="APP" /> og endre passordet</translation>

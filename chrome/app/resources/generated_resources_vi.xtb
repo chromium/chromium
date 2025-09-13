@@ -198,6 +198,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1129348283834595293">Viễn tưởng công nghệ cao</translation>
 <translation id="1129420403709586868">Xem ảnh và nội dung nghe nhìn trên điện thoại</translation>
 <translation id="1129850422003387628">Quản lý ứng dụng</translation>
+<translation id="1130116586186908674">Tạo chế độ xem chia đôi màn hình</translation>
 <translation id="1130430615924359526">{0,plural, =1{Đóng cửa sổ ẩn danh}other{Đóng cửa sổ ẩn danh (# cửa sổ)}}</translation>
 <translation id="113050636487300043">Chọn một tên và bảng màu để phân biệt giữa các hồ sơ</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Thuộc nhóm <ph name="GROUP_NAME" /></translation>
@@ -471,6 +472,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1307431692088049276">Đừng hỏi lại tôi</translation>
 <translation id="130744661532298792">Xác minh danh tính của bạn để đảm bảo bạn luôn dùng được mật khẩu trong Tài khoản Google</translation>
 <translation id="1307559529304613120">Rất tiếc! Hệ thống không lưu trữ được mã thông báo truy cập API dài hạn cho thiết bị này.</translation>
+<translation id="1311092170520822848">Trang web này đang kiểm soát máy đọc thẻ thông minh được kết nối với thiết bị của bạn và có thể truy cập vào thẻ thông minh có sẵn cho máy đọc thẻ</translation>
 <translation id="131112695174432497">Dữ liệu có ảnh hưởng đến hoạt động cá nhân hoá quảng cáo sẽ bị xoá</translation>
 <translation id="1311294419381837540">Bạn đang truyền một thẻ. Bạn có thể tạm dừng hoặc ngừng truyền bất cứ lúc nào.</translation>
 <translation id="131188242279372879">Khám phá chế độ bảo vệ nâng cao để có được cấp độ bảo mật cao nhất của Chrome đối với nội dung tải xuống</translation>
@@ -2111,6 +2113,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2431027948063157455">Không thể tải Trợ lý Google, vui lòng kiểm tra kết nối mạng của bạn rồi thử lại.</translation>
 <translation id="243179355394256322">Tổ chức của bạn chỉ cho phép những người dùng được ủy quyền đăng ký thiết bị. Người dùng này không được phép đăng ký thiết bị. Hãy kiểm tra trong phần Người dùng của Bảng điều khiển dành cho quản trị viên để đảm bảo rằng người dùng này có đặc quyền của quản trị viên "Đăng ký thiết bị Google Meet".</translation>
 <translation id="243275146591958220">Hủy quá trình tải xuống</translation>
+<translation id="2433237965825924228">Các ứng dụng web tách biệt kiểm soát các thiết bị xác thực và thẻ thông minh mà ứng dụng có thể truy cập. Thẻ thông minh thường chứa các giá trị nhận dạng dùng để xác thực danh tính của bạn.</translation>
 <translation id="2433452467737464329">Thêm một tham số truy vấn trong URL để tự động làm mới trang: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Hình thức</translation>
 <translation id="2433836460518180625">Chỉ mở khóa thiết bị</translation>
@@ -3527,6 +3530,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3429174588714165399">Tạo lối tắt đến trang này</translation>
 <translation id="3429271624041785769">Ngôn ngữ dùng cho nội dung web</translation>
 <translation id="3429275422858276529">Đánh dấu trang này để dễ dàng tìm kiếm về sau</translation>
+<translation id="343084100869297747">Các ứng dụng web tách biệt sẽ tự động tuân theo chế độ cài đặt này</translation>
 <translation id="3431530007831146102">Sử dụng chuyển động của đầu để điều khiển con trỏ chuột</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – Đã giải phóng <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -3543,7 +3547,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3435896845095436175">Bật</translation>
 <translation id="3436118221454753036">Chế độ Hỏi AI</translation>
 <translation id="3437072258256045988">Quản lý hoạt động của bạn trên Các ứng dụng Gemini</translation>
-<translation id="3437397693214267762">Xem tệp trong Sharepoint, Lịch Outlook và OneDrive</translation>
+<translation id="3437397693214267762">Xem Lịch Outlook, tệp Sharepoint và OneDrive</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Luôn cho phép <ph name="HOST" /> truy cập micrô của bạn</translation>
 <translation id="3439970425423980614">Mở PDF ở chế độ xem trước</translation>
@@ -8896,6 +8900,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7201535955609308429">Vui lòng đợi trong khi hệ thống đang tiến hành xác minh</translation>
 <translation id="7202337678781136582">Quét mã QR bằng điện thoại Android</translation>
 <translation id="7203150201908454328">Được mở rộng</translation>
+<translation id="7206252555702853828">Máy đọc thẻ thông minh của bạn đang bị kiểm soát</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Thoát khỏi trang}other{Thoát khỏi các trang}}</translation>
 <translation id="7207457272187520234">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Thiết bị này hiện tự động gửi dữ liệu chẩn đoán, dữ liệu về thiết bị và mức sử dụng ứng dụng cho Google. Những thông tin này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Tùy chọn cài đặt này do chủ sở hữu thực thi. Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung, thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="7207631048330366454">Tìm kiếm ứng dụng</translation>
@@ -11658,6 +11663,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9081543426177426948">Các trang web bạn truy cập không được lưu ở chế độ Ẩn danh</translation>
 <translation id="9082750838489080452">Ứng dụng: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Mở dưới dạng cửa sổ</translation>
+<translation id="9084383457260170045">Các ứng dụng web tách biệt có thể yêu cầu kiểm soát máy đọc thẻ thông minh.</translation>
 <translation id="9085256200913095638">Sao chép thẻ đã chọn</translation>
 <translation id="9085446486797400519">Quyền truy cập camera</translation>
 <translation id="9085776959277692427">Chưa chọn <ph name="LANGUAGE" />. Hãy nhấn phím Tìm kiếm + Phím cách để chọn.</translation>
@@ -11783,7 +11789,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
       <ph name="LIST_ITEM" />Kết nối lại Wi-Fi
       <ph name="LIST_ITEM" />Chạy công cụ Chẩn đoán kết nối dành cho Chrome
     <ph name="END_LIST" /></translation>
-<translation id="9161172953291434881">Bạn có tin tưởng trang web này không?</translation>
+<translation id="9161172953291434881">Bạn có tin tưởng để trang web này sử dụng dữ liệu của mình không?</translation>
 <translation id="9164418710391288146">Không được phép kết nối với bất kỳ thiết bị nào trên mạng cục bộ của bạn</translation>
 <translation id="9165856803582999927">Quét mã QR này bằng camera trên thiết bị mà bạn muốn tạo và lưu khoá truy cập cho <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Ảnh trong ảnh</translation>
@@ -11857,6 +11863,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Để quản lý tiện ích, hãy mở Tiện ích}other{Để quản lý các tiện ích này, hãy mở Tiện ích}}</translation>
 <translation id="924818813611903184">Quản lý ngôn ngữ trong phần cài đặt ChromeOS</translation>
 <translation id="925575170771547168">Thao tác này sẽ xoá <ph name="TOTAL_USAGE" /> dữ liệu do các trang web lưu trữ</translation>
+<translation id="927864230077808465">Các ứng dụng web tách biệt không thể kiểm soát máy đọc thẻ thông minh</translation>
 <translation id="930268624053534560">Dấu thời gian chi tiết</translation>
 <translation id="930551443325541578">Phím lặp lại và các dấu nhấn trọng âm</translation>
 <translation id="930893132043726269">Đang chuyển vùng</translation>

@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Karte u Chromiumu</translation>
 <translation id="1867772173333403444">4. Odaberite Chromium</translation>
+<translation id="1965068424387304464">Savjet za Chromium: spremite zaporke</translation>
 <translation id="2006345422933397527">Chromium nije uspio provjeriti ima li ažuriranja. Provjerite internetsku vezu.</translation>
 <translation id="2042889939382983733">Pregled povijesti na Chromiumu</translation>
 <translation id="2052320862053429062">Chromium povremeno uspoređuje vaše zaporke s javno objavljenim popisima. Tom su prilikom vaše zaporke i korisnička imena šifrirani, tako da ih nitko ne može pročitati, uključujući Google.</translation>
@@ -118,6 +119,7 @@ Pokušajte pričekati nekoliko minuta prije prebacivanja na drugi račun. Ako sa
 <translation id="3816686541346279443">Chromium će ponuditi spremanje zaporke.</translation>
 <translation id="3827545470516145620">Imate standardnu zaštitu sigurnosti na ovom uređaju</translation>
 <translation id="3833326979834193417">Chromium automatski pokreće sigurnosnu provjeru svaki dan kako bi vas zaštitio od neovlaštenog pristupa podacima, nesigurnih web-lokacija i drugih opasnosti. Više o sigurnosnoj provjeri možete pronaći u postavkama.</translation>
+<translation id="3837584850181228767">Savjet za Chromium: poboljšano sigurno pregledavanje</translation>
 <translation id="3845223911364528001">Vratite se na Chromium da biste prenijeli datoteku</translation>
 <translation id="3855938650519180865">Novosti u Chromiumu</translation>
 <translation id="3886689467633467988">Prijavite se na ovu web-lokaciju i Chromium kako biste imali pristup svojim oznakama i još toga na svim svojim uređajima.</translation>

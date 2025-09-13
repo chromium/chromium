@@ -85,6 +85,7 @@
 <translation id="1880677175115548835">選擇文字</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1953553007165777902">正在下載… 剩餘 <ph name="MINUTE" /> 分鐘</translation>
+<translation id="1979600810166324878">在 iOS 版 Chrome 啟用「強化安全瀏覽」，隨時隨地加強網上安全</translation>
 <translation id="2001586581944147178">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。Chrome 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Chrome 不再支援此擴充程式，因此建議你移除。}other{Chrome 不再支援這些擴充程式，因此建議你移除。}}</translation>
 <translation id="2018528049276128029">每個設定檔都會保存本身專屬的 Chrome 資料，例如書籤、記錄、密碼等</translation>
@@ -382,6 +383,7 @@
 
 Google Chrome 無法復原您的設定。</translation>
 <translation id="5468572406162360320">為協助改善這些功能，Chrome 會向 Google 傳送你與功能的互動資料。人手審查員可能會讀取、處理這些資料，並加上註解。</translation>
+<translation id="5510398294750420479">在手機下載 Chrome，隨時隨地多添一重保障</translation>
 <translation id="5524761631371622910">在試用期間，如果 Chrome 隨機將您加入試用行列，您的瀏覽記錄會影響所看到的廣告，以及系統推測的以下興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。</translation>
 <translation id="5524890928877629608">搜尋區域嘅左上角：距左側 <ph name="LEFT" />%，距頂部 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">加快 Chrome 的運作速度</translation>
@@ -494,6 +496,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6760235774835597023">使用 Chrome 的 V8 引擎加快網站速度，但 Chrome 防攻擊的能力會略為下降。此設定已開啟。</translation>
 <translation id="677276454032249905">仍要結束 Chrome 嗎？</translation>
 <translation id="6794858689789885890">在 Chrome 關閉後一律刪除裝置上的網站資料</translation>
+<translation id="6800285125190089494">在 iOS 版 Chrome 使用已儲存的密碼，加快登入網站的速度</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
 <translation id="684888714667046800">無法連線至互聯網。如果你使用防火牆，請確保已將 <ph name="PRODUCT_EXE_NAME" /> 加入許可名單。</translation>
@@ -631,6 +634,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8336463659890584292">當網站要求以私密方式預先載入網頁上的連結時，Chrome 會使用 Google 伺服器。這麼做可在預先載入網站中隱藏您的身分，不過 Google 會知道這類網站預先載入的內容。</translation>
 <translation id="8342675569599923794">此檔案不安全，因此 Chrome 已封鎖此檔案。</translation>
 <translation id="8349094670477064572">每當你登入 Chrome 後，就可以在 Google 帳戶中儲存及使用密碼和其他資料。<ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">向 Google 發問</translation>
 <translation id="8362914115861174987">譯文語言</translation>
 <translation id="8366770919198174997">降低效能但提高 Chrome 防範攻擊的能力</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>

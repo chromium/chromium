@@ -198,6 +198,7 @@
 <translation id="1129348283834595293">サイバーパンク</translation>
 <translation id="1129420403709586868">スマートフォンの写真とメディアを表示します</translation>
 <translation id="1129850422003387628">アプリの管理</translation>
+<translation id="1130116586186908674">分割表示を作成</translation>
 <translation id="1130430615924359526">{0,plural, =1{シークレット モードを終了}other{シークレット モードを終了（# 個のウィンドウ）}}</translation>
 <translation id="113050636487300043">各プロフィールを区別できるように名前と色のテーマを選択してください</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> グループの一部</translation>
@@ -471,6 +472,7 @@
 <translation id="1307431692088049276">今後表示しない</translation>
 <translation id="130744661532298792">Google アカウントのパスワードを常に使用できるようにするには、本人確認を行ってください</translation>
 <translation id="1307559529304613120">このデバイスの長期 API アクセス トークンを保存できませんでした。</translation>
+<translation id="1311092170520822848">このサイトは、デバイスに接続されているスマートカード リーダーと、リーダーで読み取り可能なスマートカードを制御しています</translation>
 <translation id="131112695174432497">広告のパーソナライズに影響するデータは削除されます</translation>
 <translation id="1311294419381837540">タブをキャストしています。いつでもキャストを一時停止または停止できます。</translation>
 <translation id="131188242279372879">Chrome の最高レベルのセキュリティでダウンロードを保護する保護強化機能について確認する</translation>
@@ -2093,6 +2095,7 @@
 <translation id="2431027948063157455">Google アシスタントを読み込めませんでした。ネットワーク接続を確認してから、もう一度お試しください。</translation>
 <translation id="243179355394256322">お客様の組織では、デバイスの登録は権限のあるユーザーしか行えません。このユーザーにはデバイスを登録する権限がありません。管理コンソールの [ユーザー] で、ユーザーに「Google Meet ハードウェアの登録」管理者権限があることをご確認ください。</translation>
 <translation id="243275146591958220">ダウンロードをキャンセル</translation>
+<translation id="2433237965825924228">独立したウェブアプリは、認証デバイスと、そのデバイスで読み取り可能なスマートカードを制御できます。通常、スマートカードには、ユーザーの認証に使用する識別子が含まれます。</translation>
 <translation id="2433452467737464329">ページを自動更新するには URL に次のようなクエリ パラメータを追加してください: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2433836460518180625">デバイスのロック解除のみ</translation>
@@ -3506,6 +3509,7 @@
 <translation id="3429174588714165399">このページのショートカットを作成</translation>
 <translation id="3429271624041785769">ウェブ コンテンツの言語</translation>
 <translation id="3429275422858276529">後で見つけやすいようにこのページをブックマークできます</translation>
+<translation id="343084100869297747">独立したウェブアプリは、この設定の動作を自動的に行います</translation>
 <translation id="3431530007831146102">頭の動きでマウスカーソルを操作する</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> を解放しました</translation>
 <translation id="3432762828853624962">共有ワーカー</translation>
@@ -8863,6 +8867,7 @@
 <translation id="7201535955609308429">確認中のため、しばらくお待ちください</translation>
 <translation id="7202337678781136582">Android スマートフォンで QR コードをスキャンする</translation>
 <translation id="7203150201908454328">展開表示中</translation>
+<translation id="7206252555702853828">スマートカード リーダーを制御しています</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{ページを離れる}other{ページを離れる}}</translation>
 <translation id="7207457272187520234">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
 <translation id="7207631048330366454">アプリを検索</translation>
@@ -9269,7 +9274,7 @@
 <translation id="7481312909269577407">進む</translation>
 <translation id="7481358317100446445">準備完了</translation>
 <translation id="748138892655239008">証明書の基本制約</translation>
-<translation id="7482823403440483089">拡張自動入力</translation>
+<translation id="7482823403440483089">高精度の自動入力</translation>
 <translation id="7483732342458943943">このリンクは機能していません</translation>
 <translation id="7484645889979462775">このサイトでは保存しない</translation>
 <translation id="7484943269191249363">本人確認を行うと、Google パスワード マネージャーに保存されているすべてのパスキーをこのデバイスで使用できます。この操作が必要なのは 1 回だけです。</translation>
@@ -11624,6 +11629,7 @@
 <translation id="9081543426177426948">シークレット モードでは、アクセスしたサイトは保存されません</translation>
 <translation id="9082750838489080452">アプリケーション: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">ウィンドウとして開く</translation>
+<translation id="9084383457260170045">独立したウェブアプリにスマートカード リーダーの制御のリクエストを許可する</translation>
 <translation id="9085256200913095638">選択したタブを複製</translation>
 <translation id="9085446486797400519">カメラへのアクセス</translation>
 <translation id="9085776959277692427">「<ph name="LANGUAGE" />」は選択されていません。選択するには検索+Space キーを押してください。</translation>
@@ -11823,6 +11829,7 @@
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{管理するには、拡張機能を開きます}other{管理するには、拡張機能を開きます}}</translation>
 <translation id="924818813611903184">ChromeOS の設定で言語を管理する</translation>
 <translation id="925575170771547168">サイトにより保存された <ph name="TOTAL_USAGE" /> のデータが削除されます</translation>
+<translation id="927864230077808465">独立したウェブアプリにスマートカード リーダーの制御を許可しない</translation>
 <translation id="930268624053534560">詳細なタイムスタンプ</translation>
 <translation id="930551443325541578">キーとアクセント記号の繰り返し</translation>
 <translation id="930893132043726269">現在ローミングあり</translation>

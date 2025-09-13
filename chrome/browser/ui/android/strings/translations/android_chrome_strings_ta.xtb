@@ -3,6 +3,7 @@
 <translationbundle lang="ta">
 <translation id="1010283278930414892">இந்தச் சாதனத்தில் சேமிக்கப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை</translation>
 <translation id="1011749477052068769">இங்கு நகர்த்து</translation>
+<translation id="1014083013111769343">வாசிப்புப் பயன்முறை விருப்பங்கள் முழு அளவிற்குத் திறந்துள்ளன</translation>
 <translation id="1014147525163127655">இந்தச் சாதனத்தில் <ph name="ORIGIN" /> தளத்திற்கான கடவுச்சாவிகள் எதுவுமில்லை</translation>
 <translation id="1016498331642356377">குரல் மூலம் உடனடியாகத் தேடலாம். இந்த ஷார்ட்கட்டை மாற்ற தொட்டுப் பிடித்திருக்கவும்.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> சாதனத்திற்கு அனுப்புகிறது...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">வைத்திரு</translation>
 <translation id="1973912524893600642">தரவை அழிக்காதே</translation>
 <translation id="1974060860693918893">மேம்பட்டவை</translation>
+<translation id="1982274314082047220">விருப்பங்களைப் பார்க்க வாசிப்புப் பயன்முறையை மேல்நோக்கி ஸ்வைப் செய்யவும்</translation>
 <translation id="1984087999855033707">ஃபோன் எண்</translation>
 <translation id="1984417487208496350">பாதுகாப்பற்ற பயன்முறை (பரிந்துரைக்கப்படவில்லை)</translation>
 <translation id="1986685561493779662">பெயர் ஏற்கனவே உள்ளது</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">பட விளக்கங்கள்</translation>
 <translation id="2996291259634659425">கடவுச்சொற்றொடரை உருவாக்கு</translation>
 <translation id="2996809686854298943">URL தேவை</translation>
+<translation id="3024215143424744261">வாசிப்புப் பயன்முறை விருப்பங்கள் மூடப்பட்டுள்ளன</translation>
 <translation id="3026955690410463085">இணைப்பைச் சேர்க்கும்</translation>
 <translation id="3027644380269727216">ஒரு தளத்தில் நீங்கள் மேற்கொண்ட செயல்பாட்டின் அடிப்படையிலானவை. இந்த அமைப்பு இயக்கப்பட்டுள்ளது.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" />ல் இருந்து</translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">மறைநிலைப் பயன்முறையில் இருந்து வெளியேறும்</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{பகிர்ந்த பக்கக் குழுக்களில் புதிய செயல்பாடுகளுடன் இருக்கும் <ph name="TABS_COUNT_ONE" /> பக்கத்தைக் காட்டும்}other{பகிர்ந்த பக்கக் குழுக்களில் புதிய செயல்பாடுகளுடன் இருக்கும் <ph name="TABS_COUNT_MANY" /> பக்கங்களைக் காட்டும்}}</translation>
+<translation id="6971555615916967190">வாசிப்புப் பயன்முறை விருப்பங்கள் பாதி அளவிற்குத் திறந்துள்ளன</translation>
 <translation id="6971862865055170158">அனுமதிக்காதே</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, புதிய அல்லது புதுப்பிக்கப்பட்ட பக்கம்</translation>
 <translation id="6976811588313110624">புதிய ஷார்ட்கட்டைச் சேர்க்கும்.</translation>

@@ -96,6 +96,7 @@
 <translation id="2185166961232948079">Chromium - Inici de sessió a la xarxa - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Error de comprovació d'actualització: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Suprimeix el compte de Chromium</translation>
+<translation id="2210502920229141283">Protegeix-te més siguis on siguis amb la funció Navegació segura millorada a Chromium per a iOS</translation>
 <translation id="2210682093923538346">Lloc web perillós. Chromium ha suprimit les notificacions.</translation>
 <translation id="2236949375853147973">La meva activitat</translation>
 <translation id="2238130810669087193">Per obtenir les teves adreces i altres dades en tots els dispositius, inicia la sessió a Chromium. Aquesta adreça es desarà al teu Compte de Google després d'iniciar-hi la sessió.</translation>
@@ -155,6 +156,7 @@
 <translation id="2928420929544864228">La instal·lació s'ha completat.</translation>
 <translation id="2933336679234709858">Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i desar les dades de Chromium al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="2945997411976714835">Error d'instal·lació: no s'ha pogut iniciar el procés d'instal·lació.</translation>
+<translation id="2948852018303413228">Inicia la sessió en llocs web més ràpidament utilitzant les contrasenyes desades per a Chromium a iOS</translation>
 <translation id="2970426615109535079">La teva organització gestiona Chromium</translation>
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
 <translation id="2977506796191543575">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
@@ -560,6 +562,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7888981273428720788">Defineix Chromium com a navegador predeterminat</translation>
 <translation id="7934340546140346950">Quan és possible, Chromium actualitza automàticament les connexions no segures a HTTPS</translation>
 <translation id="7937630085815544518">Teníeu la sessió iniciada a Chromium com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar a iniciar-hi la sessió.</translation>
+<translation id="7953047982688951904">Baixa Chromium al telèfon per afegir una capa addicional de protecció siguis on siguis</translation>
 <translation id="7975919845073681630">Aquesta és una instal·lació secundària de Chromium i no pot definir-se com a navegador predeterminat.</translation>
 <translation id="7997934263947464652">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chromium recomana que només n'instal·lis de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8004582292198964060">Navegador</translation>

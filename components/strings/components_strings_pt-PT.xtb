@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1063822554756965137">Os ficheiros foram eliminados com êxito</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">O Chrome considera que não quer receber notificações deste site. Por isso, os pedidos são ocultados para reduzir as interrupções.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detalhes do motor de pesquisa</translation>
 <translation id="1068467933609179019">Definições dos serviços de preenchimento automático</translation>
@@ -1625,6 +1626,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3678529606614285348">Abrir a página numa nova janela de navegação anónima (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Introduza o código de validação de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="3681007416295224113">Informações do certificado</translation>
+<translation id="3681191721636073359">O Chrome considera que não quer usar a sua localização neste site. Por isso, os pedidos são ocultados para reduzir as interrupções.</translation>
 <translation id="3681421644246505351">O Chrome regista tópicos de interesse com base no seu histórico de navegação recente.</translation>
 <translation id="3681841880472207951">Vídeo Quicktime</translation>
 <translation id="3682094733650754138">A opção de preenchimento da morada foi selecionada</translation>
@@ -1778,6 +1780,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3941630233824954464">Ative a reautenticação obrigatória</translation>
 <translation id="3942048175062210325">Tente abrir os ficheiros novamente</translation>
 <translation id="3943857333388298514">Colar</translation>
+<translation id="3945937463338223066">Controle os dispositivos de autenticação do tipo <ph name="READERNAME" /> e os cartões inteligentes acessíveis a estes</translation>
 <translation id="3946209740501886391">Perguntar sempre neste site</translation>
 <translation id="3948588869002647271">Esta aplicação está em falta ou danificada</translation>
 <translation id="3949297482798028668">A ação de colar este conteúdo aqui foi bloqueada pelo seu administrador.</translation>
@@ -4595,6 +4598,7 @@ Detalhes adicionais:
 <translation id="8624354461147303341">Obter descontos</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">O Chrome tem funcionalidades de segurança integradas para proteger o utilizador enquanto navega, como a Navegação Segura do Google, que <ph name="BEGIN_LINK" />encontrou recentemente phishing<ph name="END_LINK" /> no site que tentou visitar. Os sites de phishing simulam ser outros sites para enganar os utilizadores.<ph name="NEW_LINE" />Por vezes, até os sites normalmente seguros são comprometidos por atacantes. <ph name="BEGIN_ERROR_LINK" />Informe-nos<ph name="END_ERROR_LINK" /> se considerar que houve um erro e que este site não representa um perigo.</translation>
+<translation id="8640996933372643759">Para partilhar separadores e colaborar com outras pessoas, tem de poder iniciar sessão no Chrome</translation>
 <translation id="8641131559425911240">Envelope (bond)</translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>
 <translation id="8643846627971610148">Quando um grupo está fechado, limita quem pode aderir</translation>

@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Zamenjaj</translation>
 <translation id="1063822554756965137">Datoteke so bile uspešno izbrisane</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome meni, da ne želite prejemati obvestil s tega spletnega mesta. Zato so zahteve skrite, da bi bilo manj prekinitev.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Podrobnosti o iskalniku</translation>
 <translation id="1068467933609179019">Nastavitve storitev samodejnega izpolnjevanja</translation>
@@ -1625,6 +1626,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3678529606614285348">Odpiranje strani v novem anonimnem oknu (Ctrl + Shift + N)</translation>
 <translation id="3678914302246317895">Vnesite <ph name="OTP_LENGTH" />-mestno kodo za preverjanje</translation>
 <translation id="3681007416295224113">Informacije o potrdilu</translation>
+<translation id="3681191721636073359">Chrome meni, da na tem spletnem mestu ne želite uporabljati lokacije. Zato so zahteve skrite, da bi bilo manj prekinitev.</translation>
 <translation id="3681421644246505351">Chrome beleži teme zanimanja na podlagi nedavne zgodovine brskanja.</translation>
 <translation id="3681841880472207951">Videoposnetek QuickTime</translation>
 <translation id="3682094733650754138">Izbrana je bila možnost za izpolnitev naslova</translation>
@@ -4595,6 +4597,7 @@ Dodatne podrobnosti:
 <translation id="8624354461147303341">Prejmite popuste</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome ima vgrajene varnostne funkcije, ki vas ščitijo med brskanjem, na primer Google Varno brskanje, ki je na spletnem mestu, ki ste ga poskušali obiskati, <ph name="BEGIN_LINK" />nedavno našlo lažno predstavljanje<ph name="END_LINK" />. Spletna mesta z lažnim predstavljanjem se pretvarjajo, da so druga spletna mesta, in vas tako zavedejo.<ph name="NEW_LINE" />Tudi spletna mesta, ki so običajno varna, včasih ogrozijo napadalci. <ph name="BEGIN_ERROR_LINK" />Sporočite nam<ph name="END_ERROR_LINK" />, če menite, da je prišlo do napake in da to spletno mesto ne predstavlja nevarnosti.</translation>
+<translation id="8640996933372643759">Če želite deliti zavihke in sodelovati z drugimi, morate biti zmožni prijaviti se v Chrome</translation>
 <translation id="8641131559425911240">Envelope (Bond)</translation>
 <translation id="8643409044755049933">Kuverta Kaku 3</translation>
 <translation id="8643846627971610148">Ko je skupina zaprta, je omejeno, kdo se lahko pridruži</translation>

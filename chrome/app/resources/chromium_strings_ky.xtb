@@ -98,6 +98,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2185166961232948079">Chromium – Тармакка кирүү – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Жаңыртууну текшерүү катасы: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Аккаунтту Chromium'дан өчүрүү</translation>
+<translation id="2210502920229141283">iOS үчүн Chromium'да Өркүндөтүлгөн коопсуз серептөө менен жолдо коопсуздугуңузду камсыздаңыз</translation>
 <translation id="2210682093923538346">Кооптуу сайт. Chromium билдирмелерди өчүрдү.</translation>
 <translation id="2236949375853147973">Менин аракеттерим</translation>
 <translation id="2238130810669087193">Бардык түзмөктөрүңүздө даректерди жана башка нерселерди алуу үчүн Chromium'га кириңиз. Киргенден кийин бул дарек Google аккаунтуңузда сакталат.</translation>
@@ -157,6 +158,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2928420929544864228">Орнотулду.</translation>
 <translation id="2933336679234709858">Маалыматыңыз сыр сүйлөм менен шифрленген. Google аккаунтуңузга Chromium маалыматын сактоо жана колдонуу үчүн сыр сүйлөмдү киргизиңиз.</translation>
 <translation id="2945997411976714835">Орнотуу катасы: Орнотуу процесси башталган жок.</translation>
+<translation id="2948852018303413228">iOS'тогу Chromium'да сакталган сырсөздөр менен сайттарга тезирээк кириңиз</translation>
 <translation id="2970426615109535079">Chromium'ду уюмуңуз тескейт</translation>
 <translation id="2977470724722393594">Chromium жаңырган</translation>
 <translation id="2977506796191543575">Эгер сайт сырсөзүңүздү уурдоого аракет кылса же кооптуу файлды жүктөп алсаңыз, Chromium URL даректерди, анын ичинде барактагы мазмундун үлгүлөрүн Коопсуз серептөөгө жөнөтүшү мүмкүн</translation>
@@ -562,6 +564,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="7888981273428720788">Chromium'ду демейки серепчи кылыңыз</translation>
 <translation id="7934340546140346950">Мүмкүн болсо, Chromium корголбогон байланыштарды HTTPS'ке автоматтык түрдө жаңыртат</translation>
 <translation id="7937630085815544518">Chromium'га <ph name="USER_EMAIL_ADDRESS" /> катары кирдиңиз. Ушул аккаунт менен кайра кириңиз.</translation>
+<translation id="7953047982688951904">Жолдо баратканда кошумча коргоо катмарын кошуу үчүн телефонуңузга Chromium'ду жүктөп алыңыз</translation>
 <translation id="7975919845073681630">Бул Chromium'дун кошумча орнотулушу болгондуктан, аны демейки серепчиңиз катары тандай албайсыз.</translation>
 <translation id="7997934263947464652">Белгисиз булактардан алынган кеңейтүүлөр, колдонмолор жана темалар түзмөгүңүзгө зыян келтириши мүмкүн. Chromium аларды <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> сайтынан гана орнотууну сунуштайт</translation>
 <translation id="8004582292198964060">Серепчи</translation>

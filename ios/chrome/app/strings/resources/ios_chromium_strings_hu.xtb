@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1847960401032164406">Térkép a Chromiumban</translation>
 <translation id="1867772173333403444">4. Válassza ki a Chromium böngészőt.</translation>
+<translation id="1965068424387304464">Chromium-tipp: Jelszavak mentése</translation>
 <translation id="2006345422933397527">A Chromium nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2042889939382983733">A Chromium-előzmények megtekintése</translation>
 <translation id="2052320862053429062">A Chromium rendszeres időközönként online közzétett listák alapján ellenőrzi az Ön jelszavait. Az eljárás során jelszavai és felhasználónevei titkosítva vannak, így senki nem láthatja őket, még a Google sem.</translation>
@@ -118,6 +119,7 @@ A fiókváltás előtt várjon néhány percet. Ha most vált fiókot, akkor eze
 <translation id="3816686541346279443">A Chromium felkínálja a jelszó mentését.</translation>
 <translation id="3827545470516145620">Normál biztonsági védelemben részesül ezen az eszközön</translation>
 <translation id="3833326979834193417">A Chromium automatikusan futtat egy biztonsági ellenőrzést mindennap, hogy megvédje Önt az adatvédelmi incidensektől, a nem biztonságos webhelyektől és még sok mástól. A biztonsági ellenőrzésről a Beállításokban találhat további információt.</translation>
+<translation id="3837584850181228767">Chromium-tipp: Biztonságos Böngészés fokozott védelemmel</translation>
 <translation id="3845223911364528001">A fájl feltöltéséhez térjen vissza a Chromiumhoz</translation>
 <translation id="3855938650519180865">A Chromium újdonságai</translation>
 <translation id="3886689467633467988">Jelentkezzen be erre a webhelyre és a Chromiumba, hogy az összes eszközén hozzáférhessen könyvjelzőihez és még sok minden máshoz.</translation>

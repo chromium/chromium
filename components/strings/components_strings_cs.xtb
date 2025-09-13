@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Nahradit</translation>
 <translation id="1063822554756965137">Soubory byly úspěšně smazány</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome si myslí, že z tohoto webu nechcete dostávat oznámení. Žádosti jsou proto kvůli omezení rušení skryty.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Podrobnosti o vyhledávači</translation>
 <translation id="1068467933609179019">Nastavení služeb automatického vyplňování</translation>
@@ -1621,6 +1622,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3678529606614285348">Otevřete stránku v novém anonymním okně (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Zadejte <ph name="OTP_LENGTH" />místný ověřovací kód</translation>
 <translation id="3681007416295224113">Informace o certifikátu</translation>
+<translation id="3681191721636073359">Chrome si myslí, že na tomto webu nechcete používat svou polohu. Žádosti jsou proto kvůli omezení rušení skryty.</translation>
 <translation id="3681421644246505351">Chrome zaznamenává témata, která vás podle vaší nedávné historie prohlížení zajímají.</translation>
 <translation id="3681841880472207951">Video QuickTime</translation>
 <translation id="3682094733650754138">Byla vybrána možnost Vyplnit adresu</translation>
@@ -4590,6 +4592,7 @@ Další podrobnosti:
 <translation id="8624354461147303341">Získat slevy</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
 <translation id="8637362707224133343">V Chromu jsou vestavěné bezpečnostní funkce, které vás při procházení chrání – například Bezpečné prohlížení Google, které <ph name="BEGIN_LINK" />nedávno odhalilo phishing<ph name="END_LINK" /> na webu, který jste se pokusili navštívit. Phishingové weby se vydávají za jiné weby, aby vás oklamaly.<ph name="NEW_LINE" />Někdy mohou útočníci číhat dokonce i na webech, které jsou běžně bezpečné. Pokud se domníváte, že došlo k chybě a že tento web nepředstavuje nebezpečí, <ph name="BEGIN_ERROR_LINK" />dejte nám vědět<ph name="END_ERROR_LINK" />.</translation>
+<translation id="8640996933372643759">Ke sdílení karet a spolupráci s ostatními musíte mít možnost se do Chromu přihlásit</translation>
 <translation id="8641131559425911240">Obálka (dluhopisová)</translation>
 <translation id="8643409044755049933">Obálka Kaku 3</translation>
 <translation id="8643846627971610148">Když je skupina uzavřená, omezuje to, kdo se může připojit</translation>

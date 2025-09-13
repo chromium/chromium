@@ -665,7 +665,7 @@
 <translation id="2102495993840063010">Android アプリ</translation>
 <translation id="2102519472192754194">ウェブブラウザ</translation>
 <translation id="2103210856015238101">タップ操作で入力できるポイントカードが画面全体に表示されています。</translation>
-<translation id="2104739941682874393">拡張自動入力では、フォームの内容を正確に把握して、すばやく自動入力できます</translation>
+<translation id="2104739941682874393">高精度の自動入力では、フォームの内容を正確に把握して、すばやく自動入力できます</translation>
 <translation id="2105838220373099643">ロールプレイング ゲーム</translation>
 <translation id="2107021941795971877">印刷サポート</translation>
 <translation id="2108755909498034140">パソコンを再起動する</translation>
@@ -1780,6 +1780,7 @@
 <translation id="3941630233824954464">必須の再認証を有効にする</translation>
 <translation id="3942048175062210325">ファイルをもう一度開いてみてください</translation>
 <translation id="3943857333388298514">貼り付け</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> タイプの認証デバイスと、そのデバイスでアクセスできるスマートカードの制御</translation>
 <translation id="3946209740501886391">このサイトでは常に確認</translation>
 <translation id="3948588869002647271">このアプリケーションは見つからないか破損しています</translation>
 <translation id="3949297482798028668">このコンテンツをここに貼り付けることは、管理者によってブロックされています。</translation>
@@ -2457,7 +2458,7 @@
 <translation id="5052517576853118371">アクティブなトピック</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
 <translation id="505757197798929356">開く理由をお知らせください（必須）</translation>
-<translation id="5058282932481719070">設定で拡張自動入力の詳細を確認</translation>
+<translation id="5058282932481719070">高精度の自動入力の設定で詳細をご確認ください</translation>
 <translation id="5060419232449737386">字幕設定</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> を使用するウェブサイトで Windows Hello による確認を行うよう選択しています。このプロバイダにお支払い方法に関する情報が保存されている可能性があります。その場合、<ph name="LINK_TEXT" /> を行うことができます。</translation>
 <translation id="5061227663725596739">もしかして: <ph name="LOOKALIKE_DOMAIN" /></translation>
@@ -3590,7 +3591,7 @@
 <translation id="695140971690006676">すべてリセット</translation>
 <translation id="6954049078461159956">ホッケー</translation>
 <translation id="695582302419398462">段ボール（二重）</translation>
-<translation id="6957153644870901611">拡張自動入力をオンにすると、より多くの項目を自動入力できます</translation>
+<translation id="6957153644870901611">高精度の自動入力をオンにすると、より多くの項目を自動入力できます</translation>
 <translation id="6957887021205513506">サーバーの証明書が偽造されたもののようです。</translation>
 <translation id="6958564499836457428">Google アカウントで Google のプライバシー設定を管理します</translation>
 <translation id="6961844873822989059">デバイスにインストールされたフォントの使用を要求できる</translation>

@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Substituír</translation>
 <translation id="1063822554756965137">Elimináronse os ficheiros</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome cre que non queres notificacións deste sitio. Polo que as solicitudes se ocultan para reducir as interrupcións.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detalles do buscador</translation>
 <translation id="1068467933609179019">Configuración dos servizos de autocompletar</translation>
@@ -1165,7 +1166,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2942515540157583425">Postos tecnolóxicos e técnicos</translation>
 <translation id="2943895734390379394">Momento da carga:</translation>
 <translation id="2947281105969315778">Para compartir grupos de pestanas ou unirte a eles, tes que poder iniciar sesión en Chrome</translation>
-<translation id="2948083400971632585">Podes desactivar os proxies configurados para unha conexión desde a páxina de configuración.</translation>
+<translation id="2948083400971632585">Podes desactivar os proxys configurados para unha conexión desde a páxina de configuración.</translation>
 <translation id="2949183777371959169">Ignorouse porque o dispositivo non está inscrito en Chrome Browser Cloud Management.</translation>
 <translation id="2951588413176968965">A miña caixa de correo</translation>
 <translation id="2952820037279740115">Pechar todas as ventás do modo de incógnito</translation>
@@ -1625,6 +1626,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3678529606614285348">Abre a páxina nunha nova ventá do modo de incógnito (Ctrl+Maiúsculas+N)</translation>
 <translation id="3678914302246317895">Escribe o código de verificación de <ph name="OTP_LENGTH" /> díxitos</translation>
 <translation id="3681007416295224113">Información do certificado</translation>
+<translation id="3681191721636073359">Chrome cre que non queres usar a túa localización neste sitio. Polo que as solicitudes se ocultan para reducir as interrupcións.</translation>
 <translation id="3681421644246505351">Chrome rexistra temas de interese en función do teu historial de navegación recente.</translation>
 <translation id="3681841880472207951">Vídeo de QuickTime</translation>
 <translation id="3682094733650754138">Opción de cubrir o enderezo seleccionada</translation>
@@ -4594,6 +4596,7 @@ Detalles adicionais:
 <translation id="8624354461147303341">Obter descontos</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google, que <ph name="BEGIN_LINK" />detectou hai pouco phishing<ph name="END_LINK" /> no sitio ao que tentaches acceder. Os sitios de phishing fanse pasar por outros sitios para enganarte.<ph name="NEW_LINE" />Ás veces, mesmo os sitios que adoitan ser seguros poden verse vulnerados por atacantes. <ph name="BEGIN_ERROR_LINK" />Infórmanos<ph name="END_ERROR_LINK" /> se consideras que se cometeu un erro e que o sitio non representa ningún perigo.</translation>
+<translation id="8640996933372643759">Para compartir pestanas e colaborar con outras persoas, tes que poder iniciar sesión en Chrome</translation>
 <translation id="8641131559425911240">Sobre (carta)</translation>
 <translation id="8643409044755049933">Sobre Kaku-3</translation>
 <translation id="8643846627971610148">Cando un grupo está pechado, limítase quen se pode unir</translation>

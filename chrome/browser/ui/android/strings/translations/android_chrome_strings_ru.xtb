@@ -3,6 +3,7 @@
 <translationbundle lang="ru">
 <translation id="1010283278930414892">На устройстве нет сохраненных паролей</translation>
 <translation id="1011749477052068769">Переместить сюда</translation>
+<translation id="1014083013111769343">Настройки режима чтения открыты на весь экран</translation>
 <translation id="1014147525163127655">На этом устройстве нет ключей доступа для сайта <ph name="ORIGIN" />.</translation>
 <translation id="1016498331642356377">Выполнить голосовой поиск. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
 <translation id="1028699632127661925">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Сохранить</translation>
 <translation id="1973912524893600642">Не удалять данные</translation>
 <translation id="1974060860693918893">Дополнительные настройки</translation>
+<translation id="1982274314082047220">Чтобы открыть настройки режима чтения, проведите вверх</translation>
 <translation id="1984087999855033707">номер телефона</translation>
 <translation id="1984417487208496350">Защита отключена (не рекомендуется)</translation>
 <translation id="1986685561493779662">Это имя уже используется.</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">Описания изображений</translation>
 <translation id="2996291259634659425">Придумайте кодовую фразу</translation>
 <translation id="2996809686854298943">Необходимо указать URL</translation>
+<translation id="3024215143424744261">Настройки режима чтения закрыты</translation>
 <translation id="3026955690410463085">Добавить ссылку</translation>
 <translation id="3027644380269727216">Подбирается на основе ваших действий на сайте. Параметр включен.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">Выйти из режима инкогнито</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Посмотреть <ph name="TABS_COUNT_ONE" /> вкладку с новым действием из групп с общим доступом}one{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладку с новыми действиями из групп с общим доступом}few{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладки с новыми действиями из групп с общим доступом}many{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладок с новыми действиями из групп с общим доступом}other{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладки с новыми действиями из групп с общим доступом}}</translation>
+<translation id="6971555615916967190">Настройки режима чтения открыты на половину экрана</translation>
 <translation id="6971862865055170158">Не разрешать</translation>
 <translation id="6976223255612495095">Новая или обновленная вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="6976811588313110624">Добавить новое сочетание клавиш.</translation>

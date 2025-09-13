@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">கடவுச்சொற்கள் என்பதைத் திறக்கவும்</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
 <translation id="1433478348197382180">வாசிப்புப் பயன்முறை</translation>
+<translation id="1435271730600332883">தானாக நிரப்புதல் &amp; கடவுச்சொற்கள் என்பதைத் திறக்கவும்</translation>
 <translation id="1436671784520050284">அமைவைத் தொடர்க</translation>
 <translation id="143681031165817424">முகவரி இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது</translation>
 <translation id="1445276840641906250">எல்லாப் பக்கங்களும் ஒரே பிரவுசரில்</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">உங்கள் கணக்கிற்கு (<ph name="USER_EMAIL" />) முகவரி நகர்த்தப்பட்டது</translation>
 <translation id="4287172530684295552">படித்ததாகக் குறி</translation>
 <translation id="428768789042547925">புதியவை</translation>
+<translation id="428858055663163046">பதிவிறக்கப்பட்ட ஃபைல்கள் கிடைக்கும்போது அவற்றை இங்கே அணுகலாம்</translation>
 <translation id="429074084062258019">{count,plural, =1{குழுவில் பக்கத்தைச் சேர்}other{குழுவில் பக்கங்களைச் சேர்}}</translation>
 <translation id="4302061870579014542">தோன்றும் இடத்தை அமை</translation>
 <translation id="4304713468139749426">கடவுச்சொல் நிர்வாகி</translation>
@@ -1415,6 +1417,7 @@
 <translation id="6452534462676960500">புதிய செயல்பாடு</translation>
 <translation id="6459411599807878608">விவரங்கள் மறைக்கப்பட்டன</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">பதிவிறக்கங்கள் இங்கே காட்டப்படும்</translation>
 <translation id="6476253015009698798">இந்தப் பக்கத்தில் உள்ளவற்றின் விலையைக் கண்காணிக்க முடியாது.</translation>
 <translation id="6476284679642588870">கட்டண முறைகளை நிர்வகி</translation>
 <translation id="6476800141292307438">பக்கத்தை <ph name="LANGUAGE" /> மொழியில் மொழிபெயர்க்கிறது. திரையின் கீழ்ப்பகுதிக்கு அருகில் விருப்பத்தேர்வுகள் உள்ளன.</translation>

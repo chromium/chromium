@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Vervang</translation>
 <translation id="1063822554756965137">Lêers is suksesvol uitgevee</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome dink jy soek nie kennisgewings van hierdie werf af nie. Daarom word versoeke versteek om onderbrekings te verminder.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Soekenjinbesonderhede</translation>
 <translation id="1068467933609179019">Outovuldienste-instellings</translation>
@@ -1625,6 +1626,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3678529606614285348">Maak bladsy in 'n nuwe incognitovenster oop (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Voer <ph name="OTP_LENGTH" />-syferverifikasiekode in</translation>
 <translation id="3681007416295224113">Sertifikaatinligting</translation>
+<translation id="3681191721636073359">Chrome dink jy wil nie jou ligging op hierdie werf gebruik nie. Daarom word versoeke versteek om onderbrekings te verminder.</translation>
 <translation id="3681421644246505351">Chrome neem kennis van onderwerpe waarin jy belangstel gegrond op jou onlangse blaaigeskiedenis.</translation>
 <translation id="3681841880472207951">QuickTime-video</translation>
 <translation id="3682094733650754138">Die opsie om die adres te vul, is gekies</translation>
@@ -4594,6 +4596,7 @@ Bykomende besonderhede:
 <translation id="8624354461147303341">Kry afslag</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
 <translation id="8637362707224133343">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai – soos Google Veiligblaai, wat <ph name="BEGIN_LINK" />onlangs uitvissing gevind het<ph name="END_LINK" /> op die werf wat jy probeer besoek het. Uitvissingwerwe gee voor om ander werwe te wees om jou te mislei.<ph name="NEW_LINE" />Selfs werwe wat normaalweg veilig is, word soms deur aanvallers gekompromitteer. <ph name="BEGIN_ERROR_LINK" />Laat ons weet<ph name="END_ERROR_LINK" /> as jy dink daar ’n fout is en dat hierdie werf nie ’n gevaar inhou nie.</translation>
+<translation id="8640996933372643759">Jy moet by Chrome kan aanmeld om oortjies te deel en saam met ander te werk</translation>
 <translation id="8641131559425911240">Koevert (bond)</translation>
 <translation id="8643409044755049933">Koevert Kaku 3</translation>
 <translation id="8643846627971610148">Wanneer ’n groep toegemaak word, beperk dit wie kan aansluit</translation>

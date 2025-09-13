@@ -3,6 +3,7 @@
 <translationbundle lang="vi">
 <translation id="1010283278930414892">Không có mật khẩu nào được lưu trên thiết bị này</translation>
 <translation id="1011749477052068769">Chuyển đến đây</translation>
+<translation id="1014083013111769343">Đã mở các lựa chọn ưu tiên của Chế độ đọc trên toàn màn hình</translation>
 <translation id="1014147525163127655">Không có khoá truy cập nào cho <ph name="ORIGIN" /> trên thiết bị này</translation>
 <translation id="1016498331642356377">Tìm kiếm nhanh bằng giọng nói. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
 <translation id="1028699632127661925">Đang gửi đến <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="197288927597451399">Giữ lại</translation>
 <translation id="1973912524893600642">Giữ lại dữ liệu</translation>
 <translation id="1974060860693918893">Nâng cao</translation>
+<translation id="1982274314082047220">Chế độ đọc, vuốt lên để xem các lựa chọn ưu tiên</translation>
 <translation id="1984087999855033707">số điện thoại</translation>
 <translation id="1984417487208496350">Không được bảo vệ (không khuyến nghị)</translation>
 <translation id="1986685561493779662">Tên đã tồn tại</translation>
@@ -428,6 +430,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2992473221983447149">Nội dung mô tả hình ảnh</translation>
 <translation id="2996291259634659425">Tạo cụm mật khẩu</translation>
 <translation id="2996809686854298943">Cần có URL</translation>
+<translation id="3024215143424744261">Đã đóng các lựa chọn ưu tiên của Chế độ đọc</translation>
 <translation id="3026955690410463085">Thêm đường liên kết</translation>
 <translation id="3027644380269727216">Dựa vào hoạt động của bạn trên một trang web. Chế độ cài đặt này đang bật.</translation>
 <translation id="3027950907978057636">Từ <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="696447261358045621">Thoát khỏi chế độ Ẩn danh</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Xem <ph name="TABS_COUNT_ONE" /> thẻ có hoạt động mới trong các nhóm thẻ được chia sẻ}other{Xem <ph name="TABS_COUNT_MANY" /> thẻ có hoạt động mới trong các nhóm thẻ được chia sẻ}}</translation>
+<translation id="6971555615916967190">Đã mở các lựa chọn ưu tiên của Chế độ đọc ở nửa dưới của màn hình</translation>
 <translation id="6971862865055170158">Không phê duyệt</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, thẻ mới hoặc thẻ đã cập nhật</translation>
 <translation id="6976811588313110624">Thêm phím tắt mới.</translation>
@@ -1806,7 +1810,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9148126808321036104">Đăng nhập lại</translation>
 <translation id="9157212632995922070">Chọn một tài khoản để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Chỉ chia sẻ nội dung</translation>
-<translation id="9161172953291434881">Bạn có tin tưởng trang web này không?</translation>
+<translation id="9161172953291434881">Bạn có tin tưởng để trang web này sử dụng dữ liệu của mình không?</translation>
 <translation id="916607977885256133">Ảnh trong ảnh</translation>
 <translation id="9168847423516963845">Chuyển thanh địa chỉ xuống dưới cùng</translation>
 <translation id="9169507124922466868">Lịch sử di chuyển đang mở ở nửa dưới màn hình</translation>

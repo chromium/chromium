@@ -85,6 +85,7 @@
 <translation id="1880677175115548835">Selecciona texto</translation>
 <translation id="1919130412786645364">Permitir inicio de sesión en Chrome</translation>
 <translation id="1953553007165777902">Descargando… Tempo restante: <ph name="MINUTE" /> min</translation>
+<translation id="1979600810166324878">Protéxete esteas onde esteas coa Navegación segura mellorada en Chrome para iOS</translation>
 <translation id="2001586581944147178">Fai que ás persoas que teñan acceso ao teu tráfico de Internet lles resulte máis difícil ver os sitios que visitas. Chrome usa unha conexión segura para buscar o enderezo IP dos sitios no DNS (Sistema de nomes de dominios).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Xa non se admite esta extensión. Chrome recomenda que a quites.}other{Xa non se admiten estas extensións. Chrome recomenda que as quites.}}</translation>
 <translation id="2018528049276128029">En cada perfil gárdase a información de Chrome que lle corresponde (por exemplo, os marcadores, o historial ou os contrasinais)</translation>
@@ -383,6 +384,7 @@
 
 Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5468572406162360320">Para axudar a mellorar estas funcións, Chrome envíalle a Google as interaccións que mantiveches con elas. Os membros do equipo de revisión poden ler, procesar e anotar estes datos.</translation>
+<translation id="5510398294750420479">Descarga Chrome no teléfono para engadir unha capa máis de protección esteas onde esteas</translation>
 <translation id="5524761631371622910">Cando as probas están activas e Chrome te inclúe de forma aleatoria nunha delas, o teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina os teus intereses cada mes.</translation>
 <translation id="5524890928877629608">esquina superior esquerda da área de busca: <ph name="LEFT" /> % á esquerda, <ph name="TOP" /> % arriba</translation>
 <translation id="5530733413481476019">Fai que Chrome sexa máis rápido</translation>
@@ -495,6 +497,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6760235774835597023">Acelera os sitios co motor V8 de Chrome, pero fai que Chrome sexa un pouco menos resistente aos ataques. Esta opción de configuración está activada.</translation>
 <translation id="677276454032249905">Queres saír de Chrome de todas formas?</translation>
 <translation id="6794858689789885890">Eliminar sempre do dispositivo os datos dos sitios cando peches Chrome</translation>
+<translation id="6800285125190089494">Inicia sesión máis rápido nos sitios utilizando contrasinais gardados en Chrome para iOS</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="683440813066116847">Regra de entrada para Google Chrome Canary para permitir tráfico mDNS.</translation>
 <translation id="684888714667046800">Non se puido establecer conexión con Internet. Se utilizas un firewall, asegúrate de que <ph name="PRODUCT_EXE_NAME" /> estea na lista de entidades permitidas.</translation>
@@ -632,6 +635,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8336463659890584292">Cando un sitio solicita precargar ligazóns da súa páxina de forma privada, Chrome usa os servidores de Google. Deste xeito, ocúltaselle a túa identidade ao sitio precargado, pero Google descobre os sitios que se precargan.</translation>
 <translation id="8342675569599923794">Este ficheiro é perigoso, así que Chrome bloqueouno.</translation>
 <translation id="8349094670477064572">Gardarás e usarás os contrasinais e outros datos na túa Conta de Google sempre que teñas a sesión iniciada en Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Preguntarlle a Google</translation>
 <translation id="8362914115861174987">Traducir ao</translation>
 <translation id="8366770919198174997">Reduce o rendemento, pero fai que Chrome sexa máis resistente aos ataques</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>

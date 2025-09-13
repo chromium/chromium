@@ -198,6 +198,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Wyświetlaj zdjęcia i pliki multimedialne z telefonu</translation>
 <translation id="1129850422003387628">Zarządzaj aplikacjami</translation>
+<translation id="1130116586186908674">Utwórz widok dzielony</translation>
 <translation id="1130430615924359526">{0,plural, =1{Zamknij tryb incognito}few{Zamknij tryb incognito (# okna)}many{Zamknij tryb incognito (# okien)}other{Zamknij tryb incognito (# okna)}}</translation>
 <translation id="113050636487300043">Wybierz nazwę i motyw kolorystyczny, aby rozróżniać profile</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – należy do grupy <ph name="GROUP_NAME" /></translation>
@@ -473,6 +474,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1307431692088049276">Nie pytaj ponownie</translation>
 <translation id="130744661532298792">Potwierdź swoją tożsamość, aby móc zawsze używać haseł na koncie Google</translation>
 <translation id="1307559529304613120">Ups. System nie może zapisać długoterminowego tokena dostępu API dla tego urządzenia.</translation>
+<translation id="1311092170520822848">Ta strona steruje czytnikami kart inteligentnych podłączonymi do Twojego urządzenia i może odczytywać karty inteligentne</translation>
 <translation id="131112695174432497">Dane, które mają wpływ na personalizację reklam, są usuwane</translation>
 <translation id="1311294419381837540">Przesyłasz kartę. Przesyłanie możesz w każdej chwili wstrzymać lub zatrzymać.</translation>
 <translation id="131188242279372879">Poznaj silniejszą ochronę, która zapewnia najwyższy poziom bezpieczeństwa pobierania w Chrome</translation>
@@ -2088,6 +2090,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2431027948063157455">Nie udało się załadować Asystenta Google. Spróbuj ponownie.</translation>
 <translation id="243179355394256322">W Twojej organizacji urządzenia mogą rejestrować tylko autoryzowani użytkownicy. Ten użytkownik nie ma takich uprawnień. Przyznaj mu uprawnienia administratora „Rejestrowanie sprzętu do Google Meet” w sekcji Użytkownicy w konsoli administracyjnej.</translation>
 <translation id="243275146591958220">Anuluj pobieranie</translation>
+<translation id="2433237965825924228">Izolowane aplikacje internetowe sterują urządzeniami uwierzytelniającymi i kartami inteligentnymi, do których mają dostęp. Karty inteligentne zwykle zawierają identyfikatory używane do uwierzytelniania.</translation>
 <translation id="2433452467737464329">Aby strona była odświeżana automatycznie, dodaj parametr zapytania w adresie URL: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Wygląd</translation>
 <translation id="2433836460518180625">Tylko odblokowywanie urządzenia</translation>
@@ -3496,6 +3499,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3429174588714165399">Utwórz skrót do tej strony</translation>
 <translation id="3429271624041785769">Języki treści internetowych</translation>
 <translation id="3429275422858276529">Dodaj tę stronę do zakładek, by później łatwo ją znaleźć</translation>
+<translation id="343084100869297747">Izolowane aplikacje internetowe automatycznie stosują to ustawienie</translation>
 <translation id="3431530007831146102">Steruj kursorem myszy za pomocą ruchów głowy</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – zwolniono <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -3512,7 +3516,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3435896845095436175">Włącz</translation>
 <translation id="3436118221454753036">Zapytaj w trybie AI</translation>
 <translation id="3437072258256045988">Zarządzaj aktywnością w aplikacjach z Gemini</translation>
-<translation id="3437397693214267762">Wyświetlanie kalendarza Outlooka i plików SharePoint oraz OneDrive</translation>
+<translation id="3437397693214267762">Wyświetlaj kalendarz Outlooka i pliki SharePoint oraz OneDrive</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do mikrofonu</translation>
 <translation id="3439970425423980614">Otwieranie podglądu PDF</translation>
@@ -8860,6 +8864,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7201535955609308429">Poczekaj na zakończenie weryfikacji</translation>
 <translation id="7202337678781136582">Zeskanuj kod QR telefonem z Androidem</translation>
 <translation id="7203150201908454328">Rozwinięty</translation>
+<translation id="7206252555702853828">Możliwe jest sterowanie czytnikami kart inteligentnych</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zamknij stronę}few{Zamknij strony}many{Zamknij strony}other{Zamknij strony}}</translation>
 <translation id="7207457272187520234">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="7207631048330366454">Szukaj aplikacji</translation>
@@ -11616,6 +11621,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9081543426177426948">W trybie incognito otwierane strony nie są zapisywane</translation>
 <translation id="9082750838489080452">Aplikacja: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Otwórz jako okno</translation>
+<translation id="9084383457260170045">Izolowane aplikacje internetowe mogą prosić o możliwość sterowania czytnikami kart inteligentnych</translation>
 <translation id="9085256200913095638">Powiel wybraną kartę</translation>
 <translation id="9085446486797400519">Dostęp do kamery</translation>
 <translation id="9085776959277692427">Nie wybrano: <ph name="LANGUAGE" />. Aby wybrać język, naciśnij Wyszukaj i spację.</translation>
@@ -11815,6 +11821,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Aby nim zarządzać, otwórz Rozszerzenia}few{Aby nimi zarządzać, otwórz Rozszerzenia}many{Aby nimi zarządzać, otwórz Rozszerzenia}other{Aby nimi zarządzać, otwórz Rozszerzenia}}</translation>
 <translation id="924818813611903184">Zarządzaj językami w ustawieniach Chrome OS</translation>
 <translation id="925575170771547168">Spowoduje to usunięcie <ph name="TOTAL_USAGE" /> danych zapisanych przez strony</translation>
+<translation id="927864230077808465">Izolowane aplikacje internetowe nie mogą sterować czytnikami kart inteligentnych</translation>
 <translation id="930268624053534560">Szczegółowe sygnatury czasowe</translation>
 <translation id="930551443325541578">Powtarzaj klawisze i znaki akcentu</translation>
 <translation id="930893132043726269">Roaming jest obecnie włączony</translation>

@@ -98,6 +98,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2185166961232948079">Chromium, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Error de comprobación de actualizaciones: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Eliminar cuenta de Chromium</translation>
+<translation id="2210502920229141283">Aumenta tu seguridad estés donde estés con Navegación segura mejorada en Chromium para iOS</translation>
 <translation id="2210682093923538346">Sitio peligroso. Chromium ha eliminado las notificaciones.</translation>
 <translation id="2236949375853147973">Mi Actividad</translation>
 <translation id="2238130810669087193">Para acceder a tus direcciones y más en todos tus dispositivos, inicia sesión en Chromium. Esta dirección se guardará en tu cuenta de Google cuando inicies sesión.</translation>
@@ -157,6 +158,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2928420929544864228">Instalación completada.</translation>
 <translation id="2933336679234709858">Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y guardar datos de Chromium en tu cuenta de Google.</translation>
 <translation id="2945997411976714835">Error de instalación: no se ha podido iniciar el proceso de instalación.</translation>
+<translation id="2948852018303413228">Inicia sesión más rápido en sitios usando contraseñas guardadas en Chromium para iOS</translation>
 <translation id="2970426615109535079">Tu organización gestiona Chromium</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="2977506796191543575">Si un sitio intenta robarte tu contraseña o si descargas un archivo dañino, es posible que Chromium también envíe URLs, incluidos fragmentos de contenido de la página, a Navegación segura.</translation>
@@ -562,6 +564,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7888981273428720788">Establecer Chromium como navegador predeterminado</translation>
 <translation id="7934340546140346950">Chromium cambia las conexiones no seguras a HTTPS automáticamente cuando es posible</translation>
 <translation id="7937630085815544518">Habías iniciado sesión en Chromium como <ph name="USER_EMAIL_ADDRESS" />. Utiliza la misma cuenta para volver a iniciar sesión.</translation>
+<translation id="7953047982688951904">Descarga Chromium en tu teléfono para añadir una capa adicional de protección estés donde estés</translation>
 <translation id="7975919845073681630">Esta instalación de Chromium es secundaria, por lo que no se puede establecer como navegador predeterminado.</translation>
 <translation id="7997934263947464652">Las extensiones, las aplicaciones y los temas de fuentes desconocidas pueden dañar tu dispositivo. Chromium recomienda instalarlos únicamente desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8004582292198964060">Navegador</translation>

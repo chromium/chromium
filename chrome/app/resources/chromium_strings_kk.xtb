@@ -97,6 +97,7 @@
 <translation id="2185166961232948079">Chromium – Желіге кіру - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Жаңа нұсқаны тексеру қатесі: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Аккаунтты Chromium-нен өшіру</translation>
+<translation id="2210502920229141283">iOS жүйесіне арналған Chromium-дегі Күшейтілген Safe Browsing деректеріңізді фондық режимде қорғауға көмектеседі.</translation>
 <translation id="2210682093923538346">Сайт қауіпті. Chromium хабарландыруларды өшірді.</translation>
 <translation id="2236949375853147973">Әрекеттерім</translation>
 <translation id="2238130810669087193">Мекенжайлар мен басқа ақпаратты барлық құрылғыдан алу үшін Chromium аккаунтына кіріңіз. Аккаунтқа кіргеннен кейін, бұл мекенжай Google аккаунтыңызға сақталады.</translation>
@@ -156,6 +157,7 @@
 <translation id="2928420929544864228">Орнату аяқталды.</translation>
 <translation id="2933336679234709858">Деректер құпия фразаңызбен шифрланды. Google аккаунтыңызда Chromium деректерін пайдалану және сақтау үшін оны енгізіңіз.</translation>
 <translation id="2945997411976714835">Орнату қатесі: орнату процесі басталмады.</translation>
+<translation id="2948852018303413228">iOS жүйесіне арналған Chromium-де сақталған құпия сөздер арқылы сайттарға жылдам кіріңіз.</translation>
 <translation id="2970426615109535079">Chromium-ді ұйымыңыз басқарады</translation>
 <translation id="2977470724722393594">Chromium жаңартылған</translation>
 <translation id="2977506796191543575">Егер сайт құпия сөзіңізді ұрлағысы келсе немесе зиянды файлды жүктеп алсаңыз, Chromium браузері URL мекенжайларын, сондай-ақ бет контенті бөліктерін Safe Browsing қызметіне жіберуі мүмкін.</translation>
@@ -561,6 +563,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="7888981273428720788">Chromium-ді әдепкі браузер етіп орнату</translation>
 <translation id="7934340546140346950">Мүмкін болса, Chromium қауіпті байланыстарды HTTPS кеңейтіміне автоматты түрде жаңартады.</translation>
 <translation id="7937630085815544518">Chromium жүйесіне <ph name="USER_EMAIL_ADDRESS" /> ретінде кірдіңіз. Қайта кіру үшін бірдей аккаунтты пайдаланыңыз.</translation>
+<translation id="7953047982688951904">Телефоныңызды фондық режимде қосымша қорғау үшін оған Chromium-ді жүктеп алыңыз.</translation>
 <translation id="7975919845073681630">Бұл – Chromium браузерінің қайта орнатылған нұсқасы және әдепкі браузер бола алмайды.</translation>
 <translation id="7997934263947464652">Белгісіз дереккөздерден алынған кеңейтім, қолданба, тақырыптар құрылғыңызға зиянын тигізуі мүмкін. Chromium оларды тек <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> дүкенінен орнатуды ұсынады.</translation>
 <translation id="8004582292198964060">Браузер</translation>

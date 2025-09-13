@@ -83,6 +83,7 @@
 <translation id="1880677175115548835">Valige tekst</translation>
 <translation id="1919130412786645364">Luba Chrome'i sisselogimine</translation>
 <translation id="1953553007165777902">Allalaadimine … <ph name="MINUTE" /> minut(it) jäänud</translation>
+<translation id="1979600810166324878">iOS-i Chrome pakub täiustatud ohutut sirvimist, mis kaitseb teid liikvel olles paremini</translation>
 <translation id="2001586581944147178">Muutke teie internetiliiklusele juurdepääsu omavate inimeste jaoks keerulisemaks vaadata, milliseid saite külastate. Chrome kasutab DNS-ist (domeeninimesüsteemist) saidi IP-aadressi otsimiseks turvalist ühendust.</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Seda laiendust enam ei toetata. Chrome soovitab selle eemaldada.}other{Neid laiendusi ei toetata enam. Chrome soovitab selle eemaldada.}}</translation>
 <translation id="2018528049276128029">Igal profiilil on oma Chrome'i teave, nagu järjehoidjad, ajalugu, paroolid ja muu</translation>
@@ -379,6 +380,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5412485296464121825">Saidid võivad talletada Chrome'i teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
 <translation id="5430073640787465221">Teie eelistuste fail on rikutud või kehtetu. Google Chrome ei saa teie seadeid taastada.</translation>
 <translation id="5468572406162360320">Nende funktsioonide täiustamiseks saadab Chrome teie interaktsioonid funktsioonidega Google'ile. Ülevaatajad võivad neid andmeid lugeda, töödelda ja nende kohta märkmeid teha.</translation>
+<translation id="5510398294750420479">Laadige telefonis alla Chrome, mis kaitseb teid liikvel olles paremini</translation>
 <translation id="5524761631371622910">Kui katsed on sisse lülitatud ja Chrome on teid juhuslikkuse alusel lisanud aktiivsesse katsesse, mõjutab teie sirvimisajalugu teile esitatavaid reklaame ja allolevaid prognoositud huvisid. Teie privaatsuse kaitsmiseks kustutab Chrome teie huvisid jooksvalt iga kuu.</translation>
 <translation id="5524890928877629608">otsinguala vasak ülanurk: <ph name="LEFT" />% vasakul, <ph name="TOP" />% üleval</translation>
 <translation id="5530733413481476019">Muutke Chrome kiiremaks</translation>
@@ -491,6 +493,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6760235774835597023">Kiirendab Chrome'i V8 mootoriga saite, kuid muudab Chrome'i rünnetele veidi vähem vastupidavaks. See seade on sisse lülitatud.</translation>
 <translation id="677276454032249905">Kas väljuda Chrome'ist ikkagi?</translation>
 <translation id="6794858689789885890">Saidiandmed kustutatakse alati seadmest, kui Chrome’i sulgete</translation>
+<translation id="6800285125190089494">iOS-i Chrome võimaldab paroole salvestada ja saitidel kiiremini sisse logida</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="683440813066116847">Sissetuleku reegel Google Chrome Canaryle mDNS-liikluse lubamiseks.</translation>
 <translation id="684888714667046800">Internetiga ei saa ühendust. Kui kasutate tulemüüri, veenduge, et <ph name="PRODUCT_EXE_NAME" /> oleks lubamisloendis.</translation>
@@ -628,6 +631,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8336463659890584292">Kui sait palub lehel olevad lingid privaatselt eellaadida, kasutab Chrome Google'i servereid. See peidab teie identiteedi eellaaditud saidi eest, kuid Google saab teada, milliseid saite eellaaditakse.</translation>
 <translation id="8342675569599923794">Chrome blokeeris faili, kuna see on ohtlik.</translation>
 <translation id="8349094670477064572">Saate oma Google'i kontol paroole ja muud sisu salvestada ja kasutada alati, kui olete Chrome'i sisse logitud. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Google'ilt küsimine</translation>
 <translation id="8362914115861174987">Tõlke sihtkeel</translation>
 <translation id="8366770919198174997">Vähendab jõudlust, kuid muudab Chrome'i rünnakutele vastupidavamaks</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>

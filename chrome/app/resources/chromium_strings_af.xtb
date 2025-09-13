@@ -98,6 +98,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2185166961232948079">Chromium – Netwerkaanmelding – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Opdateringkontroleringfout: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Verwyder rekening uit Chromium</translation>
+<translation id="2210502920229141283">Bly veiliger terwyl jy aan die beweeg is met Verbeterde Veiligblaai op Chromium vir iOS</translation>
 <translation id="2210682093923538346">Gevaarlike webwerf. Chromium het kennisgewings verwyder.</translation>
 <translation id="2236949375853147973">My aktiwiteit</translation>
 <translation id="2238130810669087193">Meld aan by Chromium om jou adresse en meer op al jou toestelle te kry. Hierdie adres sal in jou Google-rekening gestoor word nadat jy aangemeld het.</translation>
@@ -157,6 +158,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2928420929544864228">Installering is voltooi.</translation>
 <translation id="2933336679234709858">Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou Google-rekening te gebruik en te stoor.</translation>
 <translation id="2945997411976714835">Installeerfout: Die installeerderproses kon nie begin nie.</translation>
+<translation id="2948852018303413228">Meld vinniger by werwe aan deur gestoorde wagwoorde vir Chromium op iOS te gebruik</translation>
 <translation id="2970426615109535079">Jou organisasie bestuur Chromium</translation>
 <translation id="2977470724722393594">Chromium is op datum</translation>
 <translation id="2977506796191543575">As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur</translation>
@@ -562,6 +564,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7888981273428720788">Stel Chromium as jou verstek.</translation>
 <translation id="7934340546140346950">Chromium gradeer onveilige verbindings aan HTTPS outomaties op, wanneer moontlik</translation>
 <translation id="7937630085815544518">Jy was as <ph name="USER_EMAIL_ADDRESS" /> by Chromium aangemeld. Gebruik asseblief dieselfde rekening om weer aan te meld.</translation>
+<translation id="7953047982688951904">Laai Chromium op jou foon af om ’n ekstra laag beskerming by te voeg wanneer jy aan die beweeg is</translation>
 <translation id="7975919845073681630">Dit is 'n sekondêre installering van Chromium en kan nie jou verstekblaaier gemaak word nie.</translation>
 <translation id="7997934263947464652">Uitbreidings, programme en temas van onbekende bronne af kan jou toestel beskadig. Chromium beveel aan dat hulle net uit die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> geïnstalleer word</translation>
 <translation id="8004582292198964060">Blaaier</translation>

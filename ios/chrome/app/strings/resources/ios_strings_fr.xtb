@@ -681,6 +681,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3695446226812920698">Comment procéder</translation>
 <translation id="3700134753671613714">Connectez-vous pour accéder à vos favoris sur tous vos appareils.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google ({EMAIL}).}one{{COUNT} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google ({EMAIL}).}other{{COUNT} mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({EMAIL}).}}</translation>
+<translation id="3709621342136814217">Choisissez ici la police, la taille du texte et plus encore</translation>
 <translation id="371230970611282515">Il prédit les événements dangereux et vous en informe avant qu'ils ne surviennent.</translation>
 <translation id="372115889256123713">fichiers en cache</translation>
 <translation id="3725081662140949903">Pour empêcher d'autres personnes d'utiliser votre mot de passe, modifiez-le dans l'appli <ph name="APP" /></translation>

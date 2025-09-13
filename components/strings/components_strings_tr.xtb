@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Değiştir</translation>
 <translation id="1063822554756965137">Dosyalar başarıyla silindi</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome, bu siteden bildirim almak istemediğinizi düşünüyor. Bu nedenle, dikkatinizi dağıtmamak için istekler gizleniyor.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Arama motoru ayrıntıları</translation>
 <translation id="1068467933609179019">Otomatik doldurma hizmetleriyle ilgili ayarlar</translation>
@@ -1625,6 +1626,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3678529606614285348">Sayfayı yeni Gizli pencerede açın (Ctrl-Üst Karakter-N)</translation>
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" /> basamaklı doğrulama kodunu girin</translation>
 <translation id="3681007416295224113">Sertifika bilgileri</translation>
+<translation id="3681191721636073359">Chrome, bu sitede konumunuzu kullanmak istemediğinizi düşünüyor. Bu nedenle, dikkatinizi dağıtmamak için istekler gizleniyor.</translation>
 <translation id="3681421644246505351">Chrome, son tarama geçmişinize göre ilgi alanlarınızı kaydeder.</translation>
 <translation id="3681841880472207951">Quicktime video</translation>
 <translation id="3682094733650754138">Adresi doldur seçeneği belirlendi</translation>
@@ -4596,6 +4598,7 @@ Ek ayrıntılar:
 <translation id="8624354461147303341">İndirim alın</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome, internette gezinirken sizi koruyacak yerleşik güvenlik özelliklerine sahiptir. Örneğin Google Güvenli Tarama, ziyaret etmeye çalıştığınız sitede <ph name="BEGIN_LINK" />kısa süre önce kimlik avı tespit etti<ph name="END_LINK" />. Kimlik avı siteleri sizi kandırmak için başka bir siteymiş gibi davranır.<ph name="NEW_LINE" />Normalde güvenli olan siteler bile bazen saldırganlar tarafından ele geçirilebilir. Bir hata olduğunu ve bu sitenin tehlike arz etmediğini düşünüyorsanız <ph name="BEGIN_ERROR_LINK" />bize bildirin<ph name="END_ERROR_LINK" />.</translation>
+<translation id="8640996933372643759">Sekmeleri paylaşmak ve diğer kullanıcılarla ortak çalışma yapmak için Chrome'da oturum açabilmeniz gerekir</translation>
 <translation id="8641131559425911240">Zarf (Bond)</translation>
 <translation id="8643409044755049933">Zarf Kaku 3</translation>
 <translation id="8643846627971610148">Bir grup kapatıldığında, kimlerin katılabileceği sınırlandırılır</translation>

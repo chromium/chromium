@@ -162,6 +162,7 @@ Untuk perangkat yang tidak terkelola, pengguna dapat memutuskan untuk mengirim m
 <translation id="1087437665304381368">Kebijakan ini hanya mengontrol mode developer<ph name="PRODUCT_OS_NAME" />. Jika ingin mencegah akses ke Opsi Developer Android, Anda perlu menetapkan kebijakan <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">Daftar kebijakan Chrome Enterprise berpindah! Update bookmark ke <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
 <translation id="1089150222292592899">Mengisi otomatis nama pengguna di halaman IdP SAML</translation>
+<translation id="1090430607214486535">Sensitif</translation>
 <translation id="1091765729282771296">Izinkan situs meminta kepada pengguna untuk memberikan akses ke perangkat HID</translation>
 <translation id="1095209545735032039">Memblokir Serial API di situs ini</translation>
 <translation id="1096105751829466145">Penyedia penelusuran default</translation>
@@ -3415,7 +3416,6 @@ Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yan
 <translation id="3285231260918855067">Opasitas garis tepi teks watermark, dari 0 (transparan) hingga 100 (buram).</translation>
 <translation id="3286159327013237833">Aktifkan klik otomatis di layar login</translation>
 <translation id="3288595667065905535">Saluran rilis</translation>
-<translation id="3291940794983537008">Setelan untuk Fitur AI Generatif DevTools</translation>
 <translation id="3294430356898755483">Jike kebijakan disetel, administrator dapat menyiapkan daftar printer bagi pengguna mereka. Pemilihan printer dilakukan pada saat pengguna mencoba mencetak untuk pertama kalinya.
 
       Menggunakan kebijakan:
@@ -4012,13 +4012,6 @@ Jika <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> dan <ph n
 Transfer data dengan Takeout juga harus diaktifkan agar aplikasi Transfer konten berfungsi dengan benar. Lihat https://support.google.com/a/answer/6364687 untuk mengetahui informasi tambahan.</translation>
 <translation id="3702518095257671450">Pengesahan jarak jauh</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Kolom 1 baris sudah tidak digunakan lagi dan akan dihapus di masa mendatang. Mulai gunakan kotak teks multibaris di bawah.)</translation>
-<translation id="3711561721191203926">Jika kebijakan ini disetel ke Aktif, permintaan utama akan diblokir setiap kali peringatan seharusnya
-ditampilkan di <ph name="DEV_TOOLS_NAME" /> karena pemeriksaan <ph name="PRIVATE_NETWORK_ACCESS" /> gagal.
-
-Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, semua peringatan <ph name="PRIVATE_NETWORK_ACCESS" /> tidak akan
-diterapkan dan permintaan tidak akan diblokir.
-
-Lihat https://wicg.github.io/private-network-access/ untuk melihat batasan <ph name="PRIVATE_NETWORK_ACCESS" />.</translation>
 <translation id="3711895659073496551">Tangguhkan</translation>
 <translation id="3712861436661566358">Menerapkan pemisahan profil</translation>
 <translation id="3719826155360621982">Beranda</translation>
@@ -5064,7 +5057,6 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan lokasinya.</translation>
 <translation id="4461400898496433231">Jangan ganti pemeriksaan keterjangkauan IPv6. Hanya buat kueri data AAAA untuk resolusi nama host ketika perangkat dapat menjangkau host IPv6 global.</translation>
-<translation id="4463467966408770621">Jangan izinkan Fitur AI Generatif DevTools.</translation>
 <translation id="4463675333222095358">Aktifkan Konversi Unit Jawaban Instan</translation>
 <translation id="4464365009416584564">Nonaktifkan <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Blokir cookie pihak ketiga</translation>
@@ -8204,23 +8196,6 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan
 <translation id="6383774771168138899">Mengonfigurasi alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="MICROSOFT_ONE_DRIVE_NAME" /> dan <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Izinkan halaman hasil penelusuran mesin telusur default ditampilkan di panel samping Browser.</translation>
 <translation id="6389240462871677239">Mengizinkan origin Aplikasi Web Terisolasi menggunakan Controlled Frame</translation>
-<translation id="6390338862225976270">Fitur di DevTools <ph name="PRODUCT_NAME" /> ini menggunakan model AI generatif untuk memberikan informasi proses debug tambahan. Untuk menggunakan fitur ini, <ph name="PRODUCT_NAME" /> harus mengumpulkan data seperti pesan error, stack trace, cuplikan kode, dan permintaan jaringan, lalu mengirimkannya ke server milik Google, yang menjalankan model AI generatif. Isi respons atau autentikasi dan header cookie dalam permintaan jaringan tidak disertakan dalam data yang dikirim ke server.
-
-Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi sumber, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
-
-Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi sumber, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
-
-Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Fitur AI Generatif DevTools mencakup:
-
-- Console Insights: menjelaskan pesan konsol dan menawarkan saran cara memperbaiki error konsol.
-
-- Bantuan AI: dapatkan bantuan untuk memahami gaya CSS (sejak versi 131), permintaan jaringan, performa, dan file (semuanya sejak versi 132).
-
-Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Kebijakan ini tidak lagi digunakan sejak <ph name="PRODUCT_OS_NAME" /> versi 29. Gunakan kebijakan PresentationScreenDimDelayScale sebagai gantinya.</translation>
 <translation id="6397588391180665797">Melaporkan konfigurasi jaringan pengguna di perangkat terdaftar.
 
@@ -8770,13 +8745,6 @@ Jika kebijakan ini disetel ke Aktif, data akan dikumpulkan dan diupload ke <ph n
 
 Untuk <ph name="PRODUCT_NAME" />, kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini selalu berlaku.</translation>
-<translation id="6720071484598746942">Jika kebijakan ini disetel ke Aktif, permintaan utama akan diblokir setiap kali peringatan yang seharusnya
-ditampilkan di <ph name="DEV_TOOLS_NAME" /> muncul karena pemeriksaan <ph name="LOCAL_NETWORK_ACCCESS" /> gagal.
-
-Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, permintaan <ph name="LOCAL_NETWORK_ACCESS" /> akan menggunakan
-penanganan default untuk permintaan ini.
-
-Lihat https://wicg.github.io/local-network-access/ untuk melihat batasan <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="6720330829631914048">Jam berlalu sejak awal hari dalam format 24 jam.</translation>
 <translation id="6721252203593581486">WebSQL di konteks pihak ketiga (misalnya, iframe lintas situs) nonaktif secara default mulai dari M97 dan akan dihapus sepenuhnya di M101.
           Jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL di konteks pihak ketiga akan tetap nonaktif.
@@ -11540,7 +11508,6 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
       Catatan: Lihat daftar variabel yang dapat Anda gunakan (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="8657543427358173663">Izinkan pengumpulan log aktivitas WebRTC dari layanan Google</translation>
 <translation id="8659843732895043951">Mengizinkan papan klip di situs ini</translation>
-<translation id="8660214745436301739">Izinkan Fitur AI Generatif DevTools dan tingkatkan kualitas model AI.</translation>
 <translation id="8661297125441579970">Jangan izinkan migrasi data dan ARC.</translation>
 <translation id="8661538142776716004">Hapus Setelan Situs</translation>
 <translation id="8661980316738569557">Aktifkan kontras tinggi</translation>
@@ -12368,7 +12335,6 @@ Kebijakan ini tidak akan berpengaruh jika <ph name="METRICS_REPORTING_ENABLED_PO
       Jika kebijakan disetel ke <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />, mode EDU pengalaman aktivasi Asisten akan digunakan.</translation>
 <translation id="9191821120522935133">Memungkinkan pengaktifan throttling iframe lintas origin yang tidak terlihat</translation>
 <translation id="9192220384862917760">Aktifkan mode tirai untuk host akses jarak jauh</translation>
-<translation id="9194693367692364911">Izinkan Fitur AI Generatif DevTools tanpa meningkatkan kualitas model AI.</translation>
 <translation id="9195766455191826480">Jangan laporkan status keamanan</translation>
 <translation id="9197238499850071076">Menentukan apakah perangkat harus di-rollback ke versi yang disetel oleh <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> jika telah menjalankan versi yang lebih baru.
 

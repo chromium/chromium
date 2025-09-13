@@ -85,6 +85,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1880677175115548835">Vybrat text</translation>
 <translation id="1919130412786645364">Povolit přihlášení do Chromu</translation>
 <translation id="1953553007165777902">Stahování… Počet zbývajících minut: <ph name="MINUTE" /></translation>
+<translation id="1979600810166324878">Buďte na cestách v bezpečí s Vylepšeným Bezpečným prohlížením v Chromu pro iOS</translation>
 <translation id="2001586581944147178">Zajistěte, aby pro lidi s přístupem k vašemu internetovému provozu bylo obtížnější zjistit, které weby navštěvujete. Chrome používá zabezpečené připojení k vyhledání IP adresy webu v DNS (Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Toto rozšíření už není podporováno. Chrome vám doporučuje odstranit ho.}few{Tato rozšíření už nejsou podporována. Chrome vám doporučuje odstranit je.}many{Tato rozšíření už nejsou podporována. Chrome vám doporučuje odstranit je.}other{Tato rozšíření už nejsou podporována. Chrome vám doporučuje odstranit je.}}</translation>
 <translation id="2018528049276128029">V každém profilu jsou uloženy soukromé údaje z Chromu, například záložky, historie, hesla a další</translation>
@@ -382,6 +383,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 
 Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5468572406162360320">Za účelem zlepšení těchto funkcí odesílá Chrome vaše interakce do Googlu. Tato data mohou číst, zpracovávat a opatřovat poznámkami kontroloři.</translation>
+<translation id="5510398294750420479">Stáhněte si Chrome do telefonu, ať máte na cestách další vrstvu ochrany</translation>
 <translation id="5524761631371622910">Když jsou zapnuté zkušební verze a Chrome vás do nějaké náhodně umístí, vaše historie prohlížení bude mít vliv na zobrazované reklamy a zájmy, jak je odhadnuto níže. Aby Chrome chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže.</translation>
 <translation id="5524890928877629608">levý horní roh oblasti hledání: vlevo <ph name="LEFT" /> %, nahoře <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Zrychlete si Chrome</translation>
@@ -494,6 +496,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6760235774835597023">Zrychluje weby pomocí modulu V8 prohlížeče Chrome, ale trochu snižuje odolnost Chromu vůči útokům. Toto nastavení je zapnuté.</translation>
 <translation id="677276454032249905">Přesto Chrome ukončit?</translation>
 <translation id="6794858689789885890">Při zavření prohlížeče Chrome ze zařízení vždy vymazat data webů</translation>
+<translation id="6800285125190089494">Přihlašujte se na weby rychleji pomocí uložených hesel pro Chrome v systému iOS</translation>
 <translation id="6831043979455480757">Přeložit</translation>
 <translation id="683440813066116847">Pravidlo příchozího provozu pro aplikaci Google Chrome Canary, které povolí provoz mDNS.</translation>
 <translation id="684888714667046800">Nelze se připojit k internetu. Pokud používáte firewall, přidejte program <ph name="PRODUCT_EXE_NAME" /> na seznam povolených.</translation>
@@ -631,6 +634,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8336463659890584292">Když web požádá o soukromé předběžné načtení odkazů na stránce, použije Chrome servery Google. To před předběžně načítaným webem skryje vaši identitu, ale Google se dozví, které weby se předběžně načítají.</translation>
 <translation id="8342675569599923794">Tento soubor je nebezpečný, proto jej Chrome zablokoval.</translation>
 <translation id="8349094670477064572">Když se do Chromu přihlásíte, budete moct ukládat a používat hesla a další data ve svém účtu Google. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Informace z Googlu</translation>
 <translation id="8362914115861174987">Přeložit do jazyka</translation>
 <translation id="8366770919198174997">Snižuje výkon, ale zvyšuje odolnost Chromu proti útokům</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>

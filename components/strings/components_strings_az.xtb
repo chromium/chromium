@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Əvəz edin</translation>
 <translation id="1063822554756965137">Fayllar silindi</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome bu saytdan bildirişlər istəmədiyinizi düşünür. Beləliklə, fasilələri azaltmaq üçün sorğular gizlədilir.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Axtarış mexanizmi detalları</translation>
 <translation id="1068467933609179019">Avtodoldurma xidməti ayarları</translation>
@@ -1621,6 +1622,7 @@
 <translation id="3678529606614285348">Yeni Gizli pəncərədə səhifə açın (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" /> rəqəmli doğrulama kodu daxil edin</translation>
 <translation id="3681007416295224113">Sertifikat məlumatı</translation>
+<translation id="3681191721636073359">Chrome bu saytda məkanınızdan istifadə etmək istəmədiyinizi düşünür. Beləliklə, fasilələri azaltmaq üçün sorğular gizlədilir.</translation>
 <translation id="3681421644246505351">Chrome son baxış tarixçənizə əsaslanaraq maraqlandığınız mövzuları qeyd edir.</translation>
 <translation id="3681841880472207951">QuickTime video</translation>
 <translation id="3682094733650754138">Ünvanın daxil edilməsi seçilib</translation>
@@ -4590,6 +4592,7 @@
 <translation id="8624354461147303341">Endirim əldə edin</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olmağa cəhd etdiyiniz saytda <ph name="BEGIN_LINK" />bu yaxınlarda fişinq tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır. Fişinq saytları sizi aldatmaq üçün özlərini digər saytlar kimi təqdim edir.<ph name="NEW_LINE" />Bəzən hücumçular təhlükəsiz saytları da ələ keçirir. Yanlışlıq olduğunu və saytın təhlükəli olmadığını düşünürsünüzsə, <ph name="BEGIN_ERROR_LINK" />bizə bildirin<ph name="END_ERROR_LINK" />.</translation>
+<translation id="8640996933372643759">Tabları paylaşmaq və başqaları ilə əməkdaşlıq etmək üçün Chrome-a daxil ola bilməlisiniz</translation>
 <translation id="8641131559425911240">Zərf (yüksəkkeyfiyyətli)</translation>
 <translation id="8643409044755049933">Zərf Kaku 3</translation>
 <translation id="8643846627971610148">Qrup bağlandıqda kimin qoşula biləcəyini məhdudlaşdırır</translation>

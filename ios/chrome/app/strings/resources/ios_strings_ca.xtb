@@ -681,6 +681,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3695446226812920698">Informació</translation>
 <translation id="3700134753671613714">Inicieu la sessió per accedir a les adreces d'interès des de tots els dispositius</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} contrasenya s'ha desat només en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google {EMAIL}.}other{{COUNT} contrasenyes s'han desat només en aquest dispositiu. Per utilitzar-les en altres dispositius, desa-les al teu Compte de Google {EMAIL}.}}</translation>
+<translation id="3709621342136814217">Tria la font, la mida del text i més aquí</translation>
 <translation id="371230970611282515">Prediu esdeveniments perillosos abans que es produeixin i t'hi avisa.</translation>
 <translation id="372115889256123713">els fitxers desats a la memòria cau</translation>
 <translation id="3725081662140949903">Per evitar que altres persones utilitzin la teva contrasenya, obre l'aplicació <ph name="APP" /> i canvia la contrasenya</translation>
@@ -832,6 +833,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4286718549648564014">L'adreça s'ha mogut al compte <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marca com a llegit</translation>
 <translation id="428768789042547925">Novetats</translation>
+<translation id="428858055663163046">Quan estiguin disponibles, des d'aquí podràs accedir als fitxers baixats</translation>
 <translation id="429074084062258019">{count,plural, =1{Afegeix una pestanya al grup}other{Afegeix pestanyes al grup}}</translation>
 <translation id="4302061870579014542">Defineix la posició</translation>
 <translation id="4304713468139749426">Gestor de contrasenyes</translation>
@@ -1414,6 +1416,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6452534462676960500">Activitat nova</translation>
 <translation id="6459411599807878608">Els detalls estan amagats</translation>
 <translation id="646394917185284261">Arxius</translation>
+<translation id="6472069383518492189">Trobaràs les baixades aquí</translation>
 <translation id="6476253015009698798">El seguiment de preus no està disponible per a aquesta pàgina.</translation>
 <translation id="6476284679642588870">Gestiona les formes de pagament</translation>
 <translation id="6476800141292307438">La pàgina s'està traduint a <ph name="LANGUAGE" />. Tens opcions disponibles a la part inferior de la pantalla.</translation>

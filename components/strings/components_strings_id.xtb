@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Ganti</translation>
 <translation id="1063822554756965137">File berhasil dihapus</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome menganggap Anda tidak ingin menerima notifikasi dari situs ini. Jadi, permintaan disembunyikan untuk mengurangi gangguan.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detail mesin telusur</translation>
 <translation id="1068467933609179019">Setelan layanan isi otomatis</translation>
@@ -1625,6 +1626,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3678529606614285348">Buka halaman dalam jendela Samaran baru (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Masukkan kode verifikasi <ph name="OTP_LENGTH" /> digit</translation>
 <translation id="3681007416295224113">Informasi sertifikat</translation>
+<translation id="3681191721636073359">Chrome menganggap Anda tidak ingin menggunakan lokasi Anda di situs ini. Jadi, permintaan disembunyikan untuk mengurangi gangguan.</translation>
 <translation id="3681421644246505351">Chrome mencatat topik minat berdasarkan histori penjelajahan terbaru Anda.</translation>
 <translation id="3681841880472207951">Video Quicktime</translation>
 <translation id="3682094733650754138">Opsi isi alamat dipilih</translation>
@@ -4591,6 +4593,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8624354461147303341">Dapatkan diskon</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome memiliki fitur keamanan bawaan untuk melindungi Anda saat menjelajah — seperti Google Safe Browsing, yang <ph name="BEGIN_LINK" />baru-baru ini menemukan phishing<ph name="END_LINK" /> di situs yang Anda coba kunjungi. Situs phishing berpura-pura menjadi situs lain untuk mengelabui Anda.<ph name="NEW_LINE" />Bahkan situs yang biasanya aman terkadang disusupi oleh penyerang. <ph name="BEGIN_ERROR_LINK" />Beri tahu kami<ph name="END_ERROR_LINK" /> jika menurut Anda hal ini merupakan kekeliruan dan situs ini tidak berbahaya.</translation>
+<translation id="8640996933372643759">Untuk berbagi tab dan berkolaborasi dengan orang lain, Anda harus dapat login ke Chrome</translation>
 <translation id="8641131559425911240">Amplop (Bond)</translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>
 <translation id="8643846627971610148">Jika grup ditutup, hanya orang tertentu yang dapat bergabung</translation>

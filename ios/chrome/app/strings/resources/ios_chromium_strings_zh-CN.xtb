@@ -139,7 +139,7 @@
 <translation id="4302397443352897529">Chromium 设置</translation>
 <translation id="4408912345039114853">运行 Chromium 安全检查</translation>
 <translation id="4432744876818348753">登录即可充分利用 Chromium。</translation>
-<translation id="4445228361214254027">贵组织已关闭在您的 Google 账号中保存 Chromium 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
+<translation id="4445228361214254027">您的组织已关闭在您的 Google 账号中保存 Chromium 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
 <translation id="4498832288620833153">将所输入的网址添加到 Chromium 中的阅读清单。</translation>
 <translation id="4508268628669724828">欢迎回来查看更多实用提示，了解如何充分利用 Chromium。</translation>
 <translation id="452436063477828504">请确保您可以一直使用 Google 账号中的 Chromium 数据</translation>
@@ -170,7 +170,7 @@
 <translation id="5053429694249468757">正在删除 Chromium 数据…</translation>
 <translation id="5071749685031362629">iOS 版 Chromium</translation>
 <translation id="5124429847818367226">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
-<translation id="5131565040785979529">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chromium 的使用方式。</translation>
+<translation id="5131565040785979529">您的组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chromium 的使用方式。</translation>
 <translation id="5134464247000681876">在 Chromium 中打开 Gmail、Google 地图、YouTube 和其他应用中的链接</translation>
 <translation id="5203244847421322551">在 Chromium 中保存并自动填充密码</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
@@ -249,7 +249,7 @@
 <translation id="6887138405044152640">若要将此标签页发送到另一设备，请在该设备上登录 Chromium。</translation>
 <translation id="6911341667534646387">请继续使用您的 Google 账号中的 Chromium 数据</translation>
 <translation id="7018284295775193585">Chromium 无法更新</translation>
-<translation id="7055269218854630176">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chromium 的使用方式。您的管理员可以设置或限制某些功能。</translation>
+<translation id="7055269218854630176">您的组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chromium 的使用方式。您的管理员可以设置或限制某些功能。</translation>
 <translation id="7099326575020694068">Chromium 无法在分割视图模式下使用您的相机</translation>
 <translation id="7165402419892018581">选择使用 Chromium 的自动填充功能</translation>
 <translation id="7175400662502680481">您的密码遭遇了数据泄露。密码管理工具建议您立即更改此密码。</translation>
@@ -318,7 +318,7 @@
 <translation id="8826789549860004832">继续设置浏览器，即可充分利用 Chromium 的各项功能。</translation>
 <translation id="88376265765385899">打开 Chromium 书签。</translation>
 <translation id="8860548555286245440">在 Chromium 中以无痕模式打开网址</translation>
-<translation id="8880024619507699923">根据贵组织的要求，您必须登录才能使用 Chromium。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="8880024619507699923">根据您的组织要求，您必须登录才能使用 Chromium。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">获享 Chromium 的超强安全保护</translation>
 <translation id="8925569192291721236">及时了解价格跟踪资讯和 Chromium 提示。</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况}other{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况}}</translation>

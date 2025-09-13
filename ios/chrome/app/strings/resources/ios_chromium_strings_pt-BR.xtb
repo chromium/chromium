@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps no Chromium</translation>
 <translation id="1867772173333403444">4. Selecione o Chromium</translation>
+<translation id="1965068424387304464">Dica do Chromium: salve senhas</translation>
 <translation id="2006345422933397527">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
 <translation id="2042889939382983733">Abrir histórico do Chromium</translation>
 <translation id="2052320862053429062">O Chromium verifica periodicamente se as suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
@@ -118,6 +119,7 @@ Aguarde alguns minutos antes de trocar de conta. Se você mudar de conta agora, 
 <translation id="3816686541346279443">O Chromium vai oferecer a opção de salvar sua senha.</translation>
 <translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
 <translation id="3833326979834193417">O Chromium executa a Confirmação de segurança todos os dias automaticamente para proteger você de violações de dados, sites perigosos e muito mais. Saiba mais sobre a Confirmação de segurança nas Configurações.</translation>
+<translation id="3837584850181228767">Dica do Chromium: Navegação Segura com Maior Proteção</translation>
 <translation id="3845223911364528001">Volte ao Chromium para fazer upload do arquivo</translation>
 <translation id="3855938650519180865">Novidades do Chromium</translation>
 <translation id="3886689467633467988">Faça login neste site e no Chromium para conferir seus favoritos e muito mais em todos os seus dispositivos.</translation>

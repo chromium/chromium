@@ -81,6 +81,7 @@
 <translation id="1880677175115548835">Text auswählen</translation>
 <translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
 <translation id="1953553007165777902">Wird heruntergeladen… Noch <ph name="MINUTE" /> Minute(n)</translation>
+<translation id="1979600810166324878">Mit dem erweiterten Safe Browsing in Chrome für iOS bist du unterwegs besser geschützt</translation>
 <translation id="2001586581944147178">Du kannst es Personen mit Zugriff auf deinen Internetverkehr erschweren, zu sehen, welche Websites du besuchst. Chrome nutzt eine verschlüsselte Verbindung, um die IP-Adresse einer Website im DNS (Domain Name System) zu ermitteln.</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung wird nicht mehr unterstützt. Chrome empfiehlt, sie zu entfernen.}other{Diese Erweiterungen werden nicht mehr unterstützt. Chrome empfiehlt, sie zu entfernen.}}</translation>
 <translation id="2018528049276128029">In jedem Profil sind eigene Chrome-Daten wie zum Beispiel Lesezeichen, Verlauf und Passwörter enthalten</translation>
@@ -374,6 +375,7 @@
 <translation id="5412485296464121825">Websites können Daten zu deinen Interessen bei Chrome speichern. Wenn du beispielsweise im Internet Schuhe für einen Marathon kaufst, definiert die Website möglicherweise Marathons als eines deiner Interessen. Wenn du dann später eine andere Website besuchst, um dich für ein Wettrennen anzumelden, kann dir auf Grundlage deiner Interessen Werbung zu Laufschuhen angezeigt werden.</translation>
 <translation id="5430073640787465221">Deine Einstellungsdatei ist beschädigt oder ungültig. Google Chrome kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="5468572406162360320">Damit wir diese Funktionen verbessern können, sendet Chrome deine Interaktionen mit ihnen an Google. Diese Daten können von Prüfern gelesen, verarbeitet und mit Anmerkungen versehen werden.</translation>
+<translation id="5510398294750420479">Lade Chrome auf dein Smartphone herunter, damit du unterwegs besser geschützt bist</translation>
 <translation id="5524761631371622910">Wenn Tests aktiviert sind und Chrome dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome jeden Monat fortlaufend deine Interessen.</translation>
 <translation id="5524890928877629608">Linke obere Ecke des Suchbereichs: links <ph name="LEFT" /> %, oben <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Chrome noch schneller machen</translation>
@@ -486,6 +488,7 @@
 <translation id="6760235774835597023">Websites werden mit der V8-Engine von Chrome beschleunigt, Chrome wird dadurch aber etwas anfälliger für Angriffe. Diese Einstellung ist aktiviert.</translation>
 <translation id="677276454032249905">Chrome trotzdem beenden?</translation>
 <translation id="6794858689789885890">Beim Schließen von Chrome immer die Websitedaten von deinem Gerät löschen</translation>
+<translation id="6800285125190089494">Mit gespeicherten Passwörtern in Chrome für iOS kannst du dich auf Websites schneller anmelden</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="683440813066116847">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Canary</translation>
 <translation id="684888714667046800">Internetverbindung kann nicht hergestellt werden. Wenn du eine Firewall verwendest, achte darauf, dass <ph name="PRODUCT_EXE_NAME" /> auf der Zulassungsliste steht.</translation>
@@ -623,6 +626,7 @@
 <translation id="8336463659890584292">Wenn eine Website anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verwendet Chrome dazu die Server von Google. Dadurch wird deine Identität vor der vorab geladenen Website verborgen. Google lernt dabei, welche Websites vorab geladen werden.</translation>
 <translation id="8342675569599923794">Diese Datei ist schädlich und wurde von Chrome blockiert.</translation>
 <translation id="8349094670477064572">Deine Passwörter und andere Daten werden in deinem Google-Konto gespeichert und verwendet, wenn du in Chrome angemeldet bist.<ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Google fragen</translation>
 <translation id="8362914115861174987">Zielsprache</translation>
 <translation id="8366770919198174997">Reduziert die Leistung, macht Chrome aber widerstandsfähiger gegen Angriffe</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>

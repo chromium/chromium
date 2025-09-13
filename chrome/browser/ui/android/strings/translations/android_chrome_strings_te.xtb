@@ -3,6 +3,7 @@
 <translationbundle lang="te">
 <translation id="1010283278930414892">ఈ పరికరంలో సేవ్ చేయబడిన పాస్‌వర్డ్‌లు ఏవీ లేవు</translation>
 <translation id="1011749477052068769">ఇక్కడకు తరలించండి</translation>
+<translation id="1014083013111769343">రీడింగ్ మోడ్ ప్రాధాన్యతలు ఫుల్ స్క్రీన్‌లో తెరవబడ్డాయి</translation>
 <translation id="1014147525163127655">ఈ పరికరంలో <ph name="ORIGIN" /> కోసం పాస్-కీలు ఏవీ లేవు</translation>
 <translation id="1016498331642356377">త్వరగా మీ వాయిస్‌తో సెర్చ్ చేయండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, నొక్కి, పట్టుకోండి.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />కు పంపుతోంది...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">ఉంచండి</translation>
 <translation id="1973912524893600642">డేటాను అలాగే ఉంచు</translation>
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
+<translation id="1982274314082047220">ప్రాధాన్యతల కోసం రీడింగ్ మోడ్ పైకి స్వైప్ చేయండి</translation>
 <translation id="1984087999855033707">ఫోన్ నంబర్</translation>
 <translation id="1984417487208496350">రక్షణ లేదు (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="1986685561493779662">పేరు ఇప్పటికే ఉంది</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">ఇమేజ్ వివరణలు</translation>
 <translation id="2996291259634659425">రహస్య పదబంధాన్ని క్రియేట్ చేయండి</translation>
 <translation id="2996809686854298943">URL అవసరం</translation>
+<translation id="3024215143424744261">రీడింగ్ మోడ్ ప్రాధాన్యతలు మూసివేయబడ్డాయి</translation>
 <translation id="3026955690410463085">లింక్‌ను చేర్చండి</translation>
 <translation id="3027644380269727216">సైట్‌లోని మీ యాక్టివిటీ ఆధారంగా. ఈ సెట్టింగ్ ఆన్ చేయబడింది.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> నుండి</translation>
@@ -1309,6 +1312,7 @@
 <translation id="696447261358045621">అజ్ఞాత మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{షేర్ చేసిన ట్యాబ్ గ్రూప్‌లలో కొత్త యాక్టివిటీతో <ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను చూడండి}other{షేర్ చేసిన ట్యాబ్ గ్రూప్‌లలో కొత్త యాక్టివిటీతో <ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లను చూడండి}}</translation>
+<translation id="6971555615916967190">రీడింగ్ మోడ్ ప్రాధాన్యతలు హాఫ్ స్క్రీన్‌లో తెరవబడ్డాయి</translation>
 <translation id="6971862865055170158">ఆమోదించవద్దు</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, కొత్తది, లేదా అప్‌డేట్ చేసిన ట్యాబ్</translation>
 <translation id="6976811588313110624">కొత్త షార్ట్‌కట్‌ను జోడించండి.</translation>

@@ -96,6 +96,7 @@
 <translation id="2185166961232948079">‏Chromium - ورود به سیستم شبکه - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">خطای بررسی به‌روزرسانی: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">‏برداشتن حساب از Chromium</translation>
+<translation id="2210502920229141283">‏با «مرور ایمن پیشرفته» در Chromium برای iOS، درحال حرکت ایمن‌تر مرور کنید</translation>
 <translation id="2210682093923538346">‏سایت خطرناک. ‫Chromium اعلان‌ها را برداشت.</translation>
 <translation id="2236949375853147973">فعالیت‌هایم</translation>
 <translation id="2238130810669087193">‏برای دریافت نشانی‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chromium وارد شوید. بعداز اینکه به سیستم وارد شدید، این نشانی در «حساب Google» شما ذخیره خواهد شد.</translation>
@@ -155,6 +156,7 @@
 <translation id="2928420929544864228">نصب کامل شد.</translation>
 <translation id="2933336679234709858">‏داده‌هایتان بااستفاده از گذرعبارت شما رمزگذاری شده است. برای استفاده از داده‌های Chromium و ذخیره کردن این داده‌ها در «حساب Google»، این گذرعبارت را وارد کنید.</translation>
 <translation id="2945997411976714835">خطای نصب: فرایند نصب‌کننده شروع نشد.</translation>
+<translation id="2948852018303413228">‏با گذرواژه‌های ذخیره‌شده برای Chromium در iOS، در سایت‌ها سریع‌تر به سیستم وارد شوید</translation>
 <translation id="2970426615109535079">‏سازمان شما Chromium را مدیریت می‌کند</translation>
 <translation id="2977470724722393594">‏Chromium به‌روز است</translation>
 <translation id="2977506796191543575">‏اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chromium ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه به «مرور ایمن» ارسال کند</translation>
@@ -558,6 +560,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7888981273428720788">‏تنظیم Chromium به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="7934340546140346950">‏‫Chromium اتصال‌های ناامن را درصورت امکان به‌طور خودکار به HTTPS ارتقا می‌دهد</translation>
 <translation id="7937630085815544518">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chromium شده‌اید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
+<translation id="7953047982688951904">‏با بارگیری Chromium در تلفنتان، یک لایه محافظتی بیشتر برای مرور درحال حرکت اضافه کنید</translation>
 <translation id="7975919845073681630">‏این نصب ثانویه Chromium است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
 <translation id="7997934263947464652">‏افزونه‌ها، برنامه‌ها، و زمینه‌های دریافتی از منابع ناشناخته می‌توانند به دستگاهتان آسیب برسانند. Chromium توصیه می‌کند آن‌ها را فقط از <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> نصب کنید</translation>
 <translation id="8004582292198964060">مرورگر</translation>

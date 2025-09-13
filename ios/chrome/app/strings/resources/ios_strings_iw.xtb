@@ -833,6 +833,7 @@
 <translation id="4286718549648564014">הכתובת הועברה לחשבון שלך, <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">סימון "'נקרא"</translation>
 <translation id="428768789042547925">מה חדש</translation>
+<translation id="428858055663163046">כשהקבצים שהורדת זמינים אפשר לגשת אליהם כאן</translation>
 <translation id="429074084062258019">{count,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
 <translation id="4302061870579014542">הגדרת המיקום</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
@@ -1415,6 +1416,7 @@
 <translation id="6452534462676960500">פעילות חדשה</translation>
 <translation id="6459411599807878608">הפרטים מוסתרים</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">ההורדות יופיעו כאן</translation>
 <translation id="6476253015009698798">המעקב אחר מחירים לא זמין בדף הזה.</translation>
 <translation id="6476284679642588870">ניהול של האמצעי תשלום</translation>
 <translation id="6476800141292307438">מתבצע תרגום של הדף ל<ph name="LANGUAGE" />. האפשרויות מוצגות בחלק התחתון של המסך.</translation>

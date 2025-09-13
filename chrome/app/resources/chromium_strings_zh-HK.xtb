@@ -97,6 +97,7 @@
 <translation id="2185166961232948079">Chromium - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">更新檢查錯誤：<ph name="UPDATE_CHECK_ERROR" />。</translation>
 <translation id="2199210295479376551">從 Chromium 移除帳戶</translation>
+<translation id="2210502920229141283">在 iOS 版 Chromium 啟用「強化安全瀏覽」，隨時隨地加強網上安全</translation>
 <translation id="2210682093923538346">危險網站。Chromium 已移除通知權限。</translation>
 <translation id="2236949375853147973">我的活動</translation>
 <translation id="2238130810669087193">如要在所有裝置上使用你的地址和其他資料，請登入 Chromium。登入後，此地址就會儲存至 Google 帳戶。</translation>
@@ -156,6 +157,7 @@
 <translation id="2928420929544864228">安裝完成。</translation>
 <translation id="2933336679234709858">你已使用密碼短語加密資料。如要在 Google 帳戶中使用及儲存 Chromium 資料，請輸入密碼短語。</translation>
 <translation id="2945997411976714835">安裝錯誤：安裝程式程序無法開始。</translation>
+<translation id="2948852018303413228">在 iOS 版 Chromium 使用已儲存的密碼，加快登入網站的速度</translation>
 <translation id="2970426615109535079">Chromium 由你的機構管理</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="2977506796191543575">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chromium 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
@@ -559,6 +561,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7888981273428720788">將 Chromium 設定為預設瀏覽器</translation>
 <translation id="7934340546140346950">Chromium 會盡可能自動將不安全的連線升級為 HTTPS</translation>
 <translation id="7937630085815544518">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chromium，請使用相同帳戶重新登入。</translation>
+<translation id="7953047982688951904">在手機下載 Chromium，隨時隨地多添一重保障</translation>
 <translation id="7975919845073681630">這是以並行形式安裝的第二個 Chromium，因此無法設定為您的預設瀏覽器。</translation>
 <translation id="7997934263947464652">來源不明的擴充程式、應用程式和主題可能會損害您的裝置。Chromium 建議您只透過「<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />」安裝這些項目</translation>
 <translation id="8004582292198964060">瀏覽器</translation>

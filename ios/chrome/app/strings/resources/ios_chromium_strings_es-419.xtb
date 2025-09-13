@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps en Chromium</translation>
 <translation id="1867772173333403444">4. Selecciona Chromium.</translation>
+<translation id="1965068424387304464">Sugerencia de Chromium: Guardar contraseñas</translation>
 <translation id="2006345422933397527">Chromium no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
 <translation id="2042889939382983733">Ver tu historial de Chromium</translation>
 <translation id="2052320862053429062">Chromium revisa tus contraseñas de forma periódica para comprobar si aparecen en listas que se hayan publicado en línea. Durante esta acción, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
@@ -118,6 +119,7 @@ Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, se b
 <translation id="3816686541346279443">Chromium te ofrecerá guardar la contraseña.</translation>
 <translation id="3827545470516145620">Recibes protección de seguridad estándar en este dispositivo</translation>
 <translation id="3833326979834193417">Chromium ejecuta automáticamente la Verificación de seguridad todos los días para protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más. Puedes encontrar más información sobre la Verificación de seguridad en Configuración.</translation>
+<translation id="3837584850181228767">Sugerencia de Chromium: Navegación segura mejorada</translation>
 <translation id="3845223911364528001">Regresa a Chromium para subir tu archivo</translation>
 <translation id="3855938650519180865">Novedades de Chromium</translation>
 <translation id="3886689467633467988">Accede a este sitio y a Chromium para obtener tus favoritos y mucho más en todos tus dispositivos.</translation>

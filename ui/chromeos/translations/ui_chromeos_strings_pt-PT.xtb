@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Género</translation>
 <translation id="1254593899333212300">Ligação direta à Internet</translation>
 <translation id="1272293450992660632">Os valores de PIN não correspondem.</translation>
+<translation id="1279040297980392566">A aguardar que a análise termine. Tente mais tarde</translation>
 <translation id="1280820357415527819">A pesquisar redes móveis…</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1297922636971898492">De momento, o Google Drive não está disponível. O carregamento será reiniciado automaticamente assim que o Google Drive voltar a estar disponível.</translation>
@@ -1078,6 +1079,7 @@
 <translation id="9213073329713032541">A instalação foi iniciada com êxito.</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="9219908252191632183">Paisagem lunar</translation>
+<translation id="931652069802536959">A rede está bloqueada pela política</translation>
 <translation id="938470336146445890">Instale um certificado de utilizador.</translation>
 <translation id="939736085109172342">Nova pasta</translation>
 <translation id="943972244133411984">Modificado por</translation>

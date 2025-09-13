@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Ersetzen</translation>
 <translation id="1063822554756965137">Dateien wurden gelöscht</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome geht davon aus, dass du von dieser Website keine Benachrichtigungen erhalten möchtest. Entsprechende Anfragen werden daher nicht angezeigt, um Unterbrechungen zu reduzieren.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Einzelheiten zur Suchmaschine</translation>
 <translation id="1068467933609179019">Einstellungen für Autofill-Services</translation>
@@ -1623,6 +1624,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3678529606614285348">Seite in einem neuen Inkognitofenster öffnen (Strg + Umschalttaste + N)</translation>
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" />-stelligen Bestätigungscode eingeben</translation>
 <translation id="3681007416295224113">Zertifikatinformationen</translation>
+<translation id="3681191721636073359">Chrome geht davon aus, dass du auf dieser Website deinen Standort nicht verwenden möchtest. Entsprechende Anfragen werden daher nicht angezeigt, um Unterbrechungen zu reduzieren.</translation>
 <translation id="3681421644246505351">Chrome nutzt zur Ermittlung deiner Interessengebiete deinen aktuellen Browserverlauf.</translation>
 <translation id="3681841880472207951">QuickTime-Video</translation>
 <translation id="3682094733650754138">Die Option „Adresse ausfüllen“ wurde ausgewählt</translation>
@@ -4594,6 +4596,7 @@ Weitere Details:
 <translation id="8624354461147303341">Rabatte sichern</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
 <translation id="8637362707224133343">Chrome verfügt über integrierte Sicherheitsfunktionen, die dich beim Surfen schützen. Eine dieser Funktionen, Google Safe Browsing, hat auf dieser Website kürzlich <ph name="BEGIN_LINK" />Phishing-Versuche festgestellt<ph name="END_LINK" />. Phishing-Websites geben sich als andere Websites aus, um dich zu täuschen.<ph name="NEW_LINE" />Selbst Websites, die normalerweise sicher sind, werden manchmal gehackt. Wenn du der Meinung bist, dass es sich um einen Fehler handelt und diese Website keine Gefahr darstellt, melde uns das bitte <ph name="BEGIN_ERROR_LINK" />unter diesem Link<ph name="END_ERROR_LINK" />.</translation>
+<translation id="8640996933372643759">Wenn du Tabs teilen und mit anderen zusammenarbeiten möchtest, musst du dich in Chrome anmelden können</translation>
 <translation id="8641131559425911240">Umschlag (Hartpost)</translation>
 <translation id="8643409044755049933">Umschlag Kaku 3</translation>
 <translation id="8643846627971610148">Wenn eine Gruppe geschlossen ist, können nur bestimmte Personen beitreten</translation>

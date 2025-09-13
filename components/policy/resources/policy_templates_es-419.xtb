@@ -162,6 +162,7 @@ Para dispositivos no administrados, el usuario puede tomar la decisión de envia
 <translation id="1087437665304381368">Esta política controla solo el modo de desarrollador de <ph name="PRODUCT_OS_NAME" />. Si quieres impedir el acceso a las Opciones para desarrolladores de Android, deberás configurar la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">La lista de políticas de Chrome Enterprise cambia de sitio. Guarda <ph name="POLICY_DOCUMENTATION_URL" /> en tus favoritos.</translation>
 <translation id="1089150222292592899">Autocompletar el nombre de usuario en la página del IdP de SAML</translation>
+<translation id="1090430607214486535">Sensible</translation>
 <translation id="1091765729282771296">Permitir que los sitios soliciten al usuario acceso a un dispositivo HID</translation>
 <translation id="1095209545735032039">Bloquea la API de Serial en estos sitios</translation>
 <translation id="1096105751829466145">Proveedor de búsqueda predeterminado</translation>
@@ -3407,7 +3408,6 @@ Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /
 <translation id="3285231260918855067">Opacidad del contorno del texto de la marca de agua, de 0 (transparente) a 100 (opaco).</translation>
 <translation id="3286159327013237833">Habilitar el clic automático en la pantalla de acceso</translation>
 <translation id="3288595667065905535">Canal de versión</translation>
-<translation id="3291940794983537008">Configuración de las funciones basadas en IA generativa de Herramientas para desarrolladores</translation>
 <translation id="3294430356898755483">Si estableces la política, los administradores podrán configurar una lista de impresoras para sus usuarios. Los usuarios eligen la impresora la primera vez que realizan una impresión.
 
       Esta política permite hacer lo siguiente:
@@ -4001,14 +4001,6 @@ Si no estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" 
 También se debe habilitar la transferencia de datos con Takeout para que la app de Transferencia de contenido funcione correctamente. Consulta https://support.google.com/a/answer/6364687 para obtener más información.</translation>
 <translation id="3702518095257671450">Certificación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Pronto dejará de estar disponible el campo de una línea y desaparecerá. Empieza a usar el cuadro de texto de varias líneas que se encuentra a continuación).</translation>
-<translation id="3711561721191203926">Si habilitas esta política, cada vez que se deba mostrar
-una advertencia en <ph name="DEV_TOOLS_NAME" /> debido a errores en las verificaciones de <ph name="PRIVATE_NETWORK_ACCESS" />, se
-bloqueará la solicitud principal.
-
-Si la inhabilitas o no la estableces, no se aplicarán
-todas las advertencias de <ph name="PRIVATE_NETWORK_ACCESS" /> y no se bloquearán las solicitudes.
-
-Para conocer las restricciones de <ph name="PRIVATE_NETWORK_ACCESS" />, consulta https://wicg.github.io/private-network-access/.</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712861436661566358">Aplicar de manera forzosa la separación de perfiles</translation>
 <translation id="3719826155360621982">Página principal</translation>
@@ -5054,7 +5046,6 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 
       Si inhabilitas la política o no la estableces, los dispositivos inscritos no informarán su ubicación.</translation>
 <translation id="4461400898496433231">No anular la verificación de accesibilidad de IPv6. Consultar solo el registro AAAA para la resolución de nombres de host cuando el dispositivo es accesible para un host IPv6 global.</translation>
-<translation id="4463467966408770621">No permitir las funciones potenciadas por IA generativa de Herramientas para desarrolladores.</translation>
 <translation id="4463675333222095358">Habilitar la conversión de unidades de Respuestas rápidas</translation>
 <translation id="4464365009416584564">Inhabilitar <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
@@ -8193,23 +8184,6 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utiliza el director
 <translation id="6383774771168138899">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren las páginas de resultados del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
 <translation id="6389240462871677239">Permitir que los orígenes de apps web aisladas usen Controlled Frame</translation>
-<translation id="6390338862225976270">Estas funciones de las Herramientas para desarrolladores de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recopilar datos como mensajes de error, seguimientos de pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor de Google que ejecuta un modelo de IA generativa. Los datos que se envían al servidor no incluyen el cuerpo de la respuesta ni los encabezados de autenticación y de cookies.
-
-0 = Permite que se use la función y que Google use datos pertinentes para mejorar sus modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados, materiales de origen y comentarios escritos, según la función. Es posible que personas revisen los datos para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
-
-1 = Permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (lo que incluye las instrucciones, las entradas, los resultados, los materiales de origen y los comentarios escritos). 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = No permite la función.
-
-Si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Las funciones potenciadas por IA generativa de Herramientas para desarrolladores incluyen:
-
-- Estadísticas de la consola: Explica los mensajes de la consola y ofrece sugerencias para corregir errores.
-
-- Asistencia de IA: Obtén ayuda para comprender los estilos de CSS (desde la versión 131), las solicitudes de red, el rendimiento y los archivos (todos desde la versión 132).
-
-Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Esta política se eliminó a partir de la versión 29 de <ph name="PRODUCT_OS_NAME" />. Utiliza la política PresentationScreenDimDelayScale en su lugar.</translation>
 <translation id="6397588391180665797">Informa a los usuarios sobre la configuración de red en dispositivos inscritos.
 
@@ -8761,14 +8735,6 @@ Si la habilitas, los datos se recopilan y se suben a <ph name="GOOGLE_ADMIN_CONS
 
 Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
 Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="6720071484598746942">Si habilitas esta política, cada vez que se deba mostrar
-una advertencia en <ph name="DEV_TOOLS_NAME" /> debido a errores en las verificaciones de <ph name="LOCAL_NETWORK_ACCCESS" />, se
-bloqueará la solicitud principal.
-
-Si la inhabilitas o no la estableces, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" /> usarán el
-manejo predeterminado de estas solicitudes.
-
-Para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />, consulta https://wicg.github.io/local-network-access/.</translation>
 <translation id="6720330829631914048">Las horas transcurridas desde que comienza el día (en formato de 24 horas).</translation>
 <translation id="6721252203593581486">WebSQL en contextos de terceros (p. ej., iframes entre sitios) está desactivado de forma predeterminada a partir de la versión M97 y se quitará por completo en la versión M101.
           Si estableces esta política como falsa o no la estableces, WebSQL en contextos de terceros permanecerá inhabilitada.
@@ -11557,7 +11523,6 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
       Nota: Consulta la lista de las variables que puedes utilizar (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="8657543427358173663">Permitir la recopilación de registros de eventos de WebRTC de los servicios de Google</translation>
 <translation id="8659843732895043951">Permitir el portapapeles en estos sitios</translation>
-<translation id="8660214745436301739">Permitir las funciones potenciadas por IA generativa de Herramientas para desarrolladores y mejorar los modelos de IA.</translation>
 <translation id="8661297125441579970">No permitir la migración de datos y ARC</translation>
 <translation id="8661538142776716004">Borrar la configuración de sitios</translation>
 <translation id="8661980316738569557">Habilitar el contraste alto</translation>
@@ -12385,7 +12350,6 @@ Esta política no tendrá efecto si inhabilitas <ph name="METRICS_REPORTING_ENAB
       Si la estableces en <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />, se utilizará el modo EDU de la experiencia de integración del Asistente (para usuarios de instituciones educativas).</translation>
 <translation id="9191821120522935133">Permitir la limitación de iframes de origen cruzado no visibles</translation>
 <translation id="9192220384862917760">Permitir el modo encubierto para el host de acceso remoto</translation>
-<translation id="9194693367692364911">Permitir las funciones potenciadas por IA generativa de Herramientas para desarrolladores sin mejorar los modelos de IA.</translation>
 <translation id="9195766455191826480">No informar el estado de seguridad</translation>
 <translation id="9197238499850071076">Especifica si el dispositivo debe revertir a la versión que se establece en <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, si ya ejecuta una versión más reciente.
 

@@ -85,6 +85,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1880677175115548835">Velja texta</translation>
 <translation id="1919130412786645364">Leyfa innskráningu í Chrome</translation>
 <translation id="1953553007165777902">Sækir... <ph name="MINUTE" /> mín. eftir</translation>
+<translation id="1979600810166324878">Vertu öruggari á ferðinni með Enn öruggari vefskoðun í Chrome fyrir iOS</translation>
 <translation id="2001586581944147178">Gerðu fólki með aðgang að netumferðinni þinni erfiðara fyrir að sjá hvaða vefsvæði þú skoðar. Chrome notar örugga tengingu til að finna IP-tölu vefsvæðis í DNS (nafnakerfi léna).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Þessi viðbót er ekki lengur studd. Chrome mælir með að þú fjarlægir hana.}one{Þessi viðbót er ekki lengur studd. Chrome mælir með að þú fjarlægir hana.}other{Þessar viðbætur eru ekki lengur studdar. Chrome mælir með að þú fjarlægir þær.}}</translation>
 <translation id="2018528049276128029">Á hverjum prófíl eru geymdar Chrome upplýsingar á borð við bókamerki, feril, aðgangsorð og fleira</translation>
@@ -383,6 +384,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5468572406162360320">Til að hjálpa til við að bæta þessa eiginleika sendir Chrome upplýsingar um notkun þína á þeim til Google. Mennskir yfirlesarar kunna að lesa, vinna úr og skrifa skýringar við þessi gögn.</translation>
+<translation id="5510398294750420479">Sæktu Chrome í símanum þínum til að bæta við aukalagi af vernd þegar þú ert á ferðinni</translation>
 <translation id="5524761631371622910">Þegar kveikt er á prufuútgáfum og Chrome hefur skráð þig af handahófi í virka prufuútgáfu hefur vafraferillinn þinn áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chrome áhugamálunum þínum sjálfkrafa mánaðarlega.</translation>
 <translation id="5524890928877629608">efsta horn leitarsvæðis vinstra megin: til vinstri <ph name="LEFT" />%, efst <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Láttu Chrome vinna hraðar</translation>
@@ -495,6 +497,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6760235774835597023">Styttir hleðslutíma vefsvæða með V8-vél Chrome en gerir Chrome örlítið berskjaldaðri gagnvart árásum. Kveikt er á þessari stillingu.</translation>
 <translation id="677276454032249905">Viltu samt loka Chrome?</translation>
 <translation id="6794858689789885890">Ávallt eyða vefsvæðagögnum úr tækinu þegar þú lokar Chrome</translation>
+<translation id="6800285125190089494">Vertu fljótari að skrá þig inn á vefsvæði með því að nota vistuð aðgangsorð fyrir Chrome í iOS</translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="683440813066116847">Regla á innleið til að láta Google Chrome Canary leyfa mDNS-umferð.</translation>
 <translation id="684888714667046800">Ekki er hægt að tengjast internetinu. Ef þú notar eldvegg skaltu tryggja að <ph name="PRODUCT_EXE_NAME" /> sé á hvíta listanum.</translation>
@@ -632,6 +635,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8336463659890584292">Þegar vefsvæði biður um að forhlaða tenglum á lokaðan hátt á síðunni sinni notar Chrome Google-þjóna. Þetta kemur í veg fyrir að forhlaðna vefsvæðið geti auðkennt þig en Google lærir að þekkja hvaða vefsvæðum er forhlaðið.</translation>
 <translation id="8342675569599923794">Þessi skrá er hættuleg og þess vegna útilokaði Chrome hana.</translation>
 <translation id="8349094670477064572">You’ll save and use passwords and more in your Google Account whenever you’re signed in to Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Spyrja Google</translation>
 <translation id="8362914115861174987">Þýða yfir á</translation>
 <translation id="8366770919198174997">Dregur úr afköstum en auðveldar Chrome að verjast árásum</translation>
 <translation id="8370517070665726704">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>

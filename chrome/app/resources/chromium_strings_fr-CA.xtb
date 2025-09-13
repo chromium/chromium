@@ -97,6 +97,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2185166961232948079">Chromium – Connexion au réseau – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Erreur de vérification de la mise à jour : <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Retirer le compte de Chromium</translation>
+<translation id="2210502920229141283">Restez en sécurité lorsque vous êtes en déplacement grâce à la navigation sécurisée améliorée sur Chromium pour iOS</translation>
 <translation id="2210682093923538346">Site dangereux. Chromium a supprimé les notifications.</translation>
 <translation id="2236949375853147973">Mon activité</translation>
 <translation id="2238130810669087193">Pour obtenir vos adresses et bien plus encore sur tous vos appareils, connectez-vous à Chromium. Cette adresse sera enregistrée dans votre compte Google après votre connexion.</translation>
@@ -156,6 +157,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2928420929544864228">Installation terminée.</translation>
 <translation id="2933336679234709858">Vos données sont chiffrées avec votre phrase de passe. Entrez-la pour utiliser et enregistrer les données Chromium dans votre compte Google.</translation>
 <translation id="2945997411976714835">Erreur d'installation : le processus d'installation n'a pas pu démarrer.</translation>
+<translation id="2948852018303413228">Connectez-vous plus rapidement aux sites à l'aide des mots de passe enregistrés pour Chromium sur iOS</translation>
 <translation id="2970426615109535079">Votre organisation gère Chromium</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
 <translation id="2977506796191543575">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée</translation>
@@ -561,6 +563,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7888981273428720788">Définir Chromium comme navigateur par défaut</translation>
 <translation id="7934340546140346950">Chromium met automatiquement à niveau les connexions non sécurisées vers HTTPS lorsque cela est possible</translation>
 <translation id="7937630085815544518">Vous étiez connecté à Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
+<translation id="7953047982688951904">Téléchargez Chromium sur votre téléphone pour ajouter une couche de protection supplémentaire lorsque vous êtes en déplacement</translation>
 <translation id="7975919845073681630">Cette installation de Chromium est secondaire. Celui-ci ne peut donc pas servir de navigateur par défaut.</translation>
 <translation id="7997934263947464652">Les extensions, les applications et les thèmes provenant de sources inconnues peuvent endommager votre appareil. Chromium recommande de les installer uniquement à partir de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Navigateur</translation>

@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps i Chromium</translation>
 <translation id="1867772173333403444">4. Välj Chromium</translation>
+<translation id="1965068424387304464">Tips för Chromium: Spara lösenord</translation>
 <translation id="2006345422933397527">Chromium kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2042889939382983733">Visa Chromium-historiken</translation>
 <translation id="2052320862053429062">Chromium kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
@@ -118,6 +119,7 @@ Testa att vänta några minuter innan du byter konto. Om du byter konto nu rader
 <translation id="3816686541346279443">Chromium frågar om du vill spara lösenordet.</translation>
 <translation id="3827545470516145620">Du har standardsäkerhetsskydd på den här enheten</translation>
 <translation id="3833326979834193417">Chromium kör automatiskt en säkerhetskontroll varje dag för att skydda dig från dataintrång, osäkra webbplatser med mera. Du hittar mer information om säkerhetskontrollen i inställningarna.</translation>
+<translation id="3837584850181228767">Tips för Chromium: Förbättrad säker webbsökning</translation>
 <translation id="3845223911364528001">Återgå till Chromium för att ladda upp filen</translation>
 <translation id="3855938650519180865">Nyheter i Chromium</translation>
 <translation id="3886689467633467988">Logga in på den här webbplatsen och i Chromium om du vill få dina bokmärken med mera på alla dina enheter.</translation>

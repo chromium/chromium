@@ -681,6 +681,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3695446226812920698">Läs mer</translation>
 <translation id="3700134753671613714">Logga in om du vill ha dina bokmärken på alla dina enheter.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} lösenord sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot {EMAIL}.}other{{COUNT} lösenord sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot {EMAIL}.}}</translation>
+<translation id="3709621342136814217">Välj teckensnitt, textstorlek med mera här</translation>
 <translation id="371230970611282515">Förutser och varnar dig om farliga händelser innan de inträffar.</translation>
 <translation id="372115889256123713">cachelagrade filer</translation>
 <translation id="3725081662140949903">Om du vill hindra andra från att använda ditt lösenord öppnar du <ph name="APP" />-appen och ändrar lösenordet</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="nl">
 <translation id="1010283278930414892">Geen opgeslagen wachtwoorden op dit apparaat</translation>
 <translation id="1011749477052068769">Hierheen verplaatsen</translation>
+<translation id="1014083013111769343">Voorkeuren voor de leesmodus zijn op volledige hoogte geopend</translation>
 <translation id="1014147525163127655">Er zijn geen toegangssleutels voor <ph name="ORIGIN" /> op dit apparaat</translation>
 <translation id="1016498331642356377">Zoek snel met je stem. Tik en houd vast om deze snelkoppeling te bewerken.</translation>
 <translation id="1028699632127661925">Verzenden naar <ph name="DEVICE_NAME" />…</translation>
@@ -207,6 +208,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="197288927597451399">Behouden</translation>
 <translation id="1973912524893600642">Gegevens behouden</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
+<translation id="1982274314082047220">Swipe omhoog voor voorkeuren voor de leesmodus</translation>
 <translation id="1984087999855033707">telefoonnummer</translation>
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
 <translation id="1986685561493779662">Naam bestaat al</translation>
@@ -428,6 +430,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2992473221983447149">Afbeeldingsbeschrijvingen</translation>
 <translation id="2996291259634659425">Wachtwoordzin maken</translation>
 <translation id="2996809686854298943">URL vereist</translation>
+<translation id="3024215143424744261">Voorkeuren voor de leesmodus gesloten</translation>
 <translation id="3026955690410463085">Link toevoegen</translation>
 <translation id="3027644380269727216">Gebaseerd op je activiteit op een site. Deze instelling staat aan.</translation>
 <translation id="3027950907978057636">Van <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="696447261358045621">Incognitomodus verlaten</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad met nieuwe activiteit in gedeelde tabbladgroepen bekijken}other{<ph name="TABS_COUNT_MANY" /> tabbladen met nieuwe activiteit in gedeelde tabbladgroepen bekijken}}</translation>
+<translation id="6971555615916967190">Voorkeuren voor de leesmodus zijn op halve hoogte geopend</translation>
 <translation id="6971862865055170158">Niet goedkeuren</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, nieuw of geüpdatet tabblad</translation>
 <translation id="6976811588313110624">Nieuwe sneltoets toevoegen.</translation>

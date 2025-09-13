@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Sostituisci</translation>
 <translation id="1063822554756965137">I file sono stati eliminati correttamente</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome ritiene che tu non voglia ricevere notifiche da questo sito. Le richieste sono nascoste per ridurre le interruzioni.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Dettagli sul motore di ricerca</translation>
 <translation id="1068467933609179019">Impostazioni dei servizi di compilazione automatica</translation>
@@ -1622,6 +1623,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3678529606614285348">Apri la pagina in un'altra finestra di navigazione in incognito (CTRL-MAIUSC-N)</translation>
 <translation id="3678914302246317895">Inserisci il codice di verifica di <ph name="OTP_LENGTH" /> cifre</translation>
 <translation id="3681007416295224113">Informazioni certificato</translation>
+<translation id="3681191721636073359">Chrome ritiene che tu non voglia usare la tua posizione su questo sito. Le richieste sono nascoste per ridurre le interruzioni.</translation>
 <translation id="3681421644246505351">Chrome rileva argomenti di interesse in base alla tua cronologia di navigazione recente.</translation>
 <translation id="3681841880472207951">Video Quicktime</translation>
 <translation id="3682094733650754138">È stata selezionata l'opzione per inserire l'indirizzo</translation>
@@ -4591,6 +4593,7 @@ Ulteriori dettagli:
 <translation id="8624354461147303341">Ricevi sconti</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome è dotato di funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura, che <ph name="BEGIN_LINK" />di recente ha rilevato phishing<ph name="END_LINK" /> sul sito che hai cercato di visitare. I siti di phishing si spacciano per altri siti per ingannarti.<ph name="NEW_LINE" />Anche i siti che in genere sono sicuri possono essere compromessi da utenti malintenzionati. <ph name="BEGIN_ERROR_LINK" />Contattaci<ph name="END_ERROR_LINK" /> se ritieni che sia stato commesso un errore e che questo sito non rappresenti un pericolo.</translation>
+<translation id="8640996933372643759">Per condividere schede e collaborare con altri, devi poter accedere a Chrome</translation>
 <translation id="8641131559425911240">Busta (da lettera)</translation>
 <translation id="8643409044755049933">Busta Kaku 3</translation>
 <translation id="8643846627971610148">Quando un gruppo è chiuso, limita chi può iscriversi</translation>

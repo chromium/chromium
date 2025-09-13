@@ -81,6 +81,7 @@
 <translation id="1880677175115548835">Seleziona testo</translation>
 <translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
 <translation id="1953553007165777902">Download in corso… Minuti rimanenti: <ph name="MINUTE" /></translation>
+<translation id="1979600810166324878">Maggiore sicurezza ovunque ti trovi con la Navigazione sicura avanzata su Chrome per iOS</translation>
 <translation id="2001586581944147178">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. Chrome utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Questa estensione non è più supportata. Chrome consiglia di rimuoverla.}other{Queste estensioni non sono più supportate. Chrome consiglia di rimuoverle.}}</translation>
 <translation id="2018528049276128029">Ogni profilo dispone delle proprie informazioni di Chrome, come preferiti, cronologia, password e altro</translation>
@@ -374,6 +375,7 @@
 <translation id="5412485296464121825">I siti possono memorizzare su Chrome informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
 <translation id="5430073640787465221">Il file delle preferenze è danneggiato o non valido. Google Chrome non è in grado di recuperare le impostazioni.</translation>
 <translation id="5468572406162360320">Per contribuire a migliorare queste funzionalità, Chrome invia le tue interazioni a Google. Questi dati potrebbero essere letti, elaborati e annotati da revisori.</translation>
+<translation id="5510398294750420479">Scarica Chrome sul tuo smartphone per aggiungere un ulteriore livello di protezione ovunque ti trovi</translation>
 <translation id="5524761631371622910">Quando sono attive le prove e se Chrome ti ha inserito in modo casuale in una prova attiva, la cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina i tuoi interessi ogni mese.</translation>
 <translation id="5524890928877629608">angolo in alto a sinistra dell'area di ricerca: sinistra <ph name="LEFT" />%, in alto <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Rendi Chrome più veloce</translation>
@@ -486,6 +488,7 @@
 <translation id="6760235774835597023">Accelera i siti con il motore V8 di Chrome, ma rende Chrome leggermente meno resistente agli attacchi. Questa impostazione è attiva.</translation>
 <translation id="677276454032249905">Vuoi uscire comunque da Chrome?</translation>
 <translation id="6794858689789885890">Elimina sempre i dati dei siti dal dispositivo alla chiusura di Chrome</translation>
+<translation id="6800285125190089494">Accedi più rapidamente ai siti usando le password salvate per Chrome su iOS</translation>
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="683440813066116847">Regola inbound per consentire il traffico mDNS in Google Chrome Canary.</translation>
 <translation id="684888714667046800">Impossibile connettersi a internet. Se utilizzi un firewall, assicurati che <ph name="PRODUCT_EXE_NAME" /> sia nella lista consentita.</translation>
@@ -623,6 +626,7 @@
 <translation id="8336463659890584292">Quando un sito chiede di precaricare privatamente i link nella sua pagina, Chrome usa i server di Google. In questo modo la tua identità rimane nascosta al sito precaricato, ma Google impara quali siti vengono precaricati.</translation>
 <translation id="8342675569599923794">Questo file è pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="8349094670477064572">Potrai salvare e usare le password e altri dati nel tuo Account Google ogni volta che accedi a Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Chiedi a Google</translation>
 <translation id="8362914115861174987">Traduci in</translation>
 <translation id="8366770919198174997">Riduce le prestazioni, ma rende Chrome più resistente agli attacchi</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tutti i diritti riservati.</translation>

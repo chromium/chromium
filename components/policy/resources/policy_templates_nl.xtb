@@ -160,6 +160,7 @@ Voor onbeheerde apparaten kan de gebruiker ervoor kiezen om de statistieken te s
 <translation id="1087437665304381368">Met dit beleid wordt alleen de ontwikkelaarsmodus van <ph name="PRODUCT_OS_NAME" /> bepaald. Als je de toegang tot de ontwikkelaarsopties van Android wilt blokkeren, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.</translation>
 <translation id="1087707496788636333">De Chrome Enterprise-beleidslijst wordt verplaatst. Update je bookmarks naar <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
 <translation id="1089150222292592899">Gebruikersnaam automatisch invullen op SAML IdP-pagina</translation>
+<translation id="1090430607214486535">Gevoelig</translation>
 <translation id="1091765729282771296">Sites toestaan om gebruikers toegang te vragen tot een HID-apparaat</translation>
 <translation id="1095209545735032039">De Serial API op deze sites blokkeren</translation>
 <translation id="1096105751829466145">Standaardzoekprovider</translation>
@@ -3251,7 +3252,6 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="3285231260918855067">Ondoorzichtigheid van de omtrek van de watermerktekst, van 0 (transparant) tot 100 (ondoorzichtig).</translation>
 <translation id="3286159327013237833">Automatisch klikken op het inlogscherm aanzetten</translation>
 <translation id="3288595667065905535">Releasekanaal</translation>
-<translation id="3291940794983537008">Instellingen voor generatieve AI-functies van DevTools</translation>
 <translation id="3294430356898755483">Als je dit beleid instelt, kunnen beheerders een lijst met printers instellen voor hun gebruikers. Als gebruikers voor het eerst iets afdrukken, moeten ze een printer selecteren.
 
       Met het beleid:
@@ -3823,11 +3823,6 @@ Als <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> en <ph nam
 Gegevensoverdracht met Takeout moet ook aanstaan voor een goede werking van de app Contentoverdracht. Ga naar https://support.google.com/a/answer/6364687 voor meer informatie.</translation>
 <translation id="3702518095257671450">Externe bevestiging</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Het veld met één regel is beëindigd en wordt in de toekomst verwijderd. Gebruik het tekstvak met meerdere regels hieronder.)</translation>
-<translation id="3711561721191203926">Als je dit beleid toepast, wordt het hoofdverzoek geblokkeerd als er een waarschuwing moet worden getoond in de <ph name="DEV_TOOLS_NAME" /> omdat de <ph name="PRIVATE_NETWORK_ACCESS" />-controles mislukken.
-
-Als je dit beleid niet toepast of niet instelt, worden alle <ph name="PRIVATE_NETWORK_ACCESS" />-waarschuwingen niet afgedwongen en worden de verzoeken niet geblokkeerd.
-
-Zie https://wicg.github.io/private-network-access/ voor beperkingen voor <ph name="PRIVATE_NETWORK_ACCESS" />.</translation>
 <translation id="3711895659073496551">Onderbreken</translation>
 <translation id="3712861436661566358">Profielscheiding afdwingen</translation>
 <translation id="3719826155360621982">Homepage</translation>
@@ -4842,7 +4837,6 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
 
       Als je het beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten hun locatie niet.</translation>
 <translation id="4461400898496433231">De IPv6-bereikbaarheidscheck niet overschrijven. Vraag de AAAA-record alleen op voor hostnaamresolutie als het apparaat bereikbaar is via een algemene IPv6-host.</translation>
-<translation id="4463467966408770621">Sta generatieve AI-functies van DevTools niet toe.</translation>
 <translation id="4463675333222095358">Eenheidsconversie van Snelle antwoorden aanzetten</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> uitzetten</translation>
 <translation id="4467952432486360968">Cookies van derden blokkeren</translation>
@@ -7803,23 +7797,6 @@ Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standa
 <translation id="6383774771168138899">Hiermee stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces in voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Weergave van resultatenpagina's van standaard zoekmachine in een zijvenster van de browser aanzetten.</translation>
 <translation id="6389240462871677239">Toestaan dat geïsoleerde web-app-oorsprongen het Controlled Frame gebruiken</translation>
-<translation id="6390338862225976270">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
-
-0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Hiermee wordt de functie niet toegestaan.
-
-Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-De generatieve AI-functies in DevTools zijn onder andere:
-
-- Console Insights: Hier vind je uitleg over consoleberichten en suggesties om consolefouten op te lossen.
-
-- AI-ondersteuning: Krijg hulp bij het begrijpen van css-stijlen (vanaf versie 131), netwerkverzoeken, prestaties en bestanden (allemaal vanaf versie 132).
-
-Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6394350458541421998">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_OS_NAME" /> versie 29. Gebruik het beleid PresentationScreenDimDelayScale.</translation>
 <translation id="6397588391180665797">De netwerkconfiguratie van gebruikers op ingeschreven apparaten rapporteren.
 
@@ -8349,11 +8326,6 @@ Als dit beleid wordt toegepast, worden de gegevens verzameld en geüpload naar <
 
 Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Voor <ph name="PRODUCT_OS_NAME" /> is dit beleid altijd van kracht.</translation>
-<translation id="6720071484598746942">Als je dit beleid toepast, wordt het hoofdverzoek geblokkeerd als er een waarschuwing moet worden getoond in de <ph name="DEV_TOOLS_NAME" /> omdat de <ph name="LOCAL_NETWORK_ACCCESS" />-controles mislukken.
-
-Als je dit beleid niet toepast of niet instelt, wordt de standaardafhandeling van deze verzoeken gebruikt voor <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken.
-
-Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="6720330829631914048">Verstreken uren sinds het begin van de dag (in 24-uursnotatie).</translation>
 <translation id="6721252203593581486">WebSQL in contexten van derden (bijv. iframes voor meerdere sites) staat standaard uit vanaf M97 en wordt helemaal verwijderd in M101.
           Als je dit beleid instelt op False of niet instelt, blijft WebSQL in contexten van derden uitstaan.
@@ -11003,7 +10975,6 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
       Opmerking: Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="8657543427358173663">Verzamelen van WebRTC-gebeurtenislogboeken van Google-services toestaan</translation>
 <translation id="8659843732895043951">Klembord toestaan op deze sites</translation>
-<translation id="8660214745436301739">Sta generatieve AI-functies van DevTools toe en verbeter AI-modellen.</translation>
 <translation id="8661297125441579970">Gegevensmigratie en ARC niet toestaan.</translation>
 <translation id="8661538142776716004">Site-instellingen wissen</translation>
 <translation id="8661980316738569557">Hoog contrast aanzetten</translation>
@@ -11798,7 +11769,6 @@ Dit beleid heeft geen effect als <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME
       Als het beleid is ingesteld op <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />, wordt de EDU-modus voor introductie van de Assistent gebruikt.</translation>
 <translation id="9191821120522935133">Hiermee kun je throttling van niet-zichtbare, cross-origin-iframes aanzetten</translation>
 <translation id="9192220384862917760">Afscherming van de host voor externe toegang aanzetten</translation>
-<translation id="9194693367692364911">Sta generatieve AI-functies van DevTools toe zonder AI-modellen te verbeteren.</translation>
 <translation id="9195766455191826480">Beveiligingsstatus niet rapporteren</translation>
 <translation id="9197238499850071076">Geeft aan of het apparaat moet terugkeren naar de versie die is ingesteld met <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> als er al een latere versie is geïnstalleerd.
 

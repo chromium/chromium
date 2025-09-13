@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps a Chromium</translation>
 <translation id="1867772173333403444">4. Selecciona Chromium.</translation>
+<translation id="1965068424387304464">Consell de Chromium: desa les contrasenyes</translation>
 <translation id="2006345422933397527">Chromium no ha pogut cercar actualitzacions. Comprova la connexió a Internet.</translation>
 <translation id="2042889939382983733">Consulta l'historial de Chromium</translation>
 <translation id="2052320862053429062">Chromium comprova periòdicament si les teves contrasenyes es troben en llistes publicades en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
@@ -118,6 +119,7 @@ Espera uns quants minuts abans de canviar de compte. Si canvies de compte ara, a
 <translation id="3816686541346279443">Chromium t'oferirà desar la contrasenya.</translation>
 <translation id="3827545470516145620">Tindràs protecció de seguretat estàndard en aquest dispositiu</translation>
 <translation id="3833326979834193417">Chromium executa automàticament la funció Comprovació de seguretat cada dia per protegir-te de violacions de les dades, de llocs web no segurs i més. Pots obtenir més informació sobre Comprovació de seguretat a Configuració.</translation>
+<translation id="3837584850181228767">Consell de Chromium: Navegació segura millorada</translation>
 <translation id="3845223911364528001">Torna a Chromium per penjar el fitxer</translation>
 <translation id="3855938650519180865">Novetats de Chromium</translation>
 <translation id="3886689467633467988">Inicia la sessió en aquest lloc web i a Chromium per accedir a les teves adreces d'interès i més contingut en tots els teus dispositius.</translation>

@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Replace</translation>
 <translation id="1063822554756965137">Files were successfully deleted</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
+<translation id="1065369186007547872">Chrome thinks that you don't want notifications from this site. So, requests are hidden to reduce interruptions.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Search engine details</translation>
 <translation id="1068467933609179019">Autofill services settings</translation>
@@ -1625,6 +1626,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3678529606614285348">Open page in a new incognito window (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Enter <ph name="OTP_LENGTH" />-digit verification code</translation>
 <translation id="3681007416295224113">Certificate information</translation>
+<translation id="3681191721636073359">Chrome thinks that you don't want to use your location on this site. So, requests are hidden to reduce interruptions.</translation>
 <translation id="3681421644246505351">Chrome notes topics of interest based on your recent browsing history.</translation>
 <translation id="3681841880472207951">QuickTime video</translation>
 <translation id="3682094733650754138">The fill address option was selected</translation>
@@ -4595,6 +4597,7 @@ Additional details:
 <translation id="8624354461147303341">Get discounts</translation>
 <translation id="8634957317623797170">54 mm x 86 mm</translation>
 <translation id="8637362707224133343">Chrome has built-in safety features to protect you while you browse – like Google Safe Browsing, which <ph name="BEGIN_LINK" />recently found phishing<ph name="END_LINK" /> on the site that you tried visiting. Phishing sites pretend to be other sites to trick you.<ph name="NEW_LINE" />Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK" />Let us know<ph name="END_ERROR_LINK" /> if you think that there's been a mistake and that this site doesn't pose a danger.</translation>
+<translation id="8640996933372643759">To share tabs and collaborate with others, you must be able to sign in to Chrome</translation>
 <translation id="8641131559425911240">Envelope (bond)</translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>
 <translation id="8643846627971610148">When a group is closed, it limits who can join</translation>

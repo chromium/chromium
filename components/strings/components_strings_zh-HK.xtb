@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">取代</translation>
 <translation id="1063822554756965137">成功刪除檔案</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome 判斷你不想接收這個網站的通知，因此會隱藏要求，減少干擾。</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">搜尋引擎詳情</translation>
 <translation id="1068467933609179019">自動填入服務設定</translation>
@@ -1624,6 +1625,7 @@
 <translation id="3678529606614285348">在新無痕式視窗中開啟網頁 (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">請輸入 <ph name="OTP_LENGTH" /> 位數驗證碼</translation>
 <translation id="3681007416295224113">憑證資料</translation>
+<translation id="3681191721636073359">Chrome 判斷你不想在此網站使用位置資料，因此會隱藏要求，減少干擾。</translation>
 <translation id="3681421644246505351">Chrome 會根據你最近的瀏覽記錄，記住你感興趣的主題。</translation>
 <translation id="3681841880472207951">QuickTime 影片</translation>
 <translation id="3682094733650754138">揀咗填入地址選項</translation>
@@ -4594,6 +4596,7 @@
 <translation id="8624354461147303341">取得折扣</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
 <translation id="8637362707224133343">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能最近曾在你嘗試瀏覽的網站上<ph name="BEGIN_LINK" />發現仿冒詐騙內容<ph name="END_LINK" />。仿冒詐騙網站會偽裝成其他網站，藉此欺騙你。<ph name="NEW_LINE" />即使是平常可安心瀏覽的網站，有時亦會受攻擊者入侵。如果你認為我們的判斷有誤，且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
+<translation id="8640996933372643759">如想與他人分享分頁和協作，你必須登入 Chrome</translation>
 <translation id="8641131559425911240">信封 (銅版紙)</translation>
 <translation id="8643409044755049933">Kaku 3 信封</translation>
 <translation id="8643846627971610148">非公開群組對可加入的成員設有限制</translation>

@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Disodli</translation>
 <translation id="1063822554756965137">Cafodd y ffeiliau eu dileu yn llwyddiannus</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Mae Chrome yn meddwl nad ydych chi eisiau hysbysiadau o'r wefan hon. Felly, mae ceisiadau wedi'u cuddio i leihau ymyrraeth.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Manylion peiriant chwilio</translation>
 <translation id="1068467933609179019">Gosodiadau gwasanaethau awtolenwi</translation>
@@ -1625,6 +1626,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3678529606614285348">Agor tudalen mewn ffenestr anhysbys newydd (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Rhowch god dilysu <ph name="OTP_LENGTH" />-digid</translation>
 <translation id="3681007416295224113">Gwybodaeth am y dystysgrif</translation>
+<translation id="3681191721636073359">Mae Chrome yn meddwl nad ydych chi eisiau defnyddio'ch lleoliad ar y wefan hon. Felly, mae ceisiadau wedi'u cuddio i leihau ymyrraeth.</translation>
 <translation id="3681421644246505351">Mae Chrome yn nodi pynciau o ddiddordeb yn seiliedig ar eich hanes pori diweddar.</translation>
 <translation id="3681841880472207951">Fideo QuickTime</translation>
 <translation id="3682094733650754138">Dewiswyd yr opsiwn cyfeiriad llenwi</translation>
@@ -4594,6 +4596,7 @@ Manylion ychwanegol:
 <translation id="8624354461147303341">Cael gostyngiadau</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Mae gan Chrome nodweddion diogelwch integredig i'ch amddiffyn wrth bori - megis Pori'n Ddiogel gyda Google, a <ph name="BEGIN_LINK" />ddaeth o hyd i we-rwydo yn ddiweddar<ph name="END_LINK" /> ar y wefan y gwnaethoch geisio ymweld â hi. Mae gwefannau gwe-rwydo yn dynwared bod yn wefannau eraill i'ch twyllo chi.<ph name="NEW_LINE" />Mae hyd yn oed y gwefannau sydd fel arfer yn ddiogel yn cael eu peryglu gan ymosodwyr weithiau. <ph name="BEGIN_ERROR_LINK" />Rhowch wybod i ni<ph name="END_ERROR_LINK" /> os ydych yn meddwl y bu camgymeriad ac nad yw'r wefan hon yn achosi niwed.</translation>
+<translation id="8640996933372643759">I rannu tabiau a chydweithio ag eraill, rhaid i chi allu mewngofnodi i Chrome</translation>
 <translation id="8641131559425911240">Amlen (Bond)</translation>
 <translation id="8643409044755049933">Amlen Kaku 3</translation>
 <translation id="8643846627971610148">Pan fydd grŵp ar gau, mae'n cyfyngu ar bwy all ymuno</translation>

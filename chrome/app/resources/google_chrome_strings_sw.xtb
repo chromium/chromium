@@ -85,6 +85,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1880677175115548835">Chagua maandishi</translation>
 <translation id="1919130412786645364">Ruhusu kuingia katika akaunti ya Chrome</translation>
 <translation id="1953553007165777902">Inapakua... Zimesalia dakika <ph name="MINUTE" /></translation>
+<translation id="1979600810166324878">Imarisha usalama wako popote ulipo kwa kutumia Kipengele cha Kuvinjari Salama Kilichoboreshwa katika Chrome kwenye iOS</translation>
 <translation id="2001586581944147178">Fanya iwe vigumu watu wanaoweza kufikia shughuli yako kwenye intaneti kuona tovuti unazotembelea. Chrome hutumia muunganisho salama kutafuta anwani ya IP ya tovuti katika DNS (Mfumo wa Majina ya Vikoa).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Kiendelezi hiki hakitumiki tena. Chrome inapendekeza ukiondoe.}other{Viendelezi hivi havitumiki tena. Chrome inapendekeza uviondoe.}}</translation>
 <translation id="2018528049276128029">Kila wasifu una maelezo yake ya Chrome kama vile alamisho, historia, manenosiri na mengine</translation>
@@ -383,6 +384,7 @@ Huenda baadhi ya vipengele visipatikane. Tafadhali bainisha saraka tofauti ya wa
 
 Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5468572406162360320">Ili kusaidia kuboresha vipengele hivi, Chrome hutumia Google data ya jinsi unavyovitumia. Data hii inaweza kusomwa, kuchakatwa na kuwekewa vidokezo na wahakiki wanadamu.</translation>
+<translation id="5510398294750420479">Pakua Chrome kwenye simu yako ili uweke safu ya ziada ya ulinzi popote ulipo</translation>
 <translation id="5524761631371622910">Vipindi vya kujaribu vinapowashwa na iwapo Chrome imekuweka kwa unasibu katika kipindi cha kujaribu kinachoendelea, historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chrome hufuta mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi.</translation>
 <translation id="5524890928877629608">kona ya juu kushoto ya eneo la utafutaji: kushoto asilimia <ph name="LEFT" />, juu asilimia <ph name="TOP" /></translation>
 <translation id="5530733413481476019">Ifanye Chrome Iwe na Kasi Zaidi ya Utendaji</translation>
@@ -495,6 +497,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6760235774835597023">Huongeza kasi ya tovuti kwa kutumia mtambo wa V8 wa Chrome lakini hufanya Chrome isistahimili sana mashambulio. Mipangilio hii imewashwa.</translation>
 <translation id="677276454032249905">Ungependa kufunga Chrome?</translation>
 <translation id="6794858689789885890">Futa data ya tovuti kila wakati kwenye kifaa chako unapofunga Chrome</translation>
+<translation id="6800285125190089494">Ingia kwenye tovuti kwa haraka ukitumia manenosiri yaliyohifadhiwa katika Chrome kwenye iOS</translation>
 <translation id="6831043979455480757">Tafsiri</translation>
 <translation id="683440813066116847">Sheria ya ndani ya Google Chrome Canary ili kuruhusu trafiki ya mDNS.</translation>
 <translation id="684888714667046800">Imeshindwa kuunganisha kwenye Intaneti. Iwapo unatumia kinga mtandao, tafadhali hakikisha <ph name="PRODUCT_EXE_NAME" /> iko kwenye orodha ya zilizoruhusiwa.</translation>
@@ -632,6 +635,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8336463659890584292">Chrome hutumia seva za Google, tovuti inapoomba viungo vipakiwe mapema kwenye ukurasa wake kwa njia ya faragha. Hali hii huficha utambulisho wako usionekane na tovuti inayopakiwa mapema lakini Google hufahamu tovuti zinazopakiwa mapema.</translation>
 <translation id="8342675569599923794">Faili hii ni hatari, kwa hivyo Chrome imeizuia.</translation>
 <translation id="8349094670477064572">Utaweza kuhifadhi na kutumia manenosiri na zaidi katika Akaunti yako ya Google ukiwa umeingia katika Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Iulize Google</translation>
 <translation id="8362914115861174987">Tafsiri kwa</translation>
 <translation id="8366770919198174997">Hupunguza utendaji lakini huifanya Chrome istahimili zaidi mashambulio</translation>
 <translation id="8370517070665726704">Hakimiliki <ph name="YEAR" /> Google LLC. Haki zote zimehifadhiwa.</translation>

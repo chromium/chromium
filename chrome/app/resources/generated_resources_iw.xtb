@@ -198,6 +198,7 @@
 <translation id="1129348283834595293">סייברפאנק</translation>
 <translation id="1129420403709586868">הצגת המדיה והתמונות שבטלפון</translation>
 <translation id="1129850422003387628">ניהול אפליקציות</translation>
+<translation id="1130116586186908674">יצירת תצוגה מפוצלת</translation>
 <translation id="1130430615924359526">{0,plural, =1{סגירת החלון הפרטי}one{סגירת החלונות הפרטיים (# חלונות)}two{סגירת החלונות הפרטיים (# חלונות)}other{סגירת החלונות הפרטיים (# חלונות)}}</translation>
 <translation id="113050636487300043">כדאי לבחור שם וערכת צבעים כדי להבדיל בין פרופילים שונים</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – חלק מהקבוצה <ph name="GROUP_NAME" /></translation>
@@ -8116,7 +8117,7 @@
 <translation id="6657240842932274095">לאפשר לשירותי המערכת להשתמש במיקום שלך?</translation>
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="6659213950629089752">בדף זה בוצע שינוי במרחק התצוגה באמצעות התוסף "<ph name="NAME" />"</translation>
-<translation id="6659594942844771486">כרטיסייה</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – המצלמה מקליטה</translation>
 <translation id="6660301751798595791">בחירת הקול</translation>
 <translation id="6660819301598582123">השועל המהיר קפץ מעל לכלב שנח לו בעצלתיים.</translation>
@@ -9341,7 +9342,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{לסגור את הכרטיסייה ולמחוק את הקבוצה?}=1{לסגור את הכרטיסיות ולמחוק את הקבוצה?}one{לסגור את הכרטיסיות ולמחוק את הקבוצות?}two{לסגור את הכרטיסיות ולמחוק את הקבוצות?}other{לסגור את הכרטיסיות ולמחוק את הקבוצות?}}</translation>
 <translation id="7509097596023256288">מתבצעת הגדרה של הניהול</translation>
 <translation id="7509539379068593709">הסרת האפליקציה</translation>
-<translation id="7513438205469584978">‏הצעות שמבוססות על <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />הפעילות שמשויכת לחשבון שלך ב-Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
+<translation id="7513438205469584978">‏הצעות שמבוססות על <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />הפעילות שלך ב-Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">העתקה למכשיר שלך</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7514417110442087199">הוספת מטלה</translation>

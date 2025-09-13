@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps i Chromium</translation>
 <translation id="1867772173333403444">4. Velg Chromium</translation>
+<translation id="1965068424387304464">Chromium-tips: Lagre passord</translation>
 <translation id="2006345422933397527">Chromium kunne ikke se etter oppdateringer. Se om du er koblet til internett.</translation>
 <translation id="2042889939382983733">Se Chromium-loggen din</translation>
 <translation id="2052320862053429062">Chromium sjekker passordene dine regelmessig opp mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
@@ -118,6 +119,7 @@ Prøv å vente i noen minutter før du bytter konto. Hvis du bytter konto nå, b
 <translation id="3816686541346279443">Chromium tilbyr å lagre passordet ditt.</translation>
 <translation id="3827545470516145620">Du får standard sikkerhetsbeskyttelse på denne enheten</translation>
 <translation id="3833326979834193417">Chromium kjører sikkerhetssjekken automatisk hver dag for å beskytte deg mot databrudd, utrygge nettsteder med mer. Du kan finne ut mer om sikkerhetssjekken i innstillingene.</translation>
+<translation id="3837584850181228767">Chromium-tips: Safe Browsing med økt beskyttelse</translation>
 <translation id="3845223911364528001">Gå tilbake til Chromium for å laste opp filen</translation>
 <translation id="3855938650519180865">Dette er nytt i Chromium</translation>
 <translation id="3886689467633467988">Logg på dette nettstedet og Chromium for å få bokmerkene dine med mer på alle enhetene dine.</translation>

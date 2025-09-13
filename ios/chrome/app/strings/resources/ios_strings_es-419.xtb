@@ -681,6 +681,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3695446226812920698">Más información</translation>
 <translation id="3700134753671613714">Accede a tu cuenta para usar tus favoritos en todos los dispositivos.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} contraseña se guarda solo en este dispositivo. Para usarla en otros dispositivos, guárdala en tu Cuenta de Google, {EMAIL}.}other{{COUNT} contraseñas se guardan solo en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu Cuenta de Google, {EMAIL}.}}</translation>
+<translation id="3709621342136814217">Elige tu fuente, tamaño del texto y mucho más aquí</translation>
 <translation id="371230970611282515">Predice y te advierte sobre eventos peligrosos antes de que ocurran.</translation>
 <translation id="372115889256123713">archivos almacenados en caché</translation>
 <translation id="3725081662140949903">Si quieres evitar que otras personas usen tu contraseña, abre la app de <ph name="APP" /> para cambiarla</translation>

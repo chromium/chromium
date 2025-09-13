@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1063822554756965137">Bestanden zijn verwijderd</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome denkt dat je geen meldingen van deze site wilt. Daarom worden verzoeken verborgen om onderbrekingen te verminderen.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Informatie over de zoekmachine</translation>
 <translation id="1068467933609179019">Instellingen voor services voor automatisch invullen</translation>
@@ -1620,6 +1621,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3678529606614285348">Pagina openen in een nieuw incognitovenster (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Voer de <ph name="OTP_LENGTH" />-cijferige verificatiecode in</translation>
 <translation id="3681007416295224113">Certificaatgegevens</translation>
+<translation id="3681191721636073359">Chrome denkt dat je je locatie niet wilt gebruiken op deze site. Daarom worden verzoeken verborgen om onderbrekingen te verminderen.</translation>
 <translation id="3681421644246505351">Chrome stelt interessante onderwerpen vast op basis van je recente browsegeschiedenis.</translation>
 <translation id="3681841880472207951">Quicktime-video</translation>
 <translation id="3682094733650754138">De optie Adres invullen is geselecteerd</translation>
@@ -1773,6 +1775,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3941630233824954464">Verplicht opnieuw verifiëren aanzetten</translation>
 <translation id="3942048175062210325">Probeer je bestanden opnieuw te openen</translation>
 <translation id="3943857333388298514">Plakken</translation>
+<translation id="3945937463338223066">Verificatie-apparaten van het type <ph name="READERNAME" /> en de smartcards die toegankelijk zijn voor deze apparaten, beheren</translation>
 <translation id="3946209740501886391">Altijd vragen op deze site</translation>
 <translation id="3948588869002647271">Deze app ontbreekt of is beschadigd</translation>
 <translation id="3949297482798028668">Je kunt deze content hier niet plakken. Deze functie is geblokkeerd door je beheerder.</translation>
@@ -4588,6 +4591,7 @@ Aanvullende informatie:
 <translation id="8624354461147303341">Kortingen zoeken</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome bevat ingebouwde veiligheidsfuncties die je beschermen terwijl je browst, zoals Google Safe Browsing, dat <ph name="BEGIN_LINK" />recent phishing heeft gevonden<ph name="END_LINK" /> op de site die je probeerde te bezoeken. Phishingsites doen zich voor als een andere site om je te misleiden.<ph name="NEW_LINE" />Ook sites die normaal gesproken veilig zijn, worden soms gehackt door aanvallers. <ph name="BEGIN_ERROR_LINK" />Laat het ons weten<ph name="END_ERROR_LINK" /> als je denkt dat er een fout is gemaakt en dat deze site geen gevaar vormt.</translation>
+<translation id="8640996933372643759">Als je tabbladen wilt delen en met anderen wilt samenwerken, moet je kunnen inloggen bij Chrome</translation>
 <translation id="8641131559425911240">Envelop (bond)</translation>
 <translation id="8643409044755049933">Envelop Kaku 3</translation>
 <translation id="8643846627971610148">Als een groep gesloten is, wordt beperkt wie eraan kan deelnemen</translation>

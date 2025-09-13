@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">바꾸기</translation>
 <translation id="1063822554756965137">파일이 삭제되었습니다</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome은 사용자가 이 사이트의 알림을 원하지 않는다고 판단합니다. 따라서 방해 요소를 줄이기 위해 알림 요청을 표시하지 않습니다.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">검색엔진 세부정보</translation>
 <translation id="1068467933609179019">자동 완성 서비스 설정</translation>
@@ -1625,6 +1626,7 @@
 <translation id="3678529606614285348">새 시크릿 창에서 페이지 열기(Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" />자리 인증 코드 입력</translation>
 <translation id="3681007416295224113">인증서 정보</translation>
+<translation id="3681191721636073359">Chrome은 사용자가 이 사이트에서 위치를 사용하지 않으려는 것으로 판단했습니다. 따라서 방해 요소를 줄이기 위해 알림 요청을 표시하지 않습니다.</translation>
 <translation id="3681421644246505351">Chrome에서는 내 최근 방문 기록을 기반으로 관심 주제를 파악합니다.</translation>
 <translation id="3681841880472207951">QuickTime 동영상</translation>
 <translation id="3682094733650754138">주소 입력 옵션이 선택됨</translation>
@@ -4594,6 +4596,7 @@
 <translation id="8624354461147303341">할인받기</translation>
 <translation id="8634957317623797170">54x86mm</translation>
 <translation id="8637362707224133343">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있으며, 사용자님이 방문하려고 한 사이트에서 <ph name="BEGIN_LINK" />최근에 피싱을 발견<ph name="END_LINK" />했습니다. 피싱 사이트는 사용자를 속이기 위해 다른 사이트인 것처럼 가장합니다.<ph name="NEW_LINE" />평소에 안전한 사이트도 가끔은 공격자에 의해 해킹당할 수 있습니다. 세이프 브라우징 기능의 오류이며 이 사이트가 위험을 초래하고 있지 않다고 생각되면 <ph name="BEGIN_ERROR_LINK" />Google에 알려주시기 바랍니다<ph name="END_ERROR_LINK" />.</translation>
+<translation id="8640996933372643759">탭을 공유하고 다른 사용자와 공동작업하려면 Chrome에 로그인할 수 있어야 합니다.</translation>
 <translation id="8641131559425911240">봉투(본드)</translation>
 <translation id="8643409044755049933">봉투 Kaku 3</translation>
 <translation id="8643846627971610148">그룹이 닫히면 가입할 수 있는 사용자가 제한됩니다.</translation>

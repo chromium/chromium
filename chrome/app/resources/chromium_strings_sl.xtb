@@ -98,6 +98,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2185166961232948079">Chromium – Prijava v omrežje – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Napaka pri preverjanju posodobitev: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Odstranitev računa iz Chromiuma</translation>
+<translation id="2210502920229141283">Ostanite varnejši na poti z izboljšanim varnim brskanjem v Chromiumu za iOS</translation>
 <translation id="2210682093923538346">Nevarno spletno mesto. Chromium je odstranil dovoljenje za obvestila.</translation>
 <translation id="2236949375853147973">Moja dejavnost</translation>
 <translation id="2238130810669087193">Če želite dostopati do naslovov in drugega v vseh napravah, se prijavite v Chromium. Ta naslov bo po prijavi shranjen v računu Google.</translation>
@@ -157,6 +158,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2928420929544864228">Namestitev je dokončana.</translation>
 <translation id="2933336679234709858">Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromiuma uporabljati in shranjevati v računu Google.</translation>
 <translation id="2945997411976714835">Napaka pri namestitvi: Proces namestitvenega programa se ni zagnal.</translation>
+<translation id="2948852018303413228">Hitreje se prijavite na spletnih mestih z uporabo shranjenih gesel za Chromium v sistemu iOS</translation>
 <translation id="2970426615109535079">Chromium upravlja vaša organizacija</translation>
 <translation id="2977470724722393594">Chromium je posodobljen</translation>
 <translation id="2977506796191543575">Če vam spletno mesto poskusi ukrasti geslo ali če prenašate škodljivo datoteko, lahko Chromium prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
@@ -562,6 +564,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7888981273428720788">Nastavite Chromium kot privzeto možnost</translation>
 <translation id="7934340546140346950">Povezave, ki niso varne, Chromium samodejno nadgradi na HTTPS, ko je to mogoče</translation>
 <translation id="7937630085815544518">V Chromium ste bili prijavljeni kot <ph name="USER_EMAIL_ADDRESS" />. Pri vnovični prijavi uporabite isti račun.</translation>
+<translation id="7953047982688951904">Prenesite Chromium v telefon, da si zagotovite dodatno plast zaščite, ko ste na poti</translation>
 <translation id="7975919845073681630">To je sekundarna namestitev Chromiuma in ga ni mogoče nastaviti kot privzeti brskalnik.</translation>
 <translation id="7997934263947464652">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chromium priporoča, da jih namestite samo tukaj: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8004582292198964060">Brskalnik</translation>

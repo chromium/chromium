@@ -85,6 +85,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1880677175115548835">Përzgjidh tekstin</translation>
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
 <translation id="1953553007165777902">Po shkarkohet... Kanë mbetur edhe <ph name="MINUTE" /> minuta</translation>
+<translation id="1979600810166324878">Qëndro më i sigurt në lëvizje me "Shfletimin e sigurt të përmirësuar" në Chrome për iOS</translation>
 <translation id="2001586581944147178">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. Chrome përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajt në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Kjo shtesë nuk mbështetet më. Chrome rekomandon që ta heqësh atë.}other{Këto shtesa nuk mbështeten më. Chrome rekomandon që t'i heqësh ato.}}</translation>
 <translation id="2018528049276128029">Secili profil duhet të zotërojë informacionin e vet të Chrome, si: faqeshënuesit, historikun, fjalëkalimet etj.</translation>
@@ -382,6 +383,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 
 Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="5468572406162360320">Për të ndihmuar në përmirësimin e këtyre veçorive, Chrome i dërgon Google ndërveprimet e tua me të. Këto të dhëna mund të lexohen, të përpunohen dhe të shënohen nga shqyrtues njerëzorë.</translation>
+<translation id="5510398294750420479">Shkarko Chrome në telefon për të shtuar një shtresë shtesë mbrojtjeje kur je në lëvizje</translation>
 <translation id="5524761631371622910">Kur provat janë aktive dhe nëse Chrome të ka vendosur rastësisht në një provë aktive, historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chrome fshin interesat e tua në vazhdimësi çdo muaj.</translation>
 <translation id="5524890928877629608">këndi lart majtas i zonës së kërkimit: majtas <ph name="LEFT" />%, lart <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Bëje Chrome më të shpejtë</translation>
@@ -494,6 +496,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6760235774835597023">Shpejton sajtet me motorin V8 të Chrome, por e bën Chrome disi më pak rezistent ndaj sulmeve. Ky cilësim është aktiv.</translation>
 <translation id="677276454032249905">Dëshiron të dalësh nga Chrome gjithsesi?</translation>
 <translation id="6794858689789885890">Fshi gjithmonë të dhënat e sajteve nga pajisja jote kur të mbyllësh Chrome</translation>
+<translation id="6800285125190089494">Identifikohu më shpejt në sajte duke përdorur fjalëkalimet e ruajtura për Chrome në iOS</translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="683440813066116847">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>
 <translation id="684888714667046800">Lidhja me internetin nuk mund të kryhej. Nëse përdor një mur mbrojtës, sigurohu që <ph name="PRODUCT_EXE_NAME" /> të jetë në listën e lejimeve.</translation>
@@ -631,6 +634,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8336463659890584292">Kur një sajt kërkon të ngarkojë paraprakisht lidhje në mënyrë private në faqen e tij, Chrome përdor serverët e Google. Kjo e fsheh identitetin tënd nga sajti i ngarkuar paraprakisht, por Google mëson se çfarë sajtesh ngarkohen paraprakisht.</translation>
 <translation id="8342675569599923794">Ky skedar është i rrezikshëm, prandaj Chrome e ka bllokuar atë.</translation>
 <translation id="8349094670477064572">Do të ruash dhe përdorësh fjalëkalimet dhe më shumë në "Llogarinë tënde të Google" në çdo kohë që je i identifikuar në Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Pyet Google</translation>
 <translation id="8362914115861174987">Përkthe në</translation>
 <translation id="8366770919198174997">Zvogëlon performancën, por e bën Chrome më rezistent ndaj sulmeve</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>

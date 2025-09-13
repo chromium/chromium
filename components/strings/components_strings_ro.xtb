@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Înlocuiți</translation>
 <translation id="1063822554756965137">Fișierele s-au șters</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome consideră că nu dorești notificări de la acest site. Prin urmare, solicitările sunt ascunse pentru a reduce întreruperile.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detalii privind motorul de căutare</translation>
 <translation id="1068467933609179019">Setări pentru serviciile de completare automată</translation>
@@ -1625,6 +1626,7 @@
 <translation id="3678529606614285348">Deschide pagina într-o fereastră incognito nouă (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Introdu codul de verificare din <ph name="OTP_LENGTH" /> cifre</translation>
 <translation id="3681007416295224113">Informații despre certificat</translation>
+<translation id="3681191721636073359">Chrome consideră că nu dorești să folosești locația pe acest site. Prin urmare, solicitările sunt ascunse pentru a reduce întreruperile.</translation>
 <translation id="3681421644246505351">Chrome reține subiectele de interes pe baza istoricului tău de navigare recent.</translation>
 <translation id="3681841880472207951">Videoclip QuickTime</translation>
 <translation id="3682094733650754138">A fost selectată opțiunea de completare a adresei</translation>
@@ -4596,6 +4598,7 @@ Detalii suplimentare:
 <translation id="8624354461147303341">Primește reduceri</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent activități de phishing<ph name="END_LINK" /> pe site-ul pe care ai încercat să-l accesezi. Site-urile de phishing falsifică alte site-uri pentru a te înșela.<ph name="NEW_LINE" />Chiar și site-urile care sunt de obicei sigure sunt uneori compromise de atacatori. <ph name="BEGIN_ERROR_LINK" />Anunță-ne<ph name="END_ERROR_LINK" /> dacă ești de părere că este o greșeală și că acest site nu reprezintă un pericol.</translation>
+<translation id="8640996933372643759">Pentru a permite accesul la file și a colabora cu alții, trebuie să te poți conecta la Chrome</translation>
 <translation id="8641131559425911240">Plic (cretat)</translation>
 <translation id="8643409044755049933">Plic Kaku 3</translation>
 <translation id="8643846627971610148">Când un grup este închis, i se pot alătura doar anumite persoane</translation>

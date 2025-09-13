@@ -198,6 +198,7 @@
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">katsella puhelimesi kuvia ja mediaa</translation>
 <translation id="1129850422003387628">Sovellusvalinnat</translation>
+<translation id="1130116586186908674">Luo jaettu näkymä</translation>
 <translation id="1130430615924359526">{0,plural, =1{Sulje incognito-ikkuna}other{Sulje incognito-ikkunat (# ikkunaa)}}</translation>
 <translation id="113050636487300043">Valitse nimi ja väriteema erottaaksesi profiilit</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – kuuluu ryhmään: <ph name="GROUP_NAME" /></translation>
@@ -8110,7 +8111,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6657240842932274095">Sallitaanko järjestelmäpalveluiden käyttää sijaintiasi?</translation>
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6659213950629089752">Tämän sivun lähensi laajennus <ph name="NAME" /></translation>
-<translation id="6659594942844771486">Välilehti</translation>
+<translation id="6659594942844771486">Sarkain</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Kamera kuvaa</translation>
 <translation id="6660301751798595791">Äänen valinta</translation>
 <translation id="6660819301598582123">Charles Darwin jammaili Åken hevixylofonilla Qatarin yöpub Zeligissä.</translation>

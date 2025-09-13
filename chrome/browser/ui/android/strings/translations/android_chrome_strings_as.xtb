@@ -3,6 +3,7 @@
 <translationbundle lang="as">
 <translation id="1010283278930414892">এই ডিভাইচটোত কোনো ছেভ কৰি থোৱা পাছৱৰ্ড নাই</translation>
 <translation id="1011749477052068769">ইয়ালৈ আনক</translation>
+<translation id="1014083013111769343">ৰীডিং ম’ড অগ্ৰাধিকাৰসমূহ সম্পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="1014147525163127655"><ph name="ORIGIN" />ৰ বাবে এই ডিভাইচটোত কোনো পাছকী নাই</translation>
 <translation id="1016498331642356377">আপোনাৰ কণ্ঠস্বৰৰ দ্বাৰা ক্ষিপ্ৰভাৱে সন্ধান কৰক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ, স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />লৈ পঠিয়াই থকা হৈছে...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">ডেটাখিনি ৰাখক</translation>
 <translation id="1974060860693918893">উন্নত</translation>
+<translation id="1982274314082047220">অগ্ৰাধিকাৰসমূহৰ বাবে ৰীডিং ম’ড ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="1984087999855033707">ফ’ন নম্বৰ</translation>
 <translation id="1984417487208496350">কোনো সুৰক্ষা নাই (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="1986685561493779662">নামটো ইতিমধ্যে আছেই</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">প্ৰতিচ্ছবিৰ বিৱৰণ</translation>
 <translation id="2996291259634659425">পাছফ্ৰেজ সৃষ্টি কৰক</translation>
 <translation id="2996809686854298943">URL আৱশ্যক</translation>
+<translation id="3024215143424744261">ৰীডিং ম’ডৰ অগ্ৰাধিকাৰসমূহ বন্ধ কৰা হৈছে</translation>
 <translation id="3026955690410463085">লিংক অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="3027644380269727216">এটা ছাইটত আপোনাৰ কাৰ্যকলাপৰ ওপৰত ভিত্তি কৰি। এই ছেটিংটো অন হৈ আছে।</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" />ৰ পৰা</translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">ইনক’গনিট’ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{শ্বেয়াৰ কৰা টেবৰ গোটত নতুন কাৰ্যকলাপৰ সৈতে <ph name="TABS_COUNT_ONE" /> টা টেব চাওক}one{শ্বেয়াৰ কৰা টেবৰ গোটত নতুন কাৰ্যকলাপৰ সৈতে <ph name="TABS_COUNT_MANY" /> টা টেব চাওক}other{শ্বেয়াৰ কৰা টেবৰ গোটত নতুন কাৰ্যকলাপৰ সৈতে <ph name="TABS_COUNT_MANY" /> টা টেব চাওক}}</translation>
+<translation id="6971555615916967190">ৰীডিং ম’ড অগ্ৰাধিকাৰসমূহ অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="6971862865055170158">অনুমোদন নজনাব</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, নতুন বা আপডে’ট কৰা টেব</translation>
 <translation id="6976811588313110624">এটা নতুন শ্বৰ্টকাট যোগ দিয়ক।</translation>

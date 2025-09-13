@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">[パスワード] を開く</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1433478348197382180">リーディング モード</translation>
+<translation id="1435271730600332883">[自動入力とパスワード] を開く</translation>
 <translation id="1436671784520050284">設定を続行</translation>
 <translation id="143681031165817424">住所はこのデバイスにのみ保存されました</translation>
 <translation id="1445276840641906250">1 つのブラウザですべてのタブを管理</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">住所をアカウント <ph name="USER_EMAIL" /> に移動しました</translation>
 <translation id="4287172530684295552">既読にする</translation>
 <translation id="428768789042547925">最新情報</translation>
+<translation id="428858055663163046">ダウンロードしたファイルがある場合は、ここからアクセスできます</translation>
 <translation id="429074084062258019">{count,plural, =1{タブをグループに追加}other{タブをグループに追加}}</translation>
 <translation id="4302061870579014542">位置を設定</translation>
 <translation id="4304713468139749426">パスワード マネージャー</translation>
@@ -1415,6 +1417,7 @@
 <translation id="6452534462676960500">新しいアクティビティ</translation>
 <translation id="6459411599807878608">詳細を非表示にしました</translation>
 <translation id="646394917185284261">ファイル</translation>
+<translation id="6472069383518492189">ダウンロードはここに表示されます</translation>
 <translation id="6476253015009698798">このページでは価格のトラッキングを利用できません。</translation>
 <translation id="6476284679642588870">お支払い方法を管理</translation>
 <translation id="6476800141292307438">ページを<ph name="LANGUAGE" />に翻訳しています。画面の下の方にオプションがあります。</translation>

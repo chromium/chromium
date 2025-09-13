@@ -97,6 +97,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2185166961232948079">Chromium - Hasi saioa sarean - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Eguneratzearen egiaztapenaren errorea: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Kendu kontua Chromium-etik</translation>
+<translation id="2210502920229141283">Egon seguruago edonoiz eta edonon iOS-erako Chromium-eko arakatze seguru hobetuarekin</translation>
 <translation id="2210682093923538346">Webgune arriskutsua. Chromium-ek jakinarazpenak erabiltzeko baimena kendu dio.</translation>
 <translation id="2236949375853147973">Nire jarduerak</translation>
 <translation id="2238130810669087193">Helbideak eta bestelako datuak zure gailu guztietan gordeta edukitzeko, hasi saioa Chromium-en. Saioa hasi ondoren, helbide hau zure Google-ko kontuan gordeko da.</translation>
@@ -156,6 +157,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2928420929544864228">Instalatu da.</translation>
 <translation id="2933336679234709858">Datuak pasaesaldiarekin enkriptatuta daude. Chromium-eko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatz ezazu.</translation>
 <translation id="2945997411976714835">Instalazio-errorea: instalatzailearen prozesua ezin izan da hasi.</translation>
+<translation id="2948852018303413228">Hasi saioa bizkorrago webguneetan iOS-erako Chromium-en gordetako pasahitzak erabilita</translation>
 <translation id="2970426615109535079">Zure erakundeak kudeatzen du Chromium</translation>
 <translation id="2977470724722393594">Eguneratuta dago Chromium</translation>
 <translation id="2977506796191543575">Webguneren bat pasahitza lapurtzen saiatzen bada edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chromium-ek URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
@@ -561,6 +563,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7888981273428720788">Ezarri Chromium arakatzaile lehenetsi gisa</translation>
 <translation id="7934340546140346950">Chromium-ek konexio ez-seguruen maila HTTPSra igotzen du automatikoki posible denean</translation>
 <translation id="7937630085815544518">Chromium-en <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
+<translation id="7953047982688951904">Deskargatu Chromium telefonoan babes-geruza gehigarri bat izan dezazun edonoiz eta edonon</translation>
 <translation id="7975919845073681630">Chromium-en bigarren mailako instalazio bat da hau; beraz, ezin duzu ezarri arakatzaile lehenetsi gisa.</translation>
 <translation id="7997934263947464652">Iturburu ezezagunetatik datozen luzapenek, aplikazioek eta gaiek gailua kalte dezakete. Halakoak <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zerbitzutik bakarrik instalatzea gomendatzen du Chromium-ek.</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>

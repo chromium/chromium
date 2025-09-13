@@ -98,6 +98,7 @@
 <translation id="2185166961232948079">Chromium (inicio de sesión de rede, <ph name="PAGE_TITLE" />)</translation>
 <translation id="2190166659037789668">Produciuse un erro durante a comprobación de actualizacións: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Quitar conta de Chromium</translation>
+<translation id="2210502920229141283">Protéxete esteas onde esteas coa Navegación segura mellorada en Chromium para iOS</translation>
 <translation id="2210682093923538346">Este sitio é perigoso. Chromium quitou os permisos de notificacións.</translation>
 <translation id="2236949375853147973">A miña actividade</translation>
 <translation id="2238130810669087193">Para poder acceder aos teus enderezos e a outros datos en todos os teus dispositivos, inicia sesión en Chromium. Despois de facelo, este enderezo gardarase na túa Conta de Google.</translation>
@@ -157,6 +158,7 @@
 <translation id="2928420929544864228">Completouse a instalación.</translation>
 <translation id="2933336679234709858">Os teus datos están encriptados cunha frase de acceso. Escríbea para usar e gardar os datos de Chromium na túa Conta de Google.</translation>
 <translation id="2945997411976714835">Erro de instalación: Non se puido iniciar o proceso do instalador.</translation>
+<translation id="2948852018303413228">Inicia sesión máis rápido nos sitios utilizando contrasinais gardados en Chromium para iOS</translation>
 <translation id="2970426615109535079">A túa organización xestiona Chromium</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="2977506796191543575">Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chromium tamén pode comprobar os enderezos URL, así como fragmentos de contido das páxinas, a través da función Navegación segura</translation>
@@ -562,6 +564,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7888981273428720788">Define Chromium como o navegador predeterminado</translation>
 <translation id="7934340546140346950">Sempre que sexa posible, Chromium cambiará automaticamente as conexións pouco seguras a HTTPS</translation>
 <translation id="7937630085815544518">Iniciaches sesión en Chromium como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
+<translation id="7953047982688951904">Descarga Chromium no teléfono para engadir unha capa máis de protección esteas onde esteas</translation>
 <translation id="7975919845073681630">Esta é unha instalación secundaria de Chromium e non se pode converter no teu navegador predeterminado.</translation>
 <translation id="7997934263947464652">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chromium recomenda que os instales só desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Navegador</translation>

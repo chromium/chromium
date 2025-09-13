@@ -98,6 +98,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2185166961232948079">Chromium – Network sign-in – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Update check error: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Remove account from Chromium</translation>
+<translation id="2210502920229141283">Stay safer on the go with Enhanced Safe Browsing on Chromium for iOS</translation>
 <translation id="2210682093923538346">Dangerous site. Chromium removed notifications.</translation>
 <translation id="2236949375853147973">My Activity</translation>
 <translation id="2238130810669087193">To get your addresses and more on all your devices, sign in to Chromium. This address will be saved in your Google Account after you sign in.</translation>
@@ -157,6 +158,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2928420929544864228">Installation complete.</translation>
 <translation id="2933336679234709858">Your data is encrypted with your passphrase. Enter it to use and save Chromium data in your Google Account.</translation>
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
+<translation id="2948852018303413228">Sign in faster to sites using saved passwords for Chromium on iOS</translation>
 <translation id="2970426615109535079">Your organisation manages Chromium</translation>
 <translation id="2977470724722393594">Chromium is up to date</translation>
 <translation id="2977506796191543575">If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing</translation>
@@ -562,6 +564,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7888981273428720788">Set Chromium as your default</translation>
 <translation id="7934340546140346950">Chromium upgrades insecure connections to HTTPS automatically when possible</translation>
 <translation id="7937630085815544518">You were signed in to Chromium as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
+<translation id="7953047982688951904">Download Chromium on your phone to add an extra layer of protection when you're on the go</translation>
 <translation id="7975919845073681630">This is a secondary installation of Chromium, and cannot be made your default browser.</translation>
 <translation id="7997934263947464652">Extensions, apps and themes from unknown sources can harm your device. Chromium recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Browser</translation>

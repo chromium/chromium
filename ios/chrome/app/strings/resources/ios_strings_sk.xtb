@@ -681,6 +681,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3695446226812920698">Ako na to</translation>
 <translation id="3700134753671613714">Ak chcete mať záložky vo všetkých svojich zariadeniach, prihláste sa.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} heslo je uložené iba v tomto zariadení. Ak ho chcete používať v ďalších zariadeniach, uložte si ho do účtu Google {EMAIL}.}few{{COUNT} heslá sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {EMAIL}.}many{{COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {EMAIL}.}other{{COUNT} hesiel je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {EMAIL}.}}</translation>
+<translation id="3709621342136814217">Tu si môžete vybrať písmo, veľkosť textu a ďalšie nastavenia</translation>
 <translation id="371230970611282515">Predpovedá nebezpečné udalosti a upozorní vás, než k nim dôjde.</translation>
 <translation id="372115889256123713">súbory vo vyrovnávacej pamäti</translation>
 <translation id="3725081662140949903">Ak nechcete, aby ostatní používali vaše heslo, otvorte aplikáciu <ph name="APP" /> a zmeňte si ho</translation>

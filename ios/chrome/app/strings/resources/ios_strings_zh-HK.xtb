@@ -681,6 +681,7 @@
 <translation id="3695446226812920698">瞭解詳情</translation>
 <translation id="3700134753671613714">登入後，即可從任何裝置取得自己的書籤。</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{這 {COUNT} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({EMAIL})。}other{這 {COUNT} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({EMAIL})。}}</translation>
+<translation id="3709621342136814217">在此選擇字型、文字大小和更多選項</translation>
 <translation id="371230970611282515">在危險事件發生前進行預測並發出警告。</translation>
 <translation id="372115889256123713">快取檔案</translation>
 <translation id="3725081662140949903">如要防止其他人使用你的密碼，請開啟 <ph name="APP" /> 應用程式變更密碼</translation>

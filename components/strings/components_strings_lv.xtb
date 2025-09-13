@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Aizstāt</translation>
 <translation id="1063822554756965137">Faili ir sekmīgi dzēsti</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome uzskata, ka jūs nevēlaties saņemt paziņojumus no šīs vietnes. Tādēļ pieprasījumi tiek paslēpti, lai samazinātu traucējumus.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detalizēta informācija par meklētājprogrammu</translation>
 <translation id="1068467933609179019">Automātiskās aizpildes pakalpojumu iestatījumi</translation>
@@ -1624,6 +1625,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3678529606614285348">Atvērt lapu jaunā inkognito režīma logā (Ctrl+Shift+N)</translation>
 <translation id="3678914302246317895">Ievadiet <ph name="OTP_LENGTH" /> ciparu verifikācijas kodu</translation>
 <translation id="3681007416295224113">Sertifikāta informācija</translation>
+<translation id="3681191721636073359">Chrome uzskata, ka jūs nevēlaties izmantot savu atrašanās vietu šajā vietnē. Tādēļ pieprasījumi tiek paslēpti, lai samazinātu traucējumus.</translation>
 <translation id="3681421644246505351">Chrome nosaka, kādas tēmas jūs interesē, ņemot vērā jūsu neseno pārlūkošanas vēsturi.</translation>
 <translation id="3681841880472207951">QuickTime video</translation>
 <translation id="3682094733650754138">Tika atlasīta adreses aizpildīšanas opcija</translation>
@@ -4594,6 +4596,7 @@ Papildu informācija:
 <translation id="8624354461147303341">Iegūt atlaides</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Lai aizsargātu jūs pārlūkošanas laikā, pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, funkcija Google droša pārlūkošana, kas <ph name="BEGIN_LINK" />nesen konstatēja pikšķerēšanu<ph name="END_LINK" /> vietnē, kuru mēģināt apmeklēt. Pikšķerēšanas vietnes uzdodas par citām vietnēm, lai jūs maldinātu.<ph name="NEW_LINE" />Dažkārt uzbrucēji apdraud pat vietnes, kuras parasti ir drošas. <ph name="BEGIN_ERROR_LINK" />Informējiet mūs<ph name="END_ERROR_LINK" />, ja uzskatāt, ka ir pieļauta kļūda un šī vietne nerada apdraudējumu.</translation>
+<translation id="8640996933372643759">Lai kopīgotu cilnes un sadarbotos ar citiem, ir svarīgi, lai jūs varētu pierakstīties pārlūkā Chrome.</translation>
 <translation id="8641131559425911240">Aploksne (biroja)</translation>
 <translation id="8643409044755049933">Aploksne Kaku 3</translation>
 <translation id="8643846627971610148">Ja grupa ir slēgta, tai var pievienoties ierobežots personu loks</translation>

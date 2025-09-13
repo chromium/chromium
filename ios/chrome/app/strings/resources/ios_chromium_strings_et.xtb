@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps Chromiumis</translation>
 <translation id="1867772173333403444">4. Valige Chromium</translation>
+<translation id="1965068424387304464">Chromiumi nõuanne: salvestage paroolid</translation>
 <translation id="2006345422933397527">Chromium ei saanud värskendusi otsida. Kontrollige internetiühendust.</translation>
 <translation id="2042889939382983733">Chromiumi ajaloo vaatamine</translation>
 <translation id="2052320862053429062">Chromium võrdleb teie paroole regulaarselt veebis avaldatud loenditega. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>
@@ -118,6 +119,7 @@ Oodake enne konto vahetamist paar minutit. Kui vahetate kohe kontot, siis need a
 <translation id="3816686541346279443">Chromium pakub võimalust parool salvestada.</translation>
 <translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
 <translation id="3833326979834193417">Chromium käitab iga päev automaatselt ohutuskontrolli, et kaitsta teid andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest. Ohutuskontrolli kohta leiate lisateavet jaotisest Seaded.</translation>
+<translation id="3837584850181228767">Chromiumi nõuanne: täiustatud ohutu sirvimine</translation>
 <translation id="3845223911364528001">Minge oma faili üleslaadimiseks tagasi Chromiumi</translation>
 <translation id="3855938650519180865">Mis on Chromiumis uut?</translation>
 <translation id="3886689467633467988">Logige sisse sellele saidile ja Chromiumi, et teie järjehoidjad ja muu sisu oleksid saadaval kõigis seadmetes.</translation>

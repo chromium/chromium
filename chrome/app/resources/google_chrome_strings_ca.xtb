@@ -81,6 +81,7 @@
 <translation id="1880677175115548835">Selecciona el text</translation>
 <translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>
 <translation id="1953553007165777902">S'està baixant... Queden <ph name="MINUTE" /> minuts</translation>
+<translation id="1979600810166324878">Protegeix-te més siguis on siguis amb la funció Navegació segura millorada a Chrome per a iOS</translation>
 <translation id="2001586581944147178">Dificulta que les persones amb accés al teu trànsit d'Internet vegin els llocs web que visites. Chrome utilitza una connexió segura per cercar l'adreça IP d'un lloc web al sistema de noms de domini (DNS).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Aquesta extensió ja no s'admet. Chrome et recomana que la suprimeixis.}other{Aquestes extensions ja no s'admeten. Chrome et recomana que les suprimeixis.}}</translation>
 <translation id="2018528049276128029">Cada perfil conserva la seva informació de Chrome pròpia, com ara les adreces d'interès, l'historial, les contrasenyes i més</translation>
@@ -375,6 +376,7 @@
 <translation id="5412485296464121825">Els llocs web poden emmagatzemar informació a Chrome sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
 <translation id="5430073640787465221">El fitxer de preferències està malmès o no és vàlid. Google Chrome no pot recuperar la configuració.</translation>
 <translation id="5468572406162360320">Per ajudar a millorar aquestes funcions, Chrome envia a Google les interaccions que hi mantinguis. És possible que revisors humans llegeixin, tractin i anotin aquestes dades.</translation>
+<translation id="5510398294750420479">Baixa Chrome al telèfon per afegir una capa addicional de protecció siguis on siguis</translation>
 <translation id="5524761631371622910">Quan les proves estan activades, i si Chrome t'ha inclòs aleatòriament en una prova activa, el teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix els interessos de manera contínua cada mes.</translation>
 <translation id="5524890928877629608">extrem superior esquerre de l'àrea de cerca: <ph name="LEFT" /> % per l'esquerra i <ph name="TOP" /> % per dalt</translation>
 <translation id="5530733413481476019">Fes que Chrome sigui més ràpid</translation>
@@ -487,6 +489,7 @@
 <translation id="6760235774835597023">Agilitza els llocs web amb el motor V8 de Chrome, però fa que Chrome sigui una mica menys resistent als atacs. Aquesta opció de configuració està activada.</translation>
 <translation id="677276454032249905">Vols sortir de Chrome igualment?</translation>
 <translation id="6794858689789885890">Suprimeix sempre les dades dels llocs web del dispositiu quan tanquis Chrome</translation>
+<translation id="6800285125190089494">Inicia la sessió en llocs web més ràpidament utilitzant les contrasenyes desades per a Chrome a iOS</translation>
 <translation id="6831043979455480757">Tradueix</translation>
 <translation id="683440813066116847">Regla d'entrada de Google Chrome Canary per permetre el trànsit de mDNS.</translation>
 <translation id="684888714667046800">No es pot connectar a Internet. Si fas servir un tallafoc, assegura't que <ph name="PRODUCT_EXE_NAME" /> sigui a la llista d'accés permès.</translation>
@@ -624,6 +627,7 @@
 <translation id="8336463659890584292">Quan un lloc web demana precarregar de manera privada enllaços de la seva pàgina, Chrome fa servir els servidors de Google. Això amaga la teva identitat del lloc web precarregat, però Google sap quins llocs web es precarreguen.</translation>
 <translation id="8342675569599923794">Chrome ha bloquejat aquest fitxer perquè és perillós.</translation>
 <translation id="8349094670477064572">Desaràs i utilitzaràs contrasenyes i altres elements del teu Compte de Google en tots els llocs en què tinguis la sessió iniciada a Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Pregunta a Google</translation>
 <translation id="8362914115861174987">Tradueix a</translation>
 <translation id="8366770919198174997">Redueix el rendiment, però fa que Chrome sigui més resistent als atacs</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>

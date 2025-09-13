@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Abra Palavras-passe</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1433478348197382180">Modo de leitura</translation>
+<translation id="1435271730600332883">Abra Preenchimento automático e palavras-passe</translation>
 <translation id="1436671784520050284">Continuar configuração</translation>
 <translation id="143681031165817424">Morada guardada apenas neste dispositivo</translation>
 <translation id="1445276840641906250">Todos os seus separadores num navegador</translation>
@@ -681,6 +682,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3695446226812920698">Saiba como</translation>
 <translation id="3700134753671613714">Inicie sessão para obter os seus marcadores em todos os dispositivos.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, {EMAIL}.}other{{COUNT} palavras-passe estão guardadas apenas neste dispositivo. Para usá-las nos seus outros dispositivos, guarde-as na sua Conta Google, {EMAIL}.}}</translation>
+<translation id="3709621342136814217">Escolha o tipo de letra, o tamanho do texto e muito mais aqui</translation>
 <translation id="371230970611282515">Prevê e envia-lhe avisos sobre eventos perigosos antes da sua ocorrência.</translation>
 <translation id="372115889256123713">ficheiros em cache</translation>
 <translation id="3725081662140949903">Para impedir que outras pessoas usem a sua palavra-passe, abra a app <ph name="APP" /> para alterar a palavra-passe</translation>
@@ -832,6 +834,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4286718549648564014">Morada movida para a sua conta <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marcar como lida</translation>
 <translation id="428768789042547925">Novidades</translation>
+<translation id="428858055663163046">Pode aceder aos seus ficheiros transferidos aqui quando estiverem disponíveis</translation>
 <translation id="429074084062258019">{count,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
@@ -1414,6 +1417,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6452534462676960500">Nova atividade</translation>
 <translation id="6459411599807878608">Detalhes ocultados</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">As suas transferências são apresentadas aqui</translation>
 <translation id="6476253015009698798">O acompanhamento de preços não está disponível para esta página.</translation>
 <translation id="6476284679642588870">Gerir métodos de pagamento</translation>
 <translation id="6476800141292307438">A traduzir a página para <ph name="LANGUAGE" />. Estão disponíveis opções junto à parte inferior do ecrã.</translation>

@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ประเภท</translation>
 <translation id="1254593899333212300">เชื่อมต่ออินเทอร์เน็ตโดยตรง</translation>
 <translation id="1272293450992660632">ค่า PIN ไม่ตรงกัน</translation>
+<translation id="1279040297980392566">กำลังรอให้การสแกนเสร็จสิ้น โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="1280820357415527819">กำลังค้นหาเครือข่ายมือถือ</translation>
 <translation id="1293556467332435079">ไฟล์</translation>
 <translation id="1297922636971898492">Google ไดรฟ์ไม่พร้อมใช้งานในขณะนี้ การอัปโหลดจะเริ่มต้นอีกครั้งโดยอัตโนมัติเมื่อ Google ไดรฟ์ใช้งานได้</translation>
@@ -1078,6 +1079,7 @@
 <translation id="9213073329713032541">เริ่มการติดตั้งสำเร็จแล้ว</translation>
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="9219908252191632183">ดวงจันทร์</translation>
+<translation id="931652069802536959">เครือข่ายถูกบล็อกโดยนโยบาย</translation>
 <translation id="938470336146445890">โปรดติดตั้งใบรับรองของผู้ใช้</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="943972244133411984">แก้ไขโดย</translation>

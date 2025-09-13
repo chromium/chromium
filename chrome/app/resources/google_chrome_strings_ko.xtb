@@ -85,6 +85,7 @@
 <translation id="1880677175115548835">텍스트 선택</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
 <translation id="1953553007165777902">다운로드 중... <ph name="MINUTE" />분 남음</translation>
+<translation id="1979600810166324878">iOS용 Chrome의 향상된 세이프 브라우징으로 이동 중에도 더 안전하게 보호하세요.</translation>
 <translation id="2001586581944147178">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. Chrome은 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않습니다. Chrome에서 삭제할 것을 권장합니다.}other{이 확장 프로그램은 더 이상 지원되지 않습니다. Chrome에서 삭제할 것을 권장합니다.}}</translation>
 <translation id="2018528049276128029">각 프로필에는 북마크, 방문 기록, 비밀번호 등과 같은 Chrome 정보가 보관됩니다.</translation>
@@ -382,6 +383,7 @@
 
 Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5468572406162360320">이러한 기능을 개선할 수 있도록 Chrome은 사용자와의 상호작용을 Google에 전송합니다. 검토자가 이 데이터를 읽고 처리하고 이 데이터에 주석을 달 수 있습니다.</translation>
+<translation id="5510398294750420479">이동 중에 보안을 한층 더 강화하려면 휴대전화에 Chrome을 다운로드하세요.</translation>
 <translation id="5524761631371622910">무료 체험이 사용 설정되어 있으며 Chrome에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다.</translation>
 <translation id="5524890928877629608">검색 영역의 왼쪽 상단: 왼쪽 <ph name="LEFT" />%, 상단 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Chrome의 속도를 높여보세요</translation>
@@ -494,6 +496,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6760235774835597023">Chrome의 V8 엔진으로 사이트 속도를 높이지만 Chrome이 공격에 약간 더 취약해집니다. 설정이 사용 설정되어 있습니다.</translation>
 <translation id="677276454032249905">Chrome을 종료하시겠습니까?</translation>
 <translation id="6794858689789885890">Chrome 종료 시 기기에서 사이트 데이터를 항상 삭제</translation>
+<translation id="6800285125190089494">iOS의 Chrome에 저장된 비밀번호를 사용하여 사이트에 더 빠르게 로그인하세요.</translation>
 <translation id="6831043979455480757">번역</translation>
 <translation id="683440813066116847">Chrome Canary가 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="684888714667046800">인터넷에 연결할 수 없습니다. 방화벽을 사용하는 경우 <ph name="PRODUCT_EXE_NAME" />이(가) 허용 목록에 있는지 확인해 주세요.</translation>
@@ -631,6 +634,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8336463659890584292">사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 Google 서버를 사용합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있지만 Google은 어떤 사이트가 미리 로드되는지 학습합니다.</translation>
 <translation id="8342675569599923794">이 파일은 위험하므로 Chrome에서 차단했습니다.</translation>
 <translation id="8349094670477064572">Chrome에 로그인할 때마다 Google 계정에 비밀번호 등의 정보를 저장하고 사용할 수 있습니다. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Google에 물어보기</translation>
 <translation id="8362914115861174987">도착어</translation>
 <translation id="8366770919198174997">성능은 감소하지만 Chrome의 공격에 대한 저항력이 강화됨</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>

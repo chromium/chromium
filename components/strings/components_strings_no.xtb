@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Erstatt</translation>
 <translation id="1063822554756965137">Filene er slettet</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome tror du ikke vil ha varsler fra dette nettstedet. Derfor skjules forespørsler for å redusere avbrudd.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Søkemotordetaljer</translation>
 <translation id="1068467933609179019">Innstillinger for autofylltjenester</translation>
@@ -1625,6 +1626,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3678529606614285348">Åpne siden i et nytt inkognitovindu (Ctrl + Shift + N)</translation>
 <translation id="3678914302246317895">Skriv inn den <ph name="OTP_LENGTH" />-sifrede bekreftelseskoden</translation>
 <translation id="3681007416295224113">Sertifikatinformasjon</translation>
+<translation id="3681191721636073359">Chrome tror at du ikke vil bruke posisjonen din på dette nettstedet. Derfor skjules forespørsler for å redusere avbrudd.</translation>
 <translation id="3681421644246505351">Chrome merker seg interessante emner basert på den nylige nettleserloggen din.</translation>
 <translation id="3681841880472207951">QuickTime-video</translation>
 <translation id="3682094733650754138">Alternativet for utfylling av adresse er valgt</translation>
@@ -4594,6 +4596,7 @@ Mer informasjon:
 <translation id="8624354461147303341">Få rabatter</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg når du surfer – for eksempel Google Safe Browsing, som <ph name="BEGIN_LINK" />nylig har funnet nettfisking<ph name="END_LINK" /> på nettstedet du prøvde å besøke. Nettsteder som driver med nettfisking, utgir seg for å være andre nettsteder for å lure deg.<ph name="NEW_LINE" />Selv nettsteder som vanligvis er trygge, blir noen ganger kompromittert av angripere. <ph name="BEGIN_ERROR_LINK" />Gi oss beskjed<ph name="END_ERROR_LINK" /> hvis du tror det har skjedd en feil, og at dette nettstedet ikke utgjør noen fare.</translation>
+<translation id="8640996933372643759">Du må kunne logge på Chrome for å dele faner og samarbeide med andre</translation>
 <translation id="8641131559425911240">Konvolutt (obligasjon)</translation>
 <translation id="8643409044755049933">Kaku 3-konvolutt</translation>
 <translation id="8643846627971610148">Når en gruppe er lukket, begrenses det hvem som kan bli med</translation>

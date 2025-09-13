@@ -3,6 +3,7 @@
 <translationbundle lang="ms">
 <translation id="1010283278930414892">Tiada kata laluan yang disimpan pada peranti ini</translation>
 <translation id="1011749477052068769">Alihkan ke sini</translation>
+<translation id="1014083013111769343">Pilihan mod membaca dibuka pada ketinggian penuh</translation>
 <translation id="1014147525163127655">Tiada apa-apa kunci laluan untuk <ph name="ORIGIN" /> pada peranti ini</translation>
 <translation id="1016498331642356377">Cari menggunakan suara anda dengan pantas. Untuk mengedit pintasan ini, sentuh dan tahan.</translation>
 <translation id="1028699632127661925">Menghantar ke <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="197288927597451399">Simpan</translation>
 <translation id="1973912524893600642">Kekalkan Data</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
+<translation id="1982274314082047220">Mod membaca, leret ke atas untuk membuka pilihan</translation>
 <translation id="1984087999855033707">nombor telefon</translation>
 <translation id="1984417487208496350">Tiada perlindungan (tidak disyorkan)</translation>
 <translation id="1986685561493779662">Nama sudah wujud</translation>
@@ -428,6 +430,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2992473221983447149">Perihalan imej</translation>
 <translation id="2996291259634659425">Buat ungkapan laluan</translation>
 <translation id="2996809686854298943">URL yang diperlukan</translation>
+<translation id="3024215143424744261">Pilihan mod membaca ditutup</translation>
 <translation id="3026955690410463085">Sertakan pautan</translation>
 <translation id="3027644380269727216">Berdasarkan aktiviti anda pada laman. Tetapan ini dihidupkan.</translation>
 <translation id="3027950907978057636">Daripada <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="696447261358045621">Tinggalkan mod Inkognito</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Lihat <ph name="TABS_COUNT_ONE" /> tab dengan aktiviti baharu dalam kumpulan tab dikongsi}other{Lihat <ph name="TABS_COUNT_MANY" /> tab dengan aktiviti baharu dalam kumpulan tab dikongsi}}</translation>
+<translation id="6971555615916967190">Pilihan mod membaca dibuka pada ketinggian separuh</translation>
 <translation id="6971862865055170158">Jangan luluskan</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, Tab Baharu atau yang telah Dikemaskinikan</translation>
 <translation id="6976811588313110624">Tambahkan pintasan baharu.</translation>

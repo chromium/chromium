@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Substitueix</translation>
 <translation id="1063822554756965137">Els fitxers s'han suprimit correctament</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome creu que no vols rebre notificacions d'aquest lloc web. Per tant, les sol·licituds s'amaguen per reduir les interrupcions.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detalls del motor de cerca</translation>
 <translation id="1068467933609179019">Configuració dels serveis d'emplenament automàtic</translation>
@@ -1625,6 +1626,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3678529606614285348">Obre la pàgina en una finestra d'incògnit nova (Ctrl+Maj+N)</translation>
 <translation id="3678914302246317895">Introdueix el codi de verificació de <ph name="OTP_LENGTH" /> dígits</translation>
 <translation id="3681007416295224113">Informació del certificat</translation>
+<translation id="3681191721636073359">Chrome creu que no vols utilitzar la teva ubicació en aquest lloc web. Per tant, les sol·licituds s'amaguen per reduir les interrupcions.</translation>
 <translation id="3681421644246505351">Chrome pren nota dels temes d'interès basant-se en el teu historial de navegació recent.</translation>
 <translation id="3681841880472207951">Vídeo QuickTime</translation>
 <translation id="3682094733650754138">S'ha seleccionat l'opció d'emplenar l'adreça</translation>
@@ -4595,6 +4597,7 @@ Detalls addicionals:
 <translation id="8624354461147303341">Obtén descomptes</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Per protegir-te mentre navegues, Chrome té funcions de seguretat integrades, com ara Navegació segura de Google, que <ph name="BEGIN_LINK" />recentment ha detectat pesca de credencials<ph name="END_LINK" /> al lloc web que has provat de visitar. Els llocs web de pesca de credencials es fan passar per altres llocs web per enganyar-te.<ph name="NEW_LINE" />De vegades, alguns atacants poden posar en perill llocs web que acostumen a ser segurs. Si creus que hi ha hagut un error i que aquest lloc web no suposa cap perill, <ph name="BEGIN_ERROR_LINK" />fes-nos-ho saber<ph name="END_ERROR_LINK" />.</translation>
+<translation id="8640996933372643759">Per compartir pestanyes i col·laborar amb altres persones, has de poder iniciar la sessió a Chrome</translation>
 <translation id="8641131559425911240">Sobre (valors)</translation>
 <translation id="8643409044755049933">Sobre Kaku 3</translation>
 <translation id="8643846627971610148">Quan un grup està tancat, es limita qui pot unir-s'hi</translation>

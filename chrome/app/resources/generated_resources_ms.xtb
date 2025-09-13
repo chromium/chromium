@@ -198,6 +198,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1129348283834595293">Siberpunk</translation>
 <translation id="1129420403709586868">Lihat foto dan media telefon anda</translation>
 <translation id="1129850422003387628">Urus apl</translation>
+<translation id="1130116586186908674">Buat paparan pisah</translation>
 <translation id="1130430615924359526">{0,plural, =1{Tutup Inkognito}other{Tutup Inkognito (# windows)}}</translation>
 <translation id="113050636487300043">Pilih nama dan tema warna untuk membezakan satu profil daripada profil yang lain</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Sebahagian daripada kumpulan <ph name="GROUP_NAME" /></translation>
@@ -471,6 +472,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1307431692088049276">Jangan tanya saya lagi</translation>
 <translation id="130744661532298792">Untuk memastikan anda dapat menggunakan kata laluan pada bila-bila masa dalam Google Account anda, sahkan identiti anda</translation>
 <translation id="1307559529304613120">Op!  Sistem gagal menyimpan token akses API jangka panjang untuk peranti ini.</translation>
+<translation id="1311092170520822848">Laman ini sedang mengawal pembaca kad pintar yang disambungkan kepada peranti anda dan kad pintar yang berkemungkinan tersedia untuk pembaca tersebut</translation>
 <translation id="131112695174432497">Data yang mempengaruhi pemeribadian iklan dipadamkan</translation>
 <translation id="1311294419381837540">Anda menghantar tab. Anda boleh menjeda atau menghentikan penghantaran pada bila-bila masa.</translation>
 <translation id="131188242279372879">Temukan perlindungan dipertingkat untuk mendapatkan tahap keselamatan tertinggi Chrome bagi muat turun</translation>
@@ -2111,6 +2113,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2431027948063157455">Google Assistant tidak dapat dimuatkan, sila periksa sambungan rangkaian anda, kemudian cuba semula.</translation>
 <translation id="243179355394256322">Organisasi anda mengehadkan pendaftaran peranti kepada pengguna yang dibenarkan sahaja. Pengguna ini tidak dibenarkan untuk mendaftarkan peranti. Sila pastikan pengguna ini mempunyai keistimewaan pentadbir "Daftarkan perkakasan Google Meet" di bahagian Pengguna dalam Konsol pentadbir.</translation>
 <translation id="243275146591958220">Batalkan muat turun</translation>
+<translation id="2433237965825924228">Apl web terpencil mengawal peranti pengesahan dan kad pintar yang boleh diakses oleh peranti tersebut. Lazimnya, kad pintar mengandungi pengecam yang digunakan untuk mengesahkan identiti anda.</translation>
 <translation id="2433452467737464329">Tambahkan parameter pertanyaan dalam URL untuk auto muat semula halaman: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Tampilan</translation>
 <translation id="2433836460518180625">Buka kunci peranti sahaja</translation>
@@ -3527,6 +3530,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3429174588714165399">Buat pintasan kepada halaman ini</translation>
 <translation id="3429271624041785769">Bahasa kandungan web</translation>
 <translation id="3429275422858276529">Tandai halaman ini agar mudah dicari kemudian</translation>
+<translation id="343084100869297747">Apl web terpencil mengikut tetapan ini secara automatik</translation>
 <translation id="3431530007831146102">Gunakan pergerakan kepala untuk mengawal kursor tetikus</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> dikosongkan</translation>
 <translation id="3432762828853624962">Pekerja Kongsi</translation>
@@ -8894,6 +8898,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7201535955609308429">Sila tunggu sementara pengesahan dijalankan</translation>
 <translation id="7202337678781136582">Imbas kod QR dengan telefon Android anda</translation>
 <translation id="7203150201908454328">Diperluas</translation>
+<translation id="7206252555702853828">Pembaca kad pintar anda sedang dikawal</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Keluar daripada halaman}other{Keluar daripada halaman}}</translation>
 <translation id="7207457272187520234">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Tetapan ini dikuatkuasakan oleh pemilik. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Google Account anda.</translation>
 <translation id="7207631048330366454">Cari apl</translation>
@@ -11657,6 +11662,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9081543426177426948">Laman yang anda lawati tidak disimpan dalam Inkognito</translation>
 <translation id="9082750838489080452">Aplikasi: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Buka sebagai Tetingkap</translation>
+<translation id="9084383457260170045">Apl web terpencil boleh meminta untuk mengawal pembaca kad pintar</translation>
 <translation id="9085256200913095638">Buat Pendua untuk Tab yang Dipilih</translation>
 <translation id="9085446486797400519">Akses kamera</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> tidak dipilih. Tekan Cari dan Ruang untuk membuat pilihan.</translation>
@@ -11856,6 +11862,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Untuk mengurus sambungan, akses Sambungan}other{Untuk mengurus sambungan, akses Sambungan}}</translation>
 <translation id="924818813611903184">Urus bahasa dalam tetapan Chrome OS</translation>
 <translation id="925575170771547168">Tindakan ini akan memadamkan <ph name="TOTAL_USAGE" /> daripada data yang disimpan oleh laman</translation>
+<translation id="927864230077808465">Apl web terpencil tidak boleh mengawal pembaca kad pintar</translation>
 <translation id="930268624053534560">Cap Masa Terperinci</translation>
 <translation id="930551443325541578">Kekunci dan tanda aksen berulang</translation>
 <translation id="930893132043726269">Dalam perayauan pada masa ini</translation>

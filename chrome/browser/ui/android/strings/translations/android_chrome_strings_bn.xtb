@@ -3,6 +3,7 @@
 <translationbundle lang="bn">
 <translation id="1010283278930414892">এই ডিভাইসে কোনও সেভ করা পাসওয়ার্ড নেই</translation>
 <translation id="1011749477052068769">এখানে সরান</translation>
+<translation id="1014083013111769343">রিডিং মোড সম্পর্কিত পছন্দ সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="1014147525163127655">এই ডিভাইসে <ph name="ORIGIN" /> সাইটের জন্য কোনও পাসকী নেই</translation>
 <translation id="1016498331642356377">আপনার আওয়াজ ব্যবহার করে দ্রুত সার্চ করুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে থাকুন।</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />-এ পাঠানো হচ্ছে...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">ডেটা রাখুন</translation>
 <translation id="1974060860693918893">উন্নত</translation>
+<translation id="1982274314082047220">পছন্দের জন্য রিডিং মোড খুলতে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="1984087999855033707">ফোন নম্বর</translation>
 <translation id="1984417487208496350">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="1986685561493779662">নামটি আগে থেকেই আছে</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">ছবির বিবরণ</translation>
 <translation id="2996291259634659425">পাসফ্রেজ তৈরি করুন</translation>
 <translation id="2996809686854298943">URL প্রয়োজন</translation>
+<translation id="3024215143424744261">রিডিং মোড সম্পর্কিত পছন্দ বন্ধ করা হয়েছে</translation>
 <translation id="3026955690410463085">লিঙ্ক যোগ করুন</translation>
 <translation id="3027644380269727216">সাইটে আপনার অ্যাক্টিভিটির উপর ভিত্তি করে। এই সেটিংটি চালু করা আছে।</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> থেকে</translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসুন</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_ONE" />টি ট্যাব দেখুন}one{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_MANY" />টি ট্যাব দেখুন}other{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_MANY" />টি ট্যাব দেখুন}}</translation>
+<translation id="6971555615916967190">রিডিং মোড সম্পর্কিত পছন্দ অর্ধেক স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="6971862865055170158">অনুমোদন দেবেন না</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, নতুন বা আপডেট করা ট্যাব</translation>
 <translation id="6976811588313110624">নতুন শর্টকাট যোগ করুন।</translation>

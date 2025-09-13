@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps in Chromium</translation>
 <translation id="1867772173333403444">4. Select Chromium</translation>
+<translation id="1965068424387304464">Chromium tip: Save passwords</translation>
 <translation id="2006345422933397527">Chromium couldn't check for updates. Try checking your Internet connection.</translation>
 <translation id="2042889939382983733">View Your Chromium History</translation>
 <translation id="2052320862053429062">Chromium periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
@@ -118,6 +119,7 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
 <translation id="3816686541346279443">Chromium will offer to save your password.</translation>
 <translation id="3827545470516145620">You're getting standard security protection on this device</translation>
 <translation id="3833326979834193417">Chromium automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.</translation>
+<translation id="3837584850181228767">Chromium tip: Enhanced Safe Browsing</translation>
 <translation id="3845223911364528001">Return to Chromium to upload your file</translation>
 <translation id="3855938650519180865">What's new in Chromium</translation>
 <translation id="3886689467633467988">Sign in to this site and Chromium to get your bookmarks and more on all your devices.</translation>

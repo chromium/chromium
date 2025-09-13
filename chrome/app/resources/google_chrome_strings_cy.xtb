@@ -85,6 +85,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1880677175115548835">Dewis testun</translation>
 <translation id="1919130412786645364">Caniatáu mewngofnodi i Chrome</translation>
 <translation id="1953553007165777902">Wrthi'n lawrlwytho... Mae <ph name="MINUTE" /> o funudau ar ôl</translation>
+<translation id="1979600810166324878">Cadwch yn fwy diogel wrth fynd gyda Gwell Pori'n Ddiogel ar Chrome ar gyfer iOS</translation>
 <translation id="2001586581944147178">Gwnewch hi'n anoddach i bobl sydd â mynediad at eich traffig rhyngrwyd weld pa wefannau rydych yn ymweld â nhw. Mae Chrome yn defnyddio cysylltiad diogel i chwilio am gyfeiriad IP safle yn y DNS (System Enw Parth).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Nid yw'r estyniad hwn yn cael ei gefnogi mwyach. Mae Chrome yn argymell eich bod yn ei dynnu.}zero{Nid yw'r estyniadau hyn yn cael eu cefnogi mwyach. Mae Chrome yn argymell eich bod yn eu tynnu.}two{Nid yw'r estyniadau hyn yn cael eu cefnogi mwyach. Mae Chrome yn argymell eich bod yn eu tynnu.}few{Nid yw'r estyniadau hyn yn cael eu cefnogi mwyach. Mae Chrome yn argymell eich bod yn eu tynnu.}many{Nid yw'r estyniadau hyn yn cael eu cefnogi mwyach. Mae Chrome yn argymell eich bod yn eu tynnu.}other{Nid yw'r estyniadau hyn yn cael eu cefnogi mwyach. Mae Chrome yn argymell eich bod yn eu tynnu.}}</translation>
 <translation id="2018528049276128029">Mae gan bob proffil ei wybodaeth Chrome ei hun megis nodau tudalen, hanes, cyfrineiriau, a rhagor</translation>
@@ -383,6 +384,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol
 
 Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5468572406162360320">Er mwyn helpu i wella'r nodweddion hyn, mae Chrome yn anfon eich rhyngweithiadau â nhw at Google. Gall y data hyn gael eu darllen, eu prosesu, a'u hanodi gan adolygwyr dynol.</translation>
+<translation id="5510398294750420479">Lawrlwythwch Chrome ar eich ffôn i ychwanegu haen ychwanegol o ddiogelwch wrth fynd</translation>
 <translation id="5524761631371622910">Pan fydd treialon ymlaen ac os yw Chrome wedi'ch gosod ar hap mewn treial gweithredol, mae eich hanes pori yn effeithio ar yr hysbysebion a welwch a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chrome yn dileu eich diddordebau yn awtomatig bob mis.</translation>
 <translation id="5524890928877629608">cornel chwith uchaf yr ardal chwilio: <ph name="LEFT" />% i'r chwith, <ph name="TOP" />% ar y brig</translation>
 <translation id="5530733413481476019">Gwneud Chrome yn Gyflymach</translation>
@@ -495,6 +497,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6760235774835597023">Yn cyflymu gwefannau gydag injan V8 Chrome ond yn lleihau gallu Chrome i wrthsefyll ymosodiadau ychydig. Mae'r gosodiad hwn wedi'i droi ymlaen.</translation>
 <translation id="677276454032249905">Gadael Chrome beth bynnag?</translation>
 <translation id="6794858689789885890">Dileu data gwefan o'ch dyfais bob amser pan fyddwch yn cau Chrome</translation>
+<translation id="6800285125190089494">Mewngofnodwch yn gyflymach i wefannau gan ddefnyddio cyfrineiriau wedi'u cadw ar gyfer Chrome ar iOS</translation>
 <translation id="6831043979455480757">Cyfieithu</translation>
 <translation id="683440813066116847">Rheol dod i mewn ar gyfer Google Chrome Canary i ganiatáu traffig mDNS.</translation>
 <translation id="684888714667046800">Methu â chysylltu â'r Rhyngrwyd. Os ydych yn defnyddio mur cadarn, sicrhewch fod <ph name="PRODUCT_EXE_NAME" /> yn y rhestr ganiatáu.</translation>
@@ -632,6 +635,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="8336463659890584292">Pan fydd gwefan yn gofyn i chi raglwytho dolenni ar ei thudalen yn breifat, mae Chrome yn defnyddio gweinyddion Google. Mae hyn yn cuddio eich hunaniaeth o'r wefan sydd wedi'i rhaglwytho, ond mae Google yn dysgu pa wefannau sy'n cael eu rhaglwytho.</translation>
 <translation id="8342675569599923794">Mae'r ffeil hon yn beryglus, felly mae Chrome wedi ei rhwystro.</translation>
 <translation id="8349094670477064572">Byddwch yn cadw ac yn defnyddio cyfrineiriau a rhagor yn eich Cyfrif Google pryd bynnag y byddwch wedi mewngofnodi i Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Gofyn i Google</translation>
 <translation id="8362914115861174987">Cyfieithu i</translation>
 <translation id="8366770919198174997">Yn lleihau perfformiad ond yn gwneud Chrome yn fwy ymwrthol i ymosodiadau</translation>
 <translation id="8370517070665726704">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir pob hawl.</translation>

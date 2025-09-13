@@ -681,6 +681,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3695446226812920698">Descubre cómo hacerlo</translation>
 <translation id="3700134753671613714">Te permite iniciar sesión para ver tus marcadores en todos tus dispositivos.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} contraseña solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google: {EMAIL}.}other{{COUNT} contraseñas solo se guardan en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu cuenta de Google: {EMAIL}.}}</translation>
+<translation id="3709621342136814217">Elige la fuente, el tamaño del texto y otras opciones</translation>
 <translation id="371230970611282515">Predice y te advierte de eventos peligrosos antes de que se produzcan.</translation>
 <translation id="372115889256123713">archivos en caché</translation>
 <translation id="3725081662140949903">Para impedir que otras personas usen tu contraseña, abre la aplicación <ph name="APP" /> y cambia tu contraseña</translation>

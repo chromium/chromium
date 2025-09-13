@@ -134,7 +134,7 @@
 <translation id="2559253115192232574">之后，您访问的网站可向 Chrome 请求查看您的兴趣，以便向您展示个性化广告。Chrome 最多可共享 3 项兴趣信息。</translation>
 <translation id="2563121210305478421">重新启动 Chrome？</translation>
 <translation id="2569974318947988067">Chrome 会尝试将导航路径升级到 HTTPS</translation>
-<translation id="2571392474191184472">贵组织负责管理 Chrome</translation>
+<translation id="2571392474191184472">您的组织负责管理 Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />已登录此 Chrome 个人资料。Chrome 可为您创建一份专属的个人资料，以将您的浏览数据与该用户的浏览数据分隔开来。</translation>
 <translation id="2580411288591421699">无法安装与当前运行版本相同的 Google Chrome 浏览器。请关闭 Google Chrome 浏览器，然后重试。</translation>
 <translation id="2586406160782125153">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
@@ -375,7 +375,7 @@
 <translation id="5412485296464121825">网站可以将您的兴趣信息存储在 Chrome 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
 <translation id="5468572406162360320">为帮助改进这些功能，Chrome 会将您与它们的互动数据发送给 Google。此类数据可能会由人工审核员读取、处理和注释。</translation>
-<translation id="5510398294750420479">在手机上下载 Chrome，随时随地享受额外的安全保障</translation>
+<translation id="5510398294750420479">在手机上下载 Chrome，随时随地享受额外安全保障</translation>
 <translation id="5524761631371622910">在试用期间，如果 Chrome 随机将您加入到了其中某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序删除您的部分兴趣。</translation>
 <translation id="5524890928877629608">搜索区域的左上角：左侧 <ph name="LEFT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">提高 Chrome 的运行速度</translation>
@@ -426,7 +426,7 @@
 <translation id="604424701295382420">已固定！您可以通过工具栏中的新按钮再次使用 Google 智能镜头</translation>
 <translation id="6069027071882229820">复制为图片</translation>
 <translation id="6070348360322141662">为了提高安全性，Google Chrome 将对您的数据进行加密</translation>
-<translation id="6075300983329039771">贵组织 (<ph name="MANAGER" />) 要求您登录 Chrome</translation>
+<translation id="6075300983329039771">您的组织 (<ph name="MANAGER" />) 要求您登录 Chrome</translation>
 <translation id="6113794647360055231">Chrome现在更好用了</translation>
 <translation id="6116252277240876590">使用此语言显示 Chrome 中的菜单、设置、提醒和其他文字</translation>
 <translation id="6127237283587442951">默认使用 Chrome 并将其固定</translation>
@@ -458,7 +458,7 @@
 <translation id="6360449101159168105">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chrome 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="6388799252195623474">帮我解决这个问题</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
-<translation id="6417690341895039567">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{贵组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{您的组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="6418662306461808273">要切换到现有的 Chrome 个人资料吗？</translation>
 <translation id="6473905796280459355">前往“关于 Chrome”页面</translation>
 <translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
@@ -538,9 +538,9 @@
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{一个或多个 Chrome 扩展程序访问过 1 部 USB 设备}=1{一个或多个 Chrome 扩展程序正在访问 1 部 USB 设备}other{一个或多个 Chrome 扩展程序正在访问 # 部 USB 设备}}</translation>
 <translation id="7426611252293106642">Google Chrome 可能无法正常运行，因为它不再支持此 Linux 发行版</translation>
 <translation id="7437998757836447326">退出 Chrome</translation>
-<translation id="7449333426561673451">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动关闭它。}other{贵组织会在 Chrome 闲置 # 分钟后自动关闭它。}}</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动关闭它。}other{您的组织会在 Chrome 闲置 # 分钟后自动关闭它。}}</translation>
 <translation id="7450541714075000668">文本已复制</translation>
-<translation id="7452987490177144319">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{贵组织会在 Chrome 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
+<translation id="7452987490177144319">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{您的组织会在 Chrome 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
 <translation id="7477130805345743099">Chrome 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="7481213027396403996">获享 Chrome 最强大的安全保护</translation>
 <translation id="749228101751499733">登录后，您可以在 Chrome 中使用 Google 账号中的密码等信息。使用 <ph name="SHORTCUT" /> 可以更改 Google 服务设置。</translation>
@@ -573,7 +573,7 @@
 <translation id="769906121737764913">关闭 Chrome Beta 版中的 Gemini</translation>
 <translation id="7716950018788545737">任务已结束。</translation>
 <translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
-<translation id="7736869414036750079">贵组织要求您登录 Chrome</translation>
+<translation id="7736869414036750079">您的组织要求您登录 Chrome</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7748969056734910029">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION_1" />权限和<ph name="PERMISSION_2" />权限。</translation>
 <translation id="7761834446675418963">点击您的姓名即可打开Chrome并开始浏览。</translation>
@@ -626,6 +626,7 @@
 <translation id="8336463659890584292">当某个网站请求以私密方式预加载其网页上的链接时，Chrome 会使用 Google 服务器。这样既可以知道会预加载哪些网站，又能避免这些网站得知您的身份。</translation>
 <translation id="8342675569599923794">此文件存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="8349094670477064572">只要您登录 Chrome，就可以随时在 Google 账号中保存密码等信息以及使用其中的密码等信息。<ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">询问 Google</translation>
 <translation id="8362914115861174987">目标语言</translation>
 <translation id="8366770919198174997">降低性能，但提高 Chrome 防范攻击的能力</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>

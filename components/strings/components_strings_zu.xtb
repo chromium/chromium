@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Faka esikhundleni</translation>
 <translation id="1063822554756965137">Amafayela asulwe ngempumelelo</translation>
 <translation id="1064054731605354900">I-A3x5</translation>
+<translation id="1065369186007547872">IChrome icabanga ukuthi awufuni izaziso ezivela kule sayithi. Ngakho, izicelo zifihliwe ukuze kuncishiswe ukuphazamiseka.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Imininingwane yenjini yokusesha</translation>
 <translation id="1068467933609179019">Amasethingi womsebenzi wokuzigcwalisela</translation>
@@ -1622,6 +1623,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3678529606614285348">Vula ikhasi kuwindi elisha le-incognito (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Faka ikhodi yokuqinisekisa yamadijithi angu-<ph name="OTP_LENGTH" /></translation>
 <translation id="3681007416295224113">Ulwazi lesitifiketi</translation>
+<translation id="3681191721636073359">IChrome icabanga ukuthi awufuni ukusebenzisa indawo okuyo kule sayithi. Ngakho, izicelo zifihliwe ukuze kuncishiswe ukuphazamiseka.</translation>
 <translation id="3681421644246505351">I-Chrome yazisa izihloko onentshisekelo kuzo ngokusekelwe kumlando wakho wakamuva wokubhrawuza.</translation>
 <translation id="3681841880472207951">Ividiyo yeQuickTime</translation>
 <translation id="3682094733650754138">Usebenzise inketho ethi gcwalisa ikheli</translation>
@@ -4591,6 +4593,7 @@ Imininingwane engeziwe:
 <translation id="8624354461147303341">Thola izaphulelo</translation>
 <translation id="8634957317623797170">U-54 x 86 mm</translation>
 <translation id="8637362707224133343">IChrome inezakhi zokuphepha ezakhelwe phakathi zokukuvikela ngesikhathi ubhrawuza — njengeGoogle Safe Browsing, <ph name="BEGIN_LINK" />esanda kuthola ubugebengu bokweba imininingwane ebucayi<ph name="END_LINK" /> kusayithi ozame ukuyivakashela. Amasayithi obugebengu bokweba imininingwane ebucayi azenza amanye amasayithi ukuze akukhohlise.<ph name="NEW_LINE" />Ngisho namasayithi ngokuvamile aphephile ngezinye izikhathi acekelwa phansi abahlaseli. <ph name="BEGIN_ERROR_LINK" />Sitshele<ph name="END_ERROR_LINK" /> uma ucabanga ukuthi kube nephutha nokuthi le sayithi ayinabo ubungozi.</translation>
+<translation id="8640996933372643759">Ukuze wabelane ngamathebhu futhi uhlanganyele nabanye, kumele ukwazi ukungena ngemvume kuChrome</translation>
 <translation id="8641131559425911240">Imvilophi (I-Bond)</translation>
 <translation id="8643409044755049933">Imvilophu ye-Kaku 3</translation>
 <translation id="8643846627971610148">Uma iqembu livaliwe, likhawulela ukuthi ubani ongajoyina</translation>

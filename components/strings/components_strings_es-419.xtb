@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1063822554756965137">Se borraron los archivos correctamente</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Chrome cree que no quieres recibir notificaciones de este sitio. Por lo tanto, se ocultarán las solicitudes para reducir las interrupciones.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Detalles del motor de búsqueda</translation>
 <translation id="1068467933609179019">Configuración de los servicios de autocompletado</translation>
@@ -1626,6 +1627,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3678529606614285348">Abre la página en una nueva ventana de incógnito (Ctrl-mayúscula-N).</translation>
 <translation id="3678914302246317895">Ingresa el código de verificación de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="3681007416295224113">Información sobre el certificado</translation>
+<translation id="3681191721636073359">Chrome cree que no quieres usar tu ubicación en este sitio. Por lo tanto, se ocultarán las solicitudes para reducir las interrupciones.</translation>
 <translation id="3681421644246505351">Chrome registra temas de interés basados en tu historial de navegación reciente.</translation>
 <translation id="3681841880472207951">Video de QuickTime</translation>
 <translation id="3682094733650754138">Se seleccionó la opción para completar la dirección</translation>
@@ -4597,6 +4599,7 @@ Detalles adicionales:
 <translation id="8624354461147303341">Obtener descuentos</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
 <translation id="8637362707224133343">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google, que <ph name="BEGIN_LINK" />recientemente encontró un caso de phishing<ph name="END_LINK" /> en el sitio que intentaste visitar. Los sitios de phishing imitan a otros sitios para engañarte.<ph name="NEW_LINE" />A veces, incluso los sitios que suelen ser seguros son hackeados por atacantes. <ph name="BEGIN_ERROR_LINK" />Cuéntanos<ph name="END_ERROR_LINK" /> si crees que hubo un error y que este sitio no representa un peligro.</translation>
+<translation id="8640996933372643759">Para compartir pestañas y colaborar con otras personas, debes poder acceder a Chrome</translation>
 <translation id="8641131559425911240">Sobre (bond)</translation>
 <translation id="8643409044755049933">Sobre Kaku n.º 3</translation>
 <translation id="8643846627971610148">Cuando un grupo está cerrado, se limita quién puede unirse</translation>

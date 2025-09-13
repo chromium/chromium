@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Palitan</translation>
 <translation id="1063822554756965137">Matagumpay na na-delete ang mga file</translation>
 <translation id="1064054731605354900">A3x5</translation>
+<translation id="1065369186007547872">Sa tingin ng Chrome ay ayaw mo ng mga notification mula sa site na ito. Kaya naman, naka-hide ang mga request para mabawasan ang mga abala.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Mga detalye ng search engine</translation>
 <translation id="1068467933609179019">Mga setting ng mga serbisyo ng autofill</translation>
@@ -1625,6 +1626,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3678529606614285348">Buksan ang page sa bagong Incognito window (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">Ilagay ang code sa pag-verify na may <ph name="OTP_LENGTH" /> (na) digit</translation>
 <translation id="3681007416295224113">Impormasyon sa certificate</translation>
+<translation id="3681191721636073359">Sa tingin ng Chrome ay ayaw mong gamitin ang iyong lokasyon sa site na ito. Kaya naman, naka-hide ang mga request para mabawasan ang mga abala.</translation>
 <translation id="3681421644246505351">Nagtatala ang Chrome ng mga paksa kung saan ka interesado batay sa iyong kamakailang history ng pag-browse.</translation>
 <translation id="3681841880472207951">QuickTime Video</translation>
 <translation id="3682094733650754138">Napili ang opsyong punan ang address</translation>
@@ -4595,6 +4597,7 @@ Mga karagdagang detalye:
 <translation id="8624354461147303341">Makakuha ng mga diskwento</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">May mga built-in na pangkaligtasang feature ang Chrome para maprotektahan ka habang nagba-browse ka — tulad ng Ligtas na Pag-browse sa Google na <ph name="BEGIN_LINK" />nakakita kamakailan ng phishing<ph name="END_LINK" /> sa site na sinubukan mong bisitahin. Nagpapanggap ang mga phishing site na ibang mga site para linlangin ka.<ph name="NEW_LINE" />Kung minsan, nakokompromiso rin ng mga attacker ang mga site na karaniwang ligtas. <ph name="BEGIN_ERROR_LINK" />Ipaalam sa amin<ph name="END_ERROR_LINK" /> kung sa palagay mo ay isa itong pagkakamali at hindi mapanganib ang site na ito.</translation>
+<translation id="8640996933372643759">Para mag-share ng mga tab at makipag-collaborate sa iba, dapat ay nakakapag-sign in ka sa Chrome</translation>
 <translation id="8641131559425911240">Envelope (Bond)</translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>
 <translation id="8643846627971610148">Kapag nakasara ang isang grupo, nalilimitahan nito kung sino ang puwedeng sumali</translation>

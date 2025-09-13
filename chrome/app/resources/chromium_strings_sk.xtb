@@ -97,6 +97,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2185166961232948079">Chromium – prihlásenie do siete – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Chyba kontroly aktualizácií: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Odstrániť účet z prehliadača Chromium</translation>
+<translation id="2210502920229141283">Zlepšené bezpečné prehliadanie v prehliadači Chromium pre systém iOS vám zaistí väčšiu bezpečnosť na cestách</translation>
 <translation id="2210682093923538346">Nebezpečný web. Prehliadač Chromium odstránil upozornenia.</translation>
 <translation id="2236949375853147973">Moja aktivita</translation>
 <translation id="2238130810669087193">Ak chcete mať adresy a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do prehliadača Chromium. Táto adresa bude uložená do vášho účtu Google, keď sa prihlásite.</translation>
@@ -156,6 +157,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2928420929544864228">Inštalácia bola dokončená.</translation>
 <translation id="2933336679234709858">Údaje sú šifrované pomocou vašej prístupovej frázy. Zadajte ju, keď chcete používať a ukladať údaje prehliadača Chromium vo svojom účte Google.</translation>
 <translation id="2945997411976714835">Chyba inštalácie: proces inštalátora sa nespustil.</translation>
+<translation id="2948852018303413228">Prihlasujte sa rýchlejšie na weboch pomocou uložených hesiel pre Chromium v systéme iOS</translation>
 <translation id="2970426615109535079">Chromium spravuje vaša organizácia</translation>
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
 <translation id="2977506796191543575">Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chromium môže odoslať Bezpečnému prehliadaniu aj webové adresy vrátane častí obsahu stránok</translation>
@@ -561,6 +563,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7888981273428720788">Nastavte si Chromium ako predvolený prehliadač</translation>
 <translation id="7934340546140346950">Keď je to možné, Chromium automaticky inovuje nezabezpečené pripojenia na HTTPS</translation>
 <translation id="7937630085815544518">Do prehliadača Chromium ste boli prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Ak sa chcete prihlásiť znova, použite rovnaký účet.</translation>
+<translation id="7953047982688951904">Stiahnite si Chromium do telefónu a získajte tak ďalšiu úroveň ochrany na cestách</translation>
 <translation id="7975919845073681630">Toto je sekundárna inštalácia prehliadača Chromium – nemôže byť nastavený ako váš predvolený prehliadač.</translation>
 <translation id="7997934263947464652">Rozšírenia, aplikácie a motívy z neznámych zdrojov môžu poškodiť vaše zariadenie. Chromium odporúča ich inštaláciu iba zo zdroja <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8004582292198964060">Prehliadač</translation>

@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1063822554756965137">Les fichiers ont été supprimés</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
+<translation id="1065369186007547872">Chrome croit que vous ne souhaitez pas recevoir de notifications de ce site. Par conséquent, les demandes sont masquées pour réduire les interruptions.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">Détails du moteur de recherche</translation>
 <translation id="1068467933609179019">Paramètres des services de remplissage automatique</translation>
@@ -1625,6 +1626,7 @@
 <translation id="3678529606614285348">Ouvrir la page dans une nouvelle fenêtre de navigation privée (Ctrl+Maj+N)</translation>
 <translation id="3678914302246317895">Entrez le code de vérification à <ph name="OTP_LENGTH" /> chiffres</translation>
 <translation id="3681007416295224113">Information relative au certificat</translation>
+<translation id="3681191721636073359">Chrome croit que vous ne souhaitez pas utiliser la localisation sur ce site. Par conséquent, les demandes sont masquées pour réduire les interruptions.</translation>
 <translation id="3681421644246505351">Chrome enregistre les sujets d'intérêt en fonction de votre historique de navigation récent.</translation>
 <translation id="3681841880472207951">Vidéo QuickTime</translation>
 <translation id="3682094733650754138">L'option Remplir l'adresse a été sélectionnée</translation>
@@ -4594,6 +4596,7 @@ Détails supplémentaires :
 <translation id="8624354461147303341">Obtenir des rabais</translation>
 <translation id="8634957317623797170">54 mm x 86 mm</translation>
 <translation id="8637362707224133343">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google, qui a <ph name="BEGIN_LINK" />récemment détecté de l'hameçonnage<ph name="END_LINK" /> sur le site que vous avez essayé de visiter. Les sites d'hameçonnage se font passer pour d'autres sites pour vous tromper.<ph name="NEW_LINE" />Même les sites normalement sûrs sont parfois compromis par des pirates informatiques. <ph name="BEGIN_ERROR_LINK" />Indiquez-nous<ph name="END_ERROR_LINK" /> si vous pensez qu'il y a eu une erreur et que ce site ne présente aucun danger.</translation>
+<translation id="8640996933372643759">Pour partager des onglets et collaborer avec d'autres personnes, vous devez pouvoir vous connecter à Chrome</translation>
 <translation id="8641131559425911240">Envelope (bond)</translation>
 <translation id="8643409044755049933">Enveloppe Kaku nᵒ 3</translation>
 <translation id="8643846627971610148">Lorsqu'un groupe est fermé, l'accès y est limité</translation>

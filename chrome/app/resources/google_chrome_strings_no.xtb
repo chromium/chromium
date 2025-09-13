@@ -81,6 +81,7 @@
 <translation id="1880677175115548835">Merk tekst</translation>
 <translation id="1919130412786645364">Tillat Chrome-pålogging</translation>
 <translation id="1953553007165777902">Laster ned … <ph name="MINUTE" /> minutt(er) igjen</translation>
+<translation id="1979600810166324878">Hold deg tryggere på farten med Safe Browsing med økt beskyttelse i Chrome for iOS</translation>
 <translation id="2001586581944147178">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. Chrome bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen støttes ikke lenger. Chrome anbefaler at du fjerner den.}other{Disse utvidelsene støttes ikke lenger. Chrome anbefaler at du fjerner dem.}}</translation>
 <translation id="2018528049276128029">Hver profil har sin egen Chrome-informasjon, som bokmerker, logg, passord med mer</translation>
@@ -375,6 +376,7 @@
 <translation id="5412485296464121825">Nettsteder kan lagre informasjon om interessene dine i Chrome. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
 <translation id="5430073640787465221">Innstillingsfilen er skadet eller ugyldig. Google Chrome kan ikke gjenopprette innstillingene dine.</translation>
 <translation id="5468572406162360320">For å bidra til å forbedre disse funksjonene sender Chrome informasjon om hvordan du samhandler med dem, til Google. Disse dataene kan bli lest, behandlet og annotert av menneskelige evaluerere.</translation>
+<translation id="5510398294750420479">Last ned Chrome på telefonen for å legge til et ekstra lag med beskyttelse når du er på farten</translation>
 <translation id="5524761631371622910">Når prøveprosjekter er påslått, og hvis Chrome har plassert deg tilfeldig i et aktivt prøveprosjekt, påvirker nettleserloggen din annonsene du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine på rullerende basis hver måned.</translation>
 <translation id="5524890928877629608">øverst til venstre i søkefeltet: venstre<ph name="LEFT" /> %, øverst <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Gjør Chrome raskere</translation>
@@ -487,6 +489,7 @@
 <translation id="6760235774835597023">Gjør nettsteder raskere med V8-motoren i Chrome, men gjør Chrome litt mindre motstandsdyktig mot angrep. Denne innstillingen er på.</translation>
 <translation id="677276454032249905">Vil du avslutte Chrome likevel?</translation>
 <translation id="6794858689789885890">Slett alltid nettstedsdata fra enheten når du lukker Chrome</translation>
+<translation id="6800285125190089494">Logg på nettsteder raskere med lagrede passord for Chrome på iOS</translation>
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="683440813066116847">Regel om innkommende trafikk for Google Chrome Canary for å tillate mDNS-trafikk.</translation>
 <translation id="684888714667046800">Kan ikke koble til internett. Hvis du bruker en brannmur, må du sørge for at <ph name="PRODUCT_EXE_NAME" /> står på godkjenningslisten.</translation>
@@ -624,6 +627,7 @@
 <translation id="8336463659890584292">Når nettsteder ber om privat forhåndslasting av linker på sidene sine, bruker Chrome tjenerne til Google. Dermed skjules identiteten din for det forhåndslastede nettstedet, men Google får vite hvilke nettsteder som blir forhåndslastet.</translation>
 <translation id="8342675569599923794">Denne filen er farlig, så Chrome har blokkert den.</translation>
 <translation id="8349094670477064572">Du lagrer og bruker passord med mer i Google-kontoen din når du er logget på Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Spør Google</translation>
 <translation id="8362914115861174987">Oversett til</translation>
 <translation id="8366770919198174997">Reduserer ytelsen, men gjør Chrome mer motstandsdyktig mot angrep</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>

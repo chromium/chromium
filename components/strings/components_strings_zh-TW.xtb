@@ -36,6 +36,7 @@
 <translation id="1062407476771304334">取代</translation>
 <translation id="1063822554756965137">已成功刪除檔案</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
+<translation id="1065369186007547872">Chrome 認為你不想收到這個網站的通知，因此會隱藏要求，減少干擾。</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">搜尋引擎詳細資料</translation>
 <translation id="1068467933609179019">自動填入服務設定</translation>
@@ -1623,6 +1624,7 @@
 <translation id="3678529606614285348">在新的無痕視窗中開啟網頁 (Ctrl + Shift + N 鍵)</translation>
 <translation id="3678914302246317895">輸入 <ph name="OTP_LENGTH" /> 位數驗證碼</translation>
 <translation id="3681007416295224113">憑證資訊</translation>
+<translation id="3681191721636073359">Chrome 認為你不想在這個網站使用位置資訊，因此會隱藏要求，減少干擾。</translation>
 <translation id="3681421644246505351">Chrome 會根據你近期的瀏覽記錄，記下你感興趣的主題。</translation>
 <translation id="3681841880472207951">QuickTime 影片</translation>
 <translation id="3682094733650754138">已選取「填入地址」選項</translation>
@@ -4593,6 +4595,7 @@
 <translation id="8624354461147303341">取得折扣</translation>
 <translation id="8634957317623797170">54 x 86 公釐</translation>
 <translation id="8637362707224133343">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近曾在你嘗試造訪的網站上<ph name="BEGIN_LINK" />發現網路釣魚內容<ph name="END_LINK" />。網路釣魚網站會偽裝成其他網站來欺騙你。<ph name="NEW_LINE" />即使是平常可以安心造訪的網站，有時也會遭到攻擊者入侵。如果你認為我們的判斷有誤，而且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
+<translation id="8640996933372643759">如要分享分頁及與人協作，必須登入 Chrome</translation>
 <translation id="8641131559425911240">信封 (證券紙)</translation>
 <translation id="8643409044755049933">Envelope Kaku 3</translation>
 <translation id="8643846627971610148">關閉群組會限制可加入的對象</translation>

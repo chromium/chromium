@@ -42,6 +42,7 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">在 Chromium 中顯示迷你 Google 地圖</translation>
 <translation id="1867772173333403444">4. 選取 [Chromium]</translation>
+<translation id="1965068424387304464">Chromium 提示：儲存密碼</translation>
 <translation id="2006345422933397527">Chromium 無法檢查更新，請查看網際網路連線狀態。</translation>
 <translation id="2042889939382983733">查看 Chromium 歷史記錄</translation>
 <translation id="2052320862053429062">Chromium 會定期將你的密碼與網路上發布的清單進行比對。在比對過程中，你的密碼和使用者名稱會經過加密，任何人 (包括 Google) 都無法讀取。</translation>
@@ -118,6 +119,7 @@
 <translation id="3816686541346279443">Chromium 會詢問你是否要儲存密碼。</translation>
 <translation id="3827545470516145620">這部裝置即將啟用標準安全防護機制</translation>
 <translation id="3833326979834193417">Chromium 每天都會自動執行安全檢查，防範資料侵害或不安全網站等等。你可以前往「設定」進一步瞭解安全檢查功能。</translation>
+<translation id="3837584850181228767">Chromium 提示：安全瀏覽強化防護功能</translation>
 <translation id="3845223911364528001">返回 Chromium 上傳檔案</translation>
 <translation id="3855938650519180865">Chromium 新功能</translation>
 <translation id="3886689467633467988">登入這個網站和 Chromium，即可在所有裝置上存取書籤及其他設定。</translation>
