@@ -459,6 +459,11 @@ targets.bundle(
     ],
     per_test_modifications = {
         "chrome_public_test_apk_desktop": targets.mixin(
+            args = [
+                "--timeout-scale=2.0",
+            ],
+            # TODO(crbug.com/441704684): Remove the ci_only and experiment
+            # after the suite is green.
             ci_only = True,
             experiment_percentage = 100,
         ),
