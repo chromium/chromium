@@ -18,13 +18,11 @@ BASE_FEATURE(kWebRtcEncodedTransformDirectCallback,
 // Keep the metadata of RTC encoded frames after they are neutered.
 // If disabled, the metadata is reset to default or no values.
 BASE_FEATURE(kWebRtcEncodedTransformRememberMetadata,
-             "WebRtcEncodedTransformRememberMetadata",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Keep the type ("key" or "delta") of an RTCEncodedVideoFrame after it is
 // neutered. If disabled, the type changes to "empty".
 BASE_FEATURE(kWebRtcEncodedTransformRememberVideoFrameType,
-             "WebRtcEncodedTransformRememberVideoFrameType",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature enables encrypting RTP header extensions using RFC 6904, if

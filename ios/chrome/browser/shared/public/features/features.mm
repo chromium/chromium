@@ -121,9 +121,7 @@ const base::TimeDelta TimeDelayForSafetyCheckAutorun() {
   return base::Hours(delay);
 }
 
-BASE_FEATURE(kHideToolbarsInOverflowMenu,
-             "HideToolbarsInOverflowMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHideToolbarsInOverflowMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedHighlightingIOS, base::FEATURE_ENABLED_BY_DEFAULT);
 

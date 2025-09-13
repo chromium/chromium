@@ -70,7 +70,7 @@ void SetExperimentIds(const base::Value::List& list) {
 //    the value that the feature will hold until overriden by the server or the
 //    command line. Here's an exmaple:
 //
-//      BASE_FEATURE(kSuperSecretSauce, "SuperSecretSauce",
+//      BASE_FEATURE(kSuperSecretSauce ,
 //                   base::FEATURE_DISABLED_BY_DEFAULT);
 //
 //    IMPORTANT NOTE:

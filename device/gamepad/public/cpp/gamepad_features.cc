@@ -27,7 +27,6 @@ BASE_FEATURE(kEnableGamepadMultitouch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables gamepad simulation in GamepadService.
 BASE_FEATURE(kEnableSimulatedGamepadDataFetcher,
-             "EnableSimulatedGamepadDataFetcher",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGamepadMultitouchEnabled() {

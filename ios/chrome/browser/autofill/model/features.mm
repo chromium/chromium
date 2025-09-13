@@ -6,9 +6,7 @@
 
 #import "base/feature_list.h"
 
-BASE_FEATURE(kAutofillBottomSheetNewBlur,
-             "AutofillBottomSheetNewBlur",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillBottomSheetNewBlur, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStatelessFormSuggestionController,
              base::FEATURE_DISABLED_BY_DEFAULT);

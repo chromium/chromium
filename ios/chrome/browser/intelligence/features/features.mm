@@ -122,14 +122,10 @@ bool IsGeminiAvailableForManagedAccounts() {
   return base::FeatureList::IsEnabled(kGeminiForManagedAccounts);
 }
 
-BASE_FEATURE(kAIHubNewBadge,
-             "AIHubNewBadge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAIHubNewBadge, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShouldDeleteGeminiConsentPref() {
   return base::FeatureList::IsEnabled(kDeleteGeminiConsentPref);
 }
 
-BASE_FEATURE(kDeleteGeminiConsentPref,
-             "DeleteGeminiConsentPref",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDeleteGeminiConsentPref, base::FEATURE_ENABLED_BY_DEFAULT);

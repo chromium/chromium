@@ -4,6 +4,4 @@
 
 #import "ios/chrome/browser/badges/model/features.h"
 
-BASE_FEATURE(kAutofillBadgeRemoval,
-             "AutofillBadgeRemoval",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillBadgeRemoval, base::FEATURE_DISABLED_BY_DEFAULT);

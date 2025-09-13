@@ -1121,9 +1121,7 @@ BASE_FEATURE(kHomeButtonQuickAppAccess, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kHomeButtonWithText, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Helpful notifications for devices with Hybrid Chargers.
-BASE_FEATURE(kHybridChargerNotifications,
-             "HybridChargerNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHybridChargerNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, allows the user to cycle between windows of an app using Alt + `.
 BASE_FEATURE(kSameAppWindowCycle, base::FEATURE_DISABLED_BY_DEFAULT);

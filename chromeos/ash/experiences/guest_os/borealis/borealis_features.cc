@@ -7,8 +7,6 @@
 namespace borealis::features {
 
 // Enable Borealis MOTD on Chrome OS.
-BASE_FEATURE(kShowBorealisMotd,
-             "ShowBorealisMotd",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShowBorealisMotd, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace borealis::features

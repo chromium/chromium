@@ -21,9 +21,7 @@ namespace {
 
 std::atomic<bool> g_notifications_suppressed = false;
 
-BASE_FEATURE(kSuppressMemoryListeners,
-             "SuppressMemoryListeners",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSuppressMemoryListeners, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(std::string,
                    kSuppressMemoryListenersMask,

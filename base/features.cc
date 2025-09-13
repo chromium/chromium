@@ -52,7 +52,6 @@ std::atomic_bool g_is_reduce_ppms_enabled{false};
 // When enabled, the compositor threads (including GPU) will be boosted to
 // kInteractive when not in input or loading scenarios.
 BASE_FEATURE(kBoostCompositorThreadsPriorityWhenIdle,
-             "BoostCompositorThreadsPriorityWhenIdle",
              FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls caching within BASE_FEATURE_PARAM(). This is feature-controlled

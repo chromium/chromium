@@ -50,7 +50,6 @@ namespace extensions {
 namespace {
 
 BASE_FEATURE(kContentVerifierAssumeRelativePaths,
-             "ContentVerifierAssumeRelativePaths",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 ContentVerifier::TestObserver* g_content_verifier_test_observer = nullptr;

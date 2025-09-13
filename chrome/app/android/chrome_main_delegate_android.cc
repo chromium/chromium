@@ -27,9 +27,7 @@
 
 namespace {
 // Whether to use the process start time for startup metrics.
-BASE_FEATURE(kUseProcessStartTimeForMetrics,
-             "UseProcessStartTimeForMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseProcessStartTimeForMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 // ChromeMainDelegateAndroid is created when the library is loaded. It is always

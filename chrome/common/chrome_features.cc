@@ -329,9 +329,7 @@ const base::FeatureParam<base::TimeDelta> kGlicActorKeyUpDuration{
 const base::FeatureParam<bool> kGlicActorScrollTargetIntoView{
     &kGlicActor, "scroll-target-into-view", true};
 
-BASE_FEATURE(kGlicActorPermissionsBypass,
-             "GlicActorPermissionsBypass",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicActorPermissionsBypass, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_GLIC)
 // Controls whether the Glic feature is enabled.
@@ -575,7 +573,6 @@ BASE_FEATURE(kGlicDisableWarming, base::FEATURE_ENABLED_BY_DEFAULT);
 // Killswitch that controls whether the guest WebContents visibility state is
 // set to hidden when the Glic panel is warming.
 BASE_FEATURE(kGlicGuestContentsVisibilityState,
-             "GlicGuestContentsVisibilityState",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -604,9 +601,7 @@ BASE_FEATURE(kGlicUserStatusCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicClosedCaptioning, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicDefaultTabContextSetting,
-             "GlicDefaultTabContextSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicDefaultTabContextSetting, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicUnloadOnClose, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1139,7 +1134,6 @@ BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
 BASE_FEATURE(kSafetyHubThreeDotDetails, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafetyHubUnusedPermissionRevocationForAllSurfaces,
-             "SafetyHubUnusedPermissionRevocationForAllSurfaces",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafetyHubDisruptiveNotificationRevocation,
@@ -1608,7 +1602,6 @@ BASE_FEATURE(kClassManagementEnabledMetricsProvider,
 
 // Enables reporting Chrome app activity for supervised users.
 BASE_FEATURE(kUnicornChromeActivityReporting,
-             "UnicornChromeActivityReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

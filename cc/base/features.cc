@@ -240,8 +240,6 @@ BASE_FEATURE(kEmitPerScrollJankV1MetricAtEndOfScroll,
 BASE_FEATURE(kEmitPerScrollJankV4MetricAtEndOfScroll,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kManualBeginFrame,
-             "ManualBeginFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

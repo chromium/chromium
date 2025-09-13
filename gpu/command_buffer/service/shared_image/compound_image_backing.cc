@@ -48,9 +48,7 @@ namespace {
 
 // Allows CompoundImageBacking to allocate backings during runtime if a
 // compatible backing to serve clients requested usage is not already present.
-BASE_FEATURE(kUseDynamicBackingAllocations,
-             "UseDynamicBackingAllocations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseDynamicBackingAllocations, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr AccessStreamSet kMemoryStreamSet = {SharedImageAccessStream::kMemory};
 

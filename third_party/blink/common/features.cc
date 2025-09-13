@@ -54,7 +54,6 @@ BASE_FEATURE(kAvoidTrustedParamsCopies, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Async touchmoves after scroll.
 BASE_FEATURE(kAsyncTouchMovesImmediatelyAfterScroll,
-             "AsyncTouchMovesImmediatelyAfterScroll",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Block all MIDI access with the MIDI_SYSEX permission
@@ -665,7 +664,6 @@ BASE_FEATURE_PARAM(int,
                    512);
 
 BASE_FEATURE(kFadeInScrollbarWhenMouseWheelMayBegin,
-             "FadeInScrollbarWhenMouseWheelMayBegin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the <fencedframe> element; see crbug.com/1123606. Note that enabling
@@ -2355,7 +2353,6 @@ BASE_FEATURE(kUrgentMainFrameForInput, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, URLPattern will use standard defined dummy URL canonicalization
 // to canonicalize URL properties. See https://crbug.com/409350827
 BASE_FEATURE(kURLPatternDummyURLCanonicalization,
-             "URLPatternDummyURLCanonicalization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Uses page viewport instead of frame viewport in the Largest Contentful Paint
