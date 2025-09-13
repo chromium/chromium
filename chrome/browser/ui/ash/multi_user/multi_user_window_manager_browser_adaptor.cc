@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_browser_adaptor.h"
 
 #include <set>
 #include <vector>
 
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "base/check_deref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -32,15 +33,20 @@
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 
+namespace ash {
+
 // This class keeps track of all applications which were started for a user.
 // When an app gets created, the window will be tagged for that user. Note
 // that the destruction does not need to be tracked here since the universal
 // window observer will take care of that.
-class AppObserver : public extensions::AppWindowRegistry::Observer {
+class MultiUserWindowManagerBrowserAdaptor::AppObserver
+    : public extensions::AppWindowRegistry::Observer {
  public:
-  explicit AppObserver(extensions::AppWindowRegistry* registry,
-                       const AccountId& account_id)
-      : account_id_(account_id) {
+  AppObserver(MultiUserWindowManager* multi_user_window_manager,
+              extensions::AppWindowRegistry* registry,
+              const AccountId& account_id)
+      : multi_user_window_manager_(CHECK_DEREF(multi_user_window_manager)),
+        account_id_(account_id) {
     app_window_registry_observer_.Observe(registry);
   }
 
@@ -53,11 +59,11 @@ class AppObserver : public extensions::AppWindowRegistry::Observer {
   void OnAppWindowAdded(extensions::AppWindow* app_window) override {
     aura::Window* window = app_window->GetNativeWindow();
     DCHECK(window);
-    MultiUserWindowManagerHelper::GetWindowManager()->SetWindowOwner(
-        window, account_id_);
+    multi_user_window_manager_->SetWindowOwner(window, account_id_);
   }
 
  private:
+  raw_ref<MultiUserWindowManager> multi_user_window_manager_;
   AccountId account_id_;
 
   base::ScopedObservation<extensions::AppWindowRegistry,
@@ -65,34 +71,35 @@ class AppObserver : public extensions::AppWindowRegistry::Observer {
       app_window_registry_observer_{this};
 };
 
-MultiProfileSupport::MultiProfileSupport(
-    ash::MultiUserWindowManager* multi_user_window_manager)
-    : multi_user_window_manager_(multi_user_window_manager) {
-  CHECK(multi_user_window_manager);
-  multi_user_window_manager_observation_.Observe(multi_user_window_manager);
+MultiUserWindowManagerBrowserAdaptor::MultiUserWindowManagerBrowserAdaptor(
+    MultiUserWindowManager* multi_user_window_manager)
+    : multi_user_window_manager_(CHECK_DEREF(multi_user_window_manager)) {
+  multi_user_window_manager_observation_.Observe(
+      &multi_user_window_manager_.get());
 
   BrowserList::AddObserver(this);
 }
 
-MultiProfileSupport::~MultiProfileSupport() {
+MultiUserWindowManagerBrowserAdaptor::~MultiUserWindowManagerBrowserAdaptor() {
   BrowserList::RemoveObserver(this);
 
   // Remove all app observers.
   account_id_to_app_observer_.clear();
 }
 
-void MultiProfileSupport::AddUser(const AccountId& account_id) {
+void MultiUserWindowManagerBrowserAdaptor::AddUser(
+    const AccountId& account_id) {
   // AddUser must not be called twice for the same account_id.
   CHECK(account_id_to_app_observer_.find(account_id) ==
         account_id_to_app_observer_.end());
 
   // This must be called after User's Profile gets ready.
   Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id));
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
   CHECK(profile);
 
   auto app_observer = std::make_unique<AppObserver>(
+      &multi_user_window_manager_.get(),
       extensions::AppWindowRegistry::Get(profile), account_id);
   auto* app_observer_ptr = app_observer.get();
   account_id_to_app_observer_.try_emplace(account_id, std::move(app_observer));
@@ -112,7 +119,7 @@ void MultiProfileSupport::AddUser(const AccountId& account_id) {
   }
 }
 
-void MultiProfileSupport::OnBrowserAdded(Browser* browser) {
+void MultiUserWindowManagerBrowserAdaptor::OnBrowserAdded(Browser* browser) {
   // A unit test (e.g. CrashRestoreComplexTest.RestoreSessionForThreeUsers) can
   // come here with no valid window.
   if (!browser->window() || !browser->window()->GetNativeWindow()) {
@@ -123,10 +130,11 @@ void MultiProfileSupport::OnBrowserAdded(Browser* browser) {
       multi_user_util::GetAccountIdFromProfile(browser->profile()));
 }
 
-void MultiProfileSupport::OnWindowOwnerEntryChanged(aura::Window* window,
-                                                    const AccountId& account_id,
-                                                    bool was_minimized,
-                                                    bool teleported) {
+void MultiUserWindowManagerBrowserAdaptor::OnWindowOwnerEntryChanged(
+    aura::Window* window,
+    const AccountId& account_id,
+    bool was_minimized,
+    bool teleported) {
   const AccountId& owner = multi_user_window_manager_->GetWindowOwner(window);
   // Browser windows don't use kAvatarIconKey. See
   // BrowserNonClientFrameViewAsh::UpdateProfileIcons().
@@ -145,15 +153,15 @@ void MultiProfileSupport::OnWindowOwnerEntryChanged(aura::Window* window,
   }
 }
 
-void MultiProfileSupport::OnTransitionUserShelfToNewAccount() {
+void MultiUserWindowManagerBrowserAdaptor::OnTransitionUserShelfToNewAccount() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  full_restore::SetActiveProfilePath(profile->GetPath());
+  ::full_restore::SetActiveProfilePath(profile->GetPath());
 
   // Only init full restore when floating workspace is disabled or in safe mode.
   // TODO(b/312233508): Add fws test coverage for this case.
-  if (!ash::floating_workspace_util::ShouldHandleRestartRestore()) {
+  if (!floating_workspace_util::ShouldHandleRestartRestore()) {
     auto* full_restore_service =
-        ash::full_restore::FullRestoreServiceFactory::GetForProfile(profile);
+        full_restore::FullRestoreServiceFactory::GetForProfile(profile);
     if (full_restore_service) {
       full_restore_service->OnTransitionedToNewActiveUser(profile);
     }
@@ -168,3 +176,5 @@ void MultiProfileSupport::OnTransitionUserShelfToNewAccount() {
   chrome_shelf_controller->ActiveUserChanged(
       multi_user_window_manager_->CurrentAccountId());
 }
+
+}  // namespace ash

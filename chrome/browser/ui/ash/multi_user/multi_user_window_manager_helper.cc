@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/shell.h"
-#include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_browser_adaptor.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session.h"
@@ -51,11 +51,12 @@ void MultiUserWindowManagerHelper::CreateInstanceForTest() {
 }
 
 void MultiUserWindowManagerHelper::AddUser(const AccountId& account_id) {
-  multi_profile_support_->AddUser(account_id);
+  multi_user_window_manager_browser_adaptor_->AddUser(account_id);
 }
 
 MultiUserWindowManagerHelper::MultiUserWindowManagerHelper()
-    : multi_profile_support_(std::make_unique<MultiProfileSupport>(
-          MultiUserWindowManagerHelper::GetWindowManager())) {}
+    : multi_user_window_manager_browser_adaptor_(
+          std::make_unique<ash::MultiUserWindowManagerBrowserAdaptor>(
+              MultiUserWindowManagerHelper::GetWindowManager())) {}
 
 MultiUserWindowManagerHelper::~MultiUserWindowManagerHelper() = default;

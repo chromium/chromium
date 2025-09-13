@@ -12,16 +12,17 @@
 #include "base/auto_reset.h"
 
 class AccountId;
-class MultiProfileSupport;
 
 namespace ash {
 class MultiUserWindowManager;
-}
+class MultiUserWindowManagerBrowserAdaptor;
+}  // namespace ash
 
 // MultiUserWindowManagerHelper is responsible for creating and owning the
 // right ash::MultiUserWindowManager implementation. If multi-profile is not
-// enabled it creates a stub implementation, otherwise MultiProfileSupport,
-// which internally owns the real ash::MultiUserWindowManager implementation.
+// enabled it creates a stub implementation, otherwise
+// MultiUserWindowManagerBrowserAdaptor, which internally owns the real
+// ash::MultiUserWindowManager implementation.
 class MultiUserWindowManagerHelper {
  public:
   MultiUserWindowManagerHelper(const MultiUserWindowManagerHelper&) = delete;
@@ -42,8 +43,8 @@ class MultiUserWindowManagerHelper {
   // Removes the instance.
   static void DeleteInstance();
 
-  // Used in tests to create an instance with MultiProfileSupport configured for
-  // |account_id|.
+  // Used in tests to create an instance with
+  // MultiUserWindowManagerBrowserAdaptor configured for |account_id|.
   static void CreateInstanceForTest();
 
   // Returns true if MultiUserSignIn is enabled. Always true on production.
@@ -67,7 +68,8 @@ class MultiUserWindowManagerHelper {
   ~MultiUserWindowManagerHelper();
 
   // Used in multi-profile support.
-  std::unique_ptr<MultiProfileSupport> multi_profile_support_;
+  std::unique_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
+      multi_user_window_manager_browser_adaptor_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_HELPER_H_

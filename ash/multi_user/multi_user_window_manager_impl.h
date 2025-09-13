@@ -28,6 +28,7 @@ enum class TabletState;
 
 namespace ash {
 
+class MultiUserWindowManagerBrowserAdaptorTest;
 class UserSwitchAnimator;
 
 // MultiUserWindowManager associates windows with users and ensures the
@@ -125,7 +126,7 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   const AccountId& GetCurrentUserForTest() const;
 
  private:
-  friend class MultiProfileSupportTest;
+  friend class MultiUserWindowManagerBrowserAdaptorTest;
   friend class UserSwitchAnimator;
 
   class WindowEntry {

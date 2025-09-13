@@ -260,10 +260,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   }
   // Note: BrowserRestoreObserver needs to be instantiated after
   // MultiUserWindowManagerHelper.
-  // Both MultiProfileSupport held by MultiUserWindowManagerHelper and
-  // BrowserRestoreObserver register themselves as BrowserListObserver,
-  // and the order is critical, because the code we run as a part of
-  // BrowserRestoreObserver on Browser creation depends on the data
+  // Both MultiUserWindowManagerBrowserAdaptor held by
+  // MultiUserWindowManagerHelper and BrowserRestoreObserver register themselves
+  // as BrowserListObserver, and the order is critical, because the code we run
+  // as a part of BrowserRestoreObserver on Browser creation depends on the data
   // that is annotated by the MultProfileSupport.
   browser_restore_observer_ = std::make_unique<ash::BrowserRestoreObserver>();
 

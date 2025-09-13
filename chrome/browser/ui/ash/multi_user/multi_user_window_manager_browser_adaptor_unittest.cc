@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_browser_adaptor.h"
 
 #include <stddef.h>
 
@@ -141,12 +141,14 @@ namespace ash {
 
 // A test class for preparing the MultiUserWindowManager. It creates
 // various windows and instantiates the MultiUserWindowManager.
-class MultiProfileSupportTest : public ChromeAshTestBase {
+class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
  public:
-  MultiProfileSupportTest() { set_start_session(false); }
+  MultiUserWindowManagerBrowserAdaptorTest() { set_start_session(false); }
 
-  MultiProfileSupportTest(const MultiProfileSupportTest&) = delete;
-  MultiProfileSupportTest& operator=(const MultiProfileSupportTest&) = delete;
+  MultiUserWindowManagerBrowserAdaptorTest(
+      const MultiUserWindowManagerBrowserAdaptorTest&) = delete;
+  MultiUserWindowManagerBrowserAdaptorTest& operator=(
+      const MultiUserWindowManagerBrowserAdaptorTest&) = delete;
 
   // ChromeAshTestBase:
   void SetUp() override;
@@ -261,9 +263,9 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
     LogInUser(ids[0]);
 
     // After the primary user log-in, (and before any more user log-ins),
-    // create MultiProfileSupport instance held by MultiUserWindowManagerHelper
-    // and initializes for the primary user, mirroring the timing of the
-    // initialization in the production.
+    // create MultiUserWindowManagerBrowserAdaptor instance held by
+    // MultiUserWindowManagerHelper and initializes for the primary user,
+    // mirroring the timing of the initialization in the production.
     // TODO(crbug.com/425160398): This should be simplified for the bug fix.
     ::MultiUserWindowManagerHelper::CreateInstanceForTest();
 
@@ -354,7 +356,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   std::unique_ptr<TabletModeWindowManager> tablet_mode_window_manager_;
 };
 
-void MultiProfileSupportTest::SetUp() {
+void MultiUserWindowManagerBrowserAdaptorTest::SetUp() {
   ash::DeviceSettingsService::Initialize();
   cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
       ash::DeviceSettingsService::Get(),
@@ -379,7 +381,8 @@ void MultiProfileSupportTest::SetUp() {
   ASSERT_TRUE(profile_manager_->SetUp());
 }
 
-void MultiProfileSupportTest::SetUpForThisManyWindows(int windows) {
+void MultiUserWindowManagerBrowserAdaptorTest::SetUpForThisManyWindows(
+    int windows) {
   CHECK(user_manager_->GetActiveUser());
 
   ASSERT_TRUE(windows_.empty());
@@ -390,7 +393,7 @@ void MultiProfileSupportTest::SetUpForThisManyWindows(int windows) {
 }
 
 std::vector<std::unique_ptr<views::Widget>>
-MultiProfileSupportTest::SetUpOneWindowEachDeskForUser() {
+MultiUserWindowManagerBrowserAdaptorTest::SetUpOneWindowEachDeskForUser() {
   if (!windows_.empty()) {
     return std::vector<std::unique_ptr<views::Widget>>();
   }
@@ -423,7 +426,7 @@ MultiProfileSupportTest::SetUpOneWindowEachDeskForUser() {
   return widgets;
 }
 
-void MultiProfileSupportTest::TearDown() {
+void MultiUserWindowManagerBrowserAdaptorTest::TearDown() {
   // Since the AuraTestBase is needed to create our assets, we have to
   // also delete them before we tear it down.
   while (!windows_.empty()) {
@@ -449,12 +452,13 @@ void MultiProfileSupportTest::TearDown() {
   ash::DeviceSettingsService::Shutdown();
 }
 
-void MultiProfileSupportTest::OnHelperWillBeDestroyed() {
+void MultiUserWindowManagerBrowserAdaptorTest::OnHelperWillBeDestroyed() {
   ChromeAshTestBase::OnHelperWillBeDestroyed();
   profile_manager_.reset();
 }
 
-std::string MultiProfileSupportTest::GetStatusImpl(bool follow_transients) {
+std::string MultiUserWindowManagerBrowserAdaptorTest::GetStatusImpl(
+    bool follow_transients) {
   std::string s;
   for (size_t i = 0; i < windows_.size(); i++) {
     if (i) {
@@ -482,7 +486,8 @@ std::string MultiProfileSupportTest::GetStatusImpl(bool follow_transients) {
   return s;
 }
 
-std::string MultiProfileSupportTest::GetOwnersOfVisibleWindowsAsString() {
+std::string
+MultiUserWindowManagerBrowserAdaptorTest::GetOwnersOfVisibleWindowsAsString() {
   std::set<AccountId> owners =
       multi_user_window_manager()->GetOwnersOfVisibleWindows();
 
@@ -494,7 +499,7 @@ std::string MultiProfileSupportTest::GetOwnersOfVisibleWindowsAsString() {
 }
 
 // Testing basic assumptions like default state and existence of manager.
-TEST_F(MultiProfileSupportTest, BasicTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, BasicTests) {
   AddLoggedInUsers(
       {AccountId::FromUserEmailGaiaId("user@test", GaiaId("123456789"))});
   SetUpForThisManyWindows(3);
@@ -543,7 +548,7 @@ TEST_F(MultiProfileSupportTest, BasicTests) {
 }
 
 // Testing simple owner changes.
-TEST_F(MultiProfileSupportTest, OwnerTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, OwnerTests) {
   AddLoggedInUsers({kAccountIdC, kAccountIdB, kAccountIdA});
   SetUpForThisManyWindows(5);
 
@@ -576,7 +581,7 @@ TEST_F(MultiProfileSupportTest, OwnerTests) {
   EXPECT_EQ("S[a], H[b], S[a], H[b], S[]", GetStatus());
 }
 
-TEST_F(MultiProfileSupportTest, CloseWindowTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, CloseWindowTests) {
   AddLoggedInUsers({kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(1);
@@ -609,7 +614,7 @@ TEST_F(MultiProfileSupportTest, CloseWindowTests) {
       multi_user_window_manager()->GetWindowOwner(to_be_deleted).is_valid());
 }
 
-TEST_F(MultiProfileSupportTest, SharedWindowTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, SharedWindowTests) {
   AddLoggedInUsers({kAccountIdC, kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(5);
@@ -673,7 +678,7 @@ TEST_F(MultiProfileSupportTest, SharedWindowTests) {
 }
 
 // Make sure that adding a window to another desktop does not cause harm.
-TEST_F(MultiProfileSupportTest, DoubleSharedWindowTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, DoubleSharedWindowTests) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(1);
@@ -696,7 +701,8 @@ TEST_F(MultiProfileSupportTest, DoubleSharedWindowTests) {
 // Tests that the user's desktop visibility changes get respected. These tests
 // are required to make sure that our usage of the same feature for showing and
 // hiding does not interfere with the "normal operation".
-TEST_F(MultiProfileSupportTest, PreserveWindowVisibilityTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       PreserveWindowVisibilityTests) {
   AddLoggedInUsers({kAccountIdC, kAccountIdB, kAccountIdA});
   SetUpForThisManyWindows(5);
 
@@ -756,7 +762,8 @@ TEST_F(MultiProfileSupportTest, PreserveWindowVisibilityTests) {
 // (see `Window::TargetVisibility()`).
 // 2. window global visibility (appearance in the user screen) which takes
 // its ancestor views' visibility into account (see `Window::IsVisible()`).
-TEST_F(MultiProfileSupportTest, WindowVisibilityInMultipleDesksTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       WindowVisibilityInMultipleDesksTests) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   // In the user A, setup two desks with one window each.
@@ -804,7 +811,7 @@ TEST_F(MultiProfileSupportTest, WindowVisibilityInMultipleDesksTests) {
 
 // Check that minimizing a window which is owned by another user will move it
 // back and gets restored upon switching back to the original user.
-TEST_F(MultiProfileSupportTest, MinimizeChangesOwnershipBack) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, MinimizeChangesOwnershipBack) {
   AddLoggedInUsers({kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(4);
@@ -830,7 +837,8 @@ TEST_F(MultiProfileSupportTest, MinimizeChangesOwnershipBack) {
 }
 
 // Check that we cannot transfer the ownership of a minimized window.
-TEST_F(MultiProfileSupportTest, MinimizeSuppressesViewTransfer) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       MinimizeSuppressesViewTransfer) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(1);
@@ -845,7 +853,7 @@ TEST_F(MultiProfileSupportTest, MinimizeSuppressesViewTransfer) {
 }
 
 // Testing that the activation state changes to the active window.
-TEST_F(MultiProfileSupportTest, ActiveWindowTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, ActiveWindowTests) {
   AddLoggedInUsers({kAccountIdC, kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(4);
@@ -890,7 +898,7 @@ TEST_F(MultiProfileSupportTest, ActiveWindowTests) {
 }
 
 // Test that Transient windows are handled properly.
-TEST_F(MultiProfileSupportTest, TransientWindows) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, TransientWindows) {
   AddLoggedInUsers({kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(10);
@@ -963,7 +971,8 @@ TEST_F(MultiProfileSupportTest, TransientWindows) {
 
 // Verifies duplicate observers are not added for transient dialog windows.
 // https://crbug.com/937333
-TEST_F(MultiProfileSupportTest, SetWindowOwnerOnTransientDialog) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       SetWindowOwnerOnTransientDialog) {
   AddLoggedInUsers({kAccountIdA});
 
   SetUpForThisManyWindows(2);
@@ -985,7 +994,7 @@ TEST_F(MultiProfileSupportTest, SetWindowOwnerOnTransientDialog) {
 }
 
 // Test that the initial visibility state gets remembered.
-TEST_F(MultiProfileSupportTest, PreserveInitialVisibility) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, PreserveInitialVisibility) {
   AddLoggedInUsers({kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(4);
@@ -1023,7 +1032,7 @@ TEST_F(MultiProfileSupportTest, PreserveInitialVisibility) {
 
 // Test that in case of an activated tablet mode, windows from all users get
 // maximized on entering tablet mode.
-TEST_F(MultiProfileSupportTest, TabletModeInteraction) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, TabletModeInteraction) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(2);
@@ -1048,7 +1057,8 @@ TEST_F(MultiProfileSupportTest, TabletModeInteraction) {
 
 // Test that a system modal dialog will switch to the desktop of the owning
 // user.
-TEST_F(MultiProfileSupportTest, SwitchUsersUponModalityChange) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       SwitchUsersUponModalityChange) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(1);
@@ -1066,7 +1076,8 @@ TEST_F(MultiProfileSupportTest, SwitchUsersUponModalityChange) {
 
 // Test that a system modal dialog will not switch desktop if active user has
 // shows window.
-TEST_F(MultiProfileSupportTest, DontSwitchUsersUponModalityChange) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       DontSwitchUsersUponModalityChange) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(1);
@@ -1084,7 +1095,7 @@ TEST_F(MultiProfileSupportTest, DontSwitchUsersUponModalityChange) {
 
 // Test that a system modal dialog will not switch if shown on correct desktop
 // but owned by another user.
-TEST_F(MultiProfileSupportTest,
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
        DontSwitchUsersUponModalityChangeWhenShownButNotOwned) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
@@ -1103,7 +1114,7 @@ TEST_F(MultiProfileSupportTest,
 
 // Test that a system modal dialog will switch if shown on incorrect desktop but
 // even if owned by current user.
-TEST_F(MultiProfileSupportTest,
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
        SwitchUsersUponModalityChangeWhenShownButNotOwned) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
@@ -1121,7 +1132,7 @@ TEST_F(MultiProfileSupportTest,
 }
 
 // Test that using the full user switch animations are working as expected.
-TEST_F(MultiProfileSupportTest, FullUserSwitchAnimationTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, FullUserSwitchAnimationTests) {
   AddLoggedInUsers({kAccountIdC, kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(3);
@@ -1158,7 +1169,8 @@ TEST_F(MultiProfileSupportTest, FullUserSwitchAnimationTests) {
 
 // Make sure that we do not crash upon shutdown when an animation is pending and
 // a shutdown happens.
-TEST_F(MultiProfileSupportTest, SystemShutdownWithActiveAnimation) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       SystemShutdownWithActiveAnimation) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB, kAccountIdC});
 
   SetUpForThisManyWindows(2);
@@ -1177,7 +1189,7 @@ TEST_F(MultiProfileSupportTest, SystemShutdownWithActiveAnimation) {
 
 // Test that using the full user switch, the animations are transitioning as
 // we expect them to in all animation steps.
-TEST_F(MultiProfileSupportTest, AnimationSteps) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, AnimationSteps) {
   AddLoggedInUsers({kAccountIdC, kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(3);
@@ -1215,7 +1227,7 @@ TEST_F(MultiProfileSupportTest, AnimationSteps) {
 }
 
 // Test that the screen coverage is properly determined.
-TEST_F(MultiProfileSupportTest, AnimationStepsScreenCoverage) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, AnimationStepsScreenCoverage) {
   AddLoggedInUsers({kAccountIdA});
 
   SetUpForThisManyWindows(3);
@@ -1236,7 +1248,8 @@ TEST_F(MultiProfileSupportTest, AnimationStepsScreenCoverage) {
 
 // Test that switching from a desktop which has a maximized window to a desktop
 // which has no maximized window will produce the proper animation.
-TEST_F(MultiProfileSupportTest, AnimationStepsMaximizeToNormal) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       AnimationStepsMaximizeToNormal) {
   AddLoggedInUsers({kAccountIdC, kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(3);
@@ -1279,7 +1292,8 @@ TEST_F(MultiProfileSupportTest, AnimationStepsMaximizeToNormal) {
 
 // Test that switching from a desktop which has a normal window to a desktop
 // which has a maximized window will produce the proper animation.
-TEST_F(MultiProfileSupportTest, AnimationStepsNormalToMaximized) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       AnimationStepsNormalToMaximized) {
   AddLoggedInUsers({kAccountIdC, kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(3);
@@ -1323,7 +1337,8 @@ TEST_F(MultiProfileSupportTest, AnimationStepsNormalToMaximized) {
 
 // Test that switching from a desktop which has a maximized window to a desktop
 // which has a maximized window will produce the proper animation.
-TEST_F(MultiProfileSupportTest, AnimationStepsMaximizedToMaximized) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       AnimationStepsMaximizedToMaximized) {
   AddLoggedInUsers({kAccountIdC, kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(3);
@@ -1388,7 +1403,7 @@ TEST_F(MultiProfileSupportTest, AnimationStepsMaximizedToMaximized) {
 }
 
 // Test that showing a window for another user also switches the desktop.
-TEST_F(MultiProfileSupportTest, ShowForUserSwitchesDesktop) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, ShowForUserSwitchesDesktop) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB, kAccountIdC});
 
   SetUpForThisManyWindows(3);
@@ -1449,7 +1464,8 @@ class TestWindowObserver : public aura::WindowObserver {
 
 // Test that switching between different user won't change the activated windows
 // and the property of transient windows.
-TEST_F(MultiProfileSupportTest, TransientWindowActivationTest) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       TransientWindowActivationTest) {
   AddLoggedInUsers({kAccountIdB, kAccountIdA});
 
   SetUpForThisManyWindows(3);
@@ -1503,7 +1519,8 @@ TEST_F(MultiProfileSupportTest, TransientWindowActivationTest) {
 
 // Test that minimized window on one desktop can't be activated on another
 // desktop.
-TEST_F(MultiProfileSupportTest, MinimizedWindowActivatableTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       MinimizedWindowActivatableTests) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(4);
@@ -1533,7 +1550,8 @@ TEST_F(MultiProfileSupportTest, MinimizedWindowActivatableTests) {
 }
 
 // Test that teleported window can be activated by the presenting user.
-TEST_F(MultiProfileSupportTest, TeleportedWindowActivatableTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       TeleportedWindowActivatableTests) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(2);
@@ -1558,7 +1576,8 @@ TEST_F(MultiProfileSupportTest, TeleportedWindowActivatableTests) {
 }
 
 // Test that teleported window has the kAvatarIconKey window property.
-TEST_F(MultiProfileSupportTest, TeleportedWindowAvatarProperty) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       TeleportedWindowAvatarProperty) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(1);
@@ -1585,7 +1604,7 @@ TEST_F(MultiProfileSupportTest, TeleportedWindowAvatarProperty) {
 // Tests that the window order is preserved when switching between users. Also
 // tests that the window's activation is restored correctly if one user's MRU
 // window list is empty.
-TEST_F(MultiProfileSupportTest, WindowsOrderPreservedTests) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, WindowsOrderPreservedTests) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(3);
@@ -1630,7 +1649,7 @@ TEST_F(MultiProfileSupportTest, WindowsOrderPreservedTests) {
 // Tests that chrome::FindBrowserWithActiveWindow works properly in
 // multi-user scenario, that is it should return the browser with active window
 // associated with it (crbug.com/675265).
-TEST_F(MultiProfileSupportTest, FindBrowserWithActiveWindow) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, FindBrowserWithActiveWindow) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(1);
@@ -1660,7 +1679,7 @@ TEST_F(MultiProfileSupportTest, FindBrowserWithActiveWindow) {
 
 // Tests that a window's bounds get restored to their pre tablet mode bounds,
 // even on a secondary user and with display rotations.
-TEST_F(MultiProfileSupportTest, WindowBoundsAfterTabletMode) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, WindowBoundsAfterTabletMode) {
   UpdateDisplay("400x200");
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(),
@@ -1701,7 +1720,7 @@ TEST_F(MultiProfileSupportTest, WindowBoundsAfterTabletMode) {
   EXPECT_EQ(bounds, window(1)->bounds());
 }
 
-TEST_F(MultiProfileSupportTest, AccountIdChangesAfterSwitch) {
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, AccountIdChangesAfterSwitch) {
   AddLoggedInUsers({kAccountIdA, kAccountIdB});
 
   SetUpForThisManyWindows(1);
