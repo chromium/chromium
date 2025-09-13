@@ -8,6 +8,7 @@ import type {PdfViewerPrivateProxy, ViewerSaveToDriveBubbleElement} from 'chrome
 import {PdfViewerPrivateProxyImpl} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -113,6 +114,12 @@ const tests = [
     chrome.test.assertEq('pdf:add-to-drive', controls.$.save.ironIcon);
     chrome.test.assertFalse(
         !!controls.shadowRoot.querySelector('circular-progress-ring'));
+
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+    chrome.test.assertTrue(bubble.$.dialog.open);
+    bubble.$.dialog.close();
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
 
     chrome.test.succeed();
   },
@@ -249,6 +256,7 @@ const tests = [
     const buttons = controls.shadowRoot.querySelectorAll('button');
     buttons[0]!.click();
     await privateProxy.whenCalled('saveToDrive');
+    controls.hasEdits = false;
 
     // Set the save to Drive state to session timeout error state and open the
     // bubble.
@@ -266,6 +274,72 @@ const tests = [
     chrome.test.assertEq(2, args.length);
     chrome.test.assertEq('EDITED', args[0]);
     chrome.test.assertEq('EDITED', args[1]);
+
+    chrome.test.succeed();
+  },
+
+  async function testBubbleOpenAndCloseAutomaticallyAfterUploadInProgress() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+
+    privateProxy.sendUploadInProgress(0, 100);
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    privateProxy.sendUploadInProgress(50, 100);
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    privateProxy.sendSessionTimeoutError();
+    await bubble.updateComplete;
+    chrome.test.assertTrue(bubble.$.dialog.open);
+
+    mockTimer.tick(2000);
+    await bubble.updateComplete;
+    chrome.test.assertTrue(bubble.$.dialog.open);
+
+    mockTimer.tick(3000);
+    await bubble.updateComplete;
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    mockTimer.uninstall();
+
+    chrome.test.succeed();
+  },
+
+  async function testBubbleNotCloseAfterUploadInProgressIfOpenedManually() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+
+    privateProxy.sendUploadInProgress(0, 100);
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+    controls.$.save.click();
+    await microtasksFinished();
+    assertBubbleAndProgressBar(bubble, 0, 100);
+
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    privateProxy.sendSessionTimeoutError();
+    await bubble.updateComplete;
+    chrome.test.assertTrue(bubble.$.dialog.open);
+
+    mockTimer.tick(6000);
+    await bubble.updateComplete;
+    chrome.test.assertTrue(bubble.$.dialog.open);
+
+    mockTimer.uninstall();
+
+    bubble.$.dialog.close();
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
 
     chrome.test.succeed();
   },

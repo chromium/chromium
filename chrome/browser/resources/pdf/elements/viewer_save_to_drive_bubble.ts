@@ -20,6 +20,8 @@ import {SaveToDriveBubbleRequestType, SaveToDriveState} from '../constants.js';
 import {getCss} from './viewer_save_to_drive_bubble.css.js';
 import {getHtml} from './viewer_save_to_drive_bubble.html.js';
 
+const DISMISS_TIMEOUT_MS = 5000;
+
 const ViewerSaveToDriveBubbleElementBase = I18nMixinLit(CrLitElement);
 
 export interface ViewerSaveToDriveBubbleElement {
@@ -69,6 +71,7 @@ export class ViewerSaveToDriveBubbleElement extends
 
   private anchor_: HTMLElement|null = null;
   private eventTracker_: EventTracker = new EventTracker();
+  private dismissTimeoutId_: number|null = null;
 
   override disconnectedCallback() {
     super.disconnectedCallback();
@@ -82,12 +85,22 @@ export class ViewerSaveToDriveBubbleElement extends
     }
   }
 
-  showAt(anchor: HTMLElement) {
+  // If `autoDismiss` is true, the bubble will be automatically dismissed after
+  // 5 seconds. However, if the bubble is already open manually, the timeout
+  // will be ignored.
+  showAt(anchor: HTMLElement, autoDismiss: boolean = false) {
+    if (this.$.dialog.open && autoDismiss && !this.dismissTimeoutId_) {
+      return;
+    }
     this.$.dialog.show();
     this.anchor_ = anchor;
     this.positionDialog_();
     this.$.dialog.focus();
+    this.eventTracker_.remove(window, 'resize');
     this.eventTracker_.add(window, 'resize', this.positionDialog_.bind(this));
+    if (autoDismiss) {
+      this.setDismissTimeout_();
+    }
   }
 
   protected getFileName_(): string {
@@ -130,6 +143,7 @@ export class ViewerSaveToDriveBubbleElement extends
         assertNotReached(`Invalid bubble action: ${this.state}`);
     }
     this.fire('save-to-drive-bubble-action', requestType);
+    this.$.dialog.close();
   }
 
   protected onCloseClick_() {
@@ -138,6 +152,10 @@ export class ViewerSaveToDriveBubbleElement extends
 
   protected onDialogClose_() {
     this.eventTracker_.removeAll();
+    if (this.dismissTimeoutId_) {
+      clearTimeout(this.dismissTimeoutId_);
+      this.dismissTimeoutId_ = null;
+    }
   }
 
   protected onFocusout_(e: FocusEvent) {
@@ -179,6 +197,13 @@ export class ViewerSaveToDriveBubbleElement extends
       this.$.dialog.style.top =
           `${this.anchor_.offsetTop + this.anchor_.offsetHeight}px`;
     }
+  }
+
+  private setDismissTimeout_() {
+    this.dismissTimeoutId_ = setTimeout(() => {
+      this.dismissTimeoutId_ = null;
+      this.$.dialog.close();
+    }, DISMISS_TIMEOUT_MS);
   }
 
   private updateDescription_() {

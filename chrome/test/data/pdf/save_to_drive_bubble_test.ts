@@ -52,6 +52,7 @@ async function testEventDispatchedFromButtonClick(
   button.click();
   const e: CustomEvent<SaveToDriveBubbleRequestType> = await eventPromise;
   chrome.test.assertEq(expectedEvent, e.detail);
+  chrome.test.assertFalse(element.$.dialog.open);
 }
 
 const tests = [
