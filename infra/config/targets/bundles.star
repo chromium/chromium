@@ -445,6 +445,7 @@ targets.bundle(
     name = "android_desktop_gtests",
     targets = [
         "android_browsertests",
+        "chrome_public_test_apk",
         "chrome_public_test_apk_desktop",
         "chrome_public_unit_test_apk",
         "extensions_unittests",
@@ -458,6 +459,21 @@ targets.bundle(
         "x86-64",
     ],
     per_test_modifications = {
+        "chrome_public_test_apk": targets.mixin(
+            args = [
+                # Tests on devices with large form factor are typically slower.
+                # Double the timeout threshold to reduce test flakiness.
+                "--timeout-scale=2.0",
+            ],
+            # Due to the capacity concern, this suite will run as ci_only.
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 30,
+            ),
+            # TODO(crbug.com/444482498): Remove the experiment after the suite
+            # is green.
+            experiment_percentage = 100,
+        ),
         "chrome_public_test_apk_desktop": targets.mixin(
             args = [
                 "--timeout-scale=2.0",
