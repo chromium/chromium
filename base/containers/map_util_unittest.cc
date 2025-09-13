@@ -212,6 +212,15 @@ TEST(MapUtilTest, InsertOrAssign) {
   EXPECT_EQ(it->second.value, 6);
 }
 
+TEST(MapUtilTest, InsertOrAssignInferKeyType) {
+  // The following should be able to infer the type of the key from the map's
+  // type.
+  base::flat_map<std::pair<int, std::string>, std::string> pair_mapping;
+  auto it = InsertOrAssign(pair_mapping, {3, "foo"}, "bar");
+  ASSERT_NE(it, pair_mapping.end());
+  EXPECT_EQ(it->second, "bar");
+}
+
 }  // namespace
 
 }  // namespace base

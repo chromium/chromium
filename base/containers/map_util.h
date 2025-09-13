@@ -85,7 +85,7 @@ constexpr MappedElementType* FindPtrOrNull(Map& map, const Key& key) {
 // TODO(crbug.com/376532871): This can be removed once map::operator[] and
 // map::insert_or_assign support heterogenous key overloads, in C++26.
 template <typename Map,
-          typename Key,
+          typename Key = Map::key_type,
           typename MappedElementType =
               std::pointer_traits<internal::MappedType<Map>>::element_type>
 Map::iterator InsertOrAssign(Map& map,
