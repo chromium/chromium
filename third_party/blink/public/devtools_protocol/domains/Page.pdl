@@ -1580,6 +1580,7 @@ domain Page
       SharedWorkerWithNoActiveClient
       WebLocks
       WebHID
+      WebBluetooth
       WebShare
       RequestedStorageAccessGrant
       WebNfc

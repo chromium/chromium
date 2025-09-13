@@ -2001,7 +2001,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::
           JsNetworkRequestReceivedCacheControlNoStoreResource;
     case WebSchedulerTrackedFeature::kWebSerial:
-    case WebSchedulerTrackedFeature::kWebBluetooth:
       // These features only disable aggressive throttling.
       NOTREACHED();
     case WebSchedulerTrackedFeature::kSmartCard:
@@ -2017,6 +2016,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
           ContentWebAuthenticationAPI;
     case WebSchedulerTrackedFeature::kSharedWorkerMessage:
       return Page::BackForwardCacheNotRestoredReasonEnum::SharedWorkerMessage;
+    case WebSchedulerTrackedFeature::kWebBluetooth:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebBluetooth;
   }
 }
 
@@ -2242,6 +2243,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebSocket:
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
     case WebSchedulerTrackedFeature::kWebAuthentication:
+    case WebSchedulerTrackedFeature::kWebBluetooth:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
@@ -2258,7 +2260,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebSocketSticky:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case WebSchedulerTrackedFeature::kWebSerial:
-    case WebSchedulerTrackedFeature::kWebBluetooth:
       NOTREACHED();
   }
 }
