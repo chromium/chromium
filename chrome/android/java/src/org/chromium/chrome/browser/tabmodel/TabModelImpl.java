@@ -412,6 +412,8 @@ public class TabModelImpl extends TabModelJniBridge {
         Tab tab = getTabById(tabId);
         if (tab == null) return;
 
+        if (tab.getIsPinned()) return;
+
         // Call #notifyWillChangePinState before #moveTab. The notify step triggers
         // TabGroupModelFilterImpl#willChangePinState to ungroup the tab prior to pinning.
         // #moveTab typically kicks off StripLayoutHelper#rebuildStripView. If rebuild runs
@@ -429,6 +431,8 @@ public class TabModelImpl extends TabModelJniBridge {
 
         Tab tab = getTabById(tabId);
         if (tab == null) return;
+
+        if (!tab.getIsPinned()) return;
 
         // The index before the first non-pinned tab is the last pinned tab. Hence move the tab to
         // the last pinned tab.
