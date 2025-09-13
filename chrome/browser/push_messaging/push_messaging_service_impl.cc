@@ -51,6 +51,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/push_messaging/app_identifier.h"
 #include "components/push_messaging/push_messaging_constants.h"
 #include "components/push_messaging/push_messaging_features.h"
 #include "components/push_messaging/push_messaging_utils.h"
@@ -201,7 +202,7 @@ void PushMessagingServiceImpl::InitializeForProfile(Profile* profile) {
   if (!profile || profile->IsOffTheRecord())
     return;
 
-  int count = push_messaging::AppIdentifier::GetCount(profile);
+  int count = PushMessagingAppIdentifier::GetCount(profile);
   if (count <= 0)
     return;
 
@@ -220,13 +221,12 @@ void PushMessagingServiceImpl::RemoveExpiredSubscriptions() {
   }
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      push_messaging::AppIdentifier::GetCount(profile_),
+      PushMessagingAppIdentifier::GetCount(profile_),
       remove_expired_subscriptions_callback_for_testing_.is_null()
           ? base::DoNothing()
           : std::move(remove_expired_subscriptions_callback_for_testing_));
 
-  for (const auto& identifier :
-       push_messaging::AppIdentifier::GetAll(profile_)) {
+  for (const auto& identifier : PushMessagingAppIdentifier::GetAll(profile_)) {
     if (!identifier.IsExpired()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, barrier_closure);
@@ -325,8 +325,7 @@ void PushMessagingServiceImpl::ShutdownHandler() {
 
 void PushMessagingServiceImpl::OnStoreReset() {
   // Delete all cached subscriptions, since they are now invalid.
-  for (const auto& identifier :
-       push_messaging::AppIdentifier::GetAll(profile_)) {
+  for (const auto& identifier : PushMessagingAppIdentifier::GetAll(profile_)) {
     RecordUnsubscribeReason(
         blink::mojom::PushUnregistrationReason::GCM_STORE_RESET);
     // Clear all the subscriptions in parallel, to reduce risk that shutdown
@@ -336,7 +335,7 @@ void PushMessagingServiceImpl::OnStoreReset() {
                             base::DoNothing());
     // TODO(johnme): Fire pushsubscriptionchange/pushsubscriptionlost SW event.
   }
-  push_messaging::AppIdentifier::DeleteAllFromPrefs(profile_);
+  PushMessagingAppIdentifier::DeleteAllFromPrefs(profile_);
 }
 
 // OnMessage methods -----------------------------------------------------------
@@ -362,7 +361,7 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
   refresher_.GotMessageFrom(app_id);
 
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByAppId(profile_, app_id);
+      PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
   // Drop message and unregister if app_id was unknown (maybe recently deleted).
   if (app_identifier.is_null()) {
     std::optional<push_messaging::AppIdentifier> refresh_identifier =
@@ -410,7 +409,7 @@ void PushMessagingServiceImpl::CheckOriginAndDispatchNextMessage() {
   messages_pending_permission_check_.pop();
 
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByAppId(profile_, message.app_id);
+      PushMessagingAppIdentifier::FindByAppId(profile_, message.app_id);
 
   if (app_identifier.is_null()) {
     CheckOriginAndDispatchNextMessage();
@@ -431,7 +430,7 @@ void PushMessagingServiceImpl::OnCheckedOrigin(
   origin_revocation_request_.reset();
 
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByAppId(profile_, message.app_id);
+      PushMessagingAppIdentifier::FindByAppId(profile_, message.app_id);
 
   if (app_identifier.is_null()) {
     CheckOriginAndDispatchNextMessage();
@@ -659,7 +658,7 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
 
   if (unsubscribe_reason != blink::mojom::PushUnregistrationReason::UNKNOWN) {
     push_messaging::AppIdentifier app_identifier =
-        push_messaging::AppIdentifier::FindByAppId(profile_, app_id);
+        PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
     UnsubscribeInternal(
         unsubscribe_reason,
         app_identifier.is_null() ? GURL() : app_identifier.origin(),
@@ -735,7 +734,7 @@ void PushMessagingServiceImpl::DidHandleMessage(
 #endif
 
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByAppId(profile_, app_id);
+      PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
 
   if (app_identifier.is_null() || !did_show_generic_notification)
     return;
@@ -780,7 +779,7 @@ void PushMessagingServiceImpl::OnMessageDecryptionFailed(
     const std::string& message_id,
     const std::string& error_message) {
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByAppId(profile_, app_id);
+      PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
 
   if (app_identifier.is_null())
     return;
@@ -802,7 +801,7 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
     RegisterCallback callback) {
   render_process_id_ = render_process_id;
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           profile_, requesting_origin, service_worker_registration_id);
 
   // If there is no existing app identifier for the given Service Worker,
@@ -883,7 +882,7 @@ void PushMessagingServiceImpl::SubscribeFromWorker(
 
   render_process_id_ = render_process_id;
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           profile_, requesting_origin, service_worker_registration_id);
 
   // If there is no existing app identifier for the given Service Worker,
@@ -1169,7 +1168,7 @@ void PushMessagingServiceImpl::DidSubscribeWithEncryptionInfo(
     return;
   }
 
-  push_messaging::AppIdentifier::PersistToPrefs(app_identifier, profile_);
+  PushMessagingAppIdentifier::PersistToPrefs(app_identifier, profile_);
   PushMessagingUnsubscribedEntry(
       app_identifier.origin(), app_identifier.service_worker_registration_id())
       .DeleteFromPrefs(profile_);
@@ -1192,7 +1191,7 @@ void PushMessagingServiceImpl::GetSubscriptionInfo(
     const std::string& subscription_id,
     SubscriptionInfoCallback callback) {
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           profile_, origin, service_worker_registration_id);
 
   if (app_identifier.is_null()) {
@@ -1268,7 +1267,7 @@ void PushMessagingServiceImpl::Unsubscribe(
     const std::string& sender_id,
     UnregisterCallback callback) {
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           profile_, requesting_origin, service_worker_registration_id);
 
   UnsubscribeInternal(
@@ -1325,10 +1324,10 @@ void PushMessagingServiceImpl::DidClearPushSubscriptionId(
   // TODO(johnme): Instead of deleting these app ids, store them elsewhere, and
   // retry unregistration if it fails due to network errors (crbug.com/465399).
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByAppId(profile_, app_id);
+      PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
   bool was_subscribed = !app_identifier.is_null();
   if (was_subscribed) {
-    push_messaging::AppIdentifier::DeleteFromPrefs(app_identifier, profile_);
+    PushMessagingAppIdentifier::DeleteFromPrefs(app_identifier, profile_);
     if (base::FeatureList::IsEnabled(
             features::kPushSubscriptionChangeEventOnResubscribe)) {
       switch (reason) {
@@ -1445,7 +1444,7 @@ void PushMessagingServiceImpl::DidDeleteServiceWorkerRegistration(
   PushMessagingUnsubscribedEntry(origin, service_worker_registration_id)
       .DeleteFromPrefs(profile_);
   const push_messaging::AppIdentifier& app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           profile_, origin, service_worker_registration_id);
   if (app_identifier.is_null()) {
     if (!service_worker_unregistered_callback_for_testing_.is_null())
@@ -1476,7 +1475,7 @@ void PushMessagingServiceImpl::DidDeleteServiceWorkerDatabase() {
   PushMessagingUnsubscribedEntry::DeleteAllFromPrefs(profile_);
 
   std::vector<push_messaging::AppIdentifier> app_identifiers =
-      push_messaging::AppIdentifier::GetAll(profile_);
+      PushMessagingAppIdentifier::GetAll(profile_);
 
   base::RepeatingClosure completed_closure = base::BarrierClosure(
       app_identifiers.size(),
@@ -1514,7 +1513,7 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
   }
 
   std::vector<push_messaging::AppIdentifier> all_app_identifiers =
-      push_messaging::AppIdentifier::GetAll(profile_);
+      PushMessagingAppIdentifier::GetAll(profile_);
 
   std::vector<PushMessagingUnsubscribedEntry> unsubscribed_entries;
   if (base::FeatureList::IsEnabled(
@@ -1745,7 +1744,7 @@ void PushMessagingServiceImpl::OnSubscriptionInvalidation(
       << "It is not allowed to call this method when "
          "features::kPushSubscriptionChangeEventOnInvalidation is disabled.";
   push_messaging::AppIdentifier old_app_identifier =
-      push_messaging::AppIdentifier::FindByAppId(profile_, app_id);
+      PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
   if (old_app_identifier.is_null())
     return;
 
@@ -1868,7 +1867,7 @@ void PushMessagingServiceImpl::DidUpdateSubscription(
   refresher_.OnSubscriptionUpdated(new_app_id);
 
   push_messaging::AppIdentifier new_app_identifier =
-      push_messaging::AppIdentifier::FindByAppId(profile_, new_app_id);
+      PushMessagingAppIdentifier::FindByAppId(profile_, new_app_id);
 
   // Callback for testing
   base::OnceClosure callback =

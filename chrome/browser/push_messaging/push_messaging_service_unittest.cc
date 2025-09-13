@@ -369,8 +369,8 @@ TEST_F(PushMessagingServiceTest, MAYBE_PayloadEncryptionTest) {
 
   // (4) Find the app_id that has been associated with the subscription.
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(profile(), origin,
-                                                         kTestServiceWorkerId);
+      PushMessagingAppIdentifier::FindByServiceWorker(profile(), origin,
+                                                      kTestServiceWorkerId);
 
   ASSERT_FALSE(app_identifier.is_null());
 
@@ -453,14 +453,14 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
   // |app_identifier|
   Subscribe(push_service, origin);
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(profile(), origin,
-                                                         kTestServiceWorkerId);
+      PushMessagingAppIdentifier::FindByServiceWorker(profile(), origin,
+                                                      kTestServiceWorkerId);
   ASSERT_FALSE(app_identifier.is_null());
 
   // (4) Manually set the time as expired, save the time in preferences
   app_identifier.set_expiration_time(base::Time::UnixEpoch());
-  push_messaging::AppIdentifier::PersistToPrefs(app_identifier, profile());
-  ASSERT_EQ(1u, push_messaging::AppIdentifier::GetCount(profile()));
+  PushMessagingAppIdentifier::PersistToPrefs(app_identifier, profile());
+  ASSERT_EQ(1u, PushMessagingAppIdentifier::GetCount(profile()));
 
   // (3) Remove all expired subscriptions
   base::RunLoop run_loop;
@@ -470,10 +470,10 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
   run_loop.Run();
 
   // (5) We expect the subscription to be deleted
-  ASSERT_EQ(0u, push_messaging::AppIdentifier::GetCount(profile()));
+  ASSERT_EQ(0u, PushMessagingAppIdentifier::GetCount(profile()));
   push_messaging::AppIdentifier deleted_identifier =
-      push_messaging::AppIdentifier::FindByAppId(profile(),
-                                                 app_identifier.app_id());
+      PushMessagingAppIdentifier::FindByAppId(profile(),
+                                              app_identifier.app_id());
   EXPECT_TRUE(deleted_identifier.is_null());
 }
 

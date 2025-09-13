@@ -1164,7 +1164,7 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
   push_messaging::AppIdentifier GetAppIdentifierForServiceWorkerRegistration(
       int64_t service_worker_registration_id) {
     push_messaging::AppIdentifier app_identifier =
-        push_messaging::AppIdentifier::FindByServiceWorker(
+        PushMessagingAppIdentifier::FindByServiceWorker(
             browser()->profile(), app_url(), service_worker_registration_id);
     return app_identifier;
   }

@@ -8,52 +8,36 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <optional>
 #include <string>
 #include <vector>
 
-#include "base/check.h"
 #include "base/gtest_prod_util.h"
-#include "base/time/time.h"
+#include "components/push_messaging/app_identifier.h"
 #include "url/gurl.h"
 
 class Profile;
-class PushMessagingBrowserTestBase;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-// Type used to identify a Service Worker registration from a Push API
-// perspective. These can be persisted to prefs, in a 1:1 mapping between
-// app_id (which includes origin) and service_worker_registration_id.
-// Legacy mapped values saved by old versions of Chrome are also supported;
-// these don't contain the origin in the app_id, so instead they map from
-// app_id to pair<origin, service_worker_registration_id>.
-namespace push_messaging {
-
-// The prefix used for all push messaging application ids.
-extern const char kAppIdentifierPrefix[];
-
-class AppIdentifier {
+// The integration of push_messaging::AppIdentifier with //chrome.
+// This is a static class with only static utility functions. But it's also a
+// friend class of push_messaging::AppIdentifier to allow using private
+// functions.
+// TODO(crbug.com/444713031): Use of the private functions of
+// push_messaging::AppIdentifier is less ideal and should be addressed sooner or
+// later.
+class PushMessagingAppIdentifier final {
  public:
-  // crbug.com/440400313, to support PushMessagingAPI out of the //chrome, this
-  // is an ongoing effort to move the shared components to
-  // //components/push_messaging/. Functions in // AppIdentifier accessing
-  // //chrome, e.g. Profile or PrefRegistrySyncable, should be static.
+  PushMessagingAppIdentifier() = delete;
+  PushMessagingAppIdentifier(const PushMessagingAppIdentifier&) = delete;
+  PushMessagingAppIdentifier(PushMessagingAppIdentifier&&) = delete;
+
+  using AppIdentifier = ::push_messaging::AppIdentifier;
 
   // Register profile-specific prefs.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-  // Returns whether the modern InstanceID API should be used with this app_id
-  // (rather than legacy GCM registration).
-  static bool UseInstanceID(const std::string& app_id);
-
-  // Generates a new app identifier, with partially random app_id.
-  static AppIdentifier Generate(
-      const GURL& origin,
-      int64_t service_worker_registration_id,
-      const std::optional<base::Time>& expiration_time = std::nullopt);
 
   // Looks up an app identifier by app_id. If not found, is_null() will be true.
   static AppIdentifier FindByAppId(Profile* profile, const std::string& app_id);
@@ -77,86 +61,11 @@ class AppIdentifier {
   // the given |profile|.
   static size_t GetCount(Profile* profile);
 
-  ~AppIdentifier();
-
   // Persist this app identifier to prefs.
   static void PersistToPrefs(const AppIdentifier& id, Profile* profile);
 
   // Delete this app identifier from prefs.
   static void DeleteFromPrefs(const AppIdentifier& id, Profile* profile);
-
-  // Returns true if this identifier does not represent an app (i.e. this was
-  // returned by a failed Find call).
-  bool is_null() const { return service_worker_registration_id_ < 0; }
-
-  // String that should be passed to push services like GCM to identify a
-  // particular Service Worker (so we can route incoming messages). Example:
-  // wp:https://foo.example.com:8443/#9CC55CCE-B8F9-4092-A364-3B0F73A3AB5F
-  // Legacy app_ids have no origin, e.g. wp:9CC55CCE-B8F9-4092-A364-3B0F73A3AB5F
-  const std::string& app_id() const {
-    DCHECK(!is_null());
-    return app_id_;
-  }
-
-  const GURL& origin() const {
-    DCHECK(!is_null());
-    return origin_;
-  }
-
-  int64_t service_worker_registration_id() const {
-    DCHECK(!is_null());
-    return service_worker_registration_id_;
-  }
-
-  void set_expiration_time(const std::optional<base::Time>& expiration_time) {
-    expiration_time_ = expiration_time;
-  }
-
-  bool IsExpired() const;
-
-  std::optional<base::Time> expiration_time() const {
-    DCHECK(!is_null());
-    return expiration_time_;
-  }
-
-  // Copy constructor
-  AppIdentifier(const AppIdentifier& other);
-
- private:
-  friend class PushMessagingAppIdentifierTest;
-  friend class ::PushMessagingBrowserTestBase;
-  FRIEND_TEST_ALL_PREFIXES(PushMessagingAppIdentifierTest, FindLegacy);
-
-  // Generates a new app identifier for legacy GCM (not modern InstanceID).
-  static AppIdentifier LegacyGenerateForTesting(
-      const GURL& origin,
-      int64_t service_worker_registration_id,
-      const std::optional<base::Time>& expiration_time = std::nullopt);
-
-  static AppIdentifier GenerateInternal(
-      const GURL& origin,
-      int64_t service_worker_registration_id,
-      bool use_instance_id,
-      const std::optional<base::Time>& expiration_time = std::nullopt);
-
-  // Constructs an invalid app identifier.
-  AppIdentifier();
-  // Constructs a valid app identifier.
-  AppIdentifier(
-      const std::string& app_id,
-      const GURL& origin,
-      int64_t service_worker_registration_id,
-      const std::optional<base::Time>& expiration_time = std::nullopt);
-
-  // Validates that all the fields contain valid values.
-  void DCheckValid() const;
-
-  std::string app_id_;
-  GURL origin_;
-  int64_t service_worker_registration_id_;
-  std::optional<base::Time> expiration_time_;
 };
-
-}  // namespace push_messaging
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_APP_IDENTIFIER_H_

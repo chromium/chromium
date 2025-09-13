@@ -60,6 +60,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/push_messaging/app_identifier.h"
 #include "components/push_messaging/push_messaging_constants.h"
 #include "components/push_messaging/push_messaging_features.h"
 #include "components/push_messaging/push_messaging_utils.h"
@@ -478,7 +479,7 @@ void PushMessagingBrowserTestBase::SetupOrphanedPushSubscription(
   run_loop.Run();
 
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), requesting_origin,
           service_worker_registration_id);
   ASSERT_FALSE(app_identifier.is_null());
@@ -515,8 +516,8 @@ void PushMessagingBrowserTestBase::LegacySubscribeSuccessfully(
     ASSERT_EQ(gcm::GCMClient::SUCCESS, register_result);
   }
 
-  push_messaging::AppIdentifier::PersistToPrefs(app_identifier,
-                                                GetBrowser()->profile());
+  PushMessagingAppIdentifier::PersistToPrefs(app_identifier,
+                                             GetBrowser()->profile());
   push_service_->IncreasePushSubscriptionCount(1, false /* is_pending */);
   push_service_->DecreasePushSubscriptionCount(1, true /* was_pending */);
 
@@ -560,7 +561,7 @@ PushMessagingBrowserTestBase::GetAppIdentifierForServiceWorkerRegistration(
     int64_t service_worker_registration_id) {
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin, service_worker_registration_id);
   EXPECT_FALSE(app_identifier.is_null());
   return app_identifier;
@@ -745,7 +746,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, SubscribeWithInvalidation) {
   ASSERT_EQ(token1, token2);
 
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(),
           https_server()->GetURL("/").DeprecatedGetOriginAsURL(),
           0LL /* service_worker_registration_id */);
@@ -1304,8 +1305,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventNoServiceWorker) {
 
   // |app_identifier| should no longer be stored in prefs.
   push_messaging::AppIdentifier stored_app_identifier =
-      push_messaging::AppIdentifier::FindByAppId(GetBrowser()->profile(),
-                                                 app_id);
+      PushMessagingAppIdentifier::FindByAppId(GetBrowser()->profile(), app_id);
   EXPECT_TRUE(stored_app_identifier.is_null());
 }
 
@@ -1386,8 +1386,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPermission) {
   EXPECT_EQ("false - not subscribed", RunScript("hasSubscription()"));
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   push_messaging::AppIdentifier app_identifier_afterwards =
-      push_messaging::AppIdentifier::FindByServiceWorker(
-          GetBrowser()->profile(), origin, 0LL);
+      PushMessagingAppIdentifier::FindByServiceWorker(GetBrowser()->profile(),
+                                                      origin, 0LL);
   EXPECT_TRUE(app_identifier_afterwards.is_null());
   histogram_tester_.ExpectUniqueSample(
       "PushMessaging.UnregistrationReason",
@@ -1654,8 +1654,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("false - not subscribed", RunScript("hasSubscription()"));
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   push_messaging::AppIdentifier app_identifier_afterwards =
-      push_messaging::AppIdentifier::FindByServiceWorker(
-          GetBrowser()->profile(), origin, 0LL);
+      PushMessagingAppIdentifier::FindByServiceWorker(GetBrowser()->profile(),
+                                                      origin, 0LL);
   EXPECT_TRUE(app_identifier_afterwards.is_null());
 
   // 1st event - blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED.
@@ -2174,7 +2174,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   // We should not be able to look up the app id.
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin,
           0LL /* service_worker_registration_id */);
   EXPECT_TRUE(app_identifier.is_null());
@@ -2206,8 +2206,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       1);
 
   // There should not be any subscriptions left.
-  EXPECT_EQ(push_messaging::AppIdentifier::GetCount(GetBrowser()->profile()),
-            0u);
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
 
   EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
               IsEmpty());
@@ -2234,8 +2233,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   }
 
   // There should be no subscription but one unsubscribed entry.
-  EXPECT_EQ(push_messaging::AppIdentifier::GetCount(GetBrowser()->profile()),
-            0u);
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
   EXPECT_THAT(
       PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
       ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
@@ -2251,8 +2249,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   }
 
   // There should be no subscription and no unsubscribed entry anymore.
-  EXPECT_EQ(push_messaging::AppIdentifier::GetCount(GetBrowser()->profile()),
-            0u);
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
   EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
               IsEmpty());
 }
@@ -2279,8 +2276,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 
   // There should be no subscription but one unsubscribed entry.
-  EXPECT_EQ(push_messaging::AppIdentifier::GetCount(GetBrowser()->profile()),
-            0u);
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
   EXPECT_THAT(
       PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
       ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
@@ -2296,8 +2292,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 
   // There should be no subscription and no unsubscribed entry anymore.
-  EXPECT_EQ(push_messaging::AppIdentifier::GetCount(GetBrowser()->profile()),
-            0u);
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
   EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
               IsEmpty());
 }
@@ -2308,7 +2303,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   push_messaging::AppIdentifier app_identifier1 =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin,
           0LL /* service_worker_registration_id */);
   ASSERT_FALSE(app_identifier1.is_null());
@@ -2320,7 +2315,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   histogram_tester_.ExpectTotalCount("PushMessaging.UnregistrationReason", 0);
   // We should still be able to look up the app id.
   push_messaging::AppIdentifier app_identifier2 =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin,
           0LL /* service_worker_registration_id */);
   EXPECT_FALSE(app_identifier2.is_null());
@@ -2337,7 +2332,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       1);
   // We should no longer be able to look up the app id.
   push_messaging::AppIdentifier app_identifier3 =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin,
           0LL /* service_worker_registration_id */);
   EXPECT_TRUE(app_identifier3.is_null());
@@ -2673,8 +2668,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // |app_identifier| should no longer be stored in prefs.
   push_messaging::AppIdentifier stored_app_identifier =
-      push_messaging::AppIdentifier::FindByAppId(GetBrowser()->profile(),
-                                                 app_id);
+      PushMessagingAppIdentifier::FindByAppId(GetBrowser()->profile(), app_id);
   EXPECT_TRUE(stored_app_identifier.is_null());
 
   histogram_tester_.ExpectUniqueSample(
@@ -2986,8 +2980,7 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnInvalidationTest,
   EXPECT_EQ("unsubscribe result: true", RunScript("unsubscribePush()"));
 
   // There should be no subscription since we unsubscribed
-  EXPECT_EQ(push_messaging::AppIdentifier::GetCount(GetBrowser()->profile()),
-            0u);
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
 
   // Create a |new_subscription| by resubscribing
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
@@ -3073,13 +3066,13 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnInvalidationTest,
 
   // Old subscription should be gone
   push_messaging::AppIdentifier deleted_identifier =
-      push_messaging::AppIdentifier::FindByAppId(GetBrowser()->profile(),
-                                                 app_identifier.app_id());
+      PushMessagingAppIdentifier::FindByAppId(GetBrowser()->profile(),
+                                              app_identifier.app_id());
   EXPECT_TRUE(deleted_identifier.is_null());
 
   // New subscription with a different app id should exist
   push_messaging::AppIdentifier new_identifier =
-      push_messaging::AppIdentifier::FindByServiceWorker(
+      PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), app_identifier.origin(),
           app_identifier.service_worker_registration_id());
   EXPECT_FALSE(new_identifier.is_null());

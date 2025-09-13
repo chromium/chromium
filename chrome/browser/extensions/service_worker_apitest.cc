@@ -899,7 +899,7 @@ class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
       int64_t service_worker_registration_id,
       const GURL& origin) {
     push_messaging::AppIdentifier app_identifier =
-        push_messaging::AppIdentifier::FindByServiceWorker(
+        PushMessagingAppIdentifier::FindByServiceWorker(
             profile(), origin, service_worker_registration_id);
 
     EXPECT_FALSE(app_identifier.is_null());

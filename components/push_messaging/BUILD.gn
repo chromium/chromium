@@ -4,6 +4,8 @@
 
 static_library("push_messaging") {
   sources = [
+    "app_identifier.cc",
+    "app_identifier.h",
     "push_messaging_constants.cc",
     "push_messaging_constants.h",
     "push_messaging_features.cc",
