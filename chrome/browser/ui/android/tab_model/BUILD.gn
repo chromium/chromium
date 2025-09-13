@@ -19,6 +19,7 @@ source_set("tab_model") {
   ]
   public_deps = [
     "//base",
+    "//build:android_buildflags",
     "//chrome/browser/flags:chrome_browser_flags_enums_srcjar",
     "//chrome/browser/flags:flags_android",
     "//chrome/browser/ui/tabs:tab_list_interface",

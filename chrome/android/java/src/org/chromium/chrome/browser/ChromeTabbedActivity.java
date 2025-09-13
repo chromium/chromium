@@ -283,6 +283,7 @@ import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactor
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.browser_window.BrowserWindowType;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -783,6 +784,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mLocaleManager = LocaleManager.getInstance();
             mLocaleManager.showSearchEnginePromoIfNeeded(this, null);
 
+            // Initialize TabModel.
             mTabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
 
             // With tab collections this is managed internally to {@link TabCollectionTabModelImpl}.
@@ -798,8 +800,21 @@ public class ChromeTabbedActivity extends ChromeActivity {
             }
 
             mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
+            TabModel currentTabModel = mTabModelSelector.getCurrentModel();
 
-            Profile profile = mTabModelSelector.getCurrentModel().getProfile();
+            // Initialize ChromeAndroidTask.
+            //
+            // This needs to be done before any tab is added so that
+            // TabModel#associateWithBrowserWindow() can be called in time for each tab to have the
+            // same native SessionID as the native AndroidBrowserWindow managed by
+            // ChromeAndroidTask.
+            ChromeAndroidTask chromeAndroidTask = initializeChromeAndroidTask(currentTabModel);
+            if (chromeAndroidTask != null) {
+                currentTabModel.associateWithBrowserWindow(
+                        chromeAndroidTask.getOrCreateNativeBrowserWindowPtr());
+                initializeExtensionWindowControllerBridge(chromeAndroidTask);
+            }
+
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =
                     new HistoricalTabModelObserver(
@@ -807,7 +822,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                     .getTabGroupModelFilterProvider()
                                     .getTabGroupModelFilter(false));
             mHistoricalTabModelObserver.addSecondaryTabModelSupplier(
-                    ArchivedTabModelOrchestrator.getForProfile(profile)::getTabModel);
+                    ArchivedTabModelOrchestrator.getForProfile(currentTabModel.getProfile())
+                            ::getTabModel);
 
             // Defer creation of this helper so it triggers after TabGroupModelFilter observers.
             mUndoRefocusHelper =
@@ -1280,33 +1296,32 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
     }
 
-    private void initializeExtensionWindowControllerBridge() {
-        try (TraceEvent e =
-                TraceEvent.scoped(
-                        "ChromeTabbedActivity.initializeExtensionWindowControllerBridge")) {
+    @Nullable
+    private ChromeAndroidTask initializeChromeAndroidTask(TabModel currentTabModel) {
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.initializeChromeAndroidTask")) {
             var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
             if (chromeAndroidTaskTracker == null) {
-                return;
+                return null;
             }
 
             var activityWindowAndroid = getWindowAndroid();
-            assert activityWindowAndroid != null;
+            assert activityWindowAndroid != null
+                    : "ChromeAndroidTask must be initialized after Java WindowAndroid is created.";
 
-            var chromeAndroidTask =
-                    chromeAndroidTaskTracker.obtainTask(
-                            BrowserWindowType.NORMAL, activityWindowAndroid, getCurrentTabModel());
+            return chromeAndroidTaskTracker.obtainTask(
+                    BrowserWindowType.NORMAL, activityWindowAndroid, currentTabModel);
+        }
+    }
 
-            mTabModelSelector
-                    .getCurrentModel()
-                    .associateWithBrowserWindow(
-                            chromeAndroidTask.getOrCreateNativeBrowserWindowPtr());
+    private void initializeExtensionWindowControllerBridge(
+            @Nullable ChromeAndroidTask chromeAndroidTask) {
+        if (chromeAndroidTask == null) {
+            return;
+        }
 
-            var extensionWindowControllerBridge =
-                    ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask);
-            if (extensionWindowControllerBridge == null) {
-                return;
-            }
-
+        var extensionWindowControllerBridge =
+                ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask);
+        if (extensionWindowControllerBridge != null) {
             chromeAndroidTask.addFeature(extensionWindowControllerBridge);
         }
     }
@@ -1428,10 +1443,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::initializeToolbarManager));
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    mCallbackController.makeCancelable(
-                            this::initializeExtensionWindowControllerBridge));
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(

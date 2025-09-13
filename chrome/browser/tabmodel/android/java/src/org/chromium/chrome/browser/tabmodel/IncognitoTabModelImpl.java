@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.Iterator;
+import java.util.OptionalInt;
 import java.util.Set;
 
 /**
@@ -416,5 +417,10 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public int findFirstNonPinnedTabIndex() {
         return mDelegateModel.findFirstNonPinnedTabIndex();
+    }
+
+    @Override
+    public OptionalInt getNativeSessionIdForTesting() {
+        return mDelegateModel.getNativeSessionIdForTesting();
     }
 }

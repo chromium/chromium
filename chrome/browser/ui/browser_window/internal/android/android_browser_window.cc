@@ -55,6 +55,10 @@ void AndroidBrowserWindow::Destroy(JNIEnv* env) {
   delete this;
 }
 
+jint AndroidBrowserWindow::GetSessionIdForTesting(JNIEnv* env) const {
+  return GetSessionID().id();
+}
+
 ui::UnownedUserDataHost& AndroidBrowserWindow::GetUnownedUserDataHost() {
   return unowned_user_data_host_;
 }

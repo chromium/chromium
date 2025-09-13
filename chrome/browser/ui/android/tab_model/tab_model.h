@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
@@ -288,6 +289,18 @@ class TabModel : public TabListInterface {
   void BroadcastSessionRestoreComplete();
 
   LocationBarModel* GetLocationBarModel();
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  // Sets the |SessionID|.
+  //
+  // This is only needed on desktop Android, where |BrowserWindowInterface|
+  // should be the source of truth for |SessionID|. This function will be
+  // called when |TabModel| is associated with a |BrowserWindowInterface|.
+  //
+  // TODO(http://crbug.com/444518651): remove the if-def when
+  // |BrowserWindowInterface| is compiled into all Android builds.
+  void SetSessionId(SessionID sessionId);
+#endif
 
  private:
   raw_ptr<Profile, DanglingUntriaged> profile_;

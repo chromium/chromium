@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 
+#include <jni.h>
 #include <stdint.h>
 
 #include <utility>
@@ -108,9 +109,12 @@ void TabModelJniBridge::AssociateWithBrowserWindow(
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
   BrowserWindowInterface* android_browser_window =
       reinterpret_cast<BrowserWindowInterface*>(native_android_browser_window);
+  CHECK(android_browser_window != nullptr);
+
   scoped_unowned_user_data_ =
       std::make_unique<ui::ScopedUnownedUserData<TabModel>>(
           android_browser_window->GetUnownedUserDataHost(), *this);
+  SetSessionId(android_browser_window->GetSessionID());
 #endif
 }
 
@@ -163,6 +167,10 @@ void TabModelJniBridge::MoveTabGroupToWindowForTesting(
 #else
   NOTIMPLEMENTED();
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+}
+
+jint TabModelJniBridge::GetSessionIdForTesting(JNIEnv* env) {
+  return GetSessionId().id();
 }
 
 void TabModelJniBridge::AddTabListInterfaceObserver(

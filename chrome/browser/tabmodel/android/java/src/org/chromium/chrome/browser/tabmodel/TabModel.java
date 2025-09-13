@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
+import java.util.OptionalInt;
 import java.util.Set;
 
 /**
@@ -203,4 +204,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @return The index of the first non-pinned tab, or the model count if all tabs are pinned.
      */
     int findFirstNonPinnedTabIndex();
+
+    /** Returns the native {@code SessionID} as returned by {@code tab_model.h:GetSessionId()}. */
+    OptionalInt getNativeSessionIdForTesting();
 }

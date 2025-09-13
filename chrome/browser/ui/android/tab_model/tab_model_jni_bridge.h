@@ -58,6 +58,7 @@ class TabModelJniBridge : public TabModel {
                                       const base::Token& group_id,
                                       long android_browser_window_ptr,
                                       int new_index);
+  jint GetSessionIdForTesting(JNIEnv* env);
 
   // TabModel::
   void AddTabListInterfaceObserver(TabListInterfaceObserver* observer) override;

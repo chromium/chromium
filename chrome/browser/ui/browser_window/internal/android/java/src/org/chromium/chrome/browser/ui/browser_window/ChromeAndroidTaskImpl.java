@@ -45,6 +45,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -476,6 +477,11 @@ final class ChromeAndroidTaskImpl
         synchronized (mFeaturesLock) {
             return mFeatures;
         }
+    }
+
+    @Override
+    public OptionalInt getSessionIdForTesting() {
+        return mAndroidBrowserWindow.getNativeSessionIdForTesting();
     }
 
     @Nullable TabModel getObservedTabModelForTesting() {

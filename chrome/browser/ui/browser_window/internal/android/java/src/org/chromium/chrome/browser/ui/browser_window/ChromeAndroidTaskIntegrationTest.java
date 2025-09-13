@@ -64,6 +64,26 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    public void startChromeTabbedActivity_ChromeAndroidTaskAndTabModelHaveSameSessionId() {
+        // Arrange.
+        mFreshCtaTransitTestRule.startOnBlankPage();
+
+        int taskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+
+        var tabModel = mFreshCtaTransitTestRule.getActivity().getCurrentTabModel();
+
+        // Assert.
+        assertTrue(chromeAndroidTask.getSessionIdForTesting().isPresent());
+        assertTrue(tabModel.getNativeSessionIdForTesting().isPresent());
+        assertEquals(
+                chromeAndroidTask.getSessionIdForTesting(),
+                tabModel.getNativeSessionIdForTesting());
+    }
+
+    @Test
+    @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
     public void startChromeTabbedActivity_activeChromeAndroidTask_isActive() {
         // Arrange & Act.

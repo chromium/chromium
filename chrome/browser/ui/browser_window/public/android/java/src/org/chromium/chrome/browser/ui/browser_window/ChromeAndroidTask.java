@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.util.List;
+import java.util.OptionalInt;
 
 /**
  * Represents an Android window containing Chrome.
@@ -188,4 +189,9 @@ public interface ChromeAndroidTask {
 
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
     List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();
+
+    /**
+     * Returns the {@code SessionID} as returned by {@code BrowserWindowInterface::GetSessionID()}.
+     */
+    OptionalInt getSessionIdForTesting();
 }

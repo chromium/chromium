@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -36,6 +37,28 @@ sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(Profile* profile) {
 
   return service->GetOpenTabsUIDelegate();
 }
+
+// Returns the initial |SessionID| for |TabModel|.
+//
+// On desktop Android, |BrowserWindowInterface| should be the source of truth
+// for |SessionID|, so we use the invalid value as the initial |SessionID| and
+// set a valid |SessionID| during
+// |TabModelJniBridge::AssociateWithBrowserWindow|. This aligns with the
+// implementation on other desktop platforms.
+//
+// On other Android platforms, there is no |BrowserWindowInterface|, and
+// |TabModel| has been the source of truth for |SessionID|, so we can use
+// |SessionID:NewUnique|.
+//
+// TODO(http://crbug.com/444518651): remove the if-def when
+// |BrowserWindowInterface| is compiled into all Android builds.
+SessionID GetInitialSessionId() {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  return SessionID::InvalidValue();
+#else
+  return SessionID::NewUnique();
+#endif
+}
 }  // namespace
 
 DEFINE_USER_DATA(TabModel);
@@ -47,7 +70,7 @@ TabModel::TabModel(Profile* profile, ActivityType activity_type)
       synced_window_delegate_(new browser_sync::SyncedWindowDelegateAndroid(
           this,
           activity_type == ActivityType::kTabbed)),
-      session_id_(SessionID::NewUnique()) {}
+      session_id_(GetInitialSessionId()) {}
 
 TabModel::~TabModel() = default;
 
@@ -137,9 +160,15 @@ void TabModel::RecordActualSyncedTabsHistogram() {
                                percent_synced);
 }
 
+// TODO(http://crbug.com/444518651): remove the if-def when
+// |BrowserWindowInterface| is compiled into all Android builds.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+void TabModel::SetSessionId(SessionID session_id) {
+  session_id_ = session_id;
+}
+
 // static
 // From //chrome/browser/ui/tabs/tab_list_interface.h
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
 TabListInterface* TabListInterface::From(
     BrowserWindowInterface* browser_window_interface) {
   return ui::ScopedUnownedUserData<TabModel>::Get(
