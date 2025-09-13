@@ -9,6 +9,7 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -46,6 +47,15 @@ struct DisplayGeometry {
 
 class DesktopDisplayInfo {
  public:
+  enum class PixelType {
+    // Measurements are in physical screen pixels.
+    PHYSICAL,
+
+    // Measurements are in logical pixels, aka. density-independent pixels
+    // (DIPs).
+    LOGICAL,
+  };
+
   DesktopDisplayInfo();
   DesktopDisplayInfo(DesktopDisplayInfo&&);
   DesktopDisplayInfo& operator=(DesktopDisplayInfo&&);
@@ -73,10 +83,17 @@ class DesktopDisplayInfo {
 
   const std::vector<DisplayGeometry>& displays() const { return displays_; }
 
+  void set_pixel_type(std::optional<PixelType> pixel_type) {
+    pixel_type_ = pixel_type;
+  }
+
+  const std::optional<PixelType>& pixel_type() const { return pixel_type_; }
+
   std::unique_ptr<protocol::VideoLayout> GetVideoLayoutProto() const;
 
  private:
   std::vector<DisplayGeometry> displays_;
+  std::optional<PixelType> pixel_type_;
 };
 
 // The output format is:

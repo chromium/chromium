@@ -42,6 +42,8 @@ base::FilePath GetDisplayLayoutFilePath() {
 
 std::unique_ptr<protocol::VideoLayout> CreateDefaultLayout() {
   auto default_layout = std::make_unique<protocol::VideoLayout>();
+  default_layout->set_pixel_type(
+      protocol::VideoLayout::PixelType::VideoLayout_PixelType_LOGICAL);
   protocol::VideoTrackLayout* track = default_layout->add_video_track();
   track->set_position_x(0);
   track->set_position_y(0);

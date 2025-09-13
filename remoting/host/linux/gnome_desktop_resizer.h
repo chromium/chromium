@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -62,7 +63,7 @@ class GnomeDesktopResizer : public DesktopResizer {
     // `current_display_config_` matches this.
     webrtc::DesktopSize expected_resolution;
 
-    // The preferred position of the monitor in physical screen pixels.
+    // The preferred position of the monitor in DIPs.
     webrtc::DesktopVector position;
 
     // The preferred scale. A supported monitor scale that is proportionally
@@ -110,10 +111,13 @@ class GnomeDesktopResizer : public DesktopResizer {
   // Represents the latest known display config state reported by Mutter. This
   // may potentially not be up-to-date, and does not include any pending
   // changes.
+  // We always use the logical layout mode for better mixed-DPI support.
   GnomeDisplayConfig current_display_config_
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool apply_monitors_config_scheduled_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
+
+  // Fields below will be cleared by `clear_preferred_config_timer_`.
 
   // Preferred monitors config, which may or may not be reflected in
   // `current_display_config_`. This field is used to:
@@ -141,11 +145,22 @@ class GnomeDesktopResizer : public DesktopResizer {
   std::optional<GnomeDisplayConfig::LayoutInfo> preferred_layout_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Timer to clear `preferred_monitors_config_` and `preferred_layout_`. Mutter
-  // tends to have multiple intermediate display config changes after resizes,
-  // so they need to be kept for a while so that the changes won't be reverted.
-  // Once the display config has stabilized, we clear these fields so that the
-  // display config can be changed externally, e.g. via the settings app.
+  base::flat_set<webrtc::ScreenId> streams_being_removed_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Stores tasks (mostly SetResolutionAndPosition calls) to be run after all
+  // streams in `streams_being_removed_` are absent from the current gnome
+  // display config. This is to prevent mutter crashes when trying to delete a
+  // pipewire stream while setting the resolution of another pipewire stream at
+  // the same time.
+  base::OnceClosureList do_after_stream_removal_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Timer to clear the fields above. Mutter tends to have multiple intermediate
+  // display config changes after resizes, so they need to be kept for a while
+  // so that the changes won't be reverted. Once the display config has
+  // stabilized, we clear these fields so that the display config can be changed
+  // externally, e.g. via the settings app.
   base::RetainingOneShotTimer clear_preferred_config_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

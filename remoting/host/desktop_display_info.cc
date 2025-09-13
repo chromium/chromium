@@ -226,6 +226,18 @@ std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
       layout->set_primary_screen_id(display.id);
     }
   }
+  if (pixel_type_.has_value()) {
+    switch (*pixel_type_) {
+      case PixelType::LOGICAL:
+        layout->set_pixel_type(
+            protocol::VideoLayout::PixelType::VideoLayout_PixelType_LOGICAL);
+        break;
+      case PixelType::PHYSICAL:
+        layout->set_pixel_type(
+            protocol::VideoLayout::PixelType::VideoLayout_PixelType_PHYSICAL);
+        break;
+    }
+  }
   return layout;
 }
 

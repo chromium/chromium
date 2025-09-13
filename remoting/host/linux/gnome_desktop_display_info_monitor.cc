@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "remoting/base/constants.h"
+#include "remoting/host/desktop_display_info.h"
 #include "remoting/host/linux/gnome_display_config.h"
 
 namespace remoting {
@@ -44,11 +45,16 @@ void GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived(
     const GnomeDisplayConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // This is the mode that the client uses for Linux hosts.
-  GnomeDisplayConfig physical_config = config;
-  physical_config.SwitchLayoutMode(GnomeDisplayConfig::LayoutMode::kPhysical);
   DesktopDisplayInfo info;
-  for (const auto& [name, monitor] : physical_config.monitors) {
+  switch (config.layout_mode) {
+    case GnomeDisplayConfig::LayoutMode::kPhysical:
+      info.set_pixel_type(DesktopDisplayInfo::PixelType::PHYSICAL);
+      break;
+    case GnomeDisplayConfig::LayoutMode::kLogical:
+      info.set_pixel_type(DesktopDisplayInfo::PixelType::LOGICAL);
+      break;
+  }
+  for (const auto& [name, monitor] : config.monitors) {
     const GnomeDisplayConfig::MonitorMode* current_mode =
         monitor.GetCurrentMode();
     if (!current_mode) {
@@ -56,15 +62,23 @@ void GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived(
                    << " ignored because it has no current mode";
       continue;
     }
+    // current_mode->width/height are always in physical screen pixels, which
+    // need to be divided by the monitor scale to get the logical pixels.
+    int width = info.pixel_type() == DesktopDisplayInfo::PixelType::PHYSICAL
+                    ? current_mode->width
+                    : (current_mode->width / monitor.scale);
+    int height = info.pixel_type() == DesktopDisplayInfo::PixelType::PHYSICAL
+                     ? current_mode->height
+                     : (current_mode->height / monitor.scale);
     // Ideally we should multiply the DPI with text-scaling-factor, but that
     // causes the client to resize the display to the actual screen resolution
     // at 1x scale when "High-DPI mode" is disabled.
     // TODO: crbug.com/431816005 - fix this bug on the host and set the the DPI
     // to `kDefaultDpi * monitor.scale * text_scaling_factor`.
-    info.AddDisplay(DisplayGeometry(
-        GnomeDisplayConfig::GetScreenId(name), monitor.x, monitor.y,
-        current_mode->width, current_mode->height, kDefaultDpi * monitor.scale,
-        /*bpp=*/24, monitor.is_primary, name));
+    info.AddDisplay(DisplayGeometry(GnomeDisplayConfig::GetScreenId(name),
+                                    monitor.x, monitor.y, width, height,
+                                    kDefaultDpi * monitor.scale,
+                                    /*bpp=*/24, monitor.is_primary, name));
   }
   callback_list_.Notify(info);
 }
