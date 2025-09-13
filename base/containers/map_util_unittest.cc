@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 
 #include "base/containers/flat_map.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,6 +81,62 @@ TEST(MapUtilTest, FindPtrOrNullForPointerLikeValues) {
 
   EXPECT_THAT(FindPtrOrNull(mapping, kKey), Pointee(Eq(kValue)));
   EXPECT_EQ(FindPtrOrNull(mapping, kMissingKey), nullptr);
+}
+
+TEST(MapUtilTest, FindPtrOrNullConstCorrectness) {
+  std::string val = "value";
+
+  {
+    // Mutable map to mutable pointers.
+    base::flat_map<std::string, std::string*> map({{kKey, &val}});
+    static_assert(
+        std::is_same_v<std::string*, decltype(FindPtrOrNull(map, "asdf"))>);
+
+    // Const map to mutable pointers.
+    const auto& const_map = map;
+    static_assert(std::is_same_v<const std::string*,
+                                 decltype(FindPtrOrNull(const_map, "asdf"))>);
+  }
+  {
+    // Mutable map to const pointers.
+    base::flat_map<std::string, const std::string*> map({{kKey, &val}});
+    static_assert(std::is_same_v<const std::string*,
+                                 decltype(FindPtrOrNull(map, "asdf"))>);
+
+    // Const map to const pointers.
+    const auto& const_map = map;
+    static_assert(std::is_same_v<const std::string*,
+                                 decltype(FindPtrOrNull(const_map, "asdf"))>);
+  }
+
+  {
+    // Mutable map to mutable pointers.
+    base::flat_map<std::string, std::unique_ptr<std::string>> map;
+    map.insert({kKey, std::make_unique<std::string>(val)});
+
+    static_assert(
+        std::is_same_v<std::string*, decltype(FindPtrOrNull(map, "asdf"))>);
+
+    // Const map to mutable pointers.
+    const auto& const_map = map;
+
+    static_assert(std::is_same_v<const std::string*,
+                                 decltype(FindPtrOrNull(const_map, "asdf"))>);
+  }
+  {
+    // Mutable map to const pointers.
+    base::flat_map<std::string, std::unique_ptr<const std::string>> map;
+    map.insert({kKey, std::make_unique<std::string>(val)});
+
+    static_assert(std::is_same_v<const std::string*,
+                                 decltype(FindPtrOrNull(map, "asdf"))>);
+
+    // Const map to const pointers.
+    const auto& const_map = map;
+
+    static_assert(std::is_same_v<const std::string*,
+                                 decltype(FindPtrOrNull(const_map, "asdf"))>);
+  }
 }
 
 struct LeftVsRightValue {
