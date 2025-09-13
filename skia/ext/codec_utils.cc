@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/codec/SkCodec.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -80,7 +80,7 @@ std::string EncodePngAsDataUri(const SkPixmap& src) {
 }
 
 void EnsurePNGDecoderRegistered() {
-  SkCodecs::Register(SkPngDecoder::Decoder());
+  SkCodecs::Register(SkPngRustDecoder::Decoder());
 }
 
 }  // namespace skia
