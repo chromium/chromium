@@ -39,6 +39,8 @@
 
 namespace optimization_guide {
 
+using enum PredictionModelDownloadManager::PredictionModelDownloadState;
+
 namespace {
 
 // Disables model downloads for benchmarking. This is to ensure that
@@ -87,6 +89,16 @@ void RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus status) {
       "OptimizationGuide.PredictionModelDownloadManager."
       "DownloadStatus",
       status);
+}
+
+void RecordPredictionModelDownloadState(
+    proto::OptimizationTarget optimization_target,
+    PredictionModelDownloadManager::PredictionModelDownloadState state) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PredictionModelDownloadManager.State." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              optimization_target),
+      state);
 }
 
 // Writes the |model_info| to |file_path|.
@@ -149,13 +161,9 @@ void PredictionModelDownloadManager::StartDownload(
       download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
   download_params.scheduling_params.network_requirements =
       download::SchedulingParams::NetworkRequirements::NONE;
-  base::UmaHistogramEnumeration(
-      "OptimizationGuide.PredictionModelDownloadManager.State." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              optimization_target),
-      PredictionModelDownloadManager::PredictionModelDownloadState::kRequested);
 
   download_service_->StartDownload(std::move(download_params));
+  RecordPredictionModelDownloadState(optimization_target, kRequested);
 }
 
 void PredictionModelDownloadManager::CancelAllPendingDownloads() {
@@ -214,11 +222,7 @@ void PredictionModelDownloadManager::OnDownloadStarted(
     download::DownloadParams::StartResult start_result) {
   if (start_result == download::DownloadParams::StartResult::ACCEPTED) {
     pending_download_guids_.insert(guid);
-    base::UmaHistogramEnumeration(
-        "OptimizationGuide.PredictionModelDownloadManager.State." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                optimization_target),
-        PredictionModelDownloadManager::PredictionModelDownloadState::kStarted);
+    RecordPredictionModelDownloadState(optimization_target, kStarted);
     base::UmaHistogramLongTimes(
         "OptimizationGuide.PredictionModelDownloadManager."
         "DownloadStartLatency." +

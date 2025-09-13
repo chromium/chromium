@@ -63,8 +63,11 @@ class PredictionModelDownloadManager {
     // Download service started the model download.
     kStarted = 2,
 
+    // No download service was available from the service tracker.
+    kNoDownloadServiceFromTracker = 3,
+
     // Add new values above this line.
-    kMaxValue = kStarted,
+    kMaxValue = kNoDownloadServiceFromTracker,
   };
 
   PredictionModelDownloadManager(
