@@ -546,7 +546,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     @Contract("null -> false")
     private boolean shouldShowTogglePinTabItem(Tab currentTab) {
-        return ChromeFeatureList.sAndroidPinnedTabs.isEnabled() && currentTab != null;
+        return (ChromeFeatureList.sAndroidPinnedTabsTabletTabStrip.isEnabled()
+                        || ChromeFeatureList.sAndroidPinnedTabs.isEnabled())
+                && currentTab != null;
     }
 
     private MVCListAdapter.ListItem buildTogglePinTabItem(Tab currentTab) {

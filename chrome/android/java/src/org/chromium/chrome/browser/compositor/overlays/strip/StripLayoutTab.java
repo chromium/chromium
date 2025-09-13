@@ -335,7 +335,8 @@ public class StripLayoutTab extends StripLayoutView {
      * @param isPinned whether this tab has been pinned.
      */
     public void setIsPinned(boolean isPinned) {
-        mIsPinned = isPinned;
+        // TODO(crbug.com/444267914): Flag guard #setIsPinned in TabImpl too.
+        mIsPinned = StripLayoutUtils.isTabPinningFromStripEnabled() ? isPinned : false;
     }
 
     /** Gets whether this tab has been pinned */

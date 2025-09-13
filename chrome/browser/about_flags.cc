@@ -6155,6 +6155,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidPinnedTabsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidPinnedTabs)},
 
+    // Pinned tabs on tablet tab strip.
+    {"android-pinned-tabs-tablet-tab-strip",
+     flag_descriptions::kAndroidPinnedTabsTabletTabStripName,
+     flag_descriptions::kAndroidPinnedTabsTabletTabStripDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidPinnedTabsTabletTabStrip)},
+
     {"hub-back-button", flag_descriptions::kHubBackButtonName,
      flag_descriptions::kHubBackButtonDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHubBackButton)},

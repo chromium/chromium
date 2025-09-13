@@ -42,6 +42,7 @@ BASE_DECLARE_FEATURE(kAndroidOmniboxFocusedNewTabPage);
 BASE_DECLARE_FEATURE(kAndroidOpenPdfInlineBackport);
 BASE_DECLARE_FEATURE(kAndroidPdfAssistContent);
 BASE_DECLARE_FEATURE(kAndroidPinnedTabs);
+BASE_DECLARE_FEATURE(kAndroidPinnedTabsTabletTabStrip);
 BASE_DECLARE_FEATURE(kAndroidSearchInSettings);
 BASE_DECLARE_FEATURE(kAndroidSettingsContainment);
 BASE_DECLARE_FEATURE(kAndroidTabGroupsColorUpdateGM3);

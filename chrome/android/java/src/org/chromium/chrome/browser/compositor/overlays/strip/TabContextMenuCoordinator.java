@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.isTabPinningFromStripEnabled;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
 import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.createNewGroupForTabs;
@@ -269,7 +270,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
             // Share is only available for single tab selection.
             itemList.add(createShareItem(isIncognito));
         }
-        if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
+        if (isTabPinningFromStripEnabled()) {
             itemList.add(createPinUnpinTabItem(tabs, isIncognito));
         }
         itemList.add(createCloseItem(isIncognito));
@@ -285,7 +286,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
             itemList.add(createMoveToWindowItem(TabModelUtils.getTabIds(tabs), isIncognito));
         }
         itemList.add(buildMenuDivider(isIncognito));
-        if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
+        if (isTabPinningFromStripEnabled()) {
             itemList.add(createPinUnpinTabItem(tabs, isIncognito));
         }
         itemList.add(createCloseItem(isIncognito));

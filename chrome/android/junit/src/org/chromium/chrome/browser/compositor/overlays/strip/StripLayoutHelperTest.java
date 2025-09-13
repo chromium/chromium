@@ -4650,6 +4650,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Pinned Tabs")
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     public void testGetTabIndexForTabDrop_DropPinnedTabOverUnpinnedTab() {
         // Setup with 3 tabs.
         initializeTest(false, false, 1, 3);
@@ -4675,6 +4676,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Pinned Tabs")
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     public void testGetTabIndexForTabDrop_DropUnpinnedTabOverPinnedTab() {
         // Setup with 3 tabs.
         initializeTest(false, false, 1, 3);
@@ -4705,6 +4707,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Pinned Tabs")
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     public void testGetTabIndexForTabDrop_DropPinnedTabOverPinnedTab() {
         // Setup with 3 tabs.
         initializeTest(false, false, 1, 3);
@@ -6700,6 +6703,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Pinned Tabs")
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     public void testTabsDrawXAndWidth_PinnedTabs() {
         final int numTabs = 5;
         initializeTest(false, false, 0, numTabs);
@@ -6781,6 +6785,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Pinned Tabs")
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     public void testTabsDrawXAndWidth_PinnedTabs_Rtl() {
         LocalizationUtils.setRtlForTesting(true);
         final int numTabs = 5;

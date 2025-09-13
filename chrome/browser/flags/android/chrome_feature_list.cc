@@ -221,6 +221,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidOpenPdfInlineBackport,
     &kAndroidPdfAssistContent,
     &kAndroidPinnedTabs,
+    &kAndroidPinnedTabsTabletTabStrip,
     &kAndroidSearchInSettings,
     &kAndroidSettingsContainment,
     &kAndroidTabGroupsColorUpdateGM3,
@@ -886,6 +887,10 @@ BASE_FEATURE(kGridTabSwitcherUpdate,
 
 BASE_FEATURE(kAndroidPinnedTabs,
              "AndroidPinnedTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidPinnedTabsTabletTabStrip,
+             "AndroidPinnedTabsTabletTabStrip",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidSearchInSettings,

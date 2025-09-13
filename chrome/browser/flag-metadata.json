@@ -332,7 +332,12 @@
   },
   {
     "name": "android-pinned-tabs",
-    "owners": [ "madhavpruthi@google.org", "ckitagawa@chromium.org" ],
+    "owners": [ "madhavpruthi@google.com", "ckitagawa@chromium.org" ],
+    "expiry_milestone": 148
+  },
+  {
+    "name": "android-pinned-tabs-tablet-tab-strip",
+    "owners": [ "zheliooo@google.com", "clank-large-form-factors@google.com"],
     "expiry_milestone": 148
   },
   {

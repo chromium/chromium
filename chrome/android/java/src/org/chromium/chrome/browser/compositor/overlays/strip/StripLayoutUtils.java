@@ -408,4 +408,8 @@ public class StripLayoutUtils {
     public static boolean isTabHighlightingTestingEnabled() {
         return isTabHighlightingForceCtrlClick() || isTabHighlightingForceShiftClick();
     }
+
+    public static boolean isTabPinningFromStripEnabled() {
+        return ChromeFeatureList.sAndroidPinnedTabsTabletTabStrip.isEnabled();
+    }
 }

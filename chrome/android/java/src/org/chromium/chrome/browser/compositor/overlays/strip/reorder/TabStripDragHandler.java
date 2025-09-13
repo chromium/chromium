@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.isTabPinningFromStripEnabled;
 
 import android.app.Activity;
 import android.content.ClipDescription;
@@ -39,7 +40,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -619,7 +619,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     public static boolean isDraggingPinnedItem() {
         DragDropGlobalState globalState = getDragDropGlobalState(/* dragEvent= */ null);
-        if (!ChromeFeatureList.sAndroidPinnedTabs.isEnabled() || globalState == null) return false;
+        if (!isTabPinningFromStripEnabled() || globalState == null) return false;
 
         Tab tab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
         if (tab != null && tab.getIsPinned()) return true;

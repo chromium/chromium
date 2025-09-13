@@ -5107,6 +5107,12 @@ const char kAndroidPinnedTabsDescription[] =
     "Enables the ability to pin tabs through various entry points like context "
     "menus and overflow menu items.";
 
+const char kAndroidPinnedTabsTabletTabStripName[] =
+    "Android pinned tabs on tablet tab strip in the tabbed layout";
+const char kAndroidPinnedTabsTabletTabStripDescription[] =
+    "Enables the ability to pin tabs through tab context menu on tablet tab "
+    "strip in the tabbed layout. This is M1 of Android Pinned Tabs";
+
 const char kEducationalTipDefaultBrowserPromoCardName[] =
     "Educational Tip Default Browser Promo Card";
 const char kEducationalTipDefaultBrowserPromoCardDescription[] =

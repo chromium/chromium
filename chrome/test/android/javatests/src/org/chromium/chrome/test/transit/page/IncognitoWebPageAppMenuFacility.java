@@ -15,7 +15,8 @@ public class IncognitoWebPageAppMenuFacility extends PageAppMenuFacility<WebPage
         if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
             mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
         }
-        if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
+        if (ChromeFeatureList.sAndroidPinnedTabsTabletTabStrip.isEnabled()
+                || ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
             // At most one of these exist.
             mPinTab = declarePossibleMenuItem(items, PIN_TAB);
             mUnpinTab = declarePossibleMenuItem(items, UNPIN_TAB);

@@ -191,6 +191,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_OPEN_PDF_INLINE_BACKPORT = "AndroidOpenPdfInlineBackport";
     public static final String ANDROID_PDF_ASSIST_CONTENT = "AndroidPdfAssistContent";
     public static final String ANDROID_PINNED_TABS = "AndroidPinnedTabs";
+    public static final String ANDROID_PINNED_TABS_TABLET_TAB_STRIP =
+            "AndroidPinnedTabsTabletTabStrip";
     public static final String ANDROID_PROGRESS_BAR_VISUAL_UPDATE =
             "AndroidProgressBarVisualUpdate";
     public static final String ANDROID_SETTINGS_CONTAINMENT = "AndroidSettingsContainment";
@@ -1304,6 +1306,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR, false);
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabs =
             newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS, false);
+    public static final MutableFlagWithSafeDefault sAndroidPinnedTabsTabletTabStrip =
+            newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS_TABLET_TAB_STRIP, false);
     public static final MutableFlagWithSafeDefault
             sAndroidShowRestoreTabsPromoOnFreBypassedKillSwitch =
                     newMutableFlagWithSafeDefault(

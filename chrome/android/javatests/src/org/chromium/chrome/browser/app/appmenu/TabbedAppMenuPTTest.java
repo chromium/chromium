@@ -107,7 +107,10 @@ public class TabbedAppMenuPTTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP,
+        ChromeFeatureList.ANDROID_PINNED_TABS
+    })
     public void testPinTabToggle() {
         WebPageStation page = mCtaTestRule.startOnBlankPage();
         Tab tab = page.loadedTabElement.value();

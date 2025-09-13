@@ -767,7 +767,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw320dp")
     @DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
-    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS})
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPageMenuItems_Phone_IncognitoPage() {
         testPageMenuItems_IncognitoPage(/* shouldShowNewTab= */ true);
     }
@@ -2213,7 +2213,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP,
+        ChromeFeatureList.ANDROID_PINNED_TABS
+    })
     public void testPinTabToggleMenuItem_tabNotPinned_shouldShowPinTabItem() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
@@ -2231,7 +2234,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP,
+        ChromeFeatureList.ANDROID_PINNED_TABS
+    })
     public void testPinTabToggleMenuItem_tabPinned_shouldShowUnpinTabItem() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);

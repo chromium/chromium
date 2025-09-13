@@ -748,7 +748,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Context Menu")
     @EnableFeatures({
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
-        ChromeFeatureList.ANDROID_PINNED_TABS
+        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP
     })
     @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showPinTabOption() {
@@ -791,7 +791,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Context Menu")
     @EnableFeatures({
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
-        ChromeFeatureList.ANDROID_PINNED_TABS,
+        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP,
         ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
     })
     @SuppressWarnings("DirectInvocationOnMock")
@@ -831,7 +831,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Context Menu")
     @EnableFeatures({
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
-        ChromeFeatureList.ANDROID_PINNED_TABS
+        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP
     })
     @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showUnpinTabOption() {
@@ -877,7 +877,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Context Menu")
     @EnableFeatures({
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
-        ChromeFeatureList.ANDROID_PINNED_TABS,
+        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP,
         ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
     })
     @SuppressWarnings("DirectInvocationOnMock")

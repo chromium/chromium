@@ -16713,6 +16713,7 @@ from previous Chrome versions.
   <int value="938191241" label="VrShell:enabled"/>
   <int value="939050961" label="OnTheFlyMhtmlHashComputation:disabled"/>
   <int value="939366135" label="DownloadsLocationChange:disabled"/>
+  <int value="939509221" label="AndroidPinnedTabsTabletTabStrip:enabled"/>
   <int value="939554480" label="enable-credit-card-scan"/>
   <int value="939603162" label="BackgroundLoadingForDownloads:disabled"/>
   <int value="940302066" label="OmniboxUniformRowHeight:disabled"/>
@@ -17319,6 +17320,7 @@ from previous Chrome versions.
   <int value="1161105475"
       label="ClipboardWellFormedHtmlSanitizationWrite:disabled"/>
   <int value="1161822401" label="LoginDetection:enabled"/>
+  <int value="1162251998" label="AndroidPinnedTabsTabletTabStrip:disabled"/>
   <int value="1162420462" label="ShelfLauncherNudge:disabled"/>
   <int value="1162622865" label="EarlyCodeCache:disabled"/>
   <int value="1162693272" label="MacCoreLocationImplementation:disabled"/>
