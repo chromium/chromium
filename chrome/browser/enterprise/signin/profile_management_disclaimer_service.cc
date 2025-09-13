@@ -46,12 +46,26 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
+namespace {
+
+bool CanTryPolicyRegistration(std::optional<base::Time> last_failure_time) {
+  if (!last_failure_time) {
+    return true;
+  }
+
+  return base::Time::Now() - last_failure_time.value() >
+         switches::kPolicyRegistrationRetryDelay.Get();
+}
+
+}  // namespace
+
 ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
     Profile* profile)
     : profile_(*profile),
       state_(std::make_unique<ResetableState>()),
       skip_automatic_disclaimer_(!base::FeatureList::IsEnabled(
-          switches::kEnforceManagementDisclaimer)) {
+          switches::kEnforceManagementDisclaimer)),
+      signin_prefs_(*profile->GetPrefs()) {
   scoped_identity_manager_observation_.Observe(GetIdentityManager());
   scoped_browser_list_observation_.Observe(BrowserList::GetInstance());
 
@@ -197,25 +211,48 @@ void ProfileManagementDisclaimerService::
         TurnSyncOnHelperPolicyFetchTracker::CreateInstance(&profile_.get(),
                                                            info);
   }
+
+  // If the account cannot try to register for policies because of delays
+  // between failures, we can reset the state and wait for another attempt.
+  if (!CanTryPolicyRegistration(
+          signin_prefs_.GetPolicyDisclaimerLastRegistrationFailureTime(
+              info.gaia))) {
+    OnRegisteredForPolicy(/*is_from_cached_registration_result=*/true,
+                          /*is_managed_account=*/false);
+    return;
+  }
+
   auto& policy_fetch_tracker = policy_fetch_tracker_by_account_id_[account_id];
   if (policy_fetch_tracker->GetPolicyRegistrationResult().has_value() &&
       policy_fetch_tracker->GetPolicyRegistrationResult().value()) {
     OnRegisteredForPolicy(
+        /*is_from_cached_registration_result=*/true,
         policy_fetch_tracker->GetPolicyRegistrationResult().value());
     return;
   }
 
   policy_fetch_tracker->RegisterForPolicy(
       base::BindOnce(&ProfileManagementDisclaimerService::OnRegisteredForPolicy,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /*is_from_cached_registration_result=*/false));
 }
 
 void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
+    bool is_from_cached_registration_result,
     bool is_managed_account) {
+  GaiaId gaia_id = GetExtendedAccountInfo(state_->account_id).gaia;
   if (!is_managed_account) {
+    if (!is_from_cached_registration_result) {
+      signin_prefs_.SetPolicyDisclaimerLastRegistrationFailureTime(
+          gaia_id, base::Time::Now());
+    }
+    // No need to keep the tracker if the account is not managed anymore, it is
+    // already handled by the retry delay logic.
+    policy_fetch_tracker_by_account_id_.erase(state_->account_id);
     Reset();
     return;
   }
+  signin_prefs_.ClearPolicyDisclaimerLastRegistrationFailureTime(gaia_id);
 
   if (profile_separation_policies_for_testing_.has_value() ||
       user_choice_for_testing_.has_value()) {

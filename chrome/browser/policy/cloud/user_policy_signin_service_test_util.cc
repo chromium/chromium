@@ -60,4 +60,11 @@ void FakeUserPolicySigninService::FetchPolicyForSignedInUser(
   std::move(callback).Run(true);
 }
 
+void FakeUserPolicySigninService::UpdateDMTokenAndClientId(
+    const std::string& dm_token,
+    const std::string& client_id) {
+  dm_token_ = dm_token;
+  client_id_ = client_id;
+}
+
 }  // namespace policy

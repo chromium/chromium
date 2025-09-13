@@ -285,6 +285,8 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnforceManagementDisclaimer);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<base::TimeDelta> kPolicyRegistrationRetryDelay;
 #endif
 
 #if BUILDFLAG(IS_WIN)

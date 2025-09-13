@@ -4,9 +4,14 @@
 
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 
+#include "base/json/values_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time_override.h"
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -305,13 +310,13 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
 
   // Create a new browser to trigger the profile management disclaimer.
-   ReplaceCurrentBrowserWithNewOne();
+  ReplaceCurrentBrowserWithNewOne();
 
   Profile* new_profile = nullptr;
 
   if (GetParam().user_choice.has_value()) {
     base::test::TestFuture<Profile*, bool> future;
-     disclaimer_service->EnsureManagedProfileForAccount(
+    disclaimer_service->EnsureManagedProfileForAccount(
         primary_account_info.account_id,
         signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup,
         future.GetCallback());
@@ -625,15 +630,20 @@ class ProfileManagementDisclaimerServiceCachingBrowserTest
         GetProfile());
   }
 
+  static base::Time GetMockTime() { return fake_time_; }
+  static void SetMockTime(base::Time time) { fake_time_ = time; }
+
  private:
   base::test::ScopedFeatureList feature_list_{
       switches::kEnforceManagementDisclaimer};
-
   base::CallbackListSubscription create_services_subscription_;
+  static base::Time fake_time_;
 };
 
+base::Time ProfileManagementDisclaimerServiceCachingBrowserTest::fake_time_;
+
 IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
-                       Test) {
+                       SuccessCaching) {
   auto* disclaimer_service = GetDisclaimerService();
 
   // User first cancels the disclaimer.
@@ -651,6 +661,19 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+  SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
+  // There should be no failure info in the pref since the registration
+  // succeeded.
+  ASSERT_FALSE(signin_prefs
+                   .GetPolicyDisclaimerLastRegistrationFailureTime(
+                       primary_account_info.gaia)
+                   .has_value());
+
+  // Update the dm token and the client id to empty, this should be ignored
+  // because of the caching logic.
+  static_cast<policy::FakeUserPolicySigninService*>(
+      policy::UserPolicySigninServiceFactory::GetForProfile(GetProfile()))
+      ->UpdateDMTokenAndClientId("", "");
 
   // User then accepts the disclaimer.
   disclaimer_service->SetUserChoiceForTesting(
@@ -665,6 +688,13 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
       primary_account_info.account_id,
       signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup,
       base::DoNothing());
+
+  // There should be no failure info in the pref since the registration
+  // succeeded because the result was cached.
+  ASSERT_FALSE(signin_prefs
+                   .GetPolicyDisclaimerLastRegistrationFailureTime(
+                       primary_account_info.gaia)
+                   .has_value());
 
   base::test::TestFuture<Profile*, bool> future;
   disclaimer_service->EnsureManagedProfileForAccount(
@@ -682,4 +712,114 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
                 .IsManaged(),
             signin::TriboolFromBool(true));
   ASSERT_TRUE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+  // There should be no failure info in the pref since the registration
+  // succeeded because the result was cached.
+  ASSERT_FALSE(signin_prefs
+                   .GetPolicyDisclaimerLastRegistrationFailureTime(
+                       primary_account_info.gaia)
+                   .has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
+                       FirstFailureRetry) {
+  SetMockTime(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetMockTime,  // Override for base::Time::Now()
+      nullptr,       // No override for base::TimeTicks::Now()
+      nullptr        // No override for base::ThreadTicks::Now()
+  );
+  auto* disclaimer_service = GetDisclaimerService();
+
+  // User accepts the disclaimer.
+  disclaimer_service->SetUserChoiceForTesting(
+      signin::SigninChoice::SIGNIN_CHOICE_CONTINUE);
+  disclaimer_service->SetProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies());
+
+  // Ensure registration fails.
+  static_cast<policy::FakeUserPolicySigninService*>(
+      policy::UserPolicySigninServiceFactory::GetForProfile(GetProfile()))
+      ->UpdateDMTokenAndClientId("", "");
+
+  // This should trigger the failure to register.
+  AccountInfo primary_account_info =
+      MakeValidPrimaryAccountInfoAvailableAndUpdate("bob@example.com",
+                                                    "example.com");
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+
+  SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
+  // The failure info should be in the pref since the registration failed.
+  ASSERT_TRUE(signin_prefs
+                  .GetPolicyDisclaimerLastRegistrationFailureTime(
+                      primary_account_info.gaia)
+                  .has_value());
+  ASSERT_EQ(signin_prefs
+                .GetPolicyDisclaimerLastRegistrationFailureTime(
+                    primary_account_info.gaia)
+                .value(),
+            base::Time::Now());
+
+  // Update the dm token and the client id to non-empty, this should be ignored
+  // because of the caching logic.
+  static_cast<policy::FakeUserPolicySigninService*>(
+      policy::UserPolicySigninServiceFactory::GetForProfile(GetProfile()))
+      ->UpdateDMTokenAndClientId("dm_token", "client_id");
+  // We still have the first failure and we have not passed the retry delay, so
+  // the disclaimer should not be shown.
+  {
+    base::test::TestFuture<Profile*, bool> future;
+    disclaimer_service->EnsureManagedProfileForAccount(
+        primary_account_info.account_id,
+        signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup,
+        future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    Profile* new_profile = future.Get<Profile*>();
+    ASSERT_FALSE(new_profile);
+    ASSERT_TRUE(
+        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+    ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+    // The failure info should be in the pref since the registration failed and
+    // the delay has not passed yet.
+    ASSERT_TRUE(signin_prefs
+                    .GetPolicyDisclaimerLastRegistrationFailureTime(
+                        primary_account_info.gaia)
+                    .has_value());
+    ASSERT_EQ(signin_prefs
+                  .GetPolicyDisclaimerLastRegistrationFailureTime(
+                      primary_account_info.gaia)
+                  .value(),
+              base::Time::Now());
+  }
+
+  // Move the time to pass the retry delay.
+  SetMockTime(base::Time::Now() +
+              switches::kPolicyRegistrationRetryDelay.Get() + base::Seconds(1));
+
+  // Here the registration should be retried since the delay passed with the
+  // good dm token and client id. The disclaimer should be shown.
+  base::test::TestFuture<Profile*, bool> future;
+  disclaimer_service->EnsureManagedProfileForAccount(
+      primary_account_info.account_id,
+      signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup,
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  Profile* new_profile = future.Get<Profile*>();
+  ASSERT_EQ(new_profile, GetProfile());
+
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(identity_manager()
+                ->FindExtendedAccountInfo(primary_account_info)
+                .IsManaged(),
+            signin::TriboolFromBool(true));
+  ASSERT_TRUE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+  // There should be no failure info in the pref since the registration
+  // succeeded because the result was cached.
+  ASSERT_FALSE(signin_prefs
+                   .GetPolicyDisclaimerLastRegistrationFailureTime(
+                       primary_account_info.gaia)
+                   .has_value());
 }

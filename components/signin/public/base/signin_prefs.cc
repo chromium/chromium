@@ -111,6 +111,9 @@ constexpr std::string_view kBookmarkBatchUploadPromoDismissCount =
 constexpr std::string_view kBookmarkBatchUploadPromoLastDismissTime =
     "BookmarkBatchUploadPromoLastDismissTime";
 
+constexpr std::string_view kPolicyDisclaimerLastRegistrationFailureTime =
+    "PolicyDisclaimerLastRegistrationFailureTime";
+
 }  // namespace
 
 SigninPrefs::SigninPrefs(PrefService& pref_service)
@@ -302,6 +305,24 @@ bool SigninPrefs::GetBookmarksExplicitBrowserSignin(
     const GaiaId& gaia_id) const {
   return GetBooleanPrefForAccount(gaia_id,
                                   kBookmarksExplicitBrowserSigninEnabled);
+}
+
+void SigninPrefs::SetPolicyDisclaimerLastRegistrationFailureTime(
+    const GaiaId& gaia_id,
+    base::Time last_registration_failure_time) {
+  SetTimePref(last_registration_failure_time, gaia_id,
+              kPolicyDisclaimerLastRegistrationFailureTime);
+}
+
+void SigninPrefs::ClearPolicyDisclaimerLastRegistrationFailureTime(
+    const GaiaId& gaia_id) {
+  ClearPref(gaia_id, kPolicyDisclaimerLastRegistrationFailureTime);
+}
+
+std::optional<base::Time>
+SigninPrefs::GetPolicyDisclaimerLastRegistrationFailureTime(
+    const GaiaId& gaia_id) const {
+  return GetTimePref(gaia_id, kPolicyDisclaimerLastRegistrationFailureTime);
 }
 
 void SigninPrefs::IncrementHistorySyncPromoIdentityPillShownCount(

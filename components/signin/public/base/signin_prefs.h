@@ -120,6 +120,13 @@ class SigninPrefs {
   void SetBookmarksExplicitBrowserSignin(const GaiaId& gaia_id, bool enabled);
   bool GetBookmarksExplicitBrowserSignin(const GaiaId& gaia_id) const;
 
+  void SetPolicyDisclaimerLastRegistrationFailureTime(
+      const GaiaId& gaia_id,
+      base::Time last_registration_failure_time);
+  void ClearPolicyDisclaimerLastRegistrationFailureTime(const GaiaId& gaia_id);
+  std::optional<base::Time> GetPolicyDisclaimerLastRegistrationFailureTime(
+      const GaiaId& gaia_id) const;
+
   // History Sync experiment promo on the avatar button.
   void IncrementHistorySyncPromoIdentityPillShownCount(const GaiaId& gaia_id);
   int GetHistorySyncPromoIdentityPillShownCount(const GaiaId& gaia_id) const;

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
@@ -132,7 +133,8 @@ class ProfileManagementDisclaimerService
     enable_management_disclaimer_ = enabled;
   }
 
-  void OnRegisteredForPolicy(bool is_managed_account);
+  void OnRegisteredForPolicy(bool is_from_cached_registration_result,
+                             bool is_managed_account);
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -152,6 +154,7 @@ class ProfileManagementDisclaimerService
 
   bool enable_management_disclaimer_ = true;
   bool skip_automatic_disclaimer_ = false;
+  SigninPrefs signin_prefs_;
 
   std::map<CoreAccountId, std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker>>
       policy_fetch_tracker_by_account_id_;
