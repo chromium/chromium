@@ -10,6 +10,7 @@
 #include <memory>
 
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_omnibox_client_delegate.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_consumer.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
@@ -26,7 +27,8 @@ class WebStateList;
 @end
 
 // Mediator for the AIM prototype.
-@interface AIMPrototypeMediator : NSObject <AIMPrototypeMutator,
+@interface AIMPrototypeMediator : NSObject <AIMOmniboxClientDelegate,
+                                            AIMPrototypeMutator,
                                             ComposeboxFileUploadObserver,
                                             LoadQueryCommands>
 

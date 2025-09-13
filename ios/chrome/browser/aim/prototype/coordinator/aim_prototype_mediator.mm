@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
@@ -217,7 +218,17 @@ CreateInputDataFromAnnotatedPageContent(
   UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
   _urlLoadingBrowserAgent->Load(params);
-  [self.delegate dismissAimPrototype];
+
+  // TODO(crbug.com/442371203): Dismissing the view directly here will
+  // lead to a crash because some calls made after pressing the return
+  // key are still being performed. This hack postpones the dismiss action.
+  __weak AIMPrototypeMediator* weakSelf = self;
+  base::OnceClosure completion = base::BindOnce(^{
+    [weakSelf dismissAimPrototype];
+  });
+  constexpr base::TimeDelta kDelay = base::Seconds(0);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, std::move(completion), kDelay);
 }
 
 - (void)setAIModeEnabled:(BOOL)enabled {
@@ -493,6 +504,37 @@ CreateInputDataFromAnnotatedPageContent(
         }
         [strongSelf didLoadPreviewImage:preview forItemWithToken:token];
       })));
+}
+
+#pragma mark - AIMOmniboxClientDelegate
+
+- (void)omniboxDidAcceptText:(const std::u16string&)text
+              destinationURL:(const GURL&)destinationURL
+                isSearchType:(BOOL)isSearchType {
+  if (isSearchType) {
+    [self sendText:[NSString cr_fromString16:text]];
+  } else {
+    UrlLoadParams params = UrlLoadParams::InCurrentTab(destinationURL);
+    params.web_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
+    _urlLoadingBrowserAgent->Load(params);
+
+    // TODO(crbug.com/442371203): Dismissing the view directly here will
+    // lead to a crash because some calls made after pressing the return
+    // key are still being performed. This hack postpones the dismiss action.
+    __weak AIMPrototypeMediator* weakSelf = self;
+    base::OnceClosure completion = base::BindOnce(^{
+      [weakSelf dismissAimPrototype];
+    });
+    constexpr base::TimeDelta kDelay = base::Seconds(0);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, std::move(completion), kDelay);
+  }
+}
+
+#pragma mark - Private helpers
+
+- (void)dismissAimPrototype {
+  [self.delegate dismissAimPrototype];
 }
 
 @end
