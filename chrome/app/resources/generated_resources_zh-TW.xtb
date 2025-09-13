@@ -10214,7 +10214,7 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{沒有任何密碼外洩}=1{{COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
 <translation id="8157248655669507702">如要安裝 eSIM 設定檔，請啟用行動數據</translation>
 <translation id="8157704005178149728">正在設定監護功能</translation>
-<translation id="8157728322324420120">個人化建議</translation>
+<translation id="8157728322324420120">為你建議</translation>
 <translation id="8157849462797352650">裝置可享最新版的安全性、穩定性和效能更新</translation>
 <translation id="8158117992543756526">這部裝置已在 <ph name="MONTH_AND_YEAR" />停止自動更新軟體和安全性。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">接收相關操作 (如分割畫面和切換桌面等) 的震動確認。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

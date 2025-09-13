@@ -5,7 +5,7 @@
 <translation id="1063300264396686489">Automatically open tab groups from other devices</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Created <ph name="NUM_YEARS_ONE" /> year ago}other{Created <ph name="NUM_YEARS_MANY" /> years ago}}</translation>
-<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Inactive tabs and groups will be closed after 1 month}other{Inactive tabs and groups will be closed after <ph name="MONTH_COUNT_MANY" /> months}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Inactive tabs and groups will be closed after 1 month.}other{Inactive tabs and groups will be closed after <ph name="MONTH_COUNT_MANY" /> months.}}</translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Open <ph name="TITLE_OF_GROUP" /> with <ph name="TAB_COUNT2" /> tab}other{Open <ph name="TITLE_OF_GROUP" /> with <ph name="TAB_COUNT2" /> tabs}}</translation>

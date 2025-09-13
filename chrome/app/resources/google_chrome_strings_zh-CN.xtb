@@ -121,7 +121,7 @@
 <translation id="2559253115192232574">之后，您访问的网站可向 Chrome 请求查看您的兴趣，以便向您展示个性化广告。Chrome 最多可共享 3 项兴趣信息。</translation>
 <translation id="2563121210305478421">重新启动 Chrome？</translation>
 <translation id="2569974318947988067">Chrome 会尝试将导航路径升级到 HTTPS</translation>
-<translation id="2571392474191184472">贵组织负责管理 Chrome</translation>
+<translation id="2571392474191184472">您的组织负责管理 Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />已登录此 Chrome 个人资料。Chrome 可为您创建一份专属的个人资料，以将您的浏览数据与该用户的浏览数据分隔开来。</translation>
 <translation id="2579190314336775785">密码只能在 Chrome 之外删除</translation>
 <translation id="2580411288591421699">无法安装与当前运行版本相同的 Google Chrome 浏览器。请关闭 Google Chrome 浏览器，然后重试。</translation>
@@ -407,7 +407,7 @@
 <translation id="604424701295382420">已固定！您可以通过工具栏中的新按钮再次使用 Google 智能镜头</translation>
 <translation id="6069027071882229820">复制为图片</translation>
 <translation id="6070348360322141662">为了提高安全性，Google Chrome 将对您的数据进行加密</translation>
-<translation id="6075300983329039771">贵组织 (<ph name="MANAGER" />) 要求您登录 Chrome</translation>
+<translation id="6075300983329039771">您的组织 (<ph name="MANAGER" />) 要求您登录 Chrome</translation>
 <translation id="6113794647360055231">Chrome现在更好用了</translation>
 <translation id="6116252277240876590">使用此语言显示 Chrome 中的菜单、设置、提醒和其他文字</translation>
 <translation id="6127237283587442951">默认使用 Chrome 并将其固定</translation>
@@ -437,7 +437,7 @@
 <translation id="6360449101159168105">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chrome 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="6388799252195623474">帮我解决这个问题</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
-<translation id="6417690341895039567">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{贵组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{您的组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="6418662306461808273">要切换到现有的 Chrome 个人资料吗？</translation>
 <translation id="6473905796280459355">前往“关于 Chrome”页面</translation>
 <translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
@@ -513,9 +513,9 @@
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{一个或多个 Chrome 扩展程序访问过 1 部 USB 设备}=1{一个或多个 Chrome 扩展程序正在访问 1 部 USB 设备}other{一个或多个 Chrome 扩展程序正在访问 # 部 USB 设备}}</translation>
 <translation id="7426611252293106642">Google Chrome 可能无法正常运行，因为它不再支持此 Linux 发行版</translation>
 <translation id="7437998757836447326">退出 Chrome</translation>
-<translation id="7449333426561673451">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动关闭它。}other{贵组织会在 Chrome 闲置 # 分钟后自动关闭它。}}</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动关闭它。}other{您的组织会在 Chrome 闲置 # 分钟后自动关闭它。}}</translation>
 <translation id="7450541714075000668">文本已复制</translation>
-<translation id="7452987490177144319">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{贵组织会在 Chrome 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
+<translation id="7452987490177144319">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{您的组织会在 Chrome 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
 <translation id="7477130805345743099">Chrome 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="7481213027396403996">获享 Chrome 最强大的安全保护</translation>
 <translation id="749228101751499733">登录后，您可以在 Chrome 中使用 Google 账号中的密码等信息。使用 <ph name="SHORTCUT" /> 可以更改 Google 服务设置。</translation>
@@ -544,7 +544,7 @@
 <translation id="769538538642757151">如有任何事项需要您审核，Chrome 会通知您</translation>
 <translation id="7716950018788545737">任务已结束。</translation>
 <translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
-<translation id="7736869414036750079">贵组织要求您登录 Chrome</translation>
+<translation id="7736869414036750079">您的组织要求您登录 Chrome</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7748969056734910029">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION_1" />权限和<ph name="PERMISSION_2" />权限。</translation>
 <translation id="7761834446675418963">点击您的姓名即可打开Chrome并开始浏览。</translation>

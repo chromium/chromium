@@ -3529,7 +3529,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="343578350365773421">Out of paper</translation>
 <translation id="3435896845095436175">Enable</translation>
 <translation id="3437072258256045988">Manage your Gemini Apps activity</translation>
-<translation id="3437397693214267762">See your Outlook Calendar, SharePoint and OneDrive files</translation>
+<translation id="3437397693214267762">See your Outlook Calendar, and SharePoint and OneDrive files</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Always allow <ph name="HOST" /> to access your microphone</translation>
 <translation id="3439970425423980614">Opening PDF in Preview</translation>
@@ -3695,7 +3695,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3551320343578183772">Close Tab</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Cleared on exit</translation>
-<translation id="3553442438687311630">Microsoft Authentication</translation>
+<translation id="3553442438687311630">Microsoft authentication</translation>
 <translation id="3554493885489666172">Your device is managed by <ph name="PROFILE_NAME" />. Administrators can access the data in any profile on this device.</translation>
 <translation id="3555812735919707620">Remove extension</translation>
 <translation id="3557101512409028104">Set website restrictions and screen time limits with Family Link</translation>
@@ -9078,7 +9078,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7380459290951585794">Make sure that your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on</translation>
 <translation id="7380622428988553498">Device name contains invalid characters</translation>
 <translation id="7380768571499464492">Updated <ph name="PRINTER_NAME" /></translation>
-<translation id="7382009635620830394">If this card is disabled, your Microsoft cards, such as SharePoint, OneDrive files and Outlook Calendar will be disabled as well.</translation>
+<translation id="7382009635620830394">If this card is disabled, your Microsoft cards such as SharePoint and OneDrive files, and Outlook Calendar, will be disabled as well.</translation>
 <translation id="7382085868019811559">Legacy Browser Support (LBS) allows specific URL patterns to be opened in an alternative browser that supports legacy features required to properly run those sites.</translation>
 <translation id="7382980704744807223">Suspicious</translation>
 <translation id="738322632977123193">Can't upload. Use an image in one of these formats: .jpg, .gif, .png, .bmp, .tif or .webp</translation>
