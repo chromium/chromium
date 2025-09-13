@@ -33,7 +33,7 @@ constexpr char kPassword[] = "te$te^";
 
 /// Test fixture for `IOSSafariDataImportClient`.
 class IOSSafariDataImportClientTest : public PlatformTest {
- protected:
+ public:
   IOSSafariDataImportClientTest() {
     consumer_ = [[MockSafariDataItemConsumer alloc] init];
     client_.SetSafariDataItemConsumer(consumer_);
@@ -45,9 +45,16 @@ class IOSSafariDataImportClientTest : public PlatformTest {
   /// Returns the last populated item
   SafariDataItem* last_populated_item() { return consumer_.lastPopulatedItem; }
 
+  /// Whether the import has failed.
+  BOOL failed() { return failed_; }
+
+  /// Mark import as failed.
+  void set_failed() { failed_ = true; }
+
  private:
   IOSSafariDataImportClient client_;
   MockSafariDataItemConsumer* consumer_;
+  BOOL failed_;
 };
 
 /// Tests that OnBookmarksReady() populates the consumer.
@@ -159,4 +166,13 @@ TEST_F(IOSSafariDataImportClientTest, OnPaymentCardsImported) {
   EXPECT_EQ(item.count, 40);
   EXPECT_EQ(item.invalidCount, 0);
   EXPECT_EQ(item.status, SafariDataItemImportStatus::kImported);
+}
+
+/// Tests that OnTotalFailure() triggers the failure callback.
+TEST_F(IOSSafariDataImportClientTest, OnTotalFailure) {
+  client()->RegisterCallbackOnImportFailure(base::BindOnce(
+      &IOSSafariDataImportClientTest::set_failed, base::Unretained(this)));
+  client()->OnTotalFailure();
+  ASSERT_TRUE(failed());
+  ASSERT_TRUE(!last_populated_item());
 }

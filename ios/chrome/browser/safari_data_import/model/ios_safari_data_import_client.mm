@@ -110,6 +110,7 @@ IOSSafariDataImportClient::~IOSSafariDataImportClient() = default;
 
 void IOSSafariDataImportClient::SetSafariDataItemConsumer(
     id<SafariDataItemConsumer> consumer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   consumer_ = consumer;
 }
 
@@ -121,10 +122,12 @@ void IOSSafariDataImportClient::RegisterCallbackOnImportFailure(
 
 NSArray<PasswordImportItem*>*
 IOSSafariDataImportClient::GetConflictingPasswords() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return conflicting_passwords_;
 }
 
 NSArray<PasswordImportItem*>* IOSSafariDataImportClient::GetInvalidPasswords() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return invalid_passwords_;
 }
 
