@@ -154,7 +154,7 @@
 <translation id="5123188916260706415">在 Chrome 中使用语音搜索</translation>
 <translation id="5162467219239570114">Chrome 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chrome。</translation>
 <translation id="5184329579814168207">在 Chrome 中打开</translation>
-<translation id="5190139289262548459">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chrome 的使用方式。</translation>
+<translation id="5190139289262548459">您的组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chrome 的使用方式。</translation>
 <translation id="5305440589062022504">在 Chrome 中打开密码管理工具</translation>
 <translation id="5310957470610282541">部分 Chrome 数据尚未保存到您的 Google 账号。
 请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
@@ -213,7 +213,7 @@
 <translation id="6536544321553662809">将 Chrome 设为默认浏览器，即可轻松分享和打开链接</translation>
 <translation id="6545449117344801102">Chrome 会检测地址，并使用 Google 地图为您提供路线和本地信息。</translation>
 <translation id="6611692150236062461">若要轻松获取其他应用中已保存的密码，请选择 Chrome 的自动填充功能。</translation>
-<translation id="6636941099779251629">根据贵组织的要求，您必须登录才能使用 Chrome。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="6636941099779251629">根据您的组织要求，您必须登录才能使用 Chrome。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给 Google。</translation>
 <translation id="6647304104688527905">在 Chrome 中打开新标签页。</translation>
 <translation id="6684809838922667136">帮助改善 Chrome</translation>
@@ -255,7 +255,7 @@
 <translation id="7400722733683201933">关于 Google Chrome</translation>
 <translation id="7466693328838535498">在“搜索小组件”框中，输入“Chrome”</translation>
 <translation id="7477056987201678345">正在删除 Chrome 数据…</translation>
-<translation id="7492574581995589075">贵组织已关闭在您的 Google 账号中保存 Chrome 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
+<translation id="7492574581995589075">您的组织已关闭在您的 Google 账号中保存 Chrome 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
 <translation id="7540272326042438331">共享 Chrome</translation>
 <translation id="7575971113404272499">Chrome 提示：默认使用 Chrome</translation>
 <translation id="7581063337314642333">访问 Chrome 中的标签页网格</translation>

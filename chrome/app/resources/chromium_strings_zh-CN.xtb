@@ -71,7 +71,7 @@
 <translation id="1911763535808217981">关闭此功能后，您无需登录 Chromium 即可登录 Gmail 等 Google 网站</translation>
 <translation id="1916451563296275579">从 Chromium 中移除此应用数据</translation>
 <translation id="1929939181775079593">Chromium 未响应。要立即重新启动吗？</translation>
-<translation id="1933341829955786215">贵组织 (<ph name="MANAGER" />) 要求您登录 Chromium</translation>
+<translation id="1933341829955786215">您的组织 (<ph name="MANAGER" />) 要求您登录 Chromium</translation>
 <translation id="193439633299369377">需要重新启动 Chromium 操作系统以应用更新。</translation>
 <translation id="1951406923938785464">Chromium 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
@@ -86,7 +86,7 @@
 <translation id="2054039611381840095">若要接收后续 Chromium 更新，您需要使用 macOS 12 或更高版本。该电脑目前使用的是 macOS 11。</translation>
 <translation id="2086476982681781442">Chromium 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="2099452623287920103">系统将从此设备中移除您已保存在 Google 账号中的密码和其他 Chromium 数据。如需在 Chromium 中重新使用这些数据，请重新登录。</translation>
-<translation id="2120965832000301375">{COUNT,plural, =1{贵组织会在 Chromium 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{贵组织会在 Chromium 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
+<translation id="2120965832000301375">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{您的组织会在 Chromium 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
 <translation id="2126108037660393668">所下载的文件未能顺利通过验证。</translation>
 <translation id="2137162749895930932">关闭翻译屏幕</translation>
 <translation id="215352261310130060">Chromium 阻止了此项下载操作，因为网站未使用安全连接，该文件可能已被篡改</translation>
@@ -153,7 +153,7 @@
 <translation id="2928420929544864228">安装完毕。</translation>
 <translation id="2933336679234709858">数据已使用口令加密。请输入该口令，以便使用 Chromium 数据并将其保存在您的 Google 账号中。</translation>
 <translation id="2945997411976714835">安装时出错：安装程序进程未能启动。</translation>
-<translation id="2970426615109535079">贵组织负责管理 Chromium</translation>
+<translation id="2970426615109535079">您的组织负责管理 Chromium</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="2977506796191543575">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
 <translation id="2981563588585023386">若要使用家长选择的设置更安全地上网，请登录 Chromium</translation>
@@ -241,7 +241,7 @@
 <translation id="4036079820698952681">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 Chromium</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4055805654398742145">密码管理工具(&amp;A)</translation>
-<translation id="4095980151185649725">{COUNT,plural, =1{贵组织会在 Chromium 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{贵组织会在 Chromium 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{您的组织会在 Chromium 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="4118474109249235144">Chromium 无痕模式</translation>
 <translation id="4122186850977583290">前往“关于 Chromium”页面</translation>
 <translation id="4148957013307229264">正在安装...</translation>
@@ -376,7 +376,7 @@
 <translation id="5949225980829865667">如需在您的所有设备上获取此书签等内容，请登录 Chromium</translation>
 <translation id="5968400720580217226">AI 模式</translation>
 <translation id="5972142260211327093">如果 Chromium 随机将您加入某项正在开展的试用活动的参与名单，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chromium 每个月都会按保留时间先后顺序删除您的部分兴趣。兴趣会刷新，除非您将其移除。</translation>
-<translation id="5986585015444752010">{COUNT,plural, =1{贵组织会在 Chromium 闲置 1 分钟后自动关闭它。}other{贵组织会在 Chromium 闲置 # 分钟后自动关闭它。}}</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动关闭它。}other{您的组织会在 Chromium 闲置 # 分钟后自动关闭它。}}</translation>
 <translation id="5987687638152509985">更新 Chromium 以开始同步</translation>
 <translation id="5988505247484123880">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还可以将您的兴趣信息存储在 Chromium 中。</translation>
 <translation id="6003112304606738118">正在下载…还需 <ph name="HOURS" /> 小时</translation>
@@ -623,7 +623,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
 <translation id="8876044221123442390">添加 Chromium 个人资料</translation>
 <translation id="8880203542552872219">如果是的话，请修改您在 Chromium 中保存的密码，使它与您的新密码保持一致。</translation>
-<translation id="8891709362986793894">贵组织要求您登录 Chromium</translation>
+<translation id="8891709362986793894">您的组织要求您登录 Chromium</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="8931379085695076764">Chromium 可以根据您在过去几周的浏览记录推测出您的兴趣。这些信息会保留在您的设备上。</translation>
 <translation id="8941642502866065432">无法更新 Chromium</translation>

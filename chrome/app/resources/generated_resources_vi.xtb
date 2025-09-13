@@ -3546,7 +3546,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3435896845095436175">Bật</translation>
 <translation id="3436118221454753036">Chế độ Hỏi AI</translation>
 <translation id="3437072258256045988">Quản lý hoạt động của bạn trên Các ứng dụng Gemini</translation>
-<translation id="3437397693214267762">Xem tệp trong Sharepoint, Lịch Outlook và OneDrive</translation>
+<translation id="3437397693214267762">Xem Lịch Outlook, tệp Sharepoint và OneDrive</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Luôn cho phép <ph name="HOST" /> truy cập micrô của bạn</translation>
 <translation id="3439970425423980614">Mở PDF ở chế độ xem trước</translation>
@@ -11787,7 +11787,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
       <ph name="LIST_ITEM" />Kết nối lại Wi-Fi
       <ph name="LIST_ITEM" />Chạy công cụ Chẩn đoán kết nối dành cho Chrome
     <ph name="END_LIST" /></translation>
-<translation id="9161172953291434881">Bạn có tin tưởng trang web này không?</translation>
+<translation id="9161172953291434881">Bạn có tin tưởng để trang web này sử dụng dữ liệu của mình không?</translation>
 <translation id="9164418710391288146">Không được phép kết nối với bất kỳ thiết bị nào trên mạng cục bộ của bạn</translation>
 <translation id="9165856803582999927">Quét mã QR này bằng camera trên thiết bị mà bạn muốn tạo và lưu khoá truy cập cho <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Ảnh trong ảnh</translation>

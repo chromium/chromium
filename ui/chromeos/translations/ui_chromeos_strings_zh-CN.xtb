@@ -499,7 +499,7 @@
 <translation id="4935975195727477204">杂色菊</translation>
 <translation id="4943368462779413526">美式足球</translation>
 <translation id="4961158930123534723">已与 Parallels Desktop 共享 1 个文件夹</translation>
-<translation id="4965874878399872778">正在检查文件是否符合贵组织的安全政策…</translation>
+<translation id="4965874878399872778">正在检查文件是否符合您的组织安全政策…</translation>
 <translation id="496656650103537022">“<ph name="FILE_NAME" />”已恢复</translation>
 <translation id="4969785127455456148">专辑</translation>
 <translation id="4972330214479971536">无法完成文件同步设置</translation>
@@ -700,7 +700,7 @@
 <translation id="6430271654280079150">您还有 1 次尝试机会。</translation>
 <translation id="643243556292470964">被删除的文件现已移至回收站</translation>
 <translation id="6438480100790416671">正在检查存储空间…</translation>
-<translation id="6451527188465304418">正在检查文件是否符合贵组织的安全政策…</translation>
+<translation id="6451527188465304418">正在检查文件是否符合您的组织安全政策…</translation>
 <translation id="6485131920355264772">检索存储空间信息失败</translation>
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
 <translation id="649877868557234318">正在将文件“<ph name="FILE_NAME" />”提取到文件夹“<ph name="FOLDER_NAME" />”</translation>

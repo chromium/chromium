@@ -301,7 +301,7 @@
 <translation id="2119636449201577317">打开方式…</translation>
 <translation id="2120553909046681540">您的组织关闭了无痕浏览。</translation>
 <translation id="2122754583996902531">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="21243612977487926">我们不会使用贵组织的对话内容来改进模型。Gemini 显示的信息（包括与人相关的信息）不一定准确，请注意核查。<ph name="YOUR_PRIVACY_GEMINI" /></translation>
+<translation id="21243612977487926">我们不会使用您的组织的对话内容来改进模型。Gemini 显示的信息（包括与人相关的信息）不一定准确，请注意核查。<ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">搜索您复制的文字</translation>
 <translation id="2147127444698817042">仅适用于 iPhone</translation>
 <translation id="2148799636999124959">使用您已保存的密码快速登录网站和应用。</translation>
@@ -571,7 +571,7 @@
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
 <translation id="3186796054637504691">清除历史记录和网站数据</translation>
 <translation id="3190736958609431397">取消跟踪</translation>
-<translation id="3208260410153224535">贵组织关闭了登录功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
+<translation id="3208260410153224535">您的组织关闭了登录功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
 <translation id="3213807041830307252">使用相机和图库购买、翻译和识别所见内容。</translation>
 <translation id="3214379938835224220">您在 iPad 重置过程中退出了账号。点按下方的“继续”即可登录。</translation>
 <translation id="3218296450292600703">登录受管理的账号后，您就能将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开</translation>
@@ -660,7 +660,7 @@
 <translation id="3575426792457739946">此列表包含所有已加载的个人资料。</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />，由组织管理。</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
-<translation id="3587885837929752825">贵组织限制了您可在 Google 账号中保存的内容。</translation>
+<translation id="3587885837929752825">您的组织限制了您可在 Google 账号中保存的内容。</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
 <translation id="3595252146048399851">您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="3602260545951981695">选择“增强型保护”</translation>
@@ -923,7 +923,7 @@
 <translation id="4658335131052370646">保存</translation>
 <translation id="466307903888586355">您的组织已禁止保存文件</translation>
 <translation id="4668929960204016307">、</translation>
-<translation id="4669618761237477717">贵组织要求您进行私密浏览。在无痕模式下，系统不会同步标签页分组。
+<translation id="4669618761237477717">您的组织要求您进行私密浏览。在无痕模式下，系统不会同步标签页分组。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">拨打电话联系商家</translation>
 <translation id="4673565891421389203">登录受管理的账号后，您就能将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开。
@@ -1248,7 +1248,7 @@
 <translation id="5868644772996939262">自动填充密码和通行密钥</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="5873179562631407582">按住任意打开的标签页</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />。由贵组织管理。</translation>
+<translation id="5878899964490256268"><ph name="EMAIL" />。由您的组织管理。</translation>
 <translation id="5887400589839399685">已保存卡片</translation>
 <translation id="5888889603768021126">所用登录身份</translation>
 <translation id="5889333064153755823">删除浏览数据</translation>
@@ -1571,7 +1571,7 @@
 <translation id="7055240621761583113">自动填充密码</translation>
 <translation id="7063811929043357292">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">为保护贵组织的安全，未保存的数据将从此设备中删除。这些数据可能包括密码、历史记录等。</translation>
+<translation id="7067610207756299941">为保护您的组织安全，未保存的数据将从此设备中删除。这些数据可能包括密码、历史记录等。</translation>
 <translation id="7067780033517902110">所有文件</translation>
 <translation id="707086654079606593">管理地址…</translation>
 <translation id="7080806333218412752">会将网址发送给“安全浏览”功能进行检查。还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁。而且，会在您登录后暂时将这些数据关联到您的 Google 账号，以便在各个 Google 应用中为您提供保护。</translation>

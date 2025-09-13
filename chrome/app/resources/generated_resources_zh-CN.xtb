@@ -454,7 +454,7 @@
 <translation id="1293360286536751243">“<ph name="MAIN_GESTURE" />”可能与“<ph name="CONFLICTING_GESTURE_ONE" />”“<ph name="CONFLICTING_GESTURE_TWO" />”和“<ph name="CONFLICTING_GESTURE_THREE" />”有相似之处。如果可能，请尝试选择其他手势。</translation>
 <translation id="1293556467332435079">文件</translation>
 <translation id="1294807885394205587">此过程可能需要几分钟的时间。正在启动容器管理器。</translation>
-<translation id="12951065153783848">贵组织负责管理您的账号</translation>
+<translation id="12951065153783848">您的组织负责管理您的账号</translation>
 <translation id="1296410481664942178">不显示 Google 日历</translation>
 <translation id="1296911687402551044">固定所选标签页</translation>
 <translation id="1297175357211070620">目标打印机</translation>
@@ -1426,7 +1426,7 @@
 <translation id="1976150099241323601">登录安全设备</translation>
 <translation id="1976823515278601587">节省大量内存</translation>
 <translation id="1977965994116744507">需将您的手机靠近您的 <ph name="DEVICE_TYPE" />，才能为其解锁。</translation>
-<translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />您在组织中注册设备后，就可以对设备进行集中管理了。贵组织可能出于多种原因而要求进行注册：<ph name="END_DESCRIPTION" />
+<translation id="1978249384651349182"><ph name="BEGIN_DESCRIPTION" />您在组织中注册设备后，就可以对设备进行集中管理了。您的组织可能出于多种原因而要求进行注册：<ph name="END_DESCRIPTION" />
     <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />增强安全性<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
     <ph name="BEGIN_DESCRIPTION1" />通过配置额外的安全设置，组织可确保用户和设备数据的安全，还可以执行远程重置或停用丢失的设备等操作。<ph name="END_DESCRIPTION1" />
     <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />自定义体验<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
@@ -3016,7 +3016,7 @@
 <translation id="3047678109605649715">您的设备上没有<ph name="LANGUAGE" />语音包。请释放出设备空间，然后重试。</translation>
 <translation id="3048336643003835855">来自供应商 <ph name="VENDOR_ID" /> 的 HID 设备</translation>
 <translation id="3048589239114571785">播放 (K)</translation>
-<translation id="3048742847101793553">由于扫描失败，贵组织已屏蔽此文件。</translation>
+<translation id="3048742847101793553">由于扫描失败，您的组织已屏蔽此文件。</translation>
 <translation id="3048917188684939573">投放和设备日志</translation>
 <translation id="3049525403650329038">与 Gemini 分享网页内容，以获得更符合需求的回答。您的数据不会用于改进生成式 AI 模型。</translation>
 <translation id="3051250416341590778">显示屏上的内容大小</translation>
@@ -3359,7 +3359,7 @@
 <translation id="3319863571062685443">您的地址已保存</translation>
 <translation id="3320271870899888245">无法连接到 OneDrive。请重试。</translation>
 <translation id="3320630259304269485">安全浏览（防范危险网站）和其他安全设置</translation>
-<translation id="3320909810101200102">如需选择 ID，请扫描二维码</translation>
+<translation id="3320909810101200102">如需选择身份证件，请扫描二维码</translation>
 <translation id="3320957378743864387">不得提供写作帮助</translation>
 <translation id="3321460131042519426">启用自动换行</translation>
 <translation id="3321494112580110651">找不到您的打印机？</translation>
@@ -3378,7 +3378,7 @@
 <translation id="3335947283844343239">重新打开关闭的标签页</translation>
 <translation id="3336855445806447827">不确定</translation>
 <translation id="3337568642696914359">不允许网站处理协议</translation>
-<translation id="333863344734218290">在您访问不安全的公共网站和私密网站时发出警告</translation>
+<translation id="333863344734218290">在您访问不安全的公共网站和私有网站时发出警告</translation>
 <translation id="3340620525920140773">“<ph name="FILE_NAME" />”已下载完毕。</translation>
 <translation id="3340978935015468852">设置</translation>
 <translation id="3341091511696469129">Chrome 可以为此处显示的语言创建和翻译字幕</translation>
@@ -3962,7 +3962,7 @@
 <translation id="3727843212509629024">PIN 码不正确。请重试</translation>
 <translation id="3727850735097852673">若要将 Google 密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chrome 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
 <translation id="3728188878314831180">通过镜像方式显示您手机上收到的通知</translation>
-<translation id="3728572446941976198">人工审核员不会使用您的内容来改进 AI 技术。贵组织可能会随时更改这些设置</translation>
+<translation id="3728572446941976198">人工审核员不会使用您的内容来改进 AI 技术。您的组织可能会随时更改这些设置</translation>
 <translation id="3728681439294129328">配置网络地址</translation>
 <translation id="3728805180379554595">此设置由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="3729455204295802282">读取文件时出错</translation>
@@ -4687,7 +4687,7 @@
 <translation id="4223404254440398437">已拒绝授予麦克风使用权限</translation>
 <translation id="4224541845943007092">读取并保存地址栏中的键盘输入内容</translation>
 <translation id="4225397296022057997">在所有网站上</translation>
-<translation id="4228071595943929139">使用贵组织的电子邮件地址</translation>
+<translation id="4228071595943929139">使用您组织的电子邮件地址</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
 <translation id="4231053948789591973">目前已暂停投放。您可随时恢复投放或停止投放屏幕。</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -5045,7 +5045,7 @@
 <translation id="4473559657152613417">右键点击某个标签页，然后选择“向新组添加标签页”</translation>
 <translation id="4473996011558324141">正在估算用时</translation>
 <translation id="4474155171896946103">为所有标签页添加书签...</translation>
-<translation id="4475299370877036544">此操作可能违反了贵组织的政策</translation>
+<translation id="4475299370877036544">此操作可能违反了您的组织政策</translation>
 <translation id="4476198534886170024">已允许。请开启<ph name="LINK_BEGIN" />系统相机使用权<ph name="LINK_END" />。</translation>
 <translation id="4476590490540813026">运动员</translation>
 <translation id="4476659815936224889">要扫描此二维码，您可以使用手机上的二维码扫描器应用，也可以使用某些相机应用。</translation>
@@ -8079,7 +8079,7 @@
 <translation id="6657240842932274095">允许系统服务使用您的位置信息？</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="6659213950629089752">此页面已由“<ph name="NAME" />”扩展程序缩放</translation>
-<translation id="6659594942844771486">标签页</translation>
+<translation id="6659594942844771486">Tab 键</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - 摄像头正在录像</translation>
 <translation id="6660301751798595791">语音选择</translation>
 <translation id="6660819301598582123">敏捷的棕色狐狸跨过懒狗。</translation>
@@ -8387,7 +8387,7 @@
 <translation id="6851181413209322061">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。如果您已为孩子开启“其他网络与应用活动记录”设置，系统可能会将这些数据保存到其 Google 账号中。</translation>
 <translation id="6851497530878285708">已启用此应用</translation>
 <translation id="6852290167968069627">ChromeOS 无法恢复您的上一个会话，因为网络出问题了。请连接到稳定的网络，然后重试。</translation>
-<translation id="6852529053326738838">请询问贵组织，或使用您的工作邮箱进行注册，以检查您的账号是否符合条件。</translation>
+<translation id="6852529053326738838">请询问您的组织，或使用您的工作邮箱进行注册，以检查您的账号是否符合条件。</translation>
 <translation id="6853029310037965825">从<ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" />安装的<ph name="APP_TYPE" /></translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> 年</translation>
 <translation id="68541483639528434">关闭其他标签页</translation>
@@ -8981,7 +8981,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 收到了权限请求，按 F6 即可回复</translation>
 <translation id="7290005709287747471">停用</translation>
 <translation id="7290242001003353852">这项由 <ph name="SAML_DOMAIN" /> 托管的登录服务正在使用您的摄像头。</translation>
-<translation id="7292067737327289208">您的<ph name="BEGIN_LINK" />浏览器<ph name="END_LINK" />由贵组织管理，您的<ph name="BEGIN_LINK" />个人资料<ph name="END_LINK" />由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
+<translation id="7292067737327289208">您的<ph name="BEGIN_LINK" />浏览器<ph name="END_LINK" />由您的组织管理，您的<ph name="BEGIN_LINK" />个人资料<ph name="END_LINK" />由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="7292147651179697920">请家长在“设置”中授予访问权限</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7293774463163321848">可在管理设置中删除搜索记录、Gemini 历史记录和密码</translation>
@@ -9024,7 +9024,7 @@
 <translation id="7325209047678309347">纸张卡住了</translation>
 <translation id="7325953439504232954">是否切换个人资料？</translation>
 <translation id="7326004502692201767">为孩子设置此 <ph name="DEVICE_TYPE" /></translation>
-<translation id="732659786514229249">要在贵组织中注册该设备吗？</translation>
+<translation id="732659786514229249">要在您的组织中注册该设备吗？</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 调试。重启 <ph name="DEVICE_TYPE" /> 后，您将无法旁加载应用。</translation>
 <translation id="7328119182036084494">已保存到“<ph name="WEB_DRIVE" />”</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
@@ -9220,7 +9220,7 @@
 <translation id="7453008956351770337">选择此打印机即表示您允许以下扩展程序访问您的打印机：</translation>
 <translation id="7453032093368223821">管理其他数据</translation>
 <translation id="7454548535253569100">门户网站：<ph name="SUBFRAME_SITE" /></translation>
-<translation id="7454744349230173024">贵组织已关闭密码保存功能</translation>
+<translation id="7454744349230173024">您的组织已关闭密码保存功能</translation>
 <translation id="7455730275746867420">管理额外容器</translation>
 <translation id="7455988709578031708">根据您的浏览记录推测得出。此设置已开启。</translation>
 <translation id="7456142309650173560">开发者版本</translation>
@@ -9235,7 +9235,7 @@
 <translation id="746216226901520237">下次，您只需使用手机就能解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="7463068149674892185">不建议执行此操作</translation>
 <translation id="746329643760972486">MacOS</translation>
-<translation id="7463985990119325874">贵组织可管理由这些功能收集的数据的使用方式。</translation>
+<translation id="7463985990119325874">您的组织可管理由这些功能收集的数据的使用方式。</translation>
 <translation id="7464645554245611385">此标签页的最近更新</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{共有 # 个打开的标签页，按一下此按钮即可显示/隐藏标签栏}other{共有 # 个打开的标签页，按一下此按钮即可显示/隐藏标签栏}}</translation>
 <translation id="7465635034594602553">出了点问题。请在几分钟后重新运行 <ph name="APP_NAME" />。</translation>
@@ -10803,7 +10803,7 @@
 <translation id="8525461909394569609">此应用包含以下来源的 Web 内容：</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">扬声器</translation>
-<translation id="8527257351549797148">贵组织可能要求注册，以便您使用应用、扩展程序等。这样一来，贵组织还可以管理安全和设备设置等事项。</translation>
+<translation id="8527257351549797148">您的组织可能要求注册，以便您使用应用、扩展程序等。这样一来，您的组织还可以管理安全和设备设置等事项。</translation>
 <translation id="8527869672961320915"><ph name="VM_NAME" /> 相关应用</translation>
 <translation id="8527919446448758559"><ph name="SITE" /> 想验证您的身份。请输入 Google 密码管理工具的 6 位数 PIN 码，这是 PIN 码的第 <ph name="NUM_DIGIT" /> 位，共 6 位</translation>
 <translation id="8528074251912154910">添加语言</translation>

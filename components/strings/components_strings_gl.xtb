@@ -1163,7 +1163,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2942515540157583425">Postos tecnolóxicos e técnicos</translation>
 <translation id="2943895734390379394">Momento da carga:</translation>
 <translation id="2947281105969315778">Para compartir grupos de pestanas ou unirte a eles, tes que poder iniciar sesión en Chrome</translation>
-<translation id="2948083400971632585">Podes desactivar os proxies configurados para unha conexión desde a páxina de configuración.</translation>
+<translation id="2948083400971632585">Podes desactivar os proxys configurados para unha conexión desde a páxina de configuración.</translation>
 <translation id="2949183777371959169">Ignorouse porque o dispositivo non está inscrito en Chrome Browser Cloud Management.</translation>
 <translation id="2951588413176968965">A miña caixa de correo</translation>
 <translation id="2952820037279740115">Pechar todas as ventás do modo de incógnito</translation>
@@ -2474,6 +2474,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5097099694988056070">Estatísticas do hardware, como o uso de CPU/RAM</translation>
 <translation id="5097468150760963273">27 × 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5102512728737175215">Preme Tabulador e, a continuación, Introducir para facer preguntas co modo IA</translation>
 <translation id="510644072453496781">Cartón (final)</translation>
 <translation id="5106648964679263509">Completouse a tarxeta virtual de <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108567515277121477">Tarxeta de fidelidade</translation>
@@ -3482,6 +3483,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6786145470008421571">Sobre 6 x 9 polgadas</translation>
 <translation id="6786747875388722282">Extensións</translation>
 <translation id="6787094689637422836">Estamos lanzando novas funcións de privacidade que che ofrecen máis opcións sobre os anuncios que ves.</translation>
+<translation id="6788615780749001893">Botón do modo IA. Preme Introducir para facer preguntas co modo IA</translation>
 <translation id="6789062271869667677">Continuo (longo)</translation>
 <translation id="678982761784843853">Códigos de identificación de contido protexido</translation>
 <translation id="6790428901817661496">Reproducir</translation>
