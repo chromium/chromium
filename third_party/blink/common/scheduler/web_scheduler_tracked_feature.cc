@@ -19,7 +19,7 @@ std::atomic_bool disable_align_wake_ups{false};
 
 struct FeatureNames {
   std::string short_name;
-  std::string human_readable;
+  const char* human_readable;
 };
 
 FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
@@ -179,7 +179,7 @@ ShortStringToFeatureMap() {
 
 }  // namespace
 
-std::string FeatureToHumanReadableString(WebSchedulerTrackedFeature feature) {
+const char* FeatureToHumanReadableString(WebSchedulerTrackedFeature feature) {
   return FeatureToNames(feature).human_readable;
 }
 

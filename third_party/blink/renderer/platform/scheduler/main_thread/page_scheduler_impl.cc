@@ -378,10 +378,11 @@ void PageSchedulerImpl::RegisterFrameSchedulerImpl(
 
 std::unique_ptr<blink::FrameScheduler> PageSchedulerImpl::CreateFrameScheduler(
     FrameScheduler::Delegate* delegate,
+    const LocalFrameToken& frame_token,
     bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type) {
   auto frame_scheduler = std::make_unique<FrameSchedulerImpl>(
-      this, delegate, is_in_embedded_frame_tree, frame_type);
+      this, delegate, frame_token, is_in_embedded_frame_tree, frame_type);
   RegisterFrameSchedulerImpl(frame_scheduler.get());
   return frame_scheduler;
 }

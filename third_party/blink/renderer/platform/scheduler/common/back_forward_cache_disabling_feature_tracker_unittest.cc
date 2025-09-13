@@ -47,8 +47,8 @@ TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddAndRemove) {
       url, function, line_number, column_number, nullptr, 0);
   SourceLocation* source_location_2 = MakeGarbageCollected<SourceLocation>(
       url, function_2, line_number, column_number, nullptr, 0);
-  BackForwardCacheDisablingFeatureTracker tracker(tracing_controller(),
-                                                  nullptr);
+  BackForwardCacheDisablingFeatureTracker tracker(
+      tracing_controller(), perfetto::NamedTrack("Test"), nullptr);
   EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
               testing::UnorderedElementsAre());
 
@@ -117,8 +117,8 @@ TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddStickyFeature) {
       FeatureAndJSLocationBlockingBFCache(
           SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore, url,
           function, line_number, column_number);
-  BackForwardCacheDisablingFeatureTracker tracker(tracing_controller(),
-                                                  nullptr);
+  BackForwardCacheDisablingFeatureTracker tracker(
+      tracing_controller(), perfetto::NamedTrack("Test"), nullptr);
 
   EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
               testing::UnorderedElementsAre());
@@ -132,8 +132,8 @@ TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddStickyFeature) {
 }
 
 TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddDuplicateFeature) {
-  BackForwardCacheDisablingFeatureTracker tracker(tracing_controller(),
-                                                  nullptr);
+  BackForwardCacheDisablingFeatureTracker tracker(
+      tracing_controller(), perfetto::NamedTrack("Test"), nullptr);
   const String& url = "https://a.com";
   const String& function = "foo";
   const String& function_two = "bar";
@@ -186,8 +186,8 @@ TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddDuplicateFeature) {
 
 TEST_F(BackForwardCacheDisablingFeatureTrackerTest,
        AddFeatureMoreThanTenTimes) {
-  BackForwardCacheDisablingFeatureTracker tracker(tracing_controller(),
-                                                  nullptr);
+  BackForwardCacheDisablingFeatureTracker tracker(
+      tracing_controller(), perfetto::NamedTrack("Test"), nullptr);
   const String& url = "https://a.com";
   const String& function = "foo";
   const String& function_two = "bar";

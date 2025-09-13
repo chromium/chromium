@@ -37,6 +37,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
       : FrameSchedulerImpl(/*main_thread_scheduler=*/nullptr,
                            /*parent_page_scheduler=*/nullptr,
                            /*delegate=*/delegate,
+                           LocalFrameToken(),
                            /*is_in_embedded_frame_tree=*/false,
                            /*frame_type=*/frame_type),
         page_scheduler_(page_scheduler),

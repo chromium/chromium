@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/base/request_priority.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
@@ -74,6 +75,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
  public:
   FrameSchedulerImpl(PageSchedulerImpl* page_scheduler,
                      FrameScheduler::Delegate* delegate,
+                     const LocalFrameToken& frame_token,
                      bool is_in_embedded_frame_tree,
                      FrameScheduler::FrameType frame_type);
   FrameSchedulerImpl(const FrameSchedulerImpl&) = delete;
@@ -215,6 +217,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   FrameSchedulerImpl(MainThreadSchedulerImpl* main_thread_scheduler,
                      PageSchedulerImpl* parent_page_scheduler,
                      FrameScheduler::Delegate* delegate,
+                     const LocalFrameToken& frame_token,
                      bool is_in_embedded_frame_tree,
                      FrameScheduler::FrameType frame_type);
 
@@ -354,6 +357,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   TraceableVariableController tracing_controller_;
   std::unique_ptr<FrameTaskQueueController> frame_task_queue_controller_;
+
+  const perfetto::NamedTrack tracing_track_;
 
   const raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged>
       main_thread_scheduler_;  // NOT OWNED

@@ -72,7 +72,7 @@ std::unique_ptr<FrameSchedulerImpl> CreateFrameScheduler(
     bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type) {
   auto frame_scheduler = page_scheduler->CreateFrameScheduler(
-      delegate, is_in_embedded_frame_tree, frame_type);
+      delegate, LocalFrameToken(), is_in_embedded_frame_tree, frame_type);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_impl(
       static_cast<FrameSchedulerImpl*>(frame_scheduler.release()));
   return frame_scheduler_impl;
@@ -273,22 +273,22 @@ class PageSchedulerImplTest : public testing::Test {
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersBefore) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
   std::unique_ptr<blink::FrameScheduler> frame2(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
 }
 
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersAfter) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
   std::unique_ptr<blink::FrameScheduler> frame2(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, /*is_in_embedded_frame_tree=*/false,
+          nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
           FrameScheduler::FrameType::kSubframe));
   page_scheduler_.reset();
 }

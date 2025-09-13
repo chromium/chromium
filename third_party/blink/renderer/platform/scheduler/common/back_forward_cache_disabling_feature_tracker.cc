@@ -13,14 +13,16 @@ namespace scheduler {
 BackForwardCacheDisablingFeatureTracker::
     BackForwardCacheDisablingFeatureTracker(
         TraceableVariableController* tracing_controller,
+        perfetto::Track parent_track,
         ThreadSchedulerBase* scheduler)
-    : opted_out_from_back_forward_cache_{false,
-                                         MakeNamedTrack(
-                                             "FrameScheduler."
-                                             "OptedOutFromBackForwardCache",
-                                             this),
-                                         tracing_controller,
-                                         YesNoStateToString},
+    : parent_track_(parent_track),
+      opted_out_from_back_forward_cache_{
+          false,
+          perfetto::NamedTrack::FromPointer("FrameScheduler."
+                                            "OptedOutFromBackForwardCache",
+                                            this,
+                                            parent_track_),
+          tracing_controller, YesNoStateToString},
       scheduler_{scheduler} {}
 
 void BackForwardCacheDisablingFeatureTracker::SetDelegate(
@@ -36,9 +38,8 @@ void BackForwardCacheDisablingFeatureTracker::SetDelegate(
 
 void BackForwardCacheDisablingFeatureTracker::Reset() {
   for (const auto& it : back_forward_cache_disabling_feature_counts_) {
-    TRACE_EVENT_END("renderer.scheduler",
-                    perfetto::Track(reinterpret_cast<intptr_t>(this) ^
-                                    static_cast<int>(it.first)));
+    auto track = GetTrackForFeature(it.first);
+    TRACE_EVENT_END("renderer.scheduler", track);
   }
 
   back_forward_cache_disabling_feature_counts_.clear();
@@ -58,6 +59,15 @@ void BackForwardCacheDisablingFeatureTracker::AddFeatureInternal(
 
   NotifyDelegateAboutFeaturesAfterCurrentTask(
       BackForwardCacheDisablingFeatureTracker::TracingType::kBegin, feature);
+}
+
+perfetto::NamedTrack
+BackForwardCacheDisablingFeatureTracker::GetTrackForFeature(
+    SchedulingPolicy::Feature traced_feature) const {
+  return perfetto::NamedTrack(
+      "ActiveSchedulerTrackedFeature",
+      reinterpret_cast<intptr_t>(this) ^ static_cast<int>(traced_feature),
+      parent_track_);
 }
 
 void BackForwardCacheDisablingFeatureTracker::AddNonStickyFeature(
@@ -140,18 +150,16 @@ void BackForwardCacheDisablingFeatureTracker::
         &BackForwardCacheDisablingFeatureTracker::ReportFeaturesToDelegate,
         weak_factory_.GetWeakPtr()));
   }
+  auto track = GetTrackForFeature(traced_feature);
   switch (tracing_type) {
     case TracingType::kBegin:
-      TRACE_EVENT_BEGIN("renderer.scheduler", "ActiveSchedulerTrackedFeature",
-                        perfetto::Track(reinterpret_cast<intptr_t>(this) ^
-                                        static_cast<int>(traced_feature)),
-                        "feature",
-                        FeatureToHumanReadableString(traced_feature));
+      TRACE_EVENT_BEGIN(
+          "renderer.scheduler",
+          perfetto::StaticString(FeatureToHumanReadableString(traced_feature)),
+          track);
       break;
     case TracingType::kEnd:
-      TRACE_EVENT_END("renderer.scheduler",
-                      perfetto::Track(reinterpret_cast<intptr_t>(this) ^
-                                      static_cast<int>(traced_feature)));
+      TRACE_EVENT_END("renderer.scheduler", track);
       break;
   }
 }

@@ -39,6 +39,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // instance except for tests.
   BackForwardCacheDisablingFeatureTracker(
       TraceableVariableController* tracing_controller,
+      perfetto::Track parent_track,
       ThreadSchedulerBase* scheduler);
 
   // Sets the delegate to notify the feature usage update. This must be called
@@ -98,6 +99,11 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
 
   // Called when a usage of |feature| is added.
   void AddFeatureInternal(SchedulingPolicy::Feature feature);
+
+  perfetto::NamedTrack GetTrackForFeature(
+      SchedulingPolicy::Feature traced_feature) const;
+
+  perfetto::Track parent_track_;
 
   base::flat_map<SchedulingPolicy::Feature, int>
       back_forward_cache_disabling_feature_counts_{};

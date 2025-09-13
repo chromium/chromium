@@ -59,7 +59,7 @@ class FrameTaskQueueControllerTest : public testing::Test,
     agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
     page_scheduler_ = agent_group_scheduler_->CreatePageScheduler(nullptr);
     frame_scheduler_ = page_scheduler_->CreateFrameScheduler(
-        nullptr, /*is_in_embedded_frame_tree=*/false,
+        nullptr, LocalFrameToken(), /*is_in_embedded_frame_tree=*/false,
         FrameScheduler::FrameType::kSubframe);
     frame_task_queue_controller_ = std::make_unique<FrameTaskQueueController>(
         scheduler_.get(),

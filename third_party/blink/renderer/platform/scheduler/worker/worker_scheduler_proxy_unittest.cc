@@ -138,6 +138,7 @@ class WorkerSchedulerProxyTest : public testing::Test {
         page_scheduler_(agent_group_scheduler_->CreatePageScheduler(nullptr)),
         frame_scheduler_(page_scheduler_->CreateFrameScheduler(
             nullptr,
+            LocalFrameToken(),
             /*is_in_embedded_frame_tree=*/false,
             FrameScheduler::FrameType::kMainFrame)) {}
 

@@ -168,6 +168,7 @@ class DummyPageScheduler : public PageScheduler {
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
+      const LocalFrameToken& frame_token,
       bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType) override {
     return CreateDummyFrameScheduler(agent_group_scheduler_->Isolate());
