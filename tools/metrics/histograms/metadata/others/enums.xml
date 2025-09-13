@@ -246,6 +246,7 @@ chromium-metrics-reviews@google.com.
   <int value="-685636232" label="icdcnl.dll"/>
   <int value="-629812910" label="fwhook.dll"/>
   <int value="-570442231" label="npggNT.des"/>
+  <int value="-551159708" label="kwsui64.dll"/>
   <int value="-534417221" label="mdnsnsp.dll"/>
   <int value="-434631356" label="cmsetac.dll"/>
   <int value="-432495155" label="radhslib.dll"/>
