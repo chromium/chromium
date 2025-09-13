@@ -23,12 +23,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/lens/tab_contextualization_controller.h"
@@ -448,22 +450,31 @@ TEST_F(ComposeboxHandlerTest, ClearFiles) {
   handler().ClearFiles();
 }
 
-class ComposeboxHandlerTabContextTest : public ComposeboxHandlerTest {
+class ComposeboxHandlerTabsTest : public ComposeboxHandlerTest {
  public:
-  ComposeboxHandlerTabContextTest() {
+  ComposeboxHandlerTabsTest() = default;
+
+  ~ComposeboxHandlerTabsTest() override {
+    // Break loop so we can deconstruct without dangling pointers.
+    delegate_.SetBrowserWindowInterface(nullptr);
+  }
+
+  void SetUp() override {
+    ComposeboxHandlerTest::SetUp();
     ON_CALL(browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(&tab_strip_model_));
     ON_CALL(browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(::testing::ReturnRef(user_data_host_));
     delegate_.SetBrowserWindowInterface(&browser_window_interface_);
+    webui::SetBrowserWindowInterface(web_contents(),
+                                     &browser_window_interface_);
   }
 
-  ~ComposeboxHandlerTabContextTest() override {
-    // Break loop so we can deconstruct without dangling pointers.
-    delegate_.SetBrowserWindowInterface(nullptr);
+  void TearDown() override {
+    tab_interface_to_alert_controller_.clear();
+    tab_strip_model()->CloseAllTabs();
+    ComposeboxHandlerTest::TearDown();
   }
-
-  void TearDown() override { ComposeboxHandlerTest::TearDown(); }
 
   TestTabStripModelDelegate* delegate() { return &delegate_; }
   TabStripModel* tab_strip_model() { return &tab_strip_model_; }
@@ -494,6 +505,12 @@ class ComposeboxHandlerTabContextTest : public ComposeboxHandlerTest {
                     *tab_interface, tab_interface);
     tab_features->SetTabContextualizationControllerForTesting(
         std::move(tab_contextualization_controller));
+    std::unique_ptr<tabs::TabAlertController> tab_alert_controller =
+        tabs::TabFeatures::GetUserDataFactoryForTesting()
+            .CreateInstance<tabs::TabAlertController>(*tab_interface,
+                                                      *tab_interface);
+    tab_interface_to_alert_controller_.insert(
+        {tab_interface, std::move(tab_alert_controller)});
 
     return tab_interface;
   }
@@ -503,10 +520,12 @@ class ComposeboxHandlerTabContextTest : public ComposeboxHandlerTest {
   TabStripModel tab_strip_model_{&delegate_, profile()};
   ui::UnownedUserDataHost user_data_host_;
   MockBrowserWindowInterface browser_window_interface_;
+  std::map<tabs::TabInterface* const, std::unique_ptr<tabs::TabAlertController>>
+      tab_interface_to_alert_controller_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
-TEST_F(ComposeboxHandlerTabContextTest, AddTabContext) {
+TEST_F(ComposeboxHandlerTabsTest, AddTabContext) {
   auto sample_url = GURL("https://www.google.com");
   tabs::TabInterface* tab = AddTab(sample_url);
   const int sample_tab_id = tab->GetHandle().raw_value();
@@ -537,9 +556,18 @@ TEST_F(ComposeboxHandlerTabContextTest, AddTabContext) {
 
   // Flush the mojo pipe to ensure the callback is run.
   mock_page_.FlushForTesting();
+}
 
-  // Clean up the tab.
-  tab_strip_model()->CloseAllTabs();
+TEST_F(ComposeboxHandlerTabsTest, GetTabs) {
+  AddTab(GURL("about:blank"));
+  AddTab(GURL("chrome://webui-is-ignored"));
+
+  auto callback = base::BindLambdaForTesting(
+      [](std::vector<composebox::mojom::TabInfoPtr> tabs) {
+        ASSERT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->title, "about:blank");
+      });
+  handler().GetTabs(std::move(callback));
 }
 
 class ComposeboxHandlerFileUploadStatusTest
