@@ -23,7 +23,6 @@ bool IsTrialPersistentToNextResponse(std::string_view trial_name) {
       "FrobulatePersistentInvalidOS",
       "FrobulatePersistentThirdPartyDeprecation",
       // Production persistent origin trials follow below:
-      "MediaPreviewsOptOutPersistent",
       "WebViewXRequestedWithDeprecation",
       "Tpcd",
       "TopLevelTpcd",

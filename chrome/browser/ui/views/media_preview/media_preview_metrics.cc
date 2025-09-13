@@ -207,12 +207,6 @@ void RecordPreviewDelayTime(const Context& context,
   GetPreviewDelayTimeHistogram(metric_name)->Add(delta.InMilliseconds());
 }
 
-void RecordOriginTrialAllowed(UiLocation location, bool allowed) {
-  base::UmaHistogramBoolean(
-      StrCat({kUiPrefix, GetUiLocationString(location), ".OriginTrialAllowed"}),
-      allowed);
-}
-
 void RecordVideoCaptureError(const Context& context,
                              media::VideoCaptureError received_error) {
   CHECK_EQ(context.preview_type, PreviewType::kCamera);

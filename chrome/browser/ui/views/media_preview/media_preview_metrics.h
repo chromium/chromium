@@ -71,8 +71,6 @@ void RecordTimeToActionWithoutPreview(const Context& context,
 void RecordPreviewDelayTime(const Context& context,
                             const base::TimeDelta& delta);
 
-void RecordOriginTrialAllowed(UiLocation location, bool allowed);
-
 void RecordVideoCaptureError(const Context& context,
                              media::VideoCaptureError received_error);
 

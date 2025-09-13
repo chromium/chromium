@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -58,10 +59,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/views/media_preview/media_preview_feature.h"
-#endif
 
 namespace {
 
@@ -277,11 +274,7 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
     return;
   }
 
-  // Check this last, as it queries the origin trials service.
-  if (!media_preview_feature::ShouldShowMediaPreview(
-          *browser()->profile(), delegate()->GetRequestingOrigin(),
-          delegate()->GetEmbeddingOrigin(),
-          media_preview_metrics::UiLocation::kPermissionPrompt)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
     return;
   }
 

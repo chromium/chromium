@@ -8104,21 +8104,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="MediaPreviews.UI.{UiLocation}.OriginTrialAllowed"
-    enum="Boolean" expires_after="2026-02-01">
-  <owner>mfoltz@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    When Media Previews are requested, records whether the previews were allowed
-    or blocked by the site's membership in the MediaPreviewsOptOutPersistent
-    origin trial.
-  </summary>
-  <token key="UiLocation">
-    <variant name="PageInfo"/>
-    <variant name="Permissions"/>
-  </token>
-</histogram>
-
 <histogram name="MediaPreviews.UI.{UiLocation}.{Type}.Duration" units="s"
     expires_after="2026-02-01">
   <owner>ahmedmoussa@google.com</owner>

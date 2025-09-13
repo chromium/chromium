@@ -2854,8 +2854,6 @@ static_library("ui") {
       "views/media_preview/camera_preview/video_stream_view.h",
       "views/media_preview/media_coordinator.cc",
       "views/media_preview/media_coordinator.h",
-      "views/media_preview/media_preview_feature.cc",
-      "views/media_preview/media_preview_feature.h",
       "views/media_preview/media_preview_metrics.cc",
       "views/media_preview/media_preview_metrics.h",
       "views/media_preview/media_view.cc",
