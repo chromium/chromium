@@ -35,6 +35,10 @@ export interface ReadAloudModelBrowserProxy {
   // Handle initialization.
   isInitialized(): boolean;
   init(context: ReadAloudNode): void;
+
+  // Resets the model. Method is optional because the V8 model handles this
+  // in C++.
+  resetModel?(): void;
 }
 
 export function getReadAloudModel(): ReadAloudModelBrowserProxy {

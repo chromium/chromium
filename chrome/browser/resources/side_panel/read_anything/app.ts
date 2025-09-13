@@ -23,6 +23,8 @@ import {minOverflowLengthToScroll} from './common.js';
 import {ContentController} from './content_controller.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
+import {getReadAloudModel} from './read_aloud/read_aloud_model_browser_proxy.js';
+import {ReadAloudNode} from './read_aloud/read_aloud_types.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 import type {SpeechListener} from './read_aloud/speech_controller.js';
 import {TextSegmenter} from './read_aloud/text_segmenter.js';
@@ -351,9 +353,7 @@ export class AppElement extends AppElementBase implements
         loadTimeData.getString('readAnythingLoadingMessage');
     this.emptyStateSubheading_ = '';
     this.hasContent_ = false;
-    if (this.isReadAloudEnabled_) {
-      this.speechController_.clearReadAloudState();
-    }
+    this.resetForNewContent();
   }
 
   // TODO: crbug.com/40927698 - Handle focus changes for speech, including
@@ -371,7 +371,7 @@ export class AppElement extends AppElementBase implements
 
     if (this.isReadAloudEnabled_) {
       this.speechController_.saveReadAloudState();
-      this.speechController_.clearReadAloudState();
+      this.resetForNewContent();
     }
     const container = this.$.container;
 
@@ -452,12 +452,34 @@ export class AppElement extends AppElementBase implements
         this.$.containerScroller.scrollTop = 0;
       }
       this.nodeStore_.estimateWordsSeenWithDelay();
+      // Initialize the speech tree with the new content.
+      if (chrome.readingMode.isTsTextSegmentationEnabled) {
+        const contextNode = ReadAloudNode.create(container);
+        if (contextNode) {
+          // Don't initialize until after we've drawn- otherwise, the DOM
+          // nodes might not yet exist in the tree.
+          getReadAloudModel().init(contextNode);
+        }
+      }
     });
   }
 
   getSelection(): any {
     assert(this.shadowRoot, 'no shadow root');
     return this.shadowRoot.getSelection();
+  }
+
+  protected resetForNewContent() {
+    if (!this.isReadAloudEnabled_) {
+      return;
+    }
+
+    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+      // Reset the read aloud model because there's new content.
+      getReadAloudModel().resetModel?.();
+    }
+
+    this.speechController_.clearReadAloudState();
   }
 
   protected updateLinks_() {

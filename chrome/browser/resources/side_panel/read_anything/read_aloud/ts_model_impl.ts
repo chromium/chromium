@@ -110,6 +110,10 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     }
   }
 
+  resetModel() {
+    this.resetState_();
+  }
+
   private resetState_() {
     this.sentences_ = [];
     this.currentIndex_ = -1;

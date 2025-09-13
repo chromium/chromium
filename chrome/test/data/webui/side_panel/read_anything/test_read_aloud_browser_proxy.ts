@@ -23,6 +23,7 @@ export class TestReadAloudModelBrowserProxy extends TestBrowserProxy implements
       'moveSpeechBackwards',
       'isInitialized',
       'init',
+      'resetModel',
     ]);
   }
 
@@ -76,6 +77,10 @@ export class TestReadAloudModelBrowserProxy extends TestBrowserProxy implements
   init(context: ReadAloudNode): void {
     this.methodCalled('init', context);
     this.isInitialized_ = true;
+  }
+
+  resetModel(): void {
+    this.methodCalled('resetModel');
   }
 
   setCurrentTextContent(content: string) {
