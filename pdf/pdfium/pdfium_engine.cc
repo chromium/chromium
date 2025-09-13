@@ -355,6 +355,16 @@ bool IsSelectableArea(PDFiumPage::Area area) {
   return area == PDFiumPage::TEXT_AREA || IsLinkArea(area);
 }
 
+int GetCharIndexBasedOnCharBounds(int char_index,
+                                  const gfx::PointF& point,
+                                  const PdfRect& bounds) {
+  // TODO(crbug.com/443275584): Handle vertical text.
+  if (point.x() < bounds.AsGfxRectF().CenterPoint().x()) {
+    return char_index;
+  }
+  return char_index + 1;
+}
+
 // These values are intended for the JS to handle, and it doesn't have access
 // to the PDFDEST_VIEW_* defines.
 std::string ConvertViewIntToViewString(unsigned long view_int) {
@@ -1503,12 +1513,12 @@ void PDFiumEngine::OnTextOrLinkAreaClickInternal(const PointData& point_data,
   }
 
   if (click_count == 1) {
-    OnSingleClick(point_data.page_index, point_data.char_index);
+    int char_index = GetCharIndexBasedOnCharBounds(
+        point_data.char_index, point_data.pdf_point, point_data.char_bounds);
+    OnSingleClick(point_data.page_index, char_index);
+
     if (caret_) {
-      // TODO(crbug.com/437807126): Handle corner case of clicking to the right
-      // of the last char on a page.
-      caret_->SetChar(
-          PageCharacterIndex(point_data.page_index, point_data.char_index));
+      caret_->SetChar(PageCharacterIndex(point_data.page_index, char_index));
     }
   } else if (click_count >= 2) {
     OnMultipleClick(click_count, point_data.page_index, point_data.char_index);
@@ -1886,7 +1896,8 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
   DCHECK_GE(point_data.char_index, 0);
 
   const int page_index = point_data.page_index;
-  const int char_index = point_data.char_index;
+  const int char_index = GetCharIndexBasedOnCharBounds(
+      point_data.char_index, point_data.pdf_point, point_data.char_bounds);
 
   // Check if the user has decreased their selection area and we need to remove
   // pages from `selection_`.
@@ -1908,12 +1919,12 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
     int count = char_index - last_char_index;
     if (count >= 0) {
       // Selecting forward.
-      selection_.back().SetCharCount(++count);
+      selection_.back().SetCharCount(count);
     } else {
       // CreateBackwards() expects a positive count, so flip the negative value.
       count = -count;
       selection_.back() = PDFiumRange::CreateBackwards(pages_[page_index].get(),
-                                                       char_index, ++count);
+                                                       char_index, count);
     }
   } else if (last_page_index < page_index) {
     // Selecting into the next page.
@@ -1934,14 +1945,15 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
     int count = pages_[last_page_index]->GetCharCount();
     selection_[last_selection_index].SetCharCount(count - last_char_index);
     selection_.push_back(PDFiumRange(pages_[page_index].get(), /*char_index=*/0,
-                                     /*char_count=*/char_index + 1));
+                                     /*char_count=*/char_index));
   } else {
     // Selecting into the previous page.
-    // The selection's char_index is 0-based, so the character count is one
-    // more than the index. This selection needs to be backwards.
+    // `last_page_index` has already been adjusted previously to either include
+    // the current character or not, so use it as-is.
+    // This selection needs to be backwards.
     selection_.back() = PDFiumRange::CreateBackwards(
         pages_[last_page_index].get(), /*char_index=*/0,
-        /*char_count=*/last_char_index + 1);
+        /*char_count=*/last_char_index);
 
     // First make sure that there are no gaps in selection, i.e. if mousedown on
     // page three but we only get mousemove over page one, we want page two.
