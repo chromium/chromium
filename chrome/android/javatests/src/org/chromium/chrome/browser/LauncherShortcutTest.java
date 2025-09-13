@@ -14,6 +14,7 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,9 +50,11 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 /** Tests for Android NMR1 launcher shortcuts. */
 @RunWith(ParameterizedRunner.class)
@@ -96,8 +99,24 @@ public class LauncherShortcutTest {
                 });
     }
 
+    @After
+    public void tearDown() {
+        ShortcutManager shortcutManager =
+                mActivityTestRule.getActivity().getSystemService(ShortcutManager.class);
+        List<String> idsToRemove = new ArrayList<>();
+        idsToRemove.add(LauncherShortcutActivity.DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID);
+        idsToRemove.add(LauncherShortcutActivity.DYNAMIC_OPEN_NEW_WINDOW_ID);
+        shortcutManager.disableShortcuts(idsToRemove);
+        shortcutManager.removeDynamicShortcuts(idsToRemove);
+
+        List<ShortcutInfo> remainingShortcuts = shortcutManager.getDynamicShortcuts();
+        Assert.assertEquals(
+                "Dynamic shortcuts should be cleared in setUp", 0, remainingShortcuts.size());
+    }
+
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     @ParameterAnnotations.UseMethodParameter(IncognitoParams.class)
     public void testLauncherShortcut(boolean incognito) throws Exception {
         int initialTabCount =
@@ -212,20 +231,33 @@ public class LauncherShortcutTest {
                 "Incorrect manifest shortcut id.", "new-tab-shortcut", shortcuts.get(0).getId());
     }
 
-    @Test
-    @SmallTest
-    public void testDynamicShortcuts() {
+    private void testDynamicShortcutsInternal(boolean newIncognitoWindowEnabled) {
+        List<String> expectedLabels;
+        int expectedSize;
+        if (newIncognitoWindowEnabled) {
+            expectedLabels = Arrays.asList("New window", "New Incognito window");
+            expectedSize = 2;
+        } else {
+            expectedLabels = Arrays.asList("New Incognito tab");
+            expectedSize = 1;
+        }
+
         IncognitoUtils.setEnabledForTesting(true);
         LauncherShortcutActivity.updateIncognitoShortcut(
                 mActivityTestRule.getActivity(), mActivityTestRule.getProfile(false));
         ShortcutManager shortcutManager =
                 mActivityTestRule.getActivity().getSystemService(ShortcutManager.class);
         List<ShortcutInfo> shortcuts = shortcutManager.getDynamicShortcuts();
-        Assert.assertEquals("Incorrect number of dynamic shortcuts.", 1, shortcuts.size());
+        List<String> actualLabels =
+                shortcuts.stream()
+                        .map(shortcut -> shortcut.getLongLabel().toString())
+                        .collect(Collectors.toList());
+
         Assert.assertEquals(
-                "Incorrect dynamic shortcut id.",
-                LauncherShortcutActivity.DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID,
-                shortcuts.get(0).getId());
+                "The number of shortcuts was incorrect.", expectedSize, actualLabels.size());
+        Assert.assertTrue(
+                "The list did not contain all expected labels.",
+                actualLabels.containsAll(expectedLabels));
 
         IncognitoUtils.setEnabledForTesting(false);
         LauncherShortcutActivity.updateIncognitoShortcut(
@@ -239,55 +271,77 @@ public class LauncherShortcutTest {
         shortcuts = shortcutManager.getDynamicShortcuts();
         Assert.assertEquals(
                 "Incorrect number of dynamic shortcuts after re-enabling incognito.",
-                1,
+                expectedSize,
                 shortcuts.size());
     }
 
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    public void testDynamicShortcuts_LanguageChange() {
+    public void testDynamicShortcuts() {
+        testDynamicShortcutsInternal(/* newIncognitoWindowEnabled= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testDynamicShortcuts_withNewIncognitoWindow() {
+        testDynamicShortcutsInternal(/* newIncognitoWindowEnabled= */ true);
+    }
+
+    private void testDynamicShortcuts_LanguageChangeInternal(boolean newIncognitoWindowEnabled) {
         IncognitoUtils.setEnabledForTesting(true);
         LauncherShortcutActivity.updateIncognitoShortcut(
                 mActivityTestRule.getActivity(), mActivityTestRule.getProfile(false));
+
+        List<String> expectedLabels;
+        int expectedSize;
+        if (newIncognitoWindowEnabled) {
+            expectedLabels = Arrays.asList("New window", "New Incognito window");
+            expectedSize = 2;
+        } else {
+            expectedLabels = Arrays.asList("New Incognito tab");
+            expectedSize = 1;
+        }
+
         ShortcutManager shortcutManager =
                 mActivityTestRule.getActivity().getSystemService(ShortcutManager.class);
         List<ShortcutInfo> shortcuts = shortcutManager.getDynamicShortcuts();
-        Assert.assertEquals("Incorrect number of dynamic shortcuts.", 1, shortcuts.size());
+        List<String> actualLabels =
+                shortcuts.stream()
+                        .map(shortcut -> shortcut.getLongLabel().toString())
+                        .collect(Collectors.toList());
+
         Assert.assertEquals(
-                "Incorrect label", "New Incognito tab", shortcuts.get(0).getLongLabel());
+                "The number of shortcuts was incorrect.", expectedSize, actualLabels.size());
+        Assert.assertTrue(
+                "The list did not contain all expected labels.",
+                actualLabels.containsAll(expectedLabels));
 
         LauncherShortcutActivity.setDynamicShortcutStringForTesting("Foo");
         LauncherShortcutActivity.updateIncognitoShortcut(
                 mActivityTestRule.getActivity(), mActivityTestRule.getProfile(false));
         shortcuts = shortcutManager.getDynamicShortcuts();
         Assert.assertEquals(
-                "Incorrect number of dynamic shortcuts after updating.", 1, shortcuts.size());
+                "Incorrect number of dynamic shortcuts after updating.",
+                expectedSize,
+                shortcuts.size());
+
         Assert.assertEquals(
                 "Incorrect label after updating.", "Foo", shortcuts.get(0).getLongLabel());
     }
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testDynamicShortcuts_LanguageChange() {
+        testDynamicShortcuts_LanguageChangeInternal(/* newIncognitoWindowEnabled= */ false);
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testDynamicShortcuts_LanguageChange_withNewIncognitoWindow() {
-        IncognitoUtils.setEnabledForTesting(true);
-        LauncherShortcutActivity.updateIncognitoShortcut(
-                mActivityTestRule.getActivity(), mActivityTestRule.getProfile(false));
-        ShortcutManager shortcutManager =
-                mActivityTestRule.getActivity().getSystemService(ShortcutManager.class);
-        List<ShortcutInfo> shortcuts = shortcutManager.getDynamicShortcuts();
-        Assert.assertEquals("Incorrect number of dynamic shortcuts.", 1, shortcuts.size());
-        Assert.assertEquals(
-                "Incorrect label", "New Incognito window", shortcuts.get(0).getLongLabel());
-
-        LauncherShortcutActivity.setDynamicShortcutStringForTesting("Foo");
-        LauncherShortcutActivity.updateIncognitoShortcut(
-                mActivityTestRule.getActivity(), mActivityTestRule.getProfile(false));
-        shortcuts = shortcutManager.getDynamicShortcuts();
-        Assert.assertEquals(
-                "Incorrect number of dynamic shortcuts after updating.", 1, shortcuts.size());
-        Assert.assertEquals(
-                "Incorrect label after updating.", "Foo", shortcuts.get(0).getLongLabel());
+        testDynamicShortcuts_LanguageChangeInternal(/* newIncognitoWindowEnabled= */ true);
     }
 }
