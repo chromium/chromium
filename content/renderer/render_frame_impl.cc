@@ -307,9 +307,7 @@ namespace {
 
 // Feature to combine the UpdateState IPC that's sent during commit time with
 // the DidCommit* IPCs. See: http://crbug.com/424829233
-BASE_FEATURE(kReducePageStateIpcs,
-             "ReducePageStateIpcs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kReducePageStateIpcs, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const int kExtraCharsBeforeAndAfterSelection = 100;
 const size_t kMaxURLLogChars = 1024;

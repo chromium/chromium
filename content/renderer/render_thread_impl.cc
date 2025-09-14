@@ -262,7 +262,6 @@ static_assert(
 // the base::ThreadPool. Does not currently work on Fuchsia due to FIDL
 // requiring thread affinity.
 BASE_FEATURE(kUseThreadPoolForMediaTaskRunner,
-             "UseThreadPoolForMediaTaskRunner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Updates the crash key for whether this renderer is foregrounded.

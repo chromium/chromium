@@ -30,9 +30,7 @@ BASE_FEATURE(kAdditionalOpaqueOriginEnforcements,
 BASE_FEATURE(kAndroidCaptureKeyEvents, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // DevTools frontend for Android.
-BASE_FEATURE(kAndroidDevToolsFrontend,
-             "AndroidDevToolsFrontend",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidDevToolsFrontend, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Fallback to next named service slot if launching a privileged service process
 // hangs. In practice, this means if GPU launch hanges, then retry it once.
@@ -486,7 +484,6 @@ BASE_FEATURE(kInstalledAppProvider, base::FEATURE_ENABLED_BY_DEFAULT);
 // at best-effort priority, but otherwise use the process priority, enable this
 // feature along with "IsolatesPriorityBestEffortWhenHidden".
 BASE_FEATURE(kIsolatesPriorityUseProcessPriority,
-             "IsolatesPriorityUseProcessPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, forces the priority of isolates in hidden renderers to
@@ -494,7 +491,6 @@ BASE_FEATURE(kIsolatesPriorityUseProcessPriority,
 // (isolates in visible renderer will still get their priority derived from
 // process priority).
 BASE_FEATURE(kIsolatesPriorityBestEffortWhenHidden,
-             "IsolatesPriorityBestEffortWhenHidden",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable support for isolated web apps. This will guard features like serving
@@ -717,7 +713,6 @@ BASE_FEATURE(kPrivateNetworkAccessSendPreflights,
 // the embedder to provide conditions that may delay the final process selection
 // until the conditions have their results.
 BASE_FEATURE(kProcessSelectionDeferringConditions,
-             "ProcessSelectionDeferringConditions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables origin-keyed processes by default, unless origins opt out using

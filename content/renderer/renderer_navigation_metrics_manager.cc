@@ -26,7 +26,6 @@ constexpr base::TimeDelta kLazyCleanupTimeout = base::Seconds(300);
 // trace events and metrics, in case they cause any unexpected overhead or other
 // issues. See https://crbug.com/415821826.
 BASE_FEATURE(kEnableRendererNavigationTimeline,
-             "EnableRendererNavigationTimeline",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Used to record how ready a renderer process is for an incoming

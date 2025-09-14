@@ -35,15 +35,12 @@ constexpr base::TimeDelta kDefaultInertInterval = base::Minutes(5);
 
 // (for Android 3GB devices)
 BASE_FEATURE(kUserLevelMemoryPressureSignalOn3GbDevices,
-             "UserLevelMemoryPressureSignalOn3GbDevices",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUserLevelMemoryPressureSignalOn4GbDevices,
-             "UserLevelMemoryPressureSignalOn4GbDevices",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices,
-             "UserLevelMemoryPressureSignalOn6GbDevices",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsUserLevelMemoryPressureSignalEnabledOn3GbDevices() {

@@ -150,7 +150,6 @@ constexpr base::TimeDelta kReportDeliverySecondRetryDelay = base::Minutes(15);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAttributionReportObserveAppState,
-             "AttributionReportObserveAppState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

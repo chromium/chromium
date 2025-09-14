@@ -10,24 +10,17 @@ namespace features {
 
 // Please keep features in alphabetical order.
 BASE_FEATURE(kFledgeAlwaysReuseBidderContext,
-             "FledgeAlwaysReuseBidderContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFledgeAlwaysReuseSellerContext,
-             "FledgeAlwaysReuseSellerContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFledgeAuctionDownloaderStaleWhileRevalidate,
-             "FledgeAuctionDownloaderStaleWhileRevalidate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFledgeEagerJSCompilation,
-             "FledgeEagerJSCompilation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFledgeEagerJSCompilation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFledgeNoWasmLazyCompilation,
-             "FledgeNoWasmLazyCompilation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFledgeNoWasmLazyCompilation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
              "FledgeBidderWorkletGroupByOriginContextsToKeep",
@@ -48,7 +41,6 @@ BASE_FEATURE_PARAM(int,
                    10);
 
 BASE_FEATURE(kFledgePrepareBidderContextsInAdvance,
-             "FledgePrepareBidderContextsInAdvance",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
                    kFledgeMaxBidderContextsPerThreadInAdvance,
@@ -77,7 +69,6 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE(kFledgeBidderUseBalancingThreadSelector,
-             "FledgeBidderUseBalancingThreadSelector",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
                    kFledgeBidderThreadSelectorMaxImbalance,
@@ -86,7 +77,6 @@ BASE_FEATURE_PARAM(int,
                    4);
 
 BASE_FEATURE(kFledgePrepareSellerContextsInAdvance,
-             "FledgePrepareSellerContextsInAdvance",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
                    kFledgeMaxSellerContextsPerThreadInAdvance,
@@ -95,11 +85,8 @@ BASE_FEATURE_PARAM(int,
                    10);
 
 BASE_FEATURE(kFledgeSellerSignalsRequestsOneAtATime,
-             "FledgeSellerSignalsRequestsOneAtATime",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFledgeTextConversionHelpers,
-             "FledgeTextConversionHelpers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFledgeTextConversionHelpers, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
