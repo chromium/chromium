@@ -65,9 +65,7 @@ namespace {
 
 // The feature flag allows us to disable the graph fusion if it causes
 // something wrong.
-BASE_FEATURE(kApplyGraphFusion,
-             "ApplyGraphFusion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kApplyGraphFusion, base::FEATURE_ENABLED_BY_DEFAULT);
 
 using Microsoft::WRL::ComPtr;
 using mojom::Operand;

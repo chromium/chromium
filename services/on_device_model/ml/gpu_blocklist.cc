@@ -127,7 +127,6 @@ DeviceInfo QueryDeviceInfoInternal(const ChromeMLAPI& api) {
 }  // namespace
 
 BASE_FEATURE(kOnDeviceModelAllowGpuForTesting,
-             "OnDeviceModelAllowGpuForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)

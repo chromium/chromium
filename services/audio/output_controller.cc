@@ -35,7 +35,6 @@ namespace {
 // reduce audio output latency but may increase the probability of audio
 // glitches.
 BASE_FEATURE(kAudioOutputControllerRequestBeforeRead,
-             "AudioOutputControllerRequestBeforeRead",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Time in seconds between two successive measurements of audio power levels.

@@ -31,7 +31,7 @@
 
 namespace network {
 
-BASE_FEATURE(kSlopBucket, "SlopBucket", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSlopBucket, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

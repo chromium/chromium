@@ -38,9 +38,7 @@ constexpr uint8_t kDataTypeManufacturerData = 0xFF;
 constexpr char kUuidPrefix[] = "0000";
 constexpr char kUuidSuffix[] = "-0000-1000-8000-00805F9B34FB";
 
-BASE_FEATURE(kUseRustBleScanParser,
-             "UseRustBleScanParser",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseRustBleScanParser, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

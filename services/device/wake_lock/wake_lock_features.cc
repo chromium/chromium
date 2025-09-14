@@ -8,7 +8,5 @@ namespace features {
 // Enables removing wake locks in the WakeLock destructor if non-null. Serves as
 // killswitch while we roll out this functionality. TODO(crbug.com/349860794):
 // Remove this killswitch post-safe rollout.
-BASE_FEATURE(kRemoveWakeLockInDestructor,
-             "RemoveWakeLockInDestructor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRemoveWakeLockInDestructor, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features

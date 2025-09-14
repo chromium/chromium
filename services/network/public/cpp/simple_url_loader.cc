@@ -61,7 +61,6 @@ constexpr size_t SimpleURLLoader::kMaxBoundedStringDownloadSize;
 constexpr size_t SimpleURLLoader::kMaxUploadStringSizeToCopy;
 
 BASE_FEATURE(kSimpleURLLoaderUseReadAndDiscardBodyOption,
-             "SimpleURLLoaderUseReadAndDiscardBodyOption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

@@ -8,8 +8,6 @@
 namespace tracked {
 
 // Enables hashing of encrypted pref values for integrity checks.
-BASE_FEATURE(kEncryptedPrefHashing,
-             "EncryptedPrefHashing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEncryptedPrefHashing, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace tracked
