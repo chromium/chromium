@@ -77,7 +77,6 @@ constexpr base::TimeDelta kDeviceStatusUploadFrequency = base::Hours(3);
 }  // namespace
 
 BASE_FEATURE(kEnableUserSessionActivityReporting,
-             "EnableUserSessionActivityReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(

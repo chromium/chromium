@@ -14,7 +14,6 @@
 namespace login_detection {
 
 BASE_FEATURE(kLoginDetection,
-             "LoginDetection",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

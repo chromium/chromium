@@ -40,7 +40,6 @@ bool DestinationListsEqual(ListOfBlockedDestinations list_a,
 // Only used in testing. Feature for testing the configuration file in our
 // automated tests. Not exposed on the UI.
 BASE_FEATURE(kReportingConfigurationFileTestSignature,
-             "ReportingConfigurationFileTestSignature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 ConfigurationFileController::~ConfigurationFileController() = default;

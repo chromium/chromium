@@ -358,9 +358,7 @@ namespace features {
 // this feature is disabled any failed launches in the current browser session
 // will still result in sandbox being disabled for the lifetime of the running
 // browser.
-BASE_FEATURE(kPersistFailedLaunchState,
-             "PersistFailedLaunchState",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPersistFailedLaunchState, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 class SystemNetworkContextManager::NetworkProcessLaunchWatcher

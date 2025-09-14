@@ -16,11 +16,9 @@ size_t g_cache_size_for_testing = 0;
 }  // namespace
 
 BASE_FEATURE(kSearchPrefetchServicePrefetching,
-             "SearchPrefetchServicePrefetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchPrefetchWithNoVarySearchDiskCache,
-             "SearchPrefetchWithNoVarySearchDiskCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool SearchPrefetchServicePrefetchingIsEnabled() {
@@ -63,7 +61,6 @@ void SetSearchPrefetchMaxCacheEntriesForTesting(size_t cache_size) {
 }
 
 BASE_FEATURE(kSearchNavigationPrefetch,
-             "SearchNavigationPrefetch",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -107,7 +104,6 @@ bool PrefetchSearchHistorySuggestions() {
 }
 
 BASE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading,
-             "SearchPrefetchOnlyAllowDefaultMatchPreloading",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool OnlyAllowDefaultMatchPreloading() {
@@ -127,9 +123,7 @@ bool IsPrefetchIncognitoEnabled() {
                                                  "allow_incognito", true);
 }
 
-BASE_FEATURE(kAutocompleteDictionaryPreload,
-             "AutocompleteDictionaryPreload",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAutocompleteDictionaryPreload, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
     kAutocompletePreloadedDictionaryTimeout{
@@ -137,7 +131,6 @@ const base::FeatureParam<base::TimeDelta>
         "autocomplete_preloaded_dictionary_timeout", base::Milliseconds(60000)};
 
 BASE_FEATURE(kSuppressesSearchPrefetchOnSlowNetwork,
-             "SuppressesSearchPrefetchOnSlowNetwork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Regarding how this number was chosen, see the design doc linked from

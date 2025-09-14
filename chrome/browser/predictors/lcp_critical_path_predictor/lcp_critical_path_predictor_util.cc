@@ -1138,7 +1138,6 @@ bool IsURLValidForLcpp(const GURL& url) {
 // TODO(crbug.com/380105415): Remove this kill switch after we confirmed that
 // this works fine.
 BASE_FEATURE(kMultipleLcppKeyInitiatorOriginFix,
-             "MultipleLcppKeyInitiatorOriginFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsValidInitiatorOrigin(const url::Origin& initiator_origin) {

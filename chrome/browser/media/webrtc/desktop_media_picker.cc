@@ -5,9 +5,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kAndroidMediaPicker,
-             "AndroidMediaPicker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidMediaPicker, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 DesktopMediaPicker::Params::Params(RequestSource request_source)

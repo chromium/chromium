@@ -68,7 +68,6 @@ namespace {
 // (go/chrome-performance-work-should-be-finched).
 // TODO(crbug.com/40897031): Clean up when experiment is complete.
 BASE_FEATURE(kAvoidUnnecessaryGetMinimizeButtonOffset,
-             "AvoidUnnecessaryGetMinimizeButtonOffset",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Converts the |image| to a Windows icon and returns the corresponding HICON

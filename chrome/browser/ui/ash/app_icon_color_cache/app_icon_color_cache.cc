@@ -31,7 +31,6 @@
 namespace ash {
 
 BASE_FEATURE(kEnablePersistentAshIconColorCache,
-             "EnablePersistentAshIconColorCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {

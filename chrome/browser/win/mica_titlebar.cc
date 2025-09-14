@@ -12,9 +12,7 @@
 
 // Allows the titlebar to be drawn by the system using the Mica material
 // on Windows 11, version 22H2 and above.
-BASE_FEATURE(kWindows11MicaTitlebar,
-             "Windows11MicaTitlebar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWindows11MicaTitlebar, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShouldDefaultThemeUseMicaTitlebar() {
   return SystemTitlebarCanUseMicaMaterial() &&

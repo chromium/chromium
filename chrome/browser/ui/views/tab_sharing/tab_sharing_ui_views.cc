@@ -74,16 +74,13 @@ using content::WebContents;
 // TabSharingInfoBar.
 // This flag only has an effect if:
 // - the TabCaptureInfobarLinks feature is enabled.
-BASE_FEATURE(kTabSharingBarOmitHttpAndHttps,
-             "TabSharingBarOmitHttpAndHttps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTabSharingBarOmitHttpAndHttps, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Omit cryptographic url-schemes for the shared tab in the TabSharingInfoBar.
 // This flag only has an effect if:
 // - the TabCaptureInfobarLinks feature is enabled, and
 // - the TabSharingBarOmitHttpAndHttps feature is disabled.
 BASE_FEATURE(kTabSharingBarOmitCryptographic,
-             "TabSharingBarOmitCryptographic",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)

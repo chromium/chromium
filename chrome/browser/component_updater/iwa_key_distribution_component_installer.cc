@@ -79,7 +79,6 @@ namespace component_updater {
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kIwaKeyDistributionComponent,
-             "IwaKeyDistributionComponent",
 #if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else   // !BUILDFLAG(IS_CHROMEOS)

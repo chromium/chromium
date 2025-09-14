@@ -18,23 +18,15 @@ namespace features {
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-BASE_FEATURE(kTrimOnMemoryPressure,
-             "TrimOnMemoryPressure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTrimOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrimArcOnMemoryPressure,
-             "TrimArcOnMemoryPressure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTrimArcOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrimArcVmOnMemoryPressure,
-             "TrimArcVmOnMemoryPressure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTrimArcVmOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrimOnFreeze, "TrimOnFreeze", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrimOnFreeze, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisableTrimmingWhileSuspended,
-             "DisableTrimmingWhileSuspended",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDisableTrimmingWhileSuspended, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kGraphWalkBackoffTimeSec = {
     &kTrimOnMemoryPressure, "GraphWalkBackoffTimeSec", 180};
@@ -155,9 +147,7 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kTerminationTargetPolicy,
-             "TerminationTargetPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTerminationTargetPolicy, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace features

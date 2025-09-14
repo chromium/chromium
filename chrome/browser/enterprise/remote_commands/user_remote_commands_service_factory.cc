@@ -13,9 +13,7 @@
 
 namespace enterprise_commands {
 
-BASE_FEATURE(kUserRemoteCommands,
-             "UserRemoteCommands",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUserRemoteCommands, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 UserRemoteCommandsServiceFactory*

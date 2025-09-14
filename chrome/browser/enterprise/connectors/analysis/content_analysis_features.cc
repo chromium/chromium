@@ -8,12 +8,9 @@
 
 namespace enterprise_connectors {
 
-BASE_FEATURE(kEnableAsyncUploadAfterVerdict,
-             "EnableAsyncUploadAfterVerdict",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableAsyncUploadAfterVerdict, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableResumableUploadOnConsumerScan,
-             "EnableResumableUploadOnConsumerScan",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default value 5 is set for historical reasons, there is no reasoning
@@ -26,9 +23,7 @@ BASE_FEATURE_PARAM(size_t,
                    /*default_value=*/5);
 
 // Controls the new upload/download limit for content analysis.
-BASE_FEATURE(kEnableNewUploadSizeLimit,
-             "EnableNewUploadSizeLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableNewUploadSizeLimit, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,
                    kMaxContentAnalysisFileSizeMB,
@@ -37,13 +32,9 @@ BASE_FEATURE_PARAM(size_t,
                    /*default_value=*/50);
 
 // Controls whether encrypted file upload is enabled.
-BASE_FEATURE(kEnableEncryptedFileUpload,
-             "EnableEncryptedFileUpload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableEncryptedFileUpload, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables scanning of pasted images for DLP.
-BASE_FEATURE(kDlpScanPastedImages,
-             "DlpScanPastedImages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDlpScanPastedImages, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace enterprise_connectors

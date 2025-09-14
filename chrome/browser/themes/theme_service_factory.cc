@@ -43,9 +43,7 @@ const ThemeHelper& GetThemeHelper() {
   return **theme_helper;
 }
 
-BASE_FEATURE(kProfileBasedThemeService,
-             "ProfileBasedThemeService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProfileBasedThemeService, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

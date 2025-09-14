@@ -81,7 +81,6 @@ namespace extensions {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Disables off-store force-installed extensions in low trust environments.
 BASE_FEATURE(kDisableOffstoreForceInstalledExtensionsInLowTrustEnviroment,
-             "DisableOffstoreForceInstalledExtensionsInLowTrustEnviroment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

@@ -237,11 +237,9 @@ DisplayMode ResolveEffectiveDisplayMode(
 }  // namespace
 
 BASE_FEATURE(kPreinstalledBrowserTabWebAppsCaptureOnDefault,
-             "PreinstalledBrowserTabWebAppsCaptureOnDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff,
-             "PreinstalledBrowserTabWebAppsForcedDefaultCaptureOff",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static

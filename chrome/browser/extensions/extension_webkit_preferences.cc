@@ -20,7 +20,6 @@ namespace {
 // state of mediaDevices.devicechange event.
 // TODO(crbug.com/404106817): Remove the feature after Chrome Apps are gone.
 BASE_FEATURE(kIgnorePermissionForDeviceChangedEventForChromeApps,
-             "IgnorePermissionForDeviceChangedEventForChromeApps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

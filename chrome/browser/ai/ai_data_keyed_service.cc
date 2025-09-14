@@ -681,9 +681,7 @@ void GetModelPrototypingAiData(AiDataKeyedService::AiDataSpecifier specifiers,
 }
 
 // Feature to add allow listed extensions remotely for data collection.
-BASE_FEATURE(kAllowlistedAiDataExtensions,
-             "AllowlistedAiDataExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowlistedAiDataExtensions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kAllowlistedExtensionsForData{
     &kAllowlistedAiDataExtensions, "allowlisted_extension_ids",
@@ -694,9 +692,7 @@ const base::FeatureParam<std::string> kBlocklistedExtensionsForData{
     /*default_value=*/""};
 
 // Feature to add allow listed extensions remotely for actions.
-BASE_FEATURE(kAllowlistedActionsExtensions,
-             "AllowlistedActionsExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowlistedActionsExtensions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kAllowlistedExtensionsForActions{
     &kAllowlistedActionsExtensions, "allowlisted_extension_ids",

@@ -6,8 +6,6 @@
 
 namespace features {
 
-BASE_FEATURE(kBookmarksImportOnFirstRun,
-             "BookmarksImportOnFirstRun",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBookmarksImportOnFirstRun, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -22,9 +22,7 @@
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
 
-BASE_FEATURE(kAllowRecentSessionTracking,
-             "AllowRecentSessionTracking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowRecentSessionTracking, base::FEATURE_ENABLED_BY_DEFAULT);
 
 UserEducationService::UserEducationService(Profile* profile, bool allows_promos)
     : profile_(*profile),

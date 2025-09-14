@@ -26,16 +26,12 @@
 
 namespace apps::chrome_app_deprecation {
 
-BASE_FEATURE(kAllowUserInstalledChromeApps,
-             "AllowUserInstalledChromeApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowUserInstalledChromeApps, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowChromeAppsInKioskSessions,
-             "AllowChromeAppsInKioskSessions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeAppsDeprecationComponentUpdater,
-             "ChromeAppsDeprecationComponentUpdater",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {

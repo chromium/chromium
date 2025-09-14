@@ -126,7 +126,6 @@ constexpr char kExtensionsKey[] = "extensions";
 
 namespace features {
 BASE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner,
-             "PolicyPagePromotionEligibilityCheckedBanner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 

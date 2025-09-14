@@ -46,9 +46,7 @@ using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
-BASE_FEATURE(kSigninInterceptSimpleButtons,
-             "SigninInterceptSimpleButtons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSigninInterceptSimpleButtons, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kEnterprizeBadgeSource[] = "cr:domain";
 constexpr char kSupervisedBadgeSource[] = "cr:kite";

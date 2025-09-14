@@ -9,15 +9,11 @@
 namespace platform_experience::features {
 
 BASE_FEATURE(kLoadLowEngagementPEHFeaturesToPrefs,
-             "LoadLowEngagementPEHFeaturesToPrefs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisablePEHNotifications,
-             "DisablePEHNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisablePEHNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShouldUseSpecificPEHNotificationText,
-             "ShouldUseSpecificPEHNotificationText",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace platform_experience::features

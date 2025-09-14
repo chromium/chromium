@@ -25,7 +25,6 @@
 namespace policy {
 
 BASE_FEATURE(kUseEncryptedReportingPipelineToReportArcAppInstallEvents,
-             "UseEncryptedReportingPipelineToReportArcAppInstallEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 AppInstallEventLogManagerWrapper::~AppInstallEventLogManagerWrapper() = default;

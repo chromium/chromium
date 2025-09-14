@@ -85,7 +85,7 @@ bool ShouldDisableDohForWindowsParentalControls() {
 }
 
 // Defines the base::Feature for controlling the ZTDNS check.
-BASE_FEATURE(kZeroTrustDNS, "ZeroTrustDNS", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kZeroTrustDNS, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // DnsIsZtEnabled returns a BOOL value that specifies whether Zero
 // Trust DNS (ZTDNS) is enabled on the current device.

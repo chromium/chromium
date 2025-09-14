@@ -9,7 +9,6 @@
 namespace extensions {
 
 BASE_FEATURE(kEnforceBookmarkVisibilityOnExtensionsAPI,
-             "EnforceBookmarkVisibilityOnExtensionsAPI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace extensions

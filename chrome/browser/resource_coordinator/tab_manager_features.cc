@@ -18,9 +18,7 @@ namespace features {
 // Enables using customized value for tab load timeout. This is used by session
 // restore in finch experiment to see what timeout value is better. The default
 // timeout is used when this feature is disabled.
-BASE_FEATURE(kCustomizedTabLoadTimeout,
-             "CustomizedTabLoadTimeout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCustomizedTabLoadTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 

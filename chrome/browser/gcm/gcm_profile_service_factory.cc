@@ -44,9 +44,7 @@ namespace {
 #if !BUILDFLAG(IS_ANDROID)
 // When enabled, GCM will use a dedicated thread for network operations instead
 // of the IO thread.
-BASE_FEATURE(kGCMUseDedicatedNetworkThread,
-             "GCMUseDedicatedNetworkThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGCMUseDedicatedNetworkThread, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Requests a ProxyResolvingSocketFactory on the UI thread. Note that a WeakPtr
 // of GCMProfileService is needed to detect when the KeyedService shuts down,

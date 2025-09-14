@@ -85,9 +85,7 @@ enum class WebappInstallSource;
 namespace web_app {
 
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kDiyAppIconsMaskedOnMacUpdate,
-             "DiyAppIconsMaskedOnMacUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDiyAppIconsMaskedOnMacUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // static

@@ -40,9 +40,7 @@ std::string LoadRefreshTokenV3() {
 
 namespace chromeos {
 
-BASE_FEATURE(kRefreshTokenV3Feature,
-             "RefreshTokenV3Feature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRefreshTokenV3Feature, base::FEATURE_DISABLED_BY_DEFAULT);
 
 DeviceOAuth2TokenStoreChromeOS::DeviceOAuth2TokenStoreChromeOS(
     PrefService* local_state)

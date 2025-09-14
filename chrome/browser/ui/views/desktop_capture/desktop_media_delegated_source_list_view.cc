@@ -14,9 +14,7 @@ namespace {
 // Flag to display an informational message about using the system's
 // screen-sharing picker. When disabled, only the button to open the picker is
 // shown without further instructions.
-BASE_FEATURE(kDelegatedSourceListInfoText,
-             "DelegatedSourceListInfoText",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDelegatedSourceListInfoText, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::u16string GetMessageText(DesktopMediaList::Type type) {
   switch (type) {

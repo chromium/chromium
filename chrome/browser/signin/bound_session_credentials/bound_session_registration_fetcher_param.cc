@@ -31,7 +31,6 @@ constexpr char kWsbetaItemKey[] = "wsbeta";
 // A temporary feature to gate the new list header support until its format is
 // finalized.
 BASE_FEATURE(kBoundSessionRegistrationListHeaderSupport,
-             "BoundSessionRegistrationListHeaderSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(

@@ -41,7 +41,6 @@ namespace ash {
 namespace cert_provisioning {
 
 BASE_FEATURE(kCertProvisioningUseOnlyInvalidationsForTesting,
-             "CertProvisioningUseOnlyInvalidationsForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

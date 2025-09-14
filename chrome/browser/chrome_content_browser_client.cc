@@ -785,12 +785,10 @@ const char kAIManagerUserDataKey[] = "ai_manager";
 bool g_disable_advanced_protection_caching_for_tests = false;
 
 BASE_FEATURE(kSkipPagehideInCommitForDSENavigation,
-             "SkipPagehideInCommitForDSENavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Warm up the ServiceWorker registration for DSE.
 BASE_FEATURE(kPrewarmServiceWorkerRegistrationForDSE,
-             "PrewarmServiceWorkerRegistrationForDSE",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A small ChromeBrowserMainExtraParts that invokes a callback when threads are

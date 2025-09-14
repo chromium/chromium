@@ -17,7 +17,6 @@ namespace digital_credentials {
 
 namespace {
 BASE_FEATURE(kEnableDigitalCredentialsCreationWithBrowserContext,
-             "EnableDigitalCredentialsCreationWithBrowserContext",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 

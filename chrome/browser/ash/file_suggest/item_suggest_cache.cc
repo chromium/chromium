@@ -201,9 +201,7 @@ std::optional<ItemSuggestCache::Results> ConvertResults(
 
 }  // namespace
 
-BASE_FEATURE(kLauncherItemSuggest,
-             "LauncherItemSuggest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLauncherItemSuggest, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool> ItemSuggestCache::kEnabled;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kServerUrl;

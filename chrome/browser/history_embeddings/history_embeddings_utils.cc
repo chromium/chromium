@@ -57,11 +57,8 @@ constexpr auto kEnabledByDefaultForDesktopOnly =
 #endif
 
 // These are the kill switches for the launched history embeddings features.
-BASE_FEATURE(kLaunchedHistoryEmbeddings,
-             "LaunchedHistoryEmbeddings",
-             kEnabledByDefaultForDesktopOnly);
+BASE_FEATURE(kLaunchedHistoryEmbeddings, kEnabledByDefaultForDesktopOnly);
 BASE_FEATURE(kLaunchedHistoryEmbeddingsAnswers,
-             "LaunchedHistoryEmbeddingsAnswers",
              kEnabledByDefaultForDesktopOnly);
 
 bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile) {

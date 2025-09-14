@@ -20,7 +20,6 @@
 //   be used to display a permission notification and a button to open the
 //   screen-recording settings when the permission is missing.
 BASE_FEATURE(kDesktopCapturePermissionCheckerKillSwitch,
-             "DesktopCapturePermissionCheckerKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Only has an effect if `kDesktopCapturePermissionCheckerKillSwitch` is enabled
@@ -33,13 +32,11 @@ BASE_FEATURE(kDesktopCapturePermissionCheckerKillSwitch,
 // `kDesktopCapturePermissionCheckerMacos14_4Plus` will not have any
 // user-visible effect.
 BASE_FEATURE(kDesktopCapturePermissionCheckerMacos14_4Plus,
-             "DesktopCapturePermissionCheckerMacos14_4Plus",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature is the same as `kDesktopCapturePermissionCheckerMacos14_4Plus`
 // but only affects macOS <14.4.
 BASE_FEATURE(kDesktopCapturePermissionCheckerPreMacos14_4,
-             "DesktopCapturePermissionCheckerPreMacos14_4",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kDesktopCapturePermissionCheckerUpdateIntervalMs{

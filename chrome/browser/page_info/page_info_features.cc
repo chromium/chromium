@@ -17,9 +17,7 @@ bool IsAboutThisSiteFeatureEnabled() {
       g_browser_process->GetApplicationLocale());
 }
 
-BASE_FEATURE(kPrivacyPolicyInsights,
-             "PrivacyPolicyInsights",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacyPolicyInsights, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsMerchantTrustFeatureEnabled() {
   auto* variations_service = g_browser_process->variations_service();

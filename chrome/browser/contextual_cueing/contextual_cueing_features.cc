@@ -16,13 +16,9 @@
 
 namespace contextual_cueing {
 
-BASE_FEATURE(kContextualCueing,
-             "ContextualCueing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kContextualCueing, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicZeroStateSuggestions,
-             "GlicZeroStateSuggestions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicZeroStateSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsZeroStateSuggestionsEnabled() {
 #if BUILDFLAG(ENABLE_GLIC)

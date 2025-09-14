@@ -129,9 +129,7 @@ ValidateManifestIdFromParsableSyncEntity(
 
 }  // namespace
 
-BASE_FEATURE(kDeleteBadWebAppSyncEntitites,
-             "DeleteBadWebAppSyncEntitites",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDeleteBadWebAppSyncEntitites, base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.

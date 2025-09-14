@@ -8,37 +8,24 @@
 
 namespace profile_management::features {
 
-BASE_FEATURE(kThirdPartyProfileManagement,
-             "ThirdPartyProfileManagement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kThirdPartyProfileManagement, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableProfileTokenManagement,
-             "EnableProfileTokenManagement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableProfileTokenManagement, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOidcAuthProfileManagement,
-             "OidcAuthProfileManagement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOidcAuthProfileManagement, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOidcAuthResponseInterception,
-             "OidcAuthResponseInterception",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOidcAuthResponseInterception, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOidcEnrollmentTimeout,
              "kOidcEnrollmentTimeout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableGenericOidcAuthProfileManagement,
-             "EnableGenericOidcAuthProfileManagement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOidcEnrollmentAuthSource,
-             "OidcEnrollmentAuthSource",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOidcEnrollmentAuthSource, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOidcAuthHeaderInterception,
-             "OidcAuthHeaderInterception",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOidcAuthHeaderInterception, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableOidcProfileRemoteCommands,
              "kEnableOidcProfileRemoteCommands",

@@ -87,7 +87,6 @@ void ShowItemInFolderOnWorkerThread(const base::FilePath& full_path) {
 }
 
 BASE_FEATURE(kEnforceShellExecutePathLimitation,
-             "EnforceShellExecutePathLimitation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 void OpenExternalOnWorkerThread(const GURL& url) {

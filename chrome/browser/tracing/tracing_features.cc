@@ -5,7 +5,5 @@
 #include "chrome/browser/tracing/tracing_features.h"
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kWindowsSystemTracing,
-             "WindowsSystemTracing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWindowsSystemTracing, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)

@@ -93,9 +93,7 @@ void ResizeForNextOutput(std::string* compressed_log, z_stream* stream) {
 
 }  // namespace
 
-BASE_FEATURE(kWebRTCLogUploadSuffix,
-             "WebRTCLogUploadSuffix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebRTCLogUploadSuffix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::string GetLogUploadProduct() {
 #if BUILDFLAG(IS_WIN)

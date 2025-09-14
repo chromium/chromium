@@ -429,9 +429,7 @@ constexpr net::NetworkTrafficAnnotationTag kGlicFrePreconnectTrafficAnnotation =
       "limits the scope of these requests."
 )");
 
-BASE_FEATURE(kGlicFrePreconnect,
-             "GlicFrePreconnect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicFrePreconnect, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kGlicFrePreconnectToSubresourceDomains,

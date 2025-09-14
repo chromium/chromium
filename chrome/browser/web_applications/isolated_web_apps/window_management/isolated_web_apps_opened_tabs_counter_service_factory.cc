@@ -24,7 +24,6 @@ namespace web_app {
 namespace {
 
 BASE_FEATURE(kIsolatedWebAppsOpenedTabsCounterServiceNotification,
-             "IsolatedWebAppsOpenedTabsCounterServiceNotification",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }
 

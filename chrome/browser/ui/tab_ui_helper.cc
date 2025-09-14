@@ -28,7 +28,6 @@ namespace {
 // visible, instead of when it's active in the tab strip (this signal is known
 // to be broken crbug.com/413080225#comment8).
 BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
-             "SessionRestoreShowThrobberOnVisible",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace

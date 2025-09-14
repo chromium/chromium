@@ -11,9 +11,7 @@ namespace features {
 
 // Let the DevTools front-end query an AIDA endpoint for explanations and
 // insights regarding console (error) messages.
-BASE_FEATURE(kDevToolsConsoleInsights,
-             "DevToolsConsoleInsights",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsConsoleInsights, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId{
     &kDevToolsConsoleInsights, "aida_model_id", /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
@@ -35,9 +33,7 @@ const base::FeatureParam<DevToolsFreestylerExecutionMode>::Option
         {DevToolsFreestylerExecutionMode::kNoScripts, "NO_SCRIPTS"}};
 
 // Whether the DevTools styling assistant is enabled.
-BASE_FEATURE(kDevToolsFreestyler,
-             "DevToolsFreestyler",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsFreestyler, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsFreestylerModelId{
     &kDevToolsFreestyler, "aida_model_id", /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsFreestylerTemperature{
@@ -63,7 +59,6 @@ const base::FeatureParam<bool> kDevToolsFreestylerFunctionCalling{
 
 // Whether the DevTools AI Assistance Network Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceNetworkAgent,
-             "DevToolsAiAssistanceNetworkAgent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsAiAssistanceNetworkAgentModelId{
     &kDevToolsAiAssistanceNetworkAgent, "aida_model_id",
@@ -79,7 +74,6 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
 
 // Whether the DevTools AI Assistance Performance Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistancePerformanceAgent,
-             "DevToolsAiAssistancePerformanceAgent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string>
     kDevToolsAiAssistancePerformanceAgentModelId{
@@ -100,9 +94,7 @@ const base::FeatureParam<bool>
         /*default_value=*/true};
 
 // Whether the DevTools AI Assistance File Agent is enabled.
-BASE_FEATURE(kDevToolsAiAssistanceFileAgent,
-             "DevToolsAiAssistanceFileAgent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsAiAssistanceFileAgent, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsAiAssistanceFileAgentModelId{
     &kDevToolsAiAssistanceFileAgent, "aida_model_id",
     /*default_value=*/""};
@@ -116,9 +108,7 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         &devtools_freestyler_user_tier_options};
 
 // Whether the DevTools AI Code Completion is enabled.
-BASE_FEATURE(kDevToolsAiCodeCompletion,
-             "DevToolsAiCodeCompletion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsAiCodeCompletion, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsAiCodeCompletionModelId{
     &kDevToolsAiCodeCompletion, "aida_model_id",
     /*default_value=*/""};
@@ -132,61 +122,43 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         &devtools_freestyler_user_tier_options};
 
 // Whether an infobar is shown when the process is shared.
-BASE_FEATURE(kDevToolsSharedProcessInfobar,
-             "DevToolsSharedProcessInfobar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsSharedProcessInfobar, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether showing animation styles in the styles tab is enabled.
 BASE_FEATURE(kDevToolsAnimationStylesInStylesTab,
-             "DevToolsAnimationStylesInStylesTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether DevTools will attempt to load project settings from a well-known
 // URI. See https://goo.gle/devtools-json-design for additional details.
 // This is enabled by default starting with M-136.
-BASE_FEATURE(kDevToolsWellKnown,
-             "DevToolsWellKnown",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsWellKnown, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the DevTools AI generated annotation labels in timeline are enabled.
 BASE_FEATURE(kDevToolsAiGeneratedTimelineLabels,
-             "DevToolsAiGeneratedTimelineLabels",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the DevTools AI generated annotation labels in timeline are enabled.
-BASE_FEATURE(kDevToolsNewPermissionDialog,
-             "DevToolsNewPermissionDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsNewPermissionDialog, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether DevTools drawer can be toggled to vertical orientation.
-BASE_FEATURE(kDevToolsVerticalDrawer,
-             "DevToolsVerticalDrawer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsVerticalDrawer, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether DevTools shows submenu example prompts for the AI Assistance panel
 // in context menus.
-BASE_FEATURE(kDevToolsAiSubmenuPrompts,
-             "DevToolsAiSubmenuPrompts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsAiSubmenuPrompts, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether DevTools shows 'Debug with AI' and new badges.
-BASE_FEATURE(kDevToolsAiDebugWithAi,
-             "DevToolsAiDebugWithAi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsAiDebugWithAi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether the global AI entrypoint is enabled.
-BASE_FEATURE(kDevToolsGlobalAiButton,
-             "DevToolsGlobalAiButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsGlobalAiButton, base::FEATURE_ENABLED_BY_DEFAULT);
 // Whether the promotion animation is enabled.
 const base::FeatureParam<bool> kDevToolsGlobalAiButtonPromotionEnabled{
     &kDevToolsGlobalAiButton, "promotion_enabled",
     /*default_value=*/false};
 
 // Whether the Google Developer Program integration is enabled.
-BASE_FEATURE(kDevToolsGdpProfiles,
-             "DevToolsGdpProfiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsGdpProfiles, base::FEATURE_DISABLED_BY_DEFAULT);
 // Whether the starter badge for the Google Developer Program is enabled.
 const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
     &kDevToolsGdpProfiles, "starter_badge_enabled",
@@ -194,18 +166,13 @@ const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
 
 // Whether DevTools Live Edit (Debugger.setScriptSource usage in CDP) is
 // enabled.
-BASE_FEATURE(kDevToolsLiveEdit,
-             "DevToolsLiveEdit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsLiveEdit, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDevToolsIndividualRequestThrottling,
-             "DevToolsIndividualRequestThrottling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether the AI Prompt API (https://developer.chrome.com/docs/ai/prompt-api)
 // is available in DevTools.
-BASE_FEATURE(kDevToolsAiPromptApi,
-             "DevToolsAiPromptApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsAiPromptApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

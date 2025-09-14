@@ -98,7 +98,6 @@ bool IsGpuTest() {
 #endif
 
 BASE_FEATURE(kShowTestThirdPartyCookiePhaseoutInfoBar,
-             "ShowTestThirdPartyCookiePhaseoutInfoBar",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

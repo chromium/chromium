@@ -39,7 +39,6 @@ namespace features {
 
 // If enabled, suppresses LoadingPredictor (https://crbug.com/350519234)
 BASE_FEATURE(kSuppressesLoadingPredictorOnSlowNetwork,
-             "SuppressesLoadingPredictorOnSlowNetwork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>

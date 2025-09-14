@@ -14,9 +14,7 @@
 namespace glic {
 
 // Allows embedded media to be controlled by a link helper.
-BASE_FEATURE(kMediaLinkEmbedHelper,
-             "MediaLinkEmbedHelper",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaLinkEmbedHelper, base::FEATURE_ENABLED_BY_DEFAULT);
 
 GlicMediaLinkHelper::GlicMediaLinkHelper(content::WebContents* web_contents)
     : web_contents_(web_contents) {}

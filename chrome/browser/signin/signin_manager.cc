@@ -27,9 +27,7 @@
 // Stop the `SigninManager` from removing the primary account and revoke all
 // tokens when there is a valid refresh token. The account reconcilor is
 // expected to rebuild cookies. Used as a kill switch.
-BASE_FEATURE(kPreventSignoutIfAccountValid,
-             "PreventSignoutIfAccountValid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPreventSignoutIfAccountValid, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  //  BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {

@@ -12,7 +12,6 @@ namespace features {
 // already has permissions, which can happen the destination path was once
 // granted permission for a different file that has since been removed.
 BASE_FEATURE(kFileSystemAccessMoveWithOverwrite,
-             "FileSystemAccessMoveWithOverwrite",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables persistent permissions for the File System Access API.
@@ -27,8 +26,6 @@ BASE_FEATURE(kFileSystemAccessPersistentPermissions,
 // Enables performing the blocklist check on a full absolute path, which
 // resolves any symbolic link.
 BASE_FEATURE(kFileSystemAccessSymbolicLinkCheck,
-             "FileSystemAccessSymbolicLinkCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

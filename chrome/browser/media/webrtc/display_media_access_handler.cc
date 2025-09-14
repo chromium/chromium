@@ -63,9 +63,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #endif
 
-BASE_FEATURE(kDisplayMediaRejectLongDomains,
-             "DisplayMediaRejectLongDomains",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisplayMediaRejectLongDomains, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 using ::blink::mojom::MediaStreamRequestResult;

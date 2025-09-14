@@ -74,7 +74,6 @@
 #endif
 
 BASE_FEATURE(kDesktopMediaPickerMultiLineTitle,
-             "DesktopMediaPickerMultiLineTitle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 using ::blink::mojom::MediaStreamRequestResult;

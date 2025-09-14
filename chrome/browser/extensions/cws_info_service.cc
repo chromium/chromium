@@ -161,9 +161,7 @@ namespace extensions {
 
 // Increase the frequency of periodic retrieval of extensions metadata from
 // CWS. This feature is used only for testing purposes.
-BASE_FEATURE(kCWSInfoFastCheck,
-             "CWSInfoFastCheck",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCWSInfoFastCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

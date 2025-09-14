@@ -49,9 +49,7 @@ namespace enterprise_reporting {
 namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-BASE_FEATURE(kAlwaysUploadExtensionInfo,
-             "AlwaysUploadExtensionInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAlwaysUploadExtensionInfo, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 

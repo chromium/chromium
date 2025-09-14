@@ -44,30 +44,21 @@
 namespace media_router {
 
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-BASE_FEATURE(kMediaRouter, "MediaRouter", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaRouter, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCastAllowAllIPsFeature,
              "CastAllowAllIPs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAllowAllSitesToInitiateMirroring,
-             "AllowAllSitesToInitiateMirroring",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kDialMediaRouteProvider,
-             "DialMediaRouteProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kDelayMediaSinkDiscovery,
-             "DelayMediaSinkDiscovery",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDialMediaRouteProvider, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDelayMediaSinkDiscovery, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShowCastPermissionRejectedError,
-             "ShowCastPermissionRejectedError",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCastMessageLogging,
-             "CastMessageLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCastMessageLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/1486680): Remove once stopping mirroring routes in the global
 // media controls is implemented on ChromeOS.
 BASE_FEATURE(kFallbackToAudioTabMirroring,
-             "FallbackToAudioTabMirroring",
 #if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else
@@ -79,7 +70,6 @@ BASE_FEATURE(kFallbackToAudioTabMirroring,
 
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kUseNetworkFrameworkForLocalDiscovery,
-             "UseNetworkFrameworkForLocalDiscovery",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

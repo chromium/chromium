@@ -135,7 +135,6 @@ GetPreinstalledWebAppsMappingForTesting() {
 namespace web_app {
 
 BASE_FEATURE(kDesktopPWAsForceUnregisterOSIntegration,
-             "DesktopPWAsForceUnregisterOSIntegration",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

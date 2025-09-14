@@ -550,9 +550,7 @@ std::string ToString(FetchPageContextError error) {
   }
 }
 
-BASE_FEATURE(kGlicTabScreenshotExperiment,
-             "GlicTabScreenshotExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicTabScreenshotExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMaxScreenshotWidthParam{
     &kGlicTabScreenshotExperiment, "max_screenshot_width", 1024};
@@ -566,9 +564,7 @@ const base::FeatureParam<int> kScreenshotJpegQuality{
 const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
     &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(5)};
 
-BASE_FEATURE(kGlicPageContextEligibility,
-             "GlicPageContextEligibility",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicPageContextEligibility, base::FEATURE_DISABLED_BY_DEFAULT);
 
 FetchPageContextOptions::FetchPageContextOptions() = default;
 

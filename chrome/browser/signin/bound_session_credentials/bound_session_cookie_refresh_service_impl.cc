@@ -166,7 +166,6 @@ bool IsSessionInitializationEnabled(const PrefService* profile_prefs,
 }  // namespace
 
 BASE_FEATURE(kEnableBoundSessionCredentialsWsbetaBypass,
-             "EnableBoundSessionCredentialsWsbetaBypass",
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -175,7 +174,6 @@ BASE_FEATURE(kEnableBoundSessionCredentialsWsbetaBypass,
 );
 
 BASE_FEATURE(kEnableBoundSessionCredentialsContinuity,
-             "EnableBoundSessionCredentialsContinuity",
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

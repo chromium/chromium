@@ -10,12 +10,9 @@
 
 namespace ntp_composebox {
 
-BASE_FEATURE(kNtpSearchboxComposeEntrypoint,
-             "NtpSearchboxComposeEntrypoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpSearchboxComposeEntrypoint, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNtpSearchboxComposeEntrypointEnglishUs,
-             "NtpSearchboxComposeEntrypointEnglishUs",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNtpSearchboxComposeEntrypointEnabled(Profile* profile) {

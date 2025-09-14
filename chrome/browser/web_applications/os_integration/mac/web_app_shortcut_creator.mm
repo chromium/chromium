@@ -87,9 +87,7 @@ OSStatus SecCodeSignerAddSignatureWithErrors(SecCodeSignerRef signer,
 
 namespace web_app {
 
-BASE_FEATURE(kWebAppMaskableIconsOnMac,
-             "WebAppMaskableIconsOnMac",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebAppMaskableIconsOnMac, base::FEATURE_ENABLED_BY_DEFAULT);
 
 class WebAppShortcutCopierSyncCallHelper {
   mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow_;

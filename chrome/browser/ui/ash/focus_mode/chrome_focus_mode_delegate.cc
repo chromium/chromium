@@ -26,9 +26,7 @@
 namespace {
 
 // Force Focus Mode to report an old version string for testing.
-BASE_FEATURE(kFocusModeOldVersion,
-             "FocusModeOldVersion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFocusModeOldVersion, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Amount of time between now and certificate expiration which will trigger a
 // refresh. Certificates are generally issued with lifetimes of about 1 year so

@@ -145,9 +145,7 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
   return base::FeatureList::IsEnabled(kNtpComposebox);
 }
 
-BASE_FEATURE(kNtpComposebox,
-             "NtpComposebox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpComposebox, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kConfigParam(&kNtpComposebox,
                                                    "ConfigParam",

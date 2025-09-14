@@ -176,7 +176,6 @@ void OnComponentDataReady(PrefService* prefs, base::OnceClosure callback) {
 }  // namespace
 
 BASE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate,
-             "IwaPolicyManagerOnDemandComponentUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static

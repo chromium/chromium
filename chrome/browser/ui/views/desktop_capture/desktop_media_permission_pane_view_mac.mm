@@ -28,13 +28,11 @@
 #include "ui/views/layout/box_layout.h"
 
 BASE_FEATURE(kAnimationForDesktopCapturePermissionChecker,
-             "AnimationForDesktopCapturePermissionChecker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
 BASE_FEATURE(kDesktopCapturePermissionCheckerRestartMessage,
-             "DesktopCapturePermissionCheckerRestartMessage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::u16string WithRestartMessage(int message_id) {

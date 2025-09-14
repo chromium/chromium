@@ -11,9 +11,7 @@
 
 namespace actor {
 
-BASE_FEATURE(kGlicActionAllowlist,
-             "GlicActionAllowlist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicActionAllowlist, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(std::string,
                    kAllowlist,
@@ -31,20 +29,14 @@ BASE_FEATURE_PARAM(bool,
                    "allowlist_only",
                    true);
 
-BASE_FEATURE(kGlicActionUseOptimizationGuide,
-             "GlicActionUseOptimizationGuide",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicActionUseOptimizationGuide, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicCrossOriginNavigationGating,
-             "GlicCrossOriginNavigationGating",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicEnableAutoLoginDialogs,
-             "GlicEnableAutoLoginDialogs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicEnableAutoLoginDialogs, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
-             "GlicTabScreenshotPaintPreviewBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kFullPageScreenshot{

@@ -89,9 +89,7 @@ namespace extensions {
 namespace {
 
 #if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
-BASE_FEATURE(kHangoutsExtensionV3,
-             "HangoutsExtensionV3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHangoutsExtensionV3, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
 
 bool g_enable_background_extensions_during_testing = false;
