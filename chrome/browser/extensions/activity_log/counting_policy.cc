@@ -48,8 +48,11 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
 #include "chrome/common/chrome_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 

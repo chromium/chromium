@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
 #include "chrome/browser/extensions/activity_log/fullstream_ui_policy.h"
 #include "chrome/common/chrome_switches.h"
+#include "extensions/buildflags/buildflags.h"
 #include "sql/error_delegate_util.h"
 #include "sql/init_status.h"
 #include "sql/sqlite_result_code_values.h"
@@ -25,6 +26,8 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/backup_util.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
