@@ -1659,6 +1659,13 @@ public abstract class ChromeFeatureList {
                     "read_aloud_audio_overviews_speed_addition_percentage",
                     20);
 
+    public static final BooleanCachedFeatureParam sShouldConsiderLanguageInOverviewReadability =
+            newBooleanCachedFeatureParam(
+              READALOUD_AUDIO_OVERVIEWS,
+              "read_aloud_audio_overviews_should_consider_language_in_overview_readability",
+              false
+            );
+
     /** Controls whether Referrer App ID is passed to Search Results Page via client= param. */
     public static final BooleanCachedFeatureParam sSearchinCctApplyReferrerId =
             newBooleanCachedFeatureParam(SEARCH_IN_CCT, "apply_referrer_id", false);
@@ -1790,6 +1797,7 @@ public abstract class ChromeFeatureList {
                     sReadAloudAudioOverviewsSpeedAdditionPercentage,
                     sSearchinCctApplyReferrerId,
                     sSearchinCctOmniboxAllowedPackageNames,
+                    sShouldConsiderLanguageInOverviewReadability,
                     sStartSurfaceReturnTimeTabletSecs,
                     sTabGroupListContainment,
                     sTabStripLayoutOptimizationOemAllowlist,
