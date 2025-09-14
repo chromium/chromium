@@ -43,6 +43,8 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/buildflags/buildflags.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 using bookmarks::BookmarkPermanentNode;
