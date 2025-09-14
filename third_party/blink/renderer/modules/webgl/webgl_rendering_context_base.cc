@@ -6911,9 +6911,9 @@ void WebGLRenderingContextBase::texElementImage2D(
   PaintRecordBuilder builder;
 
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
-  paint_layer_painter.Paint(builder.Context(),
-                            PaintFlag::kPaintingCanvasDrawElementImage |
-                                PaintFlag::kPrivacyPreserving);
+  paint_layer_painter.Paint(
+      builder.Context(),
+      PaintFlag::kPrivacyPreserving | PaintFlag::kOmitCompositingInfo);
 
   PropertyTreeState tree_state = layer->GetLayoutObject()
                                      .FirstFragment()

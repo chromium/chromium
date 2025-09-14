@@ -20,7 +20,6 @@
   <div id=child>
     <div id=grandchild></div>
   </div>
-  <canvas id=childcanvas></canvas>
 </canvas>
 <canvas id=canvaswithoutlayout layoutsubtree>
   <div id=child2></div>
@@ -33,10 +32,6 @@ promise_test(async () => {
   assert_throws_js(TypeError,
     () => canvas.getContext("2d").drawElementImage(grandchild, 20, 30),
     "Can't draw non-direct children.");
-
-  assert_throws_js(TypeError,
-    () => canvas.getContext("2d").drawElementImage(childcanvas, 20, 30),
-    "Can't draw <canvas> children.");
 
   canvaswithoutlayout.removeAttribute("layoutsubtree");
   assert_throws_js(TypeError,

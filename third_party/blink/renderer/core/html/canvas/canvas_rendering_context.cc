@@ -140,13 +140,6 @@ bool CanvasRenderingContext::IsDrawElementImageEligible(
     return false;
   }
 
-  // TODO(crbug.com/413728246): Maybe we can support canvas element.
-  if (IsA<HTMLCanvasElement>(element)) {
-    exception_state.ThrowTypeError(
-        build_error("<canvas> children of a <canvas> cannot be passed to %s."));
-    return false;
-  }
-
   return true;
 }
 

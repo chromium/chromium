@@ -842,9 +842,9 @@ void CanvasRenderingContext2D::DrawElementInternal(
                                           /*disable_expansion*/ true);
 
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
-  PaintFlags paint_flags = PaintFlag::kPaintingCanvasDrawElementImage;
-  paint_flags |= PaintFlag::kPrivacyPreserving;
-  paint_layer_painter.Paint(builder.Context(), paint_flags);
+  paint_layer_painter.Paint(
+      builder.Context(),
+      PaintFlag::kPrivacyPreserving | PaintFlag::kOmitCompositingInfo);
 
   PropertyTreeState property_tree_state = layer->GetLayoutObject()
                                               .FirstFragment()

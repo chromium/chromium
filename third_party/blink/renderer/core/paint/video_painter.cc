@@ -31,8 +31,7 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
       layout_video_.GetDocument().GetPaintPreviewState() ==
           Document::kPaintingPreviewSkipAcceleratedContent ||
       (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
-       (paint_info.GetPaintFlags() &
-        PaintFlag::kPaintingCanvasDrawElementImage));
+       (paint_info.GetPaintFlags() & PaintFlag::kPrivacyPreserving));
   bool should_display_poster =
       layout_video_.GetDisplayMode() == LayoutVideo::kPoster ||
       force_video_poster;

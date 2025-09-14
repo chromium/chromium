@@ -569,7 +569,7 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
       RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       style.HasCurrentBackgroundColorAnimation() &&
       layer.GetType() == EFillLayerType::kBackground &&
-      !(paint_flags & PaintFlag::kPaintingCanvasDrawElementImage);
+      !(paint_flags & PaintFlag::kOmitCompositingInfo);
   // When background color animation is running on the compositor thread, we
   // need to trigger repaint even if the background is transparent to collect
   // artifacts in order to run the animation on the compositor.

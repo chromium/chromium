@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<title>drawElementImage should support rendering a nested canvas</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="match" href="nested-canvas-ref.html">
+
+<canvas id="canvas" layoutsubtree="true" width="100" height="100" style="background: red;">
+  <canvas id="nested_canvas" layoutsubtree="true" width="100" height="100">
+    <div id="inner_div" style="width: 100px; height: 100px; background: radial-gradient(lightgreen, green);"></div>
+  </canvas>
+</canvas>
+<script>
+  nested_canvas.getContext('2d').drawElementImage(inner_div, 0, 0, 100, 100);
+  canvas.getContext('2d').drawElementImage(nested_canvas, 0, 0, 100, 100);
+</script>
