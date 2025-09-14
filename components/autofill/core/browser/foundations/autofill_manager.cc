@@ -684,7 +684,7 @@ void AutofillManager::ParseFormsAsyncCommon(
           const bool is_new_form = !cached_form_structure;
           if (self->form_structures_.size() + is_new_form >
               kAutofillManagerMaxFormCacheSize) {
-            LOG_AF(*context.log_manager)
+            LOG_AF(context.log_manager.get())
                 << LoggingScope::kAbortParsing
                 << LogMessage::kAbortParsingTooManyForms << context.forms[i];
             continue;
