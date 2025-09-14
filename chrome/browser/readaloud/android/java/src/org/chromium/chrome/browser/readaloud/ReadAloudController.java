@@ -274,6 +274,14 @@ public class ReadAloudController
                   || (isAudioOverviewsAllowed() && isReadable(PlaybackArgs.PlaybackMode.OVERVIEW));
       }
 
+      boolean isReadable(String tabLanguage) {
+        // A better version of readability that accounts for the page language.
+          return isReadable(PlaybackArgs.PlaybackMode.CLASSIC)
+                  || (isAudioOverviewsAllowed()
+                      && isReadable(PlaybackArgs.PlaybackMode.OVERVIEW)
+                      && isLanguageSupportedForOverview(tabLanguage));
+      }
+
       boolean isReadable(PlaybackArgs.PlaybackMode mode) {
         return getReadabilityResultForMode(mode).readable;
       }
@@ -944,7 +952,10 @@ public class ReadAloudController
             int sanitizedUrlHash = urlToHash(stripUserData(nonNullTab.getUrl()).getSpec());
             ReadabilityInfo info = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
             if (info != null) {
-                return info.isReadable();
+              if (ReadAloudFeatures.shouldConsiderLanguageInOverviewReadability()) {
+                return info.isReadable(tabLanguageStatus.mLanguage);
+              }
+              return info.isReadable();
             }
         }
         return false;
@@ -963,7 +974,7 @@ public class ReadAloudController
         if (tabLanguageStatus.mSupported && isAvailable()) {
             int sanitizedUrlHash = urlToHash(stripUserData(nonNullTab.getUrl()).getSpec());
             ReadabilityInfo info = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
-            if (info != null && info.isReadable()) {
+            if (info != null && (ReadAloudFeatures.shouldConsiderLanguageInOverviewReadability() ? info.isReadable(tabLanguageStatus.mLanguage) : info.isReadable())) {
               List<PlaybackMode> playbackModes = getPlaybackModesForNewPlayback(info, tabLanguageStatus.mLanguage);
               return playbackModes.size() > 0 ? playbackModes.get(0) : PlaybackMode.UNSPECIFIED;
             }
@@ -1450,7 +1461,7 @@ public class ReadAloudController
                 /* clearPassword= */ true);
     }
 
-    private boolean isLanguageSupportedForOverview(String language) {
+    private static boolean isLanguageSupportedForOverview(String language) {
         return language.equals("en");
     }
 
