@@ -833,6 +833,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4286718549648564014">Indirizzo spostato nel tuo account <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Segna come già letti</translation>
 <translation id="428768789042547925">Novità</translation>
+<translation id="428858055663163046">Puoi accedere ai file scaricati qui quando sono disponibili</translation>
 <translation id="429074084062258019">{count,plural, =1{Aggiungi scheda a gruppo}other{Aggiungi schede a gruppo}}</translation>
 <translation id="4302061870579014542">Imposta posizione</translation>
 <translation id="4304713468139749426">Gestore delle password</translation>
@@ -1415,6 +1416,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6452534462676960500">Nuova attività</translation>
 <translation id="6459411599807878608">Dettagli nascosti</translation>
 <translation id="646394917185284261">File</translation>
+<translation id="6472069383518492189">Troverai i tuoi download qui</translation>
 <translation id="6476253015009698798">Il monitoraggio dei prezzi non è disponibile per questa pagina.</translation>
 <translation id="6476284679642588870">Gestisci metodi di pagamento</translation>
 <translation id="6476800141292307438">Traduzione della pagina in <ph name="LANGUAGE" />. Opzioni disponibili nella parte inferiore dello schermo.</translation>

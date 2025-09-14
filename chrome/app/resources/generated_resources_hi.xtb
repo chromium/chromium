@@ -198,6 +198,7 @@
 <translation id="1129348283834595293">सायबरपंक</translation>
 <translation id="1129420403709586868">अपने फ़ोन में मौजूद फ़ोटो और मीडिया देखें</translation>
 <translation id="1129850422003387628">ऐप्लिकेशन प्रबंधित करें</translation>
+<translation id="1130116586186908674">स्प्लिट व्यू बनाएं</translation>
 <translation id="1130430615924359526">{0,plural, =1{गुप्त मोड बंद करें}one{गुप्त मोड में (# विंडो) बंद करें}other{गुप्त मोड में (# विंडो) बंद करें}}</translation>
 <translation id="113050636487300043">प्रोफ़ाइलों के बीच फ़र्क़ करने के लिए, कोई भी नाम और कलर थीम चुनें</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> ग्रुप का हिस्सा</translation>
@@ -8114,7 +8115,7 @@
 <translation id="6657240842932274095">क्या सिस्टम की सेवाओं को अपनी जगह की जानकारी का ऐक्सेस देना है?</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659213950629089752">इस पेज को "<ph name="NAME" />" एक्सटेंशन द्वारा ज़ूम किया गया था</translation>
-<translation id="6659594942844771486">ब्राउज़र टैब</translation>
+<translation id="6659594942844771486">टैब</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - कैमरे से रिकॉर्डिंग की जा रही है</translation>
 <translation id="6660301751798595791">आवाज़ चुनें</translation>
 <translation id="6660819301598582123">The quick brown fox jumped over the lazy dog.</translation>

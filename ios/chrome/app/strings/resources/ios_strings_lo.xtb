@@ -833,6 +833,7 @@
 <translation id="4286718549648564014">ຍ້າຍທີ່ຢູ່ໄປໃສ່ບັນຊີ <ph name="USER_EMAIL" /> ຂອງທ່ານແລ້ວ</translation>
 <translation id="4287172530684295552">ໝາຍວ່າອ່ານແລ້ວ</translation>
 <translation id="428768789042547925">ມີຫຍັງໃໝ່</translation>
+<translation id="428858055663163046">ທ່ານສາມາດເຂົ້າເຖິງໄຟລ໌ທີ່ດາວໂຫຼດໄວ້ຂອງທ່ານໄດ້ບ່ອນນີ້ເມື່ອພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="429074084062258019">{count,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມ}other{ເພີ່ມແຖບໃສ່ກຸ່ມ}}</translation>
 <translation id="4302061870579014542">ກຳນົດຕຳແໜ່ງ</translation>
 <translation id="4304713468139749426">ຕົວຈັດການລະຫັດຜ່ານ</translation>
@@ -1415,6 +1416,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6452534462676960500">ການເຄື່ອນໄຫວໃໝ່</translation>
 <translation id="6459411599807878608">ເຊື່ອງລາຍລະອຽດແລ້ວ</translation>
 <translation id="646394917185284261">ໄຟລ໌</translation>
+<translation id="6472069383518492189">ທ່ານຈະເຫັນການດາວໂຫຼດຂອງທ່ານບ່ອນນີ້</translation>
 <translation id="6476253015009698798">ການຕິດຕາມລາຄາບໍ່ມີໃຫ້ສຳລັບໜ້ານີ້.</translation>
 <translation id="6476284679642588870">ຈັດການວິທີການຈ່າຍເງິນ</translation>
 <translation id="6476800141292307438">ກຳລັງແປໜ້າເວັບເປັນ <ph name="LANGUAGE" />. ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
