@@ -37,9 +37,13 @@ def main(argv):
   try:
     app = Application(backend="uia")
     app.connect(title_re='.*Chrome|.*Chromium')
-    app.top_window() \
-       .child_window(title="Translate this page?", control_type="Pane") \
-       .print_control_identifiers()
+    # Use more specific criteria to avoid ambiguity
+    translate_pane = app.top_window().child_window(
+        title="Translate this page?",
+        control_type="Pane",
+        found_index=0  # Take the first match
+    )
+    translate_pane.print_control_identifiers()
     translatePopupVisible = True
   except ElementNotFoundError:
     translatePopupVisible = False
