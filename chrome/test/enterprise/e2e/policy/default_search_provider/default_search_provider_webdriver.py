@@ -17,7 +17,7 @@ try:
   app = Application(backend="uia")
   app.connect(title_re='.*Chrome|.*Chromium')
   omnibox = app.top_window() \
-            .child_window(title="Address and search bar", control_type="Edit")
+            .child_window(title="data:,", control_type="Edit")
   omnibox.set_edit_text('anything').type_keys('{ENTER}')
   print(driver.current_url)
 except Exception as error:
