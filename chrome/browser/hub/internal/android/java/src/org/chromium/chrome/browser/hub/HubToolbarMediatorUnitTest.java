@@ -91,6 +91,7 @@ public class HubToolbarMediatorUnitTest {
     @Mock private Pane mIncognitoTabSwitcherPane;
     @Mock private Pane mTabGroupsPane;
     @Mock private Pane mBookmarksPane;
+    @Mock private Pane mHistoryPane;
     @Mock private PaneOrderController mPaneOrderController;
     @Mock private DisplayButtonData mDisplayButtonData;
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
@@ -109,6 +110,7 @@ public class HubToolbarMediatorUnitTest {
     private ObservableSupplierImpl<Boolean> mRegularHubSearchEnabledStateSupplier;
     private ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier;
     private ObservableSupplierImpl<Boolean> mGroupsHubSearchEnabledStateSupplier;
+    private ObservableSupplierImpl<Boolean> mHistoryHubSearchEnabledStateSupplier;
     private ObservableSupplierImpl<DisplayButtonData>
             mIncognitoTabSwitcherReferenceButtonDataSupplier2;
     private ObservableSupplierImpl<Tab> mCurrentTabSupplier;
@@ -123,6 +125,7 @@ public class HubToolbarMediatorUnitTest {
         mRegularHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
         mIncognitoHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
         mGroupsHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
+        mHistoryHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
         mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mModel =
@@ -144,6 +147,7 @@ public class HubToolbarMediatorUnitTest {
                 .thenReturn(mIncognitoTabSwitcherPane);
         when(mPaneManager.getPaneForId(PaneId.TAB_GROUPS)).thenReturn(mTabGroupsPane);
         when(mPaneManager.getPaneForId(PaneId.BOOKMARKS)).thenReturn(mBookmarksPane);
+        when(mPaneManager.getPaneForId(PaneId.HISTORY)).thenReturn(mHistoryPane);
 
         when(mTabSwitcherPane.getHubSearchEnabledStateSupplier())
                 .thenReturn(mRegularHubSearchEnabledStateSupplier);
@@ -151,6 +155,8 @@ public class HubToolbarMediatorUnitTest {
                 .thenReturn(mIncognitoHubSearchEnabledStateSupplier);
         when(mTabGroupsPane.getHubSearchEnabledStateSupplier())
                 .thenReturn(mGroupsHubSearchEnabledStateSupplier);
+        when(mHistoryPane.getHubSearchEnabledStateSupplier())
+                .thenReturn(mHistoryHubSearchEnabledStateSupplier);
 
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mTabSwitcherReferenceButtonDataSupplier1);
@@ -164,6 +170,7 @@ public class HubToolbarMediatorUnitTest {
         when(mIncognitoTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
 
         when(mTabGroupsPane.getPaneId()).thenReturn(PaneId.TAB_GROUPS);
+        when(mHistoryPane.getPaneId()).thenReturn(PaneId.HISTORY);
 
         mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
         mIncognitoTabSwitcherReferenceButtonDataSupplier2.set(mDisplayButtonData);
@@ -652,6 +659,11 @@ public class HubToolbarMediatorUnitTest {
         mFocusedPaneSupplier.set(mTabGroupsPane);
         mModel.get(SEARCH_LISTENER).run();
         verify(mSearchActivityClient, times(3)).requestOmniboxForResult(any());
+
+        // Toggle to history pane, which is not enabled for hub search
+        mFocusedPaneSupplier.set(mHistoryPane);
+        mModel.get(SEARCH_LISTENER).run();
+        verify(mSearchActivityClient, times(3)).requestOmniboxForResult(any());
         histograms.assertExpected();
     }
 
@@ -697,6 +709,11 @@ public class HubToolbarMediatorUnitTest {
 
         // Toggle to tab groups pane
         mFocusedPaneSupplier.set(mTabGroupsPane);
+        mModel.get(SEARCH_LISTENER).run();
+        verify(mSearchActivityClient, times(3)).requestOmniboxForResult(any());
+
+        // Toggle to history pane, which is not enabled for hub search
+        mFocusedPaneSupplier.set(mHistoryPane);
         mModel.get(SEARCH_LISTENER).run();
         verify(mSearchActivityClient, times(3)).requestOmniboxForResult(any());
         histograms.assertExpected();
