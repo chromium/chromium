@@ -13,6 +13,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'incrementMetricCount',
+      'recordEmptyState',
       'recordExtensionState',
       'recordHighlightOff',
       'recordHighlightOn',
@@ -33,6 +34,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   incrementMetricCount(umaName: string) {
     this.methodCalled('incrementMetricCount', umaName);
+  }
+
+  recordEmptyState() {
+    this.methodCalled('recordEmptyState');
   }
 
   recordNewPage() {

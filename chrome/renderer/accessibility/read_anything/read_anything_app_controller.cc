@@ -1021,6 +1021,9 @@ void ReadAnythingAppController::DrawSelection() {
 
 void ReadAnythingAppController::DrawEmptyState() {
   ExecuteJavaScript("chrome.readingMode.showEmpty();");
+}
+
+void ReadAnythingAppController::LogEmptyState() {
   base::UmaHistogramEnumeration(ReadAnythingAppModel::kEmptyStateHistogramName,
                                 ReadAnythingAppModel::EmptyState::kShown);
 }
@@ -1155,6 +1158,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
       .SetMethod("onNoTextContent", &ReadAnythingAppController::OnNoTextContent)
       .SetMethod("updateWordsSeen", &ReadAnythingAppController::UpdateWordsSeen)
+      .SetMethod("logEmptyState", &ReadAnythingAppController::LogEmptyState)
       .SetMethod("updateWordsHeard",
                  &ReadAnythingAppController::UpdateWordsHeard)
       .SetMethod("onFontSizeChanged",
@@ -1770,15 +1774,8 @@ void ReadAnythingAppController::OnCopy() const {
   page_handler_->OnCopy();
 }
 
-void ReadAnythingAppController::OnNoTextContent(bool previouslyHadContent) {
-  if (previouslyHadContent) {
-    Distill();
-  } else {
-    // If updateContent was called on a page with no valid content and
-    // reading mode previously didn't have content, ensure the empty state
-    // is now showing. Otherwise, the loading screen may never terminate.
-    DrawEmptyState();
-  }
+void ReadAnythingAppController::OnNoTextContent() {
+  Distill();
 }
 
 void ReadAnythingAppController::UpdateWordsSeen(int words_seen) {

@@ -70,6 +70,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LoadingScreen) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, EmptyState) {
+  RunSidePanelTest("side_panel/read_anything/empty_state_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionMenu) {
   RunSidePanelTest("side_panel/read_anything/voice_selection_menu_test.js",
                    "mocha.run()");

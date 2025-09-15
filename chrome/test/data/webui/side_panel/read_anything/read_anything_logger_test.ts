@@ -119,6 +119,11 @@ suite('Logger', () => {
     assertEquals(source, await metrics.whenCalled('recordSpeechStopSource'));
   });
 
+  test('empty state', () => {
+    logger.logEmptyState();
+    assertEquals(1, metrics.getCallCount('recordEmptyState'));
+  });
+
   test('logVoiceSpeed', () => {
     logger.logVoiceSpeed(1);
     logger.logVoiceSpeed(2);

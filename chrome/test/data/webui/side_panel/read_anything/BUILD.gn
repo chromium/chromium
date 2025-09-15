@@ -19,6 +19,7 @@ build_webui_tests("build") {
     "content_controller_test.ts",
     "dom_read_aloud_node_test.ts",
     "download_notification_test.ts",
+    "empty_state_test.ts",
     "fake_reading_mode.ts",
     "fake_tree_builder.ts",
     "fake_tree_builder_test.ts",

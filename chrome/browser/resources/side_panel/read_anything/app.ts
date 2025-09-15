@@ -325,6 +325,10 @@ export class AppElement extends AppElementBase implements
   }
 
   showEmpty() {
+    if (this.isEmptyState()) {
+      return;
+    }
+    this.logger_.logEmptyState();
     if (!chrome.readingMode.isGoogleDocs) {
       this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
     } else {
@@ -403,7 +407,7 @@ export class AppElement extends AppElementBase implements
       // send that info back to the controller.
       if (this.hasContent_) {
         this.hasContent_ = false;
-        chrome.readingMode.onNoTextContent(/* previouslyHadContent*/ true);
+        chrome.readingMode.onNoTextContent();
       } else if (!this.isEmptyState()) {
         // If no text content is found but reading mode is not showing the
         // empty state, signal back to the renderer that this is the case.
@@ -411,12 +415,7 @@ export class AppElement extends AppElementBase implements
         // reading mode believes it has selected content to distll but
         // nothing valid is selected. This can cause the loading screen
         // to never switch to the empty state.
-        // TODO: crbug.com/411198154- Longer term, once reading mode and read
-        // aloud traversal is more in line, the renderer should be able to call
-        // showEmpty directly, rather than signaling to the WebUI to update
-        // content and then WebUI signaling back to the renderer that there is
-        // no text content.
-        chrome.readingMode.onNoTextContent(/* previouslyHadContent*/ false);
+        this.showEmpty();
       }
       return;
     }
@@ -652,7 +651,7 @@ export class AppElement extends AppElementBase implements
     const root = this.nodeStore_.getDomNode(chrome.readingMode.rootId);
     if (this.hasContent_ && !root?.textContent) {
       this.hasContent_ = false;
-      chrome.readingMode.onNoTextContent(/*previouslyHadContent*/ true);
+      chrome.readingMode.onNoTextContent();
     }
   }
 

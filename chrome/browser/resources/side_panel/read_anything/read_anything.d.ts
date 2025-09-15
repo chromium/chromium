@@ -222,7 +222,7 @@ declare namespace chrome {
 
     // Called when there is no text content after building the tree but we're
     // not showing the empty page either.
-    function onNoTextContent(previouslyHadContent: boolean): void;
+    function onNoTextContent(): void;
 
     // Returns the actual spacing value to use based on the given lineSpacing
     // category.
@@ -400,6 +400,9 @@ declare namespace chrome {
 
     // Log when speech stops and why.
     function logSpeechStop(source: number): void;
+
+    // Log when the empty state page is shown.
+    function logEmptyState(): void;
 
     // Returns a list of node ids and ranges (start and length) associated with
     // the index within the given text segment. The intended use is for
