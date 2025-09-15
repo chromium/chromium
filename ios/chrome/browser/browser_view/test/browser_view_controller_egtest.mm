@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/browser_view/test/browser_view_visibility_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -267,6 +268,8 @@ const char kSecondURLText[] = "You've arrived";
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
+#pragma mark - Widgets
+
 // Tests that the Search Widget URL loads the NTP with the Omnibox focused.
 - (void)testOpenSearchWidget {
   [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/search")];
@@ -275,8 +278,8 @@ const char kSecondURLText[] = "You've arrived";
 }
 
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-// Tests that the Search Widget URL loads the NTP with the Omnibox focused and
-// switches to the correct account.
+// Test that code for opening URLs from Search widgets loads the NTP with the
+// Omnibox focused and switches to the correct account.
 - (void)testOpenSearchWidgetForMultiprofile {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
@@ -286,6 +289,69 @@ const char kSecondURLText[] = "You've arrived";
   GREYAssertTrue([SigninEarlGrey isSignedOut], @"Failed to sign-out.");
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/"
+                                    "search?gaia_id=foo1_gmail.com_GAIAID")];
+  GREYAssertTrue(![SigninEarlGrey isSignedOut], @"Failed to sign-in.");
+}
+
+// Test that code for opening URLs from Dino Widget opens the dino game and
+// switches to the correct account.
+- (void)testOpenDinoWidgetForMultiprofile {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey
+      sceneOpenURL:
+          GURL("chromewidgetkit://dino-game-widget/game?gaia_id=No account")];
+
+  // The dino game should be loaded.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingText(
+                            base::SysNSStringToUTF8(@"chrome://dino"))];
+
+  GREYAssertTrue([SigninEarlGrey isSignedOut], @"Failed to sign-out.");
+
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://dino-game-widget/"
+                                    "game?gaia_id=foo1_gmail.com_GAIAID")];
+  GREYAssertTrue(![SigninEarlGrey isSignedOut], @"Failed to sign-in.");
+}
+
+// Test that code for opening URLs from Quick Actions Widget opens the app in
+// incognito and switches to the correct account.
+- (void)testOpenQuickActionsWidgetForMultiprofile {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://quick-actions-widget/"
+                                    "incognito?gaia_id=No account")];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  // Verify the current tab is an incognito tab.
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
+                 @"Failed to switch to incognito mode");
+  GREYAssertTrue([SigninEarlGrey isSignedOut], @"Failed to sign-out.");
+
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://quick-actions-widget/"
+                                    "incognito?gaia_id=foo1_gmail.com_GAIAID")];
+  GREYAssertTrue(![SigninEarlGrey isSignedOut], @"Failed to sign-in.");
+}
+
+// Test that code for opening URLs from Shortcuts Widget correctly opens and
+// switches to the correct account.
+- (void)testOpenShortcutsWidgetForMultiprofile {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey
+      sceneOpenURL:
+          GURL("chromewidgetkit://shortcuts-widget/search?gaia_id=No account")];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  GREYAssertTrue([SigninEarlGrey isSignedOut], @"Failed to sign-out.");
+
+  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://shortcuts-widget/"
+                                    "search?gaia_id=foo1_gmail.com_GAIAID")];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  GREYAssertTrue(![SigninEarlGrey isSignedOut], @"Failed to sign-in.");
 }
 
 #endif
