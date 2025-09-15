@@ -14,6 +14,7 @@
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/i18n/string_search.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -24,6 +25,8 @@
 #import "ios/chrome/browser/download/ui/download_list/download_list_consumer.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
 #import "ios/web/public/download/download_task.h"
+
+using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
 
 @interface DownloadListMediator () <DownloadRecordObserverDelegate>
 
@@ -315,27 +318,26 @@
 
 // Checks if a download record matches the given search keyword.
 - (BOOL)record:(const DownloadRecord&)record matchesKeyword:(NSString*)keyword {
-  // TODO:(crbug.com/441137558) replace with
-  // FixedPatternStringSearchIgnoringCaseAndAccents.
   // If no keyword is provided, match all records.
   if (!keyword || keyword.length == 0) {
     return YES;
   }
 
-  // Convert keyword to lowercase for case-insensitive search.
-  NSString* lowercaseKeyword = [keyword lowercaseString];
+  // Create searcher for the current keyword.
+  std::u16string keywordU16 = base::SysNSStringToUTF16(keyword);
+  FixedPatternStringSearchIgnoringCaseAndAccents query_search(keywordU16);
 
   // Search in file name.
-  NSString* fileName = base::SysUTF8ToNSString(record.file_name);
-  if ([fileName.lowercaseString rangeOfString:lowercaseKeyword].location !=
-      NSNotFound) {
+  std::u16string fileName = base::UTF8ToUTF16(record.file_name);
+  if (query_search.Search(fileName, /*match_index=*/nullptr,
+                          /*match_length=*/nullptr)) {
     return YES;
   }
 
   // Search in original URL.
-  NSString* originalUrl = base::SysUTF8ToNSString(record.original_url);
-  if ([originalUrl.lowercaseString rangeOfString:lowercaseKeyword].location !=
-      NSNotFound) {
+  std::u16string originalUrl = base::UTF8ToUTF16(record.original_url);
+  if (query_search.Search(originalUrl, /*match_index=*/nullptr,
+                          /*match_length=*/nullptr)) {
     return YES;
   }
 
