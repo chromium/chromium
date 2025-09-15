@@ -14604,17 +14604,9 @@ class SitePerProcessWithSubframeProcessReuseThresholdsTest
       public ::testing::WithParamInterface<std::string> {
  public:
   SitePerProcessWithSubframeProcessReuseThresholdsTest() {
-    size_t total_memory_limit = 8;
-    base::FieldTrialParams params = {
-        {"SubframeProcessReuseMemoryThreshold",
-         base::StringPrintf("%zu", total_memory_limit)}};
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSubframeProcessReuseThresholds, params);
+    RenderProcessHostImpl::SetSubframeProcessReuseThresholdForTesting(8u);
   }
   ~SitePerProcessWithSubframeProcessReuseThresholdsTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that a subframe will only reuse an existing process if adding

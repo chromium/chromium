@@ -902,6 +902,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
     return renderer_host_receiver_;
   }
 
+  // Override the default subframe process reuse memory threshold, in bytes.
+  static void SetSubframeProcessReuseThresholdForTesting(uint64_t threshold);
+
  protected:
   // A proxy for our IPC::Channel that lives on the IO thread.
   std::unique_ptr<IPC::ChannelProxy> channel_;

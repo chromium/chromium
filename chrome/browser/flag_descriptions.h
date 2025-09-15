@@ -1964,9 +1964,6 @@ extern const char kAnnotatedPageContentsForVirtualStructureDescription[];
 extern const char kPowerBookmarkBackendName[];
 extern const char kPowerBookmarkBackendDescription[];
 
-extern const char kSubframeProcessReuseThresholds[];
-extern const char kSubframeProcessReuseThresholdsDescription[];
-
 extern const char kPrerender2EarlyDocumentLifecycleUpdateName[];
 extern const char kPrerender2EarlyDocumentLifecycleUpdateDescription[];
 

@@ -3412,14 +3412,6 @@ const char kPowerBookmarkBackendName[] = "Power bookmark backend";
 const char kPowerBookmarkBackendDescription[] =
     "Enables storing additional metadata to support power bookmark features.";
 
-const char kSubframeProcessReuseThresholds[] =
-    "Subframe process reuse thresholds";
-const char kSubframeProcessReuseThresholdsDescription[] =
-    "Enable thresholds for subframe process reuse. When "
-    "out-of-process iframes attempt to reuse compatible processes from "
-    "unrelated tabs, process reuse will only be allowed if the process stays "
-    "below predefined thresholds (e.g., below a certain memory limit).";
-
 const char kPrerender2EarlyDocumentLifecycleUpdateName[] =
     "Prerender more document lifecycle phases";
 const char kPrerender2EarlyDocumentLifecycleUpdateDescription[] =

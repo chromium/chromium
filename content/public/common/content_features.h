@@ -276,9 +276,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOTP);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebViewAsyncDrawOnly);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpareRendererForSitePerProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kStrictOriginIsolation);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kSubframeProcessReuseThresholds);
-CONTENT_EXPORT extern const base::FeatureParam<double>
-    kSubframeProcessReuseMemoryThreshold;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSubframePriorityContribution);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSyntheticPointerActions);

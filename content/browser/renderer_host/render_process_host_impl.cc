@@ -318,6 +318,13 @@ const void* const kSubframeProcessReuseOverLimitUmaLoggedKey =
 RenderProcessHost::AnalyzeHungRendererFunction g_analyze_hung_renderer =
     nullptr;
 
+// Memory threshold for subframe process reuse, in bytes. A process may be
+// reused for another subframe only if the process's memory footprint stays
+// below this threshold. The default memory threshold is 512MB, for more details
+// about how this was picked, see https://crbug.com/40259123 and
+// https://crbug.com/4348963. Can be overridden in tests.
+uint64_t g_subframe_process_reuse_memory_threshold = 512 * 1024 * 1024u;
+
 #if BUILDFLAG(IS_WIN)
 // This is from extensions/common/switches.cc
 // Marks a renderer as extension process.
@@ -552,13 +559,6 @@ bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
     return true;
   }
 
-  if (process_reuse_policy ==
-          ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe &&
-      !base::FeatureList::IsEnabled(
-          features::kSubframeProcessReuseThresholds)) {
-    return true;
-  }
-
   size_t main_frame_count = 0;
   size_t total_frame_count = 0;
   bool devtools_attached = false;
@@ -611,9 +611,8 @@ bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
   // main frame and subframe in the process, how many extra same-site frames
   // would be necessarily added to `host` later if the current frame were
   // allowed to reuse it (e.g., as its subframes), etc.
-  uint64_t process_memory_limit = base::saturated_cast<uint64_t>(
-      features::kSubframeProcessReuseMemoryThreshold.Get());
-  if (host->GetPrivateMemoryFootprint() < process_memory_limit) {
+  if (host->GetPrivateMemoryFootprint() <
+      g_subframe_process_reuse_memory_threshold) {
     return true;
   }
 
@@ -5471,6 +5470,12 @@ uint64_t RenderProcessHostImpl::GetPrivateMemoryFootprint() {
       now + kPrivateMemoryFootprintCacheValidTime;
   return total_size;
 #endif
+}
+
+// static
+void RenderProcessHostImpl::SetSubframeProcessReuseThresholdForTesting(
+    uint64_t threshold) {
+  g_subframe_process_reuse_memory_threshold = threshold;  // IN-TEST
 }
 
 void RenderProcessHostImpl::HasGpuProcess(HasGpuProcessCallback callback) {

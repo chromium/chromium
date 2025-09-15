@@ -1013,21 +1013,6 @@ BASE_FEATURE(kSpareRendererForSitePerProcess, base::FEATURE_ENABLED_BY_DEFAULT);
 // eTLD+1.
 BASE_FEATURE(kStrictOriginIsolation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether subframe process reuse should be restricted according to
-// resource usage policies. Namely, a process that is already consuming too
-// much memory is not attempted to be reused.
-BASE_FEATURE(kSubframeProcessReuseThresholds, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Specifies the memory threshold for the `kSubframeProcessReuseThresholds`
-// feature, which only allows a process to be reused for another subframe if the
-// process's memory footprint stays below this threshold. Similar to
-// `kProcessPerSiteMainFrameTotalMemoryLimit`, and only provided as a separate
-// knob so that it can be independently controlled in subframe and main frame
-// process reuse experiments.
-constexpr base::FeatureParam<double> kSubframeProcessReuseMemoryThreshold{
-    &kSubframeProcessReuseThresholds, "SubframeProcessReuseMemoryThreshold",
-    512 * 1024 * 1024u};
-
 // When enabled, RenderWidgetHost in BFCache doesn't contribute to the priority
 // of the renderer process.
 BASE_FEATURE(kSubframePriorityContribution, base::FEATURE_DISABLED_BY_DEFAULT);

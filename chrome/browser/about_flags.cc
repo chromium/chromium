@@ -4189,27 +4189,6 @@ const FeatureEntry::FeatureVariation kSensitiveContentVariations[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Feature variations for kSubframeProcessReuseThresholds.
-const FeatureEntry::FeatureParam kSubframeProcessReuseMemoryThreshold512MB{
-    "SubframeProcessReuseMemoryThreshold", "536870912"};
-const FeatureEntry::FeatureParam kSubframeProcessReuseMemoryThreshold1GB{
-    "SubframeProcessReuseMemoryThreshold", "1073741824"};
-const FeatureEntry::FeatureParam kSubframeProcessReuseMemoryThreshold2GB{
-    "SubframeProcessReuseMemoryThreshold", "2147483648"};
-const FeatureEntry::FeatureParam kSubframeProcessReuseMemoryThreshold4GB{
-    "SubframeProcessReuseMemoryThreshold", "4294967296"};
-const FeatureEntry::FeatureVariation
-    kSubframeProcessReuseThresholdsVariations[] = {
-        {"with 512MB memory threshold",
-         &kSubframeProcessReuseMemoryThreshold512MB, 1, nullptr},
-        {"with 1GB memory threshold", &kSubframeProcessReuseMemoryThreshold1GB,
-         1, nullptr},
-        {"with 2GB memory threshold", &kSubframeProcessReuseMemoryThreshold2GB,
-         1, nullptr},
-        {"with 4GB memory threshold", &kSubframeProcessReuseMemoryThreshold4GB,
-         1, nullptr},
-};
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 const FeatureEntry::FeatureParam kContextualCueingEnabledNoEngagementCap[] = {
     {"BackoffTime", "0h"},
@@ -8054,14 +8033,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"disable-process-reuse", flag_descriptions::kDisableProcessReuse,
      flag_descriptions::kDisableProcessReuseDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDisableProcessReuse)},
-
-    {"subframe-process-reuse-thresholds",
-     flag_descriptions::kSubframeProcessReuseThresholds,
-     flag_descriptions::kSubframeProcessReuseThresholdsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         features::kSubframeProcessReuseThresholds,
-         kSubframeProcessReuseThresholdsVariations,
-         "SubframeProcessReuseThresholds" /* trial name */)},
 
 #if BUILDFLAG(IS_WIN)
     {"stylus-handwriting-win", flag_descriptions::kStylusHandwritingWinName,
