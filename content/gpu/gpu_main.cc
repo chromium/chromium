@@ -430,7 +430,7 @@ int GpuMain(MainFunctionParams parameters) {
   base::RunLoop run_loop;
   GpuChildThread* child_thread =
       new GpuChildThread(run_loop.QuitClosure(), std::move(gpu_init));
-  child_thread->Init(start_time);
+  child_thread->Init(start_time, main_thread_task_executor->sequence_manager());
 
   gpu_process.set_main_thread(child_thread);
 

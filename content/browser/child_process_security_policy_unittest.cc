@@ -327,13 +327,14 @@ class ChildProcessSecurityPolicyTest
   }
 
   BrowserContext* browser_context() { return &browser_context_; }
+  base::test::ScopedFeatureList& feature_list() { return feature_list_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
   ChildProcessSecurityPolicyTestBrowserClient test_browser_client_;
   raw_ptr<ContentBrowserClient> old_browser_client_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // A test class that forces kOriginKeyedProcessesByDefault off in
@@ -343,12 +344,10 @@ class ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault
     : public ChildProcessSecurityPolicyTest {
  public:
   ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault() {
-    feature_list_.InitAndDisableFeature(
+    feature_list().Reset();
+    feature_list().InitAndDisableFeature(
         features::kOriginKeyedProcessesByDefault);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(ChildProcessSecurityPolicyTest, ChildID) {

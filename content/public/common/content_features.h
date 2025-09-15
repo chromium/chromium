@@ -368,6 +368,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableExclusiveAccessManager);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kKeyboardLockApiOnAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIOThreadInteractiveThreadType);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBoostThreadsPriorityDuringInputScenario);
+
 // Number of days to "store" IPH guardrails for navigation captured app launches
 // till they are cleared.
 CONTENT_EXPORT extern const base::FeatureParam<int>

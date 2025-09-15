@@ -47,6 +47,7 @@ target(link_target_type, "gpu_sources") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//components/performance_manager/scenario_api",
     "//components/viz/service",
     "//content:export",
     "//content/child",

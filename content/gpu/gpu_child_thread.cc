@@ -17,6 +17,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
 #include "base/run_loop.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -26,6 +27,7 @@
 #include "content/gpu/browser_exposed_gpu_interfaces.h"
 #include "content/gpu/gpu_service_factory.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/gpu/content_gpu_client.h"
 #include "gpu/command_buffer/common/shm_count.h"
@@ -140,7 +142,9 @@ GpuChildThread::GpuChildThread(base::RepeatingClosure quit_closure,
 
 GpuChildThread::~GpuChildThread() = default;
 
-void GpuChildThread::Init(const base::TimeTicks& process_start_time) {
+void GpuChildThread::Init(
+    const base::TimeTicks& process_start_time,
+    base::sequence_manager::SequenceManager* sequence_manager) {
   if (!in_process_gpu())
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
 
@@ -173,6 +177,11 @@ void GpuChildThread::Init(const base::TimeTicks& process_start_time) {
           FROM_HERE, base::MemoryPressureListenerTag::kGpuChildThread,
           base::BindRepeating(&GpuChildThread::OnMemoryPressure,
                               base::Unretained(this)));
+  if (sequence_manager &&
+      base::FeatureList::IsEnabled(
+          features::kBoostThreadsPriorityDuringInputScenario)) {
+    sequence_manager->AddTaskObserver(this);
+  }
 }
 
 bool GpuChildThread::in_process_gpu() const {
@@ -237,6 +246,22 @@ void GpuChildThread::PostCompositorThreadCreated(
 
 void GpuChildThread::QuitMainMessageLoop() {
   quit_closure_.Run();
+}
+
+void GpuChildThread::WillProcessTask(const base::PendingTask& pending_task,
+                                     bool was_blocked_or_low_priority) {
+  performance_scenarios::InputScenario input_scenario =
+      performance_scenarios::GetInputScenario(
+          performance_scenarios::ScenarioScope::kGlobal)
+          ->load(std::memory_order_relaxed);
+
+  // Post a task to the IO thread if the input scenario has changed. This is
+  // used to make sure the IO thread checks the scenarios in time.
+  if (input_scenario != last_input_scenario_) {
+    last_input_scenario_ = input_scenario;
+    ChildProcess::current()->io_task_runner()->PostTask(FROM_HERE,
+                                                        base::DoNothing());
+  }
 }
 
 void GpuChildThread::OnMemoryPressure(

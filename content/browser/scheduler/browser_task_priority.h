@@ -31,6 +31,10 @@ enum class BrowserTaskPriority
 base::sequence_manager::SequenceManager::PrioritySettings CONTENT_EXPORT
 CreateBrowserTaskPrioritySettings();
 
+// Returns true if the priority of UI and IO threads should be boosted according
+// to performance scenarios and feature states.
+bool ShouldBoostThreadsPriority();
+
 }  // namespace content::internal
 
 #endif  // CONTENT_BROWSER_SCHEDULER_BROWSER_TASK_PRIORITY_H_

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "content/browser/scheduler/browser_task_queues.h"
@@ -53,6 +54,10 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
   // tests.
   void SetAllowBlockingForTesting() { allow_blocking_for_testing_ = true; }
 
+  base::TaskObserver* GetTaskObserver() {
+    return scenario_priority_boost_.get();
+  }
+
   scoped_refptr<Handle> GetHandle() { return task_queues_->GetHandle(); }
 
  private:
@@ -73,6 +78,9 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
 
   std::unique_ptr<BrowserTaskQueues> task_queues_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
+
+  std::unique_ptr<base::TaskMonitoringScopedBoostPriority>
+      scenario_priority_boost_ = nullptr;
 };
 
 }  // namespace content

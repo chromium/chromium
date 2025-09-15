@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 #include "content/browser/scheduler/browser_task_queues.h"
 #include "content/common/content_export.h"
@@ -50,6 +51,8 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
 
   scoped_refptr<Handle> GetHandle() const { return handle_; }
 
+  void OnStartupComplete();
+
  private:
   friend class BrowserTaskExecutor;
 
@@ -79,6 +82,9 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   SchedulerLoopQuarantineTaskObserver scheduler_loop_quarantine_task_observer_;
 
   scoped_refptr<Handle> handle_;
+
+  std::unique_ptr<base::TaskMonitoringScopedBoostPriority>
+      scenario_priority_boost_ = nullptr;
 };
 
 }  // namespace content
