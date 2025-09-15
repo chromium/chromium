@@ -79,7 +79,7 @@ async def get_locale(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_locale_set_and_clear(websocket, context_id, default_locale,
-                                    some_locale):
+                                    some_locale, another_locale):
     await execute_command(
         websocket, {
             'method': 'emulation.setLocaleOverride',
@@ -96,10 +96,87 @@ async def test_locale_set_and_clear(websocket, context_id, default_locale,
             'method': 'emulation.setLocaleOverride',
             'params': {
                 'contexts': [context_id],
+                'locale': another_locale
+            }
+        })
+
+    assert (await get_locale(websocket, context_id)) == another_locale
+
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setLocaleOverride',
+            'params': {
+                'contexts': [context_id],
                 'locale': None
             }
         })
     assert (await get_locale(websocket, context_id)) == default_locale
+
+
+@pytest.mark.asyncio
+async def test_locale_set_in_opened_window(websocket, context_id,
+                                           default_locale, some_locale,
+                                           another_locale):
+    pytest.xfail("crbug.com/444674636")
+    await execute_command(
+        websocket, {
+            "method": "session.subscribe",
+            "params": {
+                "events": ["browsingContext.contextCreated"]
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setLocaleOverride',
+            'params': {
+                'contexts': [context_id],
+                'locale': some_locale
+            }
+        })
+
+    assert (await get_locale(websocket, context_id)) == some_locale
+
+    # Open a new tab.
+    resp = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.open('about:blank')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+            }
+        })
+
+    # Get the new context id.
+    new_context_id = resp["result"]["value"]["context"]
+
+    # Assert the locale emulation is not inherited.
+    assert (await get_locale(websocket, new_context_id)) == default_locale
+
+    # Assert the locale can be overridden.
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setLocaleOverride',
+            'params': {
+                'contexts': [new_context_id],
+                'locale': another_locale
+            }
+        })
+    assert (await get_locale(websocket, new_context_id)) == another_locale
+
+    # Remove locale emulation.
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setLocaleOverride',
+            'params': {
+                'contexts': [new_context_id],
+                'locale': None
+            }
+        })
+    assert (await get_locale(websocket, new_context_id)) == default_locale
 
 
 @pytest.mark.asyncio
