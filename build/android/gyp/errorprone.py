@@ -43,7 +43,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'PatternMatchingInstanceof',
     'StatementSwitchToExpressionSwitch',
     'UndefinedEquals',
-    'UseCorrectAssertInTests',
     'StaticAssignmentOfThrowable',  # Want in non-test
     'StaticMockMember',
     'StringCaseLocaleUsage',
@@ -98,6 +97,11 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'FutureReturnValueIgnored',
     # Just false positives in our code.
     'ThreadJoinLoop',
+    # Fine to run the auto-fix from time to time (which replaces assert
+    # statements with Truth assertions), but because using assert statements is
+    # normal in non-test code, they also show up in test helpers, which are
+    # arguably false-positives.
+    'UseCorrectAssertInTests',
 
     # These are all for Javadoc, which we don't really care about.
     'InvalidBlockTag',
