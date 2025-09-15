@@ -42,7 +42,6 @@ if (toolchain_has_rust) {
     "rustc_demangle",
     "std_detect",
     "test",
-    "unicode_width",
     "unwind",
   ]
 
