@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "extensions/common/constants.h"
 #include "extensions/renderer/extension_url_loader_throttle.h"
 #include "net/base/url_util.h"
@@ -31,13 +32,11 @@ ExtensionThrottleManager::ExtensionThrottleManager()
 }
 
 ExtensionThrottleManager::~ExtensionThrottleManager() {
+  access_->SetDestroyed();
+
   base::AutoLock auto_lock(lock_);
   // Delete all entries.
   url_entries_.clear();
-
-  for (auto& observer : observers_) {
-    observer.OnExtensionThrottleManagerDestruct(this);
-  }
 }
 
 std::unique_ptr<blink::URLLoaderThrottle>
@@ -50,7 +49,7 @@ ExtensionThrottleManager::MaybeCreateURLLoaderThrottle(
   if (request.site_for_cookies.scheme() != extensions::kExtensionScheme) {
     return nullptr;
   }
-  return std::make_unique<ExtensionURLLoaderThrottle>(this);
+  return std::make_unique<ExtensionURLLoaderThrottle>(access_);
 }
 
 ExtensionThrottleEntry* ExtensionThrottleManager::RegisterRequestUrl(

@@ -129,6 +129,8 @@ source_set("renderer") {
     "extension_throttle_entry.h",
     "extension_throttle_manager.cc",
     "extension_throttle_manager.h",
+    "extension_throttle_manager_access.cc",
+    "extension_throttle_manager_access.h",
     "extension_url_loader_throttle.cc",
     "extension_url_loader_throttle.h",
     "extension_web_view_helper.cc",

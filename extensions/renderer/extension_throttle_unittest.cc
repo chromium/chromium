@@ -6,6 +6,9 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "extensions/renderer/extension_throttle_entry.h"
 #include "extensions/renderer/extension_throttle_manager.h"
@@ -406,8 +409,8 @@ TEST(ExtensionThrottleManagerTest, ThrottlesCanOutliveManager) {
   MockExtensionThrottleManager* manager = new MockExtensionThrottleManager();
 
   // Create one or more throttles that receive the manager in the constructor.
-  auto throttle1 = ExtensionURLLoaderThrottle(manager);
-  auto throttle2 = ExtensionURLLoaderThrottle(manager);
+  auto throttle1 = ExtensionURLLoaderThrottle(manager->GetAccess());
+  auto throttle2 = ExtensionURLLoaderThrottle(manager->GetAccess());
 
   // Delete `manager` to prove that throttle functions can run without it.
   delete manager;
@@ -418,6 +421,24 @@ TEST(ExtensionThrottleManagerTest, ThrottlesCanOutliveManager) {
   bool* defer = nullptr;
   throttle1.WillProcessResponse(gurl, response_head, defer);
   throttle2.WillProcessResponse(gurl, response_head, defer);
+}
+
+// Verify that throttles can be destroyed from other threads without crashing.
+TEST(ExtensionThrottleManagerTest, ThrottlesDestroyOnOtherThreads) {
+  // Create a manager that can be passed into the throttle constructor.
+  auto manager = std::make_unique<MockExtensionThrottleManager>();
+
+  base::test::TaskEnvironment task_environment;
+
+  constexpr int kThrottles = 100;
+  for (int i = 0; i < kThrottles; ++i) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&manager] {
+          auto throttle = std::make_unique<ExtensionURLLoaderThrottle>(
+              manager->GetAccess());
+          throttle.reset();
+        }));
+  }
 }
 
 }  // namespace extensions
