@@ -27,7 +27,6 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.AsyncViewStub;
-import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 
@@ -148,11 +147,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     @Override
     public void dismiss() {
         mMediator.dismiss();
-    }
-
-    @Override
-    public void notifyPopupAvailable(DropdownPopupWindow popup) {
-        mMediator.notifyPopupOpened(popup);
     }
 
     @Override

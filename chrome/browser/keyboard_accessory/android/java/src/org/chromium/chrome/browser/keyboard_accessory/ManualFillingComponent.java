@@ -22,7 +22,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.AsyncViewStub;
-import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 
@@ -134,13 +133,6 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /** Ensures that keyboard accessory and keyboard are hidden and reset. */
     void dismiss();
-
-    /**
-     * Notifies the component that a popup window exists so it can be dismissed if necessary.
-     *
-     * @param popup A {@link DropdownPopupWindow} that might be dismissed later.
-     */
-    void notifyPopupAvailable(DropdownPopupWindow popup);
 
     /**
      * By registering a provider, an empty tab of the given tab type is created. Call {@link
