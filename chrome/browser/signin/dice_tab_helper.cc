@@ -30,6 +30,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/navigation_controller.h"
@@ -84,9 +85,8 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
   return base::BindRepeating([](Profile* profile,
                                 content::WebContents* web_contents,
                                 const CoreAccountInfo& account_info) {
-    CHECK(base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin));
     CHECK(base::FeatureList::IsEnabled(
-        switches::kEnableHistorySyncOptinFromTabHelper));
+        syncer::kReplaceSyncPromosWithSignInPromos));
     CHECK(profile);
 
     Browser* browser = web_contents ? chrome::FindBrowserWithTab(web_contents)

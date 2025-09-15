@@ -31,6 +31,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/collaboration_id.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -431,7 +432,7 @@ class
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
-         switches::kEnableHistorySyncOptin},
+         syncer::kReplaceSyncPromosWithSignInPromos},
         {});
     InProcessBrowserTest::SetUp();
   }

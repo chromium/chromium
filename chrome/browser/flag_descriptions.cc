@@ -4197,12 +4197,6 @@ const char kTouchTextEditingRedesignDescription[] =
     "Enables new touch text editing features.";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-const char kEnableHistorySyncOptinName[] = "History Sync Opt-in";
-const char kEnableHistorySyncOptinDescription[] =
-    "Enables the History Sync Opt-in screen on Desktop platforms. The screen "
-    "is shown after the user has signed in (in the profile picker or in the "
-    "dialog) instead of the Sync Confirmation screen.";
-
 const char kTranslationAPIName[] = "Experimental translation API";
 const char kTranslationAPIDescription[] =
     "Enables the on-device language translation API. "

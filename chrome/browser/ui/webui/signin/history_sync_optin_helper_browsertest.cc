@@ -33,6 +33,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -92,7 +93,7 @@ class HistorySyncOptinHelperBrowserTest
   HistorySyncOptinHelperBrowserTest()
       : SigninBrowserTestBase(/*use_main_profile=*/true) {
     scoped_features_.InitWithFeatures(
-        /*enabled_features=*/{switches::kEnableHistorySyncOptin,
+        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
                               switches::kEnforceManagementDisclaimer},
         /*disabled_features=*/{});
   }

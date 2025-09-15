@@ -77,17 +77,6 @@ BASE_FEATURE(kSupportWebSigninAddSession,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Enables the History Sync Opt-in on Desktop.
-BASE_FEATURE(kEnableHistorySyncOptin,
-             "EnableHistorySyncOptin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables the History Sync Opt-in from the tab helper entry point.
-BASE_FEATURE(kEnableHistorySyncOptinFromTabHelper,
-             "EnableHistorySyncOptinFromTabHelper",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Move the step of browser Signin into the Sync header processing logic.
 // This flag is meant to be used as a kill switch, as the feature starts enabled

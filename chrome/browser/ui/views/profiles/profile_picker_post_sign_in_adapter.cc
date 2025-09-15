@@ -32,6 +32,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/base/window_open_disposition.h"
@@ -111,7 +112,8 @@ void ProfilePickerPostSignInAdapter::Init(
       base::BindOnce(&ProfilePickerPostSignInAdapter::FinishAndOpenBrowser,
                      weak_ptr_factory_.GetWeakPtr(), PostHostClearedCallback());
 
-  if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
     history_sync_optin_helper_ = HistorySyncOptinHelper::Create(
         identity_manager, profile_, account_info, /*delegate=*/this,
         HistorySyncOptinHelper::LaunchContext::kInProfilePicker);

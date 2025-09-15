@@ -25,6 +25,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -263,9 +264,8 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
 }
 
 bool ProcessDiceHeaderDelegateImpl::ShouldEnableHistorySync() {
-  if (!base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin) ||
-      !base::FeatureList::IsEnabled(
-          switches::kEnableHistorySyncOptinFromTabHelper)) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
     return false;
   }
   if (!signin_util::ShouldShowHistorySyncOptinScreen(profile_.get())) {
@@ -342,7 +342,8 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
     tab_helper->OnSyncSigninFlowComplete();
   }
 
-  if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
     if (!ShouldEnableHistorySync()) {
       return;
     }

@@ -33,8 +33,7 @@ class SyncSettingsInteractiveTest
  public:
   SyncSettingsInteractiveTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kEnableHistorySyncOptin,
-                              syncer::kReplaceSyncPromosWithSignInPromos},
+        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
         /*disabled_features=*/{});
   }
 

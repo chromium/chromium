@@ -9,10 +9,10 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,7 +40,8 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 class HistorySyncOptinServiceTest : public testing::Test {
  public:
   HistorySyncOptinServiceTest() {
-    feature_list_.InitAndEnableFeature(switches::kEnableHistorySyncOptin);
+    feature_list_.InitAndEnableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
     TestingProfile::Builder builder;
     builder.AddTestingFactories({IdentityTestEnvironmentProfileAdaptor::
                                      GetIdentityTestEnvironmentFactories()});

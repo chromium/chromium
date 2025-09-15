@@ -1112,6 +1112,10 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
         base::TRIM_ALL));
   }
 
+  static GURL GetHistorySyncOptinURL() {
+    return GURL("chrome://history-sync-optin?launch_context=0");
+  }
+
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
   ProfileManagementCounter& profile_management_counter() {
     return profile_management_counter_;
@@ -1144,9 +1148,10 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   size_t initial_browser_count = BrowserList::GetInstance()->size();
   // Create a new signin flow, sign-in, and wait for the Sync Comfirmation
   // promo.
-  Profile* force_sign_in_profile =
-      SignInForNewProfile(GetSyncConfirmationURL(), "joe.consumer@gmail.com",
-                          "Joe", kNoHostedDomainFound, true);
+  GURL target_url = IsParamFeatureEnabled() ? GetHistorySyncOptinURL()
+                                            : GetSyncConfirmationURL();
+  Profile* force_sign_in_profile = SignInForNewProfile(
+      target_url, "joe.consumer@gmail.com", "Joe", kNoHostedDomainFound, true);
   // No browser for the created profile exist yet.
   ASSERT_EQ(chrome::GetBrowserCount(force_sign_in_profile), 0u);
   ASSERT_TRUE(ProfilePicker::IsOpen());
@@ -1158,6 +1163,12 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   // Profile is still locked and ephemeral at this point.
   EXPECT_EQ(entry->IsSigninRequired(), true);
   EXPECT_EQ(entry->IsEphemeral(), true);
+
+  if (IsParamFeatureEnabled()) {
+    WaitForLoadStop(GetHistorySyncOptinURL());
+    // TODO(crbug.com/444639440): Simulate clicking through the opt-in.
+    return;
+  }
 
   LoginUIService::SyncConfirmationUIClosedResult sync_choice =
       // If the feature is enabled, Sync can be declined or skipped.
@@ -1189,9 +1200,10 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
 
   // Create a new signin flow, sign-in, and wait for the Sync Comfirmation
   // promo.
-  Profile* force_sign_in_profile =
-      SignInForNewProfile(GetSyncConfirmationURL(), "joe.consumer@gmail.com",
-                          "Joe", kNoHostedDomainFound, true);
+  GURL target_url = IsParamFeatureEnabled() ? GetHistorySyncOptinURL()
+                                            : GetSyncConfirmationURL();
+  Profile* force_sign_in_profile = SignInForNewProfile(
+      target_url, "joe.consumer@gmail.com", "Joe", kNoHostedDomainFound, true);
   base::FilePath force_sign_in_profile_path = force_sign_in_profile->GetPath();
   // No browser for the created profile exist yet.
   ASSERT_EQ(chrome::GetBrowserCount(force_sign_in_profile), 0u);
@@ -1207,6 +1219,12 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   // Profile is still locked and ephemeral at this point.
   EXPECT_EQ(entry->IsSigninRequired(), true);
   EXPECT_EQ(entry->IsEphemeral(), true);
+
+  if (IsParamFeatureEnabled()) {
+    WaitForLoadStop(GetHistorySyncOptinURL());
+    // TODO(crbug.com/444639440): Simulate clicking through the opt-in.
+    return;
+  }
 
   ProfileDeletionObserver deletion_observer;
   // Simulate the "No thanks" button clicked.
@@ -1657,13 +1675,16 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
 
   // Finish the signin that was started from opening the default profile.
   FinishDiceSignIn(default_profile, "joe.consumer@gmail.com", "Joe");
-  WaitForLoadStop(GetSyncConfirmationURL());
 
+  if (IsParamFeatureEnabled()) {
+    WaitForLoadStop(GetHistorySyncOptinURL());
+    // TODO(crbug.com/444639440): Simulate clicking through the opt-in.
+    return;
+  }
+
+  WaitForLoadStop(GetSyncConfirmationURL());
   LoginUIService::SyncConfirmationUIClosedResult sync_choice =
-      // If the feature is enabled, Sync can be declined or skipped.
-      IsParamFeatureEnabled()
-          ? LoginUIService::ABORT_SYNC                   // "No Thanks".
-          : LoginUIService::SYNC_WITH_DEFAULT_SETTINGS;  // "Yes, I'm in".
+      LoginUIService::SYNC_WITH_DEFAULT_SETTINGS;
   LoginUIServiceFactory::GetForProfile(default_profile)
       ->SyncConfirmationUIClosed(sync_choice);
 
@@ -1712,6 +1733,11 @@ IN_PROC_BROWSER_TEST_P(
   // Signing in with a profile that does not match the pattern should stop the
   // profile creation flow.
   FinishDiceSignIn(profile_being_created, email, "Joe", kNoHostedDomainFound);
+
+  if (IsParamFeatureEnabled()) {
+    // TODO(crbug.com/444639440): Support signin pattern.
+    return;
+  }
 
   // Returning to the profile picker main page.
   WaitForLoadStop(GURL("chrome://profile-picker"));

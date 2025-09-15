@@ -3708,11 +3708,7 @@
     "owners": [ "jiwan@chromium.org", "robsc@chromium.org", "hbarnor@chromium.org" ],
     "expiry_milestone": 140
   },
-  {
-    "name": "enable-history-sync-optin",
-    "owners": [ "ernn@google.com", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 145
-  },
+
   {
     "name": "enable-history-sync-optin-expansion-pill",
     "owners": [ "ernn@google.com", "chrome-signin-team@google.com" ],

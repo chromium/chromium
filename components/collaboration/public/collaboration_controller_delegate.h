@@ -9,8 +9,8 @@
 #include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -124,7 +124,8 @@ class CollaborationControllerDelegate {
               IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_HEADER);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
           error_body = l10n_util::GetStringUTF8(
-              base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)
+              base::FeatureList::IsEnabled(
+                  syncer::kReplaceSyncPromosWithSignInPromos)
                   ? IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_SYNC_HISTORY_BODY
                   : IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_BODY);
 #else

@@ -671,7 +671,8 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
   // TODO(crbug.com/419203245): Update the UI for this button and the conditions
   // under which it appears when it triggers the History Sync Optin, instead of
   // the Sync Consent screen.
-  if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
     if (signin_util::ShouldShowHistorySyncOptinScreen(*profile_.get())) {
       const signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile_);

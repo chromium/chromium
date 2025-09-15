@@ -28,6 +28,7 @@
 #include "components/signin/public/identity_manager/account_state_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 
 namespace {
@@ -170,7 +171,8 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
           base::BindOnce(
               &HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow,
               base::Unretained(this)))) {
-  CHECK(base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin));
+  CHECK(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
   CHECK(delegate);
 }
 

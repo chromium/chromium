@@ -18,6 +18,7 @@
 #include "chrome/grit/signin_history_sync_optin_resources_map.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -58,7 +59,8 @@ history_sync_optin::mojom::LaunchContext HistorySyncOptinLaunchContextToMojom(
 
 bool HistorySyncOptinUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin);
+  return base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 }
 
 // static
