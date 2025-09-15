@@ -15,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -86,22 +85,6 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
   CHECK(sets_.has_value());
 
   return sets_->ComputeMetadata(site, top_frame_site, fps_context_config);
-}
-
-std::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
-    const net::SchemefulSite& site,
-    const net::FirstPartySetsContextConfig& fps_context_config) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(sets_.has_value());
-  const base::ElapsedTimer timer;
-
-  std::optional<net::FirstPartySetEntry> entry =
-      is_enabled() ? sets_->FindEntry(site, fps_context_config) : std::nullopt;
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Cookie.FirstPartySets.FindOwner.Latency", timer.Elapsed(),
-      base::Microseconds(1), base::Milliseconds(100), 50);
-  return entry;
 }
 
 std::optional<FirstPartySetsManager::EntriesResult>

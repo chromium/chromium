@@ -415,21 +415,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Cookie.FirstPartySets.FindOwner.Latency" units="microseconds"
-    expires_after="M144">
-  <owner>cfredric@chromium.org</owner>
-  <owner>chrome-first-party-sets@chromium.org</owner>
-  <summary>
-    This histogram records the (TimeTicks) latency of computing the owner of a
-    given domain.
-
-    This metric is sampled every time an owner is computed. (E.g., a single time
-    when computing a partition key involving First-Party Sets; multiple times
-    when computing a SamePartyContext.) Only sampled for users with
-    high-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.FirstPartySets.InitializationDuration.{Landmark}2"
     units="ms" expires_after="2026-04-20">
   <owner>cfredric@chromium.org</owner>
