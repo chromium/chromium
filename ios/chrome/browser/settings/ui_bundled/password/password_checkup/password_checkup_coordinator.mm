@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 
+#import "base/debug/dump_without_crashing.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -95,13 +96,16 @@ using password_manager::PasswordCheckReferrer;
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
-    // The Password Checkup homepage is not made to be visited when signed out.
+    // The Password Checkup homepage is not intended to be visited by signed out
+    // users. However, if it does happen, it's preferable to show the signed-out
+    // state UI rather than crash the app.
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForProfile(self.profile);
     CHECK(authenticationService);
-    CHECK(authenticationService->HasPrimaryIdentity(
-              signin::ConsentLevel::kSignin),
-          base::NotFatalUntil::M142);
+    if (!authenticationService->HasPrimaryIdentity(
+            signin::ConsentLevel::kSignin)) {
+      base::debug::DumpWithoutCrashing();
+    }
 
     _baseNavigationController = navigationController;
     _reauthModule = reauthModule;
