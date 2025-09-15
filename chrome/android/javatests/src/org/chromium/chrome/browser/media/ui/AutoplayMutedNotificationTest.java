@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -184,7 +183,6 @@ public class AutoplayMutedNotificationTest {
     @Test
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @DisabledTest(message = "crbug.com/444435542")
     public void testMutedPlaybackDoesNotTakeAudioFocus() throws Exception {
         Tab tab = mActivityTestRule.getActivityTab();
 
