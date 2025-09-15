@@ -57,8 +57,7 @@ void AssistantBindings::OnMessage(base::Value message) {
   v8::Local<v8::Function> handler = v8::Local<v8::Function>::New(
       isolate, std::move(assistant_message_handler_));
 
-  std::string json;
-  base::JSONWriter::Write(message, &json);
+  std::string json = base::WriteJson(message).value_or("");
   v8::Local<v8::Value> message_val =
       gin::Converter<std::string>::ToV8(isolate, json);
 
