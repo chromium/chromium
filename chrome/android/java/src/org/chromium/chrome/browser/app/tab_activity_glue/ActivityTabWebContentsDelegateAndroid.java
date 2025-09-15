@@ -293,7 +293,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 navigationTabHelper != null
                         && navigationTabHelper
                                 .getInterceptNavigationDelegate()
-                                .shouldReparentTab(webContents, url);
+                                .shouldReparentTab(webContents);
 
         Tab tab =
                 tabCreator.createTabWithWebContents(

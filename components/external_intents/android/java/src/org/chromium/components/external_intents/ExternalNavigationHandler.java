@@ -186,7 +186,7 @@ public class ExternalNavigationHandler {
         protected final Intent mIntent;
         private @Nullable Intent mIntentCopy;
 
-        IntentBasedSupplier(Intent intent, Supplier<T> innerSupplier) {
+        public IntentBasedSupplier(Intent intent, Supplier<T> innerSupplier) {
             super(innerSupplier);
             mIntent = intent;
         }
@@ -333,7 +333,7 @@ public class ExternalNavigationHandler {
         // We need the query to include non-default intent filters, but should not return
         // them for clients that don't explicitly need to check non-default filters.
         private static class QueryNonDefaultSupplier extends LazySupplier<List<ResolveInfo>> {
-            QueryNonDefaultSupplier(Intent intent) {
+            public QueryNonDefaultSupplier(Intent intent) {
                 super(
                         () ->
                                 PackageManagerUtils.queryIntentActivities(
@@ -1180,8 +1180,7 @@ public class ExternalNavigationHandler {
                 && params.isInDesktopWindowingMode()
                 && params.isInitialNavigationInFrame()
                 && params.isTabInPWA()
-                && !params.isFromIntent()
-                && UrlUtilities.isHttpOrHttps(params.getUrl())) {
+                && !params.isFromIntent()) {
             if (debug()) Log.i(TAG, "No specialized handler found, reparent to browser.");
             return OverrideUrlLoadingResult.forReparentToBrowser();
         }

@@ -98,6 +98,7 @@ import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -331,7 +332,7 @@ public class UrlOverridingTest {
         private IntentFilter mFilterForHostMatch;
         private IntentFilter mFilterForSchemeMatch;
 
-        TestContext(Context baseContext, String nonBrowserPackageName) {
+        public TestContext(Context baseContext, String nonBrowserPackageName) {
             super(baseContext);
             mNonBrowserPackageName = nonBrowserPackageName;
         }
@@ -496,7 +497,7 @@ public class UrlOverridingTest {
         public boolean willNavigateTwice;
         public boolean willLoadSubframe;
 
-        TestParams(String url, boolean needClick, boolean shouldLaunchExternalIntent) {
+        public TestParams(String url, boolean needClick, boolean shouldLaunchExternalIntent) {
             this.url = url;
             this.needClick = needClick;
             this.shouldLaunchExternalIntent = shouldLaunchExternalIntent;
@@ -595,9 +596,6 @@ public class UrlOverridingTest {
             finishCallback.waitForCallback(0, preClickFinishTarget, 20, TimeUnit.SECONDS);
         }
 
-        // Sometimes firstPaintCallback is not updated by the first navigation.
-        int preClickPaintCount = firstPaintCallback.getCallCount();
-
         if (params.needClick) {
             int loadCount = loadCallback.getCallCount();
             doClick(params.clickTargetId, tab);
@@ -635,7 +633,7 @@ public class UrlOverridingTest {
             if (UrlUtilities.isHttpOrHttps(latestTabHolder.value.getUrl())) {
                 firstPaintCallback.waitForCallback(
                         "New Tab content was not drawn.",
-                        preClickPaintCount,
+                        firstPaintCallback.getCallCount(),
                         1,
                         20,
                         TimeUnit.SECONDS);
@@ -1332,7 +1330,7 @@ public class UrlOverridingTest {
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
         filter.addDataScheme(UrlConstants.HTTPS_SCHEME);
         filter.addCategory(Intent.CATEGORY_BROWSABLE);
-        filter.addDataAuthority("127.0.0.1", null);
+        filter.addDataAuthority("*", null);
         filter.addDataPath(HELLO_PAGE, PatternMatcher.PATTERN_LITERAL);
         return filter;
     }
@@ -2308,35 +2306,24 @@ public class UrlOverridingTest {
     public void testAuxiliaryNavigationShouldStayInBrowser() throws Exception {
         InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
 
-        IntentFilter filter = createHelloIntentFilter();
-        mActivityMonitor =
-                InstrumentationRegistry.getInstrumentation()
-                        .addMonitor(
-                                filter,
-                                new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
-                                true);
-        mTestContext.setIntentFilterForHost("127.0.0.1", filter);
-
         mTabbedActivityTestRule.startOnBlankPage();
 
-        String url_external = mTestServer.getURL(HELLO_PAGE);
+        String url_external = EXTERNAL_APP_SCHEME + "://example.com";
         String url = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_REL_OPENER_LINK, url_external);
         TestParams testParams = new TestParams(url, true, false);
         testParams.createsNewTab = true;
         testParams.expectedFinalUrl = null;
-        testParams.shouldFailNavigation = false;
-        testParams.willNavigateTwice = true;
+        testParams.shouldFailNavigation = true;
         loadUrlAndWaitForIntentUrl(testParams);
 
-        ChromeTabbedActivity activity = mTabbedActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(0));
                     Criteria.checkThat(
-                            ChromeTabUtils.getNumOpenTabs(mTabbedActivityTestRule.getActivity()),
-                            Matchers.is(2));
-                    Criteria.checkThat(
-                            activity.getActivityTab().getUrl().getSpec(),
+                            mTabbedActivityTestRule
+                                    .getActivityTab()
+                                    .getUrl()
+                                    .getSpec(),
                             Matchers.equalTo(new GURL(url_external).getSpec()));
                 },
                 10000L,
@@ -2349,18 +2336,9 @@ public class UrlOverridingTest {
     public void testTopLevelNavigationShouldBeIntercepted() throws Exception {
         InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
 
-        IntentFilter filter = createHelloIntentFilter();
-        mActivityMonitor =
-                InstrumentationRegistry.getInstrumentation()
-                        .addMonitor(
-                                filter,
-                                new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
-                                true);
-        mTestContext.setIntentFilterForHost("127.0.0.1", filter);
-
         mTabbedActivityTestRule.startOnBlankPage();
 
-        String url_external = mTestServer.getURL(HELLO_PAGE);
+        String url_external = EXTERNAL_APP_SCHEME + "://example.com";
         String url = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_LINK, url_external);
         TestParams testParams = new TestParams(url, true, true);
         testParams.createsNewTab = true;
@@ -2369,12 +2347,11 @@ public class UrlOverridingTest {
         loadUrlAndWaitForIntentUrl(testParams);
 
         ChromeTabbedActivity activity = mTabbedActivityTestRule.getActivity();
+        TabModelSelector tabModelSelector = activity.getTabModelSelector();
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
-                    Criteria.checkThat(
-                            ChromeTabUtils.getNumOpenTabs(mTabbedActivityTestRule.getActivity()),
-                            Matchers.is(1));
+                    Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
                     Criteria.checkThat(
                             activity.getActivityTab().getUrl().getSpec(),
                             Matchers.equalTo(new GURL(url).getSpec()));
@@ -2389,21 +2366,13 @@ public class UrlOverridingTest {
     public void testSelfNavigationInAuxiliaryPage() throws Exception {
         InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
 
-        IntentFilter filter = createHelloIntentFilter();
-        mActivityMonitor =
-                InstrumentationRegistry.getInstrumentation()
-                        .addMonitor(
-                                filter,
-                                new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
-                                true);
-        mTestContext.setIntentFilterForHost("127.0.0.1", filter);
-
-        mTabbedActivityTestRule.startOnBlankPage();
-
         String page_with_self_link =
-                getUrlWithParam(NAVIGATION_FROM_TARGET_SELF_LINK, mTestServer.getURL(HELLO_PAGE));
+                getUrlWithParam(
+                        NAVIGATION_FROM_TARGET_SELF_LINK, EXTERNAL_APP_SCHEME + "://example.com");
         String page_with_blank_opener_link =
                 getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_REL_OPENER_LINK, page_with_self_link);
+
+        mTabbedActivityTestRule.startOnBlankPage();
 
         // open first tab and new auxiliary tab
         TestParams testParams = new TestParams(page_with_blank_opener_link, true, false);
@@ -2522,16 +2491,17 @@ public class UrlOverridingTest {
     public void testNavigationsToSelfPWALaunchHandler() throws Exception {
         InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
 
-        IntentFilter filter = createHelloIntentFilter();
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        filter.addDataAuthority("example.com", null);
+        filter.addDataScheme("https");
+        mTestContext.setIntentFilterForHost("example.com", filter);
         mActivityMonitor =
                 InstrumentationRegistry.getInstrumentation()
                         .addMonitor(
                                 filter,
                                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
                                 true);
-        mTestContext.setIntentFilterForHost("127.0.0.1", filter);
-
-        mTabbedActivityTestRule.startOnBlankPage();
 
         String url2 = mTestServer.getURL(HELLO_PAGE);
         String url1 = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_LINK, url2);
@@ -2547,6 +2517,8 @@ public class UrlOverridingTest {
 
         // url1 and url2 are in the scope of the same TWA but an intent was generated anyway
         Assert.assertFalse(mActivityMonitor.getHits() == 1);
+
+        InstrumentationRegistry.getInstrumentation().removeMonitor(mActivityMonitor);
     }
 
     private void doTestInitialIntentToApp(boolean allowInitialIntentToLeave, boolean prewarm)
