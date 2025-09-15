@@ -364,8 +364,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyPageIndex) {
           "runMochaSuite('PrivacyPageIndex Main')");
 }
 
-// TODO(crbug.com/444408606): Enable on Linux once test fix is identified.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/444408606): Tests take too long to run in Linux dbg bots.
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_PrivacyPageIndexSiteSettings DISABLED_PrivacyPageIndexSiteSettings
 #else
 #define MAYBE_PrivacyPageIndexSiteSettings PrivacyPageIndexSiteSettings
