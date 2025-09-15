@@ -6,7 +6,6 @@ import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.j
 
 import type {PdfViewerPrivateProxy, ViewerSaveToDriveBubbleElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {PdfViewerPrivateProxyImpl} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -157,11 +156,11 @@ const tests = [
     assertBubbleAndProgressBar(bubble, 0, 100);
     chrome.test.assertFalse(!!bubble.shadowRoot.querySelector('#retry-button'));
     const fileMetadata = getRequiredElement(bubble, '#file-metadata');
-    assert(fileMetadata.textContent);
+    chrome.test.assertTrue(!!fileMetadata.textContent);
     chrome.test.assertEq(
         'uploading, 2 minutes left', fileMetadata.textContent.trim());
     const filename = getRequiredElement(bubble, '#filename');
-    assert(filename.textContent);
+    chrome.test.assertTrue(!!filename.textContent);
     chrome.test.assertEq('test.pdf', filename.textContent.trim());
 
     // Save to drive uploading 88/226 bytes.

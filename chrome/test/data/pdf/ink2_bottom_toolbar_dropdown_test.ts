@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import type {ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -78,10 +77,10 @@ chrome.test.runTests([
     `;
     const dropdown =
         document.body.querySelector('viewer-bottom-toolbar-dropdown');
-    assert(dropdown);
+    chrome.test.assertTrue(!!dropdown);
     chrome.test.assertTrue(!getMenu(dropdown));
     const button = document.body.querySelector('button');
-    assert(button);
+    chrome.test.assertTrue(!!button);
     const whenFocused = eventToPromise('focus', button);
 
     // Focus the dropdown and open with the keyboard.

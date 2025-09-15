@@ -4,7 +4,6 @@
 
 import {AnnotationMode, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextTypeface, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {Color} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {clickDropdownButton, getColorButtons, getRequiredElement, setupMockMetricsPrivate} from './test_util.js';
@@ -41,7 +40,7 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const toolbar =
         viewer.shadowRoot.querySelector('viewer-text-bottom-toolbar');
-    assert(toolbar);
+    chrome.test.assertTrue(!!toolbar);
 
     // Font and size selects
     const selects = toolbar.shadowRoot.querySelectorAll('select');
@@ -58,7 +57,7 @@ chrome.test.runTests([
         toolbar.shadowRoot.querySelectorAll('viewer-bottom-toolbar-dropdown');
     chrome.test.assertEq(2, toolbarDropdowns.length);
     const alignmentIcon = toolbarDropdowns[0]!.querySelector('cr-icon');
-    assert(alignmentIcon);
+    chrome.test.assertTrue(!!alignmentIcon);
     chrome.test.assertEq('pdf-ink:text-align-left', alignmentIcon.icon);
     assertColorChipFillColor(toolbar, hexToColor(TEXT_COLORS[0]!.color));
 
@@ -70,11 +69,11 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const toolbar =
         viewer.shadowRoot.querySelector('viewer-text-bottom-toolbar');
-    assert(toolbar);
+    chrome.test.assertTrue(!!toolbar);
 
     // Font is the first select.
     const fontSelect = toolbar.shadowRoot.querySelector('select');
-    assert(fontSelect);
+    chrome.test.assertTrue(!!fontSelect);
     const initialTypeface =
         Ink2Manager.getInstance().getCurrentTextAttributes().typeface;
     chrome.test.assertEq(initialTypeface, fontSelect.value);
@@ -98,7 +97,7 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const toolbar =
         viewer.shadowRoot.querySelector('viewer-text-bottom-toolbar');
-    assert(toolbar);
+    chrome.test.assertTrue(!!toolbar);
 
     // Size is the second select.
     const selects = toolbar.shadowRoot.querySelectorAll('select');
@@ -126,11 +125,11 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const toolbar =
         viewer.shadowRoot.querySelector('viewer-text-bottom-toolbar');
-    assert(toolbar);
+    chrome.test.assertTrue(!!toolbar);
     await clickDropdownButton(toolbar.$.alignment);
     const selector =
         toolbar.shadowRoot.querySelector('text-alignment-selector');
-    assert(selector);
+    chrome.test.assertTrue(!!selector);
     const buttons =
         selector.shadowRoot.querySelectorAll('selectable-icon-button');
     chrome.test.assertEq(3, buttons.length);
@@ -144,7 +143,7 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertTrue(buttons[1]!.checked);
     const alignmentIcon = toolbar.$.alignment.querySelector('cr-icon');
-    assert(alignmentIcon);
+    chrome.test.assertTrue(!!alignmentIcon);
     chrome.test.assertEq('pdf-ink:text-align-center', alignmentIcon.icon);
 
     chrome.test.succeed();
@@ -161,11 +160,11 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const toolbar =
         viewer.shadowRoot.querySelector('viewer-text-bottom-toolbar');
-    assert(toolbar);
+    chrome.test.assertTrue(!!toolbar);
     await clickDropdownButton(toolbar.$.color);
     const colorSelector =
         toolbar.shadowRoot.querySelector('ink-color-selector');
-    assert(colorSelector);
+    chrome.test.assertTrue(!!colorSelector);
     assertColorsEqual(
         hexToColor(TEXT_COLORS[0]!.color), colorSelector.currentColor);
 

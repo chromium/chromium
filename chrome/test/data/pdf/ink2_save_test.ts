@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {AnnotationMode, PluginController, PluginControllerEventType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -36,7 +35,7 @@ async function testSaveWithAnnotations() {
 
   // Click on "Edited".
   const buttons = actionMenu.querySelectorAll('button');
-  assert(buttons.length === 2);
+  chrome.test.assertEq(2, buttons.length);
   buttons[0]!.click();
 
   // A message should be sent to the plugin to save as annotated.
@@ -118,7 +117,7 @@ chrome.test.runTests([
 
     // Click on "Original".
     const buttons = actionMenu.querySelectorAll('button');
-    assert(buttons.length === 2);
+    chrome.test.assertEq(2, buttons.length);
     buttons[1]!.click();
 
     // A message should be sent to the plugin to save as annotated.
@@ -273,7 +272,7 @@ chrome.test.runTests([
     createTextBox();
     await microtasksFinished();
     const textbox = viewer.shadowRoot.querySelector('ink-text-box');
-    assert(textbox);
+    chrome.test.assertTrue(!!textbox);
     chrome.test.assertTrue(isVisible(textbox));
 
     const downloadControls = getDownloadControls();
@@ -311,7 +310,7 @@ chrome.test.runTests([
     createTextBox();
     await microtasksFinished();
     const textbox = viewer.shadowRoot.querySelector('ink-text-box');
-    assert(textbox);
+    chrome.test.assertTrue(!!textbox);
     chrome.test.assertTrue(isVisible(textbox));
     textbox.$.textbox.value = 'Hello';
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));

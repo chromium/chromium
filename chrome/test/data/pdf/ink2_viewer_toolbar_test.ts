@@ -4,7 +4,6 @@
 
 import {AnnotationMode, PluginController, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {InkTextBoxElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -402,7 +401,7 @@ chrome.test.runTests([
 
     // Create a textbox. The undo button should now be disabled.
     const textBox = viewer.shadowRoot.querySelector('ink-text-box');
-    assert(textBox);
+    chrome.test.assertTrue(!!textBox);
     chrome.test.assertFalse(isVisible(textBox));
     await createTextBoxAndWaitForStateChange(textBox);
     chrome.test.assertTrue(isVisible(textBox));
@@ -716,7 +715,7 @@ chrome.test.runTests([
     // Shortcuts don't work when there is an active text box (instead, they
     // are handled by the native <textarea> element).
     const textBox = viewer.shadowRoot.querySelector('ink-text-box');
-    assert(textBox);
+    chrome.test.assertTrue(!!textBox);
     await createTextBoxAndWaitForStateChange(textBox);
     sendUndoShortcutKey(viewerToolbar);
     chrome.test.assertTrue(

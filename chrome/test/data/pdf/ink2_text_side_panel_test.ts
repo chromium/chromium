@@ -4,7 +4,6 @@
 
 import {AnnotationMode, hexToColor, Ink2Manager, TEXT_COLORS, TextTypeface, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {Color} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {setupMockMetricsPrivate} from './test_util.js';
@@ -33,11 +32,11 @@ chrome.test.runTests([
   async function testSelectFont() {
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
-    assert(sidePanel);
+    chrome.test.assertTrue(!!sidePanel);
 
     // Font is the first select.
     const fontSelect = sidePanel.shadowRoot.querySelector('select');
-    assert(fontSelect);
+    chrome.test.assertTrue(!!fontSelect);
     const initialFont =
         Ink2Manager.getInstance().getCurrentTextAttributes().typeface;
     chrome.test.assertEq(initialFont, fontSelect.value);
@@ -60,7 +59,7 @@ chrome.test.runTests([
   async function testSelectSize() {
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
-    assert(sidePanel);
+    chrome.test.assertTrue(!!sidePanel);
 
     // Size is the second select.
     const selects = sidePanel.shadowRoot.querySelectorAll('select');
@@ -87,7 +86,7 @@ chrome.test.runTests([
   function testHasSelectors() {
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
-    assert(sidePanel);
+    chrome.test.assertTrue(!!sidePanel);
     chrome.test.assertTrue(
         !!sidePanel.shadowRoot.querySelector('text-styles-selector'));
     chrome.test.assertTrue(
@@ -99,10 +98,10 @@ chrome.test.runTests([
   async function testSelectColor() {
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);
     const sidePanel = viewer.shadowRoot.querySelector('viewer-text-side-panel');
-    assert(sidePanel);
+    chrome.test.assertTrue(!!sidePanel);
     const colorSelector =
         sidePanel.shadowRoot.querySelector('ink-color-selector');
-    assert(colorSelector);
+    chrome.test.assertTrue(!!colorSelector);
 
     // Initial state
     function assertColorsEqual(color1: Color, color2: Color) {
