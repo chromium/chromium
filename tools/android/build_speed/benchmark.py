@@ -128,6 +128,7 @@ _SUITES = {
     'extra_incremental': [
         'turbine_headers',
         'compile_java',
+        'errorprone',
         'write_build_config',
     ],
 }
@@ -207,6 +208,12 @@ _BENCHMARKS = [
         from_string='# found in the LICENSE file.',
         to_string='#temporary_edit_for_benchmark<sub>.py',
         change_file='build/android/gyp/compile_java.py',
+    ),
+    Benchmark(
+        name='errorprone',
+        from_string='# found in the LICENSE file.',
+        to_string='#temporary_edit_for_benchmark<sub>.py',
+        change_file='build/android/gyp/errorprone.py',
     ),
     Benchmark(
         name='write_build_config',
