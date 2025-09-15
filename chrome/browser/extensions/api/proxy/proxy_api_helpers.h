@@ -14,7 +14,10 @@
 
 #include "base/values.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/proxy_resolution/proxy_config.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ProxyConfigDictionary;
 
