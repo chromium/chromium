@@ -17,6 +17,7 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
@@ -376,7 +377,10 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 
   __weak __typeof(self) weakSelf = self;
   UIAlertAction* exportAction = [UIAlertAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS)
+      actionWithTitle:(CredentialExchangeEnabled()
+                           ? l10n_util::GetNSString(
+                                 IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS)
+                           : l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS))
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* action) {
                 [weakSelf onStartExportFlowConfirmed];

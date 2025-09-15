@@ -1885,9 +1885,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:ToolbarSettingsSubmenuButton()]
       performAction:grey_tap()];
 
+  const int exportButtonAccessibilityId =
+      CredentialExchangeEnabled() ? IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS
+                                  : IDS_IOS_EXPORT_PASSWORDS;
+
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(ButtonWithAccessibilityLabelId(
-                                              IDS_IOS_EXPORT_PASSWORDS),
+                                              exportButtonAccessibilityId),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
@@ -1896,7 +1900,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [GetInteractionForPasswordsExportConfirmAlert(
       chrome_test_util::AlertItemWithAccessibilityLabelId(
-          IDS_IOS_EXPORT_PASSWORDS)) performAction:grey_tap()];
+          exportButtonAccessibilityId)) performAction:grey_tap()];
 
   // Wait until the alerts are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -1905,7 +1909,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
 
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_EXPORT_PASSWORDS)]
+                                          exportButtonAccessibilityId)]
       assertWithMatcher:exportButtonStatusMatcher];
 
   [ChromeEarlGrey verifyActivitySheetVisible];
@@ -1917,7 +1921,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Check that export button is re-enabled.
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-                     IDS_IOS_EXPORT_PASSWORDS)]
+                     exportButtonAccessibilityId)]
       assertWithMatcher:grey_not(grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled))];
   [[EarlGrey

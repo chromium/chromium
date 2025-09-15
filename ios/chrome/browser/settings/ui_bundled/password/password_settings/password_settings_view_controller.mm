@@ -19,6 +19,7 @@
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -640,7 +641,10 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
 - (TableViewTextItem*)createExportPasswordsItem {
   TableViewTextItem* exportPasswordsItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeExportPasswordsButton];
-  exportPasswordsItem.text = l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS);
+  exportPasswordsItem.text =
+      CredentialExchangeEnabled()
+          ? l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS)
+          : l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS);
   exportPasswordsItem.accessibilityTraits = UIAccessibilityTraitButton;
   return exportPasswordsItem;
 }
