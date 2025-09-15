@@ -241,7 +241,7 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"Apt. 10", {ADDRESS_HOME_LINE2, ADDRESS_HOME_SUBPREMISE}},
     {"Memphis", {ADDRESS_HOME_CITY}},
     {"Tennessee", {ADDRESS_HOME_STATE}},
-    {"38116", {ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP_PREFIX}},
+    {"38116", {ADDRESS_HOME_ZIP}},
     {"ZA", {ADDRESS_HOME_COUNTRY}},
     {"South Africa", {ADDRESS_HOME_COUNTRY}},
     {"+12345678901", {PHONE_HOME_WHOLE_NUMBER}},
@@ -264,7 +264,7 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"Ile de France", {ADDRESS_HOME_STATE}},    // Missing accent.
     {"-Ile-de-France-", {ADDRESS_HOME_STATE}},  // Extra punctuation.
     {"île dÉ FrÃÑÇË", {ADDRESS_HOME_STATE}},  // Other accents & case mismatch.
-    {"75008", {ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP_PREFIX}},
+    {"75008", {ADDRESS_HOME_ZIP}},
     {"FR", {ADDRESS_HOME_COUNTRY}},
     {"France", {ADDRESS_HOME_COUNTRY}},
     {"33249197070", {PHONE_HOME_WHOLE_NUMBER}},
@@ -331,7 +331,7 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
 
     // Make sure that zip prefix and suffix are handled correctly.
     {"79401-4321", {ADDRESS_HOME_ZIP}},
-    {"79401", {ADDRESS_HOME_ZIP_PREFIX}},
+    {"79401", {ADDRESS_HOME_ZIP}},
     {"4321", {ADDRESS_HOME_ZIP_SUFFIX}},
 };
 
