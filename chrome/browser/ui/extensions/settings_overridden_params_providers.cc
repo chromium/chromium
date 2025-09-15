@@ -13,7 +13,7 @@
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
+#include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/url_constants.h"
@@ -252,7 +252,7 @@ GetSearchOverriddenParams(Profile* profile) {
   // users won't see the bubble or dialog UI if they've already acknowledged
   // an older version.
   const char* preference_name =
-      ControlledHomeBubbleDelegate::kAcknowledgedPreference;
+      ControlledHomeDialogController::kAcknowledgedPreference;
 
   // Find the active search engine (which is provided by the extension).
   TemplateURLService* template_url_service =

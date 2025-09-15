@@ -22,7 +22,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Browser;
-class ToolbarActionsBarBubbleDelegate;
+class ControlledHomeDialogControllerInterface;
 class SettingsOverriddenDialogController;
 class Profile;
 
@@ -70,7 +70,7 @@ void ShowExtensionInstallBlockedDialog(
 void ShowControlledHomeDialog(
     Profile* profile,
     gfx::NativeWindow parent,
-    std::unique_ptr<ToolbarActionsBarBubbleDelegate> controller);
+    std::unique_ptr<ControlledHomeDialogControllerInterface> controller);
 
 // Shows a modal dialog to Enhanced Safe Browsing users before the extension
 // install dialog if the extension is not included in the Safe Browsing CRX

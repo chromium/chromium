@@ -48,7 +48,8 @@ source_set("extensions") {
       "accelerator_priority.h",
       "app_launch_params.h",
       "application_launch.h",
-      "controlled_home_bubble_delegate.h",
+      "controlled_home_dialog_controller.h",
+      "controlled_home_dialog_controller_interface.h",
       "extension_action_platform_delegate.h",
       "extension_action_view_controller.h",
       "extension_enable_flow.h",
@@ -149,7 +150,7 @@ source_set("impl") {
     sources += [
       "app_launch_params.cc",
       "application_launch.cc",
-      "controlled_home_bubble_delegate.cc",
+      "controlled_home_dialog_controller.cc",
       "extension_action_view_controller.cc",
       "extension_enable_flow.cc",
       "extension_installed_bubble_model.cc",
@@ -212,7 +213,7 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [
-      "controlled_home_bubble_delegate_unittest.cc",
+      "controlled_home_dialog_controller_unittest.cc",
       "extension_installed_bubble_model_unittest.cc",
       "extension_installed_waiter_unittest.cc",
       "extension_settings_overridden_dialog_unittest.cc",

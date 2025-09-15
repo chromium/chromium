@@ -7,7 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
+#include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/grit/generated_resources.h"
@@ -29,7 +29,7 @@ class ControlledHomeDialogDelegate
  public:
   explicit ControlledHomeDialogDelegate(
       Profile* profile,
-      std::unique_ptr<ToolbarActionsBarBubbleDelegate> controller)
+      std::unique_ptr<ControlledHomeDialogControllerInterface> controller)
       : controller_(std::move(controller)) {
     extension_registry_observation_.Observe(
         extensions::ExtensionRegistry::Get(profile));
@@ -37,22 +37,24 @@ class ControlledHomeDialogDelegate
 
   void OnDialogAccepted() {
     controller_->OnBubbleClosed(
-        ToolbarActionsBarBubbleDelegate::CloseAction::CLOSE_EXECUTE);
+        ControlledHomeDialogControllerInterface::CloseAction::CLOSE_EXECUTE);
   }
   void OnDialogCancelled() {
-    controller_->OnBubbleClosed(ToolbarActionsBarBubbleDelegate::CloseAction::
-                                    CLOSE_DISMISS_USER_ACTION);
+    controller_->OnBubbleClosed(ControlledHomeDialogControllerInterface::
+                                    CloseAction::CLOSE_DISMISS_USER_ACTION);
   }
   void OnLearnMoreClicked() {
     controller_->OnBubbleClosed(
-        ToolbarActionsBarBubbleDelegate::CloseAction::CLOSE_LEARN_MORE);
+        ControlledHomeDialogControllerInterface::CloseAction::CLOSE_LEARN_MORE);
   }
   void OnDialogClosed() {
-    controller_->OnBubbleClosed(ToolbarActionsBarBubbleDelegate::CloseAction::
-                                    CLOSE_DISMISS_DEACTIVATION);
+    controller_->OnBubbleClosed(ControlledHomeDialogControllerInterface::
+                                    CloseAction::CLOSE_DISMISS_DEACTIVATION);
   }
 
-  ToolbarActionsBarBubbleDelegate* controller() { return controller_.get(); }
+  ControlledHomeDialogControllerInterface* controller() {
+    return controller_.get();
+  }
 
  private:
   void CloseDialog() { dialog_model()->host()->Close(); }
@@ -85,7 +87,7 @@ class ControlledHomeDialogDelegate
     extension_registry_observation_.Reset();
   }
 
-  std::unique_ptr<ToolbarActionsBarBubbleDelegate> controller_;
+  std::unique_ptr<ControlledHomeDialogControllerInterface> controller_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
@@ -101,11 +103,12 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kControlledHomeDialogCancelButtonElementId);
 void ShowControlledHomeDialog(
     Profile* profile,
     gfx::NativeWindow parent,
-    std::unique_ptr<ToolbarActionsBarBubbleDelegate> dialog_controller_unique) {
+    std::unique_ptr<ControlledHomeDialogControllerInterface>
+        dialog_controller_unique) {
   auto dialog_delegate_unique = std::make_unique<ControlledHomeDialogDelegate>(
       profile, std::move(dialog_controller_unique));
   ControlledHomeDialogDelegate* dialog_delegate = dialog_delegate_unique.get();
-  ToolbarActionsBarBubbleDelegate* dialog_controller =
+  ControlledHomeDialogControllerInterface* dialog_controller =
       dialog_delegate->controller();
 
   ui::DialogModel::Builder dialog_builder =

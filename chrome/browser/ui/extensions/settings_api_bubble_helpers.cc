@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
+#include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
@@ -108,7 +108,7 @@ void RegisterSettingsOverriddenUiPrefs(PrefRegistrySimple* registry) {
 void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   auto bubble_delegate =
-      std::make_unique<ControlledHomeBubbleDelegate>(browser);
+      std::make_unique<ControlledHomeDialogController>(browser);
   if (!bubble_delegate->ShouldShow()) {
     return;
   }

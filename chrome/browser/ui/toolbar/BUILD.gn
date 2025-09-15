@@ -50,7 +50,6 @@ source_set("toolbar") {
       "toolbar_action_hover_card_types.h",
       "toolbar_action_view_controller.h",
       "toolbar_action_view_delegate.h",
-      "toolbar_actions_bar_bubble_delegate.h",
       "toolbar_pref_names.cc",
       "toolbar_pref_names.h",
     ]

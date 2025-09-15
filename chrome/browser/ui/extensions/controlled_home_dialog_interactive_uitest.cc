@@ -8,9 +8,9 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
+#include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
+#include "chrome/browser/ui/extensions/controlled_home_dialog_controller_interface.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/disable_reason.h"
@@ -19,7 +19,7 @@
 
 namespace {
 
-class TestDialogController : public ToolbarActionsBarBubbleDelegate {
+class TestDialogController : public ControlledHomeDialogControllerInterface {
  public:
   explicit TestDialogController(std::string action_id)
       : action_id_(action_id) {}

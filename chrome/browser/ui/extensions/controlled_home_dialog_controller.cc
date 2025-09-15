@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
+#include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 
 #include <utility>
 
@@ -65,7 +65,7 @@ const extensions::Extension* GetExtensionToWarnAbout(Profile& profile) {
   bool was_acknowledged = false;
   if (extension_prefs->ReadPrefAsBoolean(
           controlling_extension->id(),
-          ControlledHomeBubbleDelegate::kAcknowledgedPreference,
+          ControlledHomeDialogController::kAcknowledgedPreference,
           &was_acknowledged) &&
       was_acknowledged) {
     // Extension was already acknowledged.
@@ -82,49 +82,49 @@ void AcknowledgeExtension(Profile& profile,
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(&profile);
   extension_prefs->UpdateExtensionPref(
-      extension_id, ControlledHomeBubbleDelegate::kAcknowledgedPreference,
+      extension_id, ControlledHomeDialogController::kAcknowledgedPreference,
       base::Value(true));
 }
 
 }  // namespace
 
-ControlledHomeBubbleDelegate::ControlledHomeBubbleDelegate(Browser* browser)
+ControlledHomeDialogController::ControlledHomeDialogController(Browser* browser)
     : browser_(browser),
       profile_(browser->profile()),
       extension_(GetExtensionToWarnAbout(*profile_)) {}
 
-ControlledHomeBubbleDelegate::~ControlledHomeBubbleDelegate() {
+ControlledHomeDialogController::~ControlledHomeDialogController() {
   GetPendingProfileSet().erase(profile_);
 }
 
 base::AutoReset<bool>
-ControlledHomeBubbleDelegate::IgnoreLearnMoreForTesting() {
+ControlledHomeDialogController::IgnoreLearnMoreForTesting() {
   return base::AutoReset<bool>(&g_should_ignore_learn_more_for_testing, true);
 }
 
-void ControlledHomeBubbleDelegate::ClearProfileSetForTesting() {
+void ControlledHomeDialogController::ClearProfileSetForTesting() {
   GetShownProfileSet().clear();
 }
 
-bool ControlledHomeBubbleDelegate::ShouldShow() {
+bool ControlledHomeDialogController::ShouldShow() {
   // Show if there's a non-acknowledged controlling extension and we haven't
   // shown (and aren't about to show in a pending bubble) for this profile.
   return extension_ && GetShownProfileSet().count(profile_) == 0u &&
          GetPendingProfileSet().count(profile_) == 0u;
 }
 
-void ControlledHomeBubbleDelegate::PendingShow() {
+void ControlledHomeDialogController::PendingShow() {
   DCHECK_EQ(0u, GetPendingProfileSet().count(profile_));
   // Mark the profile as having a pending bubble. This way, we won't queue up
   // another bubble if one is waiting for animation.
   GetPendingProfileSet().insert(profile_);
 }
 
-std::u16string ControlledHomeBubbleDelegate::GetHeadingText() {
+std::u16string ControlledHomeDialogController::GetHeadingText() {
   return l10n_util::GetStringUTF16(IDS_EXTENSIONS_CONTROLLED_HOME_DIALOG_TITLE);
 }
 
-std::u16string ControlledHomeBubbleDelegate::GetBodyText() {
+std::u16string ControlledHomeDialogController::GetBodyText() {
   const extensions::SettingsOverrides* settings =
       extensions::SettingsOverrides::Get(extension_.get());
   CHECK(settings);
@@ -155,7 +155,7 @@ std::u16string ControlledHomeBubbleDelegate::GetBodyText() {
   return body;
 }
 
-std::u16string ControlledHomeBubbleDelegate::GetActionButtonText() {
+std::u16string ControlledHomeDialogController::GetActionButtonText() {
   // An empty string is returned so that we don't display the button prompting
   // to remove policy-installed extensions.
   if (IsPolicyIndicationNeeded()) {
@@ -164,15 +164,15 @@ std::u16string ControlledHomeBubbleDelegate::GetActionButtonText() {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_RESTORE_SETTINGS);
 }
 
-std::u16string ControlledHomeBubbleDelegate::GetDismissButtonText() {
+std::u16string ControlledHomeDialogController::GetDismissButtonText() {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_KEEP_CHANGES);
 }
 
-std::string ControlledHomeBubbleDelegate::GetAnchorActionId() {
+std::string ControlledHomeDialogController::GetAnchorActionId() {
   return extension_->id();
 }
 
-void ControlledHomeBubbleDelegate::OnBubbleShown() {
+void ControlledHomeDialogController::OnBubbleShown() {
   DCHECK_EQ(0u, GetShownProfileSet().count(profile_));
   DCHECK_EQ(1u, GetPendingProfileSet().count(profile_));
 
@@ -180,7 +180,7 @@ void ControlledHomeBubbleDelegate::OnBubbleShown() {
   GetPendingProfileSet().erase(profile_);
 }
 
-void ControlledHomeBubbleDelegate::OnBubbleClosed(CloseAction action) {
+void ControlledHomeDialogController::OnBubbleClosed(CloseAction action) {
   // OnBubbleClosed() can be called twice when we receive multiple
   // "OnWidgetDestroying" notifications (this can at least happen when we close
   // a window with a notification open). Handle this gracefully.
@@ -232,8 +232,8 @@ void ControlledHomeBubbleDelegate::OnBubbleClosed(CloseAction action) {
   // Warning: |this| may be deleted here!
 }
 
-std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>
-ControlledHomeBubbleDelegate::GetExtraViewInfo() {
+std::unique_ptr<ControlledHomeDialogControllerInterface::ExtraViewInfo>
+ControlledHomeDialogController::GetExtraViewInfo() {
   auto extra_view_info = std::make_unique<ExtraViewInfo>();
 
   if (IsPolicyIndicationNeeded()) {
@@ -249,6 +249,6 @@ ControlledHomeBubbleDelegate::GetExtraViewInfo() {
   return extra_view_info;
 }
 
-bool ControlledHomeBubbleDelegate::IsPolicyIndicationNeeded() const {
+bool ControlledHomeDialogController::IsPolicyIndicationNeeded() const {
   return extensions::Manifest::IsPolicyLocation(extension_->location());
 }

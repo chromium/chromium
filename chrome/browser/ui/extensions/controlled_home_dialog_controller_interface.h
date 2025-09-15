@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTIONS_BAR_BUBBLE_DELEGATE_H_
-#define CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTIONS_BAR_BUBBLE_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_EXTENSIONS_CONTROLLED_HOME_DIALOG_CONTROLLER_INTERFACE_H_
+#define CHROME_BROWSER_UI_EXTENSIONS_CONTROLLED_HOME_DIALOG_CONTROLLER_INTERFACE_H_
 
 #include <string>
 
@@ -15,12 +15,10 @@ namespace gfx {
 struct VectorIcon;
 }
 
-// A delegate for a generic bubble that hangs off the toolbar actions bar.
-// TODO(crbug.com/40946250): Rename class after removing
-// ToolbarActionsBarBubbleViews, which won't be needed after refactoring
-// controlled home bubble dialog to use DialogModel as part of
-// crbug.com/441590893.
-class ToolbarActionsBarBubbleDelegate {
+// The controller for the ControlledHomeDialog. This class is responsible
+// for both providing the display information (ShowParams) as well as handling
+// the result of the dialog.
+class ControlledHomeDialogControllerInterface {
  public:
   enum CloseAction {
     CLOSE_LEARN_MORE,
@@ -47,7 +45,7 @@ class ToolbarActionsBarBubbleDelegate {
     bool is_learn_more;
   };
 
-  virtual ~ToolbarActionsBarBubbleDelegate() = default;
+  virtual ~ControlledHomeDialogControllerInterface() = default;
 
   // Returns true if the bubble should (still) be shown. Since bubbles are
   // sometimes shown asynchronously, they may be invalid by the time they would
@@ -60,13 +58,11 @@ class ToolbarActionsBarBubbleDelegate {
   // Gets the text for the bubble's body.
   virtual std::u16string GetBodyText() = 0;
 
-  // Gets the text for the main button on the bubble; this button will
-  // correspond with ACTION_EXECUTE.
+  // Gets the text for the main button on the bubble.
   virtual std::u16string GetActionButtonText() = 0;
 
-  // Gets the text for a second button on the bubble; this button will
-  // correspond with ACTION_DISMISS. If this returns an empty string, no
-  // button will be added.
+  // Gets the text for a dismiss button on the bubble. If this returns an empty
+  // string, no button will be added.
   virtual std::u16string GetDismissButtonText() = 0;
 
   // Returns the id of the action to point to, or the empty string if the
@@ -85,4 +81,4 @@ class ToolbarActionsBarBubbleDelegate {
   virtual std::unique_ptr<ExtraViewInfo> GetExtraViewInfo() = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTIONS_BAR_BUBBLE_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_EXTENSIONS_CONTROLLED_HOME_DIALOG_CONTROLLER_INTERFACE_H_

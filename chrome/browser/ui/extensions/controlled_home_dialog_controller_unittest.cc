@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
+#include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
@@ -38,10 +38,10 @@ std::unique_ptr<KeyedService> BuildOverrideRegistrar(
 
 }  // namespace
 
-class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
+class ControlledHomeDialogControllerTest : public BrowserWithTestWindowTest {
  public:
-  ControlledHomeBubbleDelegateTest() = default;
-  ~ControlledHomeBubbleDelegateTest() override = default;
+  ControlledHomeDialogControllerTest() = default;
+  ~ControlledHomeDialogControllerTest() override = default;
 
   // Loads an extension that overrides the home page of a user.
   scoped_refptr<const extensions::Extension> LoadExtensionOverridingHome(
@@ -80,7 +80,7 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
   bool IsExtensionAcknowledged(const extensions::ExtensionId& id) {
     bool was_acknowledged = false;
     return extension_prefs_->ReadPrefAsBoolean(
-               id, ControlledHomeBubbleDelegate::kAcknowledgedPreference,
+               id, ControlledHomeDialogController::kAcknowledgedPreference,
                &was_acknowledged) &&
            was_acknowledged;
   }
@@ -88,7 +88,7 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
   // Acknowledges the extension in preferences.
   void AcknowledgeExtension(const extensions::ExtensionId& id) {
     extension_prefs_->UpdateExtensionPref(
-        id, ControlledHomeBubbleDelegate::kAcknowledgedPreference,
+        id, ControlledHomeDialogController::kAcknowledgedPreference,
         base::Value(true));
   }
 
@@ -134,7 +134,7 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
     // Clean up global state for the delegates. Since profiles are stored in
     // global variables, they can be shared between tests and cause
     // unpredictable behavior.
-    ControlledHomeBubbleDelegate::ClearProfileSetForTesting();
+    ControlledHomeDialogController::ClearProfileSetForTesting();
     profile_keep_alive_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
@@ -148,7 +148,7 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
   }
 
   base::AutoReset<bool> ignore_learn_more_{
-      ControlledHomeBubbleDelegate::IgnoreLearnMoreForTesting()};
+      ControlledHomeDialogController::IgnoreLearnMoreForTesting()};
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
   raw_ptr<extensions::ExtensionRegistrar> extension_registrar_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
@@ -159,7 +159,8 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
 // Though the test harness should compile on all platforms, the behavior for
 // extensions to override the home page is limited to mac and windows.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-TEST_F(ControlledHomeBubbleDelegateTest, ClickingExecuteDisablesTheExtension) {
+TEST_F(ControlledHomeDialogControllerTest,
+       ClickingExecuteDisablesTheExtension) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
@@ -167,16 +168,16 @@ TEST_F(ControlledHomeBubbleDelegateTest, ClickingExecuteDisablesTheExtension) {
   ASSERT_TRUE(browser());
   ASSERT_TRUE(profile());
 
-  auto bubble_delegate =
-      std::make_unique<ControlledHomeBubbleDelegate>(browser());
-  EXPECT_TRUE(bubble_delegate->ShouldShow());
-  EXPECT_EQ(extension, bubble_delegate->extension_for_testing());
+  auto dialog_controller =
+      std::make_unique<ControlledHomeDialogController>(browser());
+  EXPECT_TRUE(dialog_controller->ShouldShow());
+  EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
-  bubble_delegate->PendingShow();
-  bubble_delegate->OnBubbleShown();
+  dialog_controller->PendingShow();
+  dialog_controller->OnBubbleShown();
 
-  bubble_delegate->OnBubbleClosed(
-      ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE);
+  dialog_controller->OnBubbleClosed(
+      ControlledHomeDialogControllerInterface::CLOSE_EXECUTE);
 
   EXPECT_TRUE(IsExtensionDisabled(
       extension->id(), extensions::disable_reason::DISABLE_USER_ACTION));
@@ -185,45 +186,45 @@ TEST_F(ControlledHomeBubbleDelegateTest, ClickingExecuteDisablesTheExtension) {
   EXPECT_FALSE(IsExtensionAcknowledged(extension->id()));
 }
 
-TEST_F(ControlledHomeBubbleDelegateTest,
+TEST_F(ControlledHomeDialogControllerTest,
        ClickingDismissAcknowledgesTheExtension) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
 
-  auto bubble_delegate =
-      std::make_unique<ControlledHomeBubbleDelegate>(browser());
-  EXPECT_TRUE(bubble_delegate->ShouldShow());
-  EXPECT_EQ(extension, bubble_delegate->extension_for_testing());
+  auto dialog_controller =
+      std::make_unique<ControlledHomeDialogController>(browser());
+  EXPECT_TRUE(dialog_controller->ShouldShow());
+  EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
-  bubble_delegate->PendingShow();
-  bubble_delegate->OnBubbleShown();
+  dialog_controller->PendingShow();
+  dialog_controller->OnBubbleShown();
 
-  bubble_delegate->OnBubbleClosed(
-      ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_USER_ACTION);
+  dialog_controller->OnBubbleClosed(
+      ControlledHomeDialogControllerInterface::CLOSE_DISMISS_USER_ACTION);
 
   // The extension should remain enabled and be acknowledged.
   EXPECT_TRUE(IsExtensionEnabled(extension->id()));
   EXPECT_TRUE(IsExtensionAcknowledged(extension->id()));
 }
 
-TEST_F(ControlledHomeBubbleDelegateTest,
+TEST_F(ControlledHomeDialogControllerTest,
        DismissByDeactivationDoesNotDisableOrAcknowledge) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
 
   {
-    auto bubble_delegate =
-        std::make_unique<ControlledHomeBubbleDelegate>(browser());
-    EXPECT_TRUE(bubble_delegate->ShouldShow());
-    EXPECT_EQ(extension, bubble_delegate->extension_for_testing());
+    auto dialog_controller =
+        std::make_unique<ControlledHomeDialogController>(browser());
+    EXPECT_TRUE(dialog_controller->ShouldShow());
+    EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
-    bubble_delegate->PendingShow();
-    bubble_delegate->OnBubbleShown();
+    dialog_controller->PendingShow();
+    dialog_controller->OnBubbleShown();
 
-    bubble_delegate->OnBubbleClosed(
-        ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_DEACTIVATION);
+    dialog_controller->OnBubbleClosed(
+        ControlledHomeDialogControllerInterface::CLOSE_DISMISS_DEACTIVATION);
   }
 
   // The extension should remain enabled but *shouldn't* be acknowledged.
@@ -231,36 +232,36 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   EXPECT_FALSE(IsExtensionAcknowledged(extension->id()));
 
   {
-    auto bubble_delegate =
-        std::make_unique<ControlledHomeBubbleDelegate>(browser());
+    auto dialog_controller =
+        std::make_unique<ControlledHomeDialogController>(browser());
     // Even though the extension hasn't been acknowledged, we shouldn't show the
     // bubble twice in the same session.
-    EXPECT_FALSE(bubble_delegate->ShouldShow());
+    EXPECT_FALSE(dialog_controller->ShouldShow());
   }
 }
 
-TEST_F(ControlledHomeBubbleDelegateTest,
+TEST_F(ControlledHomeDialogControllerTest,
        ClickingLearnMoreAcknowledgesTheExtension) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
 
-  auto bubble_delegate =
-      std::make_unique<ControlledHomeBubbleDelegate>(browser());
-  EXPECT_TRUE(bubble_delegate->ShouldShow());
-  EXPECT_EQ(extension, bubble_delegate->extension_for_testing());
+  auto dialog_controller =
+      std::make_unique<ControlledHomeDialogController>(browser());
+  EXPECT_TRUE(dialog_controller->ShouldShow());
+  EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
-  bubble_delegate->PendingShow();
-  bubble_delegate->OnBubbleShown();
+  dialog_controller->PendingShow();
+  dialog_controller->OnBubbleShown();
 
-  bubble_delegate->OnBubbleClosed(
-      ToolbarActionsBarBubbleDelegate::CLOSE_LEARN_MORE);
+  dialog_controller->OnBubbleClosed(
+      ControlledHomeDialogControllerInterface::CLOSE_LEARN_MORE);
 
   EXPECT_TRUE(IsExtensionEnabled(extension->id()));
   EXPECT_TRUE(IsExtensionAcknowledged(extension->id()));
 }
 
-TEST_F(ControlledHomeBubbleDelegateTest,
+TEST_F(ControlledHomeDialogControllerTest,
        BubbleShouldntShowIfExtensionAcknowledged) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome();
@@ -268,12 +269,12 @@ TEST_F(ControlledHomeBubbleDelegateTest,
 
   AcknowledgeExtension(extension->id());
 
-  auto bubble_delegate =
-      std::make_unique<ControlledHomeBubbleDelegate>(browser());
-  EXPECT_FALSE(bubble_delegate->ShouldShow());
+  auto dialog_controller =
+      std::make_unique<ControlledHomeDialogController>(browser());
+  EXPECT_FALSE(dialog_controller->ShouldShow());
 }
 
-TEST_F(ControlledHomeBubbleDelegateTest, LongExtensionNameIsTruncated) {
+TEST_F(ControlledHomeDialogControllerTest, LongExtensionNameIsTruncated) {
   const std::u16string long_name =
       u"This extension name should be longer than our truncation threshold "
       "to test that the bubble can handle long names";
@@ -285,17 +286,17 @@ TEST_F(ControlledHomeBubbleDelegateTest, LongExtensionNameIsTruncated) {
       LoadExtensionOverridingHome(base::UTF16ToUTF8(long_name));
   ASSERT_TRUE(extension);
 
-  auto bubble_delegate =
-      std::make_unique<ControlledHomeBubbleDelegate>(browser());
-  EXPECT_TRUE(bubble_delegate->ShouldShow());
+  auto dialog_controller =
+      std::make_unique<ControlledHomeDialogController>(browser());
+  EXPECT_TRUE(dialog_controller->ShouldShow());
 
-  std::u16string bubble_text = bubble_delegate->GetBodyText();
+  std::u16string bubble_text = dialog_controller->GetBodyText();
 
   EXPECT_FALSE(base::Contains(bubble_text, long_name));
   EXPECT_TRUE(base::Contains(bubble_text, truncated_name));
 }
 
-TEST_F(ControlledHomeBubbleDelegateTest,
+TEST_F(ControlledHomeDialogControllerTest,
        ExecutingOnOneExtensionDoesntAffectAnotherExtension) {
   scoped_refptr<const extensions::Extension> extension1 =
       LoadExtensionOverridingHome("ext1");
@@ -305,19 +306,19 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   ASSERT_TRUE(extension2);
 
   {
-    auto bubble_delegate =
-        std::make_unique<ControlledHomeBubbleDelegate>(browser());
-    EXPECT_TRUE(bubble_delegate->ShouldShow());
+    auto dialog_controller =
+        std::make_unique<ControlledHomeDialogController>(browser());
+    EXPECT_TRUE(dialog_controller->ShouldShow());
     // The most-recently-installed extension should control the home page
     // (`extension2`).
-    EXPECT_EQ(extension2, bubble_delegate->extension_for_testing());
+    EXPECT_EQ(extension2, dialog_controller->extension_for_testing());
 
-    bubble_delegate->PendingShow();
-    bubble_delegate->OnBubbleShown();
+    dialog_controller->PendingShow();
+    dialog_controller->OnBubbleShown();
 
     // Close the bubble with the "execute" action.
-    bubble_delegate->OnBubbleClosed(
-        ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE);
+    dialog_controller->OnBubbleClosed(
+        ControlledHomeDialogControllerInterface::CLOSE_EXECUTE);
 
     EXPECT_TRUE(IsExtensionDisabled(
         extension2->id(), extensions::disable_reason::DISABLE_USER_ACTION));
@@ -327,17 +328,17 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   }
 
   {
-    auto bubble_delegate =
-        std::make_unique<ControlledHomeBubbleDelegate>(browser());
+    auto dialog_controller =
+        std::make_unique<ControlledHomeDialogController>(browser());
     // Since `extension2` was removed, we shouldn't have acknowledged either
     // extension and we can re-show the bubble if the homepage is controlled
     // by another extension.
-    EXPECT_TRUE(bubble_delegate->ShouldShow());
-    EXPECT_EQ(extension1, bubble_delegate->extension_for_testing());
+    EXPECT_TRUE(dialog_controller->ShouldShow());
+    EXPECT_EQ(extension1, dialog_controller->extension_for_testing());
   }
 }
 
-TEST_F(ControlledHomeBubbleDelegateTest,
+TEST_F(ControlledHomeDialogControllerTest,
        AcknowledgingOneExtensionDoesntAffectAnother) {
   scoped_refptr<const extensions::Extension> extension1 =
       LoadExtensionOverridingHome("ext1");
@@ -347,17 +348,17 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   ASSERT_TRUE(extension2);
 
   {
-    auto bubble_delegate =
-        std::make_unique<ControlledHomeBubbleDelegate>(browser());
-    EXPECT_TRUE(bubble_delegate->ShouldShow());
-    EXPECT_EQ(extension2, bubble_delegate->extension_for_testing());
+    auto dialog_controller =
+        std::make_unique<ControlledHomeDialogController>(browser());
+    EXPECT_TRUE(dialog_controller->ShouldShow());
+    EXPECT_EQ(extension2, dialog_controller->extension_for_testing());
 
-    bubble_delegate->PendingShow();
-    bubble_delegate->OnBubbleShown();
+    dialog_controller->PendingShow();
+    dialog_controller->OnBubbleShown();
 
     // Dismiss the bubble; this acknowledges the extension.
-    bubble_delegate->OnBubbleClosed(
-        ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_USER_ACTION);
+    dialog_controller->OnBubbleClosed(
+        ControlledHomeDialogControllerInterface::CLOSE_DISMISS_USER_ACTION);
 
     EXPECT_TRUE(IsExtensionEnabled(extension2->id()));
     EXPECT_TRUE(IsExtensionAcknowledged(extension2->id()));
@@ -369,9 +370,9 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   {
     // The bubble shouldn't want to show (the extension that controls the home
     // page was acknowledged).
-    auto bubble_delegate =
-        std::make_unique<ControlledHomeBubbleDelegate>(browser());
-    EXPECT_FALSE(bubble_delegate->ShouldShow());
+    auto dialog_controller =
+        std::make_unique<ControlledHomeDialogController>(browser());
+    EXPECT_FALSE(dialog_controller->ShouldShow());
   }
 
   // Disable the extension that was acknowledged.
@@ -379,32 +380,32 @@ TEST_F(ControlledHomeBubbleDelegateTest,
       extension2->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
 
   {
-    auto bubble_delegate =
-        std::make_unique<ControlledHomeBubbleDelegate>(browser());
+    auto dialog_controller =
+        std::make_unique<ControlledHomeDialogController>(browser());
     // Now a new extension controls the home page, so we should re-show the
     // bubble.
-    EXPECT_TRUE(bubble_delegate->ShouldShow());
-    EXPECT_EQ(extension1, bubble_delegate->extension_for_testing());
+    EXPECT_TRUE(dialog_controller->ShouldShow());
+    EXPECT_EQ(extension1, dialog_controller->extension_for_testing());
   }
 }
 
-TEST_F(ControlledHomeBubbleDelegateTest,
+TEST_F(ControlledHomeDialogControllerTest,
        PolicyExtensionsRequirePolicyIndicators) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome(
           "ext", extensions::mojom::ManifestLocation::kExternalPolicy);
   ASSERT_TRUE(extension);
 
-  auto bubble_delegate =
-      std::make_unique<ControlledHomeBubbleDelegate>(browser());
+  auto dialog_controller =
+      std::make_unique<ControlledHomeDialogController>(browser());
   // We still show the bubble for policy-installed extensions, but it should
   // have a policy decoration.
-  EXPECT_TRUE(bubble_delegate->ShouldShow());
+  EXPECT_TRUE(dialog_controller->ShouldShow());
 
-  EXPECT_EQ(u"", bubble_delegate->GetActionButtonText());
+  EXPECT_EQ(u"", dialog_controller->GetActionButtonText());
 
-  std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo> extra_view =
-      bubble_delegate->GetExtraViewInfo();
+  std::unique_ptr<ControlledHomeDialogControllerInterface::ExtraViewInfo>
+      extra_view = dialog_controller->GetExtraViewInfo();
   // Note: Mac vs Win message styling.
   EXPECT_TRUE(extra_view->text == u"Installed by your administrator" ||
               extra_view->text == u"Installed by Your Administrator");
