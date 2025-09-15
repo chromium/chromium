@@ -11,5 +11,11 @@ option java_package = "org.chromium.chrome.browser.sensitivity";
 option optimize_for = LITE_RUNTIME;
 
 message SensitivityData {
+  // Whether the tab is detected to be sensitive.
   optional bool is_sensitive = 1;
+
+  // The sensitivity score from [0, 1] if sensitivity was run for the tab.
+  // The lower the score the more sensitive the tab is detected to be.
+  // The score will be -1 if sensitivity was not run.
+  optional float sensitivity_score = 2;
 }

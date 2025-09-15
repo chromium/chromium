@@ -70,7 +70,7 @@ class AuxiliarySearchProviderBrowserTest : public AndroidBrowserTest {
     tab_vec.push_back(tab_android);
     std::unique_ptr<SensitivityPersistedTabDataAndroid> sptda =
         std::make_unique<SensitivityPersistedTabDataAndroid>(tab_android);
-    sptda->set_is_sensitive(is_sensitive);
+    sptda->set_sensitivity_score(is_sensitive ? 0.1 : 0.7);
     tab_android->SetUserData(SensitivityPersistedTabDataAndroid::UserDataKey(),
                              std::move(sptda));
     return tab_vec;
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
   tab_model->CreateTab(second_tab, second_web_contents, /*select=*/true);
   std::unique_ptr<SensitivityPersistedTabDataAndroid> sptda2 =
       std::make_unique<SensitivityPersistedTabDataAndroid>(second_tab);
-  sptda2->set_is_sensitive(false);
+  sptda2->set_sensitivity_score(0.7);
   tab_vec.push_back(second_tab);
 
   provider()->GetNonSensitiveTabsInternal(
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
   tab_model->CreateTab(second_tab, second_web_contents, /*select=*/true);
   std::unique_ptr<SensitivityPersistedTabDataAndroid> sptda2 =
       std::make_unique<SensitivityPersistedTabDataAndroid>(second_tab);
-  sptda2->set_is_sensitive(false);
+  sptda2->set_sensitivity_score(0.7);
   tab_vec.push_back(second_tab);
 
   TabAndroid* third_tab = TabAndroid::FromWebContents(web_contents());
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
   tab_model->CreateTab(third_tab, third_web_contents, /*select=*/true);
   std::unique_ptr<SensitivityPersistedTabDataAndroid> sptda3 =
       std::make_unique<SensitivityPersistedTabDataAndroid>(third_tab);
-  sptda3->set_is_sensitive(false);
+  sptda3->set_sensitivity_score(0.7);
   tab_vec.push_back(third_tab);
 
   provider()->GetNonSensitiveTabsInternal(
