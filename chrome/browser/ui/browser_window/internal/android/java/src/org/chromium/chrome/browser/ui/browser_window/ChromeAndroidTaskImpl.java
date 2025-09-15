@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.ui.browser_window;
 
 import static androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -237,7 +235,7 @@ final class ChromeAndroidTaskImpl
             var activity = activityWindowAndroid.getActivity().get();
             if (activity == null) return false;
             var windowManager = activity.getWindowManager();
-            if (isInDesktopWindowingMode(activityWindowAndroid)) {
+            if (isInDesktopWindowing(windowManager)) {
                 return getBoundsInternalLocked().equals(getMaximizedBounds(windowManager));
             } else {
                 return !activity.isInMultiWindowMode();
@@ -403,7 +401,7 @@ final class ChromeAndroidTaskImpl
             Activity activity = activityWindowAndroid.getActivity().get();
             if (activity == null) return;
             // No maximize action in non desktop window mode.
-            if (!isInDesktopWindowingMode(activityWindowAndroid)) return;
+            if (!isInDesktopWindowing(activity.getWindowManager())) return;
             Rect maximizedBounds = getMaximizedBounds(activity.getWindowManager());
             setBoundsInternalLocked(activity, maximizedBounds);
         }
@@ -601,11 +599,10 @@ final class ChromeAndroidTaskImpl
 
     @RequiresApi(api = VERSION_CODES.R)
     // TODO(crbug.com/437982549): Replace with a more versatile API to improve OEM compatibility.
-    private static boolean isInDesktopWindowingMode(ActivityWindowAndroid activityWindowAndroid) {
-        var insetObserver = activityWindowAndroid.getInsetObserver();
-        assumeNonNull(insetObserver);
-        var lastRawWindowInsets = insetObserver.getLastRawWindowInsets();
-        if (lastRawWindowInsets == null) return false;
-        return lastRawWindowInsets.isVisible(WindowInsets.Type.captionBar());
+    private static boolean isInDesktopWindowing(WindowManager windowManager) {
+        return windowManager
+                .getCurrentWindowMetrics()
+                .getWindowInsets()
+                .isVisible(WindowInsets.Type.captionBar());
     }
 }

@@ -199,7 +199,6 @@ if (is_android) {
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//chrome/browser/ui/browser_window/test:junit_test_support",
-      "//third_party/androidx:androidx_core_core_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_no_recycler_view_java",
