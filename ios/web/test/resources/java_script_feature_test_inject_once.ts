@@ -7,13 +7,14 @@
  * will be executed once for a given `window` JS object.
  */
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
-const errorReceivedCount: number = 0;
+const errorReceivedCount_: number = 0;
 
 function getErrorCount() {
-  return gCrWebLegacy.javaScriptFeatureTest.errorReceivedCount;
+  return gCrWeb.getRegisteredApi('javaScriptFeatureTest')
+      .getProperty('errorReceivedCount');
 }
 
 function replaceDivContents() {
@@ -32,9 +33,11 @@ if (body) {
   body.appendChild(document.createTextNode('injected_script_loaded'));
 }
 
-gCrWebLegacy.javaScriptFeatureTest = {
-  errorReceivedCount,
-  getErrorCount,
-  replaceDivContents,
-  replyWithPostMessage,
-};
+const javaScriptFeatureTest = new CrWebApi();
+
+javaScriptFeatureTest.addFunction('getErrorCount', getErrorCount);
+javaScriptFeatureTest.addFunction('replaceDivContents', replaceDivContents);
+javaScriptFeatureTest.addFunction('replyWithPostMessage', replyWithPostMessage);
+javaScriptFeatureTest.addProperty('errorReceivedCount', errorReceivedCount_);
+
+gCrWeb.registerApi('javaScriptFeatureTest', javaScriptFeatureTest);
