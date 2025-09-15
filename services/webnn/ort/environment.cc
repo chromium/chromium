@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split_win.h"
 #include "base/strings/utf_string_conversions.h"
-#include "services/webnn/ort/ep_selection.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/webnn_switches.h"
@@ -93,6 +92,17 @@ constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
         },
     },
 });
+
+OrtHardwareDeviceType GetOrtHardwareDeviceType(mojom::Device device_type) {
+  switch (device_type) {
+    case mojom::Device::kCpu:
+      return OrtHardwareDeviceType_CPU;
+    case mojom::Device::kGpu:
+      return OrtHardwareDeviceType_GPU;
+    case mojom::Device::kNpu:
+      return OrtHardwareDeviceType_NPU;
+  }
+}
 
 // Returns true if the `vendor_id` exists in the `gpu_info`.
 bool VendorIdExistsInGpuInfo(const gpu::GPUInfo& gpu_info, uint32_t vendor_id) {
@@ -436,39 +446,67 @@ void Environment::Release() const {
 EpWorkarounds Environment::GetEpWorkarounds(mojom::Device device_type) const {
   EpWorkarounds workarounds;
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-  base::span<const OrtEpDevice* const> registered_ep_devices =
+  base::span<const OrtEpDevice* const> ep_devices =
       GetRegisteredEpDevices(ort_api, this->get());
-  std::vector<const OrtEpDevice*> selected_ep_devices =
-      SelectEpDevicesForDeviceType(registered_ep_devices, device_type);
-  for (const auto* ep_device : selected_ep_devices) {
+  OrtHardwareDeviceType ort_device_type = GetOrtHardwareDeviceType(device_type);
+  for (const auto* ep_device : ep_devices) {
     CHECK(ep_device);
+    OrtHardwareDeviceType ep_device_type =
+        ort_api->HardwareDevice_Type(ort_api->EpDevice_Device(ep_device));
+    // Check the workarounds when the EP device type matches the selected device
+    // type, or is CPU because CPU EPs might be selected by ORT as the fallback
+    // EP.
+    if (ep_device_type == ort_device_type ||
+        ep_device_type == OrtHardwareDeviceType_CPU) {
       const char* ep_name = ort_api->EpDevice_EpName(ep_device);
       // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
       const auto iter =
           kKnownEPs.find(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+      // TODO(crbug.com/429859159): Decide the workarounds according to the EPs
+      // that will be actually selected.
       if (iter != kKnownEPs.end()) {
         workarounds |= iter->second.workarounds;
       }
+    }
   }
   return workarounds;
 }
 
+// static
+base::Lock& Environment::GetLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
+
+raw_ptr<Environment> Environment::instance_ = nullptr;
+
 std::vector<Environment::SessionConfigEntry> Environment::GetEpConfigEntries(
     mojom::Device device_type) const {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-  base::span<const OrtEpDevice* const> registered_ep_devices =
+  base::span<const OrtEpDevice* const> ep_devices =
       GetRegisteredEpDevices(ort_api, this->get());
-  std::vector<const OrtEpDevice*> selected_ep_devices =
-      SelectEpDevicesForDeviceType(registered_ep_devices, device_type);
   std::vector<SessionConfigEntry> ep_config_entries;
   // Track processed EP names to avoid duplicates.
   std::set<base::cstring_view> processed_ep_names;
+  OrtHardwareDeviceType requested_device_type =
+      GetOrtHardwareDeviceType(device_type);
 
-  for (const auto* ep_device : selected_ep_devices) {
+  for (const auto* ep_device : ep_devices) {
     CHECK(ep_device);
 
+    // Only look for configuration when the requested device type matches
+    // the registered EP device type.
+    OrtHardwareDeviceType registered_device_type =
+        ort_api->HardwareDevice_Type(ort_api->EpDevice_Device(ep_device));
+    if (registered_device_type != requested_device_type) {
+      continue;
+    }
 
     const char* ep_name = ort_api->EpDevice_EpName(ep_device);
+    if (!ep_name) {
+      continue;
+    }
+
     // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
     base::cstring_view ep_name_view =
         UNSAFE_BUFFERS(base::cstring_view(ep_name));
@@ -491,13 +529,5 @@ std::vector<Environment::SessionConfigEntry> Environment::GetEpConfigEntries(
 
   return ep_config_entries;
 }
-
-// static
-base::Lock& Environment::GetLock() {
-  static base::NoDestructor<base::Lock> lock;
-  return *lock;
-}
-
-raw_ptr<Environment> Environment::instance_ = nullptr;
 
 }  // namespace webnn::ort

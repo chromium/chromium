@@ -55,8 +55,6 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   void AddRef() const;
   void Release() const;
 
-  // Get combined EP workarounds for the EPs that will be selected according to
-  // the given device type.
   EpWorkarounds GetEpWorkarounds(mojom::Device device_type) const;
 
   const OrtEnv* get() const { return env_.get(); }
@@ -66,8 +64,8 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
     base::cstring_view value;
   };
 
-  // Get all EP-specific session configuration entries for the EPs that will be
-  // selected according to the given device type.
+  // Get all EP-specific session configuration entries for the given device
+  // type.
   std::vector<SessionConfigEntry> GetEpConfigEntries(
       mojom::Device device_type) const;
 
