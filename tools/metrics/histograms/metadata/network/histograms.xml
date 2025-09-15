@@ -5166,26 +5166,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.IpProtection.AreAuthTokensAvailable"
-    enum="BooleanSuccess" expires_after="2026-03-08">
-  <owner>awillia@chromium.org</owner>
-  <owner>ashleynewson@chromium.org</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    The result of a call to `IpProtectionConfigCache::AreAuthTokensAvailable()`
-    when `NetworkServiceProxyDelegate::OnResolveProxy()` is determining if the
-    request is eligible for IP Protection. If this fails, tokens were not
-    available in all token caches and the request will bypass the IP Protection
-    proxy.
-
-    Note: This metric can be emitted as boolean failure even if there are tokens
-    available in the cache. Without an available proxy list, it cannot be
-    assumed that tokens within the caches are available for the current geo.
-    Thus, this metric can only be emitted as a success when there is a proxy
-    list available.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.IpProtection.EmptyTokenCache2"
     enum="IpProtectionProxyLayer" expires_after="2026-03-08">
   <owner>awillia@chromium.org</owner>
@@ -5328,19 +5308,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.IpProtection.IsProxyListAvailable"
-    enum="BooleanAvailable" expires_after="2026-03-08">
-  <owner>awillia@chromium.org</owner>
-  <owner>ashleynewson@chromium.org</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    The result of a call to `IpProtectionConfigCache::IsProxyListAvailable()`
-    when `NetworkServiceProxyDelegate::OnResolveProxy()` is determining if the
-    request is eligible for IP Protection. If this fails, the proxy list was not
-    available and the request will not be routed via any IP Protection proxy.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.IpProtection.OAuthTokenFetchTime" units="ms"
     expires_after="2026-03-08">
   <owner>awillia@chromium.org</owner>
@@ -5376,24 +5343,6 @@ chromium-metrics-reviews@google.com.
     the TokenFetcher until PRTs are available in the browser. This includes the
     IPC between the browser and the network service, the network request itself
     (including any scheduling/queuing delay), and the token validation checks.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.IpProtection.ProtectionIsAvailableForRequest"
-    enum="BooleanAvailable" expires_after="2026-03-08">
-  <owner>awillia@chromium.org</owner>
-  <owner>ashleynewson@chromium.org</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    Whether IP Protection was considered available at the time
-    IpProtectionProxyDelegate::OnResolveProxy identified an IP
-    Protection-eligible request.
-
-    The reasons for why protection is unavailable are not captured by this
-    histogram and are instead each measured in independent histograms.
-
-    This histogram can only be emitted if both the MaskedDomainList and
-    EnableIpPrivacyProxy features are enabled.
   </summary>
 </histogram>
 
@@ -5491,29 +5440,6 @@ chromium-metrics-reviews@google.com.
     *begun*, so this value may be greater than one even if the first request
     fails. This metric is not recorded for clients not configured to use QUIC to
     connect to IP Protection proxies.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.IpProtection.RequestIsEligibleForProtection"
-    enum="IpProtectionEligibility" expires_after="2026-03-08">
-  <owner>awillia@chromium.org</owner>
-  <owner>ashleynewson@chromium.org</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    Whether IpProtectionProxyDelegate::OnResolveProxy determined that a request
-    is eligible for IP Protection, meaning it has matched the network service
-    proxy allowlist (Masked Domain List) and doesn't have an exemption. This
-    histogram also records when the allowlist isn't sufficiently set up to
-    determine eligibility, and the eligibility is therefore unknown.
-
-    The reasons for why the network service proxy allowlist may not be ready are
-    not captured by this histogram. The lack of a Masked Domain List is only one
-    possible reason, whilst an inconclusive bypass policy could be another. Such
-    failure cases should probably be measured via separate histograms as
-    necessary.
-
-    The code path which emits this histogram is only reached if the
-    MaskedDomainList feature is enabled.
   </summary>
 </histogram>
 
