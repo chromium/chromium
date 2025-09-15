@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/schemeful_site.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -229,7 +229,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   void OnOptInRequestComplete(std::unique_ptr<std::string> response_body);
 
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnJsonParsed(std::optional<base::Value::List> result);
 
   void MaybeFinishCreateWorklet();
 

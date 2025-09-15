@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,7 +45,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -1839,15 +1839,15 @@ void SharedStorageWorkletHost::OnOptInRequestComplete(
   // `data_origin_opt_in_url_loader_` is no longer needed after this point.
   data_origin_opt_in_url_loader_.reset();
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body, base::BindOnce(&SharedStorageWorkletHost::OnJsonParsed,
-                                     weak_ptr_factory_.GetWeakPtr()));
+  std::optional<base::Value::List> parsed =
+      base::JSONReader::ReadList(*response_body, base::JSON_PARSE_RFC);
+  OnJsonParsed(std::move(parsed));
 }
 
 void SharedStorageWorkletHost::OnJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
+    std::optional<base::Value::List> result) {
   std::string shared_storage_origin_str = shared_storage_origin_.Serialize();
-  if (!result.has_value() || !result->is_list()) {
+  if (!result.has_value()) {
     SetDataOriginOptInResultAndMaybeFinish(
         /*opted_in=*/false, /*data_origin_opt_in_error_message=*/base::StrCat(
             {"Unable to parse the /.well-known/shared-storage/trusted-origins "
@@ -1858,7 +1858,7 @@ void SharedStorageWorkletHost::OnJsonParsed(
     return;
   }
 
-  if (result->GetList().empty()) {
+  if (result->empty()) {
     SetDataOriginOptInResultAndMaybeFinish(
         /*opted_in=*/false, /*data_origin_opt_in_error_message=*/base::StrCat(
             {"The /.well-known/shared-storage/trusted-origins file for ",
@@ -1869,7 +1869,7 @@ void SharedStorageWorkletHost::OnJsonParsed(
   bool script_origin_match = false;
   bool context_origin_match = false;
   url::Origin worklet_script_origin = url::Origin::Create(script_source_url_);
-  for (const base::Value& item_value : result->GetList()) {
+  for (const base::Value& item_value : result.value()) {
     if (!item_value.is_dict()) {
       SetDataOriginOptInResultAndMaybeFinish(
           /*opted_in=*/false, /*data_origin_opt_in_error_message=*/base::StrCat(
