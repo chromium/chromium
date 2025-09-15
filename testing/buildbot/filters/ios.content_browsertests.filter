@@ -491,3 +491,7 @@
 # TODO(crbug.com/437957113): The test has been failing since
 # https://crrev.com/c/6566111.
 -MojoSandboxTest.NotIsProcessSandboxed
+
+# TODO(crbug.com/445048341):  The test has been failing since
+# https://crrev.com/c/6917313.
+-All/DumpAccessibilityTreeTest.AccessibilityListMarkerMultiline/blink
