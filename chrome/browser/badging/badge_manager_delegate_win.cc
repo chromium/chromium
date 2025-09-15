@@ -9,9 +9,10 @@
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/taskbar/taskbar_decorator_win.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -69,26 +70,26 @@ void BadgeManagerDelegateWin::OnAppBadgeUpdated(const webapps::AppId& app_id) {
   const auto& content_and_alt =
       GetBadgeContentAndAlt(badge_manager()->GetBadgeValue(app_id));
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
+  for (auto* browser : GetAllBrowserWindowInterfaces()) {
     if (!IsAppBrowser(browser, app_id))
       continue;
 
-    auto* window = browser->window()->GetNativeWindow();
+    auto* window = browser->GetWindow()->GetNativeWindow();
 
     if (content_and_alt) {
       taskbar::DrawTaskbarDecorationString(window, content_and_alt->first,
                                            content_and_alt->second);
     } else {
-      taskbar::UpdateTaskbarDecoration(browser->profile(), window);
+      taskbar::UpdateTaskbarDecoration(browser->GetProfile(), window);
     }
   }
 }
 
-bool BadgeManagerDelegateWin::IsAppBrowser(Browser* browser,
+bool BadgeManagerDelegateWin::IsAppBrowser(BrowserWindowInterface* browser,
                                            const std::string& app_id) {
-  return browser->app_controller() &&
-         browser->app_controller()->app_id() == app_id &&
-         browser->profile() == profile();
+  return browser->GetAppBrowserController() &&
+         browser->GetAppBrowserController()->app_id() == app_id &&
+         browser->GetProfile() == profile();
 }
 
 }  // namespace badging
