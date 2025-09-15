@@ -57,9 +57,12 @@ class LenientMockPageLoader
     }
   }
 
-  void SetPageNodesToLoad(PageNode* page_node,
-                          std::vector<const PageNode*> split_nodes) {
-    split_nodes_map_[page_node] = split_nodes;
+  void AddTabSplit(std::vector<const PageNode*> split_nodes) {
+    // Tab splits are symmetrical: return all pages in `split_nodes` when
+    // looking up any of them.
+    for (const PageNode* page_node : split_nodes) {
+      split_nodes_map_[page_node] = split_nodes;
+    }
   }
 
  private:
@@ -265,8 +268,8 @@ TEST_F(BackgroundTabLoadingPolicyTest, AllLoadingSlotsUsed) {
   ::testing::Mock::VerifyAndClear(loader());
   EXPECT_EQ(0, num_all_tabs_loaded_calls());
 
-  // The "all tabs loaded" callback should be loaded after the 3rd and 4th pages
-  // finish loading.
+  // The "all tabs loaded" callback should be invoked after the 3rd and 4th
+  // pages finish loading.
   page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoading);
   page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoading);
@@ -275,13 +278,12 @@ TEST_F(BackgroundTabLoadingPolicyTest, AllLoadingSlotsUsed) {
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest, SplitTabsLoadedTogether) {
-  // Create 4 PageNode to restore.
+  // Create 4 PageNodes to restore.
   std::vector<
       performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
       page_nodes;
   std::vector<PageNodeData> to_load;
 
-  // Create vector of PageNode to restore.
   for (int i = 0; i < 4; i++) {
     page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
     to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
@@ -293,8 +295,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, SplitTabsLoadedTogether) {
 
   // Mark tabs 1 and 2 as split and 2 as the having granted permission status so
   // it loads first.
-  loader()->SetPageNodesToLoad(page_nodes[2].get(),
-                               {page_nodes[1].get(), page_nodes[2].get()});
+  loader()->AddTabSplit({page_nodes[1].get(), page_nodes[2].get()});
   to_load[2].notification_permission_status =
       blink::mojom::PermissionStatus::GRANTED;
 
@@ -326,6 +327,97 @@ TEST_F(BackgroundTabLoadingPolicyTest, SplitTabsLoadedTogether) {
   page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoading);
   page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
 
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, SplitTabsAllLoaded) {
+  // Create 3 PageNodes to restore.
+  std::vector<
+      performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
+      page_nodes;
+  std::vector<PageNodeData> to_load;
+
+  for (int i = 0; i < 3; i++) {
+    page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
+
+    // Mark the PageNode as a tab as this is a requirement to pass it to
+    // ScheduleLoadForRestoredTabs().
+    page_nodes.back()->SetType(PageType::kTab);
+  }
+
+  // Create a 4th tab, and put it in a split with tab 1.
+  page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
+  page_nodes.back()->SetType(PageType::kTab);
+  loader()->AddTabSplit({page_nodes[1].get(), page_nodes.back().get()});
+
+  // All tabs should be loaded, including the 4th, even though it wasn't
+  // explicitly requested.
+  for (int i = 0; i < 4; i++) {
+    EXPECT_CALL(*loader(), LoadPageNode(page_nodes[i].get()));
+  }
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+
+  // The "all tabs loaded" callback should be invoked after all the pages finish
+  // loading, not just the explicitly requested ones.
+  for (int i = 0; i < 3; i++) {
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoading);
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  }
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+  page_nodes.back()->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes.back()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+}
+
+// Regression test for https://crbug.com/444491692
+TEST_F(BackgroundTabLoadingPolicyTest, SplitTabsAlreadyLoading) {
+  // Create 3 PageNodes to restore.
+  std::vector<
+      performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
+      page_nodes;
+  std::vector<PageNodeData> to_load;
+
+  for (int i = 0; i < 3; i++) {
+    page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
+
+    // Mark the PageNode as a tab as this is a requirement to pass it to
+    // ScheduleLoadForRestoredTabs().
+    page_nodes.back()->SetType(PageType::kTab);
+  }
+
+  // Create a 4th tab, and put it in a split with tab 1.
+  page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
+  page_nodes.back()->SetType(PageType::kTab);
+  loader()->AddTabSplit({page_nodes[1].get(), page_nodes.back().get()});
+
+  // Mark the split tab as already loading. It should NOT be loaded again by
+  // session restore.
+  page_nodes.back()->SetLoadingState(PageNode::LoadingState::kLoading);
+  for (int i = 0; i < 3; i++) {
+    EXPECT_CALL(*loader(), LoadPageNode(page_nodes[i].get()));
+  }
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+
+  // The "all tabs loaded" callback should be invoked after all scheduled pages
+  // finish loading. The split tab isn't counted because it was already loading.
+  for (int i = 0; i < 3; i++) {
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoading);
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  }
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+  page_nodes.back()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   EXPECT_EQ(1, num_all_tabs_loaded_calls());
 }
 
