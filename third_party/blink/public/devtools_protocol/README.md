@@ -155,7 +155,7 @@ we have flexibility of using composite identifiers in the future to avoid
 identifier collisions, for example, by prepending process identifier
 to renderer-issued ids.
 
-## Wire Format, Strings and Binary Values
+## Wire Format, Strings, Binary and Number Values
 
 CDP is designed with JSON-RPC 2.0 as the primary wire format (though other
 representations exist). When exposed outside of the browser, the JSON
@@ -171,6 +171,11 @@ requests, are designated with Binary type in the protocol definition,
 which is mapped to base64-encoded strings when sent over JSON, and uses
 a more efficient representation when protocol is represented using
 a binary wire format.
+
+Note that JSON has no way of representing IEEE 754 ±Infinity or NaN values for
+floating point types, so in case of underlying representation being JSON, these
+values can't be passed through the protocol and are implicitly converted to
+null.
 
 ## Localizability
 
