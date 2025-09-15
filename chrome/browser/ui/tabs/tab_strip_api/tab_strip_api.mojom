@@ -82,10 +82,13 @@ union TabsEvent {
   // When tabs have been closed on the tab strip.
   OnTabsClosedEvent tabs_closed_event;
 
-  // When a tab has been moved.
-  OnTabMovedEvent tab_moved_event;
+  // When any node in the tab strip tree has been moved. This could be a tab
+  // TabGroup or SplitTab.
+  OnNodeMovedEvent node_moved_event;
 
-  // When data has been updated.
+  // When the data properties of an existing node have changed, but the node
+  // itself has not moved. For example, this could be data changes to an
+  // individual Tab or to a collection, such as a TabGroup's title.
   OnDataChangedEvent data_changed_event;
 
   // When a new tab collection has been created.

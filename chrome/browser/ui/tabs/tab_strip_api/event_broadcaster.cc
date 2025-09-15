@@ -22,8 +22,8 @@ class EventVisitor {
     return mojom::TabsEvent::NewTabsClosedEvent(event.Clone());
   }
 
-  mojom::TabsEventPtr operator()(const mojom::OnTabMovedEventPtr& event) {
-    return mojom::TabsEvent::NewTabMovedEvent(event.Clone());
+  mojom::TabsEventPtr operator()(const mojom::OnNodeMovedEventPtr& event) {
+    return mojom::TabsEvent::NewNodeMovedEvent(event.Clone());
   }
 
   mojom::TabsEventPtr operator()(const mojom::OnDataChangedEventPtr& event) {

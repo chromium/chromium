@@ -48,7 +48,7 @@ mojom::OnTabsClosedEventPtr ToEvent(const TabStripModelChange::Remove& remove) {
   return event;
 }
 
-mojom::OnTabMovedEventPtr ToEvent(
+mojom::OnNodeMovedEventPtr ToEvent(
     const TabStripModelChange::Move& move,
     const tabs_api::TabStripModelAdapter* adapter) {
   NodeId id(NodeId::Type::kContent,
@@ -64,7 +64,7 @@ mojom::OnTabMovedEventPtr ToEvent(
   }
   auto to = tabs_api::Position(move.to_index, to_parent_id);
 
-  auto event = mojom::OnTabMovedEvent::New();
+  auto event = mojom::OnNodeMovedEvent::New();
   event->id = id;
   event->from = std::move(from);
   event->to = std::move(to);
@@ -159,13 +159,13 @@ mojom::OnCollectionCreatedEventPtr FromTabGroupToDataCreatedEvent(
   return event;
 }
 
-mojom::OnTabMovedEventPtr FromTabGroupedStateChangedToTabMovedEvent(
+mojom::OnNodeMovedEventPtr FromTabGroupedStateChangedToNodeMovedEvent(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group_id,
     std::optional<tab_groups::TabGroupId> new_group_id,
     tabs::TabInterface* tab,
     int index) {
-  auto event = mojom::OnTabMovedEvent::New();
+  auto event = mojom::OnNodeMovedEvent::New();
   event->id = NodeId::FromTabHandle(tab->GetHandle());
   std::optional<tabs_api::NodeId> old_parent_id;
   if (old_group_id.has_value()) {
@@ -199,14 +199,14 @@ mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change) {
   return event;
 }
 
-mojom::OnTabMovedEventPtr ToTabGroupMovedEvent(
+mojom::OnNodeMovedEventPtr ToTabGroupMovedEvent(
     const TabGroupChange& tab_group_change) {
   CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kMoved);
   const TabGroup* tab_group =
       tab_group_change.model->group_model()->GetTabGroup(
           tab_group_change.group);
 
-  auto event = mojom::OnTabMovedEvent::New();
+  auto event = mojom::OnNodeMovedEvent::New();
   event->id = NodeId(
       NodeId::Type::kCollection,
       base::NumberToString(tab_group->GetCollectionHandle().raw_value()));

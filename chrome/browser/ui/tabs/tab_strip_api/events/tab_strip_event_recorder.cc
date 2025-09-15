@@ -120,8 +120,8 @@ void TabStripEventRecorder::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {
-  Handle(FromTabGroupedStateChangedToTabMovedEvent(tab_strip_model, old_group,
-                                                   new_group, tab, index));
+  Handle(FromTabGroupedStateChangedToNodeMovedEvent(tab_strip_model, old_group,
+                                                    new_group, tab, index));
 }
 
 void TabStripEventRecorder::OnSplitTabChanged(const SplitTabChange& change) {

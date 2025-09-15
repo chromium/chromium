@@ -53,7 +53,7 @@ class ReallyVerySimpleSyncObserver
 
 class TestTabStripClient : public tabs_api::mojom::TabsObserver {
  public:
-  void OnTabsCreated(tabs_api::mojom::OnTabsCreatedEventPtr& event) {
+  void OnTabsCreated(tabs_api::mojom::OnTabsCreatedEventPtr event) {
     for (auto& tab_created_container : event->tabs) {
       auto& tab = tab_created_container->tab;
       auto tab_id = tab->id;
@@ -67,7 +67,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     }
   }
 
-  void OnTabMoved(tabs_api::mojom::OnTabMovedEventPtr& event) {
+  void OnNodeMoved(tabs_api::mojom::OnNodeMovedEventPtr event) {
     move_events.push_back(std::move(event));
   }
 
@@ -97,8 +97,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     }
   }
 
-  void OnCollectionCreated(
-      tabs_api::mojom::OnCollectionCreatedEventPtr& event) {
+  void OnCollectionCreated(tabs_api::mojom::OnCollectionCreatedEventPtr event) {
     // TODO(crbug.com/412955607): implement this.
     created_events.push_back(std::move(event));
   }
@@ -107,25 +106,25 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     for (auto& event : events) {
       switch (event->which()) {
         case tabs_api::mojom::TabsEvent::Tag::kTabsCreatedEvent:
-          OnTabsCreated(event->get_tabs_created_event());
+          OnTabsCreated(std::move(event->get_tabs_created_event()));
           break;
         case tabs_api::mojom::TabsEvent::Tag::kTabsClosedEvent:
           OnTabsClosed(event->get_tabs_closed_event());
           break;
-        case tabs_api::mojom::TabsEvent::Tag::kTabMovedEvent:
-          OnTabMoved(event->get_tab_moved_event());
+        case tabs_api::mojom::TabsEvent::Tag::kNodeMovedEvent:
+          OnNodeMoved(std::move(event->get_node_moved_event()));
           break;
         case tabs_api::mojom::TabsEvent::Tag::kDataChangedEvent:
           OnDataChanged(event->get_data_changed_event());
           break;
         case tabs_api::mojom::TabsEvent::Tag::kCollectionCreatedEvent:
-          OnCollectionCreated(event->get_collection_created_event());
+          OnCollectionCreated(std::move(event->get_collection_created_event()));
           break;
       }
     }
   }
 
-  std::vector<tabs_api::mojom::OnTabMovedEventPtr> move_events;
+  std::vector<tabs_api::mojom::OnNodeMovedEventPtr> move_events;
   std::vector<tabs_api::mojom::OnCollectionCreatedEventPtr> created_events;
 
   std::map<std::string, tabs_api::mojom::TabPtr> tabs;
@@ -603,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
   EXPECT_EQ(model->group_model()->GetTabGroup(group_id)->tab_count(), 3);
 
   ASSERT_FALSE(observation->client.move_events.empty());
-  tabs_api::mojom::OnTabMovedEventPtr move_event;
+  tabs_api::mojom::OnNodeMovedEventPtr move_event;
   for (auto& event : observation->client.move_events) {
     if (event->id == to_move_id && event->to.parent_id().has_value() &&
         event->to.parent_id().value() == to_group_collection_id) {

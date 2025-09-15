@@ -29,8 +29,11 @@ struct OnCollectionCreatedEvent {
   Position position;
 };
 
-struct OnTabMovedEvent {
-  // The id of the tab that moved.
+// Fired when any node in the tab strip tree is moved.
+// "Node" is the generic term for any item which can be a single Tab
+// or a collection (ie: TabGroup or SplitTab).
+struct OnNodeMovedEvent {
+  // The id of the node that moved.
   NodeId id;
   // The original position.
   Position from;
