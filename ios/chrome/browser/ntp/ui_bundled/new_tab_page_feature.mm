@@ -170,6 +170,8 @@ NTPMIAEntrypointVariation GetNTPMIAEntrypointVariation() {
   } else if (feature_param ==
              kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito) {
     return NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito;
+  } else if (feature_param == kNTPMIAEntrypointParamAIMInQuickActions) {
+    return NTPMIAEntrypointVariation::kAIMInQuickAction;
   } else {
     return NTPMIAEntrypointVariation::kDisabled;
   }
@@ -185,12 +187,15 @@ bool ShowOnlyMIAEntrypointInNTPFakebox() {
 }
 
 bool ShouldShowQuickActionsRow() {
-  return ShowOnlyMIAEntrypointInNTPFakebox();
+  NTPMIAEntrypointVariation variation = GetNTPMIAEntrypointVariation();
+  return ShowOnlyMIAEntrypointInNTPFakebox() ||
+         variation == NTPMIAEntrypointVariation::kAIMInQuickAction;
 }
 
 bool ShouldEnlargeNTPFakeboxForMIA() {
   NTPMIAEntrypointVariation variation = GetNTPMIAEntrypointVariation();
   return variation ==
              NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox ||
-         variation == NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito;
+         variation == NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito ||
+         variation == NTPMIAEntrypointVariation::kAIMInQuickAction;
 }

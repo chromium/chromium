@@ -22,6 +22,9 @@
 // The button to open voice search.
 @property(nonatomic, readonly) UIButton* voiceSearchButton;
 
+// The button to open AIM.
+@property(nonatomic, readonly) UIButton* aimButton;
+
 // Handles the actions for the NTP shortcuts, like Lens or voice search.
 @property(nonatomic, weak) id<NewTabPageShortcutsHandler> NTPShortcutsHandler;
 

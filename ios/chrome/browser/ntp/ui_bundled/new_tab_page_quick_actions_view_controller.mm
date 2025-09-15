@@ -66,19 +66,40 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
   [NSLayoutConstraint
       activateConstraints:@[ [_buttonStackView.heightAnchor
                               constraintEqualToConstant:kQuickActionsHeight] ]];
+  BOOL showAIMEntrypoint = GetNTPMIAEntrypointVariation() ==
+                           NTPMIAEntrypointVariation::kAIMInQuickAction;
+  if (showAIMEntrypoint) {
+    _aimButton =
+        [self createButtonWithSymbolName:kMagnifyingglassSparkSymbol
+                                   title:l10n_util::GetNSString(
+                                             IDS_IOS_NTP_QUICK_ACTIONS_AIM)];
+    [_buttonStackView addArrangedSubview:_aimButton];
+  }
 
   BOOL showIncognito = GetNTPMIAEntrypointVariation() !=
                        NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito;
   if (showIncognito) {
-    _incognitoButton = [self createButtonWithSymbolName:kIncognitoSymbol];
+    if (showAIMEntrypoint) {
+      _incognitoButton = [self
+          createButtonWithSymbolName:kIncognitoSymbol
+                               title:l10n_util::GetNSString(
+                                         IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO)];
+    } else {
+      _incognitoButton = [self createButtonWithSymbolName:kIncognitoSymbol];
+    }
     [_buttonStackView addArrangedSubview:_incognitoButton];
   }
 
-  _voiceSearchButton = [self createButtonWithSymbolName:kVoiceSymbol];
-  _lensButton = [self createButtonWithSymbolName:kCameraLensSymbol];
+  BOOL showVoiceLens = GetNTPMIAEntrypointVariation() !=
+                       NTPMIAEntrypointVariation::kAIMInQuickAction;
 
-  [_buttonStackView addArrangedSubview:_voiceSearchButton];
-  [_buttonStackView addArrangedSubview:_lensButton];
+  if (showVoiceLens) {
+    _voiceSearchButton = [self createButtonWithSymbolName:kVoiceSymbol];
+    _lensButton = [self createButtonWithSymbolName:kCameraLensSymbol];
+
+    [_buttonStackView addArrangedSubview:_voiceSearchButton];
+    [_buttonStackView addArrangedSubview:_lensButton];
+  }
 
   [self setupQuickActionsButtonsAccessibility];
 
@@ -94,6 +115,9 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
   [_incognitoButton addTarget:self
                        action:@selector(openIncognitoSearch)
              forControlEvents:UIControlEventTouchUpInside];
+  [_aimButton addTarget:self
+                 action:@selector(openAIM)
+       forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (CGSize)preferredContentSize {
@@ -128,6 +152,12 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
 
 // Creates a new quick action button with the given `icon`.
 - (UIButton*)createButtonWithSymbolName:(NSString*)symbolName {
+  return [self createButtonWithSymbolName:symbolName title:nil];
+}
+
+// Creates a new quick action button with the given `icon` and title.
+- (UIButton*)createButtonWithSymbolName:(NSString*)symbolName
+                                  title:(NSString*)title {
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
   configuration.background.backgroundColor = ButtonBackgroundColor(nil);
@@ -135,6 +165,15 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
   configuration.baseForegroundColor = [UIColor colorNamed:kGrey700Color];
   UIImage* icon = CustomSymbolWithPointSize(symbolName, kSymbolPointSize);
   configuration.image = MakeSymbolMonochrome(icon);
+
+  if (title) {
+    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSAttributedString* attributedTitle =
+        [[NSAttributedString alloc] initWithString:title attributes:attributes];
+    configuration.attributedTitle = attributedTitle;
+    configuration.imagePadding = 8;
+  }
 
   UIButton* button = [[UIButton alloc] init];
 
@@ -181,6 +220,10 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
 
 - (void)openIncognitoSearch {
   [self.NTPShortcutsHandler openIncognitoSearch];
+}
+
+- (void)openAIM {
+  [self.NTPShortcutsHandler openMIA];
 }
 
 @end

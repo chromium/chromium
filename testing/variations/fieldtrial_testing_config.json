@@ -12753,6 +12753,15 @@
                     "enable_features": [
                         "kNTPMIAEntrypoint"
                     ]
+                },
+                {
+                    "name": "EnabledWithAIMInQuickActions",
+                    "params": {
+                        "kNTPMIAEntrypointParam": "kNTPMIAEntrypointParamAIMInQuickActions"
+                    },
+                    "enable_features": [
+                        "kNTPMIAEntrypoint"
+                    ]
                 }
             ]
         }
