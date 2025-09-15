@@ -1328,6 +1328,11 @@ BASE_FEATURE(kProcessPerSiteSkipEnterpriseUsers,
 // //content.
 BASE_FEATURE(kProcessPerSiteForDSE, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Consider the default search engine (DSE) warmup page as a search results page
+// (SRP), for the purpose of applying the "process per site for DSE SRP" policy
+// (`kProcessPerSiteForDSE`).
+BASE_FEATURE(kConsiderDSEWarmUpPageAsSRP, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables the SkyVault (cloud-first) changes, some of which are also controlled
 // by policies: removing local storage, saving downloads and screen captures to
