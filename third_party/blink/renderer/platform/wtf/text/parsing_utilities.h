@@ -60,25 +60,6 @@ bool SkipExactly(base::span<const CharType> chars, size_t& position) {
   return false;
 }
 
-// Use a span version instead.
-template <typename CharType>
-UNSAFE_BUFFER_USAGE bool SkipToken(const CharType*& position,
-                                   const CharType* end,
-                                   const char* token) {
-  const CharType* current = position;
-  while (current < end && *token) {
-    if (*current != *token)
-      return false;
-    UNSAFE_TODO(++current);
-    UNSAFE_TODO(++token);
-  }
-  if (*token)
-    return false;
-
-  position = current;
-  return true;
-}
-
 template <typename CharType>
 bool SkipToken(const base::span<const CharType> chars,
                StringView token,
