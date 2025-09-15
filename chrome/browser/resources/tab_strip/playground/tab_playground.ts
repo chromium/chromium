@@ -103,10 +103,9 @@ export class TabElement extends CustomElement {
     this.toggleAttribute(
         'loading_', tab.networkState === TabNetworkState.kLoading);
     this.toggleAttribute('pinned', this.isPinned);
+    this.setAttribute('draggable', 'true');
     this.toggleAttribute('blocked_', this.blocked);
     this.toggleAttribute('crashed_', this.crashed);
-
-    this.draggable = true;
 
     if (tab.title) {
       this.titleTextEl_.textContent = tab.title;
