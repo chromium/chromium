@@ -321,8 +321,9 @@ Animation* ClipPathClipper::GetClipPathAnimation(
 #if EXPENSIVE_DCHECKS_ARE_ON()
   if (animation &&
       CompositeClipPathStatus(element) == CompositedPaintStatus::kComposited) {
-    CHECK(animation->CheckCanStartAnimationOnCompositor(nullptr) ==
-          CompositorAnimations::kNoFailure);
+    CHECK(animation->HasActiveAnimationsOnCompositor() ||
+          animation->CheckCanStartAnimationOnCompositor(nullptr) ==
+              CompositorAnimations::kNoFailure);
   }
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
