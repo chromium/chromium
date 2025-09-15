@@ -226,6 +226,23 @@ std::u16string GetUrlForDisplay(Profile* profile, const GURL& url) {
   return identity.name;
 }
 
+// Permissions eligible for auto-revocation by Safety Hub need to track
+// `last_visited` timestamp for the site. Automation uses it to decide if the
+// site is considered "unused". Unused site permissions are then auto-revoked.
+content_settings::ContentSettingConstraints CreateConstraintsForAutoRevocation(
+    ContentSettingsType content_type,
+    ContentSetting setting) {
+  content_settings::ContentSettingConstraints constraints;
+
+  if (base::FeatureList::IsEnabled(
+          features::kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
+      content_settings::CanBeAutoRevokedAsUnusedPermission(
+          content_type, content_settings::ContentSettingToValue(setting))) {
+    constraints.set_track_last_visit_for_autoexpiration(true);
+  }
+  return constraints;
+}
+
 }  // namespace
 
 // static
@@ -769,9 +786,10 @@ void ContentSettingSingleRadioGroup::SetNarrowestContentSetting(
   }
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
-  map->SetNarrowestContentSetting(bubble_content().radio_group.url,
-                                  bubble_content().radio_group.url,
-                                  content_type(), setting);
+  map->SetNarrowestContentSetting(
+      bubble_content().radio_group.url, bubble_content().radio_group.url,
+      content_type(), setting,
+      CreateConstraintsForAutoRevocation(content_type(), setting));
 }
 
 // ContentSettingStorageAccessBubbleModel --------------------------------------
@@ -1271,7 +1289,9 @@ void ContentSettingMediaStreamBubbleModel::UpdateSettings(
             permissions::PermissionSourceUI::PAGE_ACTION);
     map->SetContentSettingDefaultScope(
         page_content_settings->media_stream_access_origin(), GURL(),
-        ContentSettingsType::MEDIASTREAM_MIC, setting);
+        ContentSettingsType::MEDIASTREAM_MIC, setting,
+        CreateConstraintsForAutoRevocation(ContentSettingsType::MEDIASTREAM_MIC,
+                                           setting));
   }
   if (CameraAccessed()) {
     permissions::PermissionUmaUtil::ScopedRevocationReporter
@@ -1281,7 +1301,9 @@ void ContentSettingMediaStreamBubbleModel::UpdateSettings(
             permissions::PermissionSourceUI::PAGE_ACTION);
     map->SetContentSettingDefaultScope(
         page_content_settings->media_stream_access_origin(), GURL(),
-        ContentSettingsType::MEDIASTREAM_CAMERA, setting);
+        ContentSettingsType::MEDIASTREAM_CAMERA, setting,
+        CreateConstraintsForAutoRevocation(
+            ContentSettingsType::MEDIASTREAM_CAMERA, setting));
   }
 }
 
@@ -1573,7 +1595,9 @@ void ContentSettingDownloadsBubbleModel::CommitChanges() {
     auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
     map->SetNarrowestContentSetting(
         bubble_content().radio_group.url, bubble_content().radio_group.url,
-        ContentSettingsType::AUTOMATIC_DOWNLOADS, setting);
+        ContentSettingsType::AUTOMATIC_DOWNLOADS, setting,
+        CreateConstraintsForAutoRevocation(
+            ContentSettingsType::AUTOMATIC_DOWNLOADS, setting));
   }
 }
 
