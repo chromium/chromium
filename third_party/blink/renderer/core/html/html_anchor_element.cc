@@ -855,10 +855,10 @@ Element* HTMLAnchorElement::ScrollTargetElement() const {
 PaintLayerScrollableArea*
 HTMLAnchorElement::AncestorScrollableAreaOfScrollTargetElement() const {
   Element* scroll_target = ScrollTargetElement();
-  if (!scroll_target || !scroll_target->GetLayoutBox()) {
+  if (!scroll_target || !scroll_target->GetLayoutObject()) {
     return nullptr;
   }
-  for (LayoutBox* parent_box = scroll_target->GetLayoutBox()->ParentBox();
+  for (LayoutBox* parent_box = scroll_target->GetLayoutObject()->EnclosingBox();
        parent_box; parent_box = parent_box->ParentBox()) {
     if (ScrollableArea* scrollable_area =
             scroll_into_view_util::GetScrollableAreaForLayoutBox(
