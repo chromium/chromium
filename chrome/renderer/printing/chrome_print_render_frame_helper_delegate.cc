@@ -44,7 +44,9 @@ blink::WebElement ChromePrintRenderFrameHelperDelegate::GetPdfElement(
     CHECK_NE(parent_origin,
              url::Origin::Create(GURL(chrome::kChromeUIPrintURL)));
     if (IsPdfExtensionOrigin(parent_origin)) {
+      // LINT.IfChange(GetPdfElement)
       auto plugin_element = frame->GetDocument().QuerySelector("embed");
+      // LINT.ThenChange(//chrome/browser/resources/pdf/pdf_viewer_base.ts:CreateEmbed)
       CHECK(!plugin_element.IsNull());
       return plugin_element;
     }

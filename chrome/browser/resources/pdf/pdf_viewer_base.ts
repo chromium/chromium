@@ -89,12 +89,11 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
     // fill the entire window and is set to be fixed positioning, acting as a
     // viewport. The plugin renders into this viewport according to the scroll
     // position of the window.
+    //
+    // LINT.IfChange(CreateEmbed)
     const plugin = document.createElement('embed');
+    // LINT.ThenChange(//chrome/renderer/printing/chrome_print_render_frame_helper_delegate.cc:GetPdfElement)
 
-    // NOTE: The plugin's 'id' field must be set to 'plugin' since
-    // ChromePrintRenderFrameHelperDeleage::GetPdfElement() in
-    // chrome/renderer/printing/chrome_print_render_frame_helper_delegate.cc
-    // actually references it.
     plugin.id = 'plugin';
     plugin.type = 'application/x-google-chrome-pdf';
 
