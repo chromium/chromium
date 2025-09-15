@@ -124,10 +124,6 @@ PasswordManagerDelegate* AutofillClient::GetPasswordManagerDelegate(
   return nullptr;
 }
 
-OtpDelegate* AutofillClient::GetOtpDelegate() {
-  return nullptr;
-}
-
 void AutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
   std::move(callback).Run(std::nullopt);
 }

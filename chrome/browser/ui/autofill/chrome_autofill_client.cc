@@ -497,12 +497,6 @@ PasswordManagerDelegate* ChromeAutofillClient::GetPasswordManagerDelegate(
   return client ? client->GetAutofillDelegate(field_id) : nullptr;
 }
 
-OtpDelegate* ChromeAutofillClient::GetOtpDelegate() {
-  ChromePasswordManagerClient* client =
-      ChromePasswordManagerClient::FromWebContents(web_contents());
-  return client ? client->GetOtpManager() : nullptr;
-}
-
 void ChromeAutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
   blink::mojom::AIPageContentOptionsPtr extraction_options =
       optimization_guide::DefaultAIPageContentOptions(

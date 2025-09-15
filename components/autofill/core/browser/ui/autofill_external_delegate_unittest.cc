@@ -44,7 +44,7 @@
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/compose/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
-#include "components/autofill/core/browser/integrators/password_manager/mock_otp_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/mock_otp_manager.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
@@ -1431,18 +1431,11 @@ TEST_F(AutofillExternalDelegateTest, AcceptManageAutofillAi) {
 }
 
 TEST_F(AutofillExternalDelegateTest, AcceptedOtpSuggestion) {
-  client().set_otp_delegate(std::make_unique<NiceMock<MockOtpDelegate>>());
   IssueOnQuery();
 
   std::u16string otp_value = u"123456";
   OtpFillData otp_fill_data;
   otp_fill_data[queried_field().global_id()] = otp_value;
-
-  EXPECT_CALL(
-      static_cast<MockOtpDelegate&>(*client().GetOtpDelegate()),
-      GetFillDataForOtpSuggestion(queried_form().global_id(),
-                                  queried_field().global_id(), otp_value))
-      .WillOnce(Return(otp_fill_data));
 
   // Expect that suggestion trigger source translates to source `kPopup` or
   // `kKeyboardAccessory`, depending on the platform.

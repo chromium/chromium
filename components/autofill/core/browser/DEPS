@@ -13,6 +13,7 @@ include_rules = [
   "+components/language_detection/core",
   "+components/leveldb_proto",
   "+components/metrics",
+  "+components/one_time_tokens/core/browser",
   "+components/optimization_guide",
   "+components/optimization_guide/core",
   "+components/password_manager/core/browser/features/password_features.h",

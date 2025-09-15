@@ -104,6 +104,11 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
                                            std::move(plus_address_override));
   }
 
+  OtpManager* set_otp_manager(std::unique_ptr<OtpManager> otp_manager) {
+    manager_->otp_manager_ = std::move(otp_manager);
+    return manager_->otp_manager_.get();
+  }
+
  private:
   raw_ref<BrowserAutofillManager> manager_;
 };

@@ -98,10 +98,6 @@ class WebAuthnCredManDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace webauthn
 
-namespace one_time_tokens {
-class SmsOtpBackend;
-}
-
 namespace password_manager {
 
 class FieldInfoManager;
@@ -533,8 +529,6 @@ class PasswordManagerClient {
   // Marks all credentials that have been loaded for this page and have been
   // received via the password sharing feature as notified.
   virtual void MarkSharedCredentialsAsNotified(const GURL& url);
-
-  virtual one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns the Chrome channel for the installation.

@@ -79,7 +79,6 @@
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#include "components/password_manager/core/browser/one_time_passwords/otp_manager.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -159,7 +158,6 @@
 #include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_autofill_delegate.h"
-#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
@@ -225,17 +223,7 @@ constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 url::Origin URLToOrigin(GURL url) {
   return url::Origin::Create(url.DeprecatedGetOriginAsURL());
 }
-
-#endif
-
-bool PredictionsContainOtpFields(
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
-        predictions) {
-  return std::any_of(predictions.begin(), predictions.end(),
-                     [](const auto& field) {
-                       return field.second == autofill::ONE_TIME_CODE;
-                     });
-}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -1102,10 +1090,6 @@ ChromePasswordManagerClient::GetHttpAuthManager() {
   return &httpauth_manager_;
 }
 
-password_manager::OtpManager* ChromePasswordManagerClient::GetOtpManager() {
-  return &otp_manager_;
-}
-
 autofill::AutofillCrowdsourcingManager*
 ChromePasswordManagerClient::GetAutofillCrowdsourcingManager() {
   if (auto* client =
@@ -1405,15 +1389,6 @@ void ChromePasswordManagerClient::MarkSharedCredentialsAsNotified(
       GetProfilePasswordStore()->UpdateLogin(std::move(updatedForm));
     }
   }
-}
-
-one_time_tokens::SmsOtpBackend* ChromePasswordManagerClient::GetSmsOtpBackend()
-    const {
-  if (auto* client =
-          autofill::ContentAutofillClient::FromWebContents(web_contents())) {
-    return client->GetSmsOtpBackend();
-  }
-  return nullptr;
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1816,7 +1791,6 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
                                 g_browser_process->local_state(),
                                 SyncServiceFactory::GetForProfile(profile_)),
       httpauth_manager_(this),
-      otp_manager_(this),
       content_credential_manager_(
           std::make_unique<password_manager::CredentialManagerImpl>(this)),
       password_generation_driver_receivers_(web_contents, this),
@@ -1837,12 +1811,6 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
       autofill::ContentAutofillClient::FromWebContents(web_contents),
       autofill::ScopedAutofillManagersObservation::InitializationPolicy::
           kObservePreexistingManagers);
-}
-
-void ChromePasswordManagerClient::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  otp_manager_.OnRenderFrameDeleted(
-      autofill::LocalFrameToken(render_frame_host->GetFrameToken().value()));
 }
 
 void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
@@ -1905,20 +1873,6 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
 #endif
 }
 
-void ChromePasswordManagerClient::DidFinishNavigation(
-    content::NavigationHandle* navigation) {
-  if (!navigation->HasCommitted() || navigation->IsSameDocument()) {
-    return;
-  }
-
-  if (navigation->IsInPrimaryMainFrame()) {
-    otp_manager_.OnDidFinishNavigationInMainFrame();
-  } else {
-    otp_manager_.OnDidFinishNavigationInIframe(autofill::LocalFrameToken(
-        navigation->GetRenderFrameHost()->GetFrameToken().value()));
-  }
-}
-
 void ChromePasswordManagerClient::ResourceLoadComplete(
     content::RenderFrameHost* render_frame_host,
     const content::GlobalRequestID& request_id,
@@ -1938,7 +1892,6 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
     autofill::FormGlobalId form_id,
     FieldTypeSource source) {
   PropagatePredictionsToPasswordManager(manager, form_id, source);
-  PropagatePredictionsToOtpManager(manager, form_id, source);
 }
 
 void ChromePasswordManagerClient::PropagatePredictionsToPasswordManager(
@@ -1987,46 +1940,6 @@ void ChromePasswordManagerClient::PropagatePredictionsToPasswordManager(
         }
         break;
     }
-  }
-}
-
-void ChromePasswordManagerClient::PropagatePredictionsToOtpManager(
-    autofill::AutofillManager& manager,
-    autofill::FormGlobalId form_id,
-    FieldTypeSource source) {
-  // `otp_manager_` needs to receive data for the whole browser form.
-  const autofill::FormStructure* browser_form =
-      manager.FindCachedFormById(form_id);
-  if (!browser_form) {
-    return;
-  }
-
-  std::vector<autofill::FieldGlobalId> field_ids =
-      base::ToVector(browser_form->fields(),
-                     [](const std::unique_ptr<autofill::AutofillField>& field) {
-                       return field->global_id();
-                     });
-
-  switch (source) {
-    case FieldTypeSource::kAutofillServer:
-    case FieldTypeSource::kAutofillAiModel:
-      otp_manager_.ProcessServerPredictions(
-          browser_form->ToFormData(),
-          manager.GetServerPredictionsForForm(form_id, field_ids));
-      break;
-
-    case FieldTypeSource::kHeuristicsOrAutocomplete:
-      auto model_predictions = manager.GetHeursticPredictionForForm(
-          autofill::HeuristicSource::kPasswordManagerMachineLearning, form_id,
-          field_ids);
-      if (PredictionsContainOtpFields(model_predictions) &&
-          base::FeatureList::IsEnabled(
-              password_manager::features::
-                  kApplyClientsideModelPredictionsForOtps)) {
-        otp_manager_.ProcessClassificationModelPredictions(
-            browser_form->ToFormData(), model_predictions);
-      }
-      break;
   }
 }
 

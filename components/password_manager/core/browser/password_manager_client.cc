@@ -187,10 +187,6 @@ PasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
 
 void PasswordManagerClient::MarkSharedCredentialsAsNotified(const GURL& url) {}
 
-one_time_tokens::SmsOtpBackend* PasswordManagerClient::GetSmsOtpBackend()
-    const {
-  return nullptr;
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 version_info::Channel PasswordManagerClient::GetChannel() const {

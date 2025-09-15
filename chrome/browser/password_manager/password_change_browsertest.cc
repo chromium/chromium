@@ -58,7 +58,6 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/one_time_passwords/otp_manager.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -337,12 +336,6 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
 
     ASSERT_TRUE(
         GetAutofillManager()->FindCachedFormById(form.fields()[0].global_id()));
-
-    password_manager::OtpManager* otp_manager =
-        ChromePasswordManagerClient::FromWebContents(WebContents())
-            ->GetOtpManager();
-    otp_manager->ProcessClassificationModelPredictions(
-        form, {{form.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
 
     // Notify observers manually as this would typically happen during parsing
     // but the step is skipped when using the Test APIs.

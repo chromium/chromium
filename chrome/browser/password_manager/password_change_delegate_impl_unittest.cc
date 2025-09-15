@@ -22,7 +22,6 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/password_manager/core/browser/one_time_passwords/otp_form_manager.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -306,8 +305,6 @@ TEST_F(PasswordChangeDelegateImplTest, OtpDetectionProcessed) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   autofill::FormData form = autofill::test::CreateTestUnclassifiedFormData();
   FakePasswordManagerClient fake_client;
-  password_manager::OtpFormManager form_manager(
-      form, {form.fields()[0].global_id()}, &fake_client);
 
   delegate()->StartPasswordChangeFlow();
   EXPECT_EQ(delegate()->GetCurrentState(),

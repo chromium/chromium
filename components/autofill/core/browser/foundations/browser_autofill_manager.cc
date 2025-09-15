@@ -96,8 +96,8 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
-#include "components/autofill/core/browser/integrators/password_manager/otp_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
@@ -779,7 +779,10 @@ BrowserAutofillManager::MetricsState::~MetricsState() {
 }
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
-    : AutofillManager(driver) {}
+    : AutofillManager(driver),
+      otp_manager_(
+          new OtpManagerImpl(this,
+                             driver->GetAutofillClient().GetSmsOtpBackend())) {}
 
 BrowserAutofillManager::~BrowserAutofillManager() {
   // Process log events and record into UKM when the FormStructure is destroyed.
@@ -1363,20 +1366,17 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
                                       &form_structure, &autofill_field);
 
-  const OtpDelegate* otp_delegate = client().GetOtpDelegate();
-  bool eligible_for_otp_filling =
-      form_structure && autofill_field && otp_delegate &&
-      otp_delegate->IsFieldEligibleForOtpFilling(form_structure->global_id(),
-                                                 autofill_field->global_id());
-
   auto generate_suggestions_and_maybe_show_ui_phase3 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context,
       plus_addresses);
 
-  if (eligible_for_otp_filling) {
-    otp_delegate->GetOtpSuggestions(
-        form_structure->global_id(), autofill_field->global_id(),
+  // `otp_manager_` may not be instantiated on all platforms. If a focused field
+  // is not classified, `autofill_field` is null but the field may be filled by
+  // autocomplete.
+  if (otp_manager_ && autofill_field &&
+      autofill_field->Type().GetTypes().contains(ONE_TIME_CODE)) {
+    otp_manager_->GetOtpSuggestions(
         std::move(generate_suggestions_and_maybe_show_ui_phase3));
     return;
   }
@@ -2674,6 +2674,9 @@ void BrowserAutofillManager::Reset() {
   // The order below is relevant:
   // `credit_card_access_manager_` has a reference to `metrics_`.
   credit_card_access_manager_.reset();
+  // Forget cached OTPs after a navigation.
+  otp_manager_ = std::make_unique<OtpManagerImpl>(
+      this, driver().GetAutofillClient().GetSmsOtpBackend());
   metrics_.reset();
   AutofillManager::Reset();
   metrics_.emplace(this);

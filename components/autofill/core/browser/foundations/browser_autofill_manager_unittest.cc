@@ -76,9 +76,9 @@
 #include "components/autofill/core/browser/integrators/compose/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/mock_otp_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
-#include "components/autofill/core/browser/integrators/password_manager/mock_otp_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/mock_password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
@@ -206,6 +206,10 @@ ACTION_TEMPLATE(SaveArgElementsTo,
                 AND_1_VALUE_PARAMS(pointer)) {
   auto span = testing::get<k>(args);
   pointer->assign(span.begin(), span.end());
+}
+
+MATCHER_P(SameGlobalId, form_data, negation ? "does not equal" : "equals") {
+  return arg.global_id() == form_data.global_id();
 }
 
 gfx::Rect GetFakeCaretBounds(const FormFieldData& focused_field) {
@@ -9417,12 +9421,19 @@ class BrowserAutofillManagerOtpSuggestionsTest
  protected:
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
-    client().set_otp_delegate(std::make_unique<NiceMock<MockOtpDelegate>>());
+    otp_manager_ =
+        static_cast<MockOtpManager*>(test_api(manager()).set_otp_manager(
+            std::make_unique<NiceMock<MockOtpManager>>()));
+  }
+  void TearDown() override {
+    otp_manager_ = nullptr;
+    BrowserAutofillManagerTest::TearDown();
   }
 
-  MockOtpDelegate& otp_delegate() {
-    return static_cast<MockOtpDelegate&>(*client().GetOtpDelegate());
-  }
+  MockOtpManager& otp_manager() { return *otp_manager_; }
+
+ private:
+  raw_ptr<MockOtpManager> otp_manager_ = nullptr;
 };
 
 TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpSuggestions) {
@@ -9433,8 +9444,6 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpSuggestions) {
                              {.label = u"Enter captcha",
                               .form_control_type = FormControlType::kInputText},
                          }});
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
 
   // Simulate form parsing results.
   auto form_structure = std::make_unique<FormStructure>(form);
@@ -9445,23 +9454,13 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpSuggestions) {
 
   // Check that suggestions are offered for the first field if the OTP delegate
   // suggests that.
-  EXPECT_CALL(otp_delegate(),
-              IsFieldEligibleForOtpFilling(form.global_id(),
-                                           form.fields()[0].global_id()))
-      .WillOnce(Return(true));
   const std::vector<std::string> otp_values = {"123456"};
-  EXPECT_CALL(
-      otp_delegate(),
-      GetOtpSuggestions(form.global_id(), form.fields()[0].global_id(), _))
-      .WillOnce(RunOnceCallback<2>(otp_values));
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions(_))
+      .WillOnce(RunOnceCallback<0>(otp_values));
   OnAskForValuesToFill(form, form.fields()[0]);
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 
   // Also check that there are no suggestions for the second field.
-  EXPECT_CALL(otp_delegate(),
-              IsFieldEligibleForOtpFilling(form.global_id(),
-                                           form.fields()[1].global_id()))
-      .WillOnce(Return(false));
   OnAskForValuesToFill(form, form.fields()[1]);
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
@@ -9470,8 +9469,8 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
   FormData form = test::GetFormData(
       {.fields = {{.label = u"Enter one time code",
                    .form_control_type = FormControlType::kInputText}}});
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
+
+  // Simulate form parsing results.
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->field(0)->set_heuristic_type(
       HeuristicSource::kPasswordManagerMachineLearning,
@@ -9479,9 +9478,9 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
   test_api(manager()).AddSeenFormStructure(std::move(form_structure));
 
   std::u16string otp_value = u"123456";
-  OtpFillData otp_fill_data;
-  otp_fill_data[form.fields()[0].global_id()] = otp_value;
+  OtpFillData otp_fill_data = {{form.fields()[0].global_id(), otp_value}};
 
+  // Prepare to intercept the request to the renderer to fill the data.
   base::flat_map<FieldGlobalId, FieldType> expected_types = {
       {form.fields()[0].global_id(), ONE_TIME_CODE}};
   std::vector<FormFieldData> filled_fields;
@@ -9490,9 +9489,13 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
                                         expected_types, _))
       .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
                       Return(base::flat_set<FieldGlobalId>{})));
+
+  // Ask to fill the form.
   manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                               form.fields()[0].global_id(), &otp_fill_data,
                               AutofillTriggerSource::kPopup);
+
+  // Verify that the right data is sent to the renderer.
   ASSERT_EQ(1u, filled_fields.size());
   EXPECT_EQ(form.fields()[0].global_id(), filled_fields[0].global_id());
   EXPECT_EQ(otp_value, filled_fields[0].value());

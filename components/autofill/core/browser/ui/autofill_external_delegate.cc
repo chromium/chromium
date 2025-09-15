@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -900,15 +901,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case SuggestionType::kOneTimePasswordEntry: {
-      // Dereferencing is safe, because it wouldn't be possible to get a
-      // suggestion of this type if the OTP delegate did not exist, and the
-      // destruction of the delegate happens on the tab destruction, after
-      // which no filling should happen.
-      const OtpDelegate& otp_delegate =
-          CHECK_DEREF(manager_->client().GetOtpDelegate());
-      OtpFillData otp_fill_data = otp_delegate.GetFillDataForOtpSuggestion(
-          query_form_.global_id(), query_field_.global_id(),
-          suggestion.main_text.value);
+      FormStructure* form_structure = nullptr;
+      AutofillField* autofill_field = nullptr;
+      if (!manager_->GetCachedFormAndField(query_form_.global_id(),
+                                           query_field_.global_id(),
+                                           &form_structure, &autofill_field)) {
+        break;
+      }
+      OtpFillData otp_fill_data = CreateFillDataForOtpSuggestion(
+          *form_structure, *autofill_field, suggestion.main_text.value);
       manager_->FillOrPreviewForm(
           mojom::ActionPersistence::kFill, query_form_,
           query_field_.global_id(), &otp_fill_data,

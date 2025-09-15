@@ -38,7 +38,6 @@
 #include "components/autofill/core/browser/integrators/fast_checkout/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
-#include "components/autofill/core/browser/integrators/password_manager/otp_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -199,8 +198,6 @@ class TestAutofillClientTemplate : public T {
       const autofill::FieldGlobalId& field_id) override {
     return password_manager_delegate_.get();
   }
-
-  OtpDelegate* GetOtpDelegate() override { return otp_delegate_.get(); }
 
   test::AutofillTestingPrefService* GetPrefs() override {
     if (!prefs_) {
@@ -618,10 +615,6 @@ class TestAutofillClientTemplate : public T {
     password_manager_delegate_ = std::move(password_manager_delegate);
   }
 
-  void set_otp_delegate(std::unique_ptr<OtpDelegate> otp_delegate) {
-    otp_delegate_ = std::move(otp_delegate);
-  }
-
   void set_suggestion_ui_session_id(
       std::optional<AutofillClient::SuggestionUiSessionId> session_id) {
     suggestion_ui_session_id_ = session_id;
@@ -643,7 +636,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;
   std::unique_ptr<IdentityCredentialDelegate> identity_credential_delegate_;
   std::unique_ptr<PasswordManagerDelegate> password_manager_delegate_;
-  std::unique_ptr<OtpDelegate> otp_delegate_;
   TestAddressNormalizer test_address_normalizer_;
   std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuideDecider>>
       mock_autofill_optimization_guide_decider_ = std::make_unique<
