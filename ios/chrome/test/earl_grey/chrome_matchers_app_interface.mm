@@ -262,12 +262,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)buttonWithSecondaryColor {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return grey_allOf([self buttonWithForegroundColor:kSolidBlackColor],
                       [self buttonWithBackgroundColor:UIColor.clearColor], nil);
   }
-#endif
   return grey_allOf([self buttonWithForegroundColor:kBlueColor], nil);
 }
 
@@ -286,11 +284,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       return NO;
     }
     UIButton* button = base::apple::ObjCCastStrict<UIButton>(element);
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
     if (@available(iOS 26, *)) {
       return CGColorEqualToColor(color.CGColor, button.tintColor.CGColor);
     }
-#endif
     return CGColorEqualToColor(
         color.CGColor, button.configuration.background.backgroundColor.CGColor);
   };
@@ -1179,11 +1175,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)swipeActionDeleteButton {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   NSString* buttonClass = @"_UISwipeActionDynamicButton";
-#else
-  NSString* buttonClass = @"UISwipeActionStandardButton";
-#endif
   return grey_allOf(
       [ChromeMatchersAppInterface
           buttonWithAccessibilityLabelID:IDS_IOS_DELETE_ACTION_TITLE],

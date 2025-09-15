@@ -154,7 +154,6 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
     }
     return;
   }
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26.0, *)) {
     // In iOS26, the assumption that a scrim coverts the whole window is
     // violated. Therefore, the solution is to tap on the PopoverDismissRegion
@@ -163,15 +162,12 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
         selectElementWithMatcher:grey_accessibilityID(@"PopoverDismissRegion")]
         performAction:grey_tap()];
   } else {
-#endif
     // A scrim covers the whole window and tapping on this scrim dismisses the
     // tools menu.  The "Tools Menu" button happens to be outside of the bounds
     // of the menu and is a convenient place to tap to activate the scrim.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
         performAction:grey_tap()];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif
 }
 
 - (void)openToolsMenuInWindowWithNumber:(int)windowNumber {
@@ -533,14 +529,12 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
     // On iPad, when running on iOS 26+ and building with the iOS 26+ SDK, the
     // search bar is dismissed after clearing the text. The button for clearing
     // text is always displayed.
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
     if (@available(iOS 26, *)) {
       [[EarlGrey
           selectElementWithMatcher:chrome_test_util::SearchBarClearTextButton()]
           performAction:grey_tap()];
       return;
     }
-#endif
 
     // On iPad, when running on iOS < 26 or building with an SDK older than
     // iOS 26, the search bar is cleared and dismissed via the "Cancel" button.
@@ -552,13 +546,11 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
     // When running on iOS 26+ and building with the iOS 26+ SDK, tap the
     // "Close" button.
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
     if (@available(iOS 26, *)) {
       [[EarlGrey selectElementWithMatcher:chrome_test_util::CloseButton()]
           performAction:grey_tap()];
       return;
     }
-#endif
 
     // When running on iOS < 26 or building with an SDK older than iOS 26, tap
     // the "Cancel" button.
