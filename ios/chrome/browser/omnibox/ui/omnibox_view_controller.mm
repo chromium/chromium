@@ -102,13 +102,13 @@ using base::UserMetricsAction;
 
 - (void)loadView {
   UIColor* textColor = [UIColor colorNamed:kTextPrimaryColor];
-  UIColor* textFieldTintColor = [UIColor colorNamed:kBlueColor];
+  UIColor* textInputTintColor = [UIColor colorNamed:kBlueColor];
   UIColor* iconTintColor;
   iconTintColor = [UIColor colorNamed:kToolbarButtonColor];
 
   self.view = [[OmniboxContainerView alloc] initWithFrame:CGRectZero
                                                 textColor:textColor
-                                            textFieldTint:textFieldTintColor
+                                            textInputTint:textInputTintColor
                                                  iconTint:iconTintColor
                                             isLensOverlay:_isLensOverlay];
   self.view.layoutGuideCenter = self.layoutGuideCenter;
@@ -213,7 +213,7 @@ using base::UserMetricsAction;
 #pragma mark - public methods
 
 - (id<OmniboxTextInput>)textInput {
-  return self.view.textField;
+  return self.view.textInput;
 }
 
 - (void)prepareOmniboxForScribble {

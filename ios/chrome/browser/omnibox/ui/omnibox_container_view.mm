@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_thumbnail_button.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -44,7 +45,7 @@ const CGFloat kLeadingImageLeadingMarginLensOverlay = 12;
 const CGFloat kLeadingImageTrailingMarginLensOverlay = 9;
 
 /// Space between the clear button and the edge of the omnibox.
-const CGFloat kTextFieldClearButtonTrailingOffset = 4;
+const CGFloat kTextInputViewClearButtonTrailingOffset = 4;
 
 /// Clear button inset on all sides.
 const CGFloat kClearButtonInset = 4.0f;
@@ -53,10 +54,10 @@ const CGFloat kClearButtonImageSize = 17.0f;
 const CGFloat kClearButtonSize = 28.0f;
 
 /// Creates and configures the text field.
-OmniboxTextFieldIOS* CreateTextField(CGRect frame,
-                                     UIColor* text_color,
-                                     UIColor* tint_color,
-                                     BOOL is_lens_overlay) {
+UIView<OmniboxTextInput>* CreateTextInput(CGRect frame,
+                                          UIColor* text_color,
+                                          UIColor* tint_color,
+                                          BOOL is_lens_overlay) {
   OmniboxTextFieldIOS* text_field =
       [[OmniboxTextFieldIOS alloc] initWithFrame:frame
                                        textColor:text_color
@@ -132,8 +133,6 @@ UIButton* CreateClearButton() {
 @interface OmniboxContainerView ()
 
 // Redefined as readwrite.
-@property(nonatomic, strong) OmniboxTextFieldIOS* textField;
-// Redefined as readwrite.
 @property(nonatomic, strong) UIButton* clearButton;
 
 @end
@@ -143,43 +142,45 @@ UIButton* CreateClearButton() {
   UIImageView* _leadingImageView;
   // The image thumnail button.
   OmniboxThumbnailButton* _thumbnailButton;
+  // The text input view.
+  UIView<OmniboxTextInput>* _textInputView;
 
   /// Whether the view is presented in the lens overlay.
   BOOL _isLensOverlay;
 
   // The constraint for the textfield's leading anchor when the thumbnail is
   // visible.
-  NSLayoutConstraint* _textFieldLeadingToThumbnailConstraint;
+  NSLayoutConstraint* _textInputViewLeadingToThumbnailConstraint;
   // The constraint for the textfield's leading anchor when the thumbnail is
   // hidden.
-  NSLayoutConstraint* _textFieldLeadingToIconConstraint;
+  NSLayoutConstraint* _textInputViewLeadingToIconConstraint;
 }
 
 #pragma mark - Public
 
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
-                textFieldTint:(UIColor*)textFieldTint
+                textInputTint:(UIColor*)textInputTint
                      iconTint:(UIColor*)iconTint
                 isLensOverlay:(BOOL)isLensOverlay {
   self = [super initWithFrame:frame];
   if (self) {
     _isLensOverlay = isLensOverlay;
-    self.textField =
-        CreateTextField(frame, textColor, textFieldTint, isLensOverlay);
+    _textInputView =
+        CreateTextInput(frame, textColor, textInputTint, isLensOverlay);
     _leadingImageView = CreateLeadingImageView(iconTint);
     self.clearButton = CreateClearButton();
 
     [self addSubview:_leadingImageView];
-    [self addSubview:self.textField];
+    [self addSubview:_textInputView];
     [self addSubview:self.clearButton];
 
     // Constraints.
-    [self.textField
+    [_textInputView
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
-    [self.textField setContentHuggingPriority:UILayoutPriorityDefaultLow
+    [_textInputView setContentHuggingPriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
     CGFloat leadingImageLeadingOffset =
@@ -192,14 +193,14 @@ UIButton* CreateClearButton() {
                          constant:leadingImageLeadingOffset],
       [_leadingImageView.centerYAnchor
           constraintEqualToAnchor:self.centerYAnchor],
-      [self.textField.topAnchor constraintEqualToAnchor:self.topAnchor],
-      [self.textField.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+      [_textInputView.topAnchor constraintEqualToAnchor:self.topAnchor],
+      [_textInputView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
       [self.clearButton.centerYAnchor
           constraintEqualToAnchor:self.centerYAnchor],
       [self.clearButton.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor
-                         constant:-kTextFieldClearButtonTrailingOffset],
-      [self.textField.trailingAnchor
+                         constant:-kTextInputViewClearButtonTrailingOffset],
+      [_textInputView.trailingAnchor
           constraintEqualToAnchor:self.clearButton.leadingAnchor],
     ]];
 
@@ -215,22 +216,22 @@ UIButton* CreateClearButton() {
             constraintEqualToAnchor:self.centerYAnchor],
       ]];
 
-      // The textfield can be anchored to the thumbnail (if visible) or the
+      // The textInputView can be anchored to the thumbnail (if visible) or the
       // leading icon (if thumbnail is hidden).
-      _textFieldLeadingToThumbnailConstraint = [self.textField.leadingAnchor
+      _textInputViewLeadingToThumbnailConstraint = [_textInputView.leadingAnchor
           constraintEqualToAnchor:_thumbnailButton.trailingAnchor
                          constant:kThumbnailImageTrailingMargin];
     }
 
-    CGFloat textFieldLeadingOffset =
+    CGFloat textInputViewLeadingOffset =
         _isLensOverlay ? kLeadingImageTrailingMarginLensOverlay
                        : kOmniboxTextFieldLeadingOffsetImage;
-    _textFieldLeadingToIconConstraint = [self.textField.leadingAnchor
+    _textInputViewLeadingToIconConstraint = [_textInputView.leadingAnchor
         constraintEqualToAnchor:_leadingImageView.trailingAnchor
-                       constant:textFieldLeadingOffset];
+                       constant:textInputViewLeadingOffset];
     // By default, the thumbnail is hidden, so the text field is anchored to the
     // leading icon.
-    _textFieldLeadingToIconConstraint.active = YES;
+    _textInputViewLeadingToIconConstraint.active = YES;
   }
   return self;
 }
@@ -259,17 +260,17 @@ UIButton* CreateClearButton() {
   [_thumbnailButton setHidden:!image];
 
   BOOL thumbnailVisible = ![_thumbnailButton isHidden];
-  if (_textFieldLeadingToThumbnailConstraint) {
-    _textFieldLeadingToThumbnailConstraint.active = thumbnailVisible;
+  if (_textInputViewLeadingToThumbnailConstraint) {
+    _textInputViewLeadingToThumbnailConstraint.active = thumbnailVisible;
   }
-  _textFieldLeadingToIconConstraint.active = !thumbnailVisible;
+  _textInputViewLeadingToIconConstraint.active = !thumbnailVisible;
 }
 
 - (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
   _layoutGuideCenter = layoutGuideCenter;
   [_layoutGuideCenter referenceView:_leadingImageView
                           underName:kOmniboxLeadingImageGuide];
-  [_layoutGuideCenter referenceView:_textField
+  [_layoutGuideCenter referenceView:_textInputView
                           underName:kOmniboxTextFieldGuide];
 }
 
@@ -277,10 +278,14 @@ UIButton* CreateClearButton() {
   self.clearButton.hidden = isHidden;
 }
 
+- (id<OmniboxTextInput>)textInput {
+  return _textInputView;
+}
+
 #pragma mark - TextFieldViewContaining
 
 - (UIView*)textFieldView {
-  return self.textField;
+  return _textInputView;
 }
 
 @end

@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 
 @class LayoutGuideCenter;
-@class OmniboxTextFieldIOS;
+@protocol OmniboxTextInput;
 
 /// The omnibox container view is the view that is shown in the location bar's
 /// edit state. It contains the omnibox textfield and the buttons on the left
@@ -18,7 +18,7 @@
 @interface OmniboxContainerView : UIView <TextFieldViewContaining>
 
 /// The contained omnibox textfield.
-@property(nonatomic, strong, readonly) OmniboxTextFieldIOS* textField;
+@property(nonatomic, strong, readonly) id<OmniboxTextInput> textInput;
 
 /// The contained clear button. Hide with `setClearButtonHidden`.
 @property(nonatomic, strong, readonly) UIButton* clearButton;
@@ -37,7 +37,7 @@
 /// color for omnibox.
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
-                textFieldTint:(UIColor*)textFieldTint
+                textInputTint:(UIColor*)textInputTint
                      iconTint:(UIColor*)iconTint
                 isLensOverlay:(BOOL)isLensOverlay NS_DESIGNATED_INITIALIZER;
 

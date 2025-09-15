@@ -375,7 +375,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     return;
   }
   _placeholderText = placeholderText;
-  self.omnibox.textField.placeholder = placeholderText;
+  self.omnibox.textInput.placeholder = placeholderText;
   self.searchHintLabel.text = placeholderText;
 }
 
@@ -395,15 +395,15 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   OmniboxContainerView* omnibox =
       [[OmniboxContainerView alloc] initWithFrame:CGRectZero
                                         textColor:color
-                                    textFieldTint:color
+                                    textInputTint:color
                                          iconTint:color
                                     isLensOverlay:NO];
-  omnibox.textField.placeholder = self.placeholderText;
-  [omnibox.textField setText:@""];
+  omnibox.textInput.placeholder = self.placeholderText;
+  [omnibox.textInput setText:@""];
   omnibox.translatesAutoresizingMaskIntoConstraints = NO;
   [searchField addSubview:omnibox];
   AddSameConstraints(omnibox, self.fakeLocationBar);
-  omnibox.textField.userInteractionEnabled = NO;
+  omnibox.textInput.view.userInteractionEnabled = NO;
   omnibox.hidden = YES;
   self.omnibox = omnibox;
 
