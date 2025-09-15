@@ -5985,7 +5985,7 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        break;
     }
   }
 
