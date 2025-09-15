@@ -10,6 +10,8 @@
 
 namespace autofill {
 
+class ScopedAutofillManagersObservation;
+
 // The common interface for platform-dependent AutofillDriver factories:
 // - ContentAutofillDriverFactory
 // - AutofillDriverIOSFactory
@@ -61,6 +63,12 @@ class AutofillDriverFactory {
   void RemoveObserver(Observer* observer) {
     observers_.RemoveObserver(observer);
   }
+
+  // Returns raw pointers to all drivers that the factory currently owns.
+  // TODO(crbug.com/40178290): Make this pure virtual once tests use a
+  // TestAutofillDriverFactory.
+  virtual std::vector<AutofillDriver*> GetExistingDrivers(
+      base::PassKey<ScopedAutofillManagersObservation>);
 
  protected:
   friend class AutofillDriverFactoryTestApi;

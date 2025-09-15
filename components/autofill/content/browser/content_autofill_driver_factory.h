@@ -91,9 +91,8 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
 
   size_t num_drivers() const { return driver_map_.size(); }
 
-  // Returns raw pointers to all drivers that the factory currently owns.
-  std::vector<ContentAutofillDriver*> GetExistingDrivers(
-      base::PassKey<ScopedAutofillManagersObservation>);
+  std::vector<AutofillDriver*> GetExistingDrivers(
+      base::PassKey<ScopedAutofillManagersObservation>) override;
 
   ContentAutofillDriver* DriverForFrame(
       content::RenderFrameHost* render_frame_host,

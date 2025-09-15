@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
@@ -187,8 +188,9 @@ void ProactiveNudgeTracker::StartObserving(content::WebContents* web_contents) {
     return;
   }
   autofill_managers_observation_.Observe(
-      web_contents, autofill::ScopedAutofillManagersObservation::
-                        InitializationPolicy::kObservePreexistingManagers);
+      autofill::ContentAutofillClient::FromWebContents(web_contents),
+      autofill::ScopedAutofillManagersObservation::InitializationPolicy::
+          kObservePreexistingManagers);
 }
 
 ProactiveNudgeTracker::~ProactiveNudgeTracker() {

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 
 #include "base/test/gtest_util.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "content/public/test/navigation_simulator.h"
@@ -24,11 +24,10 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Ref;
 
+// TODO(crbug.com/40714201): Add a TestAutofillDriverFactory and then move this
+// test to //components/autofill/core/browser.
 class ScopedAutofillManagersObservationTest
     : public content::RenderViewHostTestHarness {
- public:
-  void SetUp() override { content::RenderViewHostTestHarness::SetUp(); }
-
  protected:
   // TODO(crbug.com/40276395): Move this code (and the nearly identical function
   // in `FormForest`'s unittest) into a common helper function.
@@ -53,6 +52,8 @@ class ScopedAutofillManagersObservationTest
     return simulator->GetFinalRenderFrameHost();
   }
 
+  AutofillClient* client() { return autofill_client_injector_[web_contents()]; }
+
   AutofillManager* manager(content::RenderFrameHost* rfh) {
     ContentAutofillDriver* driver = autofill_driver_injector_[rfh];
     return driver ? &driver->GetAutofillManager() : nullptr;
@@ -69,7 +70,7 @@ class ScopedAutofillManagersObservationTest
 TEST_F(ScopedAutofillManagersObservationTest, SingleFrameObservation) {
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(web_contents());
+  observation.Observe(client());
   NavigateAndCommit(GURL("https://a.com/"));
 
   EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(*manager(main_rfh()))));
@@ -84,8 +85,8 @@ TEST_F(ScopedAutofillManagersObservationTest,
   ScopedAutofillManagersObservation observation(&observer);
 
   EXPECT_CHECK_DEATH(observation.Observe(
-      web_contents(), ScopedAutofillManagersObservation::InitializationPolicy::
-                          kExpectNoPreexistingManagers));
+      client(), ScopedAutofillManagersObservation::InitializationPolicy::
+                    kExpectNoPreexistingManagers));
 }
 
 TEST_F(ScopedAutofillManagersObservationTest,
@@ -94,7 +95,7 @@ TEST_F(ScopedAutofillManagersObservationTest,
 
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(web_contents(),
+  observation.Observe(client(),
                       ScopedAutofillManagersObservation::InitializationPolicy::
                           kObservePreexistingManagers);
 
@@ -107,7 +108,7 @@ TEST_F(ScopedAutofillManagersObservationTest,
        SingleFrameObservationWithNavigation) {
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(web_contents());
+  observation.Observe(client());
   NavigateAndCommit(GURL("https://a.com/"));
 
   EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(*manager(main_rfh()))));
@@ -123,7 +124,7 @@ TEST_F(ScopedAutofillManagersObservationTest,
 TEST_F(ScopedAutofillManagersObservationTest, NoObservationsAfterReset) {
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(web_contents());
+  observation.Observe(client());
   NavigateAndCommit(GURL("https://a.com/"));
 
   EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(*manager(main_rfh()))));
@@ -139,7 +140,7 @@ TEST_F(ScopedAutofillManagersObservationTest, NoObservationsAfterReset) {
 TEST_F(ScopedAutofillManagersObservationTest, MultipleFrameObservation) {
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(web_contents());
+  observation.Observe(client());
   NavigateAndCommit(GURL("https://a.com/"));
 
   content::RenderFrameHost* child_rfh =
@@ -159,7 +160,7 @@ TEST_F(ScopedAutofillManagersObservationTest,
        StateChangedToPendingDeletionNotifiesObserver) {
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(web_contents());
+  observation.Observe(client());
   NavigateAndCommit(GURL("https://a.com/"));
 
   EXPECT_CALL(observer, OnAutofillManagerStateChanged(

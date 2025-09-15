@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 
 #include "base/check_op.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
-#include "content/public/browser/web_contents.h"
 
 namespace autofill {
 
@@ -23,15 +22,21 @@ ScopedAutofillManagersObservation::~ScopedAutofillManagersObservation() {
 }
 
 void ScopedAutofillManagersObservation::Observe(
-    ContentAutofillDriverFactory* factory,
+    AutofillClient* client,
+    InitializationPolicy initialization_policy) {
+  return Observe(&client->GetAutofillDriverFactory(), initialization_policy);
+}
+
+void ScopedAutofillManagersObservation::Observe(
+    AutofillDriverFactory* factory,
     InitializationPolicy initialization_policy) {
   factory_observation_.Observe(factory);
   switch (initialization_policy) {
     case InitializationPolicy::kExpectNoPreexistingManagers:
-      CHECK_EQ(factory->num_drivers(), 0u);
+      CHECK_EQ(factory->GetExistingDrivers({}).size(), 0u);
       break;
     case InitializationPolicy::kObservePreexistingManagers:
-      for (ContentAutofillDriver* driver : factory->GetExistingDrivers({})) {
+      for (AutofillDriver* driver : factory->GetExistingDrivers({})) {
         autofill_manager_observations_.AddObservation(
             &driver->GetAutofillManager());
       }
@@ -39,37 +44,30 @@ void ScopedAutofillManagersObservation::Observe(
   }
 }
 
-void ScopedAutofillManagersObservation::Observe(
-    content::WebContents* contents,
-    InitializationPolicy initialization_policy) {
-  Observe(ContentAutofillDriverFactory::FromWebContents(contents),
-          initialization_policy);
-}
-
 void ScopedAutofillManagersObservation::Reset() {
   factory_observation_.Reset();
   autofill_manager_observations_.RemoveAllObservations();
 }
 
-content::WebContents* ScopedAutofillManagersObservation::web_contents() {
-  ContentAutofillDriverFactory* factory = factory_observation_.GetSource();
-  return factory ? factory->web_contents() : nullptr;
+AutofillDriverFactory*
+ScopedAutofillManagersObservation::autofill_driver_factory() {
+  return factory_observation_.GetSource();
 }
 
-void ScopedAutofillManagersObservation::OnContentAutofillDriverFactoryDestroyed(
-    ContentAutofillDriverFactory& factory) {
+void ScopedAutofillManagersObservation::OnAutofillDriverFactoryDestroyed(
+    AutofillDriverFactory& factory) {
   Reset();
 }
 
-void ScopedAutofillManagersObservation::OnContentAutofillDriverCreated(
-    ContentAutofillDriverFactory& factory,
-    ContentAutofillDriver& driver) {
+void ScopedAutofillManagersObservation::OnAutofillDriverCreated(
+    AutofillDriverFactory& factory,
+    AutofillDriver& driver) {
   autofill_manager_observations_.AddObservation(&driver.GetAutofillManager());
 }
 
-void ScopedAutofillManagersObservation::OnContentAutofillDriverStateChanged(
-    ContentAutofillDriverFactory& factory,
-    ContentAutofillDriver& driver,
+void ScopedAutofillManagersObservation::OnAutofillDriverStateChanged(
+    AutofillDriverFactory& factory,
+    AutofillDriver& driver,
     AutofillDriver::LifecycleState old_state,
     AutofillDriver::LifecycleState new_state) {
   switch (new_state) {

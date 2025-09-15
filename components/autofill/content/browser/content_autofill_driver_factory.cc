@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -242,15 +243,11 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
                                   : AutofillDriver::LifecycleState::kInactive);
 }
 
-std::vector<ContentAutofillDriver*>
-ContentAutofillDriverFactory::GetExistingDrivers(
+std::vector<AutofillDriver*> ContentAutofillDriverFactory::GetExistingDrivers(
     base::PassKey<ScopedAutofillManagersObservation>) {
-  std::vector<ContentAutofillDriver*> drivers;
-  drivers.reserve(driver_map_.size());
-  for (const auto& [rfh, driver] : driver_map_) {
-    drivers.push_back(driver.get());
-  }
-  return drivers;
+  return base::ToVector(driver_map_, [](const auto& p) -> AutofillDriver* {
+    return p.second.get();
+  });
 }
 
 }  // namespace autofill

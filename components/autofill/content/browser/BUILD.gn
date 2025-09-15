@@ -28,8 +28,6 @@ static_library("browser") {
     "renderer_forms_from_browser_form.h",
     "risk/fingerprint.cc",
     "risk/fingerprint.h",
-    "scoped_autofill_managers_observation.cc",
-    "scoped_autofill_managers_observation.h",
     "suggestions/identity_credential_suggestion_generator.cc",
     "suggestions/identity_credential_suggestion_generator.h",
   ]

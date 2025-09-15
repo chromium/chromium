@@ -42,11 +42,11 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_delegate.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -97,8 +97,8 @@ base::FilePath GetReplayFilesRootDirectory() {
   }
 }
 
-autofill::ElementExpr GetElementByXpath(const std::string& xpath) {
-  return autofill::ElementExpr(base::StringPrintf(
+ElementExpr GetElementByXpath(const std::string& xpath) {
+  return ElementExpr(base::StringPrintf(
       "automation_helper.getElementByXpath(`%s`)", xpath.c_str()));
 }
 
@@ -130,20 +130,21 @@ std::optional<std::vector<std::string>> GetExpectedFormSignatures(
 
 // Used to verify that the expected form signatures are submitted during the
 // test.
-class FormSubmissionCounter : public autofill::AutofillManager::Observer {
+class FormSubmissionCounter : public AutofillManager::Observer {
  public:
   explicit FormSubmissionCounter(content::WebContents* web_contents) {
     autofill_managers_observation_.Observe(
-        web_contents, autofill::ScopedAutofillManagersObservation::
-                          InitializationPolicy::kObservePreexistingManagers);
+        ContentAutofillClient::FromWebContents(web_contents),
+        ScopedAutofillManagersObservation::InitializationPolicy::
+            kObservePreexistingManagers);
   }
   ~FormSubmissionCounter() override = default;
 
   // AutofillManager::Observer:
-  void OnBeforeFormSubmitted(autofill::AutofillManager& manager,
-                             const autofill::FormData& form_data) override {
-    actual_form_signatures_submitted_.insert(base::NumberToString(
-        autofill::CalculateFormSignature(form_data).value()));
+  void OnBeforeFormSubmitted(AutofillManager& manager,
+                             const FormData& form_data) override {
+    actual_form_signatures_submitted_.insert(
+        base::NumberToString(CalculateFormSignature(form_data).value()));
   }
 
   void VerifyFormSubmissions(
@@ -161,8 +162,7 @@ class FormSubmissionCounter : public autofill::AutofillManager::Observer {
 
  private:
   std::set<std::string> actual_form_signatures_submitted_;
-  autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
-      this};
+  ScopedAutofillManagersObservation autofill_managers_observation_{this};
 };
 
 // Implements the `kAutofillCapturedSiteTestsMetricsScraper` testing feature.
@@ -266,7 +266,7 @@ class AutofillCapturedSitesInteractiveTest
       TryToCloseAllPrompts(web_contents);
 
       autofill_manager.client().HideAutofillSuggestions(
-          autofill::SuggestionHidingReason::kViewDestroyed);
+          SuggestionHidingReason::kViewDestroyed);
 
       testing::AssertionResult suggestions_shown = ShowAutofillSuggestion(
           focus_element_css_selector, iframe_path, frame);
@@ -319,7 +319,7 @@ class AutofillCapturedSitesInteractiveTest
     }
 
     autofill_manager.client().HideAutofillSuggestions(
-        autofill::SuggestionHidingReason::kViewDestroyed);
+        SuggestionHidingReason::kViewDestroyed);
     ADD_FAILURE() << "Failed to autofill the form!";
     return false;
   }
