@@ -76,26 +76,26 @@ STATIC_ASSERT_ENUM(PhysicalDirection::kLeft, 3);
 template <size_t size>
 CSSDirectionAwareResolver::Group<size>::Group(
     const StylePropertyShorthand& shorthand)
-    : properties_(shorthand.properties().data()) {
+    : properties_(shorthand.properties()) {
   DCHECK_EQ(size, shorthand.length());
 }
 
 template <size_t size>
 CSSDirectionAwareResolver::Group<size>::Group(
-    const CSSProperty* (&properties)[size])
+    const CSSProperty* const (&properties)[size])
     : properties_(properties) {}
 
 template <size_t size>
 const CSSProperty& CSSDirectionAwareResolver::Group<size>::GetProperty(
     size_t index) const {
   DCHECK_LT(index, size);
-  return UNSAFE_TODO(*properties_[index]);
+  return *properties_[index];
 }
 
 template <size_t size>
 bool CSSDirectionAwareResolver::Group<size>::Contains(CSSPropertyID id) const {
-  for (size_t i = 0; i < size; ++i) {
-    if (UNSAFE_TODO(properties_[i]->IDEquals(id))) {
+  for (const CSSProperty* property : properties_) {
+    if (property->IDEquals(id)) {
       return true;
     }
   }
