@@ -12,6 +12,7 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 # Public Java interfaces
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowCreateParams.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTask.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskFeature.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTracker.java",
@@ -23,6 +24,7 @@ android_library("java") {
     "//chrome/browser/tabmodel:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/base/mojom:ui_base_types_java",
   ]
   srcjar_deps = [ ":java_enum_srcjar" ]
 }
