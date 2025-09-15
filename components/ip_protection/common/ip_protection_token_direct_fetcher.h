@@ -94,10 +94,9 @@ class IpProtectionTokenDirectFetcher : public IpProtectionTokenFetcher {
    private:
     // The BlindSignAuth implementation used to fetch blind-signed auth
     // tokens. A raw pointer to `url_loader_factory_` gets passed to
-    // `ip_protection_config_http_`, so we ensure it stays alive by storing
+    // `blind_sign_auth_`, so we ensure it stays alive by storing
     // its scoped_refptr here.
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-    std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http_;
     std::unique_ptr<quiche::BlindSignAuthInterface> blind_sign_auth_;
     IpProtectionTokenFetcherHelper fetcher_helper_;
   };

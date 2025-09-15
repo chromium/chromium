@@ -46,8 +46,6 @@ IpProtectionTokenDirectFetcher::SequenceBoundFetch::SequenceBoundFetch(
   CHECK(pending_url_loader_factory);
   url_loader_factory_ = network::SharedURLLoaderFactory::Create(
       std::move(pending_url_loader_factory));
-  ip_protection_config_http_ =
-      std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get());
 
   if (blind_sign_auth_for_testing) {
     blind_sign_auth_ = std::move(blind_sign_auth_for_testing);
@@ -57,7 +55,8 @@ IpProtectionTokenDirectFetcher::SequenceBoundFetch::SequenceBoundFetch(
   bsa_options.set_enable_privacy_pass(true);
 
   blind_sign_auth_ = std::make_unique<quiche::BlindSignAuth>(
-      ip_protection_config_http_.get(), std::move(bsa_options));
+      std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get()),
+      std::move(bsa_options));
 }
 
 IpProtectionTokenDirectFetcher::SequenceBoundFetch::~SequenceBoundFetch() =
