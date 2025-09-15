@@ -106,21 +106,23 @@ NtpPromoController::NtpPromoController(
 
 NtpPromoController::~NtpPromoController() = default;
 
-bool NtpPromoController::HasShowablePromos(Profile* profile,
-                                           bool include_completed) {
+bool NtpPromoController::HasShowablePromos(
+    const user_education::UserEducationContextPtr& context,
+    bool include_completed) {
   // Generate promo lists here, since the Eligibility callback results are
   // insufficient. Promo callbacks may report Eligible or Completed, but promos
   // may be suppressed for a number of reasons.
-  const auto promos = GenerateShowablePromos(profile, /*apply_ordering=*/false);
+  const auto promos = GenerateShowablePromos(context, /*apply_ordering=*/false);
   return include_completed ? !promos.empty() : !promos.pending.empty();
 }
 
-NtpShowablePromos NtpPromoController::GenerateShowablePromos(Profile* profile) {
-  return GenerateShowablePromos(profile, /*apply_ordering=*/true);
+NtpShowablePromos NtpPromoController::GenerateShowablePromos(
+    const user_education::UserEducationContextPtr& context) {
+  return GenerateShowablePromos(context, /*apply_ordering=*/true);
 }
 
 NtpShowablePromos NtpPromoController::GenerateShowablePromos(
-    Profile* profile,
+    const user_education::UserEducationContextPtr& context,
     bool apply_ordering) {
   if (ArePromosBlocked()) {
     return NtpShowablePromos();
@@ -136,7 +138,7 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(
     CHECK(spec);
 
     NtpPromoSpecification::Eligibility eligibility =
-        spec->eligibility_callback().Run(profile);
+        spec->eligibility_callback().Run(context);
     if (eligibility == NtpPromoSpecification::Eligibility::kIneligible) {
       continue;
     }
@@ -191,9 +193,10 @@ void NtpPromoController::OnPromosShown(
   }
 }
 
-void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id,
-                                        BrowserWindowInterface* browser) {
-  registry_->GetNtpPromoSpecification(id)->action_callback().Run(browser);
+void NtpPromoController::OnPromoClicked(
+    NtpPromoIdentifier id,
+    const user_education::UserEducationContextPtr& context) {
+  registry_->GetNtpPromoSpecification(id)->action_callback().Run(context);
 
   auto prefs = storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
   prefs.last_clicked = storage_service_->GetCurrentTime();

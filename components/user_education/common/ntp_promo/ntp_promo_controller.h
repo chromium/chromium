@@ -13,10 +13,8 @@
 #include "base/time/time.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_storage_service.h"
-
-class BrowserWindowInterface;
-class Profile;
 
 namespace user_education {
 
@@ -100,14 +98,17 @@ class NtpPromoController {
 
   // Determines if there are any showable promos. This may return false if
   // promos are snoozed or disabled, or if there are no eligible promos to show.
-  virtual bool HasShowablePromos(Profile* profile, bool include_completed);
+  virtual bool HasShowablePromos(
+      const user_education::UserEducationContextPtr& context,
+      bool include_completed);
 
   // Provides ordered lists of eligible and completed promos, intended to be
   // displayed by the NTP. May update prefs as a side effect.
   //
   // If promos are snoozed or disabled, or there are no eligible promos, an
   // empty list is returned.
-  virtual NtpShowablePromos GenerateShowablePromos(Profile* profile);
+  virtual NtpShowablePromos GenerateShowablePromos(
+      const user_education::UserEducationContextPtr& context);
 
   // Called when promos are shown by the NTP promo component.
   //
@@ -117,8 +118,9 @@ class NtpPromoController {
       const std::vector<NtpPromoIdentifier>& completed_shown);
 
   // Called in response to an NTP promo activation.
-  virtual void OnPromoClicked(NtpPromoIdentifier id,
-                              BrowserWindowInterface* browser);
+  virtual void OnPromoClicked(
+      NtpPromoIdentifier id,
+      const user_education::UserEducationContextPtr& context);
 
   // Sets or resets the snoozed state. Snooze, when set, will last for a fixed
   // period of time.
@@ -132,8 +134,9 @@ class NtpPromoController {
   // Internal variation of promo list generation, shared between "has promos"
   // and "make promo lists" logic. When only checking if there are promos to
   // show, the (relatively expensive) ordering logic can be skipped.
-  NtpShowablePromos GenerateShowablePromos(Profile* profile,
-                                           bool apply_ordering);
+  NtpShowablePromos GenerateShowablePromos(
+      const user_education::UserEducationContextPtr& context,
+      bool apply_ordering);
 
   // Updates the data on the promo shown in the top spot.
   void OnPromoShownInTopSpot(NtpPromoIdentifier id);

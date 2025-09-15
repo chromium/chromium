@@ -15,10 +15,8 @@
 #include "base/functional/callback_helpers.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_metadata.h"
-
-class BrowserWindowInterface;
-class Profile;
 
 namespace user_education {
 
@@ -53,13 +51,15 @@ class NtpPromoSpecification {
   enum class Eligibility { kIneligible, kEligible, kCompleted };
 
   // Receives the profile to be evaluated for eligibility.
-  using EligibilityCallback = base::RepeatingCallback<Eligibility(Profile*)>;
+  using EligibilityCallback = base::RepeatingCallback<Eligibility(
+      const user_education::UserEducationContextPtr&)>;
 
   using ShowCallback = base::RepeatingClosure;
 
   // Receives a browser in which the action can be taken, and an object
   // to be held by the invoked flow until termination.
-  using ActionCallback = base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  using ActionCallback = base::RepeatingCallback<void(
+      const user_education::UserEducationContextPtr&)>;
 
   NtpPromoSpecification() = delete;
   NtpPromoSpecification(NtpPromoSpecification&&) noexcept;

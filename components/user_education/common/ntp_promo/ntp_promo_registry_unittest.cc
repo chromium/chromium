@@ -26,11 +26,13 @@ NtpPromoSpecification CreateTestPromoSpec(const NtpPromoIdentifier& id) {
   return NtpPromoSpecification(
       id,
       NtpPromoContent(kIconName, kBodyTextStringId, kActionButtonTextStringId),
-      base::BindRepeating([](Profile* profile) {
-        return NtpPromoSpecification::Eligibility::kEligible;
-      }),
+      base::BindRepeating(
+          [](const user_education::UserEducationContextPtr& context) {
+            return NtpPromoSpecification::Eligibility::kEligible;
+          }),
       base::DoNothing(),
-      base::BindRepeating([](BrowserWindowInterface* browser) {}),
+      base::BindRepeating(
+          [](const user_education::UserEducationContextPtr& context) {}),
       base::flat_set<NtpPromoIdentifier>{kShowFirstPromoId}, Metadata());
 }
 
@@ -49,11 +51,13 @@ TEST_F(NtpPromoRegistryTest, RegisterPromo) {
   registry_.AddPromo(NtpPromoSpecification(
       kPromoId,
       NtpPromoContent(kIconName, kBodyTextStringId, kActionButtonTextStringId),
-      base::BindRepeating([](Profile* profile) {
-        return NtpPromoSpecification::Eligibility::kEligible;
-      }),
+      base::BindRepeating(
+          [](const user_education::UserEducationContextPtr& context) {
+            return NtpPromoSpecification::Eligibility::kEligible;
+          }),
       base::DoNothing(),
-      base::BindRepeating([](BrowserWindowInterface* browser) {}),
+      base::BindRepeating(
+          [](const user_education::UserEducationContextPtr& context) {}),
       {kShowFirstPromoId}, Metadata()));
 
   const auto* spec = registry_.GetNtpPromoSpecification(kPromoId);

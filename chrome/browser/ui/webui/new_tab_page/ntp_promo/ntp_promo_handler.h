@@ -36,7 +36,7 @@ class NtpPromoHandler : public ntp_promo::mojom::NtpPromoHandler {
   static std::unique_ptr<NtpPromoHandler> CreateForTesting(
       mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
-      content::WebContents* web_contents,
+      const user_education::UserEducationContextPtr& ue_context,
       user_education::NtpPromoController* promo_controller);
 
   // ntp_promo::mojom::NtpPromoHandler:
@@ -53,12 +53,12 @@ class NtpPromoHandler : public ntp_promo::mojom::NtpPromoHandler {
   NtpPromoHandler(
       mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> pending_client,
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> pending_handler,
-      content::WebContents* web_contents,
+      const user_education::UserEducationContextPtr& ue_context,
       user_education::NtpPromoController* promo_controller);
 
   mojo::Remote<ntp_promo::mojom::NtpPromoClient> remote_client_;
   mojo::Receiver<ntp_promo::mojom::NtpPromoHandler> receiver_;
-  const raw_ptr<content::WebContents> web_contents_;
+  const user_education::UserEducationContextPtr ue_context_;
   const raw_ptr<user_education::NtpPromoController> promo_controller_;
 };
 

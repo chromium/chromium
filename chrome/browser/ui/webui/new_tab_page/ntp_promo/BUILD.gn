@@ -15,6 +15,7 @@ source_set("ntp_promo") {
   deps = [
     "//base",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/user_education",
     "//ui/base",

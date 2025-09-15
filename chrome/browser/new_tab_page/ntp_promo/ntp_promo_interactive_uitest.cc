@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -167,7 +168,9 @@ class NtpPromoUiTest
         user_education::NtpPromoContent(kIconName, text_id,
                                         IDS_NTP_SIGN_IN_PROMO_ACTION_BUTTON),
         base::BindLambdaForTesting(
-            [=](Profile* profile) { return eligibility; }),
+            [=](const user_education::UserEducationContextPtr& context) {
+              return eligibility;
+            }),
         base::BindRepeating(&NtpPromoUiTest::OnTestPromoShown,
                             base::Unretained(this)),
         base::BindRepeating(&NtpPromoUiTest::OnTestPromoClicked,
@@ -299,7 +302,11 @@ class NtpPromoUiTest
                                                   kTestPromoShownEvent);
   }
 
-  void OnTestPromoClicked(BrowserWindowInterface* window) {
+  void OnTestPromoClicked(
+      const user_education::UserEducationContextPtr& context) {
+    auto* browser_context = context->AsA<BrowserUserEducationContext>();
+    BrowserWindowInterface* window =
+        browser_context->GetBrowserView().browser();
     EXPECT_EQ(browser(), window);
     BrowserElements::From(window)->NotifyEvent(kBrowserViewElementId,
                                                kTestPromoClickedEvent);

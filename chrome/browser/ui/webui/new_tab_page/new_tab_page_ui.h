@@ -313,6 +313,10 @@ class NewTabPageUI
   // Called when the NTP (re)loads. Sets mutable load time data.
   void OnLoad();
 
+  // Based on the current profile and NTP promo controller, determine which
+  // type of NTP promos can be shown, if any.
+  std::string_view GetNtpPromoType();
+
   // The counter for NewTabPage.Count UMA metrics.
   static int instance_count_;
 

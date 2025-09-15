@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
@@ -628,28 +629,6 @@ constexpr std::string_view kSetupListBrowserPromo = "setuplist";
 constexpr std::string_view kEmptyBrowserPromo = "empty";
 constexpr std::string_view kDisabledBrowserPromo = "disabled";
 
-// Based on a profile and a controller (or lack thereof), determine if NTP
-// promos could be shown.
-std::string_view GetNtpPromoType(
-    Profile* profile,
-    user_education::NtpPromoController* controller) {
-  if (!controller) {
-    return kDisabledBrowserPromo;
-  }
-  switch (user_education::features::GetNtpBrowserPromoType()) {
-    case user_education::features::NtpBrowserPromoType::kSimple:
-      return controller->HasShowablePromos(profile, /*include_completed=*/false)
-                 ? kSimpleBrowserPromo
-                 : kEmptyBrowserPromo;
-    case user_education::features::NtpBrowserPromoType::kSetupList:
-      return controller->HasShowablePromos(profile, /*include_completed=*/true)
-                 ? kSetupListBrowserPromo
-                 : kEmptyBrowserPromo;
-    case user_education::features::NtpBrowserPromoType::kNone:
-      return kDisabledBrowserPromo;
-  }
-}
-
 }  // namespace
 
 // static
@@ -1189,11 +1168,7 @@ void NewTabPageUI::OnLoad() {
   update.Set("modulesEnabled", modules_enabled);
 
   // Set up the NTP promo, if any.
-  update.Set(
-      "browserPromoType",
-      GetNtpPromoType(
-          profile_, UserEducationServiceFactory::GetForBrowserContext(profile_)
-                        ->ntp_promo_controller()));
+  update.Set("browserPromoType", GetNtpPromoType());
 
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
@@ -1205,4 +1180,33 @@ base::RefCountedMemory* NewTabPageUI::GetFaviconResourceBytes(
   return static_cast<base::RefCountedMemory*>(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
           IDR_NTP_FAVICON, scale_factor));
+}
+
+std::string_view NewTabPageUI::GetNtpPromoType() {
+  auto* controller = UserEducationServiceFactory::GetForBrowserContext(profile_)
+                         ->ntp_promo_controller();
+  if (!controller) {
+    return kDisabledBrowserPromo;
+  }
+  auto* user_education =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+          web_contents());
+  if (!user_education) {
+    return kDisabledBrowserPromo;
+  }
+  auto context =
+      user_education->GetUserEducationContext(base::PassKey<NewTabPageUI>());
+
+  switch (user_education::features::GetNtpBrowserPromoType()) {
+    case user_education::features::NtpBrowserPromoType::kSimple:
+      return controller->HasShowablePromos(context, /*include_completed=*/false)
+                 ? kSimpleBrowserPromo
+                 : kEmptyBrowserPromo;
+    case user_education::features::NtpBrowserPromoType::kSetupList:
+      return controller->HasShowablePromos(context, /*include_completed=*/true)
+                 ? kSetupListBrowserPromo
+                 : kEmptyBrowserPromo;
+    case user_education::features::NtpBrowserPromoType::kNone:
+      return kDisabledBrowserPromo;
+  }
 }

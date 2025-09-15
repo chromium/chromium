@@ -62,10 +62,13 @@ class NtpPromoControllerTest : public testing::Test {
   void RegisterPromo(NtpPromoIdentifier id,
                      NtpPromoSpecification::Eligibility eligibility,
                      bool clicked = false) {
-    RegisterPromo(id, base::BindLambdaForTesting([=](Profile* profile) {
-                    return eligibility;
-                  }),
-                  base::DoNothing(), base::DoNothing());
+    RegisterPromo(
+        id,
+        base::BindLambdaForTesting(
+            [=](const user_education::UserEducationContextPtr& context) {
+              return eligibility;
+            }),
+        base::DoNothing(), base::DoNothing());
     if (clicked) {
       NtpPromoData promo_data =
           storage_service_.ReadNtpPromoData(id).value_or(NtpPromoData());
@@ -209,7 +212,9 @@ TEST_F(NtpPromoControllerTest, FutureCompletedPromoHidden) {
 
 TEST_F(NtpPromoControllerTest, PromoClicked) {
   CreateController();
-  base::MockRepeatingCallback<void(BrowserWindowInterface*)> action_callback;
+  base::MockRepeatingCallback<void(
+      const user_education::UserEducationContextPtr& context)>
+      action_callback;
   RegisterPromo(kPromoId, NtpPromoSpecification::EligibilityCallback(),
                 base::DoNothing(), action_callback.Get());
   EXPECT_CALL(action_callback, Run(_));
