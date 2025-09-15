@@ -6,6 +6,7 @@
 
 import os
 import pathlib
+import subprocess
 import unittest
 from unittest import mock
 
@@ -243,6 +244,166 @@ class SetupPromptfooUnittest(fake_filesystem_unittest.TestCase):
         mock_src_instance.setup.assert_called_once()
         mock_npm_instance.cleanup.assert_not_called()
         mock_npm_instance.setup.assert_not_called()
+
+
+class WorkDirUnittest(fake_filesystem_unittest.TestCase):
+    """Unit tests for the WorkDir class."""
+
+    def setUp(self):
+        self.setUpPyfakefs()
+        self.fs.create_dir('/tmp/src')
+
+    @mock.patch('shutil.rmtree')
+    @mock.patch('subprocess.call')
+    @mock.patch('subprocess.check_call')
+    def test_enter_btrfs(self, mock_check_call, _mock_call, _mock_rmtree):
+        """Tests that a btrfs snapshot is created when btrfs is true."""
+        workdir = eval_prompts.WorkDir('workdir',
+                                       pathlib.Path('/tmp/src'),
+                                       clean=False,
+                                       verbose=False,
+                                       force=False,
+                                       btrfs=True)
+        with workdir as w:
+            self.assertEqual(w, workdir)
+
+        mock_check_call.assert_called_once_with(
+            [
+                'btrfs',
+                'subvol',
+                'snapshot',
+                pathlib.Path('/tmp/src'),
+                pathlib.Path('/tmp/workdir'),
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+        )
+
+    @mock.patch('shutil.rmtree')
+    @mock.patch('subprocess.call')
+    @mock.patch('subprocess.check_call')
+    def test_enter_no_btrfs(self, mock_check_call, _mock_call, _mock_rmtree):
+        """Tests that gclient-new-workdir is called when btrfs is false."""
+        workdir = eval_prompts.WorkDir('workdir',
+                                       pathlib.Path('/tmp/src'),
+                                       clean=False,
+                                       verbose=False,
+                                       force=False,
+                                       btrfs=False)
+        with workdir as w:
+            self.assertEqual(w, workdir)
+
+        mock_check_call.assert_called_once_with(
+            [
+                'gclient-new-workdir.py',
+                pathlib.Path('/tmp/src'),
+                pathlib.Path('/tmp/workdir'),
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+        )
+
+    def test_enter_exists_no_force(self):
+        """Tests that an error is raised if the workdir exists."""
+        self.fs.create_dir('/tmp/workdir')
+        workdir = eval_prompts.WorkDir('workdir',
+                                       pathlib.Path('/tmp/src'),
+                                       clean=False,
+                                       verbose=False,
+                                       force=False,
+                                       btrfs=False)
+        with self.assertRaises(FileExistsError):
+            with workdir:
+                pass
+
+    @mock.patch('shutil.rmtree')
+    @mock.patch('subprocess.call')
+    @mock.patch('subprocess.check_call')
+    def test_enter_exists_force(self, _mock_check_call, mock_call,
+                                _mock_rmtree):
+        """Tests that the workdir is removed if it exists and force is on."""
+        self.fs.create_dir('/tmp/workdir')
+        workdir = eval_prompts.WorkDir('workdir',
+                                       pathlib.Path('/tmp/src'),
+                                       clean=False,
+                                       verbose=False,
+                                       force=True,
+                                       btrfs=True)
+        with workdir:
+            pass
+
+        mock_call.assert_called_once_with(
+            [
+                'sudo',
+                '-n',
+                'btrfs',
+                'subvolume',
+                'delete',
+                pathlib.Path('/tmp/workdir'),
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+        )
+
+    @mock.patch('shutil.rmtree')
+    @mock.patch('subprocess.call')
+    @mock.patch('subprocess.check_call')
+    def test_exit_clean_btrfs(self, _mock_check_call, mock_call, _mock_rmtree):
+        """Tests that the workdir is removed when clean is true w/ btrfs ."""
+        workdir = eval_prompts.WorkDir('workdir',
+                                       pathlib.Path('/tmp/src'),
+                                       clean=True,
+                                       verbose=False,
+                                       force=False,
+                                       btrfs=True)
+        with workdir:
+            pass
+
+        mock_call.assert_called_once_with(
+            [
+                'sudo',
+                'btrfs',
+                'subvolume',
+                'delete',
+                pathlib.Path('/tmp/workdir'),
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+        )
+
+    @mock.patch('shutil.rmtree')
+    @mock.patch('subprocess.call')
+    @mock.patch('subprocess.check_call')
+    def test_exit_clean_no_btrfs(self, _mock_check_call, _mock_call,
+                                 mock_rmtree):
+        """Tests that the workdir is removed when clean is True w/o btrfs."""
+        workdir = eval_prompts.WorkDir('workdir',
+                                       pathlib.Path('/tmp/src'),
+                                       clean=True,
+                                       verbose=False,
+                                       force=False,
+                                       btrfs=False)
+        with workdir:
+            pass
+
+        mock_rmtree.assert_called_once_with(pathlib.Path('/tmp/workdir'))
+
+    @mock.patch('shutil.rmtree')
+    @mock.patch('subprocess.call')
+    @mock.patch('subprocess.check_call')
+    def test_exit_no_clean(self, _mock_check_call, mock_call, mock_rmtree):
+        """Tests that the workdir is not cleaned up when clean is False."""
+        workdir = eval_prompts.WorkDir('workdir',
+                                       pathlib.Path('/tmp/src'),
+                                       clean=False,
+                                       verbose=False,
+                                       force=False,
+                                       btrfs=False)
+        with workdir:
+            pass
+
+        mock_call.assert_not_called()
+        mock_rmtree.assert_not_called()
 
 
 class DetermineShardValuesUnittest(unittest.TestCase):
