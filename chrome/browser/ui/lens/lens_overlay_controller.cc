@@ -2655,8 +2655,12 @@ void LensOverlayController::HideOverlay() {
 
   // Hide the overlay view, but keep the web view attached to the overlay view
   // so that the overlay can be re-shown without creating a new web view.
-  preselection_widget_anchor_->SetVisible(false);
-  overlay_web_view_->SetVisible(false);
+  if (preselection_widget_anchor_) {
+    preselection_widget_anchor_->SetVisible(false);
+  }
+  if (overlay_web_view_) {
+    overlay_web_view_->SetVisible(false);
+  }
   MaybeHideSharedOverlayView();
 
   // Save the current value of whether live blur is enabled so that it can be
