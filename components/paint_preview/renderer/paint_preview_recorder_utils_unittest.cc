@@ -36,7 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/codec/SkCodec.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -412,8 +412,8 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
     auto sk_image = SkImages::RasterFromBitmap(bitmap);
     auto data = skia::EncodePngAsSkData(nullptr, sk_image.get());
     CHECK(data);
-    ASSERT_TRUE(SkPngDecoder::IsPng(data->data(), data->size()));
-    SkCodecs::Register(SkPngDecoder::Decoder());
+    ASSERT_TRUE(SkPngRustDecoder::IsPng(data->data(), data->size()));
+    SkCodecs::Register(SkPngRustDecoder::Decoder());
     auto lazy_sk_image = SkImages::DeferredFromEncodedData(data);
     CHECK(lazy_sk_image);
     ASSERT_TRUE(lazy_sk_image->isLazyGenerated());
