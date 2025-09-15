@@ -32,6 +32,7 @@ base::OnceCallback<scoped_refptr<RefcountedKeyedService>(void*)> WrapFactory(
 }  // namespace
 
 void RefcountedProfileKeyedServiceFactoryIOS::SetTestingFactory(
+    PassKey pass_key,
     ProfileIOS* profile,
     TestingFactory testing_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

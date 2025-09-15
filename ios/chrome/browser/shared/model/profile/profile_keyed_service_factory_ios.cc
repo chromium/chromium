@@ -31,6 +31,7 @@ base::OnceCallback<std::unique_ptr<KeyedService>(void*)> WrapFactory(
 }  // namespace
 
 void ProfileKeyedServiceFactoryIOS::SetTestingFactory(
+    PassKey pass_key,
     ProfileIOS* profile,
     TestingFactory testing_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -36,14 +36,17 @@
 
 namespace {
 
+using PassKey = base::PassKey<TestProfileIOS>;
+
 // Assigns `testing_factories` to `profile`.
 void AssignTestingFactories(
+    PassKey pass_key,
     TestProfileIOS* profile,
     TestProfileIOS::TestingFactories testing_factories) {
   for (auto& item : testing_factories) {
     std::visit(
-        [profile](auto& p) {
-          p.first->SetTestingFactory(profile, std::move(p.second));
+        [pass_key, profile](auto& p) {
+          p.first->SetTestingFactory(pass_key, profile, std::move(p.second));
         },
         item.service_factory_and_testing_factory);
   }
@@ -93,7 +96,7 @@ TestProfileIOS::TestProfileIOS(const base::FilePath& state_path,
 
   ProfileDependencyManagerIOS::GetInstance()->MarkProfileLive(this);
 
-  AssignTestingFactories(this, std::move(testing_factories));
+  AssignTestingFactories(PassKey{}, this, std::move(testing_factories));
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kIncognito);
 
@@ -126,7 +129,7 @@ TestProfileIOS::TestProfileIOS(
 
   ProfileDependencyManagerIOS::GetInstance()->MarkProfileLive(this);
 
-  AssignTestingFactories(this, std::move(testing_factories));
+  AssignTestingFactories(PassKey{}, this, std::move(testing_factories));
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
 

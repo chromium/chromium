@@ -10,11 +10,13 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/traits_bag.h"
+#include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
 
 class ProfileIOS;
 class RefcountedProfileKeyedServiceFactoryIOS;
+class TestProfileIOS;
 
 // ProfileKeyedServiceFactoryIOS provides a ProfileIOS-specific interface for
 // KeyedServiceFactory under //ios/chrome/browser.
@@ -57,6 +59,9 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
     ValidTraits(TestingCreation);
   };
 
+  // For SetTestingFactory(...).
+  using PassKey = base::PassKey<TestProfileIOS>;
+
   // A callback that returns the instance of a KeyedService for a given
   // ProfileIOS instance. This is used for testing where the test wants
   // to create a specific test double for a service.
@@ -81,7 +86,9 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   // used to create the KeyedService when requested.  `testing_factory` can be
   // empty to signal that KeyedService should be null. Multiple calls to
   // SetTestingFactory() are allowed; previous services will be shut down.
-  void SetTestingFactory(ProfileIOS* profile, TestingFactory testing_factory);
+  void SetTestingFactory(PassKey pass_key,
+                         ProfileIOS* profile,
+                         TestingFactory testing_factory);
 
  protected:
   // Helper that casts the value returned by GetKeyedServiceForProfile() to the
