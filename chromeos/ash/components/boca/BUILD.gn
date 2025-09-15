@@ -23,6 +23,7 @@ static_library("boca") {
     "boca_window_observer.h",
     "notifications/boca_notification_handler.cc",
     "notifications/boca_notification_handler.h",
+    "retriable_request_sender.h",
     "util.cc",
     "util.h",
   ]
@@ -152,6 +153,7 @@ source_set("unit_tests") {
     "invalidations/fcm_handler_unittest.cc",
     "invalidations/invalidation_service_impl_unittest.cc",
     "notifications/boca_notification_handler_unittest.cc",
+    "retriable_request_sender_unittest.cc",
     "spotlight/register_screen_request_unittest.cc",
     "spotlight/spotlight_notification_handler_unittest.cc",
     "spotlight/spotlight_service_unittest.cc",
