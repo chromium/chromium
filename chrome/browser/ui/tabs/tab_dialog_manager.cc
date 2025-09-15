@@ -468,6 +468,12 @@ void TabDialogManager::DidFinishNavigation(
   }
 }
 
+void TabDialogManager::PrimaryMainFrameWasResized(bool width_changed) {
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    UpdateModalDialogBounds();
+  }
+}
+
 void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
   if (widget_) {
     browser_window_widget_observer_ =

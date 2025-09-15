@@ -160,6 +160,7 @@ class TabDialogManager : public content::WebContentsObserver,
   //  Overridden from content::WebContentObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void PrimaryMainFrameWasResized(bool width_changed) override;
 
   void TabDidEnterForeground(TabInterface* tab_interface);
   void TabWillEnterBackground(TabInterface* tab_interface);
