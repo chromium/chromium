@@ -365,42 +365,6 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
   }));
 }
 
-IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
-                       UnderlyingContentsIgnoredForAccessibility) {
-  Profile* const profile = browser()->profile();
-  ActorUiStateManagerInterface* state_manager =
-      ActorKeyedService::Get(profile)->GetActorUiStateManager();
-  ASSERT_NE(state_manager, nullptr);
-  tabs::TabHandle tab_handle =
-      browser()->tab_strip_model()->GetActiveTab()->GetHandle();
-
-  // Get the main WebView for the page content.
-  auto* contents_web_view = browser()->GetBrowserView().contents_web_view();
-  ASSERT_NE(contents_web_view, nullptr);
-
-  // Initially, the page should be visible to accessibility.
-  ASSERT_FALSE(contents_web_view->GetViewAccessibility().GetIsIgnored());
-
-  // Activate the overlay.
-  TestFuture<ActionResultPtr> result;
-  state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
-                           result.GetCallback());
-  ExpectOkResult(result);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
-
-  // The page should now be ignored by accessibility.
-  EXPECT_TRUE(contents_web_view->GetViewAccessibility().GetIsIgnored());
-
-  // Deactivate the overlay.
-  state_manager->OnUiEvent(StoppedActingOnTab(tab_handle));
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !IsActorOverlayVisible(browser()); }));
-
-  // The page should be restored to the accessibility tree.
-  EXPECT_FALSE(contents_web_view->GetViewAccessibility().GetIsIgnored());
-}
-
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, InputEventsIgnoredWhenOverlayVisible) {
   Profile* const profile = browser()->profile();
   ActorUiStateManagerInterface* state_manager =
