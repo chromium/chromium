@@ -239,7 +239,7 @@
           let last_line_by_pid = {};
           for (let l of lines) last_line_by_pid[l.process] = l.location;
           for (let pid in last_line_by_pid) {
-            if (!last_line_by_pid[pid].startsWith("chrome\\updater\\updater.cc:")) {
+            if (!last_line_by_pid[pid].indexOf("updater.cc") == -1) {
               findings.push("Process " + pid + " missing exit log line.");
             }
           }
