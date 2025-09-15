@@ -85,11 +85,17 @@ class FrameSinkHolderTest : public AshTestBase {
   }
 
   std::unique_ptr<UiResource> MakeResource() {
+    const gfx::Size kSize = gfx::Size(20, 20);
+    auto shared_image = sii_->CreateSharedImage(
+        {viz::SinglePlaneFormat::kBGRA_8888, kSize, gfx::ColorSpace(),
+         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "FastInkRootViewFrame"},
+        gpu::kNullSurfaceHandle);
+
     auto resource = std::make_unique<UiResource>(sii_);
     resource->ui_source_id = 1u;
     resource->format = viz::SinglePlaneFormat::kBGRA_8888;
-    resource->resource_size = gfx::Size(20, 20);
-    resource->SetExternallyOwnedMailbox(gpu::Mailbox::Generate());
+    resource->resource_size = kSize;
+    resource->SetClientSharedImage(shared_image);
     return resource;
   }
 

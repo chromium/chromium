@@ -131,7 +131,7 @@ std::unique_ptr<UiResource> CreateUiResource(
       std::make_unique<UiResource>(context_provider->SharedImageInterface());
 
   // This UiResource is operating on a shared SharedImage.
-  resource->SetExternallyOwnedMailbox(shared_image->mailbox());
+  resource->SetClientSharedImage(shared_image);
   resource->sync_token = sync_token;
 
   resource->damaged = true;

@@ -30,16 +30,8 @@ class ASH_EXPORT UiResource {
 
   virtual ~UiResource();
 
-  // It is valid to call only one of the two below setters on a given instance,
-  // and that setter should be called only once.
-  void SetExternallyOwnedMailbox(const gpu::Mailbox& mailbox) {
-    CHECK(external_mailbox_.IsZero());
-    CHECK(!client_shared_image_);
-    external_mailbox_ = mailbox;
-  }
   void SetClientSharedImage(
       scoped_refptr<gpu::ClientSharedImage> client_shared_image) {
-    CHECK(external_mailbox_.IsZero());
     CHECK(!client_shared_image_);
     client_shared_image_ = std::move(client_shared_image);
   }
@@ -48,7 +40,7 @@ class ASH_EXPORT UiResource {
   // been set and `external_mailbox_` otherwise.
   const gpu::Mailbox& mailbox() const {
     return client_shared_image_ ? client_shared_image_->mailbox()
-                                : external_mailbox_;
+                                : empty_mailbox_;
   }
 
   const scoped_refptr<gpu::ClientSharedImage>& client_shared_image() const {
@@ -71,7 +63,7 @@ class ASH_EXPORT UiResource {
   bool damaged = true;
 
  private:
-  gpu::Mailbox external_mailbox_;
+  gpu::Mailbox empty_mailbox_;
   scoped_refptr<gpu::ClientSharedImage> client_shared_image_;
 };
 

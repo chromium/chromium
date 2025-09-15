@@ -34,11 +34,15 @@ class UiResourceManagerTest : public testing::Test {
       const gfx::Size& resource_size = kDefaultSize,
       viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888,
       UiSourceId ui_source_id = kTestUiSourceId_1) {
+    auto shared_image = sii_->CreateSharedImage(
+        {format, resource_size, gfx::ColorSpace(),
+         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "FastInkRootViewFrame"},
+        gpu::kNullSurfaceHandle);
     auto resource = std::make_unique<UiResource>(sii_);
     resource->ui_source_id = ui_source_id;
     resource->format = format;
     resource->resource_size = resource_size;
-    resource->SetExternallyOwnedMailbox(gpu::Mailbox::Generate());
+    resource->SetClientSharedImage(shared_image);
     return resource;
   }
 
