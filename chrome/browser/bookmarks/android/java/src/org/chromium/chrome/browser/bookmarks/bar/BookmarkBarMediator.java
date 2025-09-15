@@ -592,7 +592,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         if (bookmarkModel == null) return INVALID_INDEX;
 
         // Get the id of the entire bookmarks bar.
-        BookmarkId bookmarkBarFolderId = bookmarkModel.getDesktopFolderId();
+        BookmarkId bookmarkBarFolderId =
+                Optional.ofNullable(bookmarkModel.getAccountDesktopFolderId())
+                        .orElseGet(bookmarkModel::getDesktopFolderId);
         if (bookmarkBarFolderId == null) return INVALID_INDEX;
 
         // Get an ordered list of all the children (both folders and web pages) of the bookmarks
