@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 
+#include "base/notimplemented.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
@@ -25,6 +26,12 @@ Host::Delegate* GlicInactiveSidePanelUi::GetHostDelegate() {
 
 void GlicInactiveSidePanelUi::Show() {
   // TODO: implement show.
+  NOTIMPLEMENTED();
+}
+
+void GlicInactiveSidePanelUi::Close() {
+  // TODO: implement close.
+  NOTIMPLEMENTED();
 }
 
 std::unique_ptr<views::View> GlicInactiveSidePanelUi::CreateView() {

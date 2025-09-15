@@ -74,14 +74,21 @@ void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
   embedder_to_show->Show();
 }
 
-void GlicInstanceImpl::Close() {
-  DeactivateCurrentEmbedder();
+void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
+  EmbedderKey key = GetEmbedderKey(type, tab);
+  auto* embedder = GetEmbedderForKey(key);
+  if (embedder) {
+    embedder->Close();
+  }
+  if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
+    DeactivateCurrentEmbedder();
+  }
 }
 
 void GlicInstanceImpl::Toggle(EmbedderType type, tabs::TabInterface* tab) {
   EmbedderKey key = GetEmbedderKey(type, tab);
   if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
-    Close();
+    Close(type, tab);
   } else {
     Show(type, tab);
   }
@@ -96,7 +103,11 @@ std::unique_ptr<views::View> GlicInstanceImpl::CreateViewForSidePanel(
 }
 
 GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForTab(tabs::TabInterface* tab) {
-  auto it = embedders_.find(EmbedderKey(tab));
+  return GetEmbedderForKey(EmbedderKey(tab));
+}
+
+GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForKey(EmbedderKey key) {
+  auto it = embedders_.find(key);
   if (it != embedders_.end()) {
     return it->second.embedder.get();
   }
@@ -195,7 +206,6 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   auto it = embedders_.find(active_embedder_key_.value());
   CHECK(it != embedders_.end());
   it->second.embedder = old_embedder->CreateInactiveEmbedder();
-
   active_embedder_key_.reset();
 }
 

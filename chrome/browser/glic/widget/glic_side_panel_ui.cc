@@ -91,6 +91,15 @@ void GlicSidePanelUi::Show() {
   side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
 }
 
+void GlicSidePanelUi::Close() {
+  if (!tab_ || !IsShowing()) {
+    return;
+  }
+  auto* side_panel_coordinator =
+      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
+  side_panel_coordinator->Close();
+}
+
 std::unique_ptr<views::View> GlicSidePanelUi::CreateView() {
   auto glic_view = std::make_unique<GlicView>(
       profile_, GlicWidget::GetInitialSize(), nullptr);

@@ -25,6 +25,8 @@ class GlicUiEmbedder {
 
   // Show the glic UI.
   virtual void Show() = 0;
+  // Close the glic UI (keeps webclient alive for now)
+  virtual void Close() = 0;
 
   // Create the WebView in which to show glic.
   virtual std::unique_ptr<views::View> CreateView() = 0;

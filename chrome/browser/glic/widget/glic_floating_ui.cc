@@ -57,6 +57,10 @@ void GlicFloatingUi::Show() {
   NOTIMPLEMENTED();
 }
 
+void GlicFloatingUi::Close() {
+  NOTIMPLEMENTED();
+}
+
 std::unique_ptr<views::View> GlicFloatingUi::CreateView() {
   NOTIMPLEMENTED();
   return nullptr;

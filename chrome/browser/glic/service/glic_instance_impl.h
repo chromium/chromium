@@ -76,7 +76,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   // These methods should only be called by the GlicInstanceCoordinator.
   void Show(EmbedderType type, tabs::TabInterface* tab);
-  void Close();
+  void Close(EmbedderType type, tabs::TabInterface* tab);
   void Toggle(EmbedderType type, tabs::TabInterface* tab);
   std::unique_ptr<views::View> CreateViewForSidePanel(tabs::TabInterface* tab);
 
@@ -119,6 +119,7 @@ class GlicInstanceImpl : public GlicInstance,
   EmbedderKey GetEmbedderKey(EmbedderType type, tabs::TabInterface* tab);
   GlicUiEmbedder* GetActiveEmbedder();
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
+  GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
   void DeactivateCurrentEmbedder();
   GlicUiEmbedder* CreateActiveEmbedderFor(const EmbedderKey& key);
   void MaybeShowHostUi(GlicUiEmbedder* embedder);

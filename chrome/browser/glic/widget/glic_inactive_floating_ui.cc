@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/widget/glic_inactive_floating_ui.h"
 
+#include "base/notimplemented.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
@@ -25,6 +26,12 @@ Host::Delegate* GlicInactiveFloatingUi::GetHostDelegate() {
 
 void GlicInactiveFloatingUi::Show() {
   // TODO: implement show.
+  NOTIMPLEMENTED();
+}
+
+void GlicInactiveFloatingUi::Close() {
+  // TODO: implement close.
+  NOTIMPLEMENTED();
 }
 
 std::unique_ptr<views::View> GlicInactiveFloatingUi::CreateView() {
