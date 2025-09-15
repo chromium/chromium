@@ -101,8 +101,7 @@ int MacOSMajorVersion() {
 
     // Darwin major version 25 corresponds to macOS version 26. Assume a
     // correspondence between Darwin's major version numbers and macOS major
-    // version numbers. TODO(https://crbug.com/424162749): Verify this before
-    // release.
+    // version numbers.
     return darwin_major_version + 1;
   }();
   return macos_major_version;
