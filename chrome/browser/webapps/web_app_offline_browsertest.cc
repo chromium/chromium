@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
   base::span<const uint8_t> image_bytes = UNSAFE_BUFFERS(
       base::span(static_cast<const uint8_t*>(bitmap.pixmap().addr()),
                  bitmap.computeByteSize()));
-  EXPECT_EQ(4172094509u, base::Crc32(0, image_bytes));
+  EXPECT_EQ(1504857296u, base::Crc32(0, image_bytes));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {

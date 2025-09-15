@@ -1114,7 +1114,7 @@ class WebInstallFromUrlCommandDialogTest
   base::FilePath GetIconPath() {
     base::FilePath path;
     base::PathService::Get(chrome::DIR_TEST_DATA, &path);
-    return path.AppendASCII("banners").AppendASCII("launcher-icon-1x.png");
+    return path.AppendASCII("banners").AppendASCII("image-512px.png");
   }
 };
 

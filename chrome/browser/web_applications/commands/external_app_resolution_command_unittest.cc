@@ -985,12 +985,15 @@ TEST_F(ExternalAppResolutionCommandTest,
     // Verify icon information.
     const std::vector<apps::IconInfo> icon_info =
         registrar().GetAppIconInfos(installed_app_id);
+    std::vector<SkColor> expected_icon_colors{SK_ColorRED, SK_ColorRED};
     EXPECT_EQ(new_sizes.size(), icon_info.size());
     EXPECT_EQ(GetMockIconInfo(icon_size::k64), icon_info[0]);
     EXPECT_EQ(GetMockIconInfo(icon_size::k512), icon_info[1]);
     LoadIconsFromDB(installed_app_id, new_sizes);
     EXPECT_EQ(GetIconSizesForApp(installed_app_id), new_sizes);
-    EXPECT_EQ(GetIconColorsForApp(installed_app_id), icon_colors);
+    // With the new trusted icon architecture, the color of the icon with the
+    // highest size is used.
+    EXPECT_EQ(GetIconColorsForApp(installed_app_id), expected_icon_colors);
   }
 }
 
@@ -1083,7 +1086,11 @@ TEST_F(ExternalAppResolutionCommandTest, IconDownloadSuccessOverwriteOldIcons) {
     EXPECT_EQ(GetMockIconInfo(icon_size::k512), new_icon_info[1]);
     LoadIconsFromDB(updated_app_id, new_sizes);
     EXPECT_EQ(GetIconSizesForApp(updated_app_id), new_sizes);
-    EXPECT_EQ(GetIconColorsForApp(updated_app_id), new_colors);
+
+    // With the new trusted icon architecture, the color of the icon with the
+    // highest size is used.
+    std::vector<SkColor> expected_colors{SK_ColorRED, SK_ColorRED};
+    EXPECT_EQ(GetIconColorsForApp(updated_app_id), expected_colors);
   }
 }
 

@@ -109,6 +109,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "skia/ext/image_operations.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -142,6 +143,9 @@
 namespace web_app {
 
 namespace {
+
+using ShortcutOsSizeColor =
+    std::vector<std::pair<std::pair<int, int>, SkColor>>;
 
 // Note: When adding new tests and any bitmap resources they may require, please
 // make sure the filename reflects the actual pixel size of the bitmap and that
@@ -393,10 +397,8 @@ class ManifestUpdateManagerBrowserTest : public WebAppBrowserTestBase {
   // contains an icon family that matches exactly the color specified in
   // `expectations`. The latter is a vector mapping (size, os) to an SK_Color
   // value.
-  void ConfirmShortcutColors(
-      const webapps::AppId& app_id,
-      const std::vector<std::pair<std::pair<int, int>, SkColor>>&
-          expectations) {
+  void ConfirmShortcutColors(const webapps::AppId& app_id,
+                             const ShortcutOsSizeColor& expectations) {
     GetProvider().os_integration_manager().GetShortcutInfoForAppFromRegistrar(
         app_id, base::BindOnce(
                     &ManifestUpdateManagerBrowserTest::OnShortcutInfoRetrieved,
@@ -3500,6 +3502,9 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
       ]
     }
   )";
+
+  const int icon_size1 = 48;
+  const int icon_size2 = 192;
   OverrideManifest(kManifest, {});
   webapps::AppId app_id = InstallWebApp();
 
@@ -3509,6 +3514,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
   histogram_tester_.ExpectBucketCount(
       "WebApp.Icon.DownloadedHttpStatusCodeOnCreate",
       net::HttpStatusCode::HTTP_OK, 1);
+
+  SkColor size48_color =
+      ReadAppIconPixel(app_id, icon_size1, icon_size1 / 2, icon_size1 / 2);
+  SkColor size192_color =
+      ReadAppIconPixel(app_id, icon_size2, icon_size2 / 2, icon_size2 / 2);
 
   // Make basic-48.png fail to download.
   // Replace the contents of basic-192.png with blue-192.png without changing
@@ -3543,9 +3553,14 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
       IconsDownloadedResult::kAbortedDueToFailure, 1);
 
   // Since one request failed, none of the icons should be updated. So the '192'
-  // size here is not updated to blue.
-  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/48), SK_ColorBLACK);
-  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/192), SK_ColorBLACK);
+  // size here is not updated to blue, and the `48` size still has the same
+  // color.
+  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/icon_size1, /*x=*/icon_size1 / 2,
+                             /*y=*/icon_size1 / 2),
+            size48_color);
+  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/icon_size2, /*x=*/icon_size2 / 2,
+                             /*y=*/icon_size2 / 2),
+            size192_color);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
@@ -5003,8 +5018,11 @@ enum AppIdTestParam {
   kActionRemoveUnimportantIcon = 1 << 16,
   kActionSwitchFromLauncher = 1 << 17,
   kActionSwitchToLauncher = 1 << 18,
+  kWithFlagTrustedIconsEnabled = 1 << 19,
 };
 
+// TODO(crbug.com/403253129): Deprecate this test once predictable app updating
+// is launched.
 class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
     : public ManifestUpdateManagerBrowserTest,
       public testing::WithParamInterface<
@@ -5024,6 +5042,11 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
     } else {
       disabled_features.push_back(
           features::kWebAppManifestPolicyAppIdentityUpdate);
+    }
+    if (IsTrustedIconsEnabled()) {
+      enabled_features.push_back(features::kWebAppUsePrimaryIcon);
+    } else {
+      disabled_features.push_back(features::kWebAppUsePrimaryIcon);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -5111,6 +5134,11 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
     return std::get<0>(GetParam()) & AppIdTestParam::kActionSwitchToLauncher;
   }
 
+  bool IsTrustedIconsEnabled() const {
+    return std::get<2>(GetParam()) &
+           AppIdTestParam::kWithFlagTrustedIconsEnabled;
+  }
+
   // This function describes in which scenarios the test should expect the title
   // of an app to change. It should mirror exactly the expectations we have of
   // the implementation and be simple to read for easy verification.
@@ -5195,6 +5223,9 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
       result += "PolicyCanUpdate_";
     if (flags & AppIdTestParam::kWithFlagAppIdDialogForIcon)
       result += "WithAppIdDlgForIcon_";
+    if (flags & AppIdTestParam::kWithFlagTrustedIconsEnabled) {
+      result += "WithTrustedIconsEnabled_";
+    }
 
     return result;
   }
@@ -5363,25 +5394,23 @@ IN_PROC_BROWSER_TEST_P(
   // to find auto-generated icons for size 64 and 96 only on Windows. Similarly,
   // size 512 is not part of `kDesiredIconSizesForShortcut` on Windows, and
   // that size therefore does not always feature in the shortcut expectations.
-  std::vector<std::pair<std::pair<int, int>, SkColor>>
-      expected_shortcut_colors_before = {
-          {{32, kAll}, SK_ColorYELLOW},
-          {{48, kAll}, SK_ColorYELLOW},
-          // Although sizes 64 and 96 are within the SizesToGenerate() list they
-          // are listed in `kDesiredIconSizesForShortcut` on Windows only.
-          {{64, kWin}, SK_ColorGREEN},
-          {{96, kWin}, SK_ColorGREEN},
-          {{128, kAll}, SK_ColorGREEN},
-          {{256, kMac}, SK_ColorGREEN},
-          {{256, kNotMac}, SK_ColorBLUE},
-          // The tests use size 512 as the icon size that guarantees that the
-          // installability requirements are met, but that size is not listed as
-          // a desired shortcut size on Windows.
-          {{512, kNotWin}, SK_ColorBLUE}};
+  ShortcutOsSizeColor expected_shortcut_colors_before = {
+      {{32, kAll}, SK_ColorYELLOW},
+      {{48, kAll}, SK_ColorYELLOW},
+      // Although sizes 64 and 96 are within the SizesToGenerate() list they
+      // are listed in `kDesiredIconSizesForShortcut` on Windows only.
+      {{64, kWin}, SK_ColorGREEN},
+      {{96, kWin}, SK_ColorGREEN},
+      {{128, kAll}, SK_ColorGREEN},
+      {{256, kMac}, SK_ColorGREEN},
+      {{256, kNotMac}, SK_ColorBLUE},
+      // The tests use size 512 as the icon size that guarantees that the
+      // installability requirements are met, but that size is not listed as
+      // a desired shortcut size on Windows.
+      {{512, kNotWin}, SK_ColorBLUE}};
 
   // This needs to be populated for each test below.
-  std::vector<std::pair<std::pair<int, int>, SkColor>>
-      expected_shortcut_colors_if_updated;
+  ShortcutOsSizeColor expected_shortcut_colors_if_updated;
 
   if (LauncherIconUpdate() && InstallIconUpdate()) {
     ending_stage =
@@ -5571,7 +5600,16 @@ IN_PROC_BROWSER_TEST_P(
                                         ManifestUpdateResult::kAppUpdated, 0);
   }
 
-  if (ExpectIconUpdate()) {
+  // If trusted icons are enabled, the largest icon will be chosen for all OSes,
+  // which is 512.
+  if (IsTrustedIconsEnabled()) {
+    ShortcutOsSizeColor expected_colors_post_trusted_icon_launch = {
+        {{32, kAll}, SK_ColorBLUE},     {{48, kAll}, SK_ColorBLUE},
+        {{64, kWin}, SK_ColorBLUE},     {{96, kWin}, SK_ColorBLUE},
+        {{128, kAll}, SK_ColorBLUE},    {{256, kMac}, SK_ColorBLUE},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
+    ConfirmShortcutColors(app_id, expected_colors_post_trusted_icon_launch);
+  } else if (ExpectIconUpdate()) {
     ConfirmShortcutColors(app_id, expected_shortcut_colors_if_updated);
   } else {
     ConfirmShortcutColors(app_id, expected_shortcut_colors_before);
@@ -5604,7 +5642,8 @@ INSTANTIATE_TEST_SUITE_P(
                         AppIdTestParam::kWithFlagAppIdDialogForIcon,
                         AppIdTestParam::kWithFlagPolicyAppIdentity,
                         AppIdTestParam::kWithFlagPolicyAppIdentity |
-                            AppIdTestParam::kWithFlagAppIdDialogForIcon)),
+                            AppIdTestParam::kWithFlagAppIdDialogForIcon,
+                        AppIdTestParam::kWithFlagTrustedIconsEnabled)),
     ManifestUpdateManagerBrowserTest_AppIdentityParameterized::ParamToString);
 
 }  // namespace web_app

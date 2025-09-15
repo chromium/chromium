@@ -159,6 +159,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -2277,11 +2278,8 @@ void WebAppIntegrationTestDriver::ManifestUpdateIcon(
           views::test::AnyWidgetTestPasskey{},
           "WebAppIdentityUpdateConfirmationView");
 
-  // The kLauncherIcon size is used here, as it is guaranteed to be written to
-  // the shortcut on all platforms, as opposed to kInstallIconSize, for example,
-  // which, on ChromeOS, is not written to the shortcut because it is not within
-  // the intersection between `kDesiredIconSizesForShortcut` (which is platform-
-  // dependent) and `SizesToGenerate()` (which is fixed on all platforms).
+  // After launching the trusted icon architecture, the icon of largest size of
+  // purpose any is going to be preferred.
   GURL url = GetUrlForSite(
       site, base::StringPrintf("?manifest=manifest_icon_red_%u.json",
                                kLauncherIconSize));
@@ -4778,6 +4776,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kIsolatedWebApps);
   enabled_features.push_back(features::kPwaUpdateDialogForIcon);
   enabled_features.push_back(features::kRecordWebAppDebugInfo);
+  enabled_features.push_back(features::kWebAppUsePrimaryIcon);
 #if !BUILDFLAG(IS_CHROMEOS)
   // TODO(b/313492499): Update test driver to work with new intent picker UI.
   enabled_features.push_back(features::kPwaNavigationCapturing);
