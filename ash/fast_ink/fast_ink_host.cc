@@ -239,9 +239,7 @@ void FastInkHost::DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect) {
 
 void FastInkHost::ResetGpuBuffer() {
   if (client_shared_image_) {
-    CHECK(context_provider_);
-    context_provider_->SharedImageInterface()->DestroySharedImage(
-        sync_token_, std::move(client_shared_image_));
+    client_shared_image_->UpdateDestructionSyncToken(sync_token_);
     client_shared_image_.reset();
     sync_token_.Clear();
   }

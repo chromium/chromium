@@ -84,8 +84,7 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
 
   // AshTestBase:
   void TearDown() override {
-    shared_image_interface()->DestroySharedImage(gpu::SyncToken(),
-                                                 std::move(shared_image_));
+    shared_image_.reset();
     resource_manager_.ClearAvailableResources();
     resource_manager_.LostExportedResources();
     AshTestBase::TearDown();

@@ -14,12 +14,9 @@ UiResource::UiResource(scoped_refptr<gpu::SharedImageInterface> sii)
 }
 
 UiResource::~UiResource() {
-  if (!client_shared_image_) {
-    return;
+  if (client_shared_image_) {
+    client_shared_image_->UpdateDestructionSyncToken(sync_token);
   }
-
-  shared_image_interface->DestroySharedImage(sync_token,
-                                             std::move(client_shared_image_));
 }
 
 }  // namespace ash
