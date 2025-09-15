@@ -314,6 +314,13 @@ const CGFloat kTopBarLargeInset = 20;
   [self updateAccessibilityLabel];
 }
 
+- (void)setLayoutType:(EmptyThumbnailLayoutType)layoutType {
+  _layoutType = layoutType;
+  for (GroupTabView* view in [self allGroupTabViews]) {
+    view.layoutType = layoutType;
+  }
+}
+
 #pragma mark - Private
 
 // Sets up the top bar with icon, title, and close button.

@@ -232,6 +232,8 @@ source_set("tab_group_creation_ui") {
 
 source_set("snapshots_view") {
   sources = [
+    "grid_empty_thumbnail_view.h",
+    "grid_empty_thumbnail_view.mm",
     "group_tab_view.h",
     "group_tab_view.mm",
     "tab_group_snapshots_view.h",
@@ -240,13 +242,16 @@ source_set("snapshots_view") {
   deps = [
     ":tab_groups_constant",
     "//base",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
 }
 

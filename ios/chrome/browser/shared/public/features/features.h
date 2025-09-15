@@ -328,12 +328,16 @@ BASE_DECLARE_FEATURE(kRemoveExcessNTPs);
 // Feature flag / Kill Switch for TCRex.
 BASE_DECLARE_FEATURE(kTCRexKillSwitch);
 
-// When enabled uses new transitions in the TabGrid.
-BASE_DECLARE_FEATURE(kTabGridNewTransitions);
-
 // When this flag is enabled, the tab grid will show an empty thumbnail for
 // tabs that don't have one.
 BASE_DECLARE_FEATURE(kTabGridEmptyThumbnail);
+
+// Returns YES when the tab grid should show an empty thumbnail for
+// tabs that don't have one.
+bool IsTabGridEmptyThumbnailUIEnabled();
+
+// When enabled uses new transitions in the TabGrid.
+BASE_DECLARE_FEATURE(kTabGridNewTransitions);
 
 // Whether the new tab grid tabs transitions should be enabled.
 bool IsNewTabGridTransitionsEnabled();

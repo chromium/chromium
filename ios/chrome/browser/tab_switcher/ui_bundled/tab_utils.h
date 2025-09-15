@@ -18,6 +18,13 @@ class BrowserList;
 @class TabSwitcherItem;
 class WebStateList;
 
+// Enum for the various layouts for the empty thumbnail of a tab grid view.
+typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType) {
+  EmptyThumbnailLayoutTypeLandscape = 1,
+  EmptyThumbnailLayoutTypePortrait,
+  EmptyThumbnailLayoutTypeCenteredPortrait,
+};
+
 // Returns the aspect ratio (height / width) of an item based on the container
 // `size`.
 CGFloat TabGridItemAspectRatio(CGSize size);
