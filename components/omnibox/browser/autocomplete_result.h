@@ -196,6 +196,12 @@ class AutocompleteResult {
   // Sets a takeover action on all matches to open Lens.
   void AttachContextualSearchOpenLensActionToMatches();
 
+  // Sets a smart compose inline hint.
+  void set_smart_compose_inline_hint(
+      const std::string& smart_compose_inline_hint) {
+    smart_compose_inline_hint_ = smart_compose_inline_hint;
+  }
+
   // Sets |has_tab_match| in matches whose URL matches an open tab's URL.
   // Also, fixes up the description if not using another UI element to
   // annotate (e.g. tab switch button). |input| can be null; if provided,
@@ -257,6 +263,10 @@ class AutocompleteResult {
 
   const omnibox::GroupConfigMap& suggestion_groups_map() const {
     return suggestion_groups_map_;
+  }
+
+  const std::string smart_compose_inline_hint() const {
+    return smart_compose_inline_hint_;
   }
 
   const SessionData& session() const { return session_; }
@@ -442,12 +452,14 @@ class AutocompleteResult {
   typedef ACMatches::iterator::difference_type matches_difference_type;
 #endif
 
-  // Swaps this result set - i.e., `matches_` and `suggestion_groups_map_` -
-  // with `other`. Called in AutocompleteController and tests only.
+  // Swaps this result set - i.e., `matches_`, `suggestion_groups_map_`, and
+  // `smart_compose_inline_hint_` - with `other`. Called in
+  // `AutocompleteController` and tests only.
   void SwapMatchesWith(AutocompleteResult* other);
 
-  // Copies the result set - i.e., `matches_` and `suggestion_groups_map_` -
-  // from `other`. Called in AutocompleteController and tests only.
+  // Copies the result set - i.e., `matches_` and `suggestion_groups_map_` and
+  // `smart_compose_inline_hint_` - from `other`. Called in
+  // `AutocompleteController` and tests only.
   void CopyMatchesFrom(const AutocompleteResult& other);
 
   // Modifies |matches| such that any duplicate matches are coalesced into
@@ -505,6 +517,9 @@ class AutocompleteResult {
 
   // The current result set. Cleared on `ClearMatches()` or `Reset()`.
   ACMatches matches_;
+
+  // The smart compose completion, if any.
+  std::string smart_compose_inline_hint_;
 
   // The map of suggestion group IDs to suggestion group information for the
   // current result set. Cleared along with `matches_` on `ClearMatches()` or

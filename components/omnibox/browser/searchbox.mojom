@@ -107,6 +107,7 @@ struct AutocompleteResult {
   // Map of suggestion group IDs to their respective info.
   map<int32, SuggestionGroup> suggestion_groups_map;
   array<AutocompleteMatch> matches;
+  mojo_base.mojom.String16? smart_compose_inline_hint;
 };
 
 enum SelectionLineState {

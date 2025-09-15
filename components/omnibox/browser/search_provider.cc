@@ -220,6 +220,7 @@ void SearchProvider::Start(const AutocompleteInput& input,
   model->Load();
 
   matches_.clear();
+  smart_compose_inline_hint_.clear();
 
   // At this point, we could exit early if the input is on-focus or empty,
   // because offering suggestions in those scenarios is handled by
@@ -439,6 +440,7 @@ void SearchProvider::OnURLLoadComplete(
           client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
               metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE);
         }
+        smart_compose_inline_hint_ = results->smart_compose_inline_hint;
         SortResults(is_keyword, results);
         PrefetchImages(results);
       }
@@ -466,6 +468,7 @@ void SearchProvider::StopSuggest() {
 void SearchProvider::ClearAllResults() {
   keyword_results_.Clear();
   default_results_.Clear();
+  smart_compose_inline_hint_.clear();
 }
 
 void SearchProvider::UpdateMatchContentsClass(
@@ -707,8 +710,7 @@ void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
   // suggest and only the verbatim matches should be shown.
   if ((omnibox::IsLensContextualSearchbox(
            input_.current_page_classification()) &&
-       !lens::features::ShowContextualSearchboxSearchSuggest()) ||
-      omnibox::IsComposebox(input_.current_page_classification())) {
+       !lens::features::ShowContextualSearchboxSearchSuggest())) {
     return;
   }
   // Make sure the current query can be sent to at least one suggest service.

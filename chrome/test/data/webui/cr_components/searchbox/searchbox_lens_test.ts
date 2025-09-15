@@ -134,6 +134,7 @@ suite('Lens search', () => {
       input: stringToMojoString16(realbox.$.input.value.trimStart()),
       matches,
       suggestionGroupsMap: {},
+      smartComposeInlineHint: stringToMojoString16(''),
     });
     await testProxy.callbackRouterRemote.$.flushForTesting();
     assertTrue(areMatchesShowing());

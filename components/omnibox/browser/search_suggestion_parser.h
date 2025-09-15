@@ -375,6 +375,9 @@ class SearchSuggestionParser {
 
     // The map of suggestion group IDs to suggestion group information.
     omnibox::GroupConfigMap suggestion_groups_map;
+
+    // The smart compose inline hint.
+    std::string smart_compose_inline_hint;
   };
 
   // Converts JSON loaded by a SimpleURLLoader into UTF-8 and returns the
