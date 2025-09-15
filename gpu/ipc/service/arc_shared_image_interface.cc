@@ -5,6 +5,7 @@
 #include "gpu/ipc/service/arc_shared_image_interface.h"
 
 #include "base/notimplemented.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -15,34 +16,43 @@ namespace gpu {
 
 // static
 scoped_refptr<ArcSharedImageInterface> ArcSharedImageInterface::Create(
-    GpuChannelManager* gpu_channel_manager) {
+    GpuChannelManager* gpu_channel_manager,
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+  CHECK(gpu_task_runner->BelongsToCurrentThread());
+
   gpu::ContextResult result;
-  auto context_state = gpu_channel_manager->GetSharedContextState(&result);
+  scoped_refptr<SharedContextState> context_state =
+      gpu_channel_manager->GetSharedContextState(&result);
 
   if (!context_state) {
     return nullptr;
   }
 
-  return base::MakeRefCounted<gpu::ArcSharedImageInterface>(
+  return base::MakeRefCounted<ArcSharedImageInterface>(
       std::make_unique<gpu::SharedImageFactory>(
           gpu_channel_manager->gpu_preferences(),
           gpu_channel_manager->gpu_driver_bug_workarounds(),
           gpu_channel_manager->gpu_feature_info(), context_state.get(),
           gpu_channel_manager->shared_image_manager(),
           context_state->memory_tracker(),
-          /*is_for_display_compositor=*/false));
+          /*is_for_display_compositor=*/false),
+      std::move(gpu_task_runner));
 }
 
 ArcSharedImageInterface::ArcSharedImageInterface(
-    std::unique_ptr<SharedImageFactory> shared_image_factory)
-    : shared_image_factory_(std::move(shared_image_factory)) {}
+    std::unique_ptr<SharedImageFactory> shared_image_factory,
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner)
+    : shared_image_factory_(std::move(shared_image_factory)),
+      gpu_task_runner_(std::move(gpu_task_runner)) {}
 
 ArcSharedImageInterface::~ArcSharedImageInterface() {
+  CHECK(gpu_task_runner_->BelongsToCurrentThread());
   if (shared_image_factory_->HasImages()) {
     // Some of the backings might require a current GL context to be destroyed.
-    bool have_context = MakeContextCurrent(/*needs_gl=*/true);
+    bool have_context = MakeContextCurrentOnGpuThread(/*needs_gl=*/true);
     shared_image_factory_->DestroyAllSharedImages(have_context);
   }
+  shared_image_factory_.reset();
 }
 
 scoped_refptr<ClientSharedImage> ArcSharedImageInterface::CreateSharedImage(
@@ -50,6 +60,10 @@ scoped_refptr<ClientSharedImage> ArcSharedImageInterface::CreateSharedImage(
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
+  if (encountered_error_.load(std::memory_order_relaxed)) {
+    return nullptr;
+  }
+
   auto client_buffer_handle = buffer_handle.Clone();
   auto mailbox = Mailbox::Generate();
   // Copy which can be modified.
@@ -57,8 +71,26 @@ scoped_refptr<ClientSharedImage> ArcSharedImageInterface::CreateSharedImage(
   // Set CPU read/write usage based on buffer usage.
   si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
 
-  if (!MakeContextCurrent()) {
-    return nullptr;
+  gpu_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ArcSharedImageInterface::CreateSharedImageOnGpuThread,
+                     base::Unretained(this), mailbox, si_info_copy,
+                     buffer_usage, std::move(buffer_handle)));
+
+  return base::MakeRefCounted<ClientSharedImage>(
+      mailbox, si_info_copy, gpu::SyncToken(),
+      GpuMemoryBufferHandleInfo(std::move(client_buffer_handle), buffer_usage),
+      holder_);
+}
+
+void ArcSharedImageInterface::CreateSharedImageOnGpuThread(
+    const Mailbox& mailbox,
+    const SharedImageInfo& si_info,
+    gfx::BufferUsage buffer_usage,
+    gfx::GpuMemoryBufferHandle buffer_handle) {
+  if (!MakeContextCurrentOnGpuThread()) {
+    encountered_error_.store(true, std::memory_order_relaxed);
+    return;
   }
 
   if (!shared_image_factory_->CreateSharedImage(
@@ -67,13 +99,9 @@ scoped_refptr<ClientSharedImage> ArcSharedImageInterface::CreateSharedImage(
           si_info.meta.alpha_type, si_info.meta.usage,
           std::move(si_info.debug_label), std::move(buffer_handle))) {
     shared_image_factory_->shared_context_state()->MarkContextLost();
-    return nullptr;
+    encountered_error_.store(true, std::memory_order_relaxed);
+    return;
   }
-
-  return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info_copy, gpu::SyncToken(),
-      GpuMemoryBufferHandleInfo(std::move(client_buffer_handle), buffer_usage),
-      holder_);
 }
 
 void ArcSharedImageInterface::DestroySharedImage(
@@ -130,7 +158,15 @@ void ArcSharedImageInterface::UpdateSharedImage(
 }
 void ArcSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
                                                  const Mailbox& mailbox) {
-  if (!MakeContextCurrent()) {
+  gpu_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ArcSharedImageInterface::DestroySharedImageOnGpuThread,
+                     base::Unretained(this), mailbox));
+}
+
+void ArcSharedImageInterface::DestroySharedImageOnGpuThread(
+    const Mailbox& mailbox) {
+  if (!MakeContextCurrentOnGpuThread()) {
     return;
   }
 
@@ -173,7 +209,8 @@ const SharedImageCapabilities& ArcSharedImageInterface::GetCapabilities() {
   NOTREACHED();
 }
 
-bool ArcSharedImageInterface::MakeContextCurrent(bool needs_gl /*=false*/) {
+bool ArcSharedImageInterface::MakeContextCurrentOnGpuThread(
+    bool needs_gl /*=false*/) {
   auto* context_state = shared_image_factory_->shared_context_state();
   if (!context_state) {
     return false;
