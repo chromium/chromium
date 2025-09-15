@@ -128,18 +128,12 @@ void ScheduleLoadForRestoredTabs(
     auto permission_descriptor = content::PermissionDescriptorUtil::
         CreatePermissionDescriptorForPermissionType(
             blink::PermissionType::NOTIFICATIONS);
-    // Without kBackgroundTabLoadingRestoreMainFrameState, use the incorrect
-    // lookup method to get bug-for-bug compatibility with TabLoader.
-    // TODO(crbug.com/40121561): Remove this after comparing the performance.
     auto notification_permission =
-        features::kBackgroundTabLoadingRestoreMainFrameState.Get()
-            ? permission_controller
-                  ->GetPermissionResultForOriginWithoutContext(
-                      permission_descriptor,
-                      url::Origin::Create(content->GetLastCommittedURL()))
-                  .status
-            : permission_controller->GetPermissionStatusForCurrentDocument(
-                  permission_descriptor, content->GetPrimaryMainFrame());
+        permission_controller
+            ->GetPermissionResultForOriginWithoutContext(
+                permission_descriptor,
+                url::Origin::Create(content->GetLastCommittedURL()))
+            .status;
 
     page_node_data_vector.emplace_back(
         PerformanceManager::GetPrimaryPageNodeForWebContents(content),
@@ -307,13 +301,9 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
     // Setting main frame restored state ensures that the notification
     // permission status and background title/favicon update properties are set
     // correctly when `ScoreTab` scores the page.
-    // TODO(crbug.com/40121561): Remove the feature check after comparing the
-    // performance to TabLoader, which lacks this call.
-    if (features::kBackgroundTabLoadingRestoreMainFrameState.Get()) {
-      PageNodeImpl::FromNode(page_node)->SetMainFrameRestoredState(
-          page_node_data.main_frame_url,
-          page_node_data.notification_permission_status);
-    }
+    PageNodeImpl::FromNode(page_node)->SetMainFrameRestoredState(
+        page_node_data.main_frame_url,
+        page_node_data.notification_permission_status);
 
     // No need to schedule a load if the page is already loading.
     if (base::Contains(page_nodes_loading_, page_node)) {

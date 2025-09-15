@@ -761,16 +761,13 @@ TEST_P(BackgroundTabLoadingPolicySiteEngagementTest,
 // End-to-end tests that ensure the `site_engagement` score and notification
 // permissions are piped through correctly from ScheduleLoadForRestoreTabs.
 class BackgroundTabLoadingPolicyScheduleLoadTest
-    : public BackgroundTabLoadingPolicyTest,
-      public ::testing::WithParamInterface<bool> {
+    : public BackgroundTabLoadingPolicyTest {
  public:
   BackgroundTabLoadingPolicyScheduleLoadTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kBackgroundTabLoadingFromPerformanceManager,
         {
             {"min_site_engagement", base::NumberToString(kMinSiteEngagement)},
-            {"restore_main_frame_state",
-             base::ToString(restore_main_frame_state_)},
         });
   }
 
@@ -796,8 +793,6 @@ class BackgroundTabLoadingPolicyScheduleLoadTest
   }
 
  protected:
-  bool restore_main_frame_state_ = GetParam();
-
   // PageNodes created and owned by the test.
   std::vector<
       performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
@@ -807,11 +802,7 @@ class BackgroundTabLoadingPolicyScheduleLoadTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackgroundTabLoadingPolicyScheduleLoadTest,
-                         ::testing::Bool());
-
-TEST_P(BackgroundTabLoadingPolicyScheduleLoadTest,
+TEST_F(BackgroundTabLoadingPolicyScheduleLoadTest,
        ScheduleLoadForRestoredTabs_WithoutNotificationPermission) {
   std::vector<PageNodeData> to_load;
 
@@ -845,7 +836,7 @@ TEST_P(BackgroundTabLoadingPolicyScheduleLoadTest,
   policy()->ScheduleLoadForRestoredTabs(to_load);
 }
 
-TEST_P(BackgroundTabLoadingPolicyScheduleLoadTest,
+TEST_F(BackgroundTabLoadingPolicyScheduleLoadTest,
        ScheduleLoadForRestoredTabs_WithNotificationPermission) {
   std::vector<PageNodeData> to_load;
 
@@ -864,8 +855,7 @@ TEST_P(BackgroundTabLoadingPolicyScheduleLoadTest,
       AddPageNode(GURL("http://low-engagement.example.com"),
                   blink::mojom::PermissionStatus::GRANTED);
   low_engagement_data.site_engagement = kMinSiteEngagement - 1;
-  EXPECT_CALL(*loader(), LoadPageNode(low_engagement_data.page_node.get()))
-      .Times(restore_main_frame_state_ ? 1 : 0);
+  EXPECT_CALL(*loader(), LoadPageNode(low_engagement_data.page_node.get()));
   to_load.push_back(std::move(low_engagement_data));
 
   // Tab with a high `site_engagement` score should be loaded regardless of
