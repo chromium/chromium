@@ -64,7 +64,8 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
       CHECK(collapsed_track_indexes.empty());
 
       Vector<LayoutUnit> intrinsic_repeat_track_sizes =
-          GetIntrinsicRepeaterTrackSizes(track_collection);
+          GetIntrinsicRepeaterTrackSizes(!masonry_items.IsEmpty(),
+                                         track_collection);
       track_collection = ComputeGridAxisTracks(
           sizing_constraint, &intrinsic_repeat_track_sizes, masonry_items,
           collapsed_track_indexes, start_offset, needs_intrinsic_track_size);
@@ -137,7 +138,8 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
     CHECK(collapsed_track_indexes.empty());
 
     Vector<LayoutUnit> intrinsic_repeat_track_sizes =
-        GetIntrinsicRepeaterTrackSizes(track_collection);
+        GetIntrinsicRepeaterTrackSizes(!masonry_items.IsEmpty(),
+                                       track_collection);
     track_collection = ComputeGridAxisTracks(
         SizingConstraint::kLayout, &intrinsic_repeat_track_sizes, masonry_items,
         collapsed_track_indexes, start_offset, needs_intrinsic_track_size);
@@ -871,6 +873,7 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
 }
 
 Vector<LayoutUnit> MasonryLayoutAlgorithm::GetIntrinsicRepeaterTrackSizes(
+    bool has_items,
     const GridSizingTrackCollection& track_collection) const {
   CHECK_NE(track_collection.GetIntrinsicSizedRepeaterSetIndex(), kNotFound);
   const ComputedStyle& style = Style();
@@ -883,6 +886,13 @@ Vector<LayoutUnit> MasonryLayoutAlgorithm::GetIntrinsicRepeaterTrackSizes(
   const wtf_size_t repeat_track_count = track_list.AutoRepeatTrackCount();
 
   Vector<LayoutUnit> intrinsic_repeat_track_sizes(repeat_track_count);
+
+  if (!has_items) {
+    // If there are no items, the size of the intrinsic tracks within an auto
+    // repeat are zero.
+    return intrinsic_repeat_track_sizes;
+  }
+
   for (wtf_size_t i = 0; i < repeat_track_count; ++i) {
     GridSet current_set = track_collection.GetSetAt(
         track_collection.GetIntrinsicSizedRepeaterSetIndex() + i);

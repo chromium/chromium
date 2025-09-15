@@ -45,7 +45,8 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
       CHECK(collapsed_track_indexes_.empty());
 
       Vector<LayoutUnit> intrinsic_repeat_track_sizes =
-          algorithm.GetIntrinsicRepeaterTrackSizes(grid_axis_tracks_.value());
+          algorithm.GetIntrinsicRepeaterTrackSizes(!masonry_items.IsEmpty(),
+                                                   grid_axis_tracks_.value());
       grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
           SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
           masonry_items, collapsed_track_indexes_, start_offset,

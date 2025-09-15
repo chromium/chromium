@@ -100,8 +100,10 @@ class CORE_EXPORT MasonryLayoutAlgorithm
 
   // Given a `track_collection`, return all the track sizes of an auto repeat
   // that has intrinsic track size(s). This method assumes that such an auto
-  // repeat exists in `track_collection`.
+  // repeat exists in `track_collection`. `has_items` indicates whether there
+  // are any masonry items in the masonry container.
   Vector<LayoutUnit> GetIntrinsicRepeaterTrackSizes(
+      bool has_items,
       const GridSizingTrackCollection& track_collection) const;
 
   // If `intrinsic_repeat_track_sizes` is non-null, this indicates the track
