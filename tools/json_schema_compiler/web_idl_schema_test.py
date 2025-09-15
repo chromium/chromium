@@ -664,19 +664,6 @@ class WebIdlSchemaTest(unittest.TestCase):
         'test/web_idl/void_unsupported.idl',
     )
 
-  # Tests that a namespace with an extended attribute that we don't have
-  # processing for results in a schema compiler error.
-  def testUnknownNamespaceExtendedAttributeNameError(self):
-    expected_error_regex = (
-        r'.* Interface\(TestWebIdl\): Unknown extended attribute with name'
-        r' "UnknownExtendedAttribute" when processing namespace.')
-    self.assertRaisesRegex(
-        SchemaCompilerError,
-        expected_error_regex,
-        web_idl_schema.Load,
-        'test/web_idl/unknown_namespace_extended_attribute.idl',
-    )
-
   # Tests that an API interface that uses the nodoc extended attribute has the
   # related nodoc attribute set to true after processing.
   def testNoDocOnNamespace(self):
@@ -703,16 +690,35 @@ class WebIdlSchemaTest(unittest.TestCase):
     no_nodoc_enum = getType(schema, 'EnumType')
     self.assertFalse(hasattr(no_nodoc_enum, 'nodoc'))
 
-  # Tests that an enum with the deprecated extended attribute has the related
-  # deprecated attribute set to the provided string value after processing.
-  # TODO(crbug.com/340297705): expand this out to the other various places
-  # deprecated can be specified.
+  # Tests that the deprecated extended attribute used in various places get the
+  # related attribute set to the provided string after processing.
+  # TODO(crbug.com/340297705): Enum values are not allowed to have extended
+  # attributes preceding them, so we need to find some other way to mark a
+  # specific enum value as deprecated.
   def testDeprecatedExtendedAttribute(self):
     idl = web_idl_schema.Load('test/web_idl/deprecated.idl')
     self.assertEqual(1, len(idl))
     schema = idl[0]
+
+    self.assertEqual('This API is deprecated', schema['deprecated'])
+
     deprecated_enum = getType(schema, 'DeprecatedEnum')
     self.assertEqual('This enum is deprecated', deprecated_enum['deprecated'])
+
+    deprecated_dict = getType(schema, 'DictWithDeprecatedMember')
+    self.assertEqual(
+        'This dict member is deprecated',
+        deprecated_dict['properties']['deprecatedDictMember']['deprecated'])
+
+    deprecated_function = getFunction(schema, 'deprecatedFunction')
+    self.assertEqual(
+        'This function is deprecated and it has such a long message that\n  it'
+        ' requires line wrapping',
+        deprecated_function['deprecated'],
+    )
+
+    deprecated_event = getEvent(schema, 'onDeprecatedEvent')
+    self.assertEqual('This event is deprecated', deprecated_event['deprecated'])
 
   # Tests that a function defined with the requiredCallback extended attribute
   # does not have the returns_async field marked as optional after processing.

@@ -100,6 +100,38 @@ def GetExtendedAttributes(node: IDLNode) -> Optional[List[IDLNode]]:
   return ext_attribute_node.GetListOf('ExtAttribute')
 
 
+def HasExtendedAttribute(node: IDLNode, name: str) -> bool:
+  """Returns true if the node has an extended attribute with the given name.
+
+  Args:
+    node: The IDLNode to check for the extended attribute on.
+    name: The name of the extended attribute to look for.
+
+  Returns:
+    Boolean indicating if an extended attribute with the given name was found.
+  """
+  for extended_attribute in GetExtendedAttributes(node):
+    if extended_attribute.GetName() == name:
+      return True
+  return False
+
+
+def GetExtendedAttributeValue(node: IDLNode, name: str) -> Optional[str]:
+  """Returns the string value of an extended attribute if it exists.
+
+  Args:
+    node: The IDLNode to check for the extended attribute on.
+    name: The name of the extended attribute to look for.
+
+  Returns:
+    The string value of the extended attribute if found, otherwise None.
+  """
+  for extended_attribute in GetExtendedAttributes(node):
+    if extended_attribute.GetName() == name:
+      return extended_attribute.GetProperty('VALUE')
+  return None
+
+
 def _ExtractNodeComment(node: IDLNode) -> str:
   """Extract contiguous file comments above a node and return them as a string.
 
@@ -303,19 +335,14 @@ class Type():
     # TODO(crbug.com/340297705): Add support for more types.
     type_details = self.type_node.GetChildren()[0]
 
-    # Process any extended attributes first.
-    instance_of = None
-    for extended_attribute in GetExtendedAttributes(self.type_node.GetParent()):
-      if extended_attribute.GetName() == 'instanceOf':
-        instance_of = extended_attribute.GetProperty('VALUE')
-
     if type_details.IsA('PrimitiveType', 'StringType'):
       properties['type'] = self._TranslateBasicType(type_details)
       # 'object' types also have an 'additionalProperties' attribute and may
       # have an 'instanceOf' extended attribute.
       if properties['type'] == 'object':
         properties['additionalProperties'] = {'type': 'any'}
-        if instance_of:
+        if instance_of := GetExtendedAttributeValue(self.type_node.GetParent(),
+                                                    'instanceOf'):
           properties['isInstanceOf'] = instance_of
     elif type_details.IsA('Typeref'):
       # Some common types don't actually have a custom class backing them and
@@ -507,6 +534,9 @@ class DictionaryMember(TypedProperty):
     if self.type_node.GetProperty('NULLABLE'):
       self.properties['optional'] = True
 
+    if deprecated := GetExtendedAttributeValue(self.node, 'deprecated'):
+      self.properties['deprecated'] = deprecated
+
     description = ProcessNodeDescription(self.node).description
     if description:
       self.properties['description'] = description
@@ -536,11 +566,8 @@ class Operation:
     if (description_data.description):
       properties['description'] = description_data.description
 
-    callback_optional = True
-    for extended_attribute in GetExtendedAttributes(self.node):
-      attribute_name = extended_attribute.GetName()
-      if attribute_name == 'requiredCallback':
-        callback_optional = False
+    if deprecated := GetExtendedAttributeValue(self.node, 'deprecated'):
+      properties['deprecated'] = deprecated
 
     parameters = []
     arguments_node = self.node.GetOneOf('Arguments')
@@ -566,7 +593,7 @@ class Operation:
       # would be nice to just get rid of the 'optional' property here and always
       # treat it as optional when we remove the context restrictions for promise
       # based calls.
-      if callback_optional:
+      if not HasExtendedAttribute(self.node, 'requiredCallback'):
         return_type['optional'] = True
       # For legacy reasons Promise based returns are represented on a
       # "returns_async" property.
@@ -636,12 +663,11 @@ class Enum:
         'type': 'string',
         'enum': enum
     }
-    for extended_attribute in GetExtendedAttributes(self.node):
-      attribute_name = extended_attribute.GetName()
-      if attribute_name == 'nodoc':
-        result['nodoc'] = True
-      if attribute_name == 'deprecated':
-        result['deprecated'] = extended_attribute.GetProperty('VALUE')
+    if HasExtendedAttribute(self.node, 'nodoc'):
+      result['nodoc'] = True
+    if deprecated := GetExtendedAttributeValue(self.node, 'deprecated'):
+      result['deprecated'] = deprecated
+
     return result
 
 
@@ -701,6 +727,10 @@ class Event:
       parameters.append(
           FunctionArgument(argument, parameter_descriptions).Process())
     properties['parameters'] = parameters
+
+    if deprecated := GetExtendedAttributeValue(self.node, 'deprecated'):
+      properties['deprecated'] = deprecated
+
 
     return properties
 
@@ -769,10 +799,6 @@ class Namespace:
     properties = OrderedDict()
     manifest_keys = None
     description = ProcessNodeDescription(self.namespace).description
-    nodoc = False
-    platforms = None
-    compiler_options = {}
-    deprecated = None
 
     # Functions are defined as Operations on the API Interface definition.
     for node in self.namespace.GetListOf('Operation'):
@@ -793,21 +819,17 @@ class Namespace:
     for node in self.namespace.GetListOf('Attribute'):
       events.append(Event(node).process(self.namespace.GetParent()))
 
-    for extended_attribute in GetExtendedAttributes(self.namespace):
-      attribute_name = extended_attribute.GetName()
-      if attribute_name == 'nodoc':
-        nodoc = True
-      elif attribute_name == 'platforms':
-        platforms = extended_attribute.GetProperty('VALUE')
-      elif attribute_name == 'implemented_in':
-        compiler_options['implemented_in'] = extended_attribute.GetProperty(
-            'VALUE')
-      elif attribute_name == 'generate_error_messages':
-        compiler_options['generate_error_messages'] = True
-      else:
-        raise SchemaCompilerError(
-            f'Unknown extended attribute with name "{attribute_name}" when'
-            ' processing namespace.', self.namespace)
+    # Several special attributes specific to the schema compilation process are
+    # defined using Extended Attributes on the API Interface definition.
+    nodoc = HasExtendedAttribute(self.namespace, 'nodoc')
+    platforms = GetExtendedAttributeValue(self.namespace, 'platforms')
+    deprecated = GetExtendedAttributeValue(self.namespace, 'deprecated')
+    compiler_options = {}
+    if implemented_in := GetExtendedAttributeValue(self.namespace,
+                                                   'implemented_in'):
+      compiler_options['implemented_in'] = implemented_in
+    if HasExtendedAttribute(self.namespace, 'generate_error_messages'):
+      compiler_options['generate_error_messages'] = True
 
     return {
         'namespace': self.name,
