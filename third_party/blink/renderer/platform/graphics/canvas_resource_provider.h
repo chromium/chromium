@@ -623,6 +623,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   bool notified_context_lost_ = false;
 
+  void ClearUnusedResources() override { unused_resources_.clear(); }
+  void RegisterUnusedResource(
+      scoped_refptr<CanvasResourceSharedImage>&& resource);
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
+  bool IsResourceUsable(CanvasResourceSharedImage* resource);
+
  private:
   // `viz::ContextLostObserver` implementation.
   void OnContextLost() override;

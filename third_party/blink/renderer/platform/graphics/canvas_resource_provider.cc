@@ -278,6 +278,46 @@ void CanvasResourceProviderSharedImage::OnGpuChannelLost() {
   notified_context_lost_ = true;
 }
 
+void CanvasResourceProviderSharedImage::RegisterUnusedResource(
+    scoped_refptr<CanvasResourceSharedImage>&& resource) {
+  CHECK(IsResourceUsable(resource.get()));
+  unused_resources_.emplace_back(base::TimeTicks::Now(), std::move(resource));
+}
+
+scoped_refptr<CanvasResourceSharedImage>
+CanvasResourceProviderSharedImage::NewOrRecycledResource() {
+  if (IsSingleBuffered()) {
+    CHECK(unused_resources_.empty());
+    num_inflight_resources_ = max_inflight_resources_ = 1;
+    return CreateResource();
+  }
+
+  if (unused_resources_.empty()) {
+    scoped_refptr<CanvasResourceSharedImage> resource = CreateResource();
+    if (!resource) {
+      return nullptr;
+    }
+
+    RegisterUnusedResource(std::move(resource));
+    ++num_inflight_resources_;
+    if (num_inflight_resources_ > max_inflight_resources_) {
+      max_inflight_resources_ = num_inflight_resources_;
+    }
+  }
+
+  scoped_refptr<CanvasResourceSharedImage> resource =
+      std::move(unused_resources_.back().resource);
+  unused_resources_.pop_back();
+  DCHECK(resource->HasOneRef());
+  return resource;
+}
+
+bool CanvasResourceProviderSharedImage::IsResourceUsable(
+    CanvasResourceSharedImage* resource) {
+  return resource->GetClientSharedImage()->usage().HasAll(
+      shared_image_usage_flags_);
+}
+
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
 class CanvasResourceProviderSharedImageImpl
@@ -936,14 +976,6 @@ class CanvasResourceProviderSharedImageImpl
     }
   }
 
-  void ClearUnusedResources() override { unused_resources_.clear(); }
-
-  void RegisterUnusedResource(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) {
-    CHECK(IsResourceUsable(resource.get()));
-    unused_resources_.emplace_back(base::TimeTicks::Now(), std::move(resource));
-  }
-
   void MaybePostUnusedResourcesReclaimTask() {
     if (!base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources)) {
       return;
@@ -971,38 +1003,6 @@ class CanvasResourceProviderSharedImageImpl
     // SharedImageInterface::Flush in not needed here explicitly.
 
     MaybePostUnusedResourcesReclaimTask();
-  }
-
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() {
-    if (IsSingleBuffered()) {
-      CHECK(unused_resources_.empty());
-      num_inflight_resources_ = max_inflight_resources_ = 1;
-      return CreateResource();
-    }
-
-    if (unused_resources_.empty()) {
-      scoped_refptr<CanvasResourceSharedImage> resource = CreateResource();
-      if (!resource) {
-        return nullptr;
-      }
-
-      RegisterUnusedResource(std::move(resource));
-      ++num_inflight_resources_;
-      if (num_inflight_resources_ > max_inflight_resources_) {
-        max_inflight_resources_ = num_inflight_resources_;
-      }
-    }
-
-    scoped_refptr<CanvasResourceSharedImage> resource =
-        std::move(unused_resources_.back().resource);
-    unused_resources_.pop_back();
-    DCHECK(resource->HasOneRef());
-    return resource;
-  }
-
-  bool IsResourceUsable(CanvasResourceSharedImage* resource) {
-    return resource->GetClientSharedImage()->usage().HasAll(
-        shared_image_usage_flags_);
   }
 
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override {
