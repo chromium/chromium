@@ -131,6 +131,7 @@ source_set("test_support") {
     "test_autofill_java_script_feature_container.h",
     "test_autofill_java_script_feature_container.mm",
     "test_autofill_manager_injector.h",
+    "test_autofill_manager_injector.mm",
   ]
   public_deps = [ ":browser" ]
   deps = [
