@@ -121,6 +121,18 @@ const CGFloat kDamping = 0.85;
   [self.sheetPresentationController invalidateDetents];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  // The related WebState can be hidden asynchronously while this animated view
+  // is being shown. `BWGTabHelper::WasHidden()` causes the related coordinator
+  // to shut down, causing the `mutator` to be nil, and leaves the view in a
+  // broken state once shown. This check ensures that if the view is in a broken
+  // state, automatically dismiss it.
+  if (!self.mutator) {
+    [self dismissViewControllerAnimated:YES completion:nil];
+  }
+}
+
 #pragma mark - Private
 
 // Returns YES if the consent view is currently displayed as the second step
