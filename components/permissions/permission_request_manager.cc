@@ -41,6 +41,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/switches.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -187,6 +188,8 @@ PermissionRequestManager::~PermissionRequestManager() {
   for (Observer& observer : observer_list_) {
     observer.OnPermissionRequestManagerDestructed();
   }
+
+  tab_subscriptions_.clear();
 }
 
 void PermissionRequestManager::AddRequest(
@@ -544,46 +547,14 @@ void PermissionRequestManager::WebContentsDestroyed() {
 
 void PermissionRequestManager::OnVisibilityChanged(
     content::Visibility visibility) {
-  bool tab_was_hidden = tab_is_hidden_;
-  tab_is_hidden_ = visibility == content::Visibility::HIDDEN;
-  if (tab_was_hidden == tab_is_hidden_) {
+  // If `tab_subscriptions_` isn't empty, defer to those listeners instead.
+  if (!tab_subscriptions_.empty()) {
     return;
   }
-  NotifyTabVisibilityChanged(visibility);
-  if (tab_is_hidden_) {
-    if (view_) {
-      switch (view_->GetTabSwitchingBehavior()) {
-        case PermissionPrompt::TabSwitchingBehavior::
-            kDestroyPromptButKeepRequestPending:
-          DeletePrompt();
-          break;
-        case PermissionPrompt::TabSwitchingBehavior::
-            kDestroyPromptAndIgnoreRequest:
-          Ignore();
-          break;
-        case PermissionPrompt::TabSwitchingBehavior::kKeepPromptAlive:
-          break;
-      }
-    }
-
-    return;
-  }
-
-  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-    return;
-  }
-
-  if (!IsRequestInProgress()) {
-    ScheduleDequeueRequestIfNeeded();
-    return;
-  }
-
-  if (view_) {
-    // We switched tabs away and back while a prompt was active.
-    DCHECK_EQ(view_->GetTabSwitchingBehavior(),
-              PermissionPrompt::TabSwitchingBehavior::kKeepPromptAlive);
-  } else if (current_request_ui_to_use_.has_value()) {
-    ShowPrompt();
+  bool prior_tab_is_active_ = tab_is_active_;
+  tab_is_active_ = visibility != content::Visibility::HIDDEN;
+  if (prior_tab_is_active_ != tab_is_active_) {
+    OnTabActiveChanged();
   }
 }
 
@@ -903,16 +874,29 @@ PermissionRequestManager::GetPromptBubbleViewBoundsInScreen() const {
 }
 
 PermissionRequestManager::PermissionRequestManager(
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    tabs::TabInterface* tab_interface)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PermissionRequestManager>(*web_contents),
       view_factory_(base::BindRepeating(&PermissionPrompt::Create)),
-      tab_is_hidden_(web_contents->GetVisibility() ==
-                     content::Visibility::HIDDEN),
       auto_response_for_test_(NONE),
       permission_ui_selectors_(
           PermissionsClient::Get()->CreatePermissionUiSelectors(
-              web_contents->GetBrowserContext())) {}
+              web_contents->GetBrowserContext())) {
+  if (tab_interface) {
+    tab_is_active_ = tab_interface->IsActivated();
+    RegisterTabSubscriptions(tab_interface);
+  } else {
+    tab_is_active_ =
+        web_contents->GetVisibility() != content::Visibility::HIDDEN;
+  }
+}
+
+PermissionRequestManager::PermissionRequestManager(
+    content::WebContents* web_contents)
+    : PermissionRequestManager(web_contents, nullptr) {
+  ;
+}
 
 void PermissionRequestManager::DequeueRequestIfNeeded() {
   // TODO(olesiamarukhno): Media requests block other media requests from
@@ -1024,7 +1008,7 @@ void PermissionRequestManager::ShowPrompt() {
   DCHECK(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
   DCHECK(current_request_ui_to_use_);
 
-  if (tab_is_hidden_) {
+  if (!tab_is_active_) {
     NotifyPromptCreationFailedHiddenTab();
     return;
   }
@@ -1427,10 +1411,9 @@ bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
   return false;
 }
 
-void PermissionRequestManager::NotifyTabVisibilityChanged(
-    content::Visibility visibility) {
+void PermissionRequestManager::NotifyTabActiveChanged(bool is_active) {
   for (Observer& observer : observer_list_) {
-    observer.OnTabVisibilityChanged(visibility);
+    observer.OnTabActiveChanged(is_active);
   }
 }
 
@@ -1707,6 +1690,93 @@ ContentSetting PermissionRequestManager::GetRequestInitialStatus(
   }
 
   return CONTENT_SETTING_DEFAULT;
+}
+
+void PermissionRequestManager::RegisterTabSubscriptions(
+    tabs::TabInterface* tab_interface) {
+  tab_subscriptions_.clear();
+
+  tab_subscriptions_.push_back(tab_interface->RegisterDidActivate(
+      base::BindRepeating(&PermissionRequestManager::OnTabActiveStatusChanged,
+                          weak_factory_.GetWeakPtr(), /*is_active=*/true)));
+  tab_subscriptions_.push_back(tab_interface->RegisterWillDeactivate(
+      base::BindRepeating(&PermissionRequestManager::OnTabActiveStatusChanged,
+                          weak_factory_.GetWeakPtr(), /*is_active=*/false)));
+
+  tab_subscriptions_.push_back(tab_interface->RegisterWillDetach(
+      base::BindRepeating(&PermissionRequestManager::OnTabDetached,
+                          weak_factory_.GetWeakPtr())));
+  // Store this separately because this must not be cleared when a tab is
+  // detached.
+  tab_insert_subscription_ = tab_interface->RegisterDidInsert(
+      base::BindRepeating(&PermissionRequestManager::OnTabAttached,
+                          weak_factory_.GetWeakPtr()));
+}
+
+void PermissionRequestManager::OnTabActiveStatusChanged(
+    bool is_active,
+    tabs::TabInterface* tab_interface) {
+  const bool prior_tab_is_active_ = tab_is_active_;
+  tab_is_active_ = is_active;
+  if (prior_tab_is_active_ != tab_is_active_) {
+    OnTabActiveChanged();
+  }
+}
+
+void PermissionRequestManager::OnTabDetached(
+    tabs::TabInterface* tab_interface,
+    tabs::TabInterface::DetachReason reason) {
+  // Clear the existing tab subscriptions while the tab is detached from a tab
+  // strip. This might mean the TabInterface will become part of a PWA which
+  // should fall back to the OnVisibilityChanged listeners.
+  tab_subscriptions_.clear();
+}
+
+void PermissionRequestManager::OnTabAttached(
+    tabs::TabInterface* tab_interface) {
+  RegisterTabSubscriptions(tab_interface);
+}
+
+void PermissionRequestManager::OnTabActiveChanged() {
+  NotifyTabActiveChanged(tab_is_active_);
+  if (!tab_is_active_) {
+    if (view_) {
+      switch (view_->GetTabSwitchingBehavior()) {
+        case PermissionPrompt::TabSwitchingBehavior::
+            kDestroyPromptButKeepRequestPending: {
+          DeletePrompt();
+          break;
+        }
+        case PermissionPrompt::TabSwitchingBehavior::
+            kDestroyPromptAndIgnoreRequest: {
+          Ignore();
+          break;
+        }
+        case PermissionPrompt::TabSwitchingBehavior::kKeepPromptAlive: {
+          break;
+        }
+      }
+    }
+
+    return;
+  }
+
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    return;
+  }
+
+  if (!IsRequestInProgress()) {
+    ScheduleDequeueRequestIfNeeded();
+    return;
+  }
+
+  if (view_) {
+    // We switched tabs away and back while a prompt was active.
+    DCHECK_EQ(view_->GetTabSwitchingBehavior(),
+              PermissionPrompt::TabSwitchingBehavior::kKeepPromptAlive);
+  } else if (current_request_ui_to_use_.has_value()) {
+    ShowPrompt();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PermissionRequestManager);

@@ -144,6 +144,7 @@
 #include "components/search/ntp_features.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -492,7 +493,17 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           performance_manager::PerformanceManagerRegistry::GetInstance()) {
     pm_registry->SetPageType(web_contents, performance_manager::PageType::kTab);
   }
-  permissions::PermissionRequestManager::CreateForWebContents(web_contents);
+  // The tab interface is only needed on Desktop to support Split View.
+  tabs::TabInterface* desktop_tab_interface =
+#if BUILDFLAG(IS_ANDROID)
+      nullptr;
+#else
+      base::FeatureList::IsEnabled(features::kSideBySide)
+          ? tabs::TabInterface::MaybeGetFromContents(web_contents)
+          : nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
+  permissions::PermissionRequestManager::CreateForWebContents(
+      web_contents, desktop_tab_interface);
   permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
       web_contents);
   // The PopupBlockerTabHelper has an implicit dependency on

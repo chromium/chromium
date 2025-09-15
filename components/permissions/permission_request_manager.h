@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/check_is_test.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +28,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -85,7 +87,7 @@ class PermissionRequestManager
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnTabVisibilityChanged(content::Visibility visibility) {}
+    virtual void OnTabActiveChanged(bool is_active) {}
     virtual void OnPromptAdded() {}
     virtual void OnPromptRemoved() {}
     // Called when recreation of the permission prompt is not possible. It means
@@ -294,6 +296,10 @@ class PermissionRequestManager
   FRIEND_TEST_ALL_PREFIXES(PermissionRequestManagerTest,
                            WeakDuplicateRequestsAccept);
 
+  // TODO(crbug.com/443780638): Remove this once the TabInterface can be fetched
+  // from WebContents.
+  PermissionRequestManager(content::WebContents* web_contents,
+                           tabs::TabInterface* tab_interface);
   explicit PermissionRequestManager(content::WebContents* web_contents);
 
   // Defines how to handle the current request, when new requests arrive
@@ -422,7 +428,7 @@ class PermissionRequestManager
   // Erases a request and all its duplicates.
   void FinishRequestIncludingDuplicates(PermissionRequest* request);
 
-  void NotifyTabVisibilityChanged(content::Visibility visibility);
+  void NotifyTabActiveChanged(bool is_active);
   void NotifyPromptAdded();
   void NotifyPromptRemoved();
   void NotifyPromptRecreateFailed();
@@ -468,6 +474,16 @@ class PermissionRequestManager
 
   ContentSetting GetRequestInitialStatus(PermissionRequest* request);
 
+  void RegisterTabSubscriptions(tabs::TabInterface* tab_interface);
+  void OnTabActiveStatusChanged(bool is_active,
+                                tabs::TabInterface* tab_interface);
+  void OnTabVisibleStatusChanged(bool is_visible,
+                                 tabs::TabInterface* tab_interface);
+  void OnTabDetached(tabs::TabInterface* tab_interface,
+                     tabs::TabInterface::DetachReason reason);
+  void OnTabAttached(tabs::TabInterface* tab_interface);
+  void OnTabActiveChanged();
+
   // Factory to be used to create views when needed.
   PermissionPrompt::Factory view_factory_;
 
@@ -483,8 +499,13 @@ class PermissionRequestManager
   std::optional<permissions::PermissionPromptDisposition>
       current_request_prompt_disposition_;
 
-  // We only show new prompts when |tab_is_hidden_| is false.
-  bool tab_is_hidden_;
+  // We only show new prompts when |tab_is_active_| is true.
+  bool tab_is_active_;
+
+  // Holds subscriptions for TabInterface active and visible callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+  // Holds subscriptions for TabInterface attach and detach callbacks.
+  base::CallbackListSubscription tab_insert_subscription_;
 
   // The request (or requests) that the user is currently being prompted for.
   // When this is non-empty, the |view_| is generally non-null as long as the

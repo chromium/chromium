@@ -16,6 +16,7 @@ include_rules = [
   "+components/resources/android",
   "+components/strings",
   "+components/sync_preferences",
+  "+components/tabs",
   "+components/ukm/content",
   "+components/ukm/test_ukm_recorder.h",
   "+components/url_formatter",

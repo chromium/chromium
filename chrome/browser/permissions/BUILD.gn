@@ -306,6 +306,7 @@ if (!is_android) {
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/permissions/system",
       "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:ui_features",
       "//chrome/test:test_support",
       "//components/back_forward_cache",
       "//components/optimization_guide/core:test_support",
