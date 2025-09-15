@@ -966,6 +966,10 @@ class TouchMoveInjectingObserver : public RenderWidgetHost::InputEventObserver {
     return root_view_has_seen_gsu_for_async_touch_move_;
   }
 
+  int first_touch_move_after_scroll_begin_id() const {
+    return first_touch_move_after_scroll_begin_id_;
+  }
+
  private:
   void OnInputEventOnChildFrame(const blink::WebInputEvent& event) {
     if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
@@ -1014,15 +1018,8 @@ class TouchMoveInjectingObserver : public RenderWidgetHost::InputEventObserver {
 };
 
 // The test is flaky on Android, see crbug.com/443928502
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ScrollBubblingWithTouchMoveInjection \
-  DISABLED_ScrollBubblingWithTouchMoveInjection
-#else
-#define MAYBE_ScrollBubblingWithTouchMoveInjection \
-  ScrollBubblingWithTouchMoveInjection
-#endif
 IN_PROC_BROWSER_TEST_P(OOPIFScrollBubblingTest,
-                       MAYBE_ScrollBubblingWithTouchMoveInjection) {
+                       ScrollBubblingWithTouchMoveInjection) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/scrollable_page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1055,7 +1052,7 @@ IN_PROC_BROWSER_TEST_P(OOPIFScrollBubblingTest,
   SyntheticSmoothScrollGestureParams params;
   params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.anchor = scroll_pos;
-  params.distances.push_back(gfx::Vector2d(0, -200));  // Scroll down.
+  params.distances.push_back(gfx::Vector2d(0, -20000));  // Scroll down.
   params.granularity = ui::ScrollGranularity::kScrollByPrecisePixel;
 
   auto gesture = std::make_unique<SyntheticSmoothScrollGesture>(params);
@@ -1076,6 +1073,7 @@ IN_PROC_BROWSER_TEST_P(OOPIFScrollBubblingTest,
   iframe_rwh->AddInputEventObserver(&observer);
   run_loop.Run();
 
+  EXPECT_NE(observer.first_touch_move_after_scroll_begin_id(), -1);
   EXPECT_TRUE(observer.root_view_has_seen_gsu_for_async_touch_move());
 
   root->current_frame_host()->GetRenderWidgetHost()->RemoveInputEventObserver(
