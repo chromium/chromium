@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_earl_grey_app_interface.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -142,6 +141,9 @@ id<GREYMatcher> SharePasswordsTitle() {
   if ([self isRunningTest:@selector(testBestFeatures_variantE)] ||
       [self isRunningTest:@selector(testBestFeatures_variantECPEEnabled)]) {
     feature_param = "5";
+  }
+  if ([self isRunningTest:@selector(testBestFeatures_variantDShopper)]) {
+    config.additional_args.push_back("--mock-shopping-service=is-eligible");
   }
 
   config.additional_args.push_back(
@@ -321,7 +323,6 @@ id<GREYMatcher> SharePasswordsTitle() {
   }
 #endif
 
-  [NotificationsEarlGreyAppInterface setUpMockShoppingService];
   // Ensure the Default Browser Promo appears before the Best Features Screen.
   [self skipDefaultBrowserPromo];
 

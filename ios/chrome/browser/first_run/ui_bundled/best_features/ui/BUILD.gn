@@ -60,7 +60,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
-    "//ios/chrome/browser/settings/ui_bundled/notifications:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/common/ui/confirmation_alert:constants",

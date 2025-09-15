@@ -9,7 +9,6 @@
 #import "components/variations/pref_names.h"
 #import "ios/chrome/browser/push_notification/ui_bundled/scoped_notification_auth_swizzler.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_earl_grey_app_interface.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -77,6 +76,9 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
     config.additional_args.push_back(
         "--disable-features=SafetyCheckNotifications");
   }
+  if ([self isRunningTest:@selector(testPriceNotificationsSwipeDown)]) {
+    config.additional_args.push_back("--mock-shopping-service=is-eligible");
+  }
 
   return config;
 }
@@ -90,8 +92,6 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
   [ChromeEarlGrey setStringValue:"us"
                forLocalStatePref:variations::prefs::
                                      kVariationsPermanentOverriddenCountry];
-
-  [NotificationsEarlGreyAppInterface setUpMockShoppingService];
 
   // Opens price notifications setting.
   [ChromeEarlGreyUI openSettingsMenu];

@@ -214,7 +214,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts:constants",
     "//ios/chrome/browser/settings/ui_bundled/language:eg_app_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/notifications:constants",
-    "//ios/chrome/browser/settings/ui_bundled/notifications:eg_app_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/notifications/tracking_price:constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_app_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/password:password_constants",

@@ -81,7 +81,6 @@ source_set("eg2_tests") {
     "//components/commerce/core:pref_names",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/settings/ui_bundled/notifications:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",
