@@ -5,12 +5,16 @@ prompts:
 providers:
   - id: python:../../../testing/gemini_provider.py
     config:
-      timeoutSeconds: 30
-      system_prompt: file://../../../../GEMINI.md
+      timeoutSeconds: 90
 
 # The test cases will run on the output returned by our Python script.
 tests:
   - description: 'Host architecture determination'
     assert:
-      - type: icontains
-        value: 'x64'
+      - type: python
+        value: file://../../../testing/asserts/check_mcp.py:check_response_contains_mcp_response
+        config:
+          server_path:
+            build/mcp_servers/build_information.py
+          tool:
+            get_host_arch

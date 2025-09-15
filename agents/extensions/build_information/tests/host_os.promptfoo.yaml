@@ -13,5 +13,10 @@ providers:
 tests:
   - description: 'Host OS determination'
     assert:
-      - type: icontains
-        value: 'linux'
+      - type: python
+        value: file://../../../testing/asserts/check_mcp.py:check_response_contains_mcp_response
+        config:
+          server_path:
+            build/mcp_servers/build_information.py
+          tool:
+            get_host_os
