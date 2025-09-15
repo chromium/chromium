@@ -19,6 +19,7 @@
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/variations/variations_switches.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -34,6 +35,8 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, "BE");
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "be");
 
     InitMockPolicyService();
     TestProfileIOS::Builder builder;

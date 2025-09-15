@@ -42,6 +42,7 @@ source_set("unit_tests") {
     "//components/regional_capabilities",
     "//components/search_engines",
     "//components/sync_preferences:test_support",
+    "//components/variations",
     "//ios/chrome/browser/policy/model:test_support",
     "//ios/chrome/browser/search_engine_choice/ui_bundled:constants",
     "//ios/chrome/browser/search_engines/model",
