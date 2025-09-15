@@ -4006,15 +4006,13 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
   function->SetLaunchWebAuthFlowDelegateForTesting(
       std::make_unique<TestDelegate>());
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_opened;
 
   std::string args =
       "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
   RunFunctionAsync(function.get(), args);
 
   Browser* popup_browser = browser_opened.Wait();
-
   gfx::Rect bounds = popup_browser->window()->GetBounds();
   EXPECT_EQ(bounds.x(), TestDelegate::kTestBounds.x());
   EXPECT_EQ(bounds.y(), TestDelegate::kTestBounds.y());

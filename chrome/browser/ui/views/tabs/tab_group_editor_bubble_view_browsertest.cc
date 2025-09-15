@@ -171,10 +171,9 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
                                 gfx::PointF(), base::TimeTicks(), 0, 0);
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   views::test::ButtonTestApi(move_group_button).NotifyClick(released_event);
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
+  ui_test_utils::WaitForBrowserSetLastActive(browser_created_observer.Wait());
 
   EXPECT_EQ(0u, group_model()->ListTabGroups().size());
   EXPECT_FALSE(group_model()->ContainsTabGroup(group_.value()));

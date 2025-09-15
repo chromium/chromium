@@ -231,8 +231,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
   Browser* app_browser;
   webapps::AppId app_id;
   {
-    ui_test_utils::BrowserChangeObserver app_browser_observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     base::RunLoop run_loop;
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     DCHECK(provider);
@@ -257,7 +256,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
             }),
         FallbackBehavior::kAllowFallbackDataAlways);
     run_loop.Run();
-    app_browser = app_browser_observer.Wait();
+    app_browser = browser_created_observer.Wait();
     ASSERT_TRUE(app_browser);
     EXPECT_NE(app_browser, browser());
   }
@@ -705,10 +704,9 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
 
   size_t initial_browser_count = BrowserList::GetInstance()->size();
 
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::MoveTabsToNewWindow(app_browser, {1});
-  Browser* new_browser = new_browser_observer.Wait();
+  Browser* new_browser = browser_created_observer.Wait();
   ASSERT_TRUE(new_browser);
 
   EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
@@ -735,10 +733,9 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
   chrome::NewTab(app_browser);
 
   // Open a second app browser window.
-  ui_test_utils::BrowserChangeObserver app_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::MoveTabsToNewWindow(app_browser, {1});
-  Browser* app_browser2 = app_browser_observer.Wait();
+  Browser* app_browser2 = browser_created_observer.Wait();
   ASSERT_TRUE(app_browser2);
 
   EXPECT_EQ(app_browser->tab_strip_model()->count(), 1);

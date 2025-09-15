@@ -139,8 +139,7 @@ class IntentChipButtonBrowserTest
   // appear if `wait_for_browser` is true. If waiting is specified, the new
   // browser window is returned; if waiting is not specified, null is returned.
   Browser* ClickIntentChip(bool wait_for_browser) {
-    ui_test_utils::BrowserChangeObserver browser_opened(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
     views::test::ButtonTestApi test_api(GetIntentChip(browser()));
     ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
@@ -148,7 +147,7 @@ class IntentChipButtonBrowserTest
     test_api.NotifyClick(e);
 
     if (wait_for_browser) {
-      return browser_opened.Wait();
+      return browser_created_observer.Wait();
     }
 
     return nullptr;

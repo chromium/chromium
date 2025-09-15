@@ -44,8 +44,7 @@ class LaunchWebAuthFlowDelegateAshBrowserTest : public InProcessBrowserTest {
 
  protected:
   Browser* OpenFilesAppWindow() {
-    ui_test_utils::BrowserChangeObserver browser_added_observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     base::RunLoop run_loop;
     file_manager::util::ShowItemInFolder(
         GetProfile(), file_.path(),
@@ -56,7 +55,7 @@ class LaunchWebAuthFlowDelegateAshBrowserTest : public InProcessBrowserTest {
               run_loop.Quit();
             }));
     run_loop.Run();
-    browser_added_observer.Wait();
+    browser_created_observer.Wait();
 
     Browser* files_browser = FindSystemWebAppBrowser(
         GetProfile(), ash::SystemWebAppType::FILE_MANAGER);

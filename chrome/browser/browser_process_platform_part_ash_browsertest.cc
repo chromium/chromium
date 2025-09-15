@@ -222,8 +222,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   SessionStartupPref::SetStartupPref(profile, startup_pref);
 
   // Request a new browser window.
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::NewEmptyWindow(profile);
 
   // This startup pref should restore a single window.
@@ -231,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
   run_loop.Run();
 
-  auto* pref_urls_opened_browser = new_browser_observer.Wait();
+  auto* pref_urls_opened_browser = browser_created_observer.Wait();
   ASSERT_TRUE(pref_urls_opened_browser);
   EXPECT_EQ(pref_urls_opened_browser->profile(), profile);
   ui_test_utils::WaitUntilBrowserBecomeActive(pref_urls_opened_browser);

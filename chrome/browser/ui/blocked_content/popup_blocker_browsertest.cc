@@ -211,13 +211,13 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
     std::map<int32_t, GURL> blocked_requests =
         popup_blocker_helper->GetBlockedPopupRequests();
     std::map<int32_t, GURL>::const_iterator iter = blocked_requests.begin();
-    ui_test_utils::BrowserChangeObserver popup_observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     popup_blocker_helper->ShowBlockedPopup(iter->first, disposition);
 
     BrowserWindowInterface* new_browser;
     if (what_to_expect == kExpectPopup || what_to_expect == kExpectNewWindow) {
-      ui_test_utils::WaitForBrowserSetLastActive(popup_observer.Wait());
+      ui_test_utils::WaitForBrowserSetLastActive(
+          browser_created_observer.Wait());
       new_browser = GetLastActiveBrowserWindowInterfaceWithAnyProfile();
       EXPECT_NE(browser, new_browser);
       web_contents = new_browser->GetTabStripModel()->GetActiveWebContents();

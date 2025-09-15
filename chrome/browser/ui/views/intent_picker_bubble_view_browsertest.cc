@@ -505,12 +505,11 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest, RememberOpenWebApp) {
   apps_util::PreferredAppUpdateWaiter preference_update_waiter(
       preferred_apps, test_web_app_id());
 
-  ui_test_utils::BrowserChangeObserver added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   intent_picker_bubble()->AcceptDialog();
 
   // Accepting the bubble should open the app.
-  Browser* app_browser = added_observer.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
                                                          test_web_app_id()));
 

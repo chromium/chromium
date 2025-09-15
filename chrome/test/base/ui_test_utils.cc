@@ -578,10 +578,9 @@ bool IsBrowserActive(Browser* browser) {
 Browser* OpenNewEmptyWindowAndWaitUntilActivated(
     Profile* profile,
     bool should_trigger_session_restore) {
-  BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::NewEmptyWindow(profile, should_trigger_session_restore);
-  Browser* new_browser = new_browser_observer.Wait();
+  Browser* new_browser = browser_created_observer.Wait();
   WaitUntilBrowserBecomeActive(new_browser);
   return new_browser;
 }
@@ -877,9 +876,7 @@ void WaitForHistoryToLoad(history::HistoryService* history_service) {
 }
 
 Browser* WaitForBrowserToOpen() {
-  return BrowserChangeObserver(nullptr,
-                               BrowserChangeObserver::ChangeType::kAdded)
-      .Wait();
+  return BrowserCreatedObserver().Wait();
 }
 
 void WaitForBrowserToClose(Browser* browser) {
@@ -965,35 +962,25 @@ void BrowserDestroyedObserver::OnBrowserRemoved(Browser* browser) {
   }
 }
 
-BrowserChangeObserver::BrowserChangeObserver(Browser* browser, ChangeType type)
-    : browser_(browser), type_(type) {
-  BrowserList::AddObserver(this);
+BrowserCreatedObserver::BrowserCreatedObserver() {
+  browser_list_observation_.Observe(BrowserList::GetInstance());
 }
 
-BrowserChangeObserver::~BrowserChangeObserver() {
-  BrowserList::RemoveObserver(this);
-}
+BrowserCreatedObserver::~BrowserCreatedObserver() = default;
 
-Browser* BrowserChangeObserver::Wait() {
-  run_loop_.Run();
-  return browser_;
-}
-
-void BrowserChangeObserver::OnBrowserAdded(Browser* browser) {
-  if (type_ == ChangeType::kAdded) {
-    browser_ = browser;
-    run_loop_.Quit();
+Browser* BrowserCreatedObserver::Wait() {
+  if (!browser_) {
+    run_loop_.Run();
   }
+  CHECK(browser_);
+  // Extract the Browser raw_ptr to mitigate risks of a dangling ref in the case
+  // clients close `browser_` before destroying this class.
+  return browser_.ExtractAsDangling();
 }
 
-void BrowserChangeObserver::OnBrowserRemoved(Browser* browser) {
-  if (browser_ && browser_ != browser)
-    return;
-
-  if (type_ == ChangeType::kRemoved) {
-    browser_ = browser;
-    run_loop_.Quit();
-  }
+void BrowserCreatedObserver::OnBrowserAdded(Browser* browser) {
+  browser_ = browser;
+  run_loop_.Quit();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

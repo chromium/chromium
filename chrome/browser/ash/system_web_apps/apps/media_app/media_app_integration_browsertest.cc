@@ -506,11 +506,10 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
   image_params.launch_paths = {TestFile(kFilePng800x600),
                                TestFile(kFileJpeg640x480)};
 
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   LaunchAndWait(image_params);
   BrowserWindowInterface* const system_app_browser =
-      new_browser_observer.Wait();
+      browser_created_observer.Wait();
 
   const BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(2u, browser_list->size());  // 1 extra for the browser test browser.
@@ -527,15 +526,14 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
   ash::SystemAppLaunchParams pdf_params;
   pdf_params.launch_paths = {TestFile(kFilePdfTall), TestFile(kFilePdfImg)};
 
-  // BrowserChangeObserver will report the most recently added browser, which
+  // BrowserCreatedObserver will report the most recently added browser, which
   // will be the pdf img browser specified above.
-  ui_test_utils::BrowserChangeObserver pdf_img_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   LaunchAndWait(pdf_params);
   WaitForBrowserCount(3);  // 1 extra for the browser test browser.
   EXPECT_EQ(3u, BrowserList::GetInstance()->size());
 
-  Browser* const pdf_img_browser = pdf_img_observer.Wait();
+  Browser* const pdf_img_browser = browser_created_observer.Wait();
   Browser* const pdf_tall_browser =
       ui_test_utils::GetBrowserNotInSet({browser(), pdf_img_browser});
 

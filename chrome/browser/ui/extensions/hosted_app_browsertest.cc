@@ -476,8 +476,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   CheckWebContentsDoesNotHaveAppPrefs(current_tab);
 
-  ui_test_utils::BrowserChangeObserver app_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   Browser* app_browser =
       web_app::ReparentWebContentsIntoAppBrowser(current_tab, app_id_);
   ASSERT_NE(browser(), app_browser);
@@ -491,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest,
   } else {  // WEB_APP
     // For web app, |current_tab| will be reparent-ed to a new created app
     // window.
-    ui_test_utils::WaitForBrowserSetLastActive(app_browser_observer.Wait());
+    ui_test_utils::WaitForBrowserSetLastActive(browser_created_observer.Wait());
   }
 
   CheckWebContentsHasAppPrefs(

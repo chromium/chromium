@@ -1226,8 +1226,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_AppIdSwitch) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
 
-  ui_test_utils::BrowserChangeObserver browser_change(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::test::TestFuture<void> launch_done;
   web_app::startup::SetStartupDoneCallbackForTesting(launch_done.GetCallback());
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
@@ -1235,7 +1234,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_AppIdSwitch) {
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   ASSERT_TRUE(launch_done.Wait());
-  Browser* app_browser = browser_change.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   EXPECT_TRUE(app_browser->is_type_app());
 
 #if BUILDFLAG(IS_WIN)

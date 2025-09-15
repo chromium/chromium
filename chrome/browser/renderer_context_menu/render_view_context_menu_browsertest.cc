@@ -2133,8 +2133,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInProfileEntryPresent) {
   }
 
   // Open new window for the additional profile. This profile becomes active.
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   profiles::FindOrCreateNewWindowForProfile(
       profile, chrome::startup::IsProcessStartup::kNo,
       chrome::startup::IsFirstRun::kNo, false);
@@ -2144,7 +2143,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInProfileEntryPresent) {
   // is observed if the active profile has not switched to `profile` yet.
   bool wait_for_set_last_active_observed =
       ProfileManager::GetLastUsedProfileIfLoaded() != profile;
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait(),
+  ui_test_utils::WaitForBrowserSetLastActive(browser_created_observer.Wait(),
                                              wait_for_set_last_active_observed);
 
   // On Lacros SessionStartupPref::ShouldRestoreLastSession() returns true for
@@ -2268,12 +2267,11 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
       // In order for the profile to be counted as active, it needs to have a
       // created browser window. The profile isn't marked active until the
       // browser is actually open, which we need.
-      ui_test_utils::BrowserChangeObserver observer(
-          nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+      ui_test_utils::BrowserCreatedObserver browser_created_observer;
       profiles::FindOrCreateNewWindowForProfile(
           profile, chrome::startup::IsProcessStartup::kNo,
           chrome::startup::IsFirstRun::kNo, false);
-      observer.Wait();
+      browser_created_observer.Wait();
       profiles_in_menu.push_back(profile);
     }
   }

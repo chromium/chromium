@@ -352,13 +352,12 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   ASSERT_EQ(nullptr, browser);
 
   // Open a files app window.
-  ui_test_utils::BrowserChangeObserver browser_added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::test::TestFuture<platform_util::OpenOperationResult> future;
   file_manager::util::ShowItemInFolder(profile(), files_.at(0).path(),
                                        future.GetCallback());
   EXPECT_EQ(future.Get(), platform_util::OpenOperationResult::OPEN_SUCCEEDED);
-  browser_added_observer.Wait();
+  browser_created_observer.Wait();
 
   browser = FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
   ASSERT_NE(nullptr, browser);

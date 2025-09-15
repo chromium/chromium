@@ -283,14 +283,13 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   // Install setup
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
-  ui_test_utils::BrowserChangeObserver wait_for_web_app(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::HistogramTester histograms;
 
   // Install the pwa to use to call `navigator.install()` from within.
   webapps::AppId app_id = InstallWebAppFromPage(
       browser(), https_server()->GetURL("/banners/manifest_test_page.html"));
-  Browser* app_browser = wait_for_web_app.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   histograms.ExpectBucketCount("WebApp.LaunchSource",
@@ -712,12 +711,11 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
       GenerateManifestId("some_id", install_url).spec();
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
-  ui_test_utils::BrowserChangeObserver wait_for_web_app(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
   webapps::AppId app_id =
       web_app::InstallWebAppFromPage(browser(), install_url);
-  Browser* app_browser = wait_for_web_app.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   histograms.ExpectBucketCount("WebApp.LaunchSource",

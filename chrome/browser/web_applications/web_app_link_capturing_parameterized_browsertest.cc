@@ -1012,12 +1012,11 @@ class NavCaptureParameterizedBrowserTest
   }
 
   void ClickIntentPickerChip(Browser* browser) {
-    ui_test_utils::BrowserChangeObserver app_browser_observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     // Clicking the Intent Picker will trigger a re-parenting (not a new
     // navigation, so the DomMessage has already been sent).
     ASSERT_TRUE(web_app::ClickIntentPickerChip(browser));
-    app_browser_observer.Wait();
+    browser_created_observer.Wait();
 
     // After re-parenting, the old browser gets a new tab contents and we
     // need to wait for that to finish loading before capturing the end

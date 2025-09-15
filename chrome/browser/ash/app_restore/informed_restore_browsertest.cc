@@ -524,11 +524,10 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_AppInfo) {
   test::CreateSystemWebApp(profile, SystemWebAppType::MEDIA);
   test::CreateSystemWebApp(profile, SystemWebAppType::SETTINGS);
 
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   test::CreateSystemWebApp(profile, SystemWebAppType::CAMERA);
   BrowserWindowInterface* const camera_app_browser =
-      new_browser_observer.Wait();
+      browser_created_observer.Wait();
 
   test::CreateSystemWebApp(profile, SystemWebAppType::PRINT_MANAGEMENT);
   auto* browser_list = BrowserList::GetInstance();

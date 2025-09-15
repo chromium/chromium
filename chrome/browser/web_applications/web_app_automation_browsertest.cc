@@ -82,12 +82,11 @@ IN_PROC_BROWSER_TEST_F(WebAppAutomationBrowserTest,
 
   base::CommandLine command_line =
       GetWebAppCommandLine(app_id, /*enable_automation=*/true);
-  ui_test_utils::BrowserChangeObserver browser_added_waiter(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
       command_line, /*current_directory=*/{}));
-  EXPECT_TRUE(
-      AppBrowserController::IsForWebApp(browser_added_waiter.Wait(), app_id));
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(browser_created_observer.Wait(),
+                                                app_id));
 }
 
 #if BUILDFLAG(IS_WIN)

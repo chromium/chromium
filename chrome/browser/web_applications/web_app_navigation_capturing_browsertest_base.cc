@@ -49,10 +49,9 @@ WebAppNavigationCapturingBrowserTestBase::CallWindowOpenExpectNewBrowser(
     content::WebContents* contents,
     const GURL& url,
     bool with_opener) {
-  ui_test_utils::BrowserChangeObserver browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   CallWindowOpen(contents, url, with_opener);
-  return browser_observer.Wait();
+  return browser_created_observer.Wait();
 }
 
 content::WebContents*

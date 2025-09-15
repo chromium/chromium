@@ -158,8 +158,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
   SetInstalledCallbackForTesting(install_future.GetCallback());
   base::HistogramTester histograms;
 
-  ui_test_utils::BrowserChangeObserver wait_for_web_app(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
   ASSERT_TRUE(TryInstallApp());
 
@@ -169,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
               webapps::InstallResultCode::kSuccessNewInstall);
 
   // Verify that the app was launched.
-  auto* app_browser = wait_for_web_app.Wait();
+  auto* app_browser = browser_created_observer.Wait();
   ASSERT_TRUE(web_app::AppBrowserController::IsWebApp(app_browser));
   auto* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -263,14 +262,13 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   auto auto_accept_intent_picker =
       IntentPickerBubbleView::SetAutoAcceptIntentPickerBubbleForTesting();
 
-  ui_test_utils::BrowserChangeObserver wait_for_launch_app(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
   // Call navigator.install() to trigger the intent picker.
   ASSERT_TRUE(TryInstallApp());
 
   // Verify the app was launched again after accepting the intent picker.
-  auto* launched_app_browser = wait_for_launch_app.Wait();
+  auto* launched_app_browser = browser_created_observer.Wait();
   ASSERT_TRUE(web_app::AppBrowserController::IsWebApp(launched_app_browser));
   auto* launched_app_web_contents =
       launched_app_browser->tab_strip_model()->GetActiveWebContents();

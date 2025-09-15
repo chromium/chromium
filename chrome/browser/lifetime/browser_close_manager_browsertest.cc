@@ -1152,11 +1152,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   // When the shutdown is cancelled, the downloads page should be opened in a
   // browser for that profile. Because there are no browsers for that profile, a
   // new browser should be opened.
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_CANCELS_CLOSE);
-  Browser* opened_browser = new_browser_observer.Wait();
+  Browser* opened_browser = browser_created_observer.Wait();
   ASSERT_TRUE(opened_browser);
   ui_test_utils::WaitUntilBrowserBecomeActive(opened_browser);
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());

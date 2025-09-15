@@ -47,13 +47,12 @@ class WebAppShelfBrowserTest : public InProcessBrowserTest {
   }
 
   void PinToShelf(const webapps::AppId& app_id) {
-    ui_test_utils::BrowserChangeObserver observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     auto* const proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     proxy->LaunchAppWithParams(apps::AppLaunchParams(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromOmnibox));
-    Browser* app_browser = observer.Wait();
+    Browser* app_browser = browser_created_observer.Wait();
     ash::ShelfModel::Get()->PinExistingItemWithID(app_id);
     app_browser->window()->Close();
   }
@@ -107,12 +106,11 @@ IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {
   Browser* browser_c;
   content::WebContents* contents_c;
   {
-    ui_test_utils::BrowserChangeObserver observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ui_test_utils::AllBrowserTabAddedWaiter waiter;
     proxy->Launch(app_c,
                   /*event_flags=*/0, apps::LaunchSource::kFromAppListGrid);
-    browser_c = observer.Wait();
+    browser_c = browser_created_observer.Wait();
     contents_c = waiter.Wait();
   }
 

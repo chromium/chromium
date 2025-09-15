@@ -397,13 +397,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToNewWindow) {
   browser()->tab_strip_model()->ChangeTabGroupVisuals(
       group_id, tab_groups::TabGroupVisualData(
                     u"Test Group", tab_groups::TabGroupColorId::kGrey));
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
   chrome::MoveGroupToNewWindow(browser(), group_id);
   ASSERT_TRUE(browser()->tab_strip_model()->count() == 1);
 
-  Browser* active_browser = new_browser_observer.Wait();
+  Browser* active_browser = browser_created_observer.Wait();
   ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   EXPECT_TRUE(
@@ -474,10 +473,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveActiveTabToNewWindow) {
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
             url2);
 
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
-  Browser* active_browser = new_browser_observer.Wait();
+  Browser* active_browser = browser_created_observer.Wait();
   ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now we should have: two browsers, each with one tab (url1 in browser(),
@@ -507,10 +505,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   EXPECT_FALSE(browser()->tab_strip_model()->IsTabSelected(1));
   EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(2));
 
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
-  Browser* active_browser = new_browser_observer.Wait();
+  Browser* active_browser = browser_created_observer.Wait();
   ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now we should have two browsers:

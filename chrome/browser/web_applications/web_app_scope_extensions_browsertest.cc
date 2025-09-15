@@ -145,9 +145,7 @@ class WebAppScopeExtensionsBrowserTest
     CHECK_NE(url, unrelated_url_);
     NavigateViaLinkClickToURLAndWait(browser(), unrelated_url_);
 
-    ui_test_utils::BrowserChangeObserver browser_observer(
-        /*browser=*/nullptr,
-        ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
     // This always creates a new top level browsing context which is essential
     // to trigger navigation capturing.
@@ -165,7 +163,7 @@ class WebAppScopeExtensionsBrowserTest
       return false;
     }
 
-    Browser* app_browser = browser_observer.Wait();
+    Browser* app_browser = browser_created_observer.Wait();
     EXPECT_EQ(
         app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
         url);

@@ -254,11 +254,10 @@ class SearchEngineChoiceUIPixelTest
     InProcessBrowserTest::SetUpOnMainThread();
 
     if (GetParam().is_guest_session) {
-      ui_test_utils::BrowserChangeObserver browser_added_observer(
-          nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+      ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
       CreateGuestBrowser();
-      Browser* new_browser = browser_added_observer.Wait();
+      Browser* new_browser = browser_created_observer.Wait();
       ASSERT_TRUE(new_browser);
       ASSERT_NE(new_browser, browser());
       ASSERT_TRUE(new_browser->profile()->IsGuestSession());

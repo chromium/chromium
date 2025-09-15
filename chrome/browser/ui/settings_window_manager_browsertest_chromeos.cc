@@ -87,10 +87,9 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
   }
 
   void ShowOSSettings() {
-    ui_test_utils::BrowserChangeObserver browser_opened(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     settings_manager_->ShowOSSettings(browser()->profile());
-    browser_opened.Wait();
+    browser_created_observer.Wait();
   }
 
  protected:

@@ -179,12 +179,11 @@ class RecentTabsSubMenuModelTest : public InProcessBrowserTest {
   }
 
   Browser* AddBrowser(Browser* browser, const GURL& url) {
-    ui_test_utils::BrowserChangeObserver new_browser_observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-    Browser* new_browser = new_browser_observer.Wait();
+    Browser* new_browser = browser_created_observer.Wait();
     ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
     return new_browser;
   }

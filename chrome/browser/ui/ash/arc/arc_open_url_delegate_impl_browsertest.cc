@@ -221,11 +221,10 @@ void TestOpenSettingFromArc(Browser* browser,
   ash::SystemWebAppManager::GetForTest(browser->profile())
       ->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
   if (expected_setting_window) {
-    browser_opened.Wait();
+    browser_created_observer.Wait();
   }
 
   EXPECT_EQ(expected_setting_window ? 1ul : 0ul, GetNumberOfSettingsWindows());

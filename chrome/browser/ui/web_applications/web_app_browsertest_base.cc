@@ -160,8 +160,7 @@ Browser* WebAppBrowserTestBase::OpenPopupAndWait(Browser* browser,
   content::WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-  ui_test_utils::BrowserChangeObserver browser_change_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   std::string open_window_script = base::StringPrintf(
       "window.open('%s', '_blank', 'toolbar=none,width=%i,height=%i')",
       url.spec().c_str(), popup_size.width(), popup_size.height());
@@ -169,7 +168,7 @@ Browser* WebAppBrowserTestBase::OpenPopupAndWait(Browser* browser,
   EXPECT_TRUE(content::ExecJs(web_contents, open_window_script));
 
   // The navigation should happen in a new window.
-  Browser* popup_browser = browser_change_observer.Wait();
+  Browser* popup_browser = browser_created_observer.Wait();
   EXPECT_NE(browser, popup_browser);
 
   content::WebContents* popup_contents =

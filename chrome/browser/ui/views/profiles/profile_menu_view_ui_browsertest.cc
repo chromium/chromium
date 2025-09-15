@@ -413,8 +413,8 @@ class ProfileMenuViewPixelTest
     ProfilesPixelTestBaseT<DialogBrowserTest>::SetUpOnMainThread();
 
     // Configures the browser according to the profile type.
-    ui_test_utils::BrowserChangeObserver browser_added_observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    auto browser_created_observer =
+        std::make_optional<ui_test_utils::BrowserCreatedObserver>();
     Browser* new_browser = nullptr;
 
     switch (GetProfileType()) {
@@ -423,17 +423,18 @@ class ProfileMenuViewPixelTest
         break;
       case ProfileTypePixelTestParam::kIncognito:
         CreateIncognitoBrowser();
-        new_browser = browser_added_observer.Wait();
+        new_browser = browser_created_observer->Wait();
         ASSERT_TRUE(new_browser);
         ASSERT_TRUE(new_browser->profile()->IsIncognitoProfile());
         break;
       case ProfileTypePixelTestParam::kGuest:
         CreateGuestBrowser();
-        new_browser = browser_added_observer.Wait();
+        new_browser = browser_created_observer->Wait();
         ASSERT_TRUE(new_browser);
         ASSERT_TRUE(new_browser->profile()->IsGuestSession());
         break;
     }
+    browser_created_observer.reset();
 
     // Close the initial browser and set the new one as default.
     if (new_browser) {

@@ -891,10 +891,9 @@ class CaptureModeProjectorBrowserTests : public CaptureModeCameraBrowserTests {
     ash::SystemWebAppManager::GetForTest(profile)
         ->InstallSystemAppsForTesting();
 
-    ui_test_utils::BrowserChangeObserver browser_opened(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ash::ProjectorClient::Get()->OpenProjectorApp();
-    browser_opened.Wait();
+    browser_created_observer.Wait();
 
     Browser* app_browser =
         FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);

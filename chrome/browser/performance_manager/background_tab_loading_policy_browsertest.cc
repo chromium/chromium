@@ -111,12 +111,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, RestoreTab) {
   // the browser is closed below.
   Browser* browser_to_restore = nullptr;
   {
-    ui_test_utils::BrowserChangeObserver observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url_, WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    browser_to_restore = observer.Wait();
+    browser_to_restore = browser_created_observer.Wait();
   }
 
   // Add more tabs to the new browser; waiting for each to fully load.
@@ -135,10 +134,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, RestoreTab) {
   CloseBrowserSynchronously(std::exchange(browser_to_restore, nullptr));
   Browser* restored_browser = nullptr;
   {
-    ui_test_utils::BrowserChangeObserver observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     chrome::OpenWindowWithRestoredTabs(browser()->profile());
-    restored_browser = observer.Wait();
+    restored_browser = browser_created_observer.Wait();
   }
 
   EXPECT_EQ(kDesiredNumberOfTabs, restored_browser->tab_strip_model()->count())

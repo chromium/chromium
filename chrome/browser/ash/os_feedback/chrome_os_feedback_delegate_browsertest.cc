@@ -852,10 +852,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   feedback_delegate.OpenDiagnosticsApp();
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   Browser* app_browser = ash::FindSystemWebAppBrowser(
       browser()->profile(), ash::SystemWebAppType::DIAGNOSTICS);
@@ -895,10 +894,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   feedback_delegate.OpenExploreApp();
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   Browser* app_browser = ash::FindSystemWebAppBrowser(
       browser()->profile(), ash::SystemWebAppType::HELP);

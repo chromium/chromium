@@ -125,10 +125,9 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
 
   // Open the settings window and record the |settings_browser|.
   auto* manager = SettingsWindowManager::GetInstance();
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   manager->ShowOSSettings(profile);
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   auto* settings_browser = manager->FindBrowserForProfile(profile);
   ASSERT_TRUE(settings_browser);

@@ -652,8 +652,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
   });
 
   // Confirm Sync.
-  ui_test_utils::BrowserChangeObserver browser_added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   GURL sync_confirmation_url =
       AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
                                         SyncConfirmationStyle::kWindow, true);
@@ -663,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
 
   // Wait for browser to open.
   profiles::testing::WaitForPickerClosed();
-  Browser* new_browser = browser_added_observer.Wait();
+  Browser* new_browser = browser_created_observer.Wait();
   EXPECT_EQ(new_browser->profile(), new_profile);
   EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
             signin::ConsentLevel::kSync);

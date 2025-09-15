@@ -37,10 +37,9 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientTabletModePartTest,
 
   // Open the OS settings window.
   auto* settings = chrome::SettingsWindowManager::GetInstance();
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   settings->ShowOSSettings(profile);
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   // The OS settings window still uses the default font sizes.
   Browser* browser = settings->FindBrowserForProfile(profile);

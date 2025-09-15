@@ -150,8 +150,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   EXPECT_EQ(incognito_browser, chrome::FindLastActive());
 
   // Simulate click on "New Window".
-  ui_test_utils::BrowserChangeObserver browser_added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   AppController* app_controller = AppController.sharedController;
   NSMenu* menu = [app_controller applicationDockMenu:NSApp];
   ASSERT_TRUE(menu);
@@ -160,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   [app_controller commandDispatch:item];
 
   // Check that a new non-incognito browser is opened.
-  Browser* new_browser = browser_added_observer.Wait();
+  Browser* new_browser = browser_created_observer.Wait();
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
   EXPECT_EQ(profile, new_browser->profile());

@@ -404,9 +404,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // it because the current web contents is not in-scope of the app. And thus
   // create a new window.
   base::HistogramTester histograms;
-  ui_test_utils::BrowserChangeObserver added(
-      /*browser=*/nullptr,
-      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   {
     NavigateParams params(app_browser, GetLandingPage(),
                           ui::PAGE_TRANSITION_LINK);
@@ -415,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     Navigate(&params);
   }
-  Browser* new_app_browser = added.Wait();
+  Browser* new_app_browser = browser_created_observer.Wait();
 
   test::CompletePageLoadForAllWebContents();
   apps::test::FlushLaunchQueuesForAllBrowserTabs();
@@ -455,9 +453,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // Do a capturable navigation to the landing page, and ensure that it opens in
   // a new browser;
   base::HistogramTester histograms;
-  ui_test_utils::BrowserChangeObserver added(
-      /*browser=*/nullptr,
-      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   {
     NavigateParams params(browser(), GetLandingPage(),
                           ui::PAGE_TRANSITION_LINK);
@@ -466,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     Navigate(&params);
   }
-  Browser* new_app_browser = added.Wait();
+  Browser* new_app_browser = browser_created_observer.Wait();
   test::CompletePageLoadForAllWebContents();
   apps::test::FlushLaunchQueuesForAllBrowserTabs();
   AwaitMetricsAvailableFromRenderer();

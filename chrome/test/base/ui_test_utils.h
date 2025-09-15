@@ -603,31 +603,25 @@ class BrowserDestroyedObserver : public BrowserListObserver {
       browser_list_observation_{this};
 };
 
-// In general, tests should use WaitForBrowserToClose() and
-// WaitForBrowserToOpen() rather than instantiating this class directly.
-class BrowserChangeObserver : public BrowserListObserver {
+// Waits for the creation of `browser`. If `browser` is null will wait on the
+// creation of any Browser.
+class BrowserCreatedObserver : public BrowserListObserver {
  public:
-  enum class ChangeType {
-    kAdded,
-    kRemoved,
-  };
-
-  BrowserChangeObserver(Browser* browser, ChangeType type);
-  BrowserChangeObserver(const BrowserChangeObserver&) = delete;
-  BrowserChangeObserver& operator=(const BrowserChangeObserver&) = delete;
-  ~BrowserChangeObserver() override;
+  BrowserCreatedObserver();
+  BrowserCreatedObserver(const BrowserCreatedObserver&) = delete;
+  BrowserCreatedObserver& operator=(const BrowserCreatedObserver&) = delete;
+  ~BrowserCreatedObserver() override;
 
   Browser* Wait();
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
 
-  void OnBrowserRemoved(Browser* browser) override;
-
  private:
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
-  ChangeType type_;
+  raw_ptr<Browser> browser_ = nullptr;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
 };
 
 // Encapsulates waiting for the browser window to change state. This is

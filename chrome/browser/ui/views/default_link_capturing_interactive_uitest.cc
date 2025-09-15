@@ -147,8 +147,7 @@ IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
   ASSERT_NE(it, app_infos.end());
   size_t index = it - app_infos.begin();
 
-  ui_test_utils::BrowserChangeObserver browser_added_waiter(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   views::test::ButtonTestApi test_api(
       web_app::GetIntentPickerButtonAtIndex(index));
   test_api.NotifyClick(ui::MouseEvent(
@@ -158,7 +157,7 @@ IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
 
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("IntentPickerViewAcceptLaunchApp"));
-  Browser* app_browser = browser_added_waiter.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   ASSERT_TRUE(app_browser);
   EXPECT_TRUE(web_app::AppBrowserController::IsWebApp(app_browser));
   EXPECT_TRUE(

@@ -1000,8 +1000,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
   }
 
   std::pair<bool, Browser*> OpenPopupAndRequestFullscreenOnLoad() {
-    ui_test_utils::BrowserChangeObserver popup_observer(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     const std::string script = R"((() => {
       let w = open(location.href, '', 'popup');
       return new Promise(resolve => {
@@ -1014,7 +1013,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
 
     Browser* browser = chrome::FindBrowserWithTab(web_contents_);
     auto result = EvalJs(web_contents_, script);
-    Browser* popup = popup_observer.Wait();
+    Browser* popup = browser_created_observer.Wait();
     if (!popup) {
       return std::make_pair(false, nullptr);
     }

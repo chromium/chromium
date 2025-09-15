@@ -139,8 +139,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
       PackageId(PackageType::kGeForceNow, "1234"),
       GURL("https://play.geforcenow.com/games?game-id=1234"));
 
-  ui_test_utils::BrowserChangeObserver browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
   // Open install-app URI with gfn package.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -150,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
 
   // Expect GeForce NOW app to be opened.
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(
-      browser_observer.Wait(), app_id));
+      browser_created_observer.Wait(), app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,

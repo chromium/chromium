@@ -593,12 +593,11 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest, MenuCommands) {
   EXPECT_TRUE([app_controller validateUserInterfaceItem:new_window_menu_item]);
 
   // Activate the item and check that a new browser is opened.
-  ui_test_utils::BrowserChangeObserver browser_added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   [file_submenu
       performActionForItemAtIndex:[file_submenu
                                       indexOfItem:new_window_menu_item]];
-  EXPECT_TRUE(browser_added_observer.Wait());
+  EXPECT_TRUE(browser_created_observer.Wait());
 }
 
 class AppControllerFirstRunBrowserTest : public AppControllerBrowserTest {
@@ -1261,8 +1260,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   IncognitoModePrefs::SetAvailability(
       profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
   // Simulate click on "New window".
-  ui_test_utils::BrowserChangeObserver browser_added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   AppController* app_controller = AppController.sharedController;
   NSMenu* menu = [app_controller applicationDockMenu:NSApp];
   ASSERT_TRUE(menu);
@@ -1270,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   ASSERT_TRUE(item);
   [app_controller commandDispatch:item];
   // Check that a new incognito browser is opened.
-  Browser* new_browser = browser_added_observer.Wait();
+  Browser* new_browser = browser_created_observer.Wait();
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_TRUE(new_browser->profile()->IsPrimaryOTRProfile());
   EXPECT_EQ(profile, new_browser->profile()->GetOriginalProfile());

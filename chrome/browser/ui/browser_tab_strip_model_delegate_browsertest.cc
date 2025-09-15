@@ -79,10 +79,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest, MoveTabsToNewWindow) {
 
   // Execute this on a background tab to ensure that the code path can handle
   // other tabs besides the active one.
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   delegate->MoveTabsToNewWindow({0});
-  Browser* active_browser = new_browser_observer.Wait();
+  Browser* active_browser = browser_created_observer.Wait();
   ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now there are two browsers, each with one tab and the new browser is
@@ -137,10 +136,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
 
   // Execute this on a background tab to ensure that the code path can handle
   // other tabs besides the active one.
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   delegate->MoveTabsToNewWindow({0, 2});
-  Browser* active_browser = new_browser_observer.Wait();
+  Browser* active_browser = browser_created_observer.Wait();
   ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now there are two browsers, with one or two tabs and the new browser is

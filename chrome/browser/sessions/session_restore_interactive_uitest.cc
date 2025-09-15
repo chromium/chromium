@@ -251,10 +251,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreAshInteractiveTest, MultiWindowTabLoad) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, kUrlWindow1));
   browser1->window()->SetBounds(bounds);
 
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::NewWindow(browser1);
-  Browser* browser2 = new_browser_observer.Wait();
+  Browser* browser2 = browser_created_observer.Wait();
   browser2->window()->SetBounds(bounds);
 
   ui_test_utils::WaitUntilBrowserBecomeActive(browser2);
