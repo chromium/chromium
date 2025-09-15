@@ -1128,8 +1128,6 @@ crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-003.html [ Failur
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-006.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-012.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-006.html [ Failure ]
-# Track Sizing failures due to % resolution
-crbug.com/1076027 external/wpt/css/css-grid/parsing/grid-template-rows-intrinsic-auto-repeat-computed-implicit-track.tentative.html [ Failure ]
 # Masonry named line failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/grid-placement/masonry-grid-placement-named-lines-002.html [ Failure ]
 # Tests failing in wpt runner that match expectations in the browser rendering
