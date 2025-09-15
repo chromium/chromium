@@ -8,15 +8,16 @@
 
 namespace ash {
 
-UiResource::UiResource(scoped_refptr<gpu::SharedImageInterface> sii)
-    : shared_image_interface(std::move(sii)) {
+UiResource::UiResource(scoped_refptr<gpu::SharedImageInterface> sii,
+                       scoped_refptr<gpu::ClientSharedImage> shared_image)
+    : shared_image_interface(std::move(sii)),
+      client_shared_image_(std::move(shared_image)) {
   CHECK(shared_image_interface);
+  CHECK(client_shared_image_);
 }
 
 UiResource::~UiResource() {
-  if (client_shared_image_) {
-    client_shared_image_->UpdateDestructionSyncToken(sync_token);
-  }
+  client_shared_image_->UpdateDestructionSyncToken(sync_token);
 }
 
 }  // namespace ash

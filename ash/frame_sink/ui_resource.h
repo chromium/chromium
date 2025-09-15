@@ -23,24 +23,16 @@ inline constexpr UiSourceId kInvalidUiSourceId(0u);
 // map the resource back to the source of the resource.
 class ASH_EXPORT UiResource {
  public:
-  UiResource(scoped_refptr<gpu::SharedImageInterface> sii);
+  UiResource(scoped_refptr<gpu::SharedImageInterface> sii,
+             scoped_refptr<gpu::ClientSharedImage> shared_image);
 
   UiResource(const UiResource&) = delete;
   UiResource& operator=(const UiResource&) = delete;
 
   virtual ~UiResource();
 
-  void SetClientSharedImage(
-      scoped_refptr<gpu::ClientSharedImage> client_shared_image) {
-    CHECK(!client_shared_image_);
-    client_shared_image_ = std::move(client_shared_image);
-  }
-
-  // Returns `client_shared_image_->mailbox()` if `client_shared_image_` has
-  // been set and `external_mailbox_` otherwise.
   const gpu::Mailbox& mailbox() const {
-    return client_shared_image_ ? client_shared_image_->mailbox()
-                                : empty_mailbox_;
+    return client_shared_image_->mailbox();
   }
 
   const scoped_refptr<gpu::ClientSharedImage>& client_shared_image() const {
@@ -63,7 +55,6 @@ class ASH_EXPORT UiResource {
   bool damaged = true;
 
  private:
-  gpu::Mailbox empty_mailbox_;
   scoped_refptr<gpu::ClientSharedImage> client_shared_image_;
 };
 

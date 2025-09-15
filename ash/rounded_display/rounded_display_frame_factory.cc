@@ -123,25 +123,25 @@ std::unique_ptr<UiResource> RoundedDisplayFrameFactory::CreateUiResource(
     return nullptr;
   }
 
-  auto resource =
-      std::make_unique<UiResource>(context_provider->SharedImageInterface());
+  scoped_refptr<gpu::SharedImageInterface> sii =
+      context_provider->SharedImageInterface();
 
   gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-  if (is_overlay && resource->shared_image_interface->GetCapabilities()
-                        .supports_scanout_shared_images) {
+  if (is_overlay && sii->GetCapabilities().supports_scanout_shared_images) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  auto client_shared_image =
-      resource->shared_image_interface->CreateSharedImage(
-          {format, size, gfx::ColorSpace(), usage, "RoundedDisplayFrameUi"},
-          gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+  auto client_shared_image = sii->CreateSharedImage(
+      {format, size, gfx::ColorSpace(), usage, "RoundedDisplayFrameUi"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
   if (!client_shared_image) {
     LOG(ERROR) << "Failed to create MappableSharedImage";
     return nullptr;
   }
-  resource->SetClientSharedImage(std::move(client_shared_image));
+
+  auto resource = std::make_unique<UiResource>(std::move(sii),
+                                               std::move(client_shared_image));
 
   resource->sync_token =
       resource->shared_image_interface->GenVerifiedSyncToken();

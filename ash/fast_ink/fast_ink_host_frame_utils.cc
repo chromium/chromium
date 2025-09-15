@@ -127,13 +127,10 @@ std::unique_ptr<UiResource> CreateUiResource(
     return nullptr;
   }
 
-  auto resource =
-      std::make_unique<UiResource>(context_provider->SharedImageInterface());
+  auto resource = std::make_unique<UiResource>(
+      context_provider->SharedImageInterface(), shared_image);
 
-  // This UiResource is operating on a shared SharedImage.
-  resource->SetClientSharedImage(shared_image);
   resource->sync_token = sync_token;
-
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
   resource->format = kFastInkSharedImageFormat;

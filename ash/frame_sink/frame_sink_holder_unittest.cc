@@ -91,11 +91,10 @@ class FrameSinkHolderTest : public AshTestBase {
          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "FastInkRootViewFrame"},
         gpu::kNullSurfaceHandle);
 
-    auto resource = std::make_unique<UiResource>(sii_);
+    auto resource = std::make_unique<UiResource>(sii_, std::move(shared_image));
     resource->ui_source_id = 1u;
     resource->format = viz::SinglePlaneFormat::kBGRA_8888;
     resource->resource_size = kSize;
-    resource->SetClientSharedImage(shared_image);
     return resource;
   }
 

@@ -38,11 +38,10 @@ class UiResourceManagerTest : public testing::Test {
         {format, resource_size, gfx::ColorSpace(),
          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "FastInkRootViewFrame"},
         gpu::kNullSurfaceHandle);
-    auto resource = std::make_unique<UiResource>(sii_);
+    auto resource = std::make_unique<UiResource>(sii_, std::move(shared_image));
     resource->ui_source_id = ui_source_id;
     resource->format = format;
     resource->resource_size = resource_size;
-    resource->SetClientSharedImage(shared_image);
     return resource;
   }
 
