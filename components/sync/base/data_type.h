@@ -266,7 +266,7 @@ enum class DataTypeForHistograms {
   kAutofillWalletUsage = 54,
   // kDeprecatedSegmentation = 55,
   kSavedTabGroups = 56,
-  kPowerBookmark = 57,
+  // kDeprecatedPowerBookmark = 57,
   kWebAuthnCredentials = 58,
   kIncomingPasswordSharingInvitations = 59,
   kOutgoingPasswordSharingInvitations = 60,

@@ -894,7 +894,7 @@ chromium-metrics-reviews@google.com.
   <int value="54" label="Autofill Wallet Usage"/>
   <int value="55" label="(Obsolete) Segmentation"/>
   <int value="56" label="Saved Tab Groups"/>
-  <int value="57" label="Power Bookmark"/>
+  <int value="57" label="(Obsolete) Power Bookmark"/>
   <int value="58" label="WebAuthn Credentials"/>
   <int value="59" label="Incoming Password Sharing Invitations"/>
   <int value="60" label="Outgoing Password Sharing Invitations"/>
@@ -1261,13 +1261,13 @@ chromium-metrics-reviews@google.com.
   <int value="129" label="kPlusAddressTransactionCommitFailedOnDisableSync"/>
   <int value="130"
       label="kPlusAddressTransactionCommitFailedOnIncrementalSync"/>
-  <int value="131" label="kPowerBookmarkDatabaseCommitFailed"/>
-  <int value="132" label="kPowerBookmarkDatabaseInitFailed"/>
-  <int value="133" label="kPowerBookmarkFailedToBeginTransaction"/>
-  <int value="134" label="kPowerBookmarkFailedToCommitTransaction"/>
-  <int value="135" label="kPowerBookmarkFailedToDeleteLocalPowers"/>
-  <int value="136" label="kPowerBookmarkFailedToLoadMetadata"/>
-  <int value="137" label="kPowerBookmarkFailedToMergeLocalPowers"/>
+  <int value="131" label="(Obsolete) kPowerBookmarkDatabaseCommitFailed"/>
+  <int value="132" label="(Obsolete) kPowerBookmarkDatabaseInitFailed"/>
+  <int value="133" label="(Obsolete) kPowerBookmarkFailedToBeginTransaction"/>
+  <int value="134" label="(Obsolete) kPowerBookmarkFailedToCommitTransaction"/>
+  <int value="135" label="(Obsolete) kPowerBookmarkFailedToDeleteLocalPowers"/>
+  <int value="136" label="(Obsolete) kPowerBookmarkFailedToLoadMetadata"/>
+  <int value="137" label="(Obsolete) kPowerBookmarkFailedToMergeLocalPowers"/>
   <int value="138" label="kPrefFailedToDeserializeValue"/>
   <int value="139" label="kPrefModelsNotAssociated"/>
   <int value="140" label="kPrintersFailedToDeserializeSpecifics"/>
