@@ -416,6 +416,10 @@ BASE_FEATURE(kPostDelayedTaskFocusTab, "PostDelayedTaskFocusTab", ENABLED);
 // Controls various Omnibox Diagnostics features.
 BASE_FEATURE(kDiagnostics, "OmniboxDiagnostics", DISABLED);
 
+// When enabled, offer a desktop-like omnibox UI enhancement on large form
+// factors.
+BASE_FEATURE(kOmniboxImprovementForLFF, "OmniboxImprovementForLFF", DISABLED);
+
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
@@ -433,7 +437,8 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxSiteSearch,
       &kOmniboxAimShortcutTypedState,
       &kOmniboxMultimodalInput,
-      &kMultilineEditField};
+      &kMultilineEditField,
+      &kOmniboxImprovementForLFF};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<jlong>(kFeatureMap.get());

@@ -14815,6 +14815,7 @@ from previous Chrome versions.
   <int value="262035701"
       label="UnifiedPasswordManagerLocalPasswordsAndroidNoMigration:enabled"/>
   <int value="262382944" label="GuestViewCrossProcessFrames:disabled"/>
+  <int value="263044730" label="OmniboxImprovementForLFF:enabled"/>
   <int value="264443322" label="CompressionDictionaryTransportBackend:enabled"/>
   <int value="264534322" label="FilesDriveShortcuts:enabled"/>
   <int value="264609083" label="PasswordDomainCapabilitiesFetching:disabled"/>
@@ -16776,6 +16777,7 @@ from previous Chrome versions.
   <int value="962191833" label="StopAppIndexingReport:disabled"/>
   <int value="963054071" label="MlUrlPiecewiseMappedSearchBlending:enabled"/>
   <int value="963457392" label="ChromeHomeModernLayout:disabled"/>
+  <int value="963463314" label="OmniboxImprovementForLFF:disabled"/>
   <int value="963671232" label="DrawOcclusion:disabled"/>
   <int value="964606028"
       label="CrOSLateBootAudioSuppressSetRTCAudioActive:disabled"/>

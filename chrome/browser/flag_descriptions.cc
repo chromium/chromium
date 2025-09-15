@@ -3044,6 +3044,10 @@ const char kOmniboxSiteSearchName[] = "Omnibox Site Search";
 const char kOmniboxSiteSearchDescription[] =
     "Enables keyword-based site search functionality on Android devices";
 
+const char kOmniboxImprovementForLFFName[] = "Omnibox Improvement for LFF";
+const char kOmniboxImprovementForLFFDescription[] =
+    "Enables desktop-like omnibox UI enhancement for large form factors";
+
 const char kContextualSearchBoxUsesContextualSearchProviderName[] =
     "Contextual search box uses contextual search provider";
 const char kContextualSearchBoxUsesContextualSearchProviderDescription[] =

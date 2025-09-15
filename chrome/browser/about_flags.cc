@@ -7122,6 +7122,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxMobileParityV2Variants,
                                     "OmniboxMobileParityUpdateV2")},
 
+    {"omnibox-improvement-for-lff",
+     flag_descriptions::kOmniboxImprovementForLFFName,
+     flag_descriptions::kOmniboxImprovementForLFFDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxImprovementForLFF)},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
     {"omnibox-on-device-head-suggestions",

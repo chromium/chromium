@@ -1749,6 +1749,9 @@ extern const char kOmniboxSearchAggregatorDescription[];
 extern const char kOmniboxSiteSearchName[];
 extern const char kOmniboxSiteSearchDescription[];
 
+extern const char kOmniboxImprovementForLFFName[];
+extern const char kOmniboxImprovementForLFFDescription[];
+
 extern const char kContextualSearchBoxUsesContextualSearchProviderName[];
 extern const char kContextualSearchBoxUsesContextualSearchProviderDescription[];
 
