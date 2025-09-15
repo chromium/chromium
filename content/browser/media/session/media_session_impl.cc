@@ -1283,7 +1283,7 @@ void MediaSessionImpl::EnterPictureInPicture() {
   normal_players_.begin()->first.observer->OnEnterPictureInPicture(
       normal_players_.begin()->first.player_id);
   uma_helper_.RecordEnterPictureInPicture(
-      MediaSessionUmaHelper::EnterPictureInPictureType::kDefaultHandler);
+      MediaSessionUmaHelper::EnterPictureInPictureType::kDefaultManual);
 }
 
 void MediaSessionImpl::ExitPictureInPicture() {
@@ -2214,6 +2214,9 @@ void MediaSessionImpl::MaybeEnterBrowserInitiatedAutomaticPictureInPicture()
 
   auto& first = normal_players_.begin()->first;
   first.observer->OnEnterPictureInPicture(first.player_id);
+
+  uma_helper_.RecordEnterPictureInPicture(
+      MediaSessionUmaHelper::EnterPictureInPictureType::kDefaultAutomatic);
 }
 
 void MediaSessionImpl::NotifyPlayerOfAutoPictureInPictureInfo(

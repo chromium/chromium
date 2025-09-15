@@ -6287,7 +6287,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Session.EnterPictureInPicture"
+<histogram name="Media.Session.EnterPictureInPictureV2"
     enum="MediaSessionEnterPictureInPictureType" expires_after="2026-01-18">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>

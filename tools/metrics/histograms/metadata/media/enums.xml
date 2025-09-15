@@ -1614,9 +1614,10 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="MediaSessionEnterPictureInPictureType">
-  <int value="0" label="Default Handler"/>
+  <int value="0" label="Default Manual"/>
   <int value="1" label="Registered Manual"/>
   <int value="2" label="Registered Automatic"/>
+  <int value="3" label="Default Automatic"/>
 </enum>
 
 <enum name="MediaSinkType">
