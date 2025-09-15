@@ -5690,6 +5690,7 @@ crbug.com/359279545 [ Mac ] compositing/video/video-subpixel.html [ Failure ]
 # Failures need to be investigated.
 crbug.com/359279545 [ Linux ] http/tests/html/scaled-oopif-text-not-blurry.html [ Failure ]
 crbug.com/359279545 [ Linux ] compositing/video/video-subpixel.html [ Failure ]
+crbug.com/359279545 [ Win ] http/tests/html/scaled-oopif-text-not-blurry.html [ Failure ]
 
 # Sheriff 2019-02-01, 2019-02-19
 # These are crashy on Win10, and seem to leave processes lying around, causing the swarming
