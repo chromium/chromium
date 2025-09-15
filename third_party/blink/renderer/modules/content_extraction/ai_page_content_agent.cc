@@ -977,6 +977,7 @@ AIPageContentAgent::ContentBuilder::~ContentBuilder() = default;
 
 mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
     LocalFrame& frame) {
+  TRACE_EVENT0("blink", "AIPageContentAgent::ContentBuilder::Build");
   auto& document = *frame.GetDocument();
 
   mojom::blink::AIPageContentPtr page_content =
@@ -1803,7 +1804,8 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     // TODO(khushalsagar): Remove is_clickability.
     node_interaction_info->is_clickable =
         !node_interaction_info->clickability_reasons.empty();
-    node_interaction_info->is_focusable = element->IsFocusable();
+    node_interaction_info->is_focusable =
+        element->IsFocusable(Element::UpdateBehavior::kAssertNoLayoutUpdates);
   }
 
   const bool needs_interaction_info =
