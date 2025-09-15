@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
@@ -277,11 +278,19 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
     return PasswordChangeAvailability::kDisabledByPolicy;
   }
 
+  if (!pref_service_->GetInteger(
+          password_manager::prefs::kTotalPasswordsAvailableForAccount) &&
+      !pref_service_->GetInteger(
+          password_manager::prefs::kTotalPasswordsAvailableForProfile)) {
+    return PasswordChangeAvailability::kNoSavedPasswords;
+  }
+
   const bool result = base::FeatureList::IsEnabled(
       password_manager::features::kImprovedPasswordChangeService);
   if (logger) {
     logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_FEATURE_ENABLED, result);
   }
+
   return result ? PasswordChangeAvailability::kAvailable
                 : PasswordChangeAvailability::kFeatureDisabled;
 }

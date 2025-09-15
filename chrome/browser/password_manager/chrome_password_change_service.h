@@ -53,7 +53,8 @@ enum class PasswordChangeAvailability {
   kUnsupportedLanguage = 6,
   kUnsupportedCountryCode = 7,
   kNotSupportedSite = 8,
-  kMaxValue = kNotSupportedSite,
+  kNoSavedPasswords = 9,
+  kMaxValue = kNoSavedPasswords,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeAvailability)
 
