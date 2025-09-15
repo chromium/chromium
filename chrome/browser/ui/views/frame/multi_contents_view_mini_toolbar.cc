@@ -39,6 +39,7 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_util.h"
 #include "ui/views/background.h"
@@ -168,17 +169,21 @@ MultiContentsViewMiniToolbar::~MultiContentsViewMiniToolbar() {
 
 void MultiContentsViewMiniToolbar::UpdateState(bool is_active,
                                                bool is_highlighted) {
+  const int contents_container_outline_thickness =
+      ContentsContainerOutline::GetThickness(is_highlighted);
+
   gfx::Insets kInactiveInteriorMargins = gfx::Insets::TLBR(
       ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
-      ContentsContainerOutline::kCornerRadius * 2, kMiniToolbarContentPadding,
-      ContentsContainerOutline::GetThickness(is_highlighted));
+      ContentsContainerOutline::kCornerRadius * 2,
+      contents_container_outline_thickness,
+      contents_container_outline_thickness);
 
   // Reduce the margins in the case of showing only the close or menu button.
   gfx::Insets kActiveInteriorMargins = gfx::Insets::TLBR(
       ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
       ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
-      kMiniToolbarContentPadding,
-      ContentsContainerOutline::GetThickness(is_highlighted) * 2);
+      contents_container_outline_thickness,
+      contents_container_outline_thickness);
 
   static_cast<views::FlexLayout*>(GetLayoutManager())
       ->SetInteriorMargin(is_active ? kActiveInteriorMargins
