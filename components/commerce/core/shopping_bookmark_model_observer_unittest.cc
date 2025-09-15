@@ -218,9 +218,8 @@ TEST_F(ShoppingBookmarkModelObserverTest,
 }
 
 // Ensure a subscription is automatically tracked if that flag is enabled.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(ShoppingBookmarkModelObserverTest, TestAutomaticTrackingOnAdd) {
-  test_features_.InitAndEnableFeature(kTrackByDefaultOnMobile);
-
   uint64_t cluster_id = 12345L;
   ProductInfo info;
   info.product_cluster_id.emplace(cluster_id);
@@ -238,6 +237,7 @@ TEST_F(ShoppingBookmarkModelObserverTest, TestAutomaticTrackingOnAdd) {
 
   base::RunLoop().RunUntilIdle();
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Ensure a subscription is automatically tracked if that flag is enabled.
 TEST_F(ShoppingBookmarkModelObserverTest, TestShoppingCollectionChangeMetrics) {

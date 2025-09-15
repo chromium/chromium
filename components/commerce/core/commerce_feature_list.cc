@@ -279,10 +279,6 @@ BASE_FEATURE(kSubscriptionsApi,
              "SubscriptionsApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrackByDefaultOnMobile,
-             "TrackByDefaultOnMobile",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kPriceInsightsIos,
              "PriceInsightsIos",

@@ -30,7 +30,7 @@ namespace commerce {
 namespace {
 bool IsTrackByDefaultEnabled() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(kTrackByDefaultOnMobile);
+  return false;
 #else
   return true;
 #endif

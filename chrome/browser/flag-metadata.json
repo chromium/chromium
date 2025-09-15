@@ -9980,11 +9980,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "track-by-default-mobile",
-    "owners": ["mdjones@chromium.org", "chrome-shopping@google.com"],
-    "expiry_milestone": 133
-  },
-  {
     "name": "tracking-protection-3pcd",
     "owners": ["fmacintosh@google.com", "koilos@google.com"],
     "expiry_milestone": 146

@@ -37,11 +37,6 @@ extern const char kPriceInsightsHighPriceIosDescription[] =
     "is high.";
 #endif
 
-const char kTrackByDefaultOnMobileName[] =
-    "Product Tracking by Default on Mobile";
-const char kTrackByDefaultOnMobileDescription[] =
-    "Enable tracking a product by default when bookmarking on mobile devices.";
-
 const char kPriceTrackingSubscriptionServiceLocaleKeyName[] =
     "Price Tracking Subscription Service Local Key";
 const char kPriceTrackingSubscriptionServiceLocaleKeyDescription[] =

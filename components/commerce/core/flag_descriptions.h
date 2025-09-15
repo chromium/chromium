@@ -35,9 +35,6 @@ extern const char kPriceInsightsHighPriceIosDescription[];
 extern const char kShoppingPageTypesName[];
 extern const char kShoppingPageTypesDescription[];
 
-extern const char kTrackByDefaultOnMobileName[];
-extern const char kTrackByDefaultOnMobileDescription[];
-
 extern const char kPriceTrackingSubscriptionServiceLocaleKeyName[];
 extern const char kPriceTrackingSubscriptionServiceLocaleKeyDescription[];
 
