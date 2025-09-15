@@ -316,7 +316,7 @@ BASE_FEATURE(kVideoDecoder,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether ARC uses MappableSharedImage for video encoding.
-BASE_FEATURE(kVideoEncodeUseMappableSI, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVideoEncodeUseMappableSI, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature to continuously log PSI memory pressure data to Chrome.
 BASE_FEATURE(kVmMemoryPSIReports,
