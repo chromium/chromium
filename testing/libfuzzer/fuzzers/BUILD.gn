@@ -498,25 +498,21 @@ test("paint_vector_icon_fuzztest") {
   ]
 }
 
-# Figure why this fuzzer constantly misbehaves on libfuzzer builds.
-# See crbug.com/406454922.
-if (use_centipede) {
-  test("chrome_tint_wgsl_fuzzer") {
-    sources = [
-      "tint_wgsl_fuzzer.cc",
-      "tint_wgsl_fuzzer_grammar.h",
-    ]
-    fuzztests = [
-      "ChromiumTintWgslTest.CanParseProgramWithoutCrashing",
-      "ChromiumTintWgslTest.CanConvertWgslToIRWithoutCrashing",
-    ]
-    fuzztest_additional_args = [ "--stack_limit_kb=512" ]
+test("chrome_tint_wgsl_fuzzer") {
+  sources = [
+    "tint_wgsl_fuzzer.cc",
+    "tint_wgsl_fuzzer_grammar.h",
+  ]
+  fuzztests = [
+    "ChromiumTintWgslTest.CanParseProgramWithoutCrashing",
+    "ChromiumTintWgslTest.CanConvertWgslToIRWithoutCrashing",
+  ]
+  fuzztest_additional_args = [ "--stack_limit_kb=512" ]
 
-    deps = [
-      "//base",
-      "//third_party/dawn/src/tint/cmd/fuzz/wgsl:fuzz",
-      "//third_party/dawn/src/tint/lang/wgsl/reader",
-      "//third_party/fuzztest:fuzztest_gtest_main",
-    ]
-  }
+  deps = [
+    "//base",
+    "//third_party/dawn/src/tint/cmd/fuzz/wgsl:fuzz",
+    "//third_party/dawn/src/tint/lang/wgsl/reader",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }
