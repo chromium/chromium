@@ -636,15 +636,6 @@ bool WasmCustomDescriptorsEnabledCallback(v8::Local<v8::Context> context) {
       execution_context);
 }
 
-bool WasmJSPromiseIntegrationEnabledCallback(v8::Local<v8::Context> context) {
-  ExecutionContext* execution_context = ToExecutionContext(context);
-  if (!execution_context) {
-    return false;
-  }
-  return RuntimeEnabledFeatures::WebAssemblyJSPromiseIntegrationEnabled(
-      execution_context);
-}
-
 v8::MaybeLocal<v8::Promise> HostImportModuleWithPhaseDynamically(
     v8::Local<v8::Context> context,
     v8::Local<v8::Data> v8_host_defined_options,
@@ -805,7 +796,6 @@ void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetWasmInstanceCallback(WasmInstanceOverride);
   isolate->SetWasmCustomDescriptorsEnabledCallback(
       WasmCustomDescriptorsEnabledCallback);
-  isolate->SetWasmJSPIEnabledCallback(WasmJSPromiseIntegrationEnabledCallback);
   isolate->SetSharedArrayBufferConstructorEnabledCallback(
       SharedArrayBufferConstructorEnabledCallback);
   isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
