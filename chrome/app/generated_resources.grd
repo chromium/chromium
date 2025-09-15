@@ -10042,6 +10042,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SPLIT_VIEW_DISMISS_ACTION_IPH" desc="The pin confirmation button of the IPH describing split view.">
         No thanks
       </message>
+      <message name="IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_TITLE" desc="The title for intro of quick tab switch split view IPH tutorial.">
+        Split view makes it easier to multitask
+      </message>
+      <message name="IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_BODY" desc="The body for intro of quick tab switch split view IPH tutorial.">
+        Put pages side-by-side in the same tab so you can easily compare options and more
+      </message>
+      <message name="IDS_SPLIT_VIEW_TAB_SWITCH_STEP_IPH_BODY" desc="The body for first step of quick tab switch split view IPH tutorial.">
+        Right-click on this tab and select “Add tab to new split view”
+      </message>
+      <message name="IDS_SPLIT_VIEW_TAB_SWITCH_COMPLETION_IPH_BODY" desc="The body for completion of quick tab switch split view IPH tutorial.">
+        You can now use split view to compare, multitask, and more
+      </message>
 
       <!-- Vertical Tab Strings -->
       <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
