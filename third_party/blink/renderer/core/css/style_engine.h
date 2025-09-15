@@ -786,8 +786,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                       CountersAttachmentContext& context);
   // FontSelectorClient implementation.
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;
-  mojom::blink::ColorScheme AdjustAboutBlankColorScheme(
-      mojom::blink::ColorScheme root_color_scheme) const;
 
   AncestorAnalysis AnalyzeInclusiveAncestor(const Node&);
   AncestorAnalysis AnalyzeExclusiveAncestor(const Node&);
