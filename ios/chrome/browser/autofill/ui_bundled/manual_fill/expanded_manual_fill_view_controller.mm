@@ -21,16 +21,15 @@ using manual_fill::ManualFillDataType;
 
 namespace {
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 // Size of the Chrome logo.
 constexpr CGFloat kChromeLogoSize = 28;
-#endif
+
 // Size of the Chrome logo when liquid glass is disabled.
 constexpr CGFloat kChromeLogoSizePreLiquidGlass = 24;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+
 // Size of the close button.
 constexpr CGFloat kCloseButtonSize = 44;
-#endif
+
 // Size of the close button when liquid glass is disabled.
 constexpr CGFloat kCloseButtonSizePreLiquidGlass = 30;
 // Size of the data type icons representing the different segments
@@ -44,10 +43,10 @@ constexpr CGFloat kHeaderViewHorizontalPadding = 16;
 constexpr CGFloat kHeaderViewTopPadding = 8;
 // Top padding for the header view when in a bottom popover.
 constexpr CGFloat kHeaderViewPopoverTopPadding = 22;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+
 // Opacity of the segmented control background color.
 constexpr CGFloat kSegmentedControlBackgroundColorOpacity = 0.05;
-#endif
+
 // Height of the segmented control.
 constexpr CGFloat kSegmentedControlHeight = 32;
 // Multiplier used to constraint the view's height.
@@ -84,36 +83,30 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 
 // Returns the color to use for the view's background.
 UIColor* GetBackgroundColor() {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return UIColor.clearColor;
   }
-#endif
 
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 
 // Returns the size to use for the Chrome logo.
 CGFloat GetChromeLogoSize() {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return kChromeLogoSize;
   }
-#endif
 
   return kChromeLogoSizePreLiquidGlass;
 }
 
 // Returns the symbol configuration to use for the close button.
 UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return [UIImageSymbolConfiguration
         configurationWithPointSize:kCloseButtonSize
                             weight:UIImageSymbolWeightThin
                              scale:UIImageSymbolScaleDefault];
   }
-#endif
 
   return [UIImageSymbolConfiguration
       configurationWithPointSize:kCloseButtonSizePreLiquidGlass
@@ -123,25 +116,21 @@ UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
 
 // Returns the foreground color to use for the close button color palette.
 UIColor* GetCloseButtonForegroundColor() {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return [UIColor colorNamed:kTextPrimaryColor];
   }
-#endif
 
   return [[UIColor secondaryLabelColor] colorWithAlphaComponent:0.6];
 }
 
 // Returns the constant to apply to the header view top constraint.
 CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     if (!(is_compact_height ||
           ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
       return -kHeaderViewTopPadding;
     }
   }
-#endif
 
   return kHeaderViewTopPadding;
 }
@@ -489,12 +478,10 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
                        action:@selector(onSegmentSelected:)
              forControlEvents:UIControlEventValueChanged];
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     segmentedControl.backgroundColor = [[UIColor colorNamed:kGrey700Color]
         colorWithAlphaComponent:kSegmentedControlBackgroundColorOpacity];
   }
-#endif
 
   return segmentedControl;
 }

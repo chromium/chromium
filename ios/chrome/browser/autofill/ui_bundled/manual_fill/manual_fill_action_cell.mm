@@ -100,14 +100,12 @@
 
   [self.contentView addSubview:self.titleButton];
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     [NSLayoutConstraint activateConstraints:@[
       [self.contentView.heightAnchor
           constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight]
     ]];
   }
-#endif
   AddSameConstraintsToSides(self.titleButton, self.contentView,
                             LayoutSides::kTop | LayoutSides::kBottom |
                                 LayoutSides::kTrailing | LayoutSides::kLeading);

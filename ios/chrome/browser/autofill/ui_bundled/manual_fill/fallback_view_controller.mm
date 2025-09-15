@@ -78,11 +78,9 @@ bool ShouldResizeViewForPopover(
 
 // Returns the color to use for the table view's background.
 UIColor* GetBackgroundColor() {
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return UIColor.clearColor;
   }
-#endif
 
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }

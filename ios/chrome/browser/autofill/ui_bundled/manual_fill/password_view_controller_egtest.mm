@@ -583,11 +583,10 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that the other password list can be dismissed with a swipe down.
 - (void)testClosingOtherPasswordListViaSwipeDown {
 // TODO(crbug.com/435134454): Re-enable the test on iOS26.
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+
   if (iOS26_OR_ABOVE()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
-#endif
 
   [self openOtherPasswords];
 
