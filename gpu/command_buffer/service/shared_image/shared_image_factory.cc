@@ -99,6 +99,10 @@
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(USE_DAWN)
+#include "gpu/command_buffer/service/shared_image/dawn_image_backing_factory.h"
+#endif  // BUILDFLAG(USE_DAWN)
+
 namespace gpu {
 
 namespace {
@@ -344,6 +348,17 @@ SharedImageFactory::SharedImageFactory(
     factories_.push_back(std::move(iosurface_backing_factory));
   }
 #endif
+
+#if BUILDFLAG(USE_DAWN)
+  // This factory will only be used with skia graphite dawn as of now. It is
+  // currently not in use at all and will be soon enabled to be used with
+  // CompoundSharedImage. It will be used when there is no other backing
+  // which can support dawn representation. Hence it is added here at the end
+  // in the list.
+  if (gr_context_type_ == GrContextType::kGraphiteDawn) {
+    factories_.push_back(std::make_unique<DawnImageBackingFactory>());
+  }
+#endif  // BUILDFLAG(USE_DAWN)
 }
 
 SharedImageFactory::~SharedImageFactory() {

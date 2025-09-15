@@ -65,6 +65,8 @@ const char* BackingTypeToString(SharedImageBackingType type) {
       return "DXGISwapChain";
     case SharedImageBackingType::kWrappedGraphiteTexture:
       return "WrappedGraphiteTexture";
+    case SharedImageBackingType::kDawn:
+      return "DawnImageBacking";
   }
   NOTREACHED();
 }

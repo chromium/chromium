@@ -375,6 +375,7 @@ test("gl_tests") {
     ]
 
     sources += [
+      "command_buffer/service/shared_image/dawn_image_backing_factory_unittest.cc",
       "command_buffer/service/shared_image/dawn_image_representation_unittest_common.cc",
       "command_buffer/service/shared_image/dawn_image_representation_unittest_common.h",
     ]
