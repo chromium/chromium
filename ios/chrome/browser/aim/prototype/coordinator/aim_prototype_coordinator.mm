@@ -10,9 +10,6 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_entrypoint.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_mediator.h"
-#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_dismiss_animator.h"
-#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_present_animator.h"
-#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller+private.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -35,8 +32,7 @@
                                        PHPickerViewControllerDelegate,
                                        UIDocumentPickerDelegate,
                                        UIImagePickerControllerDelegate,
-                                       UINavigationControllerDelegate,
-                                       UIViewControllerTransitioningDelegate>
+                                       UINavigationControllerDelegate>
 @end
 
 @implementation AIMPrototypeCoordinator {
@@ -66,8 +62,6 @@
 - (void)start {
   _viewController = [[AIMPrototypeViewController alloc] init];
   _viewController.delegate = self;
-  _viewController.modalPresentationStyle = UIModalPresentationCustom;
-  _viewController.transitioningDelegate = self;
 
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
@@ -95,15 +89,9 @@
   _mediator.delegate = self;
   _viewController.mutator = _mediator;
   _voiceSearchController.dispatcher = _mediator;
-
-  [self.baseViewController presentViewController:_viewController
-                                        animated:YES
-                                      completion:nil];
 }
 
 - (void)stop {
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
   _viewController = nil;
   _picker = nil;
   [_voiceSearchController dismissMicPermissionHelp];
@@ -114,22 +102,12 @@
   _mediator = nil;
 }
 
-#pragma mark - UIViewControllerTransitioningDelegate
-
-- (id<UIViewControllerAnimatedTransitioning>)
-    animationControllerForPresentedController:(UIViewController*)presented
-                         presentingController:(UIViewController*)presenting
-                             sourceController:(UIViewController*)source {
-  AIMPrototypePresentAnimator* animator = [[AIMPrototypePresentAnimator alloc]
-      initWithContextProvider:_viewController];
-  animator.toggleOnAIM = _entrypoint == AIMPrototypeEntrypoint::kNTPAIMButton;
-  return animator;
+- (UIViewController*)inputViewController {
+  return _viewController;
 }
 
-- (id<UIViewControllerAnimatedTransitioning>)
-    animationControllerForDismissedController:(UIViewController*)dismissed {
-  return [[AIMPrototypeDismissAnimator alloc]
-      initWithContextProvider:_viewController];
+- (id<AIMPrototypeAnimationContextProvider>)contextProvider {
+  return _viewController;
 }
 
 #pragma mark - AIMPrototypeViewControllerDelegate

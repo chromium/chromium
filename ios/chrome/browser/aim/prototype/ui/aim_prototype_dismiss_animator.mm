@@ -26,13 +26,15 @@
 
 - (void)animateTransition:
     (id<UIViewControllerContextTransitioning>)transitionContext {
+  UIView* presentedView =
+      [transitionContext viewForKey:UITransitionContextFromViewKey];
+
   UIView* containerView = transitionContext.containerView;
-  UIView* mainView = [_contextProvider mainViewForAnimation];
   UIView* inputPlateView = [_contextProvider inputPlateViewForAnimation];
 
   [UIView animateWithDuration:[self transitionDuration:transitionContext]
       animations:^{
-        mainView.alpha = 0.0;
+        presentedView.alpha = 0.0;
         CGRect finalFrame = inputPlateView.frame;
         finalFrame.origin.y = containerView.bounds.size.height;
         inputPlateView.frame = finalFrame;

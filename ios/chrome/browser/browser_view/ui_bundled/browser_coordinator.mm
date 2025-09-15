@@ -41,7 +41,7 @@
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
-#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_coordinator.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_container_coordinator.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
@@ -709,7 +709,7 @@ enum class ToolbarKind {
   base::ScopedClosureRunner _activityOverlayCallback;
 
   // Coordinator for the AIM prototype.
-  AIMPrototypeCoordinator* _aimPrototypeCoordinator;
+  AIMPrototypeContainerCoordinator* _aimPrototypeCoordinator;
 
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
@@ -2615,7 +2615,7 @@ enum class ToolbarKind {
   if (_aimPrototypeCoordinator) {
     return;
   }
-  _aimPrototypeCoordinator = [[AIMPrototypeCoordinator alloc]
+  _aimPrototypeCoordinator = [[AIMPrototypeContainerCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                       entrypoint:entrypoint

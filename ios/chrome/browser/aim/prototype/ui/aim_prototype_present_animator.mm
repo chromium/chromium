@@ -38,11 +38,10 @@ const NSTimeInterval kSlideInDuration = 0.1;
   UIView* containerView = transitionContext.containerView;
   [containerView addSubview:toView];
 
-  UIView* mainView = [_contextProvider mainViewForAnimation];
   UIView* inputPlateView = [_contextProvider inputPlateViewForAnimation];
   UITextView* textView = [_contextProvider textViewForAnimation];
 
-  mainView.alpha = 0.0;
+  toView.alpha = 0.0;
   CGRect finalFrame = inputPlateView.frame;
   inputPlateView.frame =
       CGRectMake(finalFrame.origin.x, containerView.bounds.size.height,
@@ -62,7 +61,7 @@ const NSTimeInterval kSlideInDuration = 0.1;
         [UIView addKeyframeWithRelativeStartTime:0.0
                                 relativeDuration:1.0
                                       animations:^{
-                                        mainView.alpha = 1.0;
+                                        toView.alpha = 1.0;
                                       }];
         // Slide in the input plate.
         [UIView addKeyframeWithRelativeStartTime:0.0

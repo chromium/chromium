@@ -11,11 +11,19 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-class Browser;
+@protocol AIMPrototypeAnimationContextProvider;
 enum class AIMPrototypeEntrypoint;
+class Browser;
 
 /// AIMPrototypeCoordinator presents AIM with an omnibox.
 @interface AIMPrototypeCoordinator : ChromeCoordinator
+
+// The context provider for the animations.
+@property(nonatomic, readonly) id<AIMPrototypeAnimationContextProvider>
+    contextProvider;
+
+// The view controller managed by this coordinator.
+@property(nonatomic, readonly) UIViewController* inputViewController;
 
 /// Init the AIM Prototype opened from `entrypoint` with an optional `query` in
 /// the omnibox.

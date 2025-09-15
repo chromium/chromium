@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_image_cell.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_animation_context_provider.h"
-#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller+private.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -97,8 +97,6 @@ const CGFloat kGlowEffectWidth = 4.0f;
   NSLayoutConstraint* _textViewHeightConstraint;
   /// The text view for user input.
   UITextView* _textView;
-  /// The backing view for the animation.
-  UIView* _mainViewForAnimation;
   /// The button to toggle AI mode.
   UIButton* _aimButton;
   /// The glow effect around the input plate container.
@@ -106,15 +104,11 @@ const CGFloat kGlowEffectWidth = 4.0f;
 }
 
 /// AIMPrototypeAnimationContextProvider
-@synthesize mainViewForAnimation = _mainViewForAnimation;
 @synthesize inputPlateViewForAnimation = _inputPlateContainerView;
 @synthesize textViewForAnimation = _textView;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
-  _mainViewForAnimation = self.view;
-  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   // Close button
   UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeClose];

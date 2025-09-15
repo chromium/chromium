@@ -9,6 +9,8 @@ source_set("coordinator") {
     "aim_omnibox_client_delegate.h",
     "aim_prototype_availability.h",
     "aim_prototype_availability.mm",
+    "aim_prototype_container_coordinator.h",
+    "aim_prototype_container_coordinator.mm",
     "aim_prototype_coordinator.h",
     "aim_prototype_coordinator.mm",
     "aim_prototype_entrypoint.h",

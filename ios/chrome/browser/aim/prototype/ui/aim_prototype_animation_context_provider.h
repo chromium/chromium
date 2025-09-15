@@ -9,8 +9,6 @@
 
 // Provides the views needed for the custom dismissal animation.
 @protocol AIMPrototypeAnimationContextProvider
-// The main view of the view controller to be faded out.
-@property(nonatomic, readonly) UIView* mainViewForAnimation;
 // The input plate view to be animated downwards.
 @property(nonatomic, readonly) UIView* inputPlateViewForAnimation;
 // The text view to be focused after the presentation animation.
