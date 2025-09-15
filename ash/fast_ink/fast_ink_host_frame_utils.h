@@ -65,7 +65,7 @@ ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
     const gfx::Size& size,
     UiSourceId ui_source_id,
     bool is_overlay_candidate,
-    gpu::Mailbox mailbox,
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token);
 
 // Creates and configures a compositor frame. Uses the SharedImage that
