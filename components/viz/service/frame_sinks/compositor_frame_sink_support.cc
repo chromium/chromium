@@ -862,7 +862,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     const bool has_copy_request_against_prev_surface =
         frame.metadata.screenshot_destination.has_value() && prev_surface;
 
-    current_surface = surface_manager_->CreateSurface(
+    auto create_surface_return = surface_manager_->CreateSurface(
         weak_factory_.GetWeakPtr(), surface_info,
         has_copy_request_against_prev_surface ? last_created_surface_id_
                                               : SurfaceId());
@@ -902,18 +902,39 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
                                    /*capture_exact_id=*/true));
     }
 
-    if (!current_surface) {
+    if (!create_surface_return.has_value()) {
       TRACE_EVENT_INSTANT0("viz", "Surface belongs to another client",
                            TRACE_EVENT_SCOPE_THREAD);
-      SCOPED_CRASH_KEY_STRING32("viz", "Local surface id",
-                                local_surface_id.ToString());
-      SCOPED_CRASH_KEY_STRING32(
-          "viz", "Last created local surface id",
+
+      static auto* const crash_key_local_surface_id =
+          base::debug::AllocateCrashKeyString(
+              "Local surface id", base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(crash_key_local_surface_id,
+                                     local_surface_id.ToString());
+
+      static auto* const crash_key_last_created_local_surface_id =
+          base::debug::AllocateCrashKeyString(
+              "Last created local surface id",
+              base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(
+          crash_key_last_created_local_surface_id,
           last_created_surface_id_.local_surface_id().ToString());
-      SCOPED_CRASH_KEY_STRING32("viz", "Prev surface",
-                                prev_surface ? "exist" : "not_exist");
+
+      static auto* const crash_key_prev_surface =
+          base::debug::AllocateCrashKeyString(
+              "Prev surface", base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(crash_key_prev_surface,
+                                     prev_surface ? "exist" : "not_exist");
+
+      static auto* const crash_key_create_surface_error =
+          base::debug::AllocateCrashKeyString(
+              "Create surface error", base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(crash_key_create_surface_error,
+                                     create_surface_return.error());
+
       return SubmitResult::SURFACE_OWNED_BY_ANOTHER_CLIENT;
     }
+    current_surface = create_surface_return.value();
     last_created_surface_id_ = SurfaceId(frame_sink_id_, local_surface_id);
 
     surface_manager_->SurfaceDamageExpected(current_surface->surface_id(),

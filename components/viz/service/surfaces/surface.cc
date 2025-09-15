@@ -448,15 +448,13 @@ void Surface::FrameData::SendAckIfNeeded(SurfaceClient* client) {
 }
 
 void Surface::ActivatePendingFrame() {
-  DCHECK(pending_frame_data_);
-  if (!pending_frame_data_) {
-    SCOPED_CRASH_KEY_STRING32("viz", "Pending frame data change reason",
-                              PendingFrameDataChangeReasonToString(
-                                  pending_frame_data_change_reason_));
-    SCOPED_CRASH_KEY_STRING32(
-        "viz", "Last frame activation reason",
-        FrameActivationReasonToString(frame_activation_reason_));
-  }
+  SCOPED_CRASH_KEY_STRING32(
+      "viz", "Pending frame data change reason",
+      PendingFrameDataChangeReasonToString(pending_frame_data_change_reason_));
+  SCOPED_CRASH_KEY_STRING32(
+      "viz", "Last frame activation reason",
+      FrameActivationReasonToString(frame_activation_reason_));
+  CHECK(pending_frame_data_);
 
   pending_frame_data_change_reason_ =
       PendingFrameDataChangeReason::kActivatePendingFrameReset;

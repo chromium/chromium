@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -25,6 +26,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -34,7 +36,6 @@
 
 #if DCHECK_IS_ON()
 #include <iosfwd>
-#include <string>
 #endif
 
 namespace base {
@@ -86,9 +87,10 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // destroyed when MarkSurfaceForDestruction is called, all of its destruction
   // dependencies are satisfied, and it is not reachable from the root surface.
   // A temporary reference will be added to the new Surface.
-  Surface* CreateSurface(base::WeakPtr<SurfaceClient> surface_client,
-                         const SurfaceInfo& surface_info,
-                         const SurfaceId& pending_copy_surface_id);
+  base::expected<Surface*, std::string> CreateSurface(
+      base::WeakPtr<SurfaceClient> surface_client,
+      const SurfaceInfo& surface_info,
+      const SurfaceId& pending_copy_surface_id);
 
   // Marks |surface_id| for destruction. The surface will get destroyed when
   // it's not reachable from the root or any other surface that is not marked

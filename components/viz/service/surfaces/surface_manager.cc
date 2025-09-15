@@ -116,7 +116,7 @@ void SurfaceManager::SetTickClockForTesting(const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
 }
 
-Surface* SurfaceManager::CreateSurface(
+base::expected<Surface*, std::string> SurfaceManager::CreateSurface(
     base::WeakPtr<SurfaceClient> surface_client,
     const SurfaceInfo& surface_info,
     const SurfaceId& pending_copy_surface_id) {
@@ -127,9 +127,7 @@ Surface* SurfaceManager::CreateSurface(
   // We should not be asked to create a surface that already exists.
   auto it = surface_map_.find(surface_info.id());
   if (it != surface_map_.end()) {
-    SCOPED_CRASH_KEY_STRING32("viz", "Create surface fail reason",
-                              "surface already exists");
-    return nullptr;
+    return base::unexpected("surface already exists");
   }
 
   SurfaceAllocationGroup* allocation_group =
@@ -137,9 +135,7 @@ Surface* SurfaceManager::CreateSurface(
   // GetOrCreateAllocationGroupForSurfaceId can fail if two FrameSinkIds use the
   // same embed token.
   if (!allocation_group) {
-    SCOPED_CRASH_KEY_STRING32("viz", "Create surface fail reason",
-                              "Cannot reuse embed token across frame sinks");
-    return nullptr;
+    return base::unexpected("Cannot reuse embed token across frame sinks");
   }
 
   std::unique_ptr<Surface> surface = std::make_unique<Surface>(
@@ -156,7 +152,7 @@ Surface* SurfaceManager::CreateSurface(
   // is received, is added to prevent this from happening.
   AddTemporaryReference(surface_info.id());
 
-  return surface_map_[surface_info.id()].get();
+  return base::ok(surface_map_[surface_info.id()].get());
 }
 
 void SurfaceManager::MarkSurfaceForDestruction(const SurfaceId& surface_id) {
