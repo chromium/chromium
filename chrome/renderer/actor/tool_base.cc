@@ -154,9 +154,9 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                         .Add("hit_node", NodeToDebugSring(hit_element))
                         .AddError("Node covered by another node")
                         .Build());
-      // TODO(crbug.com/418280472): return error after retry for failed task is
-      // landed.
-      return resolved_target;
+      return base::unexpected(MakeResult(
+          mojom::ActionResultCode::kTargetNodeInteractionPointObscured,
+          "The element's interaction point is obscured by other elements."));
     }
 
     if (!observed_target_->node_attribute->geometry) {

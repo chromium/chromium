@@ -856,6 +856,33 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       ToctouCheckFailsWhenNodeInteractionPointObscured) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_obscured_element.html");
+  constexpr std::string_view kClickableButtonLabel = "target";
+
+  RunTestSequence(
+      // clang-format off
+    InitializeWithOpenGlicWindow(),
+    StartActorTaskInNewTab(task_url, kNewActorTabId),
+    GetPageContextFromFocusedTab(),
+    ClickAction(
+        kClickableButtonLabel,
+        actor::mojom::ActionResultCode::kTargetNodeInteractionPointObscured),
+     InAnyContext(WithElement(kNewActorTabId, [](ui::TrackedElement* el) {
+        content::WebContents* web_contents =
+            AsInstrumentedWebContents(el)->web_contents();
+        EXPECT_EQ(false,
+          content::EvalJs(web_contents, "target_button_clicked"));
+        EXPECT_EQ(false,
+          content::EvalJs(web_contents, "obstruction_button_clicked"));
+      }))
+      // clang-format on
+  );
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
                        UsesExistingActorTabOnSubsequentNavigate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =

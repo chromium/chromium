@@ -223,6 +223,10 @@ enum ActionResultCode {
   // hit test on the live DOM.
   kObservedTargetElementChanged = 31,
 
+  // The target node's interaction point is obscured by other elements in hit
+  // testing.
+  kTargetNodeInteractionPointObscured = 32,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
