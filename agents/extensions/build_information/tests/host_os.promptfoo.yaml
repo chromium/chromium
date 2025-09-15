@@ -5,8 +5,9 @@ prompts:
 providers:
   - id: python:../../../testing/gemini_provider.py
     config:
-      timeoutSeconds: 30
-      system_prompt: file://../../../../GEMINI.md
+      timeoutSeconds: 120
+      templates:
+        - "agents/prompts/common.minimal.md"
 
 # The test cases will run on the output returned by our Python script.
 tests:

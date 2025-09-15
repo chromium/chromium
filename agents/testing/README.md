@@ -24,15 +24,35 @@ slower and take up significantly more disk space. These steps can be used to
 fetch a new Chromium solution in a virtual btrfs file system mounted in your
 home dir.
 
-1.  Ensure btrfs is installed with `sudo apt install btrfs-progs`
-2.  Create the virtual image file with
-    `truncate -s 500G ~/btrfs_virtual_disk.img`
-3.  Format the image with btrfs `mkfs.btrfs ~/btrfs_virtual_disk.img`
-4.  Mount the image `mkdir ~/btrfs && sudo mount -o loop
-    ~/btrfs_virtual_disk.img ~/btrfs`
-5.  Update owner `sudo chown $(whoami):$(id -ng) ~/btrfs`
-6.  Fetch (or move) your Chromium solution into the mount `cd ~/btrfs && fetch
-    chromium`
+The following commands can be used to set up the environment:
+```bash
+# 1. Ensure btrfs is installed
+sudo apt install btrfs-progs
+
+# 2. Create the virtual image file
+truncate -s 500G ~/btrfs_virtual_disk.img
+
+# 3. Format the image with btrfs
+mkfs.btrfs ~/btrfs_virtual_disk.img
+
+# 4. Mount the image
+mkdir ~/btrfs
+sudo mount -o loop ~/btrfs_virtual_disk.img ~/btrfs
+
+# 5. Update owner
+sudo chown $(whoami):$(id -ng) ~/btrfs
+
+# 6. Create a btrfs subvolume for the checkout
+btrfs subvolume create ~/btrfs/chromium
+
+# 7. Fetch a new Chromium checkout into the subvolume.
+# This will place the 'src' directory inside '~/btrfs/chromium/'.
+cd ~/btrfs/chromium
+fetch chromium
+
+# For an existing checkout, you would instead move the contents, e.g.:
+# mv ~/your_old_chromium/* ~/btrfs/chromium/
+```
 
 After Chromium is checked out, `agents/testing/eval_prompts.py` can then
 be run from `~/btrfs/chromium/src/`.
@@ -56,3 +76,50 @@ Config files should be placed in a `tests/promptfoo/` subdirectory of the
 relevant prompt or extension directory. After they exist on disk, new yaml
 files will need to be added to the `PROMPTFOO_CONFIG_COMPONENTS` list at the
 top of the script for the tests to actually be run.
+
+## Advanced Usage: Testing Custom Options
+
+The `gemini_provider.py` supports several custom options for advanced testing
+scenarios, such as applying file changes or loading specific templates. Below is
+an example of a `promptfoo.yaml` file that demonstrates how to use the `changes`
+option to patch and stage files before a test prompt is run.
+
+This example can be used as a template for writing tests that require a specific
+file state.
+
+### Example: `custom_options.promptfoo.yaml`
+
+```yaml
+prompts:
+  - "What is the staged content of the file `path/to/dummy.txt`?"
+providers:
+  - id: "python:../../../testing/gemini_provider.py"
+    config:
+      extensions:
+        - depot_tools
+      changes:
+        - apply: "path/to/add_dummy_content.patch"
+        - stage: "path/to/dummy.txt"
+tests:
+  - description: "Test with custom options"
+    assert:
+      # Check that the agent ran git diff and found the new content.
+      - type: icontains
+        value: "dummy content"
+```
+
+### Example Patch File
+
+The `changes` field points to standard `.patch` files. The test runner will
+apply them.
+
+#### `add_dummy_content.patch`
+```diff
+diff --git a/path/to/dummy.txt b/path/to/dummy.txt
+index e69de29..27332d3 100644
+--- a/path/to/dummy.txt
++++ b/path/to/dummy.txt
+@@ -0,0 +1 @@
++dummy content
+
+```
