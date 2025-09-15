@@ -27,15 +27,6 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 
-namespace {
-
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
-const CGFloat kMenuCornerRadius = 28;
-#else
-const CGFloat kMenuCornerRadius = 20;
-#endif
-}
-
 @interface PageActionMenuCoordinator () <
     PageActionMenuViewControllerDelegate,
     UINavigationControllerDelegate,
@@ -118,8 +109,6 @@ const CGFloat kMenuCornerRadius = 20;
   ];
   _navigationController.sheetPresentationController.selectedDetentIdentifier =
       kAIHubDetentIdentifier;
-  _navigationController.sheetPresentationController.preferredCornerRadius =
-      kMenuCornerRadius;
   _navigationController.sheetPresentationController
       .prefersEdgeAttachedInCompactHeight = YES;
   _navigationController.sheetPresentationController.prefersGrabberVisible = NO;
