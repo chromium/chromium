@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -177,6 +178,105 @@ TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
       layer_tree_host->pending_commit_state()->force_send_metadata_request);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class WebFrameWidgetScrollContainerHitTest : public WebFrameWidgetSimTest {
+ public:
+  void SetUp() override {
+    WebFrameWidgetSimTest::SetUp();
+
+    WebView().Resize(gfx::Size(1000, 1000));
+    WebView().MainFrameViewWidget()->SetPageScaleStateAndLimits(1.0f, true,
+                                                                1.0f, 3.0f);
+    GetVisualViewport().SetSize(gfx::Size(500, 500));
+
+    SimRequest request("https://example.com/test.html", "text/html");
+    LoadURL("https://example.com/test.html");
+    request.Complete(
+        R"HTML(
+      <style>
+      html, body {
+        margin :0px;
+        padding: 0px;
+      }
+      .box {
+        width: 100px;
+        height: 100px;
+        overflow: scroll;
+      }
+      .space {
+        height: 200vh;
+        width: 200vw;
+      }
+      </style>
+
+      <div id='box1' class='box'>
+        <div class='space'></div>
+      </div>
+      <div id='box2' class='box'>
+        <div class='space'></div>
+      </div>
+
+      )HTML");
+    WebView().MainFrameViewWidget()->UpdateAllLifecyclePhases(
+        DocumentUpdateReason::kTest);
+  }
+
+  VisualViewport& GetVisualViewport() {
+    return WebView().MainFrameViewWidget()->GetPage()->GetVisualViewport();
+  }
+
+  void TestScrollContainerHitTest(gfx::PointF box1_target_offset,
+                                  gfx::PointF box2_target_offset) {
+    Element* box1 = GetDocument().getElementById(AtomicString("box1"));
+    Element* box2 = GetDocument().getElementById(AtomicString("box2"));
+
+    const cc::ElementId box1_dom_node_id =
+        box1->GetLayoutBox()->GetScrollableArea()->GetScrollElementId();
+    const cc::ElementId box2_dom_node_id =
+        box2->GetLayoutBox()->GetScrollableArea()->GetScrollElementId();
+
+    WebFrameWidgetImpl& widget = *WebView().MainFrameViewWidget();
+    VisualViewport& visual_viewport = GetVisualViewport();
+    EXPECT_EQ(visual_viewport.GetScrollOffset(), ScrollOffset(0, 0));
+
+    cc::ElementId scrollable_id =
+        widget.GetScrollableContainerIdAt(box1_target_offset);
+    EXPECT_EQ(scrollable_id, box1_dom_node_id);
+
+    visual_viewport.SetScrollOffset(ScrollOffset(0, 50),
+                                    mojom::blink::ScrollType::kProgrammatic);
+    EXPECT_EQ(visual_viewport.GetScrollOffset(), ScrollOffset(0, 50));
+    scrollable_id = widget.GetScrollableContainerIdAt(box2_target_offset);
+    EXPECT_EQ(scrollable_id, box2_dom_node_id);
+  }
+};
+
+TEST_F(WebFrameWidgetScrollContainerHitTest, PageScaleOne) {
+  GetVisualViewport().SetScale(1);
+
+  // Here is a note about the selection of numbers for hitting box2:
+  // The hit test offset should account for the visual viewport scroll
+  // offset (50). The hit test offset should be the following:
+  //   50 (scroll offset) + 1 (page scale) * 75 = 125 > 100
+  // which should hit box2.
+  // If the scroll offset is (incorrectly) not taken into account, we should hit
+  // the wrong box: 75 < 100
+  TestScrollContainerHitTest(gfx::PointF(50, 50), gfx::PointF(50, 75));
+}
+
+TEST_F(WebFrameWidgetScrollContainerHitTest, PageScaleHalf) {
+  GetVisualViewport().SetScale(2.0f);
+
+  // Here is a note about the selection of numbers for hitting box2:
+  // The page scale should be applied only once to get the hit test offset. The
+  // hit test offset should be the following:
+  //   50 (scroll offset) + 0.5 (page scale) * 150 = 125 > 100
+  // which should hit box2.
+  // If the page scale is (incorrectly) applied more than once, e.g.:
+  //   50 + 0.5 * 0.5 * 150 = 87.5 < 100
+  // we'll hit the wrong box.
+  TestScrollContainerHitTest(gfx::PointF(50, 50), gfx::PointF(50, 150));
+}
 
 // A test that forces a RemoteMainFrame to be created.
 class WebFrameWidgetImplRemoteFrameSimTest : public SimTest {

@@ -779,6 +779,7 @@ class CORE_EXPORT WebFrameWidgetImpl
  private:
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;
+  friend class WebFrameWidgetScrollContainerHitTest;
 
   void NotifySwapAndPresentationTime(PromiseCallbacks callbacks);
 
