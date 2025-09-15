@@ -287,7 +287,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
           id<UIViewControllerTransitionCoordinatorContext> context) {
         if (IsTabGridEmptyThumbnailUIEnabled()) {
           for (UICollectionViewCell* cell in self.collectionView.visibleCells) {
-            if ([cell isKindOfClass:[GroupGridCell class]]) {
+            if ([cell isKindOfClass:[GridCell class]]) {
+              GridCell* gridCell = ObjCCastStrict<GridCell>(cell);
+              gridCell.layoutType = [self layoutTypeForContainerSize:size
+                                                          isGridCell:YES];
+            } else if ([cell isKindOfClass:[GroupGridCell class]]) {
               GroupGridCell* gridCell = ObjCCastStrict<GroupGridCell>(cell);
               gridCell.layoutType = [self layoutTypeForContainerSize:size
                                                           isGridCell:NO];
@@ -1716,6 +1720,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.title = item.title;
   cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
+  if (IsTabGridEmptyThumbnailUIEnabled()) {
+    cell.layoutType =
+        [self layoutTypeForContainerSize:self.collectionView.bounds.size
+                              isGridCell:YES];
+  }
   if (self.mode == TabGridMode::kSelection) {
     if ([self.gridProvider isItemSelected:itemIdentifier]) {
       cell.state = GridCellStateEditingSelected;

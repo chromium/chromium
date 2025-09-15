@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
 
 @class GridCell;
+typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 @class LayoutGuideCenter;
 
 // Informs the receiver of actions on the cell.
@@ -43,6 +44,8 @@
 @property(nonatomic, weak) PriceCardView* priceCardView;
 // The layout guide center to use to refer to the selected cell.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+// The layout type configuration for the empty thumbnail.
+@property(nonatomic, assign) EmptyThumbnailLayoutType layoutType;
 
 // Returns a transition selection cell with the same theme and frame as `cell`,
 // but with no visible content view, no delegate, and no identifier.
@@ -57,9 +60,6 @@
 
 // Hides the price drop annotation
 - (void)hidePriceDrop;
-
-// Fade in a new snapshot.
-- (void)fadeInSnapshot:(UIImage*)snapshot;
 
 // Starts the activity indicator animation.
 - (void)showActivityIndicator;

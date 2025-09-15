@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_activity_summary_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_header.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_layout.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 
 @interface TabGroupGridViewController () <TabGroupActivitySummaryCellDelegate>
 @end
@@ -143,6 +144,11 @@
   if (self.activitySummaryCellText != nil) {
     [self addActivitySummaryCellInSnapshot:snapshot];
   }
+}
+
+- (EmptyThumbnailLayoutType)layoutTypeForContainerSize:(CGSize)containerSize
+                                            isGridCell:(BOOL)isGridCell {
+  return EmptyThumbnailLayoutTypeCenteredPortrait;
 }
 
 #pragma mark - Private
