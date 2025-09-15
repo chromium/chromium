@@ -416,24 +416,6 @@ class CanvasRenderingContext2DTest : public CanvasRenderingContext2DTestBase {
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTest);
 
-class CanvasRenderingContext2DTestGLES2
-    : public CanvasRenderingContext2DTestBase {
- public:
-  bool AllowsAcceleration() override { return true; }
-
-  void CreateContextProvider(SetIsContextLost set_context_lost) override {
-    test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get(),
-                                    /*cache=*/nullptr, set_context_lost);
-    ConfigureContextProvider(*test_context_provider_);
-  }
-
- private:
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
-};
-
-INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestGLES2);
-
 CanvasRenderingContext2DTestBase::CanvasRenderingContext2DTestBase()
     : wrap_gradients_(MakeGarbageCollected<WrapGradients>()),
       opaque_bitmap_(gfx::Size(10, 10), kOpaqueBitmap),
@@ -799,70 +781,6 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
   // the validity of the resource.
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
   EXPECT_TRUE(Context2D()->IsCanvas2DResourceProviderValid());
-}
-
-TEST_P(CanvasRenderingContext2DTestGLES2, ReleaseResourcesAfterPageTornDown) {
-  CreateContext(kNonOpaque);
-
-  ASSERT_TRUE(Context2D()->GetOrCreateCanvas2DResourceProvider());
-
-  // Invoking PrepareTransferableResource() has a precondition that a CC layer
-  // is present.
-  ASSERT_TRUE(CanvasElement().GetOrCreateCcLayerForCanvas2DIfNeeded());
-
-  Context2D()->fillRect(3, 3, 1, 1);
-
-  viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
-
-  // Resources aren't released if the canvas still uses them.
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
-                                                          &release_callback));
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
-  std::move(release_callback).Run(gpu::SyncToken(), /*is_lost=*/false);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
-
-  // Tearing down the page does not destroy unreleased resources.
-  CanvasElement().PrepareTransferableResource(&resource, &release_callback);
-  TearDownPage();
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
-
-  std::move(release_callback).Run(gpu::SyncToken(), /*is_lost=*/false);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 0u);
-  SharedGpuContext::Reset();
-}
-
-TEST_P(CanvasRenderingContext2DTestGLES2,
-       FallbackToSoftwareOnFailedTextureAlloc) {
-  CreateContext(kNonOpaque);
-  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-
-  // As no CanvasResourceProvider has yet been created, the host should default
-  // to the raster mode that has been set as preferred.
-  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-
-  // This will cause SkSurface_Gpu creation to fail.
-  SharedGpuContext::ContextProviderWrapper()
-      ->ContextProvider()
-      .GetGrContext()
-      ->abandonContext();
-
-  // Drawing to the canvas should cause a CanvasResourceProvider to be created.
-  // It is not possible to create a valid CanvasResourceProviderSharedImage
-  // instance without a GrContext as creating an SkSurface will fail, so the
-  // created provider should be unaccelerated (and hence downgrade the raster
-  // mode to CPU).
-  Context2D()->fillRect(3, 3, 1, 1);
-  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
-
-  // Without GPU rasterization, snapshots should not be texture-backed.
-  EXPECT_FALSE(Context2D()
-                   ->GetImage(FlushReason::kTesting)
-                   ->PaintImageForCurrentFrame()
-                   .IsTextureBacked());
-
-  // Verify that taking the snapshot did not alter the raster mode.
-  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
 }
 
 TEST_P(CanvasRenderingContext2DTest, FillRect_FullCoverage) {
