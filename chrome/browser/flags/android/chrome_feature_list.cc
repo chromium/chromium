@@ -844,7 +844,7 @@ BASE_FEATURE(kEdgeToEdgeBottomChin, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEdgeToEdgeMonitorConfigurations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEdgeToEdgeEverywhere, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEdgeToEdgeEverywhere, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEdgeToEdgeTablet, base::FEATURE_DISABLED_BY_DEFAULT);
 
