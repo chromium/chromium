@@ -73,7 +73,7 @@ export class ContextMenuEntrypointElement extends CrLitElement {
   protected addTabContext(e: Event) {
     e.stopPropagation();
 
-    const tabElement = e.target! as HTMLInputElement;
+    const tabElement = e.currentTarget! as HTMLInputElement;
     const tabId = Number(tabElement.dataset['id']);
     if (!tabId) {
       return;
