@@ -337,7 +337,6 @@ void WebAppProvider::Shutdown() {
   manifest_update_manager_->Shutdown();
   iwa_update_manager_->Shutdown();
   install_manager_->Shutdown();
-  isolated_web_app_policy_manager_->Shutdown();
   web_app_policy_manager_->Shutdown();
   icon_manager_->Shutdown();
   install_finalizer_->Shutdown();

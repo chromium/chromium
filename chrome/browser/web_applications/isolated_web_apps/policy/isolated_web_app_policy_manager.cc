@@ -76,10 +76,6 @@ constexpr net::BackoffEntry::Policy kInstallRetryBackoffPolicy = {
     .always_use_initial_delay = false,
 };
 
-constexpr int kIsolatedWebAppForceInstallMaxRetryTreshold = 2;
-constexpr base::TimeDelta kIsolatedWebAppForceInstallEmergencyDelay =
-    base::Hours(5);
-
 // Remove the install source from the already installed app, possibly
 // uninstalling it if no more sources are remaining.
 struct AppActionRemoveInstallSource {
@@ -118,6 +114,8 @@ struct AppActionInstall {
 
 using AppAction = std::variant<AppActionRemoveInstallSource, AppActionInstall>;
 using AppActions = base::flat_map<web_package::SignedWebBundleId, AppAction>;
+
+bool g_run_bundle_cleanup_without_delay_for_testing = false;
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool g_first_policy_processing_delay_recorded = false;
@@ -195,6 +193,11 @@ void IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
 }
 
 // static
+void IsolatedWebAppPolicyManager::RemoveDelayForBundleCleanupForTesting() {
+  g_run_bundle_cleanup_without_delay_for_testing = true;
+}
+
+// static
 std::vector<IsolatedWebAppExternalInstallOptions>
 IsolatedWebAppPolicyManager::GetIwaInstallForceList(const Profile& profile) {
   std::vector<IsolatedWebAppExternalInstallOptions> iwas_in_policy;
@@ -253,41 +256,13 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
 }
 
 void IsolatedWebAppPolicyManager::StartImpl() {
-  const int pending_inits_count = GetPendingInitCount();
-  SetPendingInitCount(pending_inits_count + 1);
-
-  if (pending_inits_count > 0) {
-    base::UmaHistogramCounts100(
-        "WebApp.Isolated.PolicyManager.PendingInitializations",
-        /*sample=*/pending_inits_count);
-  }
-
-  if (pending_inits_count <= kIsolatedWebAppForceInstallMaxRetryTreshold) {
-    ConfigureObserversOnSessionStart();
-    CleanupAndProcessPolicyOnSessionStart();
-  } else {
-    auto configure_observers = base::BindOnce(
-        &IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart,
-        weak_ptr_factory_.GetWeakPtr());
-    auto cleanup_and_process_policy = base::BindOnce(
-        &IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart,
-        weak_ptr_factory_.GetWeakPtr());
-
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        std::move(configure_observers)
-            .Then(std::move(cleanup_and_process_policy)),
-        kIsolatedWebAppForceInstallEmergencyDelay);
-  }
+  ConfigureObserversOnSessionStart();
+  CleanupAndProcessPolicyOnSessionStart();
 }
 
 void IsolatedWebAppPolicyManager::SetProvider(base::PassKey<WebAppProvider>,
                                               WebAppProvider& provider) {
   provider_ = &provider;
-}
-
-void IsolatedWebAppPolicyManager::Shutdown() {
-  SetPendingInitCount(0);
 }
 
 base::Value IsolatedWebAppPolicyManager::GetDebugValue() const {
@@ -324,10 +299,7 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
       "IsolatedWebAppPolicyManager::ProcessPolicy", AllAppsLockDescription(),
       base::BindOnce(&IsolatedWebAppPolicyManager::DoProcessPolicy,
                      weak_ptr_factory_.GetWeakPtr()),
-      /*on_complete=*/
-      initial_policy_processing_finished_cb_
-          ? std::move(initial_policy_processing_finished_cb_)
-          : base::DoNothing());
+      /*on_complete=*/base::DoNothing());
 }
 
 void IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart() {
@@ -342,33 +314,16 @@ void IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart() {
 }
 
 void IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart() {
-  base::RepeatingClosure finished_barrier = base::BarrierClosure(
-      /*num_closures=*/2u,
-      base::BindOnce(&IsolatedWebAppPolicyManager::SetPendingInitCount,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*pending_count=*/0));
-
-  initial_policy_processing_finished_cb_ = finished_barrier;
-  CleanupOrphanedBundles(/*finished_closure=*/finished_barrier);
   ProcessPolicy();
-}
-
-int IsolatedWebAppPolicyManager::GetPendingInitCount() {
-  PrefService& pref_service = CHECK_DEREF(profile_->GetPrefs());
-  if (!pref_service.HasPrefPath(
-          prefs::kIsolatedWebAppPendingInitializationCount)) {
-    pref_service.SetInteger(prefs::kIsolatedWebAppPendingInitializationCount,
-                            0);
+  if (g_run_bundle_cleanup_without_delay_for_testing) {
+    CleanupOrphanedBundles();
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&IsolatedWebAppPolicyManager::CleanupOrphanedBundles,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Minutes(1));
   }
-  return CHECK_DEREF(profile_->GetPrefs())
-      .GetUserPrefValue(prefs::kIsolatedWebAppPendingInitializationCount)
-      ->GetIfInt()
-      .value_or(0);
-}
-
-void IsolatedWebAppPolicyManager::SetPendingInitCount(int pending_count) {
-  profile_->GetPrefs()->SetInteger(
-      prefs::kIsolatedWebAppPendingInitializationCount, pending_count);
 }
 
 void IsolatedWebAppPolicyManager::DoProcessPolicy(
@@ -456,8 +411,9 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
     }
   }
 
-  for (const auto& [web_bundle_id, _] : installed_iwas) {
-    if (!base::Contains(apps_in_policy, web_bundle_id,
+  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
+    if (iwa.get().GetSources().Has(WebAppManagement::kIwaPolicy) &&
+        !base::Contains(apps_in_policy, web_bundle_id,
                         &IsolatedWebAppExternalInstallOptions::web_bundle_id)) {
       app_actions.emplace(web_bundle_id, AppActionRemoveInstallSource(
                                              WebAppManagement::kIwaPolicy));
@@ -479,10 +435,10 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
         const auto& [web_bundle_id, app_action] = entry;
         return base::Value::Dict()
             .Set("web_bundle_id", base::ToString(web_bundle_id))
-            .Set("action", std::visit(absl::Overload{[](const auto& action) {
-                                        return action.GetDebugValue();
-                                      }},
-                                      app_action));
+            .Set("action",
+                 std::visit(
+                     [](const auto& action) { return action.GetDebugValue(); },
+                     app_action));
       }));
   current_process_log_.Merge(debug_info.Clone());
 
@@ -597,13 +553,12 @@ void IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted(
                result.type() != IwaInstallerResultType::kErrorAppNotInAllowlist;
       });
 
-  if (any_app_needs_retry) {
-    install_retry_backoff_entry_.InformOfRequest(/*succeeded=*/false);
-    CleanupOrphanedBundles(/*finished_closure=*/base::DoNothing());
-  } else {
+  if (!any_app_needs_retry) {
     install_retry_backoff_entry_.Reset();
     return;
   }
+
+  install_retry_backoff_entry_.InformOfRequest(/*succeeded=*/false);
 
   // No retry needed if it was already scheduled --> Exit early.
   if (reprocess_policy_needed_) {
@@ -635,13 +590,8 @@ void IsolatedWebAppPolicyManager::OnPolicyProcessed() {
   }
 }
 
-void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
-    base::OnceClosure finished_closure) {
-  provider_->scheduler().CleanupOrphanedIsolatedApps(
-      base::IgnoreArgs<
-          base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
-                         CleanupOrphanedIsolatedWebAppsCommandError>>(
-          std::move(finished_closure)));
+void IsolatedWebAppPolicyManager::CleanupOrphanedBundles() {
+  provider_->scheduler().CleanupOrphanedIsolatedApps(base::DoNothing());
 }
 
 void IsolatedWebAppPolicyManager::OnPolicyChanged() {
@@ -653,6 +603,9 @@ void IsolatedWebAppPolicyManager::OnPolicyChanged() {
 
 void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
     bool is_preloaded) {
+  // We don't need to check `is_preloaded` here or route the processing through
+  // `OnComponentDataReady()` as the observer (this func) for the component data
+  // provider is only attached after the initial download check was completed.
   ProcessPolicy();
 }
 

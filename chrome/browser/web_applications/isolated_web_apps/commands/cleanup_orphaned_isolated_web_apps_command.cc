@@ -192,9 +192,12 @@ void CleanupOrphanedIsolatedWebAppsCommand::StartWithLock(
   lock_ = std::move(lock);
 
   const base::FilePath profile_dir = profile_->GetPath();
+  // Since this command is holding an AllAppsLock, it's undesirable to post
+  // low-prio background tasks with BEST_EFFORT; USER_VISIBLE feels like a
+  // better tradeoff.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&RetrieveAllIsolatedWebAppsDirectories, profile_dir),
       base::BindOnce(&CleanupOrphanedIsolatedWebAppsCommand::
@@ -215,6 +218,15 @@ void CleanupOrphanedIsolatedWebAppsCommand::
                               std::back_inserter(directories_to_delete));
 
   number_of_deleted_directories_ = directories_to_delete.size();
+  if (directories_to_delete.empty()) {
+    // Do not post a task if there's no job to do.
+    CommandComplete(/*success=*/true);
+    return;
+  }
+
+  // Since this command is holding an AllAppsLock, it's undesirable to post
+  // low-prio background tasks with BEST_EFFORT; USER_VISIBLE feels like a
+  // better tradeoff.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::MayBlock(),

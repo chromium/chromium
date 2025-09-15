@@ -11,7 +11,9 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
@@ -52,17 +54,16 @@ class IsolatedWebAppPolicyManager
 
   void Start(base::OnceClosure on_started_callback);
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
-  void Shutdown();
 
   base::Value GetDebugValue() const;
+
+  static void RemoveDelayForBundleCleanupForTesting();
 
  private:
   void StartImpl();
 
   void ConfigureObserversOnSessionStart();
   void CleanupAndProcessPolicyOnSessionStart();
-  int GetPendingInitCount();
-  void SetPendingInitCount(int pending_count);
   void ProcessPolicy();
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
   void OnPolicyProcessed();
@@ -84,7 +85,7 @@ class IsolatedWebAppPolicyManager
 
   void MaybeStartNextInstallTask();
 
-  void CleanupOrphanedBundles(base::OnceClosure finished_closure);
+  void CleanupOrphanedBundles();
 
   void OnPolicyChanged();
 
@@ -118,8 +119,6 @@ class IsolatedWebAppPolicyManager
   base::Value::Dict current_process_log_;
 
   net::BackoffEntry install_retry_backoff_entry_;
-
-  base::OnceClosure initial_policy_processing_finished_cb_;
 
   // We must execute install tasks in a queue, because each task uses a
   // `WebContents`, and installing an unbound number of apps in parallel would

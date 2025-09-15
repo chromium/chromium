@@ -733,7 +733,6 @@ class CleanupOrphanedBundlesTest
             /*is_user_session=*/GetParam()) {}
 
   void SetUpOnMainThread() override {
-    iwa_installer_factory_.SetUp(GetProfileForTest());
     IsolatedWebAppPolicyManagerAshBrowserTestBase::SetUpOnMainThread();
     profile_manager_observation_.Observe(g_browser_process->profile_manager());
   }
@@ -776,7 +775,6 @@ class CleanupOrphanedBundlesTest
   }
 
  protected:
-  TestIwaInstallerFactory iwa_installer_factory_;
   raw_ptr<Profile> last_simulate_orphaned_bundle_profile_ = nullptr;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
@@ -784,6 +782,8 @@ class CleanupOrphanedBundlesTest
 
 IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
                        CleanUpSuccessfulOnSessionStart) {
+  IsolatedWebAppPolicyManager::RemoveDelayForBundleCleanupForTesting();
+
   AddUser(/*set_iwa_policy_on_login=*/false);
 
   // Login to the session.
@@ -796,43 +796,6 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
   // Make sure we simulated the orphaned bundle for the profile we run the
   // cleanup command on.
   EXPECT_EQ(last_simulate_orphaned_bundle_profile_, profile);
-  EXPECT_FALSE(CheckBundleDirectoryExists(profile, kOrphanedBundleDirectory));
-}
-
-IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
-                       CleanUpSuccessfulOnFailedInstall) {
-  base::test::TestFuture<void> future;
-  iwa_installer_factory_.SetInstallCompletedClosure(
-      future.GetRepeatingCallback());
-
-  AddUser(/*set_iwa_policy_on_login=*/false);
-
-  // Login to the session.
-  ASSERT_NO_FATAL_FAILURE(StartLogin());
-  WaitForSessionStart();
-
-  Profile* const profile = GetProfileForTest();
-  WebAppCommandManager& command_manager = provider().command_manager();
-  command_manager.AwaitAllCommandsCompleteForTesting();
-
-  SimulateOrphanedBundle(profile, kOrphanedBundleDirectory);
-  ASSERT_TRUE(CheckBundleDirectoryExists(profile, kOrphanedBundleDirectory));
-
-  // Try to install an isolated web app, which should fail. This should trigger
-  // a cleanup.
-  iwa_installer_factory_.SetCommandBehavior(
-      kWebBundleId1.id(), /*execution_mode=*/
-      MockIwaInstallCommandWrapper::ExecutionMode::kSimulateFailure,
-      /*execute_immediately=*/true);
-  SetPolicyWithOneApp();
-  ASSERT_TRUE(future.Wait());
-
-  EXPECT_NE(provider().registrar_unsafe().GetInstallState(kAppId1),
-            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-
-  // Wait until the cleanup is done.
-  command_manager.AwaitAllCommandsCompleteForTesting();
-  EXPECT_EQ(0u, command_manager.GetCommandCountForTesting());
   EXPECT_FALSE(CheckBundleDirectoryExists(profile, kOrphanedBundleDirectory));
 }
 
