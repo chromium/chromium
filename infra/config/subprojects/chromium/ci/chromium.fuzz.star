@@ -122,6 +122,7 @@ def ci_builder(
         chromium_extra_apply_configs = [],
         gclient_apply_configs = None,
         use_component_build = False,
+        dcheck_always_on = False,
         clusterfuzz_archive = None,
         gn_extra_configs = [],
         console_category = None,
@@ -130,15 +131,18 @@ def ci_builder(
     gn_configs = ["remoteexec"] + gn_extra_configs
 
     if build_config == builder_config.build_config.DEBUG:
-        if use_component_build:
-            gn_configs.append("debug_builder")
-        else:
-            gn_configs.append("debug_static_builder")
+        gn_configs.append("debug")
+        gn_configs.append("minimal_symbols")
     elif build_config == builder_config.build_config.RELEASE:
-        if use_component_build:
-            gn_configs.append("release")
-        else:
-            gn_configs.append("release_builder")
+        gn_configs.append("release")
+
+    if use_component_build:
+        gn_configs.append("shared")
+    else:
+        gn_configs.append("static")
+
+    if dcheck_always_on:
+        gn_configs.append("dcheck_always_on")
 
     gn_configs.append(_arch_short_name(target_arch, target_bits))
 
@@ -227,7 +231,7 @@ def browser_asan_builder(
         **kwargs
     )
 
-def libfuzzer_builder(
+def fuzz_target_builder(
         name = None,
         test_builder_name = None,
         build_config = None,
@@ -236,6 +240,7 @@ def libfuzzer_builder(
         target_arch = None,
         swarming_mixins = None,
         builderless = True,
+        fuzzing_engine = None,
         sanitizer = None,
         branch_selector = None,
         max_concurrent_invocations = None,
@@ -252,12 +257,12 @@ def libfuzzer_builder(
         fail("Must specify at least one of name or test_builder_name.")
 
     gn_configs = [
-        "libfuzzer",
+        fuzzing_engine,
         "shared",
     ] + gn_extra_configs
 
     properties = {
-        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_bucket": "chromium-browser-" + fuzzing_engine,
         "upload_directory": clusterfuzz_archive_subdir or sanitizer,
     }
 
@@ -297,7 +302,7 @@ def libfuzzer_builder(
             # since the tests builder is not gardened.
             branch_selector = branch_selector,
             builderless = builderless,
-            console_category = "libfuzzer",
+            console_category = fuzzing_engine,
             properties = properties,
             **kwargs
         )
@@ -310,13 +315,13 @@ def libfuzzer_builder(
     expected_name = "-".join([
         _PLATFORM_SHORT_NAMES[target_platform],
         _arch_short_name(target_arch, target_bits),
-        "libfuzzer",
+        fuzzing_engine,
         sanitizer,
         _BUILD_CONFIG_SHORT_NAMES[build_config],
         "tests",
     ])
     if test_builder_name != expected_name:
-        fail("Unexpected libfuzzer test builder name: got " +
+        fail("Unexpected fuzz target test builder name: got " +
              test_builder_name + ", expected " + expected_name)
 
     ci_builder(
@@ -336,9 +341,12 @@ def libfuzzer_builder(
         # TODO(https://crbug.com/432407787): Add to a gardening rotation
         # once the bots are proven green enough.
         gardener_rotations = args.ignore_default(None),
-        console_category = "libfuzzer-tests",
+        console_category = fuzzing_engine + "-tests",
         **kwargs
     )
+
+def libfuzzer_builder(**kwargs):
+    return fuzz_target_builder(fuzzing_engine = "libfuzzer", **kwargs)
 
 def libfuzzer_linux_builder(
         # Allow overriding despite the name for ChromeOS and Android builder.
@@ -489,159 +497,68 @@ ci.builder(
     contact_team_email = "v8-infra@google.com",
 )
 
-ci.builder(
+def centipede_linux_asan_builder(
+        gn_extra_configs = [],
+        **kwargs):
+    return fuzz_target_builder(
+        build_config = builder_config.build_config.RELEASE,
+        target_bits = 64,
+        target_platform = builder_config.target_platform.LINUX,
+        contact_team_email = "chrome-fuzzing-core@google.com",
+        fuzzing_engine = "centipede",
+        sanitizer = "asan",
+        gn_extra_configs = [
+            "asan",
+            "optimize_for_fuzzing",
+            "disable_seed_corpus",
+        ] + gn_extra_configs,
+        **kwargs
+    )
+
+centipede_linux_asan_builder(
     name = "Centipede Upload Linux ASan",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    executable = "recipe:chromium/fuzz",
-    # Schedule more concurrent builds only on trunk to reduce blamelist sizes.
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ) if settings.is_main else None,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_clang",
-            apply_configs = [
-                "clobber",
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "centipede",
-            "asan",
-            "chromeos_codecs",
-            "pdf_xfa",
-            "optimize_for_fuzzing",
-            "shared",
-            "release",
-            "remoteexec",
-            "disable_seed_corpus",
-            "mojo_fuzzer",
-            "linux",
-            "x64",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "centipede",
-        short_name = "cent",
-    ),
-    contact_team_email = "chrome-fuzzing-core@google.com",
+    clusterfuzz_archive_name_prefix = "centipede",
+    console_short_name = "cent",
     execution_timeout = 4 * time.hour,
-    properties = {
-        "upload_bucket": "chromium-browser-centipede",
-        "upload_directory": "asan",
-        "archive_prefix": "centipede",
-    },
+    gn_extra_configs = [
+        "chromeos_codecs",
+        "pdf_xfa",
+        "mojo_fuzzer",
+    ],
+    # Schedule more concurrent builds only on trunk to reduce blamelist sizes.
+    max_concurrent_invocations = 4 if settings.is_main else None,
 )
 
-ci.builder(
+centipede_linux_asan_builder(
     name = "Centipede High End Upload Linux ASan",
     description_html = """This builder uploads centipede high end fuzzers.\
 Those fuzzers require more resources to run correctly.\
 """,
-    executable = "recipe:chromium/fuzz",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_clang",
-            apply_configs = [
-                "clobber",
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "centipede",
-            "asan",
-            "chromeos_codecs",
-            "pdf_xfa",
-            "optimize_for_fuzzing",
-            "shared",
-            "release",
-            "remoteexec",
-            "disable_seed_corpus",
-            "high_end_fuzzer_targets",
-            "linux",
-            "x64",
-            "mojo_fuzzer",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "centipede",
-        short_name = "cent high",
-    ),
-    contact_team_email = "chrome-fuzzing-core@google.com",
-    properties = {
-        "upload_bucket": "chromium-browser-centipede",
-        "upload_directory": "asan",
-        "archive_prefix": "centipede-high-end",
-    },
+    clusterfuzz_archive_name_prefix = "centipede-high-end",
+    console_short_name = "cent high",
+    gn_extra_configs = [
+        "chromeos_codecs",
+        "pdf_xfa",
+        "high_end_fuzzer_targets",
+        "mojo_fuzzer",
+    ],
+    max_concurrent_invocations = 4,
 )
 
-ci.builder(
+centipede_linux_asan_builder(
     name = "Centipede High End Upload Linux ASan DCheck",
     description_html = """This builder uploads centipede high end fuzzers \
 in release mode with dcheck_always_on.\
 """,
-    executable = "recipe:chromium/fuzz",
-    triggering_policy = scheduler.greedy_batching(),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_clang",
-            apply_configs = [
-                "clobber",
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
-            "centipede",
-            "disable_seed_corpus",
-            "high_end_fuzzer_targets",
-            "linux",
-            "optimize_for_fuzzing",
-            "release_with_dchecks",
-            "remoteexec",
-            "shared",
-            "x64",
-        ],
-    ),
     # TODO(crbug.com/399002817): add this to the gardener_rotations.
     gardener_rotations = args.ignore_default(None),
-    console_view_entry = consoles.console_view_entry(
-        category = "centipede",
-        short_name = "cent high dc",
-    ),
-    contact_team_email = "chrome-fuzzing-core@google.com",
-    properties = {
-        "upload_bucket": "chromium-browser-centipede",
-        "upload_directory": "asan",
-        "archive_prefix": "centipede-high-end-dcheck",
-    },
+    clusterfuzz_archive_name_prefix = "centipede-high-end-dcheck",
+    console_short_name = "cent high dc",
+    dcheck_always_on = True,
+    gn_extra_configs = [
+        "high_end_fuzzer_targets",
+    ],
 )
 
 def libfuzzer_linux_asan_high_end_builder(
