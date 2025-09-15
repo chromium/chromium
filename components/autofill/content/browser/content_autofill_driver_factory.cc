@@ -243,8 +243,8 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
                                   : AutofillDriver::LifecycleState::kInactive);
 }
 
-std::vector<AutofillDriver*> ContentAutofillDriverFactory::GetExistingDrivers(
-    base::PassKey<ScopedAutofillManagersObservation>) {
+std::vector<AutofillDriver*>
+ContentAutofillDriverFactory::GetExistingDrivers() {
   return base::ToVector(driver_map_, [](const auto& p) -> AutofillDriver* {
     return p.second.get();
   });

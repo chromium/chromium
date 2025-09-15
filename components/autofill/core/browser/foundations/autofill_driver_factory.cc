@@ -27,8 +27,7 @@ void AutofillDriverFactory::SetLifecycleStateAndNotifyObservers(
       old_state, new_state, /*pass_key=*/{});
 }
 
-std::vector<AutofillDriver*> AutofillDriverFactory::GetExistingDrivers(
-    base::PassKey<ScopedAutofillManagersObservation>) {
+std::vector<AutofillDriver*> AutofillDriverFactory::GetExistingDrivers() {
   return {};
 }
 

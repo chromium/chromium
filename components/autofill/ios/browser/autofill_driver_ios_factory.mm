@@ -149,8 +149,7 @@ AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
   return driver.get();
 }
 
-std::vector<AutofillDriver*> AutofillDriverIOSFactory::GetExistingDrivers(
-    base::PassKey<ScopedAutofillManagersObservation>) {
+std::vector<AutofillDriver*> AutofillDriverIOSFactory::GetExistingDrivers() {
   std::vector<AutofillDriver*> drivers;
   drivers.reserve(driver_map_.size());
   for (const auto& [frame_id, driver] : driver_map_) {

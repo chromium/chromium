@@ -33,10 +33,10 @@ void ScopedAutofillManagersObservation::Observe(
   factory_observation_.Observe(factory);
   switch (initialization_policy) {
     case InitializationPolicy::kExpectNoPreexistingManagers:
-      CHECK_EQ(factory->GetExistingDrivers({}).size(), 0u);
+      CHECK_EQ(factory->GetExistingDrivers().size(), 0u);
       break;
     case InitializationPolicy::kObservePreexistingManagers:
-      for (AutofillDriver* driver : factory->GetExistingDrivers({})) {
+      for (AutofillDriver* driver : factory->GetExistingDrivers()) {
         autofill_manager_observations_.AddObservation(
             &driver->GetAutofillManager());
       }
