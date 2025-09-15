@@ -30,7 +30,6 @@
 
 namespace views::test {
 
-using ui::test::internal::SpecifyElement;
 using GestureParams = InteractionTestUtilMouse::GestureParams;
 
 namespace {
@@ -114,7 +113,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
   RequireInteractiveTest();
   StepBuilder step;
   step.SetDescription("MoveMouseTo()");
-  SpecifyElement(step, reference);
+  step.SetElement(reference);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, RelativePositionCallback pos_callback,
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
@@ -176,7 +175,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
   RequireInteractiveTest();
   StepBuilder step;
   step.SetDescription("DragMouseTo()");
-  SpecifyElement(step, reference);
+  step.SetElement(reference);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, RelativePositionCallback pos_callback,
          bool release, ui::InteractionSequence* seq, ui::TrackedElement* el) {

@@ -40,7 +40,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::PressButton(
     InputType input_type) {
   StepBuilder builder;
   builder.SetDescription("PressButton()");
-  internal::SpecifyElement(builder, button);
+  builder.SetElement(button);
   builder.SetMustRemainVisible(false);
   builder.SetStartCallback(base::BindOnce(
       [](InputType input_type, InteractiveTestApi* test,
@@ -59,7 +59,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectMenuItem(
   RequireInteractiveTest();
   StepBuilder builder;
   builder.SetDescription("SelectMenuItem()");
-  internal::SpecifyElement(builder, menu_item);
+  builder.SetElement(menu_item);
   builder.SetMustRemainVisible(false);
   builder.SetStartCallback(base::BindOnce(
       [](InputType input_type, InteractiveTestApi* test,
@@ -77,7 +77,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::DoDefaultAction(
     InputType input_type) {
   StepBuilder builder;
   builder.SetDescription("DoDefaultAction()");
-  internal::SpecifyElement(builder, element);
+  builder.SetElement(element);
   builder.SetMustRemainVisible(false);
   builder.SetStartCallback(base::BindOnce(
       [](InputType input_type, InteractiveTestApi* test,
@@ -97,7 +97,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectTab(
     std::optional<size_t> expected_index_after_selection) {
   StepBuilder builder;
   builder.SetDescription(base::StringPrintf("SelectTab( %zu )", tab_index));
-  internal::SpecifyElement(builder, tab_collection);
+  builder.SetElement(tab_collection);
   builder.SetStartCallback(base::BindOnce(
       [](size_t index, InputType input_type,
          std::optional<size_t> expected_index_after_selection,
@@ -126,7 +126,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectDropdownItem(
 
   StepBuilder builder;
   builder.SetDescription(base::StringPrintf("SelectDropdownItem( %zu )", item));
-  internal::SpecifyElement(builder, collection);
+  builder.SetElement(collection);
   builder.SetStartCallback(base::BindOnce(
       [](size_t item, InputType input_type, InteractiveTestApi* test,
          InteractionSequence* seq, TrackedElement* el) {
@@ -145,7 +145,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::EnterText(
   StepBuilder builder;
   builder.SetDescription(base::StringPrintf("EnterText( \"%s\" )",
                                             base::UTF16ToUTF8(text).c_str()));
-  internal::SpecifyElement(builder, element);
+  builder.SetElement(element);
   builder.SetStartCallback(base::BindOnce(
       [](std::u16string text, TextEntryMode mode, InteractiveTestApi* test,
          InteractionSequence* seq, TrackedElement* el) {
@@ -162,7 +162,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::ActivateSurface(
   RequireInteractiveTest();
   StepBuilder builder;
   builder.SetDescription("ActivateSurface()");
-  internal::SpecifyElement(builder, element);
+  builder.SetElement(element);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveTestApi* test, InteractionSequence* seq,
          TrackedElement* el) {
@@ -178,7 +178,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::FocusElement(
   RequireInteractiveTest();
   StepBuilder builder;
   builder.SetDescription("FocusElement()");
-  internal::SpecifyElement(builder, element);
+  builder.SetElement(element);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveTestApi* test, InteractionSequence* seq,
          TrackedElement* el) {
@@ -197,7 +197,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::SendAccelerator(
   builder.SetDescription(base::StringPrintf(
       "SendAccelerator( %s )",
       base::UTF16ToUTF8(accelerator.GetShortcutText()).c_str()));
-  internal::SpecifyElement(builder, element);
+  builder.SetElement(element);
   builder.SetStartCallback(base::BindOnce(
       [](Accelerator accelerator, InteractiveTestApi* test,
          InteractionSequence* seq, TrackedElement* el) {
@@ -217,7 +217,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::SendKeyPress(
   std::ostringstream oss;
   oss << "SendKeyPress( " << key << ", " << flags << " )";
   builder.SetDescription(oss.str());
-  internal::SpecifyElement(builder, element);
+  builder.SetElement(element);
   builder.SetStartCallback(base::BindOnce(
       [](KeyboardCode key, int flags, InteractiveTestApi* test,
          InteractionSequence* seq, TrackedElement* el) {
@@ -235,7 +235,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::Confirm(
     ElementSpecifier element) {
   StepBuilder builder;
   builder.SetDescription("Confirm()");
-  internal::SpecifyElement(builder, element);
+  builder.SetElement(element);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveTestApi* test, InteractionSequence* seq,
          TrackedElement* el) {
@@ -270,7 +270,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForShow(
     bool transition_only_on_event) {
   StepBuilder step;
   step.SetDescription("WaitForShow()");
-  internal::SpecifyElement(step, element);
+  step.SetElement(element);
   step.SetTransitionOnlyOnEvent(transition_only_on_event);
   return step;
 }
@@ -281,7 +281,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForHide(
     bool transition_only_on_event) {
   StepBuilder step;
   step.SetDescription("WaitForHide()");
-  internal::SpecifyElement(step, element);
+  step.SetElement(element);
   step.SetType(InteractionSequence::StepType::kHidden);
   step.SetTransitionOnlyOnEvent(transition_only_on_event);
   return step;
@@ -294,7 +294,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForEvent(
   StepBuilder step;
   step.SetDescription(
       base::StringPrintf("WaitForEvent( %s )", event.GetName().c_str()));
-  internal::SpecifyElement(step, element);
+  step.SetElement(element);
   step.SetType(InteractionSequence::StepType::kCustomEvent, event);
   return step;
 }
@@ -522,15 +522,6 @@ void InteractiveTestApi::AddDescriptionPrefix(MultiStep& steps,
   for (auto& step : steps) {
     step.AddDescriptionPrefix(prefix);
   }
-}
-
-std::ostream& operator<<(std::ostream& os, internal::ElementSpecifier element) {
-  if (auto* id = std::get_if<ui::ElementIdentifier>(&element)) {
-    os << *id;
-  } else {
-    os << std::get<std::string_view>(element);
-  }
-  return os;
 }
 
 }  // namespace ui::test

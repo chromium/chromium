@@ -554,7 +554,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::NameViewRelative(
   StepBuilder builder;
   builder.SetDescription(
       base::StringPrintf("NameViewRelative( \"%s\" )", name.data()));
-  ui::test::internal::SpecifyElement(builder, relative_to);
+  builder.SetElement(relative_to);
   builder.SetMustBeVisibleAtStart(true);
   builder.SetStartCallback(base::BindOnce(
       [](base::OnceCallback<R*(V*)> find_callback, std::string name,
@@ -607,7 +607,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::WithView(
     F&& function) {
   StepBuilder builder;
   builder.SetDescription("WithView()");
-  ui::test::internal::SpecifyElement(builder, view);
+  builder.SetElement(view);
   builder.SetMustBeVisibleAtStart(true);
   builder.SetStartCallback(base::BindOnce(
       [](base::OnceCallback<void(V*)> function, ui::InteractionSequence* seq,
@@ -754,7 +754,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckView(
     M&& matcher) {
   StepBuilder builder;
   builder.SetDescription("CheckView()");
-  ui::test::internal::SpecifyElement(builder, view);
+  builder.SetElement(view);
   using MatcherType = ui::test::internal::MatcherTypeFor<R>;
   builder.SetStartCallback(base::BindOnce(
       [](base::OnceCallback<R(V*)> function,
@@ -780,7 +780,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckViewProperty(
     M&& matcher) {
   StepBuilder builder;
   builder.SetDescription("CheckViewProperty()");
-  ui::test::internal::SpecifyElement(builder, view);
+  builder.SetElement(view);
   using MatcherType = ui::test::internal::MatcherTypeFor<R>;
   builder.SetStartCallback(base::BindOnce(
       [](R (V::*property)() const, testing::Matcher<MatcherType> matcher,

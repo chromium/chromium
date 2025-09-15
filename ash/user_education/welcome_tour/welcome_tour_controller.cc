@@ -46,6 +46,7 @@
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_specifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -285,7 +286,7 @@ WelcomeTourController::GetTutorialDescription() const {
   // Wait for "Next" button click before proceeding to the next bubble step.
   // NOTE: This event step also ensures that the next bubble step will show on
   // the primary display by naming the primary root window's home button.
-  std::variant<ui::ElementIdentifier, std::string> current_element;
+  ui::ElementSpecifier current_element;
   if (features::IsWelcomeTourV3Enabled()) {
     current_element = kShelfViewElementId;
   } else {

@@ -29,6 +29,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_specifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
 namespace ui {
@@ -306,6 +307,14 @@ InteractionSequence::StepBuilder::StepBuilder(StepBuilder&& other) = default;
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::operator=(
     StepBuilder&& other) = default;
 InteractionSequence::StepBuilder::~StepBuilder() = default;
+
+InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetElement(
+    ElementSpecifier element_spec) {
+  DCHECK(element_spec);
+  step_->id = element_spec.identifier();
+  step_->element_name = element_spec.name();
+  return *this;
+}
 
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetElementID(ElementIdentifier element_id) {

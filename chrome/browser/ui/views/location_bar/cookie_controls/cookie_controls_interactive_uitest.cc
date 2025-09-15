@@ -130,7 +130,7 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
     std::string expected_name = icon.name;
     StepBuilder builder;
     builder.SetDescription("CheckIcon()");
-    ui::test::internal::SpecifyElement(builder, view);
+    builder.SetElement(view);
     builder.SetStartCallback(base::BindOnce(
         [](std::string expected_name, ui::InteractionSequence* sequence,
            ui::TrackedElement* element) {

@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_specifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
 namespace ui {
@@ -49,7 +50,7 @@ namespace ui {
 //      .SetCompletedCallback(base::BindOnce(...))
 //      .AddStep(InteractionSequence::WithInitialElement(initial_element))
 //      .AddStep(InteractionSequence::StepBuilder()
-//          .SetElementID(kDialogElementID)
+//          .SetElement(kDialogElementID)
 //          .SetType(StepType::kShown)
 //          .SetStartCallback(...)
 //          .Build())
@@ -385,13 +386,20 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
     StepBuilder(StepBuilder&& other);
     StepBuilder& operator=(StepBuilder&& other);
 
+    // Sets the identifier or name of the element to use for this step.
+    // `SetElement()` or equivalent is required for all step types except
+    // `kCustomEvent`.
+    StepBuilder& SetElement(ElementSpecifier element_specifier);
+
     // Sets the unique identifier for this step. Either this or
     // SetElementName() is required for all step types except kCustomEvent.
+    // DEPRECATED: use `SetElement()`.
     StepBuilder& SetElementID(ElementIdentifier element_id);
 
     // Sets the step to refer to a named element instead of an
     // ElementIdentifier. Either this or SetElementID() is required for all
     // step types other than kCustomEvent.
+    // DEPRECATED: use `SetElement()`.
     StepBuilder& SetElementName(std::string_view name);
 
     // Sets the context for the step; useful for setting up the initial

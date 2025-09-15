@@ -17,9 +17,6 @@
 
 namespace ui::test::internal {
 
-// Specifies an element either by ID or by name.
-using ElementSpecifier = std::variant<ElementIdentifier, std::string_view>;
-
 // Specifies a sequence of steps.
 using MultiStep = std::vector<InteractionSequence::StepBuilder>;
 
@@ -212,11 +209,6 @@ concept IsCheckCallback =
     internal::HasCompatibleSignature<F,
                                      R(const InteractionSequence*,
                                        const TrackedElement*)>;
-
-// Converts an ElementSpecifier to an element ID or name and sets it onto
-// `builder`.
-void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
-                    ElementSpecifier element);
 
 std::string DescribeElement(ElementSpecifier spec);
 

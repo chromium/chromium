@@ -144,7 +144,7 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::Screenshot(
     const std::string& baseline_cl) {
   StepBuilder builder;
   builder.SetDescription("Compare Screenshot");
-  ui::test::internal::SpecifyElement(builder, element);
+  builder.SetElement(element);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveBrowserTestApi* test, std::string screenshot_name,
          std::string baseline_cl, ui::InteractionSequence* seq,
@@ -169,7 +169,7 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::ScreenshotWebUi(
     const std::string& baseline_cl) {
   StepBuilder builder;
   builder.SetDescription("Compare WebUI Element Screenshot");
-  ui::test::internal::SpecifyElement(builder, element);
+  builder.SetElement(element);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveBrowserTestApi* test, std::string screenshot_name,
          std::string baseline_cl, const DeepQuery& where,
@@ -197,7 +197,7 @@ InteractiveBrowserTestApi::ScreenshotSurface(
     const std::string& baseline_cl) {
   StepBuilder builder;
   builder.SetDescription("Compare Surface Screenshot");
-  ui::test::internal::SpecifyElement(builder, element_in_surface);
+  builder.SetElement(element_in_surface);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveBrowserTestApi* test, std::string screenshot_name,
          std::string baseline_cl, ui::InteractionSequence* seq,
@@ -943,10 +943,10 @@ InteractiveBrowserTestApi::MaybeWaitForPaint(ElementSpecifier element) {
   //
   // WebContents are typically only referred to via their assigned IDs.
   // TODO(dfried): possibly handle (rare) cases where a name has been assigned.
-  if (!std::holds_alternative<ui::ElementIdentifier>(element)) {
+  if (!element.is_identifier()) {
     return MultiStep();
   }
-  const auto element_id = std::get<ui::ElementIdentifier>(element);
+  const auto element_id = element.identifier();
 
   // Do a `WaitForWebContentsPainted()`, but only if the ID has been assigned to
   // an instrumented `WebContents`.

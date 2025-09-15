@@ -17,6 +17,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/user_education_metadata.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_specifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
@@ -157,7 +158,7 @@ struct TutorialDescription {
   ~TutorialDescription();
 
   using ContextMode = ui::InteractionSequence::ContextMode;
-  using ElementSpecifier = std::variant<ui::ElementIdentifier, std::string>;
+  using ElementSpecifier = ui::ElementSpecifier;
 
   // Callback used to determine if the "then" branch of a conditional should be
   // followed. Note that `element` may be null if no matching element exists.
@@ -202,8 +203,9 @@ struct TutorialDescription {
       return *this;
     }
 
-    ui::ElementIdentifier element_id() const { return element_id_; }
-    std::string element_name() const { return element_name_; }
+    ui::ElementIdentifier element_id() const { return element_.identifier(); }
+    std::string_view element_name() const { return element_.name(); }
+    ElementSpecifier element() const { return element_; }
     ui::InteractionSequence::StepType step_type() const { return step_type_; }
     ui::CustomElementEventType event_type() const { return event_type_; }
     int title_text_id() const { return title_text_id_; }
@@ -237,18 +239,14 @@ struct TutorialDescription {
          ui::CustomElementEventType event_type = ui::CustomElementEventType());
 
     // The element used by interaction sequence to observe and attach a bubble.
-    ui::ElementIdentifier element_id_;
-
-    // The element, referred to by name, used by the interaction sequence
-    // to observe and potentially attach a bubble. must be non-empty.
-    std::string element_name_;
+    ElementSpecifier element_;
 
     // The step type for InteractionSequence::Step.
     ui::InteractionSequence::StepType step_type_ =
         ui::InteractionSequence::StepType::kShown;
 
     // The event type for the step if `step_type` is kCustomEvent.
-    ui::CustomElementEventType event_type_ = ui::CustomElementEventType();
+    ui::CustomElementEventType event_type_;
 
     // The title text to be populated in the bubble.
     int title_text_id_ = 0;

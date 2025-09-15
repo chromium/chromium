@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "ash/accelerators/accelerator_lookup.h"
@@ -138,20 +137,6 @@ MATCHER_P4(StringFUTF8Eq, message_id, sub1, sub2, sub3, "") {
   return Matches(l10n_util::GetStringFUTF8(message_id, sub1, sub2, sub3))(arg);
 }
 
-MATCHER_P(ElementSpecifierEq, element_specifier, "") {
-  return std::visit(absl::Overload{
-                        [&](const ui::ElementIdentifier& element_id) {
-                          return arg.element_id() == element_id &&
-                                 arg.element_name().empty();
-                        },
-                        [&](const std::string& element_name) {
-                          return arg.element_name() == element_name &&
-                                 arg.element_id() == ui::ElementIdentifier();
-                        },
-                    },
-                    element_specifier);
-}
-
 MATCHER_P6(BubbleStep,
            element_specifier,
            context_mode,
@@ -163,7 +148,7 @@ MATCHER_P6(BubbleStep,
   namespace util = user_education_util;
   const auto& ext_props = arg.extended_properties();
   return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode &&
          util::GetHelpBubbleId(ext_props) == help_bubble_id &&
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
@@ -186,7 +171,7 @@ MATCHER_P7(BubbleStep,
   namespace util = user_education_util;
   const auto& ext_props = arg.extended_properties();
   return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode &&
          util::GetHelpBubbleId(ext_props) == help_bubble_id &&
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
@@ -211,7 +196,7 @@ MATCHER_P8(BubbleStep,
   namespace util = user_education_util;
   const auto& ext_props = arg.extended_properties();
   return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode &&
          util::GetHelpBubbleId(ext_props) == help_bubble_id &&
          Matches(accessible_name_matcher)(
@@ -227,7 +212,7 @@ MATCHER_P8(BubbleStep,
 
 MATCHER_P2(HiddenStep, element_specifier, context_mode, "") {
   return arg.step_type() == ui::InteractionSequence::StepType::kHidden &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode;
 }
 
@@ -237,14 +222,14 @@ MATCHER_P3(EventStep,
            has_name_elements_callback,
            "") {
   return arg.step_type() == ui::InteractionSequence::StepType::kCustomEvent &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode &&
          arg.name_elements_callback().is_null() != has_name_elements_callback;
 }
 
 MATCHER_P2(ShownStep, element_specifier, context_mode, "") {
   return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode;
 }
 
