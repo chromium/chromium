@@ -2577,6 +2577,10 @@ enum class ToolbarKind {
   _notificationsOptInCoordinator = nil;
 }
 
+- (void)forceFullscreenMode {
+  _fullscreenController->EnterForceFullscreenMode(YES);
+}
+
 - (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
                        prefilledEmail:(NSString*)email {
   if (_signinCoordinator.viewWillPersist) {

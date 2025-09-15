@@ -262,6 +262,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 @property(nonatomic, strong) OverflowMenuAction* askBWGAction;
 
+@property(nonatomic, strong) OverflowMenuAction* hideToolbarsAction;
+
 @end
 
 @implementation OverflowMenuMediator
@@ -711,6 +713,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.AIPrototypeAction = [self openAIPrototypeAction];
   }
 
+  if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
+    self.hideToolbarsAction = [self collapseToolbars];
+  }
+
   if ([self isGeminiAvailable]) {
     self.askBWGAction = [self openAskBWGAction];
   }
@@ -878,6 +884,22 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                      handler:^{
                                        [weakSelf startAskBWG];
                                      }];
+}
+
+- (OverflowMenuAction*)collapseToolbars {
+  __weak __typeof(self) weakSelf = self;
+  return [self
+      createOverflowMenuActionWithName:l10n_util::GetNSString(
+                                           IDS_IOS_OVERFLOW_MENU_HIDE_TOOLBARS)
+                            actionType:overflow_menu::ActionType::HideToolbars
+                            symbolName:kExpandSymbol
+                          systemSymbol:YES
+                      monochromeSymbol:NO
+                       accessibilityID:kToolsMenuHideToolbars
+                          hideItemText:nil
+                               handler:^{
+                                 [weakSelf startCollapseToolbars];
+                               }];
 }
 
 - (OverflowMenuAction*)newReadLaterAction {
@@ -1519,6 +1541,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   if ([self isGeminiAvailable]) {
     self.askBWGAction.enabled = !_webState->IsLoading();
+  }
+
+  if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
+    self.hideToolbarsAction.enabled = YES;
   }
 }
 
@@ -2167,6 +2193,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   if (IsReaderModeAvailable()) {
     actions.push_back(overflow_menu::ActionType::ReaderMode);
   }
+  if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
+    actions.push_back(overflow_menu::ActionType::HideToolbars);
+  }
 
   return actions;
 }
@@ -2244,6 +2273,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.readerModeAction;
     case overflow_menu::ActionType::AskBWG:
       return self.askBWGAction;
+    case overflow_menu::ActionType::HideToolbars:
+      return self.hideToolbarsAction;
   }
 }
 
@@ -2290,6 +2321,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return [self toggleReaderModeAction];
     case overflow_menu::ActionType::AskBWG:
       return [self openAskBWGAction];
+    case overflow_menu::ActionType::HideToolbars:
+      return [self hideToolbarsAction];
   }
 }
 
@@ -2514,6 +2547,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)startAskBWG {
   [self dismissMenu];
   [self.BWGHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::OverflowMenu];
+}
+
+- (void)startCollapseToolbars {
+  [self dismissMenu];
+  [self.browserCoordinatorHandler forceFullscreenMode];
 }
 
 // Opens the "Set a reminder" screen for the user's current tab.

@@ -49,3 +49,4 @@ NSString* const kToolsMenuWhatsNewId = @"kToolsMenuWhatsNewId";
 NSString* const kToolsMenuPriceNotifications = @"kToolsMenuPriceNotifications";
 NSString* const kToolsMenuEditActionsId = @"kToolsMenuEditActionsId";
 NSString* const kToolsMenuOpenAskBWG = @"kToolsMenuOpenAskBWG";
+NSString* const kToolsMenuHideToolbars = @"kToolsMenuHideToolbars";

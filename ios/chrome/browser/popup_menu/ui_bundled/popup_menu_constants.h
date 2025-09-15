@@ -58,6 +58,8 @@ extern NSString* const kToolsMenuReadLater;
 extern NSString* const kToolsMenuAddToBookmarks;
 // Open Ask BWG item accessibility Identifier.
 extern NSString* const kToolsMenuOpenAskBWG;
+// Collapsed toolbars accessibility Identifier.
+extern NSString* const kToolsMenuHideToolbars;
 // Open lens overlay item accessibility Identifier.
 extern NSString* const kToolsMenuOpenLensOverlay;
 // Open ai prototype item accessibility Identifier.

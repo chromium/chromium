@@ -4231,6 +4231,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ITEM_ACCESSIBILITY_HINT" desc="Accessibility hint telling users what will happen if they take action on a shown item." meaning="[iOS only]">
         Hides this item
       </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_HIDE_TOOLBARS" desc="The text for the 'Hide Toolbars' button in the overflow menu to enter in fullscreen mode.">
+        Hide Toolbar
+      </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SHOW_ITEM_ACCESSIBILITY_HINT" desc="Accessibility hint telling users what will happen if they take action on a hidden item." meaning="[iOS only]">
         Shows this item
       </message>
