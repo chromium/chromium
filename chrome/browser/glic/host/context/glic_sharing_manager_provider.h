@@ -14,6 +14,12 @@ namespace glic {
 // implementation detail hidden from the consumer via this provider interface.
 class GlicSharingManagerProvider {
  public:
+  GlicSharingManagerProvider() = default;
+  virtual ~GlicSharingManagerProvider() = default;
+  GlicSharingManagerProvider(const GlicSharingManagerProvider&) = delete;
+  GlicSharingManagerProvider& operator=(const GlicSharingManagerProvider&) =
+      delete;
+
   virtual GlicSharingManager& sharing_manager() = 0;
 };
 

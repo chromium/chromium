@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "components/tabs/public/tab_interface.h"
@@ -29,7 +30,7 @@ class WebUIContentsContainer;
 
 // The host owns the WebUI that contains the main glic UI and the web client.
 // TODO(crbug.com/409332639): Better encapsulate details here.
-class Host {
+class Host : public GlicSharingManagerProvider {
  public:
   class Delegate {
    public:
@@ -103,9 +104,12 @@ class Host {
     virtual void ContextAccessIndicatorChanged(bool enabled) {}
   };
 
+  // When no sharing manager provider is supplied, GlicKeyedService is used.
   explicit Host(Profile* profile);
+  explicit Host(Profile* profile,
+                GlicSharingManagerProvider* sharing_manager_provider);
   Host(const Host&) = delete;
-  ~Host();
+  ~Host() override;
   Host& operator=(const Host&) = delete;
 
   void Initialize(Delegate* delegate);
@@ -125,6 +129,9 @@ class Host {
 
   // Signals the glic WebUI that the glic window will be shown soon.
   void NotifyWindowIntentToShow();
+
+  // GlicSharingManagerProvider Implementation.
+  GlicSharingManager& sharing_manager() override;
 
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   // Returns the WebUI web contents. May be null.
@@ -277,6 +284,8 @@ class Host {
   // Keep profile alive as long as the glic web contents. This object should be
   // destroyed when the profile needs to be destroyed.
   std::unique_ptr<WebUIContentsContainer> contents_;
+
+  raw_ptr<GlicSharingManagerProvider> sharing_manager_provider_;
 
   // The current view in the primary page handler.
   mojom::CurrentView primary_current_view_ = mojom::CurrentView::kConversation;

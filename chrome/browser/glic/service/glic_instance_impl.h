@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
@@ -35,7 +36,9 @@ class GlicUiEmbedder;
 // GlicUiEmbedder to display the webcontents in. An instance (and host) exist
 // even if it has no GlicUiEmbedder showing the UI. A host could have many
 // different GlicUiEmbedders during its lifetime.
-class GlicInstanceImpl : public GlicInstance, public Host::InstanceDelegate {
+class GlicInstanceImpl : public GlicInstance,
+                         public Host::InstanceDelegate,
+                         public GlicSharingManagerProvider {
  public:
   enum class EmbedderType {
     kSidePanel,
@@ -51,7 +54,6 @@ class GlicInstanceImpl : public GlicInstance, public Host::InstanceDelegate {
   };
 
   GlicInstanceImpl(Profile* profile,
-                   std::unique_ptr<Host> host,
                    InstanceId instance_id,
                    base::WeakPtr<AttachmentDelegate> attachment_delegate);
   ~GlicInstanceImpl() override;
@@ -60,6 +62,9 @@ class GlicInstanceImpl : public GlicInstance, public Host::InstanceDelegate {
   GlicInstanceImpl& operator=(const GlicInstanceImpl&) = delete;
 
   Profile* profile() { return profile_; }
+
+  // GlicSharingManagerProvider implementation.
+  GlicSharingManager& sharing_manager() override;
 
   void DisassociateWindow();
 

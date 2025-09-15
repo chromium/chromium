@@ -379,8 +379,7 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
   // TODO: Sync this id with the web client.
   InstanceId instance_id = base::Uuid::GenerateRandomV4();
   auto new_instance = std::make_unique<GlicInstanceImpl>(
-      profile_, std::make_unique<Host>(profile_), instance_id,
-      weak_ptr_factory_.GetWeakPtr());
+      profile_, instance_id, weak_ptr_factory_.GetWeakPtr());
   auto* instance_ptr = new_instance.get();
   instances_[instance_id] = std::move(new_instance);
   return instance_ptr;

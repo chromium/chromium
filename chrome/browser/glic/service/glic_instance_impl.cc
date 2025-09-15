@@ -11,6 +11,8 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
@@ -29,13 +31,12 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::EmbedderEntry::operator=(
 
 GlicInstanceImpl::GlicInstanceImpl(
     Profile* profile,
-    std::unique_ptr<Host> host,
     InstanceId instance_id,
     base::WeakPtr<AttachmentDelegate> attachment_delegate)
     : profile_(profile),
       attachment_delegate_(attachment_delegate),
       id_(instance_id),
-      host_(std::move(host)) {}
+      host_(std::make_unique<Host>(profile_, this)) {}
 
 GlicInstanceImpl::~GlicInstanceImpl() = default;
 
@@ -100,6 +101,12 @@ GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForTab(tabs::TabInterface* tab) {
     return it->second.embedder.get();
   }
   return nullptr;
+}
+
+GlicSharingManager& GlicInstanceImpl::sharing_manager() {
+  // TODO(b:444463509): allow for per-instance sharing manager instances.
+  return GlicKeyedServiceFactory::GetGlicKeyedService(profile_)
+      ->sharing_manager();
 }
 
 void GlicInstanceImpl::CloseInstanceAndShutdown() {

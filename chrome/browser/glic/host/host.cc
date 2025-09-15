@@ -11,11 +11,13 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom-data-view.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/tabs/public/tab_interface.h"
@@ -56,7 +58,14 @@ Host::PageHandlerInfo::PageHandlerInfo(PageHandlerInfo&&) = default;
 Host::PageHandlerInfo& Host::PageHandlerInfo::operator=(PageHandlerInfo&&) =
     default;
 
-Host::Host(Profile* profile) : profile_(profile) {}
+// When no sharing manager provider is injected, use the keyed service.
+Host::Host(Profile* profile)
+    : profile_(profile),
+      sharing_manager_provider_(
+          GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {}
+Host::Host(Profile* profile,
+           GlicSharingManagerProvider* sharing_manager_provider)
+    : profile_(profile), sharing_manager_provider_(sharing_manager_provider) {}
 Host::~Host() = default;
 
 void Host::Initialize(Delegate* delegate) {
@@ -136,6 +145,10 @@ void Host::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
 
 void Host::LoginPageCommitted(GlicPageHandler* page_handler) {
   observers_.Notify(&Observer::LoginPageCommitted);
+}
+
+GlicSharingManager& Host::sharing_manager() {
+  return sharing_manager_provider_->sharing_manager();
 }
 
 GlicKeyedService& Host::glic_service() {
