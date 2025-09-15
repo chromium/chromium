@@ -1230,6 +1230,7 @@ if (is_android) {
       ":chrome_junit_tests_helper",
       "//base:base_junit_test_support",
       "//base:holder_java",
+      "//chrome/browser/tab_group_suggestion:java",
     ]
   }
 

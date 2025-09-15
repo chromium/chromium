@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService.GroupCreationSource.GTS_SUGGESTION;
 
 import android.content.Context;
 
@@ -13,12 +14,16 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService;
+import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
@@ -190,6 +195,17 @@ public class TabGroupSuggestionMessageService extends MessageService<@MessageTyp
         if (!tabs.isEmpty()) {
             Tab tab = tabs.get(0);
             tabGroupModelFilter.mergeListOfTabsToGroup(tabs, tab, /* notify= */ true);
+
+            SuggestionMetricsService metricsService =
+                    SuggestionMetricsServiceFactory.getForProfile(tab.getProfile());
+            assert tab.getTabGroupId() != null;
+            assert metricsService != null;
+
+            @WindowId
+            int windowId =
+                    TabWindowManagerSingleton.getInstance()
+                            .findWindowIdForTabGroup(tab.getTabGroupId());
+            metricsService.onSuggestionAccepted(windowId, GTS_SUGGESTION, tab.getTabGroupId());
         }
 
         dismissMessage(CallbackUtils.emptyRunnable());

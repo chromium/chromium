@@ -4,15 +4,20 @@
 
 package org.chromium.chrome.browser.tab_group_suggestion.toolbar;
 
-import org.chromium.build.annotations.EnsuresNonNullIf;
+import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService.GroupCreationSource.CPA_SUGGESTION;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService;
+import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.visited_url_ranking.url_grouping.CachedSuggestions;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestion;
+import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestions;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
 import org.chromium.components.visited_url_ranking.url_grouping.UserResponse;
 import org.chromium.components.visited_url_ranking.url_grouping.UserResponseMetadata;
@@ -23,8 +28,19 @@ import java.util.List;
 @NullMarked
 public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsButtonController {
 
+    /** A data class used to associate a cached suggestion to a window. */
+    private static class WindowedSuggestion {
+        public final @WindowId int windowId;
+        public final CachedSuggestions cachedSuggestions;
+
+        WindowedSuggestion(@WindowId int windowId, CachedSuggestions cachedSuggestions) {
+            this.windowId = windowId;
+            this.cachedSuggestions = cachedSuggestions;
+        }
+    }
+
     private final GroupSuggestionsService mGroupSuggestionsService;
-    private @Nullable CachedSuggestions mCachedSuggestions;
+    private @Nullable WindowedSuggestion mWindowedSuggestion;
     private boolean mWasCachedSuggestionShown;
 
     public GroupSuggestionsButtonControllerImpl(GroupSuggestionsService groupSuggestionsService) {
@@ -33,12 +49,11 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
 
     @Override
     public boolean shouldShowButton(Tab tab, @WindowId int windowId) {
-        if (mCachedSuggestions != null) {
+        if (mWindowedSuggestion != null) {
             clearCachedSuggestion(UserResponse.NOT_SHOWN);
         }
 
-        mCachedSuggestions = mGroupSuggestionsService.getCachedSuggestions(windowId);
-
+        mWindowedSuggestion = initWindowedSuggestion(windowId);
         boolean suggestionIncludesTab = isSuggestionValidForTab(tab);
 
         if (!suggestionIncludesTab) {
@@ -93,6 +108,15 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
                 TabModelUtils.getTabsById(tabIdList, tabModel, /* allowClosing= */ false);
         tabGroupModelFilter.mergeListOfTabsToGroup(tabsToGroup, tab, /* notify= */ true);
 
+        SuggestionMetricsService metricsService =
+                SuggestionMetricsServiceFactory.getForProfile(tab.getProfile());
+        assert tab.getTabGroupId() != null;
+        assert metricsService != null;
+        assert mWindowedSuggestion != null;
+
+        metricsService.onSuggestionAccepted(
+                mWindowedSuggestion.windowId, CPA_SUGGESTION, tab.getTabGroupId());
+
         clearCachedSuggestion(UserResponse.ACCEPTED);
     }
 
@@ -104,17 +128,17 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
         var suggestionsList = getGroupSuggestionList();
         var suggestionId = suggestionsList.isEmpty() ? 0 : suggestionsList.get(0).suggestionId;
 
-        mCachedSuggestions.userResponseMetadataCallback.onResult(
-                new UserResponseMetadata(suggestionId, userResponse));
-        mCachedSuggestions = null;
+        assumeNonNull(mWindowedSuggestion)
+                .cachedSuggestions
+                .userResponseMetadataCallback
+                .onResult(new UserResponseMetadata(suggestionId, userResponse));
+        mWindowedSuggestion = null;
         mWasCachedSuggestionShown = false;
     }
 
-    @EnsuresNonNullIf("mCachedSuggestions")
     private boolean isSuggestionValid() {
-        return mCachedSuggestions != null
-                && mCachedSuggestions.groupSuggestions != null
-                && mCachedSuggestions.groupSuggestions.groupSuggestions != null;
+        GroupSuggestions groupSuggestions = getGroupSuggestions(mWindowedSuggestion);
+        return groupSuggestions != null && groupSuggestions.groupSuggestions != null;
     }
 
     private boolean isSuggestionValidForTab(Tab tab) {
@@ -135,13 +159,18 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
     }
 
     private List<GroupSuggestion> getGroupSuggestionList() {
-        if (mCachedSuggestions == null
-                || mCachedSuggestions.groupSuggestions == null
-                || mCachedSuggestions.groupSuggestions.groupSuggestions == null) {
+        GroupSuggestions groupSuggestions = getGroupSuggestions(mWindowedSuggestion);
+        if (groupSuggestions == null || groupSuggestions.groupSuggestions == null) {
             return List.of();
         }
 
-        return mCachedSuggestions.groupSuggestions.groupSuggestions;
+        return groupSuggestions.groupSuggestions;
+    }
+
+    private static @Nullable GroupSuggestions getGroupSuggestions(
+            @Nullable WindowedSuggestion windowedSuggestion) {
+        if (windowedSuggestion == null) return null;
+        return windowedSuggestion.cachedSuggestions.groupSuggestions;
     }
 
     private int @Nullable [] getTabGroupListForTab(Tab tab) {
@@ -163,8 +192,17 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
 
     @Override
     public void destroy() {
-        if (mCachedSuggestions == null) return;
-        mCachedSuggestions.userResponseMetadataCallback.destroy();
-        mCachedSuggestions = null;
+        if (mWindowedSuggestion == null) return;
+
+        mWindowedSuggestion.cachedSuggestions.userResponseMetadataCallback.destroy();
+        mWindowedSuggestion = null;
+    }
+
+    private @Nullable WindowedSuggestion initWindowedSuggestion(@WindowId int windowId) {
+        CachedSuggestions cachedSuggestions =
+                mGroupSuggestionsService.getCachedSuggestions(windowId);
+        if (cachedSuggestions == null) return null;
+
+        return new WindowedSuggestion(windowId, cachedSuggestions);
     }
 }

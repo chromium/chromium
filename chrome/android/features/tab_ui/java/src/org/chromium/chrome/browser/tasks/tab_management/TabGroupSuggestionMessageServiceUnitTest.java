@@ -35,10 +35,15 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService;
+import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService.GroupCreationSource;
+import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -68,10 +73,12 @@ public class TabGroupSuggestionMessageServiceUnitTest {
     @Mock private Context mContext;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
+    @Mock private Profile mProfile;
     @Mock private Callback<@TabId Integer> mAddOnMessageAfterTabCallback;
     @Mock private Runnable mOnDismissMessageListener;
     @Mock private SuggestionLifecycleObserver mSuggestionLifecycleObserver;
     @Mock private StartMergeAnimation mStartMergeAnimation;
+    @Mock private SuggestionMetricsService mSuggestionMetricsService;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
@@ -83,6 +90,8 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
     @Before
     public void setUp() {
+        SuggestionMetricsServiceFactory.setForTesting(mSuggestionMetricsService);
+
         ObservableSupplierImpl<TabGroupModelFilter> tabGroupModelFilterSupplier =
                 new ObservableSupplierImpl<>(mTabGroupModelFilter);
         mTabGroupSuggestionMessageService =
@@ -121,6 +130,11 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         when(mTabModel.indexOf(mTab2)).thenReturn(TAB2_INDEX);
         when(mTabModel.indexOf(mTab3)).thenReturn(TAB3_INDEX);
         when(mTabModel.indexOf(mTab4)).thenReturn(TAB4_INDEX);
+
+        when(mTab1.getProfile()).thenReturn(mProfile);
+        when(mTab2.getProfile()).thenReturn(mProfile);
+        when(mTab3.getProfile()).thenReturn(mProfile);
+        when(mTab4.getProfile()).thenReturn(mProfile);
     }
 
     @Test
@@ -198,6 +212,8 @@ public class TabGroupSuggestionMessageServiceUnitTest {
     public void testGroupTabsAction() {
         List<Integer> tabIds = List.of(TAB1_ID, TAB2_ID);
         List<Tab> tabs = List.of(mTab1, mTab2);
+        Token tabGroupId = new Token(1L, 2L);
+        when(mTab1.getTabGroupId()).thenReturn(tabGroupId);
 
         mTabGroupSuggestionMessageService.addGroupMessageForTabs(
                 tabIds, mSuggestionLifecycleObserver);
@@ -212,6 +228,9 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         verify(mSuggestionLifecycleObserver).onSuggestionAccepted();
         verify(mTabGroupModelFilter).mergeListOfTabsToGroup(tabs, mTab1, true);
         verify(mTabGroupSuggestionMessageService).dismissMessage(any());
+        verify(mSuggestionMetricsService)
+                .onSuggestionAccepted(
+                        anyInt(), eq(GroupCreationSource.GTS_SUGGESTION), eq(tabGroupId));
     }
 
     @Test
@@ -288,6 +307,15 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                 .start(eq(TAB1_ID), eq(shiftedTabIds), onAnimationEndCaptor.capture());
         verify(mTabGroupSuggestionMessageService, never()).dismissMessage(any());
         verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyBoolean());
+
+        // Simulate tab group ID being set.
+        doAnswer(
+                        ignored -> {
+                            when(mTab1.getTabGroupId()).thenReturn(Token.createRandom());
+                            return null;
+                        })
+                .when(mTabGroupModelFilter)
+                .mergeListOfTabsToGroup(tabs, mTab1, true);
 
         // Simulate animation end.
         onAnimationEndCaptor.getValue().run();
