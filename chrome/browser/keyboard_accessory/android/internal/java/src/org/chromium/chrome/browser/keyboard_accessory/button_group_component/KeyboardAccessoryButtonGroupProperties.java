@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -13,6 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * These properties are used to describe a model for the tab layout component as used in the
  * keyboard accessory. The properties are describing all known tabs.
  */
+@NullMarked
 class KeyboardAccessoryButtonGroupProperties {
     static final ReadableObjectPropertyKey<ListModel<KeyboardAccessoryData.Tab>> TABS =
             new ReadableObjectPropertyKey<>("tabs");

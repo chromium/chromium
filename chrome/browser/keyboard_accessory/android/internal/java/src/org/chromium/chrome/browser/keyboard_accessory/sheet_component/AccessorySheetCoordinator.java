@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +15,8 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -33,6 +34,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * the ManualFillingCoordinator (e.g. add a tab to trigger the sheet). to the {@link
  * AccessorySheetMediator}.
  */
+@NullMarked
 public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvider {
     private final AccessorySheetMediator mMediator;
 
@@ -44,6 +46,7 @@ public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvi
     public interface SheetVisibilityDelegate {
         /**
          * Is triggered when a tab in the accessory was selected and the sheet needs to change.
+         *
          * @param sheetIndex The index of the selected sheet in the sheet openers / tab bar.
          */
         void onChangeAccessorySheet(int sheetIndex);
@@ -111,15 +114,16 @@ public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvi
 
     /**
      * Returns a {@link KeyboardAccessoryData.Tab} object that is used to display this bottom sheet.
+     *
      * @return Returns a {@link KeyboardAccessoryData.Tab}.
      */
-    @Nullable
-    public KeyboardAccessoryData.Tab getTab() {
+    public KeyboardAccessoryData.@Nullable Tab getTab() {
         return mMediator.getTab();
     }
 
     /**
      * Sets the height of the accessory sheet (i.e. adapts to keyboard heights).
+     *
      * @param height The height of the sheet in pixels.
      */
     public void setHeight(@Px int height) {
@@ -128,6 +132,7 @@ public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvi
 
     /**
      * Gets the height of the accessory sheet (even if not visible).
+     *
      * @return The height of the sheet in pixels.
      */
     public @Px int getHeight() {
@@ -148,6 +153,7 @@ public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvi
 
     /**
      * Returns whether the accessory sheet is currently visible.
+     *
      * @return True, if the accessory sheet is visible.
      */
     public boolean isShown() {
@@ -156,6 +162,7 @@ public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvi
 
     /**
      * Calling this function changes the active tab to the tab at the given |position|.
+     *
      * @param position The index of the tab (starting with 0) that should be set active.
      */
     public void setActiveTab(int position) {

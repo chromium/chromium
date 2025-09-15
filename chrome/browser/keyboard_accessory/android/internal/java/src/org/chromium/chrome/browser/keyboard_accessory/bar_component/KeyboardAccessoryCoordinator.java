@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getValuableIcon;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
@@ -13,7 +14,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
@@ -21,6 +21,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -58,13 +61,14 @@ import java.util.function.Supplier;
  * the controller but will mainly forward events (like adding a tab, or showing the accessory) to
  * the {@link KeyboardAccessoryMediator}.
  */
+@NullMarked
 public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStateProvider {
     private final KeyboardAccessoryMediator mMediator;
     private final KeyboardAccessoryButtonGroupCoordinator mButtonGroup;
     private final PropertyModel mModel;
-    private KeyboardAccessoryView mView;
+    private @MonotonicNonNull KeyboardAccessoryView mView;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private EdgeToEdgePadObserver mEdgeToEdgePadObserver;
+    private @MonotonicNonNull EdgeToEdgePadObserver mEdgeToEdgePadObserver;
 
     /**
      * The interface to notify consumers about keyboard accessories visibility. E.g: the animation
@@ -86,6 +90,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         /**
          * A {@link KeyboardAccessoryData.Tab} passed into this function will be represented as item
          * at the start of the tab layout. It is meant to trigger various bottom sheets.
+         *
          * @param tab The tab which contains representation data of a bottom sheet.
          */
         void addTab(KeyboardAccessoryData.Tab tab);
@@ -93,12 +98,14 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         /**
          * The {@link KeyboardAccessoryData.Tab} passed into this function will be completely
          * removed from the tab layout.
+         *
          * @param tab The tab to be removed.
          */
         void removeTab(KeyboardAccessoryData.Tab tab);
 
         /**
          * Clears all currently known tabs and adds the given tabs as replacement.
+         *
          * @param tabs An array of {@link KeyboardAccessoryData.Tab}s.
          */
         void setTabs(KeyboardAccessoryData.Tab[] tabs);
@@ -108,6 +115,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
 
         /**
          * Set the currently active tab to the given tabType.
+         *
          * @param tabType The type of the tab that should be selected.
          */
         void setActiveTab(@AccessoryTabType int tabType);
@@ -115,13 +123,14 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         /**
          * Returns whether active tab or null if no tab is currently active. The returned property
          * reflects the latest change while the view might still be in progress of being updated.
+         *
          * @return The active {@link KeyboardAccessoryData.Tab}, null otherwise.
          */
-        @Nullable
-        KeyboardAccessoryData.Tab getActiveTab();
+        KeyboardAccessoryData.@Nullable Tab getActiveTab();
 
         /**
          * Returns whether the model holds any tabs.
+         *
          * @return True if there is at least one tab, false otherwise.
          */
         boolean hasTabs();
@@ -240,20 +249,23 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     static KeyboardAccessoryViewBinder.UiConfiguration createUiConfiguration(
             Context context, AutofillImageFetcher imageFetcher) {
         KeyboardAccessoryViewBinder.UiConfiguration uiConfiguration =
-                new KeyboardAccessoryViewBinder.UiConfiguration();
-        uiConfiguration.suggestionDrawableFunction =
-                (suggestion) -> getSuggestionIcon(context, imageFetcher, suggestion);
+                new KeyboardAccessoryViewBinder.UiConfiguration(
+                        /* suggestionDrawableFunction= */ (suggestion) ->
+                                getSuggestionIcon(context, imageFetcher, suggestion));
 
         return uiConfiguration;
     }
 
     private static @Nullable Drawable getSuggestionIcon(
-            Context context, AutofillImageFetcher imageFetcher, AutofillSuggestion suggestion) {
+            Context context,
+            AutofillImageFetcher imageFetcher,
+            @Nullable AutofillSuggestion suggestion) {
+        if (suggestion == null) return null;
         if (suggestion.getSuggestionType() == SuggestionType.LOYALTY_CARD_ENTRY) {
             return getValuableIcon(
                     context,
                     imageFetcher,
-                    suggestion.getCustomIconUrl(),
+                    assumeNonNull(suggestion.getCustomIconUrl()),
                     ImageSize.SMALL,
                     suggestion.getSublabel());
         }
@@ -305,10 +317,10 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     }
 
     /**
-     * Allows any {@link Provider} to communicate with the
-     * {@link KeyboardAccessoryMediator} of this component.
+     * Allows any {@link Provider} to communicate with the {@link KeyboardAccessoryMediator} of this
+     * component.
      *
-     * Note that the provided actions are removed when the accessory is hidden.
+     * <p>Note that the provided actions are removed when the accessory is hidden.
      *
      * @param provider The object providing action lists to observers in this component.
      */
@@ -394,6 +406,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     /**
      * This method returns whether the accessory has any contents that justify showing it. A single
      * tab, action or suggestion chip would already mean it is not empty.
+     *
      * @return False if there is any content to be shown. True otherwise.
      */
     public boolean empty() {
@@ -403,6 +416,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     /**
      * Returns whether the active tab is non-null. The returned property reflects the latest change
      * while the view might still be in progress of being updated accordingly.
+     *
      * @return True if the accessory is visible and has an active tab, false otherwise.
      */
     public boolean hasActiveTab() {
