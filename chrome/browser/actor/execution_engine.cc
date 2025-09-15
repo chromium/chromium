@@ -339,6 +339,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
                   JournalDetailsBuilder()
                       .AddError("Acting after cross-origin navigation occurred")
                       .Build());
+    FailedOnTabBeforeToolCreation();
     CompleteActions(MakeResult(mojom::ActionResultCode::kCrossOriginNavigation,
                                "Acting after cross-origin navigation occurred"),
                     next_action_index_);
@@ -350,6 +351,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
         GetNextAction().GetURLForJournal(), task_id,
         mojom::JournalTrack::kActor, "Act Failed",
         JournalDetailsBuilder().AddError("URL blocked for actions").Build());
+    FailedOnTabBeforeToolCreation();
     CompleteActions(MakeResult(mojom::ActionResultCode::kUrlBlocked,
                                "URL blocked for actions"),
                     next_action_index_);
@@ -357,6 +359,17 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   }
 
   ExecuteNextAction();
+}
+
+void ExecutionEngine::FailedOnTabBeforeToolCreation() {
+  tabs::TabHandle tab = GetNextAction().GetTabHandle();
+  journal_->Log(GetNextAction().GetURLForJournal(), task_->id(),
+                mojom::JournalTrack::kActor, "Act Failed",
+                JournalDetailsBuilder()
+                    .Add("tabId", tab.raw_value())
+                    .AddError("Associating tab for failed action")
+                    .Build());
+  task_->AddTab(tab, base::DoNothing());
 }
 
 void ExecutionEngine::ExecuteNextAction() {
