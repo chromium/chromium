@@ -68,6 +68,16 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
     });
   }
 
+  sendUploadCompleted(): void {
+    this.sendSaveToDriveProgress({
+      status: SaveToDriveStatus.UPLOAD_COMPLETED,
+      errorType: SaveToDriveErrorType.NO_ERROR,
+      driveItemId: 'test-drive-item-id',
+      parentFolderName: 'test-parent-folder-name',
+      fileName: 'save_to_drive_test.pdf',
+    });
+  }
+
   sendUninitializedState(): void {
     this.sendSaveToDriveProgress({
       status: SaveToDriveStatus.NOT_STARTED,
@@ -207,6 +217,38 @@ const tests = [
     chrome.test.assertEq(args, null);
 
     chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
+
+    chrome.test.succeed();
+  },
+
+  async function testSaveToDriveBubbleUploadCompletedAndOpenInDriveClick() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+
+    // Set upload completed state and open the bubble.
+    privateProxy.sendUploadCompleted();
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+    controls.$.save.click();
+    await microtasksFinished();
+
+    const description = getRequiredElement(bubble, '#description');
+    chrome.test.assertTrue(!!description.textContent);
+    chrome.test.assertEq(
+        'Saved to your test-parent-folder-name folder',
+        description.textContent.trim());
+
+    const button = bubble.shadowRoot.querySelector<HTMLButtonElement>(
+        '#open-in-drive-button')!;
+    chrome.test.assertTrue(!!button);
+
+    // TODO(crbug.com/427451594): Write tests for clicking on the open in Drive
+    // button once it is hooked up to open the Drive URL.
+
+    // Resetting the bubble open state for the next test.
+    bubble.$.dialog.close();
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
 
     chrome.test.succeed();
   },

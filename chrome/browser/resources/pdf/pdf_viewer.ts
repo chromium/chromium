@@ -83,6 +83,7 @@ import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents, verifyPdfHe
 const SaveToDriveErrorType = chrome.pdfViewerPrivate.SaveToDriveErrorType;
 const SaveToDriveStatus = chrome.pdfViewerPrivate.SaveToDriveStatus;
 type SaveToDriveProgress = chrome.pdfViewerPrivate.SaveToDriveProgress;
+type SaveToDriveStatus = chrome.pdfViewerPrivate.SaveToDriveStatus;
 // </if> enable_pdf_save_to_drive
 const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
@@ -162,18 +163,27 @@ const BACKGROUND_COLOR: number = 0xff282828;
 // clang-format on
 
 // <if expr="enable_pdf_save_to_drive">
+function convertNoErrorStatusToSaveToDriveState(status: SaveToDriveStatus):
+    SaveToDriveState {
+  switch (status) {
+    case SaveToDriveStatus.INITIATED:
+    case SaveToDriveStatus.FETCH_OAUTH:
+    case SaveToDriveStatus.FETCH_PARENT_FOLDER:
+    case SaveToDriveStatus.UPLOAD_STARTED:
+    case SaveToDriveStatus.UPLOAD_IN_PROGRESS:
+      return SaveToDriveState.UPLOADING;
+    case SaveToDriveStatus.UPLOAD_COMPLETED:
+      return SaveToDriveState.SUCCESS;
+    default:
+      return SaveToDriveState.UNINITIALIZED;
+  }
+}
+
 function convertSaveToDriveProgressToSaveToDriveState(
     progress: SaveToDriveProgress): SaveToDriveState {
   switch (progress.errorType) {
     case SaveToDriveErrorType.NO_ERROR:
-      if (progress.status === SaveToDriveStatus.INITIATED ||
-          progress.status === SaveToDriveStatus.FETCH_OAUTH ||
-          progress.status === SaveToDriveStatus.FETCH_PARENT_FOLDER ||
-          progress.status === SaveToDriveStatus.UPLOAD_STARTED ||
-          progress.status === SaveToDriveStatus.UPLOAD_IN_PROGRESS) {
-        return SaveToDriveState.UPLOADING;
-      }
-      return SaveToDriveState.UNINITIALIZED;
+      return convertNoErrorStatusToSaveToDriveState(progress.status);
     case SaveToDriveErrorType.UNKNOWN_ERROR:
       return SaveToDriveState.UNKNOWN_ERROR;
     case SaveToDriveErrorType.QUOTA_EXCEEDED:
