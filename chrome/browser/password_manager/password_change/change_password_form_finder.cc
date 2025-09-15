@@ -203,6 +203,7 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
     return;
   }
 
+  form_waiter_.reset();
   click_helper_ = std::make_unique<ButtonClickHelper>(
       web_contents_, client_, dom_node_id,
       base::BindOnce(&ChangePasswordFormFinder::OnButtonClicked,

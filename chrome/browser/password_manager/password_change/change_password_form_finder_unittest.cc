@@ -511,13 +511,16 @@ TEST_F(ChangePasswordFormFinderTest,
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
-  EXPECT_TRUE(form_finder->click_helper());
+  ASSERT_TRUE(form_finder->click_helper());
+  EXPECT_FALSE(form_finder->form_waiter());
 
   // Still waiting for the click helper to respond.
   EXPECT_FALSE(completion_callback.IsReady());
   form_finder->click_helper()->SimulateClickResult(/*result=*/true);
+
   EXPECT_FALSE(form_finder->click_helper());
 
+  ASSERT_TRUE(form_finder->form_waiter());
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder->form_waiter())
       ->OnPasswordFormParsed(form_manager.get());
