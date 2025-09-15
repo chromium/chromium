@@ -43,8 +43,6 @@ void BackForwardCacheDisablingFeatureTracker::Reset() {
   }
 
   back_forward_cache_disabling_feature_counts_.clear();
-  back_forward_cache_disabling_features_.reset();
-  last_uploaded_bfcache_disabling_features_ = 0;
   non_sticky_features_and_js_locations_.Clear();
   sticky_features_and_js_locations_.Clear();
   last_reported_non_sticky_.Clear();
@@ -53,8 +51,12 @@ void BackForwardCacheDisablingFeatureTracker::Reset() {
 
 void BackForwardCacheDisablingFeatureTracker::AddFeatureInternal(
     SchedulingPolicy::Feature feature) {
-  ++back_forward_cache_disabling_feature_counts_[feature];
-  back_forward_cache_disabling_features_.set(static_cast<size_t>(feature));
+  if (back_forward_cache_disabling_feature_counts_[feature]++ == 0) {
+    auto track = GetTrackForFeature(feature);
+    TRACE_EVENT_BEGIN(
+        "renderer.scheduler",
+        perfetto::StaticString(FeatureToHumanReadableString(feature)), track);
+  }
   opted_out_from_back_forward_cache_ = true;
 
   NotifyDelegateAboutFeaturesAfterCurrentTask(
@@ -105,8 +107,8 @@ void BackForwardCacheDisablingFeatureTracker::Remove(
   DCHECK_GT(back_forward_cache_disabling_feature_counts_[feature], 0);
   auto it = back_forward_cache_disabling_feature_counts_.find(feature);
   if (it->second == 1) {
+    TRACE_EVENT_END("renderer.scheduler", GetTrackForFeature(feature));
     back_forward_cache_disabling_feature_counts_.erase(it);
-    back_forward_cache_disabling_features_.reset(static_cast<size_t>(feature));
   } else {
     --it->second;
   }
@@ -149,18 +151,6 @@ void BackForwardCacheDisablingFeatureTracker::
     scheduler_->ExecuteAfterCurrentTask(base::BindOnce(
         &BackForwardCacheDisablingFeatureTracker::ReportFeaturesToDelegate,
         weak_factory_.GetWeakPtr()));
-  }
-  auto track = GetTrackForFeature(traced_feature);
-  switch (tracing_type) {
-    case TracingType::kBegin:
-      TRACE_EVENT_BEGIN(
-          "renderer.scheduler",
-          perfetto::StaticString(FeatureToHumanReadableString(traced_feature)),
-          track);
-      break;
-    case TracingType::kEnd:
-      TRACE_EVENT_END("renderer.scheduler", track);
-      break;
   }
 }
 

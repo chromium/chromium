@@ -5,9 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_BACK_FORWARD_CACHE_DISABLING_FEATURE_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_BACK_FORWARD_CACHE_DISABLING_FEATURE_TRACKER_H_
 
-#include <bitset>
-#include <utility>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -107,16 +104,9 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
 
   base::flat_map<SchedulingPolicy::Feature, int>
       back_forward_cache_disabling_feature_counts_{};
-  // TODO(crbug.com/1366675): Remove back_forward_cache_disabling_features_.
-  std::bitset<static_cast<size_t>(SchedulingPolicy::Feature::kMaxValue) + 1>
-      back_forward_cache_disabling_features_{};
   TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
       opted_out_from_back_forward_cache_;
 
-  // The last set of features passed to FrameOrWorkerScheduler::Delegate::
-  // UpdateBackForwardCacheDisablingFeatures.
-  // TODO(yuzus): Remove the feature mask.
-  uint64_t last_uploaded_bfcache_disabling_features_ = 0;
   BFCacheBlockingFeatureAndLocations last_reported_non_sticky_;
   BFCacheBlockingFeatureAndLocations last_reported_sticky_;
   bool feature_report_scheduled_ = false;
