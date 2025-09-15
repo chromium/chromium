@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/null_task_runner.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
@@ -226,14 +227,13 @@ TEST(BlinkTransferableMessageStructTraitsTest,
 class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
  public:
   void SetUp() override {
-    auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    sii_ = sii.get();
-    context_provider_ = viz::TestContextProvider::Create(std::move(sii));
-    InitializeSharedGpuContextGLES2(context_provider_.get());
+    context_provider_ = viz::TestContextProvider::CreateRaster();
+    context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
+        true);
+    InitializeSharedGpuContextRaster(context_provider_.get());
   }
 
   void TearDown() override {
-    sii_ = nullptr;
     SharedGpuContext::Reset();
   }
 
@@ -264,7 +264,6 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
   }
 
  protected:
-  gpu::TestSharedImageInterface* sii_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
 
   bool image_destroyed_ = false;
