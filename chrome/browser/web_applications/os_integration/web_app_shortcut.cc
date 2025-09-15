@@ -449,14 +449,15 @@ gfx::ImageSkia CreateDefaultApplicationIcon(int size) {
 namespace internals {
 
 void PostShortcutIOTask(base::OnceCallback<void(const ShortcutInfo&)> task,
-                        std::unique_ptr<ShortcutInfo> shortcut_info) {
+                        std::unique_ptr<ShortcutInfo> shortcut_info,
+                        const base::Location& location) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Ownership of |shortcut_info| moves to the Reply, which is guaranteed to
   // outlive the const reference.
   const ShortcutInfo& shortcut_info_ref = *shortcut_info;
   GetShortcutIOTaskRunner()->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(std::move(task), std::cref(shortcut_info_ref)),
+      location, base::BindOnce(std::move(task), std::cref(shortcut_info_ref)),
       base::BindOnce(
           [](std::unique_ptr<ShortcutInfo> shortcut_info) {
             // This lambda is to own and delete the shortcut info.
@@ -467,13 +468,14 @@ void PostShortcutIOTask(base::OnceCallback<void(const ShortcutInfo&)> task,
 
 void PostAsyncShortcutIOTask(
     base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> task,
-    std::unique_ptr<ShortcutInfo> shortcut_info) {
+    std::unique_ptr<ShortcutInfo> shortcut_info,
+    const base::Location& location) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Ownership of |shortcut_info| is transferred to the task. The task must
   // ensure that it is destroyed on the UI thread.
   GetShortcutIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(task), std::move(shortcut_info)));
+      location, base::BindOnce(std::move(task), std::move(shortcut_info)));
 }
 
 void ScheduleCreatePlatformShortcuts(
