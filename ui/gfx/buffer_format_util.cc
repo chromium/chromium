@@ -94,7 +94,7 @@ size_t SubsamplingFactorForBufferFormat(BufferFormat format, size_t plane) {
   NOTREACHED();
 }
 
-base::CheckedNumeric<size_t> PlaneWidthForBufferFormatChecked(
+base::CheckedNumeric<size_t> PlaneWidthForBufferFormatCheckedInternal(
     size_t width,
     BufferFormat format,
     size_t plane) {
@@ -112,7 +112,7 @@ base::CheckedNumeric<size_t> PlaneHeightForBufferFormatCheckedInternal(
                         subsample);
 }
 
-size_t BytesPerPixelForBufferFormat(BufferFormat format, size_t plane) {
+size_t BytesPerPixelForBufferFormatInternal(BufferFormat format, size_t plane) {
   switch (format) {
     case BufferFormat::R_8:
       return 1;
@@ -164,7 +164,7 @@ size_t RowByteAlignmentForBufferFormat(BufferFormat format, size_t plane) {
     case BufferFormat::YUV_420_BIPLANAR:
     case BufferFormat::YUVA_420_TRIPLANAR:
     case BufferFormat::P010:
-      return BytesPerPixelForBufferFormat(format, plane);
+      return BytesPerPixelForBufferFormatInternal(format, plane);
   }
   NOTREACHED();
 }
@@ -181,8 +181,8 @@ bool RowSizeForBufferFormatChecked(size_t width,
                                    size_t plane,
                                    size_t* size_in_bytes) {
   base::CheckedNumeric<size_t> checked_size =
-      PlaneWidthForBufferFormatChecked(width, format, plane);
-  checked_size *= BytesPerPixelForBufferFormat(format, plane);
+      PlaneWidthForBufferFormatCheckedInternal(width, format, plane);
+  checked_size *= BytesPerPixelForBufferFormatInternal(format, plane);
   const size_t alignment = RowByteAlignmentForBufferFormat(format, plane);
   checked_size = (checked_size + alignment - 1) & ~(alignment - 1);
   if (!checked_size.IsValid())
@@ -204,16 +204,6 @@ bool PlaneHeightForBufferFormatChecked(size_t height,
 
   *height_in_pixels = checked_height.ValueOrDie();
   return true;
-}
-
-size_t PlaneSizeForBufferFormat(const Size& size,
-                                BufferFormat format,
-                                size_t plane) {
-  size_t plane_size = 0;
-  bool valid =
-      PlaneSizeForBufferFormatChecked(size, format, plane, &plane_size);
-  DCHECK(valid);
-  return plane_size;
 }
 
 bool PlaneSizeForBufferFormatChecked(const Size& size,
@@ -286,7 +276,11 @@ size_t BufferOffsetForBufferFormat(const Size& size,
     case BufferFormat::P010: {
       size_t offset = 0;
       for (size_t i = 0; i < plane; i++) {
-        offset += PlaneSizeForBufferFormat(size, format, i);
+        size_t plane_size = 0;
+        bool valid =
+            PlaneSizeForBufferFormatChecked(size, format, i, &plane_size);
+        DCHECK(valid);
+        offset += plane_size;
       }
       return offset;
     }
