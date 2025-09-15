@@ -37,6 +37,26 @@ class PasswordManagerSettingsService;
 
 class PrefService;
 
+// Password change availability state used for UMA. Corresponds to
+// `PasswordChangeAvailability` in enums.xml.
+//
+// These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(PasswordChangeAvailability)
+enum class PasswordChangeAvailability {
+  kAvailable = 0,
+  kPasswordGenerationDisabled = 1,
+  kModelExecutionNotAllowed = 2,
+  kPasswordSavingDisabled = 3,
+  kDisabledByPolicy = 4,
+  kFeatureDisabled = 5,
+  kUnsupportedLanguage = 6,
+  kUnsupportedCountryCode = 7,
+  kNotSupportedSite = 8,
+  kMaxValue = kNotSupportedSite,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeAvailability)
+
 class ChromePasswordChangeService
     : public KeyedService,
       public password_manager::PasswordChangeServiceInterface,
@@ -93,6 +113,11 @@ class ChromePasswordChangeService
 
   // KeyedService impl.
   void Shutdown() override;
+
+  PasswordChangeAvailability GetGeneralAvailability() const;
+  PasswordChangeAvailability GetPerSiteAvailability(
+      const GURL& url,
+      const autofill::LanguageCode& page_language) const;
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<affiliations::AffiliationService> affiliation_service_;

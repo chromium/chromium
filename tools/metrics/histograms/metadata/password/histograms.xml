@@ -2816,6 +2816,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChangeAvailability"
+    enum="PasswordChangeAvailability" expires_after="2026-02-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the availability of the automated password change feature and the
+    reason if it's not available. Recorded every time IsPasswordChangeSupported
+    is called.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChangeRecoveryFlow"
     enum="PasswordChangeRecoveryFlowState" expires_after="2026-07-11">
   <owner>otara@google.com</owner>

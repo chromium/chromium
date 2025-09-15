@@ -811,6 +811,22 @@ chromium-metrics-reviews@google.com.
              credentials report"/>
 </enum>
 
+<!-- LINT.IfChange(PasswordChangeAvailability) -->
+
+<enum name="PasswordChangeAvailability">
+  <int value="0" label="Available"/>
+  <int value="1" label="Password generation disabled"/>
+  <int value="2" label="Model execution not allowed"/>
+  <int value="3" label="Password saving disabled"/>
+  <int value="4" label="Disabled by policy"/>
+  <int value="5" label="Feature disabled"/>
+  <int value="6" label="Unsupported language"/>
+  <int value="7" label="Unsupported country"/>
+  <int value="8" label="Unsupported site"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/password_manager/chrome_password_change_service.h) -->
+
 <!-- LINT.IfChange(PasswordChangeDialogAction) -->
 
 <enum name="PasswordChangeDialogAction">
