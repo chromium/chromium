@@ -112,9 +112,16 @@ void HandleSignoutForSnackbar(
         ->SetSelectedType(clear_selected_type.value(), false);
   }
 
+  // To complete the signout request, it should be guranteed to complete the
+  // request using a non-incognito browser.
+  Browser* mainBrowser =
+      browser->type() == Browser::Type::kIncognito
+          ? browser->GetSceneState()
+                .browserProviderInterface.mainBrowserProvider.browser
+          : browser;
   signin::ProfileSignoutRequest(
       signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn)
-      .Run(browser);
+      .Run(mainBrowser);
 }
 
 void MaybeShowHistorySyncScreenAfterProfileSwitch(
