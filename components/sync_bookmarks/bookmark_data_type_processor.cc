@@ -235,15 +235,9 @@ void BookmarkDataTypeProcessor::OnUpdateReceived(
     updates_handler.Process(updates, got_new_encryption_requirements);
   }
 
-  // Issue error and stop sync if bookmarks count exceeds limit.
-  if (bookmark_tracker_->TrackedBookmarksCount() >
-      max_bookmarks_till_sync_enabled_) {
-    // Local changes continue to be tracked in order to allow users to delete
-    // bookmarks and recover upon restart.
-    DisconnectSync();
-    activation_request_.error_handler.Run(syncer::ModelError(
-        FROM_HERE, syncer::ModelError::Type::
-                       kBookmarksLocalCountExceededLimitOnUpdateReceived));
+  if (MaybeReportBookmarkCountLimitExceededError(
+          syncer::ModelError::Type::
+              kBookmarksLocalCountExceededLimitOnUpdateReceived)) {
     return;
   }
 
@@ -439,21 +433,9 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
     return;
   }
 
-  // Issue error and stop sync if bookmarks exceed limit.
-  // TODO(crbug.com/40854724): Think about adding two different limits: one for
-  // when sync just starts, the other (larger one) as hard limit, incl.
-  // incremental changes.
-  const size_t count = bookmark_tracker_
-                           ? bookmark_tracker_->TrackedBookmarksCount()
-                           : CountSyncableBookmarksFromModel(bookmark_model_);
-  if (count > max_bookmarks_till_sync_enabled_) {
-    // For the case where a tracker already exists, local changes will continue
-    // to be tracked in order order to allow users to delete bookmarks and
-    // recover upon restart.
-    start_callback_.Reset();
-    activation_request_.error_handler.Run(syncer::ModelError(
-        FROM_HERE, syncer::ModelError::Type::
-                       kBookmarksLocalCountExceededLimitOnSyncStart));
+  if (MaybeReportBookmarkCountLimitExceededError(
+          syncer::ModelError::Type::
+              kBookmarksLocalCountExceededLimitOnSyncStart)) {
     return;
   }
 
@@ -482,6 +464,33 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
           weak_ptr_factory_for_worker_.GetWeakPtr(),
           base::SequencedTaskRunner::GetCurrentDefault());
   std::move(start_callback_).Run(std::move(activation_context));
+}
+
+bool BookmarkDataTypeProcessor::MaybeReportBookmarkCountLimitExceededError(
+    syncer::ModelError::Type error_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If `activation_request_.error_handler` is not set, the check is ignored
+  // because this gets re-evaluated in ConnectIfReady().
+  if (!activation_request_.error_handler) {
+    return false;
+  }
+
+  const size_t count = bookmark_tracker_
+                           ? bookmark_tracker_->TrackedBookmarksCount()
+                           : CountSyncableBookmarksFromModel(bookmark_model_);
+  if (count > max_bookmarks_till_sync_enabled_) {
+    // For the case where a tracker already
+    // exists, local changes will continue
+    // to be tracked in order order to allow users to delete bookmarks and
+    // recover upon restart.
+    DisconnectSync();
+    start_callback_.Reset();
+
+    activation_request_.error_handler.Run(
+        syncer::ModelError(FROM_HERE, error_type));
+    return true;
+  }
+  return false;
 }
 
 void BookmarkDataTypeProcessor::OnSyncStopping(
@@ -523,20 +532,9 @@ void BookmarkDataTypeProcessor::OnSyncStopping(
 void BookmarkDataTypeProcessor::NudgeForCommitIfNeeded() {
   DCHECK(bookmark_tracker_);
 
-  // Issue error and stop sync if the number of local bookmarks exceed limit.
-  // If `activation_request_.error_handler` is not set, the check is ignored
-  // because this gets re-evaluated in ConnectIfReady().
-  if (activation_request_.error_handler &&
-      bookmark_tracker_->TrackedBookmarksCount() >
-          max_bookmarks_till_sync_enabled_) {
-    // Local changes continue to be tracked in order to allow users to delete
-    // bookmarks and recover upon restart.
-    DisconnectSync();
-    start_callback_.Reset();
-
-    activation_request_.error_handler.Run(syncer::ModelError(
-        FROM_HERE, syncer::ModelError::Type::
-                       kBookmarksLocalCountExceededLimitNudgeForCommit));
+  if (MaybeReportBookmarkCountLimitExceededError(
+          syncer::ModelError::Type::
+              kBookmarksLocalCountExceededLimitNudgeForCommit)) {
     return;
   }
 
