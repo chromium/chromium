@@ -473,13 +473,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         CreateForWebContents(web_contents);
 
 #if BUILDFLAG(IS_ANDROID)
-    // If enabled, save sensitivity data for each non-incognito non-custom
-    // android tab
+    // If enabled, save sensitivity data for each non-incognito android tab.
     // TODO(crbug.com/40276584): Consider moving check conditions or the
     // registration logic to sensitivity_persisted_tab_data_android.*
     if (!profile->IsOffTheRecord()) {
-      if (auto* tab = TabAndroid::FromWebContents(web_contents);
-          (tab && !tab->IsCustomTab())) {
+      if (auto* tab = TabAndroid::FromWebContents(web_contents); tab) {
         SensitivityPersistedTabDataAndroid::From(
             tab,
             base::BindOnce(
