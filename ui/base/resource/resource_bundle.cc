@@ -38,7 +38,7 @@
 #include "net/filter/gzip_header.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/brotli/include/brotli/decode.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -1053,7 +1053,7 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
 // Register Png Decoder for use by DataURIResourceProviderProxy for embedded
 // images.
 #if BUILDFLAG(IS_CHROMEOS)
-  SkCodecs::Register(SkPngDecoder::Decoder());
+  SkCodecs::Register(SkPngRustDecoder::Decoder());
 #endif
 }
 
