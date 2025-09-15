@@ -3929,16 +3929,10 @@ if (!is_robolectric && enable_java_templates) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       create_apk_script = false
 
-      if (!defined(apk_name)) {
-        apk_name = get_label_info(invoker.shared_library, "name")
-      }
-
       if (!defined(android_manifest)) {
         android_manifest_dep = ":${target_name}_manifest"
         android_manifest = _android_manifest
       }
-
-      final_apk_path = "$root_build_dir/${apk_name}_apk/${apk_name}-debug.apk"
 
       if (!defined(use_default_launcher) || use_default_launcher) {
         deps += [

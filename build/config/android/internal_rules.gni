@@ -815,6 +815,20 @@ template("test_runner_script") {
       _jacoco_coverage_dir_name = "java_coverage"
     }
 
+    if (defined(invoker.proguard_mapping_path)) {
+      if (_incremental_apk) {
+        not_needed(invoker, [ "proguard_mapping_path" ])
+      } else {
+        data += [ invoker.proguard_mapping_path ]
+        _rebased_mapping_path =
+            rebase_path(invoker.proguard_mapping_path, root_build_dir)
+        executable_args += [
+          "--proguard-mapping-path",
+          "@WrappedPath($_rebased_mapping_path)",
+        ]
+      }
+    }
+
     _device_test = true
     if (_test_type == "gtest") {
       assert(defined(invoker.test_suite))
@@ -874,19 +888,6 @@ template("test_runner_script") {
           "--use-webview-provider",
           "@WrappedPath(@FileArg($_rebased_build_config:apk_path))",
         ]
-      }
-      if (defined(invoker.proguard_mapping_path)) {
-        if (_incremental_apk) {
-          not_needed(invoker, [ "proguard_mapping_path" ])
-        } else {
-          data += [ invoker.proguard_mapping_path ]
-          _rebased_mapping_path =
-              rebase_path(invoker.proguard_mapping_path, root_build_dir)
-          executable_args += [
-            "--proguard-mapping-path",
-            "@WrappedPath($_rebased_mapping_path)",
-          ]
-        }
       }
       if (use_jacoco_coverage) {
         # Set a default coverage output directory (can be overridden by user

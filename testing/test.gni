@@ -639,15 +639,21 @@ template("test") {
           deps += [ "//testing/android/native_test:native_test_native_code" ]
         }
       }
+      if (defined(invoker.output_name)) {
+        _apk_name = invoker.output_name
+      } else {
+        _apk_name = invoker.target_name
+      }
+      _final_apk_path =
+          "$root_build_dir/${_apk_name}_apk/${_apk_name}-debug.apk"
+
       unittest_apk(_apk_target_name) {
         forward_variables_from(invoker, _apk_specific_vars)
+        apk_name = _apk_name
+        final_apk_path = _final_apk_path
         shared_library = ":$_library_target_name"
         if (_generate_final_jni) {
           srcjar_deps = [ "${shared_library}__jni_registration" ]
-        }
-        apk_name = invoker.target_name
-        if (defined(invoker.output_name)) {
-          apk_name = invoker.output_name
         }
 
         if (defined(invoker.deps)) {
@@ -687,6 +693,9 @@ template("test") {
         # Dep needed for the test runner .runtime_deps file to pick up data
         # deps from the forward_variables_from(invoker, "*") on the library.
         data_deps = [ ":$_library_target_name" ]
+        if (defined(invoker.proguard_enabled) && invoker.proguard_enabled) {
+          proguard_mapping_path = "$_final_apk_path.mapping"
+        }
       }
       test_name = _output_name
       test_suite = _output_name

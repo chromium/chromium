@@ -440,6 +440,10 @@ def AddGTestOptions(parser):
       help=('If present, test artifacts will be uploaded to this Google '
             'Storage bucket.'))
   parser.add_argument(
+      '--proguard-mapping-path',
+      help='.mapping file to use to Deobfuscate java stack traces in test '
+      'output and logcat.')
+  parser.add_argument(
       '--render-test-output-dir',
       help='If present, store rendering artifacts in this path.')
   parser.add_argument(
