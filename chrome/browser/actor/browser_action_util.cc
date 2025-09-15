@@ -656,6 +656,20 @@ void FillInTabObservation(
   if (fetch_result.annotated_page_content_result) {
     *tab_observation.mutable_annotated_page_content() =
         fetch_result.annotated_page_content_result->proto;
+    if (fetch_result.annotated_page_content_result->metadata) {
+      auto* proto_metadata = tab_observation.mutable_metadata();
+      const auto& mojom_metadata =
+          *fetch_result.annotated_page_content_result->metadata;
+      for (const auto& mojom_frame_metadata : mojom_metadata.frame_metadata) {
+        auto* proto_frame_metadata = proto_metadata->add_frame_metadata();
+        proto_frame_metadata->set_url(mojom_frame_metadata->url.spec());
+        for (const auto& mojom_meta_tag : mojom_frame_metadata->meta_tags) {
+          auto* proto_meta_tag = proto_frame_metadata->add_meta_tags();
+          proto_meta_tag->set_name(mojom_meta_tag->name);
+          proto_meta_tag->set_content(mojom_meta_tag->content);
+        }
+      }
+    }
   }
 }
 

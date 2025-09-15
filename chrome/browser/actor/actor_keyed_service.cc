@@ -215,6 +215,10 @@ void ActorKeyedService::RequestTabObservation(
   options.annotated_page_content_options =
       optimization_guide::ActionableAIPageContentOptions(
           /* on_critical_path =*/true);
+  // The maximum number of meta tags to extract from the page. This is a fairly
+  // generous limit that should be sufficient for the metadata we expect to see.
+  // 32 is the value specified in the TabObservation proto comment.
+  options.annotated_page_content_options->max_meta_elements = 32;
   page_content_annotations::FetchPageContext(
       *tab.GetContents(), options,
       CreateActorJournalFetchPageProgressListener(journal_.GetSafeRef(),

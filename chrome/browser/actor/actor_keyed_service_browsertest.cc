@@ -11,7 +11,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -140,6 +142,44 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   TaskId second_task_id = actor_keyed_service()->CreateTask();
   EXPECT_FALSE(first_task_id.is_null());
   EXPECT_NE(first_task_id, second_task_id);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       RequestTabObservation_HasMetadata) {
+  const GURL url(
+      "data:text/html,<html><head>"
+      "<meta name=\"sis\" content=\"rose\">"
+      "<meta name=\"sis\" content=\"ruth\">"
+      "<meta name=\"sis\" content=\"val\">"
+      "</head><body>Hello</body></html>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  TaskId task_id = actor_keyed_service()->CreateTask();
+
+  TestFuture<ActorKeyedService::TabObservationResult> future;
+  actor_keyed_service()->RequestTabObservation(*active_tab(), task_id,
+                                               future.GetCallback());
+
+  const ActorKeyedService::TabObservationResult& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result.value());
+
+  optimization_guide::proto::TabObservation observation;
+  FillInTabObservation(**result, observation);
+
+  ASSERT_TRUE(observation.has_metadata());
+  const auto& metadata = observation.metadata();
+  ASSERT_EQ(metadata.frame_metadata_size(), 1);
+  const auto& frame_metadata = metadata.frame_metadata(0);
+  ASSERT_EQ(frame_metadata.meta_tags_size(), 3);
+  EXPECT_EQ(frame_metadata.meta_tags(0).name(), "sis");
+  EXPECT_EQ(frame_metadata.meta_tags(0).content(), "rose");
+  EXPECT_EQ(frame_metadata.meta_tags(1).name(), "sis");
+  EXPECT_EQ(frame_metadata.meta_tags(1).content(), "ruth");
+  EXPECT_EQ(frame_metadata.meta_tags(2).name(), "sis");
+  EXPECT_EQ(frame_metadata.meta_tags(2).content(), "val");
+
+  actor_keyed_service()->StopTask(task_id, /*success=*/true);
 }
 
 }  // namespace
