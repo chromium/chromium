@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/function_ref.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"
@@ -47,11 +48,11 @@ class NET_EXPORT ParsedCookie {
   // class if !IsValid.
   bool IsValid() const;
 
-  const std::string& Name() const { return pairs_[0].first; }
-  const std::string& Token() const { return Name(); }
-  const std::string& Value() const { return pairs_[0].second; }
+  const std::string& Name() const LIFETIME_BOUND { return pairs_[0].first; }
+  const std::string& Token() const LIFETIME_BOUND { return Name(); }
+  const std::string& Value() const LIFETIME_BOUND { return pairs_[0].second; }
 
-  std::optional<std::string_view> Path() const {
+  std::optional<std::string_view> Path() const LIFETIME_BOUND {
     if (path_index_ == 0) {
       return std::nullopt;
     }
@@ -60,19 +61,19 @@ class NET_EXPORT ParsedCookie {
   // Note that Domain() may return the empty string; in the case of cookie_line
   // "domain=", Domain().has_value() will return true (as the empty string is an
   // acceptable domain value), and Domain().value() will be an empty string.
-  std::optional<std::string_view> Domain() const {
+  std::optional<std::string_view> Domain() const LIFETIME_BOUND {
     if (domain_index_ == 0) {
       return std::nullopt;
     }
     return pairs_[domain_index_].second;
   }
-  std::optional<std::string_view> Expires() const {
+  std::optional<std::string_view> Expires() const LIFETIME_BOUND {
     if (expires_index_ == 0) {
       return std::nullopt;
     }
     return pairs_[expires_index_].second;
   }
-  std::optional<std::string_view> MaxAge() const {
+  std::optional<std::string_view> MaxAge() const LIFETIME_BOUND {
     if (maxage_index_ == 0) {
       return std::nullopt;
     }
