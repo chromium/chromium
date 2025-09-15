@@ -211,9 +211,10 @@ void ShowExtensionInstallDialogImpl(
   }
 
   gfx::NativeWindow parent_window = show_params->GetParentWindow();
-  ExtensionInstallDialogView* dialog = new ExtensionInstallDialogView(
+  auto dialog = std::make_unique<ExtensionInstallDialogView>(
       std::move(show_params), std::move(done_callback), std::move(prompt));
-  constrained_window::CreateBrowserModalDialogViews(dialog, parent_window)
+  constrained_window::CreateBrowserModalDialogViews(std::move(dialog),
+                                                    parent_window)
       ->Show();
 }
 

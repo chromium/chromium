@@ -187,18 +187,19 @@ class ScrollbarTest : public ExtensionInstallDialogViewTestBase {
 
 bool ScrollbarTest::IsScrollbarVisible(
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
-  ExtensionInstallDialogView* dialog = new ExtensionInstallDialogView(
+  auto dialog = std::make_unique<ExtensionInstallDialogView>(
       std::make_unique<ExtensionInstallPromptShowParams>(web_contents()),
       base::DoNothing(), std::move(prompt));
+  ExtensionInstallDialogView* dialog_ptr = dialog.get();
 
   // Create the modal view around the install dialog view.
   views::Widget* modal = constrained_window::CreateBrowserModalDialogViews(
-      dialog, web_contents()->GetTopLevelNativeWindow());
+      std::move(dialog), web_contents()->GetTopLevelNativeWindow());
   modal->Show();
   content::RunAllTasksUntilIdle();
 
   // Check if the vertical scrollbar is visible.
-  return dialog->scroll_view()->vertical_scroll_bar()->GetVisible();
+  return dialog_ptr->scroll_view()->vertical_scroll_bar()->GetVisible();
 }
 
 // Tests that a scrollbar _is_ shown for an excessively long extension
