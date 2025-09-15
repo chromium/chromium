@@ -47,6 +47,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
@@ -61,6 +62,25 @@ using ::ip_protection::BlindSignedAuthToken;
 using ::ip_protection::GeoHint;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
+
+// A Gmock matcher for a `base::TimeDelta` within the jitter range defined by
+// `net::features::kIpPrivacyBackoffJitter`.
+MATCHER_P(IsNearWithJitter, expected, "") {
+  if (arg == base::TimeDelta::Max() && (expected) == base::TimeDelta::Max()) {
+    return true;
+  }
+
+  const auto jitter = net::features::kIpPrivacyBackoffJitter.Get();
+  const auto lower_bound = (expected) * (1.0 - jitter);
+  const auto upper_bound = (expected) * (1.0 + jitter);
+  if (arg >= lower_bound && arg <= upper_bound) {
+    return true;
+  }
+
+  *result_listener << "which is outside the expected range [" << lower_bound
+                   << ", " << upper_bound << "]";
+  return false;
+}
 
 constexpr char kTryGetAuthTokensResultHistogram[] =
     "NetworkService.IpProtection.TryGetAuthTokensResult2";
@@ -263,7 +283,8 @@ class IpProtectionCoreHostTest : public testing::Test {
     auto& [bsa_tokens, try_again_after] = tokens_future_.Get();
     EXPECT_EQ(bsa_tokens, std::nullopt);
     if (!bsa_tokens) {
-      EXPECT_EQ(*try_again_after, base::Time::Now() + try_again_delta);
+      EXPECT_THAT(*try_again_after - base::Time::Now(),
+                  IsNearWithJitter(try_again_delta));
     }
     // Clear future so it can be reused and accept new tokens.
     tokens_future_.Clear();

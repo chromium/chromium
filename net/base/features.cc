@@ -426,6 +426,10 @@ const base::FeatureParam<base::TimeDelta> kIpPrivacyTryGetAuthTokensBugBackoff{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTryGetAuthTokensBugBackoff",
     /*default_value=*/base::Minutes(10)};
 
+const base::FeatureParam<double> kIpPrivacyBackoffJitter{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyBackoffJitter",
+    /*default_value=*/0.25};
+
 const base::FeatureParam<bool> kIpPrivacyRestrictTopLevelSiteSchemes{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyRestrictTopLevelSiteSchemes",

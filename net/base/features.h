@@ -526,6 +526,9 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kIpPrivacyTryGetAuthTokensBugBackoff;
 
+// Jitter (as a percentage) to apply to backoff time calculations.
+NET_EXPORT extern const base::FeatureParam<double> kIpPrivacyBackoffJitter;
+
 // If true, only proxy traffic when the top-level site uses the http:// or
 // https:// schemes. This prevents attempts to proxy from top-level sites with
 // chrome://, chrome-extension://, or other non-standard schemes, in addition to

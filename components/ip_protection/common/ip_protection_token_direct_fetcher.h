@@ -68,6 +68,8 @@ class IpProtectionTokenDirectFetcher : public IpProtectionTokenFetcher {
   void AccountStatusChanged(bool account_available);
 
  private:
+  friend class IpProtectionTokenDirectFetcherTest;
+
   // The helper runs in `SequenceBound<SequenceBoundFetch>`, and
   // `network::SharedURLLoaderFactory::Create` must be called in that sequence.
   // This class owns the stack of BlindSignAuthInterface ->
@@ -101,8 +103,7 @@ class IpProtectionTokenDirectFetcher : public IpProtectionTokenFetcher {
     IpProtectionTokenFetcherHelper fetcher_helper_;
   };
 
-  FRIEND_TEST_ALL_PREFIXES(IpProtectionTokenDirectFetcherTest,
-                           CalculateBackoff);
+
 
   void OnRequestOAuthTokenCompletedForTryGetAuthTokens(
       uint32_t batch_size,

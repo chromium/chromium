@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -335,6 +336,10 @@ std::optional<base::TimeDelta> IpProtectionTokenDirectFetcher::CalculateBackoff(
   last_try_get_auth_tokens_result_ = result;
   last_try_get_auth_tokens_backoff_ = backoff;
 
+  if (backoff && backoff != base::TimeDelta::Max()) {
+    return base::RandomizeByPercentage(
+        *backoff, net::features::kIpPrivacyBackoffJitter.Get() * 100);
+  }
   return backoff;
 }
 
