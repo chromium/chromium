@@ -20253,6 +20253,7 @@
                 {
                     "name": "Enabled_2025_09_09",
                     "params": {
+                        "read_aloud_audio_overviews_should_consider_language_in_overview_readability": "true",
                         "read_aloud_audio_overviews_speed_addition_percentage": "10"
                     },
                     "enable_features": [
