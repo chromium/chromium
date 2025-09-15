@@ -1258,28 +1258,69 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootUnknownSha256) {
 }
 
 TEST(CertVerifyProcTest, TestHasTooLongValidity) {
+  static constexpr base::Time kTime_2029_03_15 =
+      base::Time::FromMillisecondsSinceUnixEpoch(1868227200000);
+  static constexpr base::Time kTime_2027_03_15 =
+      base::Time::FromMillisecondsSinceUnixEpoch(1805068800000);
+  static constexpr base::Time kTime_2026_03_15 =
+      base::Time::FromMillisecondsSinceUnixEpoch(1773532800000);
+
+  enum ValidityExpectation {
+    kAllowed,
+    kTooLong,
+  };
+
   struct {
+    ValidityExpectation is_valid_too_long;
     const char* const test_name;
     base::Time not_before;
     base::TimeDelta validity;
-    bool is_valid_too_long;
   } tests[] = {
-      {"start after expiry", base::Time::Now(), -base::Days(1), true},
-      {"399 days, before BRs",
+      {kTooLong, "start after expiry", base::Time::Now(), -base::Days(1)},
+
+      {kTooLong, "399 days, before BRs",
        base::Time::FromMillisecondsSinceUnixEpoch(1199145600000),  // 2008-01-01
-       base::Days(399), true},
-      {"399 days, before 2020-09-01",
+       base::Days(399)},
+      {kTooLong, "399 days, before 2020-09-01",
        base::Time::FromMillisecondsSinceUnixEpoch(1598832000000),  // 2020-08-31
-       base::Days(399), true},
-      {"398 days, after 2020-09-01",
+       base::Days(399)},
+      {kAllowed, "398 days, after 2020-09-01",
        base::Time::FromMillisecondsSinceUnixEpoch(1599004800000),  // 2020-09-02
-       base::Days(398), false},
-      {"399 days, after 2020-09-01",
+       base::Days(398)},
+      {kTooLong, "399 days, after 2020-09-01",
        base::Time::FromMillisecondsSinceUnixEpoch(1599004800000),  // 2020-09-02
-       base::Days(399), true},
-      {"398 days 1 second, after 2020-09-01",
+       base::Days(399)},
+      {kTooLong, "398 days 1 second, after 2020-09-01",
        base::Time::FromMillisecondsSinceUnixEpoch(1599004800000),  // 2020-09-02
-       base::Days(398) + base::Seconds(1), true},
+       base::Days(398) + base::Seconds(1)},
+
+      {kAllowed, "398 days, before 2026-03-15",  //
+       kTime_2026_03_15 - base::Seconds(1), base::Days(398)},
+      {kTooLong, "398 days, on 2026-03-15",  //
+       kTime_2026_03_15, base::Days(398)},
+
+      {kAllowed, "200 days, on 2026-03-15",  //
+       kTime_2026_03_15, base::Days(200)},
+      {kTooLong, "200 days 1 second, on 2026-03-15",  //
+       kTime_2026_03_15, base::Days(200) + base::Seconds(1)},
+      {kAllowed, "200 days, before 2027-03-15",  //
+       kTime_2027_03_15 - base::Seconds(1), base::Days(200)},
+      {kTooLong, "200 days, on 2027-03-15",  //
+       kTime_2027_03_15, base::Days(200)},
+
+      {kAllowed, "100 days, on 2027-03-15",  //
+       kTime_2027_03_15, base::Days(100)},
+      {kTooLong, "100 days 1 second, on 2027-03-15",  //
+       kTime_2027_03_15, base::Days(100) + base::Seconds(1)},
+      {kAllowed, "100 days, before 2029-03-15",  //
+       kTime_2029_03_15 - base::Seconds(1), base::Days(100)},
+      {kTooLong, "100 days, on 2029-03-15",  //
+       kTime_2029_03_15, base::Days(100)},
+
+      {kAllowed, "47 days, on 2029-03-15",  //
+       kTime_2029_03_15, base::Days(47)},
+      {kTooLong, "47 days 1 second, on 2029-03-15",  //
+       kTime_2029_03_15, base::Days(47) + base::Seconds(1)},
   };
 
   auto [leaf, root] = CertBuilder::CreateSimpleChain2();
@@ -1287,7 +1328,7 @@ TEST(CertVerifyProcTest, TestHasTooLongValidity) {
     SCOPED_TRACE(test.test_name);
 
     leaf->SetValidity(test.not_before, test.not_before + test.validity);
-    EXPECT_EQ(test.is_valid_too_long,
+    EXPECT_EQ(test.is_valid_too_long == kTooLong,
               CertVerifyProc::HasTooLongValidity(*leaf->GetX509Certificate()));
   }
 }

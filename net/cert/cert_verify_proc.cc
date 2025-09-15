@@ -814,14 +814,48 @@ bool CertVerifyProc::HasTooLongValidity(const X509Certificate& cert) {
   // * Certificates issued on-or-after 1 March 2018: 825 days.
   //   * Last possible expiry: 1 September 2020 + 825 days = 2022-12-05
   //
-  // The current limit, from Chrome Root Certificate Policy:
-  // * Certificates issued on-or-after 1 September 2020: 398 days.
+  // No certificates issued under these older lifetime requirements could
+  // possibly still be accepted, so we don't need to check the older limits
+  // explicitly.
 
   base::TimeDelta validity_duration = cert.valid_expiry() - cert.valid_start();
 
-  // No certificates issued before the latest lifetime requirement was enacted
-  // could possibly still be accepted, so we don't need to check the older
-  // limits explicitly.
+  // The current limits, from section 6.3.2 (Certificate operational periods
+  // and key pair usage periods) of CABF Baseline Requirements version 2.1.7.
+  //
+  // The "Last possible expiry" date indicates the date after which each
+  // condition is no longer relevant and can be removed.
+
+  // datetime.datetime(2029,3,15,tzinfo=datetime.timezone.utc).timestamp()*1000
+  static constexpr base::Time kTime_2029_03_15 =
+      base::Time::FromMillisecondsSinceUnixEpoch(1868227200000);
+  // datetime.datetime(2027,3,15,tzinfo=datetime.timezone.utc).timestamp()*1000
+  static constexpr base::Time kTime_2027_03_15 =
+      base::Time::FromMillisecondsSinceUnixEpoch(1805068800000);
+  // datetime.datetime(2026,3,15,tzinfo=datetime.timezone.utc).timestamp()*1000
+  static constexpr base::Time kTime_2026_03_15 =
+      base::Time::FromMillisecondsSinceUnixEpoch(1773532800000);
+
+  // For certificates issued on-or-after March 15, 2029: 47 days.
+  if (start >= kTime_2029_03_15) {
+    return validity_duration > base::Days(47);
+  }
+
+  // For certificates issued on-or-after March 15, 2027: 100 days.
+  // Last possible expiry: March 15, 2029 + 100 days = 2029-06-23
+  if (start >= kTime_2027_03_15) {
+    return validity_duration > base::Days(100);
+  }
+
+  // For certificates issued on-or-after March 15, 2026: 200 days.
+  // Last possible expiry: March 15, 2027 + 200 days = 2027-10-01
+  if (start >= kTime_2026_03_15) {
+    return validity_duration > base::Days(200);
+  }
+
+  // The current limit, from Chrome Root Certificate Policy:
+  // Certificates issued on-or-after 1 September 2020: 398 days.
+  // Last possible expiry: March 15, 2026 + 398 days = 2027-04-17
   return validity_duration > base::Days(398);
 }
 
