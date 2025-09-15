@@ -16,6 +16,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/containers/to_vector.h"
+#import "base/debug/crash_logging.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -515,6 +516,11 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
                                   webState:(web::WebState*)webState
                          completionHandler:
                              (SuggestionsAvailableCompletion)completion {
+  SCOPED_CRASH_KEY_BOOL("Bug40072712", "spc_isPwdGen",
+                        self.isPasswordGenerated);
+  SCOPED_CRASH_KEY_NUMBER("Bug40072712", "spc_pwdGenId",
+                          self.passwordGeneratedIdentifier.value());
+
   DCHECK_EQ(_webState, webState);
   if (!webState->GetLastCommittedURLIfTrusted()) {
     completion(NO);
