@@ -34,7 +34,7 @@ class NameInfo : public FormGroup {
                                                      ALTERNATIVE_FULL_NAME,
                                                      ALTERNATIVE_GIVEN_NAME,
                                                      ALTERNATIVE_FAMILY_NAME};
-  NameInfo();
+  explicit NameInfo(bool alternative_names_supported);
   NameInfo(const NameInfo& info);
   NameInfo(std::unique_ptr<NameFull> name,
            std::unique_ptr<AlternativeFullName> alternative_name);
@@ -167,10 +167,20 @@ class NameInfo : public FormGroup {
   // This node is unique by definition.
   AddressComponent* GetRootForType(FieldType type);
 
+  // Returns if the `alternative_name_` tree exists.
+  bool IsAlternativeNameSupported() const;
+
+  // Returns true if `this` and `other` have matching support for alternative
+  // names (i.e. both support them, or neither supports them), returns false
+  // otherwise.
+  bool HaveSimilarAlternativeNameSupport(const NameInfo& other) const;
+
   // This data structures store structured representation of the name and
   // alternative (e.g. phonetic) name.
   const std::unique_ptr<NameFull> name_;
-  const std::unique_ptr<AlternativeFullName> alternative_name_;
+  // Exists only if `this` supports alternative names. Currently it is
+  // only used for japanese profiles.
+  std::unique_ptr<AlternativeFullName> alternative_name_;
 };
 
 class EmailInfo : public FormGroup {

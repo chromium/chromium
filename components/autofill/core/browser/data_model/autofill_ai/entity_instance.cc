@@ -10,6 +10,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
@@ -66,7 +67,7 @@ AttributeInstance::AttributeInstance(AttributeType type)
     : type_(type), info_([&]() -> InfoStructure {
         switch (type.data_type()) {
           case AttributeType::DataType::kName:
-            return NameInfo();
+            return NameInfo(/*alternative_names_supported=*/false);
           case AttributeType::DataType::kCountry:
             return CountryInfo();
           case AttributeType::DataType::kDate:

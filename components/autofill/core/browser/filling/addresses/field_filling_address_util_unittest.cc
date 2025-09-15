@@ -890,10 +890,10 @@ TEST_P(AlternativeNameFillingTest, FillAlternativeName) {
   std::u16string actual_value =
       GetValueForProfile(profile, kAppLocale, AutofillType(field_type), field,
                          /*address_normalizer=*/nullptr);
-
-  EXPECT_EQ(test_case.expected_value, actual_value);
-
-  if (test_case.country_code == "JP") {
+  if (test_case.country_code != "JP") {
+    EXPECT_THAT(actual_value, testing::IsEmpty());
+  } else {
+    EXPECT_EQ(test_case.expected_value, actual_value);
     histogram_tester.ExpectUniqueSample(
         "Autofill.Filling.DidAlternativeNameFieldRequireConversion",
         actual_value != test_case.value_to_fill, 1);

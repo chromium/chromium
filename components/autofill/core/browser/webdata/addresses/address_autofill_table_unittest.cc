@@ -57,8 +57,9 @@ class AddressAutofillTableProfileTest
   AutofillProfile::RecordType record_type() const { return GetParam(); }
 
   // Creates an `AutofillProfile` of `record_type()`.
-  AutofillProfile CreateAutofillProfile() const {
-    return AutofillProfile(record_type(), AddressCountryCode("ES"));
+  AutofillProfile CreateAutofillProfile(
+      AddressCountryCode country_code = AddressCountryCode("ES")) const {
+    return AutofillProfile(record_type(), country_code);
   }
 };
 
@@ -359,7 +360,7 @@ TEST_P(AddressAutofillTableProfileTest,
        AutofillJpProfileWithAlternativeNameConversion) {
   base::test::ScopedFeatureList features{
       features::kAutofillSupportPhoneticNameForJP};
-  AutofillProfile profile = CreateAutofillProfile();
+  AutofillProfile profile = CreateAutofillProfile(AddressCountryCode("JP"));
 
   // Phonetic names in Katakana. They should be saved and later returned in
   // Hiragana.

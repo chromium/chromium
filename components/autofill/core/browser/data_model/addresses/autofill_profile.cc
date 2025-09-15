@@ -252,6 +252,8 @@ AutofillProfile::AutofillProfile(const std::string& guid,
                                  RecordType record_type,
                                  AddressCountryCode country_code)
     : guid_(guid),
+      name_(/*alternative_names_supported=*/country_code ==
+            AddressCountryCode("JP")),
       phone_number_(this),
       address_(country_code),
       record_type_(record_type),
@@ -278,7 +280,9 @@ AutofillProfile::AutofillProfile(const AccountInfo& info)
 }
 
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
-    : phone_number_(this),
+    : name_(/*alternative_names_supported=*/profile.GetAddressCountryCode() ==
+            AddressCountryCode("JP")),
+      phone_number_(this),
       address_(profile.GetAddress()),
       token_quality_(this),
       usage_history_information_(profile.usage_history_information_),
@@ -773,7 +777,9 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   AutofillProfileComparator comparator(app_locale);
   DCHECK(comparator.AreMergeable(*this, profile));
 
-  NameInfo name;
+  NameInfo name(
+      /*alternative_names_supported=*/profile.GetAddressCountryCode() ==
+      AddressCountryCode("JP"));
   EmailInfo email;
   CompanyInfo company;
   PhoneNumber phone_number(this);

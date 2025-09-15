@@ -167,16 +167,16 @@ public class PersonalDataManagerTest {
     public void testRecordSeparatorMetricForAddAndEditProfiles() throws TimeoutException {
         AutofillProfile profile =
                 AutofillProfile.builder()
-                        .setFullName("John Smith")
-                        .setAlternativeFullName("James Bond")
+                        .setFullName("山本 葵")
+                        .setAlternativeFullName("ヤマモト・アオイ")
                         .setCompanyName("Acme Inc.")
                         .setStreetAddress("1 Main\nApt A")
-                        .setRegion("CA")
-                        .setLocality("San Francisco")
+                        .setRegion("Tokyo")
+                        .setLocality("Tokyo")
                         .setPostalCode("94102")
-                        .setCountryCode("US")
+                        .setCountryCode("JP")
                         .setPhoneNumber("4158889999")
-                        .setEmailAddress("john@acme.inc")
+                        .setEmailAddress("aoi_yamamoto@acme.inc")
                         .build();
 
         // Expect histogram to record separator existence in alternative name.
@@ -239,10 +239,10 @@ public class PersonalDataManagerTest {
                         .setAlternativeFullName("やまもと·あおい")
                         .setCompanyName("Acme Inc.")
                         .setStreetAddress("1 Main\nApt A")
-                        .setRegion("CA")
-                        .setLocality("San Francisco")
+                        .setRegion("Tokyo")
+                        .setLocality("Tokyo")
                         .setPostalCode("94102")
-                        .setCountryCode("US")
+                        .setCountryCode("JP")
                         .setPhoneNumber("4158889999")
                         .setEmailAddress("aoi_yamamoto@acme.inc")
                         .build();
