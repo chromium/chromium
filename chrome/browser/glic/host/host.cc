@@ -58,11 +58,9 @@ Host::PageHandlerInfo::PageHandlerInfo(PageHandlerInfo&&) = default;
 Host::PageHandlerInfo& Host::PageHandlerInfo::operator=(PageHandlerInfo&&) =
     default;
 
-// When no sharing manager provider is injected, use the keyed service.
+// When no sharing manager provider is injected, we'll use the keyed service.
 Host::Host(Profile* profile)
-    : profile_(profile),
-      sharing_manager_provider_(
-          GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {}
+    : profile_(profile), sharing_manager_provider_(nullptr) {}
 Host::Host(Profile* profile,
            GlicSharingManagerProvider* sharing_manager_provider)
     : profile_(profile), sharing_manager_provider_(sharing_manager_provider) {}
@@ -147,12 +145,14 @@ void Host::LoginPageCommitted(GlicPageHandler* page_handler) {
   observers_.Notify(&Observer::LoginPageCommitted);
 }
 
-GlicSharingManager& Host::sharing_manager() {
-  return sharing_manager_provider_->sharing_manager();
-}
-
 GlicKeyedService& Host::glic_service() {
   return *GlicKeyedService::Get(profile_);
+}
+
+GlicSharingManager& Host::sharing_manager() {
+  return sharing_manager_provider_
+             ? sharing_manager_provider_->sharing_manager()
+             : glic_service().sharing_manager();
 }
 
 GlicPageHandler* Host::page_handler() const {

@@ -519,7 +519,6 @@ class GlicWebClientHandler
         glic_service_(
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
         window_controller_(&glic_service_->window_controller()),
-        glic_sharing_manager_(glic_service_->sharing_manager()),
         pref_service_(profile_->GetPrefs()),
         active_state_calculator_(&glic_service_->window_controller()),
         browser_is_open_calculator_(profile_, this),
@@ -538,6 +537,7 @@ class GlicWebClientHandler
   }
 
   Host& host() { return page_handler_->host(); }
+  GlicSharingManager& sharing_manager() { return host().sharing_manager(); }
 
   // glic::mojom::WebClientHandler implementation.
   void WebClientCreated(
@@ -587,31 +587,32 @@ class GlicWebClientHandler
     }
 
     focus_changed_subscription_ =
-        glic_sharing_manager_->AddFocusedTabChangedCallback(
+        sharing_manager().AddFocusedTabChangedCallback(
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabChanged,
                                 base::Unretained(this)));
 
     pinned_tabs_changed_subscription_ =
-        glic_sharing_manager_->AddPinnedTabsChangedCallback(base::BindRepeating(
+        sharing_manager().AddPinnedTabsChangedCallback(base::BindRepeating(
             &GlicWebClientHandler::OnPinningChanged, base::Unretained(this)));
 
     pinned_tab_data_changed_subscription_ =
-        glic_sharing_manager_->AddPinnedTabDataChangedCallback(
+        sharing_manager().AddPinnedTabDataChangedCallback(
             base::BindRepeating(&GlicWebClientHandler::OnPinnedTabDataChanged,
                                 base::Unretained(this)));
 
     focus_data_changed_subscription_ =
-        glic_sharing_manager_->AddFocusedTabDataChangedCallback(
+        sharing_manager().AddFocusedTabDataChangedCallback(
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
                                 base::Unretained(this)));
 
     focused_browser_changed_subscription_ =
-        glic_sharing_manager_->AddFocusedBrowserChangedCallback(
+        sharing_manager().AddFocusedBrowserChangedCallback(
             base::BindRepeating(&GlicWebClientHandler::OnFocusedBrowserChanged,
                                 base::Unretained(this)));
 
     active_browser_changed_subscription_ =
-        glic_sharing_manager_->focused_browser_manager()
+        sharing_manager()
+            .focused_browser_manager()
             .AddActiveBrowserChangedCallback(base::BindRepeating(
                 &GlicWebClientHandler::OnActiveBrowserChanged,
                 base::Unretained(this)));
@@ -653,23 +654,23 @@ class GlicWebClientHandler
     state->panel_state = host().GetPanelState(this).Clone();
 
     state->focused_tab_data =
-        CreateFocusedTabData(glic_sharing_manager_->GetFocusedTabData());
+        CreateFocusedTabData(sharing_manager().GetFocusedTabData());
     state->can_attach = browser_attach_observation_->CanAttachToBrowser();
     state->panel_is_active = active_state_calculator_.IsActive();
 
     state->focused_tab_data =
-        CreateFocusedTabData(glic_sharing_manager_->GetFocusedTabData());
+        CreateFocusedTabData(sharing_manager().GetFocusedTabData());
 
     if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab)) {
-      OnPinningChanged(glic_sharing_manager_->GetPinnedTabs());
+      OnPinningChanged(sharing_manager().GetPinnedTabs());
     }
 
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
-    state->browser_is_active = glic_sharing_manager_->GetFocusedBrowser();
+    state->browser_is_active = sharing_manager().GetFocusedBrowser();
 
     state->active_browser_info = CreateActiveBrowserInfo(
         profile_,
-        glic_sharing_manager_->focused_browser_manager().GetActiveBrowser());
+        sharing_manager().focused_browser_manager().GetActiveBrowser());
 
     state->always_detached_mode = GlicWindowController::AlwaysDetached();
 
@@ -757,7 +758,7 @@ class GlicWebClientHandler
                  const std::optional<int32_t> window_id,
                  CreateTabCallback callback) override {
     if (base::FeatureList::IsEnabled(media::kMediaLinkHelpers)) {
-      if (auto* tab = glic_sharing_manager_->GetFocusedTabData().focus()) {
+      if (auto* tab = sharing_manager().GetFocusedTabData().focus()) {
         const bool replaced =
             GlicMediaLinkHelper(tab->GetContents()).MaybeReplaceNavigation(url);
         base::UmaHistogramBoolean("Glic.MaybeReplaceNavigation.Result",
@@ -839,10 +840,10 @@ class GlicWebClientHandler
   void GetContextFromFocusedTab(
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
-    auto* tab = glic_sharing_manager_->GetFocusedTabData().focus();
+    auto* tab = sharing_manager().GetFocusedTabData().focus();
     auto tab_handle = tab ? tab->GetHandle() : tabs::TabHandle::Null();
 
-    glic_sharing_manager_->GetContextFromTab(
+    sharing_manager().GetContextFromTab(
         tab_handle, *options,
         base::BindOnce(
             &LogErrorAndUnwrapResult,
@@ -855,7 +856,7 @@ class GlicWebClientHandler
                          glic::mojom::GetTabContextOptionsPtr options,
                          GetContextFromTabCallback callback) override {
     // Extra activation gating is done in this function.
-    glic_sharing_manager_->GetContextFromTab(
+    sharing_manager().GetContextFromTab(
         tabs::TabHandle(tab_id), *options,
         base::BindOnce(&LogErrorAndUnwrapResult, base::DoNothing())
             .Then(std::move(callback)));
@@ -867,7 +868,7 @@ class GlicWebClientHandler
       GetContextForActorFromTabCallback callback) override {
     // TODO(b/433328453): add GetContextForActorFromTab Error
     // histogram.
-    glic_sharing_manager_->GetContextForActorFromTab(
+    sharing_manager().GetContextForActorFromTab(
         tabs::TabHandle(tab_id), *options,
         base::BindOnce(&LogErrorAndUnwrapResult, base::DoNothing())
             .Then(std::move(callback)));
@@ -876,7 +877,7 @@ class GlicWebClientHandler
   void SetMaximumNumberOfPinnedTabs(
       uint32_t num_tabs,
       SetMaximumNumberOfPinnedTabsCallback callback) override {
-    uint32_t effective_max = glic_sharing_manager_->SetMaxPinnedTabs(num_tabs);
+    uint32_t effective_max = sharing_manager().SetMaxPinnedTabs(num_tabs);
     std::move(callback).Run(effective_max);
   }
 
@@ -886,7 +887,7 @@ class GlicWebClientHandler
     for (auto tab_id : tab_ids) {
       tab_handles.push_back(tabs::TabHandle(tab_id));
     }
-    std::move(callback).Run(glic_sharing_manager_->PinTabs(tab_handles));
+    std::move(callback).Run(sharing_manager().PinTabs(tab_handles));
   }
 
   void UnpinTabs(const std::vector<int32_t>& tab_ids,
@@ -895,12 +896,10 @@ class GlicWebClientHandler
     for (auto tab_id : tab_ids) {
       tab_handles.push_back(tabs::TabHandle(tab_id));
     }
-    std::move(callback).Run(glic_sharing_manager_->UnpinTabs(tab_handles));
+    std::move(callback).Run(sharing_manager().UnpinTabs(tab_handles));
   }
 
-  void UnpinAllTabs() override {
-    glic_sharing_manager_->UnpinAllTabs();
-  }
+  void UnpinAllTabs() override { sharing_manager().UnpinAllTabs(); }
 
   void CreateTask(CreateTaskCallback callback) override {
     glic_service_->CreateTask(std::move(callback));
@@ -1223,8 +1222,8 @@ class GlicWebClientHandler
   void SubscribeToPinCandidates(
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override {
-    glic_sharing_manager_->SubscribeToPinCandidates(std::move(options),
-                                                    std::move(observer));
+    sharing_manager().SubscribeToPinCandidates(std::move(options),
+                                               std::move(observer));
   }
 
   void OnViewChanged(mojom::ViewChangedNotificationPtr notification) override {
@@ -1517,7 +1516,6 @@ class GlicWebClientHandler
   raw_ptr<GlicPageHandler> page_handler_;
   raw_ptr<GlicKeyedService> glic_service_;
   raw_ptr<GlicWindowController> window_controller_;
-  raw_ref<GlicSharingManager> glic_sharing_manager_;
   raw_ptr<PrefService> pref_service_;
   ActiveStateCalculator active_state_calculator_;
   BrowserIsOpenCalculator browser_is_open_calculator_;
