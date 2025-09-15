@@ -48,6 +48,16 @@ void LogBoolean(password_manager::PasswordManagerClient* client,
   }
 }
 
+void LogNumber(password_manager::PasswordManagerClient* client,
+               autofill::SavePasswordProgressLogger::StringID message_id,
+               int error_enum) {
+  if (client && client->GetCurrentLogManager() &&
+      client->GetCurrentLogManager()->IsLoggingActive()) {
+    BrowserSavePasswordProgressLogger(client->GetCurrentLogManager())
+        .LogNumber(message_id, error_enum);
+  }
+}
+
 }  // namespace
 
 LoginStateChecker::LoginStateChecker(
@@ -150,8 +160,9 @@ void LoginStateChecker::OnExecutionResponseCallback(
       client_,
       SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESPONSE_RECEIVED);
   if (!execution_result.response.has_value()) {
-    LogMessage(client_,
-               SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_FAILURE);
+    LogNumber(client_,
+              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_SERVER_ERROR,
+              static_cast<int>(execution_result.response.error().error()));
     TerminateLoginChecks();
     return;
   }

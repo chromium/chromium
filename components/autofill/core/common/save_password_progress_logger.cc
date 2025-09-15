@@ -566,6 +566,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Login state check: max attempts reached";
     case STRING_LOGIN_STATE_CHECK_NO_CONTENT:
       return "Login state check: no page content";
+    case STRING_LOGIN_STATE_CHECK_SERVER_ERROR:
+      return "Login state check: model execution server error, code: ";
     case STRING_LOGIN_STATE_CHECK_FAILURE:
       return "Login state check: failure";
     case STRING_ACTOR_LOGIN_FILLING_ATTEMPT_STARTED:
