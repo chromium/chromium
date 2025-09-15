@@ -163,7 +163,10 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   //  offscreen: whether to make the context offscreen or not. When FBO 0 is
   //      bound, offscreen contexts render to an internal buffer, onscreen ones
   //      to the surface.
-  //  offscreen_size: the size if the GL context is offscreen.
+  //  context_type: type of the command buffer, should be WEBGL1, WEBGL2 or
+  //      OPENGLES2.
+  //  lose_context_when_out_of_memory: lose this context in case of out of
+  //      memory errors.
   // Returns:
   //   true if successful.
   virtual gpu::ContextResult Initialize(
