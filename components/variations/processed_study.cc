@@ -165,6 +165,16 @@ bool ValidateAndComputeTotalProbability(
       return false;
     }
 
+    if (study.activation_type() == Study::STICKY_AFTER_QUERY &&
+        (experiment.has_google_web_experiment_id() ||
+         experiment.has_google_web_trigger_experiment_id() ||
+         experiment.has_google_app_experiment_id())) {
+      LogInvalidReason(InvalidStudyReason::kExperimentIdInStickyStudy);
+      DVLOG(1) << study.name() << " with sticky activation has experiment ("
+               << experiment.name() << ") with an experiment ID.";
+      return false;
+    }
+
     if (!experiment.has_forcing_flag() && experiment.probability_weight() > 0) {
       // If |divisor| is not 0, there was at least one prior non-zero group.
       if (divisor != 0) {

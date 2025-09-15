@@ -37,7 +37,8 @@ enum class InvalidStudyReason {
   kUnsupportedStudyActivationType = 16,
   kInvalidConsistencyForStickyStudy = 17,
   kUnsupportedExpiryDate = 18,
-  kMaxValue = kUnsupportedExpiryDate,
+  kExperimentIdInStickyStudy = 19,
+  kMaxValue = kExperimentIdInStickyStudy,
 };
 
 class Study;

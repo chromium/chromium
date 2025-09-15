@@ -158,6 +158,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Unsupported study activation type"/>
   <int value="17" label="Invalid consistency for sticky study"/>
   <int value="18" label="Unsupported expiry_date field"/>
+  <int value="19" label="Sticky activation study specifies an experiment ID"/>
 </enum>
 
 <enum name="VariationsLimitedEntropySeedRejectionReason">
