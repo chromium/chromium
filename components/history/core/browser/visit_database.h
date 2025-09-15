@@ -222,6 +222,7 @@ class VisitDatabase {
   // scheme/host/port as `url`, as well as the time of the earliest visit.
   // "User-visible" is defined as in GetVisibleVisitsInRange() above, i.e.
   // excluding redirects and subframes.
+  // Visits with an HTTP response code of 404 are also excluded.
   // This function is only valid for HTTP and HTTPS URLs; all other schemes
   // cause the function to return false.
   bool GetVisibleVisitCountToHost(const GURL& url,

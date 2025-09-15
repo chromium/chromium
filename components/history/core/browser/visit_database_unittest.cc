@@ -274,6 +274,119 @@ TEST_F(VisitDatabaseTest, GetMostRecentVisitForURL_Tied) {
   EXPECT_EQ(out_visit.visit_time, kNow);
 }
 
+TEST_F(VisitDatabaseTest, GetVisibleVisitCountToHost) {
+  // Add a primary main frame non-redirect visit to a URL.
+  GURL url("http://www.google.com/");
+  URLRow url_row(url);
+  URLID url_id = AddURL(url_row);
+  ASSERT_NE(0, url_id);
+
+  VisitRow visit1(url_id, base::Time::Now(), 0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START |
+                                            ui::PAGE_TRANSITION_CHAIN_END),
+                  0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit1, SOURCE_BROWSED));
+
+  // Check that we have one visit.
+  int count = 0;
+  base::Time first_visit_time;
+  EXPECT_TRUE(GetVisibleVisitCountToHost(url, &count, &first_visit_time));
+  EXPECT_EQ(1, count);
+  EXPECT_EQ(visit1.visit_time, first_visit_time);
+
+  // Add a later visit to the same origin.
+  VisitRow visit2(url_id, base::Time::Now() + base::Seconds(1), 0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START |
+                                            ui::PAGE_TRANSITION_CHAIN_END),
+                  0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit2, SOURCE_BROWSED));
+
+  // The count should be updated, but the first visit time should stay the same.
+  EXPECT_TRUE(GetVisibleVisitCountToHost(url, &count, &first_visit_time));
+  EXPECT_EQ(2, count);
+  EXPECT_EQ(visit1.visit_time, first_visit_time);
+
+  // Add a visit with a 404 response code.
+  GURL url2("http://www.google.com/foo");
+  URLRow url_row2(url2);
+  URLID url_id2 = AddURL(url_row2);
+  ASSERT_NE(0, url_id2);
+
+  VisitRow visit3(url_id2, base::Time::Now() + base::Seconds(2), 0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START |
+                                            ui::PAGE_TRANSITION_CHAIN_END),
+                  0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit3, SOURCE_BROWSED));
+  VisitContextAnnotations annotations404;
+  annotations404.on_visit.response_code = 404;
+  AddContextAnnotationsForVisit(visit3.visit_id, annotations404);
+
+  // Check that the 404 visit is not counted.
+  EXPECT_TRUE(GetVisibleVisitCountToHost(url, &count, &first_visit_time));
+  EXPECT_EQ(2, count);
+
+  // Add a visit with a 403 response code.
+  GURL url3("http://www.google.com/bar");
+  URLRow url_row3(url3);
+  URLID url_id3 = AddURL(url_row3);
+  ASSERT_NE(0, url_id3);
+
+  VisitRow visit4(url_id3, base::Time::Now() + base::Seconds(3), 0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START |
+                                            ui::PAGE_TRANSITION_CHAIN_END),
+                  0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit4, SOURCE_BROWSED));
+  VisitContextAnnotations annotations403;
+  annotations403.on_visit.response_code = 403;
+  AddContextAnnotationsForVisit(visit4.visit_id, annotations403);
+
+  // Check that the 200 visit is counted.
+  EXPECT_TRUE(GetVisibleVisitCountToHost(url, &count, &first_visit_time));
+  EXPECT_EQ(3, count);
+
+  // Add a redirect visit to the same origin and verify it isn't counted.
+  VisitRow visit5(url_id, base::Time::Now() + base::Seconds(4), 0,
+                  ui::PAGE_TRANSITION_SERVER_REDIRECT, 0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit5, SOURCE_BROWSED));
+  EXPECT_TRUE(GetVisibleVisitCountToHost(url, &count, &first_visit_time));
+  EXPECT_EQ(3, count);
+
+  // Add a subframe visit, which should not be counted.
+  VisitRow visit6(url_id, base::Time::Now() + base::Seconds(5), 0,
+                  ui::PAGE_TRANSITION_AUTO_SUBFRAME, 0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit6, SOURCE_BROWSED));
+  EXPECT_TRUE(GetVisibleVisitCountToHost(url, &count, &first_visit_time));
+  EXPECT_EQ(3, count);
+
+  // Add a visit for a different origin (this one is HTTPS instead of HTTP).
+  GURL url4("https://www.google.com/");
+  URLRow url_row4(url4);
+  URLID url_id4 = AddURL(url_row4);
+  ASSERT_NE(0, url_id4);
+  VisitRow visit7(url_id4, base::Time::Now() + base::Seconds(6), 0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START |
+                                            ui::PAGE_TRANSITION_CHAIN_END),
+                  0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit7, SOURCE_BROWSED));
+  // We should only get visits for the specified origin.
+  EXPECT_TRUE(GetVisibleVisitCountToHost(url4, &count, &first_visit_time));
+  EXPECT_EQ(1, count);
+
+  // We should succeed with a count of 0 for an origin with no visits.
+  GURL url5("http://www.nevervisited.com/");
+  EXPECT_TRUE(GetVisibleVisitCountToHost(url5, &count, &first_visit_time));
+  EXPECT_EQ(0, count);
+
+  // We should fail for non-HTTP / HTTPS URLs.
+  GURL url6("ftp://ftp.example.com/");
+  EXPECT_FALSE(GetVisibleVisitCountToHost(url6, &count, &first_visit_time));
+}
+
 namespace {
 
 std::vector<VisitRow> GetTestVisitRows() {

@@ -1037,8 +1037,11 @@ bool VisitDatabase::GetVisibleVisitCountToHost(const GURL& url,
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT v.visit_time,transition "
-      "FROM visits v INNER JOIN urls u ON v.url = u.id "
-      "WHERE u.url >= ? AND u.url < ?"));
+      "FROM visits v "
+      "INNER JOIN urls u ON v.url=u.id "
+      "LEFT OUTER JOIN context_annotations c ON v.id=c.visit_id "
+      "WHERE u.url>=? AND u.url<? "
+      "AND (c.response_code IS NULL OR c.response_code!=404)"));
   statement.BindString(0, host_query_min);
   statement.BindString(
       1, host_query_min.substr(0, host_query_min.size() - 1) + '0');
