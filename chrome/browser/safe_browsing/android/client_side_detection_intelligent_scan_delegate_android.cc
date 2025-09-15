@@ -225,9 +225,12 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::InquireOnDeviceModel(
     return;
   }
 
-  // The caller of this function is responsible for calling ResetOnDeviceSession
-  // before calling this function again.
-  CHECK(!current_inquiry_);
+  // TODO(crbug.com/444148365): Intelligent scan delegate is per profile and may
+  // be shared with multiple ClientSideDetectionHost, so it is possible that one
+  // session created by one ClientSideDetectionHost is still alive when another
+  // ClientSideDetectionHost tries to create a new session. We should support
+  // multiple sessions per delegate.
+  ResetOnDeviceSession();
 
   current_inquiry_ = std::make_unique<Inquiry>(this, std::move(callback));
   current_inquiry_->Start(rendered_texts);
