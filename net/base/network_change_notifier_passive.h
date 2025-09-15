@@ -39,8 +39,7 @@ class NET_EXPORT NetworkChangeNotifierPassive : public NetworkChangeNotifier {
   // These methods are used to notify this object that a network property has
   // changed. These must be called from the thread that owns this object.
   void OnDNSChanged();
-  void OnIPAddressChanged(
-      IPAddressChangeType change_type = IP_ADDRESS_CHANGE_NORMAL);
+  void OnIPAddressChanged(IPAddressChangeType change_type);
   void OnConnectionChanged(
       NetworkChangeNotifier::ConnectionType connection_type);
   void OnConnectionSubtypeChanged(

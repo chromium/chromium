@@ -1065,7 +1065,8 @@ class SpdySessionGoAwayOnChangeTest
   void SimulateChange() {
     switch (GetParam()) {
       case ChangeType::kIpAddress:
-        spdy_session_pool_->OnIPAddressChanged();
+        spdy_session_pool_->OnIPAddressChanged(
+            NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
         break;
       case ChangeType::kSSLConfig:
         session_deps_.ssl_config_service->NotifySSLContextConfigChange();
@@ -1329,7 +1330,8 @@ TEST_F(SpdySessionPoolTest, CloseOnIPAddressChanged) {
   sessionC->CloseSessionOnError(ERR_HTTP2_PROTOCOL_ERROR, "Error!");
   EXPECT_TRUE(sessionC->IsDraining());
 
-  spdy_session_pool_->OnIPAddressChanged();
+  spdy_session_pool_->OnIPAddressChanged(
+      NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
 
   EXPECT_TRUE(sessionA->IsDraining());
   EXPECT_TRUE(sessionB->IsDraining());
@@ -1380,7 +1382,8 @@ TEST_F(SpdySessionPoolTest, HandleIPAddressChangeThenShutdown) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(delegate.send_headers_completed());
 
-  spdy_session_pool_->OnIPAddressChanged();
+  spdy_session_pool_->OnIPAddressChanged(
+      NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   EXPECT_EQ(1u, num_active_streams(session));

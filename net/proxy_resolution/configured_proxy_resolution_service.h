@@ -327,8 +327,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // NetworkChangeNotifier::IPAddressObserver
   // When this is called, we re-fetch PAC scripts and re-run WPAD.
   void OnIPAddressChanged(
-      NetworkChangeNotifier::IPAddressChangeType change_type =
-          NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override;
+      NetworkChangeNotifier::IPAddressChangeType change_type) override;
 
   // NetworkChangeNotifier::DNSObserver
   // We respond as above.

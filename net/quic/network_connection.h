@@ -41,8 +41,7 @@ class NET_EXPORT NetworkConnection
 
   // NetworkChangeNotifier::IPAddressObserver methods:
   void OnIPAddressChanged(
-      NetworkChangeNotifier::IPAddressChangeType change_type =
-          NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override;
+      NetworkChangeNotifier::IPAddressChangeType change_type) override;
 
   // NetworkChangeNotifier::ConnectionTypeObserver methods:
   void OnConnectionTypeChanged(

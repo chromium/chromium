@@ -364,7 +364,7 @@ AddressSorterPosix::AddressSorterPosix(ClientSocketFactory* socket_factory)
       ipv4_scope_table_(LoadPolicy(kDefaultIPv4ScopeTable,
                                    std::size(kDefaultIPv4ScopeTable))) {
   NetworkChangeNotifier::AddIPAddressObserver(this);
-  OnIPAddressChanged();
+  OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
 }
 
 AddressSorterPosix::~AddressSorterPosix() {

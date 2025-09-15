@@ -80,8 +80,7 @@ class NetworkServiceClient
 
   // net::NetworkChangeNotifier::IPAddressObserver implementation:
   void OnIPAddressChanged(
-      net::NetworkChangeNotifier::IPAddressChangeType change_type =
-          net::NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override;
+      net::NetworkChangeNotifier::IPAddressChangeType change_type) override;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)

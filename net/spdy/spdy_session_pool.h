@@ -333,8 +333,7 @@ class NET_EXPORT SpdySessionPool
   // they won't get re-used.  The active ones will either complete successfully
   // or error out due to the IP address change.
   void OnIPAddressChanged(
-      NetworkChangeNotifier::IPAddressChangeType change_type =
-          NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override;
+      NetworkChangeNotifier::IPAddressChangeType change_type) override;
 
   // SSLClientContext::Observer methods:
 

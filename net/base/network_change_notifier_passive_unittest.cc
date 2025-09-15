@@ -65,7 +65,8 @@ TEST_F(NetworkChangeNotifierPassiveTest, OnIPAddressChanged) {
 
   EXPECT_CALL(observer, OnIPAddressChanged(
                             NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL));
-  notifier()->OnIPAddressChanged();
+  notifier()->OnIPAddressChanged(
+      NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
   FastForwardUntilIdle();
 
   NetworkChangeNotifier::RemoveIPAddressObserver(&observer);

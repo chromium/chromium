@@ -560,8 +560,7 @@ class DnsConfigServiceWin::Watcher
 
   // NetworkChangeNotifier::IPAddressObserver:
   void OnIPAddressChanged(
-      NetworkChangeNotifier::IPAddressChangeType change_type =
-          NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL) override {
+      NetworkChangeNotifier::IPAddressChangeType change_type) override {
     // Need to update non-loopback IP of local host.
     OnHostsChanged(true);
   }

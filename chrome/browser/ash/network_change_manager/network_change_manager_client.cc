@@ -207,7 +207,8 @@ void NetworkChangeManagerClient::NotifyObservers(
 
   // Notify NetworkChangeNotifier.
   if (ip_address_changed)
-    network_change_notifier_->OnIPAddressChanged();
+    network_change_notifier_->OnIPAddressChanged(
+        net::NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
   if (dns_changed)
     network_change_notifier_->OnDNSChanged();
   if (connection_type_changed)
