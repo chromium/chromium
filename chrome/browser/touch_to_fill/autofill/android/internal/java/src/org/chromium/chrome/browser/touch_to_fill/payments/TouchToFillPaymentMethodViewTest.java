@@ -64,11 +64,13 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.PROGRESS_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.NON_TRANSFORMING_LOYALTY_CARD_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ProgressIconProperties.PROGRESS_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CLOSED_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_FULL_HEIGHT_DESCRIPTION_ID;
@@ -76,6 +78,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ALL_LOYALTY_CARDS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.ALL_TERMS_LABEL_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
@@ -1354,6 +1357,39 @@ public class TouchToFillPaymentMethodViewTest {
         verify(actionCallback, never()).run();
     }
 
+    @Test
+    @MediumTest
+    public void testProgressSpinnerIsShown() {
+        runOnUiThreadBlocking(
+                () -> {
+                    ModelList progressScreenItems = new ModelList();
+                    progressScreenItems.add(
+                            new ListItem(
+                                    PROGRESS_ICON,
+                                    createProgressIconModel(
+                                            R.string
+                                                    .autofill_pending_dialog_loading_accessibility_description)));
+
+                    mTouchToFillPaymentMethodModel.set(CURRENT_SCREEN, PROGRESS_SCREEN);
+                    mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, progressScreenItems);
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        RecyclerView bnplProgressScreen =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.touch_to_fill_progress_screen);
+        assertNotNull(bnplProgressScreen);
+        assertThat(bnplProgressScreen.getAdapter().getItemCount(), is(1));
+
+        View progressSpinner = bnplProgressScreen.getChildAt(0).findViewById(R.id.progress_spinner);
+        assertTrue(progressSpinner.isShown());
+        assertEquals(
+                getString(R.string.autofill_pending_dialog_loading_accessibility_description),
+                progressSpinner.getContentDescription());
+    }
+
     private RecyclerView getCreditCardSuggestions() {
         return mTouchToFillPaymentMethodView
                 .getContentView()
@@ -1469,6 +1505,13 @@ public class TouchToFillPaymentMethodViewTest {
                         .with(BNPL_ITEM_COLLECTION_INFO, collectionInfo)
                         .with(IS_ENABLED, !suggestion.applyDeactivatedStyle());
         return bnplSuggestionModelBuilder.build();
+    }
+
+    private static PropertyModel createProgressIconModel(@StringRes int contentDescription) {
+        return new PropertyModel.Builder(
+                        TouchToFillPaymentMethodProperties.ProgressIconProperties.ALL_KEYS)
+                .with(PROGRESS_CONTENT_DESCRIPTION_ID, contentDescription)
+                .build();
     }
 
     private static PropertyModel createFillButtonModel(Runnable actionCallback) {

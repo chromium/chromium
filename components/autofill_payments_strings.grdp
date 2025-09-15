@@ -307,10 +307,10 @@
     <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_NAME_ON_CARD" desc="Error message to show when a user has input an invalid name on card.">
       Name on card is invalid
     </message>
-    <message name="IDS_AUTOFILL_SAVE_AND_FILL_PENDING_DIALOG_LOADING_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement to indicate that the Save and Fill dialog is in a pending state. It is displayed along with a loading spinner while attempting to show the server version of the dialog and after the user has accepted the dialog.">
-      Loading
-    </message>
   </if>
+  <message name="IDS_AUTOFILL_PENDING_DIALOG_LOADING_ACCESSIBILITY_DESCRIPTION" desc="The accessibility string read to indicate that the dialog or bottomsheet is in a pending state. It is announced when the user taps on the spinner and TalkBack is enabled." formatter_data="android_java">
+    Loading
+  </message>
 
   <!-- Autofill error dialog related strings -->
   <message name="IDS_AUTOFILL_MASKED_SERVER_CARD_RISK_BASED_UNMASKING_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog during credit card risk-based unmasking.">
@@ -1368,6 +1368,18 @@
     </message>
     <message name="IDS_AUTOFILL_LOYALTY_CARD_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet showing a list of the user's loyalty cards is closed." formatter_data="android_java">
       List of loyalty cards is closed.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_PROGRESS_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes the bottom sheet which shows a progress spinner for a Buy-Now-Pay-Later flow." formatter_data="android_java">
+      Buy-Now-Pay-Later progress screen. Keyboard hidden.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_PROGRESS_SHEET_HALF_HEIGHT" desc="Accessibility string read when the bottom sheet showing a Buy-Now-Pay-Later progress spinner is opened at half height. The sheet will occupy the bottom half the screen." formatter_data="android_java">
+      Buy-Now-Pay-Later progress screen opened at half height.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_PROGRESS_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet showing a Buy-Now-Pay-Later progress spinner is opened at full height. The sheet will occupy the entire screen." formatter_data="android_java">
+      Buy-Now-Pay-Later progress screen opened at full height.
+    </message>
+    <message name="IDS_AUTOFILL_BNPL_PROGRESS_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet showing a Buy-Now-Pay-Later progress spinner is closed." formatter_data="android_java">
+      Buy-Now-Pay-Later progress screen is closed.
     </message>
     <message name="IDS_AUTOFILL_PAYMENT_METHOD_A11Y_ITEM_COLLECTION_INFO" desc="A template message for a fillable item content description, provides its position in the list info (e.g. 'Item label, 2 of 4')." formatter_data="android_java">
       <ph name="ITEM_LABEL">%1$s<ex>Card info</ex></ph>, <ph name="ITEM_POSITION">%2$s<ex>2</ex></ph> of <ph name="ITEMS_TOTAL">%3$s<ex>8</ex></ph>.

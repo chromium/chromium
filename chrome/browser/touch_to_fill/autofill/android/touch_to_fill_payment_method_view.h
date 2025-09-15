@@ -31,6 +31,8 @@ class TouchToFillPaymentMethodView {
       base::span<const LoyaltyCard> affiliated_loyalty_cards,
       base::span<const LoyaltyCard> all_loyalty_cards,
       bool first_time_usage) = 0;
+  virtual bool ShowProgressScreen(
+      TouchToFillPaymentMethodViewController* controller) = 0;
   virtual void Hide() = 0;
 };
 

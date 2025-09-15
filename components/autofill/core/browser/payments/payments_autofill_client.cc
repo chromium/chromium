@@ -250,6 +250,11 @@ bool PaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
   return false;
 }
 
+bool PaymentsAutofillClient::ShowTouchToFillProgress(
+    base::WeakPtr<TouchToFillDelegate> delegate) {
+  return false;
+}
+
 void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
 const PaymentsDataManager& PaymentsAutofillClient::GetPaymentsDataManager()

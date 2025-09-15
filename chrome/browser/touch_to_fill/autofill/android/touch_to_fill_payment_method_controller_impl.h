@@ -54,6 +54,8 @@ class TouchToFillPaymentMethodControllerImpl
                         base::span<const LoyaltyCard> affiliated_loyalty_cards,
                         base::span<const LoyaltyCard> all_loyalty_cards,
                         bool first_time_usage) override;
+  bool ShowProgressScreen(std::unique_ptr<TouchToFillPaymentMethodView> view,
+                          base::WeakPtr<TouchToFillDelegate> delegate) override;
   void Hide() override;
 
   // content::WebContentsObserver:

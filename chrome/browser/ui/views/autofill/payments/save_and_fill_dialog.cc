@@ -263,8 +263,9 @@ void SaveAndFillDialog::CreatePendingView() {
 void SaveAndFillDialog::ToggleThrobberVisibility(bool visible) {
   if (visible) {
     throbber_->Start();
-    throbber_->GetViewAccessibility().AnnouncePolitely(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_AND_FILL_PENDING_DIALOG_LOADING_ACCESSIBILITY_ANNOUNCEMENT));
+    throbber_->GetViewAccessibility().AnnouncePolitely(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_PENDING_DIALOG_LOADING_ACCESSIBILITY_DESCRIPTION));
     SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
   } else {
     throbber_->Stop();

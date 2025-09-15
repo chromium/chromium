@@ -137,6 +137,27 @@ bool TouchToFillPaymentMethodControllerImpl::ShowLoyaltyCards(
   return true;
 }
 
+bool TouchToFillPaymentMethodControllerImpl::ShowProgressScreen(
+    std::unique_ptr<TouchToFillPaymentMethodView> view,
+    base::WeakPtr<TouchToFillDelegate> delegate) {
+  if (view) {
+    // If there is a view already being shown, reset it and use the new provided
+    // view.
+    if (view_) {
+      ResetJavaObject();
+    }
+    view_ = std::move(view);
+  }
+
+  if (!view_ || !view_->ShowProgressScreen(this)) {
+    ResetJavaObject();
+    return false;
+  }
+
+  delegate_ = delegate;
+  return true;
+}
+
 void TouchToFillPaymentMethodControllerImpl::Hide() {
   if (view_) {
     view_->Hide();

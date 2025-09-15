@@ -156,6 +156,24 @@ bool TouchToFillPaymentMethodViewImpl::ShowLoyaltyCards(
   return true;
 }
 
+bool TouchToFillPaymentMethodViewImpl::ShowProgressScreen(
+    TouchToFillPaymentMethodViewController* controller) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // If the TTF surface isn't already showing, and a new surface is not ready to
+  // show, return that showing the progress screen failed, as the progress
+  // screen can not be shown.
+  if (!java_object_ && !IsReadyToShow(controller, env)) {
+    return false;
+  }
+
+  // Use either the old `java_object_` or the new one created in
+  // `IsReadyToShow()` to show the progress screen.
+  Java_TouchToFillPaymentMethodViewBridge_showProgressScreen(env, java_object_);
+
+  return true;
+}
+
 void TouchToFillPaymentMethodViewImpl::Hide() {
   if (java_object_) {
     Java_TouchToFillPaymentMethodViewBridge_hideSheet(

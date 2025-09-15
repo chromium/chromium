@@ -58,6 +58,15 @@ class TouchToFillPaymentMethodController
       base::span<const LoyaltyCard> all_loyalty_cards,
       bool first_time_usage) = 0;
 
+  // Shows the Touch To Fill progress screen. If the TTF surface is already
+  // being shown when this is called, `view` is optional and will override the
+  // existing view when present. Otherwise, if the TTF surface is not already
+  // being shown, `view` is required. If provided, `delegate` will be notified
+  // of the user's actions. Returns whether the surface was successfully shown.
+  virtual bool ShowProgressScreen(
+      std::unique_ptr<TouchToFillPaymentMethodView> view,
+      base::WeakPtr<TouchToFillDelegate> delegate) = 0;
+
   // Hides the surface if it is currently shown.
   virtual void Hide() = 0;
 };

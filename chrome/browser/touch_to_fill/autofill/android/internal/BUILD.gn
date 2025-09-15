@@ -56,6 +56,8 @@ android_resources("java_resources") {
     "java/res/layout/touch_to_fill_payment_method_header_item.xml",
     "java/res/layout/touch_to_fill_payment_method_home_screen.xml",
     "java/res/layout/touch_to_fill_payment_method_sheet.xml",
+    "java/res/layout/touch_to_fill_progress_icon_sheet_item.xml",
+    "java/res/layout/touch_to_fill_progress_screen.xml",
     "java/res/layout/touch_to_fill_terms_label_sheet_item.xml",
     "java/res/layout/touch_to_fill_wallet_settings_button.xml",
     "java/res/values/dimens.xml",

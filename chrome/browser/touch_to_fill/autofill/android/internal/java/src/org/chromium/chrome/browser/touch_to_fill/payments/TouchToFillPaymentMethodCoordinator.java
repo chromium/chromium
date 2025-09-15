@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.PROGRESS_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.WALLET_SETTINGS_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
@@ -108,6 +109,11 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
+    public void showProgressScreen() {
+        mMediator.showProgressScreen();
+    }
+
+    @Override
     public void hideSheet() {
         mMediator.hideSheet();
     }
@@ -166,6 +172,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 BNPL,
                 TouchToFillPaymentMethodViewBinder::createBnplItemView,
                 TouchToFillPaymentMethodViewBinder::bindBnplItemView);
+        adapter.registerType(
+                PROGRESS_ICON,
+                TouchToFillPaymentMethodViewBinder::createProgressIconView,
+                TouchToFillPaymentMethodViewBinder::bindProgressIconView);
         view.setSheetItemListAdapter(adapter);
     }
 

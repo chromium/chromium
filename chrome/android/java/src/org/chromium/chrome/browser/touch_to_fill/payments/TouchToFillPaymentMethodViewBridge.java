@@ -92,6 +92,11 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
+    private void showProgressScreen() {
+        mComponent.showProgressScreen();
+    }
+
+    @CalledByNative
     private void hideSheet() {
         mComponent.hideSheet();
     }

@@ -943,6 +943,18 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
 #endif
 }
 
+bool ChromePaymentsAutofillClient::ShowTouchToFillProgress(
+    base::WeakPtr<TouchToFillDelegate> delegate) {
+#if BUILDFLAG(IS_ANDROID)
+  // TTF should already be shown, so pass nullptr for `view`.
+  return GetTouchToFillPaymentMethodController()->ShowProgressScreen(
+      /*view=*/nullptr, delegate);
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED();
+#endif
+}
+
 void ChromePaymentsAutofillClient::HideTouchToFillPaymentMethod() {
 #if BUILDFLAG(IS_ANDROID)
   GetTouchToFillPaymentMethodController()->Hide();

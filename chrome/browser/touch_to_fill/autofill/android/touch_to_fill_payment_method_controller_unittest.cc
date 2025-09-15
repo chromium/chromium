@@ -56,6 +56,9 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
                base::span<const LoyaltyCard> affiliated_loyalty_cards,
                base::span<const LoyaltyCard> all_loyalty_cards,
                bool first_time_usage));
+  MOCK_METHOD(bool,
+              ShowProgressScreen,
+              (TouchToFillPaymentMethodViewController * controller));
   MOCK_METHOD(void, Hide, ());
 };
 
@@ -285,6 +288,64 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   OnAfterAskForValuesToFill();
   EXPECT_CALL(ttf_delegate(), ShowPaymentMethodSettings);
   payment_method_controller().ShowPaymentMethodSettings(nullptr);
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowProgressScreenOnPreexistingView) {
+  EXPECT_CALL(*mock_view_,
+              ShowPaymentMethods(&payment_method_controller(),
+                                 ElementsAreArray(suggestions_),
+                                 /*should_show_scan_credit_card=*/true));
+  EXPECT_CALL(*mock_view_, ShowProgressScreen(&payment_method_controller()))
+      .WillOnce(Return(true));
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  payment_method_controller().ShowProgressScreen(
+      /*view=*/nullptr, ttf_delegate().GetWeakPointer());
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest, ShowProgressScreenOnNewView) {
+  EXPECT_CALL(*mock_view_, ShowProgressScreen(&payment_method_controller()))
+      .WillOnce(Return(true));
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowProgressScreen(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer());
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowProgressScreenAbortsIfNoViewAvailable) {
+  EXPECT_CALL(*mock_view_, ShowProgressScreen(_)).Times(0);
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowProgressScreen(
+      /*view=*/nullptr, ttf_delegate().GetWeakPointer());
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowProgressScreenPrefersUsingNewViewOverPreexistingView) {
+  std::unique_ptr<MockTouchToFillPaymentMethodViewImpl> new_mock_view =
+      std::make_unique<MockTouchToFillPaymentMethodViewImpl>();
+
+  EXPECT_CALL(*mock_view_,
+              ShowPaymentMethods(&payment_method_controller(),
+                                 ElementsAreArray(suggestions_),
+                                 /*should_show_scan_credit_card=*/true));
+  EXPECT_CALL(*mock_view_, ShowProgressScreen(_)).Times(0);
+  EXPECT_CALL(*new_mock_view, ShowProgressScreen(&payment_method_controller()))
+      .WillOnce(Return(true));
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  payment_method_controller().ShowProgressScreen(
+      std::move(new_mock_view), ttf_delegate().GetWeakPointer());
+  OnAfterAskForValuesToFill();
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest, OnDismissedIsCalled) {

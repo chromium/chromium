@@ -63,6 +63,9 @@ class TouchToFillPaymentMethodProperties {
 
         // The screen displaying all loyalty cards of a user.
         int ALL_LOYALTY_CARDS_SCREEN = 1;
+
+        // The screen displaying the progress spinner.
+        int PROGRESS_SCREEN = 2;
     }
 
     @interface ItemType {
@@ -96,6 +99,9 @@ class TouchToFillPaymentMethodProperties {
 
         // A section containing the BNPL data.
         int BNPL = 9;
+
+        // A section containing the progress spinner icon.
+        int PROGRESS_ICON = 10;
     }
 
     /** Metadata associated with a card's image. */
@@ -241,6 +247,16 @@ class TouchToFillPaymentMethodProperties {
         };
 
         private BnplSuggestionProperties() {}
+    }
+
+    /** Properties for a progress icon entry in the TouchToFill sheet for payments. */
+    static class ProgressIconProperties {
+        static final PropertyModel.ReadableIntPropertyKey PROGRESS_CONTENT_DESCRIPTION_ID =
+                new PropertyModel.ReadableIntPropertyKey("progress_content_description_id");
+
+        static final PropertyKey[] ALL_KEYS = {PROGRESS_CONTENT_DESCRIPTION_ID};
+
+        private ProgressIconProperties() {}
     }
 
     /**

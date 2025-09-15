@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,6 +53,11 @@ class MockTouchToFillPaymentMethodController
                base::span<const LoyaltyCard>,
                base::span<const LoyaltyCard>,
                bool),
+              (override));
+  MOCK_METHOD(bool,
+              ShowProgressScreen,
+              (std::unique_ptr<TouchToFillPaymentMethodView> view,
+               base::WeakPtr<TouchToFillDelegate> delegate),
               (override));
   MOCK_METHOD(void, OnDismissed, (JNIEnv*, bool), (override));
   MOCK_METHOD(void, ScanCreditCard, (JNIEnv*), (override));

@@ -118,6 +118,9 @@ interface TouchToFillPaymentMethodComponent {
             List<LoyaltyCard> allLoyaltyCards,
             boolean firstTimeUsage);
 
+    /** Displays a progress screen bottomsheet. */
+    void showProgressScreen();
+
     /** Hides the bottom sheet if shown. */
     void hideSheet();
 }

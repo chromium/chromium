@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace content {
 class WebContents;
@@ -45,6 +46,8 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
                         base::span<const LoyaltyCard> affiliated_loyalty_cards,
                         base::span<const LoyaltyCard> all_loyalty_cards,
                         bool first_time_usage) override;
+  bool ShowProgressScreen(
+      TouchToFillPaymentMethodViewController* controller) override;
   void Hide() override;
 
   // The corresponding Java TouchToFillPaymentMethodViewBridge.
