@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
 import android.animation.ObjectAnimator;
@@ -16,11 +15,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -30,8 +30,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
-import org.chromium.build.annotations.EnsuresNonNull;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.feature_engagement.Tracker;
@@ -41,7 +39,6 @@ import org.chromium.ui.widget.ViewRectProvider;
  * The Accessory sitting above the keyboard and below the content area. It is used for autofill
  * suggestions and manual entry points assisting the user in filling forms.
  */
-@NullMarked
 class KeyboardAccessoryView extends LinearLayout {
     private static final int ARRIVAL_ANIMATION_DURATION_MS = 300;
     private static final float ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP = 200f;
@@ -49,12 +46,12 @@ class KeyboardAccessoryView extends LinearLayout {
     private static final int FADE_ANIMATION_DURATION_MS = 150; // Total duration of show/hide.
     private static final int HIDING_ANIMATION_DELAY_MS = 50; // Shortens animation duration.
 
-    private @Nullable Tracker mFeatureEngagementTracker;
-    private @Nullable Callback<Integer> mObfuscatedLastChildAt;
-    private @Nullable Callback<Boolean> mOnTouchEvent;
-    private @Nullable ObjectAnimator mAnimator;
-    private @Nullable AnimationListener mAnimationListener;
-    private @Nullable ViewPropertyAnimator mRunningAnimation;
+    private Tracker mFeatureEngagementTracker;
+    private Callback<Integer> mObfuscatedLastChildAt;
+    private Callback<Boolean> mOnTouchEvent;
+    private ObjectAnimator mAnimator;
+    private AnimationListener mAnimationListener;
+    private ViewPropertyAnimator mRunningAnimation;
     private boolean mShouldSkipClosingAnimation;
     private boolean mDisableAnimations;
     private boolean mAllowClicksWhileObscured;
@@ -77,12 +74,10 @@ class KeyboardAccessoryView extends LinearLayout {
     private final RecyclerView.OnScrollListener mScrollingIphCallback =
             new RecyclerView.OnScrollListener() {
                 @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     if (newState != RecyclerView.SCROLL_STATE_IDLE) {
                         mBarItemsView.removeOnScrollListener(mScrollingIphCallback);
-                        if (mFeatureEngagementTracker != null) {
-                            KeyboardAccessoryIphUtils.emitScrollingEvent(mFeatureEngagementTracker);
-                        }
+                        KeyboardAccessoryIphUtils.emitScrollingEvent(mFeatureEngagementTracker);
                     }
                 }
             };
@@ -112,8 +107,7 @@ class KeyboardAccessoryView extends LinearLayout {
 
         private int getItemOffsetInternal(
                 final View view, final RecyclerView parent, RecyclerView.State state) {
-            if (parent.getAdapter() == null
-                    || !isLastItem(parent, view, parent.getAdapter().getItemCount())
+            if (!isLastItem(parent, view, parent.getAdapter().getItemCount())
                     || !mHasStickyLastItem) {
                 return mHorizontalMargin;
             }
@@ -170,7 +164,7 @@ class KeyboardAccessoryView extends LinearLayout {
     }
 
     /** Constructor for inflating from XML. */
-    KeyboardAccessoryView(Context context, AttributeSet attrs) {
+    public KeyboardAccessoryView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -189,9 +183,7 @@ class KeyboardAccessoryView extends LinearLayout {
         // The event is filtered out when the keyboard accessory view is fully or partially obscured
         // given that no user education bubbles are shown to the user.
         final boolean shouldFilterEvent = isViewObscured && !mAllowClicksWhileObscured;
-        if (mOnTouchEvent != null) {
-            mOnTouchEvent.onResult(shouldFilterEvent);
-        }
+        mOnTouchEvent.onResult(shouldFilterEvent);
 
         if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID)) {
@@ -216,6 +208,7 @@ class KeyboardAccessoryView extends LinearLayout {
     protected void onFinishInflate() {
         TraceEvent.begin("KeyboardAccessoryView#onFinishInflate");
         super.onFinishInflate();
+        sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
 
         // TODO: crbug.com/385172647 - Move height parameters to the xml file once the feature is
         // launched.
@@ -272,13 +265,13 @@ class KeyboardAccessoryView extends LinearLayout {
         mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
     }
 
-    @EnsuresNonNull("mFeatureEngagementTracker")
     void setFeatureEngagementTracker(Tracker tracker) {
-        mFeatureEngagementTracker = assumeNonNull(tracker);
+        assert tracker != null : "Tracker must not be null";
+        mFeatureEngagementTracker = tracker;
     }
 
-    @Nullable
     Tracker getFeatureEngagementTracker() {
+        assert mFeatureEngagementTracker != null : "Attempting to access null Tracker";
         return mFeatureEngagementTracker;
     }
 
@@ -304,11 +297,10 @@ class KeyboardAccessoryView extends LinearLayout {
         mAnimationListener = animationListener;
     }
 
-    @Nullable
     ViewRectProvider getSwipingIphRect() {
-        @Nullable View lastChild = getLastChild();
+        View lastChild = getLastChild();
         if (lastChild == null) return null;
-        ViewRectProvider provider = new ViewRectProvider(lastChild);
+        ViewRectProvider provider = new ViewRectProvider(getLastChild());
         provider.setIncludePadding(true);
         return provider;
     }
@@ -400,11 +392,13 @@ class KeyboardAccessoryView extends LinearLayout {
     }
 
     void setAccessibilityMessage(boolean hasSuggestions) {
-        int descriptionId =
-                hasSuggestions
-                        ? R.string.autofill_keyboard_accessory_content_description
-                        : R.string.autofill_keyboard_accessory_content_fallback_description;
-        setContentDescription(getContext().getString(descriptionId));
+        setContentDescription(
+                getContext()
+                        .getString(
+                                hasSuggestions
+                                        ? R.string.autofill_keyboard_accessory_content_description
+                                        : R.string
+                                                .autofill_keyboard_accessory_content_fallback_description));
     }
 
     void setBarItemsAdapter(RecyclerView.Adapter adapter) {
@@ -443,9 +437,7 @@ class KeyboardAccessoryView extends LinearLayout {
                         .withStartAction(() -> setVisibility(View.VISIBLE))
                         .withEndAction(
                                 () -> {
-                                    if (mAnimationListener != null) {
-                                        mAnimationListener.onFadeInEnd();
-                                    }
+                                    mAnimationListener.onFadeInEnd();
                                     mRunningAnimation = null;
                                 });
         ViewCompat.setAccessibilityPaneTitle(this, getContentDescription());
@@ -489,12 +481,12 @@ class KeyboardAccessoryView extends LinearLayout {
     }
 
     private void onItemsChanged() {
-        if (mObfuscatedLastChildAt != null && isLastChildObfuscated()) {
+        if (isLastChildObfuscated()) {
             mObfuscatedLastChildAt.onResult(mBarItemsView.indexOfChild(getLastChild()));
         }
     }
 
-    private @Nullable View getLastChild() {
+    private View getLastChild() {
         for (int i = mBarItemsView.getChildCount() - 1; i >= 0; --i) {
             View lastChild = mBarItemsView.getChildAt(i);
             if (lastChild == null) continue;

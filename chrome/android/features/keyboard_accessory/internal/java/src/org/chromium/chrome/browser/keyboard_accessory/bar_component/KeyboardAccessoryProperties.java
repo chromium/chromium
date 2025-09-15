@@ -7,13 +7,12 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
@@ -46,7 +45,6 @@ import java.lang.annotation.RetentionPolicy;
  * actions. Whenever the state changes, it notifies its listeners - like the {@link
  * KeyboardAccessoryMediator} or a ModelChangeProcessor.
  */
-@NullMarked
 class KeyboardAccessoryProperties {
     static final ReadableObjectPropertyKey<ListModel<BarItem>> BAR_ITEMS =
             new ReadableObjectPropertyKey<>("bar_items");
@@ -148,7 +146,6 @@ class KeyboardAccessoryProperties {
 
         /**
          * Returns the which type of view represents this item.
-         *
          * @return A {@link Type}.
          */
         @Type
@@ -158,10 +155,10 @@ class KeyboardAccessoryProperties {
 
         /**
          * If applicable, returns which action is held by this item.
-         *
          * @return An {@link Action}.
          */
-        @Nullable Action getAction() {
+        @Nullable
+        Action getAction() {
             return mAction;
         }
 
@@ -200,8 +197,8 @@ class KeyboardAccessoryProperties {
     }
 
     /**
-     * This {@link BarItem} is used to render Autofill suggestions into the accessory bar. For that,
-     * it needs (in addition to an {@link Action}) the held {@link AutofillSuggestion}.
+     * This {@link BarItem} is used to render Autofill suggestions into the accessory bar.
+     * For that, it needs (in addition to an {@link Action}) the held {@link AutofillSuggestion}.
      */
     static class AutofillBarItem extends BarItem {
         private final AutofillSuggestion mSuggestion;
@@ -224,17 +221,16 @@ class KeyboardAccessoryProperties {
             return mSuggestion;
         }
 
-        void setFeatureForIph(@Nullable String feature) {
+        void setFeatureForIph(String feature) {
             mFeature = feature;
         }
 
-        void maybeEmitEventForIph(@Nullable Tracker tracker) {
-            if (tracker != null && mFeature != null) {
-                KeyboardAccessoryIphUtils.emitFillingEvent(tracker, mFeature);
-            }
+        void maybeEmitEventForIph(Tracker tracker) {
+            if (mFeature != null) KeyboardAccessoryIphUtils.emitFillingEvent(tracker, mFeature);
         }
 
-        @Nullable String getFeatureForIph() {
+        @Nullable
+        String getFeatureForIph() {
             return mFeature;
         }
 

@@ -14,13 +14,12 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.base.ObserverList;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -35,7 +34,6 @@ import org.chromium.ui.modelutil.PropertyObservable;
  * Contains the controller logic of the AccessorySheet component. It communicates with data
  * providers and native backends to update a model based on {@link AccessorySheetProperties}.
  */
-@NullMarked
 class AccessorySheetMediator implements PropertyObservable.PropertyObserver<PropertyKey> {
     private final PropertyModel mModel;
     private final RecyclerView.OnScrollListener mScrollListener =
@@ -60,7 +58,8 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
         mModel.set(SHOW_KEYBOARD_CALLBACK, this::onKeyboardRequested);
     }
 
-    KeyboardAccessoryData.@Nullable Tab getTab() {
+    @Nullable
+    KeyboardAccessoryData.Tab getTab() {
         if (mModel.get(ACTIVE_TAB_INDEX) == NO_ACTIVE_TAB) return null;
         return mModel.get(TABS).get(mModel.get(ACTIVE_TAB_INDEX));
     }
