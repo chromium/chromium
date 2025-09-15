@@ -111,8 +111,16 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioBrowserTest,
       "callAndEnsureRemoteAudioTrackMutingWorks(" + constraints + ");");
 }
 
+// https://crbug.com/445223008
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_EstablishAudioVideoCallAndVerifyLocalMutingWorks \
+  DISABLED_CheckTempPagesSavedInCorrectDir
+#else
+#define MAYBE_EstablishAudioVideoCallAndVerifyLocalMutingWorks \
+  EstablishAudioVideoCallAndVerifyLocalMutingWorks
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcAudioBrowserTest,
-                       EstablishAudioVideoCallAndVerifyLocalMutingWorks) {
+                       MAYBE_EstablishAudioVideoCallAndVerifyLocalMutingWorks) {
   std::string constraints =
       BuildConstraints(kAudioConstraints, kVideoConstraints);
   MakeAudioDetectingPeerConnectionCall(
