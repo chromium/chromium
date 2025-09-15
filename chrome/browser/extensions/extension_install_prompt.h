@@ -310,10 +310,7 @@ class ExtensionInstallPrompt {
                   const SkBitmap* icon,
                   std::unique_ptr<Prompt> prompt,
                   const ShowDialogCallback& show_dialog_callback);
-  // Declared virtual for testing purposes.
-  // Note: if all you want to do is automatically confirm or cancel, prefer
-  // ScopedTestDialogAutoConfirm from extension_dialog_auto_confirm.h
-  virtual void ShowDialog(
+  void ShowDialog(
       DoneCallback install_callback,
       const extensions::Extension* extension,
       const SkBitmap* icon,
