@@ -4416,7 +4416,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.AppCount2.{AppType}" units="apps"
-    expires_after="2025-06-01">
+    expires_after="2026-06-01">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
@@ -4425,6 +4425,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     histogram had 1000 linear buckets).
 
     Warning: this histogram was expired from M95 to M96; data may be missing.
+    Warning: this histogram was expired from 2025-06-01 to 2025-09-12; data may
+    be missing.
   </summary>
   <token key="AppType">
     <variant name="All" summary="all apps"/>
@@ -4434,35 +4436,40 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FileCount" units="files"
-    expires_after="2025-06-01">
+    expires_after="2026-06-01">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
     Records the number of files a user is trying to share from the Sharesheet
     when the sharesheet is invoked.
+
+    Warning: this histogram was expired from 2025-06-01 to 2025-09-12; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.LaunchSource"
-    enum="ChromeOSSharesheetLaunchSource" expires_after="2025-06-01">
+    enum="ChromeOSSharesheetLaunchSource" expires_after="2026-06-01">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
     Records the source from which the Sharesheet is invoked.
 
     Warning: this histogram was expired from M95 to M96; data may be missing.
+    Warning: this histogram was expired from 2025-06-01 to 2025-09-12; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.UserAction"
-    enum="ChromeOSSharesheetAction" expires_after="2026-01-11">
+    enum="ChromeOSSharesheetAction" expires_after="2026-06-01">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>Records user action on sharesheet invocations.</summary>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.{Location}.MimeType"
-    enum="ChromeOSSharesheetMimeType" expires_after="2024-09-22">
+    enum="ChromeOSSharesheetMimeType" expires_after="2026-06-01">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
@@ -4473,6 +4480,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     that the user shares data of mime types at once. However, a single share
     will not record the same mime type twice. E.g. sharing 2 images in one share
     will record the image mimetype once.
+
+    Warning: this histogram was expired from 2024-09-22 to 2025-09-12; data may
+    be missing.
   </summary>
   <token key="Location">
     <variant name="CopyToClipboard"
