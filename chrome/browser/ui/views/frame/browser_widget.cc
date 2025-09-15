@@ -23,9 +23,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -319,7 +319,7 @@ void BrowserWidget::UpdateThrobber(bool running) {
   browser_frame_view_->UpdateThrobber(running);
 }
 
-BrowserNonClientFrameView* BrowserWidget::GetFrameView() const {
+BrowserFrameView* BrowserWidget::GetFrameView() const {
   return browser_frame_view_;
 }
 
@@ -405,8 +405,7 @@ views::internal::RootView* BrowserWidget::CreateRootView() {
 
 std::unique_ptr<views::NonClientFrameView>
 BrowserWidget::CreateNonClientFrameView() {
-  auto browser_frame_view =
-      chrome::CreateBrowserNonClientFrameView(this, browser_view_);
+  auto browser_frame_view = chrome::CreateBrowserFrameView(this, browser_view_);
   browser_frame_view_ = browser_frame_view.get();
   return browser_frame_view;
 }

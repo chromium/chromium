@@ -1882,12 +1882,12 @@ static_library("ui") {
       "views/external_protocol_handler_ash.cc",
       "views/frame/browser_frame_header_chromeos.cc",
       "views/frame/browser_frame_header_chromeos.h",
+      "views/frame/browser_frame_view_chromeos.cc",
+      "views/frame/browser_frame_view_chromeos.h",
+      "views/frame/browser_frame_view_factory_chromeos.cc",
       "views/frame/browser_native_widget_ash.cc",
       "views/frame/browser_native_widget_ash.h",
       "views/frame/browser_native_widget_factory_chromeos.cc",
-      "views/frame/browser_non_client_frame_view_chromeos.cc",
-      "views/frame/browser_non_client_frame_view_chromeos.h",
-      "views/frame/browser_non_client_frame_view_factory_chromeos.cc",
       "views/frame/browser_view_ash.cc",
       "views/frame/browser_view_ash.h",
       "views/frame/immersive_mode_controller_chromeos.cc",
@@ -3140,12 +3140,11 @@ static_library("ui") {
       "views/certificate_viewer_mac_views.mm",
       "views/eye_dropper/eye_dropper_view_mac.h",
       "views/eye_dropper/eye_dropper_view_mac.mm",
+      "views/frame/browser_frame_view_factory_mac.mm",
+      "views/frame/browser_frame_view_mac.mm",
       "views/frame/browser_native_widget_factory_mac.mm",
       "views/frame/browser_native_widget_mac.h",
       "views/frame/browser_native_widget_mac.mm",
-      "views/frame/browser_non_client_frame_view_factory_mac.mm",
-      "views/frame/browser_non_client_frame_view_mac.h",
-      "views/frame/browser_non_client_frame_view_mac.mm",
       "views/frame/immersive_mode_controller_mac.h",
       "views/frame/immersive_mode_controller_mac.mm",
       "views/tab_contents/chrome_web_contents_view_delegate_views_mac.h",
@@ -3763,10 +3762,15 @@ static_library("ui") {
       # TODO(https://crbug.com/443281722): Remove browser_frame.h a couple weeks
       # after the refactor of BrowserFrame => BrowserWindow lands.
       "views/frame/browser_frame.h",
+      "views/frame/browser_frame_view.cc",
+      "views/frame/browser_frame_view.h",
       "views/frame/browser_native_widget.h",
       "views/frame/browser_native_widget_factory.cc",
       "views/frame/browser_native_widget_factory.h",
-      "views/frame/browser_non_client_frame_view.cc",
+
+      # TODO(https://crbug.com/443301212): Remove
+      # browser_non_client_frame_view.h a couple weeks after the refactor of
+      # BrowserNonClientFrameView => BrowserFrameView lands.
       "views/frame/browser_non_client_frame_view.h",
       "views/frame/browser_root_view.cc",
       "views/frame/browser_root_view.h",
@@ -4983,9 +4987,9 @@ static_library("ui") {
 
     if (!is_chromeos) {
       sources += [
+        "views/frame/browser_frame_view_factory_views.cc",
         "views/frame/browser_native_widget_aura.cc",
         "views/frame/browser_native_widget_aura.h",
-        "views/frame/browser_non_client_frame_view_factory_views.cc",
       ]
     }
 

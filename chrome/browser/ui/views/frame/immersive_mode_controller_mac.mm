@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -97,7 +97,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
   if (enabled) {
     if (separate_tab_strip_) {
       tab_widget_height_ = browser_view_->tab_strip_view()->height();
-      tab_widget_height_ += static_cast<BrowserNonClientFrameViewMac*>(
+      tab_widget_height_ += static_cast<BrowserFrameViewMac*>(
                                 browser_view_->frame()->GetFrameView())
                                 ->GetTopInset(false);
 
@@ -230,7 +230,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
 // LINT.IfChange(MacTabStripInsets)
 gfx::Insets ImmersiveModeControllerMac::GetTabStripRegionViewInsets() {
   // TODO(crbug.com/40892148): Get this dynamically. Unfortunately the
-  // values in BrowserNonClientFrameViewMac::GetCaptionButtonInsets don't
+  // values in BrowserFrameViewMac::GetCaptionButtonInsets don't
   // account for a window with an NSToolbar. (This is now done for
   // the Mac browser frame view, but not yet here.)
   int right_left_inset = 0;
@@ -246,7 +246,7 @@ gfx::Insets ImmersiveModeControllerMac::GetTabStripRegionViewInsets() {
              ? gfx::Insets::TLBR(1, right_left_inset, 0, 0)
              : gfx::Insets::TLBR(1, 0, 0, right_left_inset);
 }
-// LINT.ThenChange(//chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.mm:MacTabStripInsets)
+// LINT.ThenChange(//chrome/browser/ui/views/frame/browser_frame_view_mac.mm:MacTabStripInsets)
 
 void ImmersiveModeControllerMac::BrowserDidClose(
     BrowserWindowInterface* browser) {

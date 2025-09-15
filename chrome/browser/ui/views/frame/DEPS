@@ -1,6 +1,6 @@
 specific_include_rules = {
   # Parts of this class use Ash, but only when run in classic Ash mode.
-  "browser_non_client_frame_view_chromeos\.*": [
+  "browser_frame_view_chromeos\..*": [
     "+ash",
   ],
   "browser_native_widget_ash\.*": [

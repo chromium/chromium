@@ -43,7 +43,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -121,7 +121,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -135,7 +135,7 @@
 namespace {
 
 #if BUILDFLAG(IS_MAC)
-// Keep in sync with browser_non_client_frame_view_mac.mm
+// Keep in sync with browser_frame_view_mac.mm
 constexpr double kTitlePaddingWidthFraction = 0.1;
 #endif
 
@@ -690,7 +690,7 @@ class BorderlessIsolatedWebAppBrowserTest
 
     views::NonClientFrameView* frame_view =
         browser_view()->GetWidget()->non_client_view()->frame_view();
-    frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
+    frame_view_ = static_cast<BrowserFrameView*>(frame_view);
   }
 
   void GrantWindowManagementPermission() {
@@ -722,7 +722,7 @@ class BorderlessIsolatedWebAppBrowserTest
     return browser_view()->web_app_frame_toolbar_for_testing();
   }
 
-  BrowserNonClientFrameView* frame_view() { return frame_view_; }
+  BrowserFrameView* frame_view() { return frame_view_; }
 
   // Opens a new popup window from `browser_` by running
   // `window_open_script` and returns the `BrowserView` of the popup it opened.
@@ -784,7 +784,7 @@ class BorderlessIsolatedWebAppBrowserTest
  private:
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
-  raw_ptr<BrowserNonClientFrameView, AcrossTasksDanglingUntriaged> frame_view_;
+  raw_ptr<BrowserFrameView, AcrossTasksDanglingUntriaged> frame_view_;
 };
 
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
@@ -807,8 +807,8 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
   // `chromeos::FrameCaptionButtonContainerView` is ChromeOS only thing.
-  BrowserNonClientFrameViewChromeOS* frame_view_cros =
-      static_cast<BrowserNonClientFrameViewChromeOS*>(frame_view());
+  BrowserFrameViewChromeOS* frame_view_cros =
+      static_cast<BrowserFrameViewChromeOS*>(frame_view());
   EXPECT_TRUE(frame_view_cros->caption_button_container()->GetVisible());
 #endif
   EXPECT_TRUE(web_app_frame_toolbar()->GetVisible());
@@ -1441,8 +1441,8 @@ IN_PROC_BROWSER_TEST_P(
   ToggleWindowControlsOverlayAndWait();
   EXPECT_TRUE(GetWindowControlOverlayVisibility());
 
-  BrowserNonClientFrameViewChromeOS* frame_view_cros =
-      static_cast<BrowserNonClientFrameViewChromeOS*>(helper()->frame_view());
+  BrowserFrameViewChromeOS* frame_view_cros =
+      static_cast<BrowserFrameViewChromeOS*>(helper()->frame_view());
 
   int frame_view_height = frame_view_cros->GetMinimumSize().height();
   int caption_container_height =

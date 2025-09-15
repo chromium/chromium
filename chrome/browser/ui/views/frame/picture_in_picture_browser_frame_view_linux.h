@@ -32,7 +32,7 @@ class PictureInPictureBrowserFrameViewLinux
 
   ~PictureInPictureBrowserFrameViewLinux() override;
 
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
   gfx::Insets RestoredMirroredFrameBorderInsets() const override;
   gfx::Insets GetInputInsets() const override;
   SkRRect GetRestoredClipRegion() const override;

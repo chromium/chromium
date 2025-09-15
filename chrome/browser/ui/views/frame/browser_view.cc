@@ -319,7 +319,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/window_properties.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -1491,8 +1491,8 @@ void BrowserView::SetBounds(const gfx::Rect& bounds) {
 
   ExitFullscreen();
 
-  // If the BrowserNonClientFrameView has been created, give it a chance to
-  // handle the BrowserWidget's bounds change.
+  // If the BrowserFrameView has been created, give it a chance to handle the
+  // BrowserWidget's bounds change.
   if (frame_->GetFrameView()) {
     frame_->GetFrameView()->SetFrameBounds(bounds);
   } else {
@@ -2250,7 +2250,7 @@ void BrowserView::FullscreenStateChanging() {
 void BrowserView::FullscreenStateChanged() {
 #if BUILDFLAG(IS_CHROMEOS)
   const auto* non_client_frame_view =
-      static_cast<BrowserNonClientFrameViewChromeOS*>(frame_->GetFrameView());
+      static_cast<BrowserFrameViewChromeOS*>(frame_->GetFrameView());
   immersive_mode_controller()->SetEnabled(
       non_client_frame_view->ShouldEnableImmersiveModeController());
 #endif
@@ -2516,7 +2516,7 @@ void BrowserView::OnLockedForOnTaskUpdated() {
 
 bool BrowserView::IsTrustedPinned() const {
   const auto* frame_view =
-      static_cast<BrowserNonClientFrameViewChromeOS*>(frame_->GetFrameView());
+      static_cast<BrowserFrameViewChromeOS*>(frame_->GetFrameView());
   return frame_view->IsTrustedPinned();
 }
 
@@ -3276,7 +3276,7 @@ views::Button* BrowserView::GetSharingHubIconButton() {
 
 void BrowserView::ToggleMultitaskMenu() const {
   auto* frame_view =
-      static_cast<BrowserNonClientFrameViewChromeOS*>(frame_->GetFrameView());
+      static_cast<BrowserFrameViewChromeOS*>(frame_->GetFrameView());
   if (!frame_view) {
     return;
   }

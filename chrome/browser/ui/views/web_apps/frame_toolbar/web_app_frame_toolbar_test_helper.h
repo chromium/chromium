@@ -15,7 +15,7 @@
 #include "content/public/browser/web_contents.h"
 
 class Browser;
-class BrowserNonClientFrameView;
+class BrowserFrameView;
 class BrowserView;
 class Profile;
 class GURL;
@@ -109,7 +109,7 @@ class WebAppFrameToolbarTestHelper {
 
   Browser* app_browser() { return app_browser_; }
   BrowserView* browser_view() { return browser_view_; }
-  BrowserNonClientFrameView* frame_view() { return frame_view_; }
+  BrowserFrameView* frame_view() { return frame_view_; }
   views::View* root_view() { return root_view_; }
   WebAppFrameToolbarView* web_app_frame_toolbar() {
     return web_app_frame_toolbar_;
@@ -122,8 +122,7 @@ class WebAppFrameToolbarTestHelper {
 
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
-  raw_ptr<BrowserNonClientFrameView, AcrossTasksDanglingUntriaged> frame_view_ =
-      nullptr;
+  raw_ptr<BrowserFrameView, AcrossTasksDanglingUntriaged> frame_view_ = nullptr;
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> root_view_ = nullptr;
   raw_ptr<WebAppFrameToolbarView, AcrossTasksDanglingUntriaged>
       web_app_frame_toolbar_ = nullptr;

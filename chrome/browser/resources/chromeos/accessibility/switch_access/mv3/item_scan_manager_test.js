@@ -426,7 +426,7 @@ AX_TEST_F(
             'lacros-chrome-path', async hasLacrosChromePath => {
               if (!hasLacrosChromePath) {
                 await this.untilFocusIs(
-                    {className: 'BrowserNonClientFrameViewChromeOS'});
+                    {className: 'BrowserFrameViewChromeOS'});
               }
               resolve();
             });

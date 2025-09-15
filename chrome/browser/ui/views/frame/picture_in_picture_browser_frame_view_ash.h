@@ -28,7 +28,7 @@ class PictureInPictureBrowserFrameViewAsh
 
   ~PictureInPictureBrowserFrameViewAsh() override;
 
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
   void UpdateWindowRoundedCorners() override;
 
   // aura::WindowObserver:

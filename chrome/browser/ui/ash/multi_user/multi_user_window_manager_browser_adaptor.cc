@@ -137,7 +137,7 @@ void MultiUserWindowManagerBrowserAdaptor::OnWindowOwnerEntryChanged(
     bool teleported) {
   const AccountId& owner = multi_user_window_manager_->GetWindowOwner(window);
   // Browser windows don't use kAvatarIconKey. See
-  // BrowserNonClientFrameViewAsh::UpdateProfileIcons().
+  // BrowserFrameViewAsh::UpdateProfileIcons().
   if (owner.is_valid() && !chrome::FindBrowserWithWindow(window)) {
     const user_manager::User* const window_owner =
         user_manager::UserManager::IsInitialized()
