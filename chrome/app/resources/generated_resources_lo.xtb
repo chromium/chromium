@@ -200,6 +200,7 @@
 <translation id="1129348283834595293">ໄຊເບີພັງຄ໌</translation>
 <translation id="1129420403709586868">ເບິ່ງຮູບພາບ ແລະ ມີເດຍຂອງໂທລະສັບທ່ານ</translation>
 <translation id="1129850422003387628">ຈັດການແອັບ</translation>
+<translation id="1130116586186908674">ສ້າງມຸມມອງແບບແຍກ</translation>
 <translation id="1130430615924359526">{0,plural, =1{ປິດໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ}other{ປິດໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ (# ໜ້າຈໍ)}}</translation>
 <translation id="113050636487300043">ເລືອກຊື່ ແລະ ຮູບແບບສີສັນເພື່ອແຍກຄວາມແຕກຕ່າງລະຫວ່າງໂປຣໄຟລ໌ຕ່າງໆ</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - ສ່ວນໜຶ່ງຂອງກຸ່ມ <ph name="GROUP_NAME" /></translation>
@@ -737,6 +738,7 @@
 <translation id="1503392482221435031">ສົ່ງສະຖິຕິການນຳໃຊ້ໄປໃຫ້ Google ອັດຕະໂນມັດ. ທ່ານສາມາດເປີດ ຫຼື ປິດລາຍງານການຂັດຂ້ອງໄດ້ໃນການຕັ້ງຄ່າຂອງອຸປະກອນທ່ານ.</translation>
 <translation id="1503556098270577657">ທ່ານເຂົ້າສູ່ລະບົບຫາ <ph name="USER_EMAIL" /> ໂດຍໃຊ້ໂທລະສັບ Android ຂອງທ່ານແລ້ວ</translation>
 <translation id="150411034776756821">ລຶບ <ph name="SITE" /> ອອກ</translation>
+<translation id="1504253885059472207">ປັກໝຸດມຸມມອງແບບແຍກ</translation>
 <translation id="1504551620756424144">ໂຟນເດີທີ່ໃຊ້ຮ່ວມກັນສາມາດໃຊ້ໄດ້ໃນ Windows ທີ່ <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">ສົ່ງລະຫັດຜ່ານອອກ</translation>
 <translation id="1505654899813338756">ທ່ານສາມາດຈັດກຸ່ມແຖບເພື່ອເກັບຮັກສາໜ້າທີ່ກ່ຽວຂ້ອງກັນໄວ້ນຳກັນ ແລະ ບັນທຶກໄວ້ໃນອຸປະກອນຕ່າງໆຂອງທ່ານໄດ້</translation>
@@ -882,6 +884,7 @@
 <translation id="1597806446183714225">ປັບປຸງຄຸນນະພາບສຽງເພື່ອໃຫ້ສຽງຟັງເບິ່ງເປັນທຳມະຊາດ ແລະ ຊັດເຈນ.</translation>
 <translation id="1598163867407640634">ໃຊ້ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">ການ​ອັບ​ເດດ​ຖືກ​ປິດ​ໃຊ້​ງານ​ໂດຍ​ຜູ້​ດູແລລະ​ບົບ​ຂອງ​ທ່ານ.</translation>
+<translation id="1598293830962835699">ສ້າງມຸມມອງແບບແຍກໄດ້ຢ່າງວ່ອງໄວເມື່ອທ່ານຕ້ອງການ</translation>
 <translation id="1600857548979126453">ເຂົ້າຫາດ້ານຫຼັງຂອງຕົວແກ້ໄຂບັນຫາໜ້າ</translation>
 <translation id="1601481906560916994">ຍົກເວັ້ນເວັບໄຊ</translation>
 <translation id="1601560923496285236">ນໍາໃຊ້</translation>
@@ -3122,6 +3125,7 @@
 <translation id="3122883569442693641">ລາຍລະອຽດເພີ່ມເຕີມ</translation>
 <translation id="3124111068741548686">ດ້າມຈັບ​ຜູ້​ໃຊ້</translation>
 <translation id="3124332159330678621">ປັບແຕ່ງ Chrome ເພື່ອໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານມີຮູບລັກໃໝ່</translation>
+<translation id="3125361247594231799">ປັກໝຸດໄວ້ສຳລັບເທື່ອຕໍ່ໄປ</translation>
 <translation id="3125816458150005808">ທ່ານສາມາດຖອນໝຸດມັນ ແລະ ເປີດມັນຈາກເມນູໄດ້</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">ເພື່ອຫຼີກເວັ້ນບັນຫາການສາກ ແລະ ປະສິດທິພາບການນຳໃຊ້ ກະລຸນາໃຊ້ອະແດັບເຕີໄຟ Dell ຫຼື USB ປະເພດ C.</translation>

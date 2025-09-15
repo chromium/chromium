@@ -200,6 +200,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Consulta las fotos y el contenido multimedia de tu teléfono</translation>
 <translation id="1129850422003387628">Gestionar apps</translation>
+<translation id="1130116586186908674">Crear vista dividida</translation>
 <translation id="1130430615924359526">{0,plural, =1{Cerrar ventana de Incógnito}other{Cerrar ventanas de Incógnito (# ventanas)}}</translation>
 <translation id="113050636487300043">Elige un nombre y un tema de color para diferenciar entre perfiles</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: parte del grupo <ph name="GROUP_NAME" /></translation>
@@ -736,6 +737,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1503392482221435031">Envía estadísticas de uso a Google automáticamente. Puedes activar o desactivar los informes sobre fallos en los ajustes del dispositivo.</translation>
 <translation id="1503556098270577657">Has iniciado sesión en <ph name="USER_EMAIL" /> con tu teléfono Android</translation>
 <translation id="150411034776756821">Quitar <ph name="SITE" /></translation>
+<translation id="1504253885059472207">Fijar vista dividida</translation>
 <translation id="1504551620756424144">En Windows, las carpetas compartidas están disponibles en <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exportar contraseñas</translation>
 <translation id="1505654899813338756">Puedes agrupar pestañas para juntar las páginas relacionadas y guardarlas en todos tus dispositivos</translation>
@@ -883,6 +885,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1597806446183714225">Mejora la calidad del audio para que las voces suenen naturales y claras.</translation>
 <translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">El administrador ha inhabilitado las actualizaciones.</translation>
+<translation id="1598293830962835699">Crea rápidamente una vista dividida cuando la necesites</translation>
 <translation id="1600857548979126453">Acceder al servidor de depuración de página</translation>
 <translation id="1601481906560916994">Excluir sitio</translation>
 <translation id="1601560923496285236">Aplicar</translation>
@@ -3111,6 +3114,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3122883569442693641">Más detalles</translation>
 <translation id="3124111068741548686">Objetos USER</translation>
 <translation id="3124332159330678621">Personaliza Chrome para cambiar el diseño de tu navegador</translation>
+<translation id="3125361247594231799">Fíjala para la próxima vez</translation>
 <translation id="3125816458150005808">Puedes desfijarla y abrirla desde el menú</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Para evitar problemas de carga y rendimiento, usa un adaptador de corriente compatible Dell o USB tipo C.</translation>
@@ -7290,7 +7294,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6077189836672154517">Consejos y novedades sobre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Hablar para escribir</translation>
 <translation id="6078121669093215958">{0,plural, =1{Invitado}other{# ventanas de invitado abiertas}}</translation>
-<translation id="6078323886959318429">Acceso directo</translation>
+<translation id="6078323886959318429">Añadir acceso directo</translation>
 <translation id="6078752646384677957">Comprueba el volumen del micrófono y del audio.</translation>
 <translation id="608029822688206592">No se ha encontrado ninguna red. Inserta tu tarjeta SIM y vuelve a intentarlo.</translation>
 <translation id="6080689532560039067">Comprueba la hora del sistema</translation>

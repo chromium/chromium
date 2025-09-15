@@ -738,6 +738,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1503392482221435031">Automaticky odesílá statistiky o využívání do Googlu Zprávy o selhání můžete zapnout nebo vypnout v nastavení zařízení.</translation>
 <translation id="1503556098270577657">Pomocí telefonu Android jste se přihlásili k účtu <ph name="USER_EMAIL" /></translation>
 <translation id="150411034776756821">Odebrat web <ph name="SITE" /></translation>
+<translation id="1504253885059472207">Připnout rozdělené zobrazení</translation>
 <translation id="1504551620756424144">Sdílené složky jsou ve Windows k dispozici v adresáři <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exportovat hesla</translation>
 <translation id="1505654899813338756">Karty můžete seskupovat, abyste měli související stránky pohromadě a dostupné na všech zařízeních</translation>
@@ -885,6 +886,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1597806446183714225">Zlepšit kvalitu zvuku, aby hlasy zněly přirozeně a čistě.</translation>
 <translation id="1598163867407640634">Používejte web <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Administrátor aktualizace zakázal.</translation>
+<translation id="1598293830962835699">Rychle vytvořte rozdělené zobrazení, kdykoli ho potřebujete</translation>
 <translation id="1600857548979126453">Získat přístup k ladicímu programu stránky na serveru</translation>
 <translation id="1601481906560916994">Vyloučit web</translation>
 <translation id="1601560923496285236">Použít</translation>
@@ -3112,6 +3114,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3122883569442693641">Další podrobnosti</translation>
 <translation id="3124111068741548686">Popisovače – UŽIVATEL</translation>
 <translation id="3124332159330678621">Přizpůsobte si Chrome a dodejte svému prohlížeči nový vzhled</translation>
+<translation id="3125361247594231799">Připnutí na příště</translation>
 <translation id="3125816458150005808">Můžete ho odepnout a otevírat ho z nabídky</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Chcete-li předejít problémům s nabíjením a výkonem, používejte kompatibilní napájecí adaptér Dell nebo USB Type-C.</translation>

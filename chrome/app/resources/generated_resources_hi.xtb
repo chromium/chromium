@@ -200,6 +200,7 @@
 <translation id="1129348283834595293">सायबरपंक</translation>
 <translation id="1129420403709586868">अपने फ़ोन में मौजूद फ़ोटो और मीडिया देखें</translation>
 <translation id="1129850422003387628">ऐप्लिकेशन प्रबंधित करें</translation>
+<translation id="1130116586186908674">स्प्लिट व्यू बनाएं</translation>
 <translation id="1130430615924359526">{0,plural, =1{गुप्त मोड बंद करें}one{गुप्त मोड में (# विंडो) बंद करें}other{गुप्त मोड में (# विंडो) बंद करें}}</translation>
 <translation id="113050636487300043">प्रोफ़ाइलों के बीच फ़र्क़ करने के लिए, कोई भी नाम और कलर थीम चुनें</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> ग्रुप का हिस्सा</translation>
@@ -738,6 +739,7 @@
 <translation id="1503392482221435031">Google को इस्तेमाल के आंकड़े अपने-आप भेजता है. डिवाइस की सेटिंग में जाकर, क्रैश रिपोर्ट बनाने की सुविधा को चालू या बंद किया जा सकता है.</translation>
 <translation id="1503556098270577657">अपने Android फ़ोन का इस्तेमाल करके <ph name="USER_EMAIL" /> से साइन इन किया है</translation>
 <translation id="150411034776756821"><ph name="SITE" /> को निकालें</translation>
+<translation id="1504253885059472207">स्प्लिट व्यू को पिन करें</translation>
 <translation id="1504551620756424144">शेयर किए गए फ़ोल्डर, Windows में <ph name="BASE_DIR" /> पर उपलब्ध हैं.</translation>
 <translation id="1505494256539862015">पासवर्ड एक्सपोर्ट करना</translation>
 <translation id="1505654899813338756">मिलते-जुलते विषय से जुड़े पेजों को एक साथ रखने के लिए, टैब ग्रुप बनाए जा सकते हैं. ये ग्रुप, आपके सभी डिवाइसों में सेव हो जाते हैं</translation>
@@ -885,6 +887,7 @@
 <translation id="1597806446183714225">ऑडियो की क्वालिटी बेहतर करें, ताकि आवाज़ें नैचुरल और साफ़ सुनाई दें.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> की मदद से, <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल करें</translation>
 <translation id="1598233202702788831">आपके व्‍यवस्‍थापक के द्वारा अपडेट अक्षम किए गए हैं</translation>
+<translation id="1598293830962835699">ज़रूरत पड़ने पर, तुरंत स्प्लिट व्यू सेट करें</translation>
 <translation id="1600857548979126453">पेज डीबगर बैकएंड को एक्सेस करें</translation>
 <translation id="1601481906560916994">साइट को शामिल न करें</translation>
 <translation id="1601560923496285236">लागू करें</translation>
@@ -3124,6 +3127,7 @@
 <translation id="3122883569442693641">ज़्यादा जानकारी</translation>
 <translation id="3124111068741548686">उपयोगकर्ता हैंडल</translation>
 <translation id="3124332159330678621">अपने ब्राउज़र को एक नया रूप देने के लिए, Chrome को कस्टमाइज़ करें</translation>
+<translation id="3125361247594231799">इसे अगली बार के लिए पिन करें</translation>
 <translation id="3125816458150005808">इसे अनपिन करके, मेन्यू से भी खोला जा सकता है</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">चार्ज होने और परफ़ॉर्मेंस से जुड़ी समस्याओं से बचने के लिए, डिवाइस के साथ काम करने वाला Dell या यूएसबी टाइप-सी पावर अडैप्टर इस्तेमाल करें.</translation>

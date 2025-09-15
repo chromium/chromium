@@ -200,6 +200,7 @@
 <translation id="1129348283834595293">سائبر پنک</translation>
 <translation id="1129420403709586868">اپنے فون کی تصاویر اور میڈیا دیکھیں</translation>
 <translation id="1129850422003387628">ایپس کا نظم کریں</translation>
+<translation id="1130116586186908674">اسپلٹ ویو تخلیق کریں</translation>
 <translation id="1130430615924359526">{0,plural, =1{پوشیدگی ونڈو بند کریں}other{پوشیدگی (# ونڈوز) بند کریں}}</translation>
 <translation id="113050636487300043">پروفائلوں کے درمیان امتیاز کرنے کیلئے ایک نام اور رنگ کی تھیم کا انتخاب کریں</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - گروپ کا حصہ <ph name="GROUP_NAME" /></translation>
@@ -736,6 +737,7 @@
 <translation id="1503392482221435031">‏استعمال کے اعدادوشمار خودکار طور پر Google کو بھیجتا ہے۔ آپ اپنے آلے کی ترتیبات میں کریش رپورٹس کو آن یا آف کر سکتے ہیں۔</translation>
 <translation id="1503556098270577657">‏آپ نے اپنا Android فون استعمال کر کے <ph name="USER_EMAIL" /> میں سائن ان کیا ہے</translation>
 <translation id="150411034776756821"><ph name="SITE" /> کو ہٹائیں</translation>
+<translation id="1504253885059472207">اسپلٹ ویو کو پن کریں</translation>
 <translation id="1504551620756424144">ونڈوز میں اشتراک کردہ فولڈرز <ph name="BASE_DIR" /> میں دستیاب ہیں۔</translation>
 <translation id="1505494256539862015">پاس ورڈز برآمد کریں</translation>
 <translation id="1505654899813338756">آپ متعلقہ صفحات کو ایک ساتھ رکھنے اور اپنے آلات پر محفوظ کرنے کے لیے ٹیبز کو گروپ بند کر سکتے ہیں</translation>
@@ -883,6 +885,7 @@
 <translation id="1597806446183714225">آڈیو کا معیار بہتر بنائیں تاکہ آوازیں فطری اور صاف ہوں۔</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> کا استعمال کریں</translation>
 <translation id="1598233202702788831">آپ کے منتظم نے اپ ڈیٹس کو غیر فعال کر دیا ہے۔</translation>
+<translation id="1598293830962835699">ضرورت پڑنے پر فوری طور پر اسپلٹ ویو بنائیں</translation>
 <translation id="1600857548979126453">صفحہ ڈیبگر بیک اینڈ تک رسائی حاصل کریں</translation>
 <translation id="1601481906560916994">سائٹ خارج کریں</translation>
 <translation id="1601560923496285236">لاگو کریں</translation>
@@ -3112,6 +3115,7 @@
 <translation id="3122883569442693641">مزید تفصیلات</translation>
 <translation id="3124111068741548686">صارف ہینڈلز</translation>
 <translation id="3124332159330678621">‏اپنے براؤزر کو نئی شکل دینے کے لیے Chrome کو حسب ضرورت بنائیں</translation>
+<translation id="3125361247594231799">اسے اگلی بار کیلئے پن کریں</translation>
 <translation id="3125816458150005808">آپ اس کا پن ہٹا سکتے ہیں اور اسے مینو سے کھول سکتے ہیں</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">‏چارجنگ اور کارکردگی کے مسائل سے بچنے کیلئے، موافق Dell یا USB ٹائپ سی پاور ایڈاپٹر کا استعمال کریں۔</translation>

@@ -200,6 +200,7 @@
 <translation id="1129348283834595293">خيال علمي سيبراني</translation>
 <translation id="1129420403709586868">عرض الصور والوسائط من هاتفك</translation>
 <translation id="1129850422003387628">إدارة التطبيقات</translation>
+<translation id="1130116586186908674">إنشاء عرض مقسَّم</translation>
 <translation id="1130430615924359526">{0,plural, =1{إغلاق نافذة واحدة للتصفّح المتخفي}zero{إغلاق # نافذة للتصفّح المتخفي}two{إغلاق نافذتَي التصفّح المتخفي}few{إغلاق # نوافذ للتصفّح المتخفي}many{إغلاق # نافذةً للتصفّح المتخفي}other{إغلاق # نافذة للتصفّح المتخفي}}</translation>
 <translation id="113050636487300043">يمكنك اختيار اسمًا ومظهرًا ملوّنًا لكل ملف شخصي للتمييز بينها</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - جزء من مجموعة <ph name="GROUP_NAME" /></translation>
@@ -741,6 +742,7 @@
 <translation id="1503392482221435031">‏يتيح هذا الخيار إمكانية إرسال إحصاءات الاستخدام إلى Google تلقائيًا. يمكنك تفعيل ميزة تقارير الأعطال أو إيقافها من خلال إعدادات جهازك.</translation>
 <translation id="1503556098270577657">‏لقد سجّلت الدخول إلى الحساب <ph name="USER_EMAIL" /> باستخدام هاتف Android</translation>
 <translation id="150411034776756821">إزالة <ph name="SITE" /></translation>
+<translation id="1504253885059472207">تثبيت العرض المقسَّم</translation>
 <translation id="1504551620756424144">‏تتوفّر المجلّدات المشترَكة في Windows على <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">تصدير كلمات المرور</translation>
 <translation id="1505654899813338756">يمكنك تجميع علامات التبويب للاحتفاظ بالصفحات ذات الصلة معًا وحفظها على جميع أجهزتك</translation>
@@ -888,6 +890,7 @@
 <translation id="1597806446183714225">يمكنك تحسين جودة الصوت لجعل الأصوات تبدو طبيعية وواضحة.</translation>
 <translation id="1598163867407640634">يمكنك استخدام <ph name="SITE_ETLD_PLUS_ONE" /> مع <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">أوقف المشرف التحديثات.</translation>
+<translation id="1598293830962835699">يمكنك بسرعة إنشاء عرض مقسَّم عند الحاجة إليه</translation>
 <translation id="1600857548979126453">الدخول إلى الواجهة الخلفية لبرنامج تصحيح أخطاء الصفحة</translation>
 <translation id="1601481906560916994">إبقاء الموقع الإلكتروني نشطًا</translation>
 <translation id="1601560923496285236">تطبيق</translation>
@@ -3117,6 +3120,7 @@
 <translation id="3122883569442693641">المزيد من التفاصيل</translation>
 <translation id="3124111068741548686">معالجات المستخدم</translation>
 <translation id="3124332159330678621">‏يمكنك تخصيص Chrome لإضفاء مظهر جديد على المتصفِّح</translation>
+<translation id="3125361247594231799">تثبيت هذا العرض المقسَّم لاستخدامه في المرة القادمة</translation>
 <translation id="3125816458150005808">يمكنك إلغاء تثبيتها وفتحها من القائمة</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">‏لتجنّب مشاكل الشحن والأداء، يمكنك استخدام محوِّل طاقة USB من نوع C أو محوِّل Dell متوافق.</translation>

@@ -737,6 +737,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1503392482221435031">Skickar användningsstatistik till Google automatiskt. Du kan aktivera eller inaktivera felrapporter i enhetens inställningar.</translation>
 <translation id="1503556098270577657">Du loggade in på <ph name="USER_EMAIL" /> med Android-telefonen</translation>
 <translation id="150411034776756821">Ta bort <ph name="SITE" /></translation>
+<translation id="1504253885059472207">Fäst delad vy</translation>
 <translation id="1504551620756424144">Delade mappar finns i <ph name="BASE_DIR" /> i Windows.</translation>
 <translation id="1505494256539862015">exportera lösenord</translation>
 <translation id="1505654899813338756">Du kan gruppera flikar för att hålla ihop relaterade sidor och spara dem på alla dina enheter</translation>
@@ -884,6 +885,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1597806446183714225">Förbättra ljudkvaliteten så att röster låter naturliga och tydliga.</translation>
 <translation id="1598163867407640634">Använd <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Uppdateringar har inaktiverats av administratören.</translation>
+<translation id="1598293830962835699">Skapa snabbt en delad vy när du behöver det</translation>
 <translation id="1600857548979126453">Få åtkomst till serverdelen för felsökning av sida</translation>
 <translation id="1601481906560916994">Exkludera webbplats</translation>
 <translation id="1601560923496285236">Verkställ</translation>
@@ -3123,6 +3125,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3122883569442693641">Mer information</translation>
 <translation id="3124111068741548686">USER-handtag</translation>
 <translation id="3124332159330678621">Anpassa Chrome så att webbläsaren får ett nytt utseende</translation>
+<translation id="3125361247594231799">Fäst den till nästa gång</translation>
 <translation id="3125816458150005808">Du kan lossa alternativet och öppna det från menyn</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Undvik laddnings- eller prestandaproblem genom att använda en kompatibel Dell- eller USB Type-C-nätadapter.</translation>

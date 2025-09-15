@@ -200,6 +200,7 @@
 <translation id="1129348283834595293">Сајберпанк</translation>
 <translation id="1129420403709586868">да прегледа слике и медијски садржај са телефона</translation>
 <translation id="1129850422003387628">Управљајте апликацијама</translation>
+<translation id="1130116586186908674">Направи подељени приказ</translation>
 <translation id="1130430615924359526">{0,plural, =1{Затвори прозор без архивирања}one{Затвори прозоре без архивирања (# прозор)}few{Затвори прозоре без архивирања (# прозора)}other{Затвори прозоре без архивирања (# прозора)}}</translation>
 <translation id="113050636487300043">Одаберите име и тему боја да бисте разликовали профиле</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – део групе <ph name="GROUP_NAME" /></translation>
@@ -738,6 +739,7 @@
 <translation id="1503392482221435031">Аутоматски шаље статистику коришћења Google-у. Можете да укључите или искључите извештаје о отказивању у подешавањима уређаја.</translation>
 <translation id="1503556098270577657">Пријавили сте се на <ph name="USER_EMAIL" /> помоћу Android телефона</translation>
 <translation id="150411034776756821">Уклони <ph name="SITE" /></translation>
+<translation id="1504253885059472207">Закачи подељени приказ</translation>
 <translation id="1504551620756424144">Дељени директоријуми су доступни у Windows-у на <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">извезе лозинке</translation>
 <translation id="1505654899813338756">Можете да групишете картице да бисте повезане странице чували заједно на свим уређајима</translation>
@@ -882,6 +884,7 @@
 <translation id="1597806446183714225">Побољшајте квалитет звука да би гласови звучали природно и јасно.</translation>
 <translation id="1598163867407640634">Користите <ph name="SITE_ETLD_PLUS_ONE" /> уз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Администратор је онемогућио ажурирања.</translation>
+<translation id="1598293830962835699">Брзо направите подељени приказ када вам затреба</translation>
 <translation id="1600857548979126453">Приступ позадинском механизму програма за отклањање грешака на страници</translation>
 <translation id="1601481906560916994">Изузми сајт</translation>
 <translation id="1601560923496285236">Примени</translation>
@@ -3108,6 +3111,7 @@
 <translation id="3122883569442693641">Још детаља</translation>
 <translation id="3124111068741548686">КОРИСНИЧКИ надимци</translation>
 <translation id="3124332159330678621">Прилагодите Chrome да бисте прешли на нов изглед прегледача</translation>
+<translation id="3125361247594231799">Закачите за следећи пут</translation>
 <translation id="3125816458150005808">Можете да је откачите и отворите из менија</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Да бисте избегли проблеме са пуњењем и учинком, користите компатибилни адаптер произвођача Dell или USB адаптер типа C.</translation>

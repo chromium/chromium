@@ -105,6 +105,7 @@
 <translation id="2307973900865360088">도크에 고정</translation>
 <translation id="2313870531055795960">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="2343156876103232566">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
+<translation id="2356070529366658676">확인</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" 확장 프로그램에서 Chromium 로그인을 요청합니다</translation>
 <translation id="236943522426971115">앱에서 백그라운드 실행 중인 Chromium 사용 중지</translation>

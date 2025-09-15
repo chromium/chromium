@@ -736,6 +736,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1503392482221435031">Nutzungsstatistiken werden automatisch an Google gesendet. Du kannst Absturzberichte in den Geräteeinstellungen aktivieren oder deaktivieren.</translation>
 <translation id="1503556098270577657">Du hast dich mit deinem Android-Smartphone im Konto <ph name="USER_EMAIL" /> angemeldet</translation>
 <translation id="150411034776756821"><ph name="SITE" /> entfernen</translation>
+<translation id="1504253885059472207">Geteilte Ansicht anpinnen</translation>
 <translation id="1504551620756424144">Freigegebene Ordner sind auf Windows-Geräten unter <ph name="BASE_DIR" /> verfügbar.</translation>
 <translation id="1505494256539862015">Passwörter exportieren</translation>
 <translation id="1505654899813338756">Du kannst Tabs gruppieren, um zusammengehörige Seiten zu Gruppen zusammenzufassen und geräteübergreifend zu speichern</translation>
@@ -880,6 +881,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1597806446183714225">Verbessert die Audioqualität, damit Stimmen natürlich und klar klingen.</translation>
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> verwenden</translation>
 <translation id="1598233202702788831">Updates sind durch deinen Administrator deaktiviert.</translation>
+<translation id="1598293830962835699">Erstelle bei Bedarf im Handumdrehen eine geteilte Ansicht</translation>
 <translation id="1600857548979126453">Auf das Backend für Seiten-Debugger zugreifen</translation>
 <translation id="1601481906560916994">Website ausschließen</translation>
 <translation id="1601560923496285236">Übernehmen</translation>
@@ -3107,6 +3109,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3122883569442693641">Weitere Details</translation>
 <translation id="3124111068741548686">NUTZER-Handles</translation>
 <translation id="3124332159330678621">Personalisiere Chrome nach deinen Vorlieben</translation>
+<translation id="3125361247594231799">Für das nächste Mal anpinnen</translation>
 <translation id="3125816458150005808">Du kannst sie loslösen und über das Menü öffnen</translation>
 <translation id="3126026824346185272">Strg</translation>
 <translation id="3127860049873093642">Verwende ein kompatibles Dell- oder USB-Typ-C-Netzteil, um Lade- und Leistungsprobleme zu vermeiden.</translation>

@@ -614,6 +614,7 @@
 <translation id="8336463659890584292">ページのリンクを非公開でプリロードするようサイトから求められた場合、Chrome は Google サーバーを使用します。これによりプリロードしたサイトにユーザーの情報が知られることはありませんが、Google はどのようなサイトがプリロードされたかを学習します。</translation>
 <translation id="8342675569599923794">このファイルは危険なファイルであるため、Chrome でブロックしました。</translation>
 <translation id="8349094670477064572">Chrome にログインしているときに、Google アカウントにパスワードなどを保存して使用できます。<ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Google で調べる</translation>
 <translation id="8362914115861174987">訳文の言語</translation>
 <translation id="8366770919198174997">パフォーマンスは低下しますが、攻撃に対する Chrome の耐性が強化されます</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>

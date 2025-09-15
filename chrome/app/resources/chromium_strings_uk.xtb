@@ -104,6 +104,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="2307973900865360088">Закріпити на панелі Dock</translation>
 <translation id="2313870531055795960">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігаються в Chromium. Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chromium також може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки.</translation>
 <translation id="2343156876103232566">Щоб надіслати номер на телефон Android, увійдіть у Chromium на обох пристроях.</translation>
+<translation id="2356070529366658676">Запитувати</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2361918034042471035">Щоб використовувати розширення <ph name="EXTENSION_NAME" />, потрібно ввійти в Chromium</translation>
 <translation id="236943522426971115">Вимкнути фоновий режим Chromium для додатків</translation>
