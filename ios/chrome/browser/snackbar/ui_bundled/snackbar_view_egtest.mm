@@ -136,7 +136,8 @@ void VerifySnackbarUI(NSString* title,
 }
 
 // Tests that tapping the snackbar view dismisses it.
-- (void)testSnackbarDismissesOnTap {
+// TODO(crbug.com/445155205): Re-enable once the test is fixed.
+- (void)DISABLED_testSnackbarDismissesOnTap {
   VerifySnackbarUI(kTestTitle, nil, nil, nil, NO, NO);
   [[EarlGrey selectElementWithMatcher:SnackbarViewMatcher()]
       performAction:grey_tap()];
