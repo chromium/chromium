@@ -33,6 +33,8 @@
 #include "base/values.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "components/metrics/dwa/dwa_builders.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
@@ -1020,6 +1022,12 @@ void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
   // invoking the callback may potentially leak whether the user was previously
   // in the InterestGroup through timing differences.
   std::move(callback).Run(/*failed_well_known_check=*/!can_join);
+
+  dwa::builders::InterestGroupJoin()
+      .SetContent(group.owner.Serialize())
+      .SetResult(can_join ? 0 /* Permission granted */
+                          : 1 /* Permission denied */)
+      .Record(metrics::dwa::DwaRecorder::Get());
 
   if (!report_result_only && can_join) {
     // All ads' allowed reporting origins must be attested. Otherwise don't

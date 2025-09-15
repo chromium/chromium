@@ -6518,6 +6518,11 @@ shown properly on the user-facing crash UI.
   <int value="5" label="Initial state"/>
 </enum>
 
+<enum name="InterestGroupJoinPermissionResult">
+  <int value="0" label="Permission granted"/>
+  <int value="1" label="Permission denied"/>
+</enum>
+
 <enum name="InterstitialCloseReason">
   <int value="0" label="Interstitial is shown"/>
   <int value="1" label="User leaves the interstitial by navigating away"/>
