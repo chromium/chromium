@@ -614,8 +614,6 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event_init.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_rtcp_parameters.idl",
-  "//third_party/blink/renderer/modules/peerconnection/rtc_rtp_acks.idl",
-  "//third_party/blink/renderer/modules/peerconnection/rtc_rtp_ack.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_rtp_capabilities.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_rtp_codec.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_rtp_codec_capability.idl",

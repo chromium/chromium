@@ -1608,13 +1608,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter quota
 [Worker]     getter requested
 [Worker]     method constructor
-[Worker] interface RTCRtpAcks
-[Worker]     attribute @@toStringTag
-[Worker]     getter explicitCongestionNotification
-[Worker]     getter receivedTime
-[Worker]     getter remoteSendTimestamp
-[Worker]     method acks
-[Worker]     method constructor
 [Worker] interface ReadableByteStreamController
 [Worker]     attribute @@toStringTag
 [Worker]     getter byobRequest

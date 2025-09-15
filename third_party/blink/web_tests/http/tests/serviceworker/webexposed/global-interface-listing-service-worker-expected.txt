@@ -1692,13 +1692,6 @@ interface QuotaExceededError : DOMException
     getter quota
     getter requested
     method constructor
-interface RTCRtpAcks
-    attribute @@toStringTag
-    getter explicitCongestionNotification
-    getter receivedTime
-    getter remoteSendTimestamp
-    method acks
-    method constructor
 interface ReadableByteStreamController
     attribute @@toStringTag
     getter byobRequest

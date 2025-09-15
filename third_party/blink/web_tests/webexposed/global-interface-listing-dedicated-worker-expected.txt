@@ -1824,13 +1824,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method setMetadata
 [Worker]     method toString
 [Worker]     setter data
-[Worker] interface RTCRtpAcks
-[Worker]     attribute @@toStringTag
-[Worker]     getter explicitCongestionNotification
-[Worker]     getter receivedTime
-[Worker]     getter remoteSendTimestamp
-[Worker]     method acks
-[Worker]     method constructor
 [Worker] interface RTCRtpScriptTransformer : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter options
