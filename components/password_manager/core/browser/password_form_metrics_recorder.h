@@ -226,7 +226,9 @@ class PasswordFormMetricsRecorder
     kSingleUsernameForm = 14,
     // An actor task is ongoing on the page.
     kActorTaskOngoing = 15,
-    kMaxValue = kActorTaskOngoing,
+    // Password change is ongoing on the page.
+    kPasswordChangeOngoing = 16,
+    kMaxValue = kPasswordChangeOngoing,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordManagerFirstWaitForUsernameReason)
 

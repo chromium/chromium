@@ -809,15 +809,12 @@ void ChromePasswordManagerClient::NotifyStorePasswordCalled() {
 bool ChromePasswordManagerClient::IsPasswordChangeOngoing() {
   ChromePasswordChangeService* password_change_service =
       PasswordChangeServiceFactory::GetForProfile(profile_);
-  if (password_change_service) {
-    auto* delegate =
-        password_change_service->GetPasswordChangeDelegate(web_contents());
-    if (delegate) {
-      return delegate->GetCurrentState() ==
-             PasswordChangeDelegate::State::kChangingPassword;
-    }
+  if (!password_change_service) {
+    return false;
   }
-  return false;
+
+  return password_change_service->GetPasswordChangeDelegate(web_contents()) !=
+         nullptr;
 }
 
 void ChromePasswordManagerClient::NotifyOnSuccessfulLogin(
