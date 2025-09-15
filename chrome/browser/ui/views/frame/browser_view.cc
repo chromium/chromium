@@ -4173,8 +4173,17 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
   if (top_container()->parent() == this) {
     return;
   }
+  // TODO(crbug.com/442255944): In the case top_container() is not a child of
+  // BrowserView, we expect the overlay widget and overlay view to still be
+  // present. Investigate why this may not always be the case on Mac and remove
+  // this check.
+  if (!overlay_view_tracker_) {
+    LOG(ERROR) << "ReparentTopContainerForEndOfImmersive() called after "
+                  "overlay_view_ destroyed.";
+    return;
+  }
 
-  overlay_view_->SetVisible(false);
+  overlay_view_tracker_.view()->SetVisible(false);
   top_container()->DestroyLayer();
   AddChildViewAt(top_container(), 0);
   EnsureFocusOrder();
@@ -4386,11 +4395,13 @@ views::ClientView* BrowserView::CreateClientView(views::Widget* widget) {
 }
 
 views::View* BrowserView::CreateOverlayView() {
-  overlay_view_ = new TopContainerOverlayView(weak_ptr_factory_.GetWeakPtr());
-  overlay_view_->SetVisible(false);
-  overlay_view_->SetEventTargeter(std::make_unique<views::ViewTargeter>(
+  auto* overlay_view =
+      new TopContainerOverlayView(weak_ptr_factory_.GetWeakPtr());
+  overlay_view_tracker_.SetView(overlay_view);
+  overlay_view->SetVisible(false);
+  overlay_view->SetEventTargeter(std::make_unique<views::ViewTargeter>(
       std::make_unique<OverlayViewTargeterDelegate>()));
-  return overlay_view_;
+  return overlay_view;
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -4445,7 +4456,7 @@ views::View* BrowserView::CreateMacOverlayView() {
 
   overlay_view->SetEventTargeter(std::make_unique<views::ViewTargeter>(
       std::make_unique<OverlayViewTargeterDelegate>()));
-  overlay_view_ = overlay_view.get();
+  overlay_view_tracker_.SetView(overlay_view.get());
   overlay_widget_->GetRootView()->AddChildView(std::move(overlay_view));
 
   if (UsesImmersiveFullscreenTabbedMode()) {
@@ -4462,7 +4473,7 @@ views::View* BrowserView::CreateMacOverlayView() {
         std::move(tab_overlay_view));
   }
 
-  return overlay_view_;
+  return overlay_view_tracker_.view();
 }
 #endif  // IS_MAC
 
@@ -6156,8 +6167,9 @@ void BrowserView::OnImmersiveRevealStarted() {
 
   top_container()->SetPaintToLayer();
   top_container()->layer()->SetFillsBoundsOpaquely(false);
-  overlay_view_->AddChildViewRaw(top_container());
-  overlay_view_->SetVisible(true);
+  CHECK(overlay_view_tracker_);
+  overlay_view_tracker_.view()->AddChildViewRaw(top_container());
+  overlay_view_tracker_.view()->SetVisible(true);
   InvalidateLayout();
   GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
 
