@@ -14,7 +14,6 @@
 
 namespace features {
 
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAlignSurfaceLayerImplToPixelGrid);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kComputeRasterTranslateForExternalScale);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSynchronizedScrolling);
 
