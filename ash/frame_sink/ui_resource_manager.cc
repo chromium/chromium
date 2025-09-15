@@ -88,11 +88,17 @@ viz::TransferableResource UiResourceManager::OfferAndPrepareResourceForExport(
   CHECK(resource);
 
   viz::TransferableResource transferable_resource =
-      viz::TransferableResource::MakeGpu(
-          resource->client_shared_image()->mailbox(), GL_TEXTURE_2D,
-          resource->sync_token, resource->resource_size, resource->format,
-          resource->is_overlay_candidate,
-          viz::TransferableResource::ResourceSource::kUI);
+      viz::TransferableResource::Make(
+          resource->client_shared_image(),
+          viz::TransferableResource::ResourceSource::kUI, resource->sync_token,
+          /*override=*/
+          {
+              .format = resource->format,
+              .size = resource->resource_size,
+              .texture_target = GL_TEXTURE_2D,
+              .is_overlay_candidate = resource->is_overlay_candidate,
+              .color_space = gfx::ColorSpace(),
+          });
 
   transferable_resource.id = id_generator_.GenerateNextId();
   exported_resources_pool_[transferable_resource.id] = std::move(resource);
