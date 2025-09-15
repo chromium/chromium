@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "google_apis/common/api_error_codes.h"
+#include "google_apis/common/base_requests.h"
 
 namespace ash::boca_receiver {
 namespace {
@@ -55,6 +56,10 @@ void RegisterReceiverRequest::OnSuccess(std::unique_ptr<base::Value> response) {
 void RegisterReceiverRequest::OnError(google_apis::ApiErrorCode error) {
   CHECK(callback_);
   std::move(callback_).Run(std::nullopt);
+}
+
+google_apis::HttpRequestMethod RegisterReceiverRequest::GetRequestType() const {
+  return google_apis::HttpRequestMethod::kPost;
 }
 
 }  // namespace ash::boca_receiver

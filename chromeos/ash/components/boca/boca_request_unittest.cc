@@ -53,6 +53,10 @@ class MockBocaRequestDelegate : public BocaRequest::Delegate {
               (std::unique_ptr<base::Value> response),
               (override));
   MOCK_METHOD(void, OnError, (google_apis::ApiErrorCode error), (override));
+  MOCK_METHOD(google_apis::HttpRequestMethod,
+              GetRequestType,
+              (),
+              (const, override));
 };
 
 class BocaRequestTest : public testing::Test {
@@ -64,7 +68,9 @@ class BocaRequestTest : public testing::Test {
         std::move(auth_service), url_loader_factory_.GetSafeWeakWrapper(),
         task_environment_.GetMainThreadTaskRunner(), "custom-user-agent",
         TRAFFIC_ANNOTATION_FOR_TESTS);
-    delegate_ = std::make_unique<MockBocaRequestDelegate>();
+    delegate_ = std::make_unique<testing::NiceMock<MockBocaRequestDelegate>>();
+    ON_CALL(*delegate_, GetRequestType)
+        .WillByDefault(testing::Return(google_apis::HttpRequestMethod::kPost));
     EXPECT_CALL(*delegate_, GetRelativeUrl)
         .WillOnce(testing::Return(std::string(kRelativeUrl)));
   }
@@ -72,7 +78,7 @@ class BocaRequestTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<google_apis::RequestSender> sender_;
-  std::unique_ptr<MockBocaRequestDelegate> delegate_;
+  std::unique_ptr<testing::NiceMock<MockBocaRequestDelegate>> delegate_;
   raw_ptr<google_apis::DummyAuthService> auth_service_ptr_;
 };
 
@@ -80,9 +86,8 @@ TEST_F(BocaRequestTest, RequestDataAreCorrect) {
   EXPECT_CALL(*delegate_, GetRequestBody)
       .WillOnce(testing::Return(std::string(kRequestBody)));
 
-  auto boca_request = std::make_unique<BocaRequest>(
-      sender_.get(), google_apis::HttpRequestMethod::kPost,
-      std::move(delegate_));
+  auto boca_request =
+      std::make_unique<BocaRequest>(sender_.get(), std::move(delegate_));
   sender_->StartRequestWithAuthRetry(std::move(boca_request));
   url_loader_factory_.WaitForRequest(GURL(kFullUrl));
   network::ResourceRequest request =
@@ -97,12 +102,13 @@ TEST_F(BocaRequestTest, RequestDataAreCorrect) {
 }
 
 TEST_F(BocaRequestTest, EmptyRequest) {
+  ON_CALL(*delegate_, GetRequestType)
+      .WillByDefault(testing::Return(google_apis::HttpRequestMethod::kGet));
   EXPECT_CALL(*delegate_, GetRequestBody)
       .WillOnce(testing::Return(std::nullopt));
 
-  auto boca_request = std::make_unique<BocaRequest>(
-      sender_.get(), google_apis::HttpRequestMethod::kGet,
-      std::move(delegate_));
+  auto boca_request =
+      std::make_unique<BocaRequest>(sender_.get(), std::move(delegate_));
   sender_->StartRequestWithAuthRetry(std::move(boca_request));
   url_loader_factory_.WaitForRequest(GURL(kFullUrl));
   network::ResourceRequest request =
@@ -122,9 +128,8 @@ TEST_F(BocaRequestTest, SuccessfullRequest) {
       });
   EXPECT_CALL(*delegate_, OnError).Times(0);
 
-  auto boca_request = std::make_unique<BocaRequest>(
-      sender_.get(), google_apis::HttpRequestMethod::kPost,
-      std::move(delegate_));
+  auto boca_request =
+      std::make_unique<BocaRequest>(sender_.get(), std::move(delegate_));
   url_loader_factory_.AddResponse(std::string(kFullUrl),
                                   std::string(kResponseBody));
   sender_->StartRequestWithAuthRetry(std::move(boca_request));
@@ -146,9 +151,8 @@ TEST_F(BocaRequestTest, FailedRequest) {
         std::move(future).GetCallback().Run(error);
       });
 
-  auto boca_request = std::make_unique<BocaRequest>(
-      sender_.get(), google_apis::HttpRequestMethod::kPost,
-      std::move(delegate_));
+  auto boca_request =
+      std::make_unique<BocaRequest>(sender_.get(), std::move(delegate_));
   auto response_head = network::mojom::URLResponseHead::New();
   response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   response_head->headers->ReplaceStatusLine("HTTP/1.1 404 Not found");
@@ -170,9 +174,8 @@ TEST_F(BocaRequestTest, ParseError) {
         std::move(future).GetCallback().Run(error);
       });
 
-  auto boca_request = std::make_unique<BocaRequest>(
-      sender_.get(), google_apis::HttpRequestMethod::kPost,
-      std::move(delegate_));
+  auto boca_request =
+      std::make_unique<BocaRequest>(sender_.get(), std::move(delegate_));
   url_loader_factory_.AddResponse(std::string(kFullUrl), "invalid json");
   sender_->StartRequestWithAuthRetry(std::move(boca_request));
 
@@ -189,9 +192,8 @@ TEST_F(BocaRequestTest, EmptyResponse) {
       });
   EXPECT_CALL(*delegate_, OnError).Times(0);
 
-  auto boca_request = std::make_unique<BocaRequest>(
-      sender_.get(), google_apis::HttpRequestMethod::kPost,
-      std::move(delegate_));
+  auto boca_request =
+      std::make_unique<BocaRequest>(sender_.get(), std::move(delegate_));
   url_loader_factory_.AddResponse(std::string(kFullUrl), "{}");
   sender_->StartRequestWithAuthRetry(std::move(boca_request));
   std::unique_ptr<base::Value> response = future.Take();

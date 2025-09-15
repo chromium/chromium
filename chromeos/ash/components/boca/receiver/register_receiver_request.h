@@ -65,6 +65,7 @@ class RegisterReceiverRequest : public boca::BocaRequest::Delegate {
   std::optional<std::string> GetRequestBody() override;
   void OnSuccess(std::unique_ptr<base::Value> response) override;
   void OnError(google_apis::ApiErrorCode error) override;
+  google_apis::HttpRequestMethod GetRequestType() const override;
 
  private:
   std::string fcm_token_;

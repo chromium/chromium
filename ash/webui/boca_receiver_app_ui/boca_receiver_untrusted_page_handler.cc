@@ -58,12 +58,11 @@ void BocaReceiverUntrustedPageHandler::Init() {
 std::unique_ptr<google_apis::RequestSender>
 BocaReceiverUntrustedPageHandler::SendRequest(
     std::unique_ptr<boca::BocaRequest::Delegate> request_delegate,
-    google_apis::HttpRequestMethod request_type,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   auto request_sender =
       delegate_->CreateRequestSender(kRequesterId, traffic_annotation);
   auto request = std::make_unique<boca::BocaRequest>(
-      request_sender.get(), request_type, std::move(request_delegate));
+      request_sender.get(), std::move(request_delegate));
   request_sender->StartRequestWithAuthRetry(std::move(request));
   return request_sender;
 }
@@ -79,7 +78,6 @@ void BocaReceiverUntrustedPageHandler::Register(
                                                 std::move(response_cb));
   registration_request_sender_ =
       SendRequest(std::move(registration_request_delegate),
-                  google_apis::HttpRequestMethod::kPost,
                   RegisterReceiverRequest::kTrafficAnnotation);
 }
 

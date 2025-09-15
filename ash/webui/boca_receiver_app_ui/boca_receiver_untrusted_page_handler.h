@@ -61,7 +61,6 @@ class BocaReceiverUntrustedPageHandler
 
   [[nodiscard]] std::unique_ptr<google_apis::RequestSender> SendRequest(
       std::unique_ptr<boca::BocaRequest::Delegate> request_delegate,
-      google_apis::HttpRequestMethod request_type,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   void Register(const std::string& fcm_token,

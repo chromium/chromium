@@ -39,13 +39,13 @@ class BocaRequest : public google_apis::UrlFetchRequestBase {
     virtual std::optional<std::string> GetRequestBody() = 0;
     virtual void OnSuccess(std::unique_ptr<base::Value> response) = 0;
     virtual void OnError(google_apis::ApiErrorCode error) = 0;
+    virtual google_apis::HttpRequestMethod GetRequestType() const = 0;
 
    protected:
     Delegate() = default;
   };
 
   BocaRequest(google_apis::RequestSender* sender,
-              google_apis::HttpRequestMethod request_type,
               std::unique_ptr<Delegate> delegate);
 
   BocaRequest(const BocaRequest&) = delete;
@@ -72,7 +72,6 @@ class BocaRequest : public google_apis::UrlFetchRequestBase {
  private:
   void OnDataParsed(std::unique_ptr<base::Value> response_data);
 
-  google_apis::HttpRequestMethod request_type_;
   std::unique_ptr<Delegate> delegate_;
   base::WeakPtrFactory<BocaRequest> weak_ptr_factory_{this};
 };

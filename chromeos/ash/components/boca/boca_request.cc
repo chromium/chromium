@@ -21,12 +21,10 @@
 namespace ash::boca {
 
 BocaRequest::BocaRequest(google_apis::RequestSender* sender,
-                         google_apis::HttpRequestMethod request_type,
                          std::unique_ptr<Delegate> delegate)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),
-      request_type_(request_type),
       delegate_(std::move(delegate)) {}
 
 BocaRequest::~BocaRequest() = default;
@@ -47,7 +45,7 @@ bool BocaRequest::IsSuccessfulErrorCode(google_apis::ApiErrorCode error) {
 }
 
 google_apis::HttpRequestMethod BocaRequest::GetRequestType() const {
-  return request_type_;
+  return delegate_->GetRequestType();
 }
 
 bool BocaRequest::GetContentData(std::string* upload_content_type,

@@ -115,4 +115,9 @@ void StartKioskReceiverRequest::OnError(google_apis::ApiErrorCode error) {
   std::move(callback_).Run(std::nullopt);
 }
 
+google_apis::HttpRequestMethod StartKioskReceiverRequest::GetRequestType()
+    const {
+  return google_apis::HttpRequestMethod::kPost;
+}
+
 }  // namespace ash::boca_receiver

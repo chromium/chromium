@@ -121,4 +121,9 @@ void GetReceiverConnectionInfoRequest::OnError(
   std::move(callback_).Run(std::nullopt);
 }
 
+google_apis::HttpRequestMethod
+GetReceiverConnectionInfoRequest::GetRequestType() const {
+  return google_apis::HttpRequestMethod::kGet;
+}
+
 }  // namespace ash::boca_receiver

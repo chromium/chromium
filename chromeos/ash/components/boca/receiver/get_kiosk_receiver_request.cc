@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/boca/receiver/kiosk_receiver_parser.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "google_apis/common/api_error_codes.h"
+#include "google_apis/common/base_requests.h"
 
 namespace ash::boca_receiver {
 
@@ -70,6 +71,10 @@ void GetKioskReceiverRequest::OnSuccess(std::unique_ptr<base::Value> response) {
 void GetKioskReceiverRequest::OnError(google_apis::ApiErrorCode error) {
   CHECK(callback_);
   std::move(callback_).Run(std::nullopt);
+}
+
+google_apis::HttpRequestMethod GetKioskReceiverRequest::GetRequestType() const {
+  return google_apis::HttpRequestMethod::kGet;
 }
 
 }  // namespace ash::boca_receiver
