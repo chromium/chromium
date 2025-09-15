@@ -1912,6 +1912,16 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.WhatsNewSurvey.Status"
+    enum="PrivacySandboxWhatsNewSurveyStatus" expires_after="2026-02-26">
+  <owner>michalhoffmann@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the status when attempting to surface the ACT What's New survey. The
+    ACT What's New survey is triggered on the What's New page with a delay.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
     expires_after="never">
 <!-- expires-never: critical system health metric for monitoring -->

@@ -162,6 +162,11 @@ constexpr char kHatsSurveyOrganicTriggerSafetyHubAndroid[] =
     "safety_hub_android_organic_survey";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+constexpr char kHatsSurveyTriggerPrivacySandboxWhatsNewSurvey[] =
+    "privacy-sandbox-whats-new-survey";
+#endif  // !BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(ENABLE_COMPOSE)
 constexpr char kHatsSurveyTriggerComposeAcceptance[] = "compose-acceptance";
 constexpr char kHatsSurveyTriggerComposeClose[] = "compose-close";
@@ -207,7 +212,6 @@ constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[] =
     "omnibox-on-focus-happiness";
 constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[] =
     "omnibox-on-focus-utility";
-
 namespace {
 
 constexpr char kHatsSurveyProbability[] = "probability";
@@ -555,6 +559,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker,
       kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, std::nullopt,
       std::vector<std::string>{}, identity_string_psd_fields);
+
+  // Privacy sandbox What's New survey
+  survey_configs.emplace_back(  //
+      &privacy_sandbox::kPrivacySandboxWhatsNewSurvey,
+      kHatsSurveyTriggerPrivacySandboxWhatsNewSurvey);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

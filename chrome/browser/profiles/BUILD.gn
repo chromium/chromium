@@ -387,6 +387,10 @@ source_set("profiles_extra_parts_impl") {
     deps += [ ":profile_util" ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/privacy_sandbox/incognito:whats_new_survey" ]
+  }
+
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/extensions/keyed_services:keyed_service_factories",

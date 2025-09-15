@@ -495,6 +495,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyController.java:PrivacySandboxSurveyTypes) -->
 
+<!-- LINT.IfChange(PrivacySandboxWhatsNewSurveyStatus) -->
+
+<enum name="PrivacySandboxWhatsNewSurveyStatus">
+  <int value="0" label="Survey was successfully launched"/>
+  <int value="1" label="Feature not enabled"/>
+  <int value="2" label="Failed to fetch HaTS service"/>
+  <int value="3" label="Failed to launch survey"/>
+  <int value="4" label="Launched delayed survey"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/incognito/privacy_sandbox_whats_new_survey_service.h:PrivacySandboxWhatsNewSurveyStatus) -->
+
 <enum name="QuickDeleteAction">
   <int value="0" label="Entry from menu item clicked"/>
   <int value="1" label="Delete button on dialog clicked"/>

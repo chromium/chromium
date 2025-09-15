@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_INCOGNITO_PRIVACY_SANDBOX_INCOGNITO_TAB_OBSERVER_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_INCOGNITO_PRIVACY_SANDBOX_INCOGNITO_TAB_OBSERVER_H_
 
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -22,6 +23,9 @@ class PrivacySandboxIncognitoTabObserver : public content::WebContentsObserver {
 
  private:
   bool IsNewTabPage(const GURL& url);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  bool IsWhatsNewPage(const GURL& url);
+#endif
 };
 
 }  // namespace privacy_sandbox
