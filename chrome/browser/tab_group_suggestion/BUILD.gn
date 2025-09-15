@@ -16,17 +16,22 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsPromotionProperties.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsServiceFactory.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionEventObserver.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionMetricsService.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionMetricsServiceFactory.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionMetricsTracker.java",
     ]
 
     deps = [
       ":java_resources",
       "//base:base_java",
       "//build/android:build_java",
+      "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/hub:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
+      "//chrome/browser/tabwindow:java",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/embedder_support/android:util_java",
       "//components/visited_url_ranking/public:public_java",

@@ -23,6 +23,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="GroupCreationSource">
+  <variant name="CPA"
+      summary="Tab groups created from contextual page action suggestions."/>
+  <variant name="GTS"
+      summary="Tab groups created from Grid Tab Switcher suggestions."/>
+  <variant name="Unknown" summary="Tab groups created from an unknown source."/>
+</variants>
+
 <histogram name="GroupSuggestionsService.OpenedTabCount.Last10Mins"
     units="counts" expires_after="2026-01-11">
   <owner>ssid@chromium.org</owner>
@@ -63,6 +71,36 @@ chromium-metrics-reviews@google.com.
     Records the reason why the group suggestion is throttled. Logged every time
     the group suggestion was computed and then throttled.
   </summary>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TabSwitches.PerGroup.{GroupCreationSource}"
+    units="count" expires_after="2026-01-01">
+  <owner>mfiaz@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <summary>
+    Records the average number of times per group a tab from a tab group was
+    switched to the foreground. This is recorded when the application is
+    stopped. The count is reset when the application is stopped. The source of
+    the suggestion is {GroupCreationSource}.
+  </summary>
+  <token key="GroupCreationSource" variants="GroupCreationSource"/>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TabSwitches.Total.{GroupCreationSource}"
+    units="count" expires_after="2026-01-01">
+  <owner>mfiaz@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <summary>
+    Records the number of times a tab from a tab group was switched to the
+    foreground. This is recorded when the application is stopped. The count is
+    reset when the application is stopped. The source of the suggestion is
+    {GroupCreationSource}.
+  </summary>
+  <token key="GroupCreationSource" variants="GroupCreationSource"/>
 </histogram>
 
 <histogram
