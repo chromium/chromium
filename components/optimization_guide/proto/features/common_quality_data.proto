@@ -355,12 +355,22 @@ message ContentAttributes {
 //
 // Only populated for ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.
 message Geometry {
-  // The bounding box of the content node, in the page coordinate system. This
-  // roughly corresponds to the element's local box used for hit testing.
+  // The bounding box of the content node mapped to the viewport ignoring any
+  // ancestor clips (including the viewport clip). This can be thought of as the
+  // where the element would be relative to the viewport if it "popped out" of
+  // the page and was painted on top of all the content. A few use-case for this
+  // are:
+  //
+  // - If empty, this implies the node is not hit-testable, even once
+  //   scrolled onscreen.
+  // - The rect's origin indicates whether whether it starts above or below the
+  //   viewport. A negative y-coordinate means the node's content starts above
+  //   the viewport.
   BoundingRect outer_bounding_box = 1 [features = { field_presence: EXPLICIT }];
 
-  // Denotes which subset of this node is visible, in the page coordinate
-  // system. If the content is offscreen, this field will be empty.
+  // The bounding box of the content node relative to the viewport including all
+  // ancestor clipping. These are the element bounds visible to the user and
+  // hit-testable in the DOM.
   BoundingRect visible_bounding_box = 2 [features = { field_presence: EXPLICIT }];
 
   // Whether the content node is fixed or sticky position. This may suggest
