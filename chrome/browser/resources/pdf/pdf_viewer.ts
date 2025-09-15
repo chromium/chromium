@@ -76,6 +76,9 @@ import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
 import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
+// <if expr="enable_pdf_save_to_drive">
+import {getSaveToDriveManageStorageUrl} from './pdf_viewer_utils.js';
+// </if> enable_pdf_save_to_drive
 import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents, verifyPdfHeader} from './pdf_viewer_utils.js';
 // clang-format on
 
@@ -1335,6 +1338,15 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case SaveToDriveBubbleRequestType.CANCEL_UPLOAD:
         PdfViewerPrivateProxyImpl.getInstance().saveToDrive(
             /*saveRequestType=undefined*/);
+        break;
+      case SaveToDriveBubbleRequestType.MANAGE_STORAGE:
+        assert(this.saveToDriveProgress_.accountEmail);
+        this.handleNavigate_(
+            getSaveToDriveManageStorageUrl(
+                this.saveToDriveProgress_.accountEmail,
+                this.saveToDriveProgress_.accountIsManaged ?? false),
+            WindowOpenDisposition.NEW_FOREGROUND_TAB);
+        // TODO(crbug.com/427449996): Add testing for this case.
         break;
       case SaveToDriveBubbleRequestType.RETRY:
         PdfViewerPrivateProxyImpl.getInstance().saveToDrive(
