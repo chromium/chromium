@@ -156,8 +156,8 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
   Paint(total_damage_rect, rotation_transform, resource.get());
 
   if (resource->damaged) {
-    resource->shared_image_interface->UpdateSharedImage(resource->sync_token,
-                                                        resource->mailbox());
+    resource->shared_image_interface->UpdateSharedImage(
+        resource->sync_token, resource->client_shared_image()->mailbox());
     resource->sync_token =
         resource->shared_image_interface->GenVerifiedSyncToken();
     resource->damaged = false;

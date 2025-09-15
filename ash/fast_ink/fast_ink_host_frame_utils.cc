@@ -44,7 +44,7 @@ std::unique_ptr<UiResource> AcquireUiResource(
       size, kFastInkSharedImageFormat, kFastInkUiSourceId);
 
   if (resource) {
-    CHECK(shared_image->mailbox() == resource->mailbox());
+    CHECK(shared_image == resource->client_shared_image());
   } else {
     resource = CreateUiResource(size, kFastInkUiSourceId, is_overlay_candidate,
                                 shared_image, sync_token);
@@ -172,8 +172,8 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   }
 
   if (resource->damaged) {
-    resource->shared_image_interface->UpdateSharedImage(resource->sync_token,
-                                                        resource->mailbox());
+    resource->shared_image_interface->UpdateSharedImage(
+        resource->sync_token, resource->client_shared_image()->mailbox());
     resource->sync_token =
         resource->shared_image_interface->GenVerifiedSyncToken();
     resource->damaged = false;

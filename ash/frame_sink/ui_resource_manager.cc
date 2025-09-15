@@ -89,8 +89,8 @@ viz::TransferableResource UiResourceManager::OfferAndPrepareResourceForExport(
 
   viz::TransferableResource transferable_resource =
       viz::TransferableResource::MakeGpu(
-          resource->mailbox(), GL_TEXTURE_2D, resource->sync_token,
-          resource->resource_size, resource->format,
+          resource->client_shared_image()->mailbox(), GL_TEXTURE_2D,
+          resource->sync_token, resource->resource_size, resource->format,
           resource->is_overlay_candidate,
           viz::TransferableResource::ResourceSource::kUI);
 

@@ -31,10 +31,6 @@ class ASH_EXPORT UiResource {
 
   virtual ~UiResource();
 
-  const gpu::Mailbox& mailbox() const {
-    return client_shared_image_->mailbox();
-  }
-
   const scoped_refptr<gpu::ClientSharedImage>& client_shared_image() const {
     return client_shared_image_;
   }

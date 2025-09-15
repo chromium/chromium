@@ -135,7 +135,7 @@ TEST_F(FastInkHostCreateFrameUtilTest, ResourceUsesMailbox) {
 
   auto* resource = resource_manager_.PeekExportedResource(resource_id);
   EXPECT_NE(resource->ui_source_id, kInvalidUiSourceId);
-  EXPECT_EQ(resource->mailbox(), shared_image_->mailbox());
+  EXPECT_EQ(resource->client_shared_image(), shared_image_);
 }
 
 TEST_F(FastInkHostCreateFrameUtilTest, CompositorFrameHasCorrectStructure) {
