@@ -877,13 +877,11 @@ source_set("unit_tests") {
     "location_bar_model_impl_unittest.cc",
     "most_visited_sites_provider_unittest.cc",
     "omnibox_controller_unittest.cc",
-    "omnibox_edit_model_unittest.cc",
     "omnibox_field_trial_unittest.cc",
     "omnibox_metrics_provider_unittest.cc",
     "omnibox_popup_selection_unittest.cc",
     "omnibox_text_util_unittest.cc",
     "omnibox_triggered_feature_service_unittest.cc",
-    "omnibox_view_unittest.cc",
     "on_device_head_model_unittest.cc",
     "on_device_head_provider_unittest.cc",
     "on_device_model_update_listener_unittest.cc",
@@ -975,6 +973,8 @@ source_set("unit_tests") {
     sources += [
       "actions/history_clusters_action_unittest.cc",
       "history_cluster_provider_unittest.cc",
+      "omnibox_edit_model_unittest.cc",
+      "omnibox_view_unittest.cc",
     ]
     deps += [ "//ui/base/clipboard:clipboard_test_support" ]
   }

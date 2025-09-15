@@ -56,6 +56,8 @@
 #include "extensions/common/extension_features.h"  // nogncheck
 #endif
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 using metrics::OmniboxEventProto;
 using Selection = OmniboxPopupSelection;
 using testing::_;
@@ -184,8 +186,6 @@ TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
   EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
 }
 
-// iOS doesn't use elisions in the Omnibox textfield.
-#if !BUILDFLAG(IS_IOS)
 TEST_F(OmniboxEditModelTest, RespectUnelisionInZeroSuggest) {
   location_bar_model()->set_url(GURL("https://www.example.com/"));
   location_bar_model()->set_url_for_display(u"example.com");
@@ -210,7 +210,6 @@ TEST_F(OmniboxEditModelTest, RespectUnelisionInZeroSuggest) {
   EXPECT_FALSE(model()->user_input_in_progress());
   EXPECT_TRUE(view()->IsSelectAll());
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(OmniboxEditModelTest, RevertZeroSuggestTemporaryText) {
   location_bar_model()->set_url(GURL("https://www.example.com/"));
@@ -277,12 +276,7 @@ TEST_F(OmniboxEditModelTest, CurrentMatch) {
     model()->ResetDisplayTexts();
     model()->Revert();
 
-    // iOS doesn't do elision in the textfield view.
-#if BUILDFLAG(IS_IOS)
-    EXPECT_EQ(u"http://www.example.com/", view()->GetText());
-#else
     EXPECT_EQ(u"example.com", view()->GetText());
-#endif
 
     AutocompleteMatch match = model()->CurrentMatch(nullptr);
     EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
@@ -298,12 +292,7 @@ TEST_F(OmniboxEditModelTest, CurrentMatch) {
     model()->ResetDisplayTexts();
     model()->Revert();
 
-    // iOS doesn't do elision in the textfield view.
-#if BUILDFLAG(IS_IOS)
-    EXPECT_EQ(u"https://www.google.com/", view()->GetText());
-#else
     EXPECT_EQ(u"google.com", view()->GetText());
-#endif
 
     AutocompleteMatch match = model()->CurrentMatch(nullptr);
     EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
@@ -323,22 +312,12 @@ TEST_F(OmniboxEditModelTest, DisplayText) {
 
   EXPECT_TRUE(model()->CurrentTextIsURL());
 
-#if BUILDFLAG(IS_IOS)
-  // iOS OmniboxEditModel always provides the full URL as the OmniboxView
-  // permanent display text. Unelision should return false.
-  EXPECT_EQ(u"https://www.example.com/", model()->GetPermanentDisplayText());
-  EXPECT_EQ(u"https://www.example.com/", view()->GetText());
-  EXPECT_FALSE(model()->Unelide());
-  EXPECT_FALSE(model()->user_input_in_progress());
-  EXPECT_FALSE(view()->IsSelectAll());
-#else
   // Verify we can unelide and show the full URL properly.
   EXPECT_EQ(u"example.com", model()->GetPermanentDisplayText());
   EXPECT_EQ(u"example.com", view()->GetText());
   EXPECT_TRUE(model()->Unelide());
   EXPECT_FALSE(model()->user_input_in_progress());
   EXPECT_TRUE(view()->IsSelectAll());
-#endif
 
   EXPECT_EQ(u"https://www.example.com/", view()->GetText());
   EXPECT_TRUE(model()->CurrentTextIsURL());
@@ -799,7 +778,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupPositionChanging) {
   }
 }
 
-#if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   ACMatches matches;
   for (size_t i = 0; i < 6; ++i) {
@@ -908,10 +887,10 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   model()->OnUpOrDownPressed(true, true);
   EXPECT_EQ(Selection(5, Selection::NORMAL), model()->GetPopupSelection());
 }
-#endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-// Actions are not part of the selection stepping in Android and iOS at all.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Actions are not part of the selection stepping in Android at all.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::Toolbelt>
@@ -1180,8 +1159,8 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
 }
 
-// Android and iOS handle actions and metrics differently from other platforms.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Android handles actions and metrics differently from other platforms.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(OmniboxEditModelPopupTest, OpenActionSelectionLogsOmniboxEvent) {
   base::HistogramTester histogram_tester;
   ACMatches matches;
@@ -1304,7 +1283,7 @@ TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
   EXPECT_EQ(FeedbackType::kNone, result->match_at(1)->feedback_type);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 // Tests the `GetMatchIcon()` method, verifying that a page favicon is used for
 // `URL_WHAT_YOU_TYPED` matches.
 TEST_F(OmniboxEditModelPopupTest,
@@ -1428,7 +1407,7 @@ TEST_F(OmniboxEditModelPopupTest,
   gfx::test::CheckColors(bitmap.getColor(0, 0),
                          image.ToSkBitmap()->getColor(0, 0));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests the `GetMatchIcon()` method, verifying that the extension's icon is
@@ -1603,7 +1582,7 @@ TEST_F(OmniboxEditModelTest, IPv4AddressPartsCount) {
                            base::Bucket(4, 1)));
 }
 
-#if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
+#if !BUILDFLAG(IS_ANDROID)
 // The keyword mode feature is only available on Desktop. Do not test on mobile.
 TEST_F(OmniboxEditModelTest, OpenTabMatch) {
   // When the match comes from the Open Tab Provider while in keyword mode,
@@ -1643,7 +1622,7 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
                                GURL(), std::u16string(), 0);
   EXPECT_EQ(disposition, WindowOpenDisposition::CURRENT_TAB);
 }
-#endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(OmniboxEditModelTest, LogAnswerUsed) {
   base::HistogramTester histogram_tester;
