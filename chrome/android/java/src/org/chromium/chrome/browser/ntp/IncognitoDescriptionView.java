@@ -46,6 +46,8 @@ public class IncognitoDescriptionView extends LinearLayout {
     private int mHeightDp;
 
     private LinearLayout mContainer;
+    private View mHeaderCondensedContainer;
+    private ImageView mIcon;
     private TextView mHeader;
     private TextView mSubtitle;
     private LinearLayout mBulletpointsContainer;
@@ -55,9 +57,10 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     private static final int BULLETPOINTS_HORIZONTAL_SPACING_DP = 40;
     private static final int BULLETPOINTS_MARGIN_BOTTOM_DP = 12;
+    private static final int CONDENSED_ICON_SIZE_DP = 40;
     private static final int CONTENT_WIDTH_DP = 600;
-    private static final int WIDE_LAYOUT_THRESHOLD_DP = 720;
     private static final int COOKIES_CONTROL_MARGIN_TOP_DP = 12;
+    private static final int WIDE_LAYOUT_THRESHOLD_DP = 720;
 
     static final String TRACKING_PROTECTION_URL =
             "https://support.google.com/chrome/?p=pause_protections";
@@ -88,6 +91,8 @@ public class IncognitoDescriptionView extends LinearLayout {
         populateBulletpoints(R.id.new_tab_incognito_warning, R.string.new_tab_otr_visible);
 
         mContainer = findViewById(R.id.new_tab_incognito_container);
+        mHeaderCondensedContainer = findViewById(R.id.new_tab_incognito_title_condensed_stub);
+        mIcon = findViewById(R.id.new_tab_incognito_icon);
         mHeader = findViewById(R.id.new_tab_incognito_title);
         mSubtitle = findViewById(R.id.new_tab_incognito_subtitle);
         mLearnMore = findViewById(R.id.learn_more);
@@ -152,7 +157,11 @@ public class IncognitoDescriptionView extends LinearLayout {
     }
 
     private void adjustView() {
-        adjustIcon();
+        if (isSmallIconEnabled()) {
+            adjustCondensedIcon();
+        } else {
+            adjustIcon();
+        }
         adjustLayout();
         adjustLearnMore();
         adjustCookieControlsCard();
@@ -247,11 +256,19 @@ public class IncognitoDescriptionView extends LinearLayout {
             float horizontalOffsetDp = horizontalOffset * pxToDp;
             paddingHorizontalDp = (int) (paddingHorizontalDp - horizontalOffsetDp);
 
-            mHeader.setPadding(
-                    horizontalOffset,
-                    mHeader.getPaddingTop(),
-                    horizontalOffset,
-                    mHeader.getPaddingBottom());
+            if (isSmallIconEnabled()) {
+                mHeaderCondensedContainer.setPadding(
+                        horizontalOffset,
+                        mHeaderCondensedContainer.getPaddingTop(),
+                        horizontalOffset,
+                        mHeaderCondensedContainer.getPaddingBottom());
+            } else {
+                mHeader.setPadding(
+                        horizontalOffset,
+                        mHeader.getPaddingTop(),
+                        horizontalOffset,
+                        mHeader.getPaddingBottom());
+            }
 
             // The subtitle is sized automatically, but not wider than CONTENT_WIDTH_DP.
             mSubtitle.setLayoutParams(
@@ -292,7 +309,15 @@ public class IncognitoDescriptionView extends LinearLayout {
             // Reset any horizontal padding added to account for the horizontal offset, for
             // |mHeader|, |mSubtitle| and |mBulletpointsContainer|. This padding should be applied
             // only for a small-width layout.
-            mHeader.setPadding(0, mHeader.getPaddingTop(), 0, mHeader.getPaddingBottom());
+            if (isSmallIconEnabled()) {
+                mHeaderCondensedContainer.setPadding(
+                        0,
+                        mHeaderCondensedContainer.getPaddingTop(),
+                        0,
+                        mHeaderCondensedContainer.getPaddingBottom());
+            } else {
+                mHeader.setPadding(0, mHeader.getPaddingTop(), 0, mHeader.getPaddingBottom());
+            }
             mSubtitle.setLayoutParams(
                     new LinearLayout.LayoutParams(
                             contentWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -361,9 +386,16 @@ public class IncognitoDescriptionView extends LinearLayout {
         params.setMargins(0, learnMoreSpacingTop, 0, learnMoreSpacingBottom);
         ViewUtils.requestLayout(mLearnMore, "IncognitoDescriptionView.adjustLayout");
 
-        ((LinearLayout.LayoutParams) mHeader.getLayoutParams())
-                .setMargins(0, totalSpaceBetweenViews, 0, 0);
-        mHeader.setLayoutParams(mHeader.getLayoutParams()); // Apply the new layout.
+        if (isSmallIconEnabled()) {
+            if (mHeader.getParent() != mHeaderCondensedContainer) {
+                ((ViewGroup) mHeader.getParent()).removeView(mHeader);
+                ((ViewGroup) mHeaderCondensedContainer).addView(mHeader);
+            }
+        } else {
+            ((LinearLayout.LayoutParams) mHeader.getLayoutParams())
+                    .setMargins(0, totalSpaceBetweenViews, 0, 0);
+            mHeader.setLayoutParams(mHeader.getLayoutParams()); // Apply the new layout.
+        }
     }
 
     /** Adjust the Incognito icon. */
@@ -378,9 +410,28 @@ public class IncognitoDescriptionView extends LinearLayout {
             sizeDp = mHeightDp <= 480 ? 72 : 120;
         }
 
-        ImageView icon = findViewById(R.id.new_tab_incognito_icon);
-        icon.getLayoutParams().width = dpToPx(getContext(), sizeDp);
-        icon.getLayoutParams().height = dpToPx(getContext(), sizeDp);
+        mIcon.getLayoutParams().width = dpToPx(getContext(), sizeDp);
+        mIcon.getLayoutParams().height = dpToPx(getContext(), sizeDp);
+    }
+
+    /** Adjust the Incognito condensed icon. */
+    private void adjustCondensedIcon() {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mIcon.getLayoutParams();
+        int sizeDp = CONDENSED_ICON_SIZE_DP;
+        int marginEndPx =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.incognito_ntp_total_space_between_views);
+
+        params.width = dpToPx(getContext(), sizeDp);
+        params.height = dpToPx(getContext(), sizeDp);
+        params.setMarginEnd(marginEndPx);
+        mIcon.setLayoutParams(params);
+
+        if (mIcon.getParent() != mHeaderCondensedContainer) {
+            ((ViewGroup) mIcon.getParent()).removeView(mIcon);
+            ((ViewGroup) mHeaderCondensedContainer).addView(mIcon);
+        }
     }
 
     /** Adjust the "Learn More" link. */
@@ -436,5 +487,9 @@ public class IncognitoDescriptionView extends LinearLayout {
             // Landscape
             mCookieControlsCard.getLayoutParams().width = dpToPx(getContext(), CONTENT_WIDTH_DP);
         }
+    }
+
+    private boolean isSmallIconEnabled() {
+        return ChromeFeatureList.sIncognitoNtpSmallIcon.isEnabled();
     }
 }

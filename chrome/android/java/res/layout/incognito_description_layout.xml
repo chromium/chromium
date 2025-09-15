@@ -32,6 +32,14 @@ found in the LICENSE file.
         android:text="@string/new_tab_otr_title"
         android:textAppearance="@style/TextAppearance.Headline.Primary.Baseline.Light" />
 
+    <!-- Placeholder for NTP condensed title. -->
+    <LinearLayout
+        android:id="@+id/new_tab_incognito_title_condensed_stub"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical" />
+
     <org.chromium.ui.widget.TextViewWithClickableSpans
         android:id="@+id/new_tab_incognito_subtitle"
         android:layout_width="wrap_content"
