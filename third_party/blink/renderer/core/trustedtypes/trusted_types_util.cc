@@ -50,6 +50,7 @@ enum TrustedTypeViolationKind {
   kTrustedScriptURLAssignmentAndNoDefaultPolicyExisted,
   kNavigateToJavascriptURL,
   kNavigateToJavascriptURLAndDefaultPolicyFailed,
+  kNavigateToJavascriptURLAndDefaultPolicyCreatedInvalidURL,
   kScriptExecution,
   kScriptExecutionAndDefaultPolicyFailed,
 };
@@ -105,6 +106,11 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
              "Navigating to a javascript:-URL is equivalent to a "
              "'TrustedScript' assignment and the 'default' policy failed to"
              "execute.";
+    case kNavigateToJavascriptURLAndDefaultPolicyCreatedInvalidURL:
+      return "This document requires 'TrustedScript' assignment. "
+             "Navigating to a javascript:-URL is equivalent to a "
+             "'TrustedScript' assignment and the 'default' policy created an "
+             "invalid URL.";
     case kScriptExecution:
       return "This document requires 'TrustedScript' assignment. "
              "This script element was modified without use of TrustedScript "
@@ -270,7 +276,8 @@ String GetStringFromScriptHelper(
     const char* interface_name,
     const char* property_name,
     TrustedTypeViolationKind violation_kind,
-    TrustedTypeViolationKind violation_kind_when_default_policy_failed) {
+    TrustedTypeViolationKind violation_kind_when_default_policy_failed,
+    bool do_javascript_url_check) {
   if (!context)
     return script;
   if (!RequireTrustedTypesCheck(context))
@@ -320,6 +327,25 @@ String GetStringFromScriptHelper(
     }
     return script;
   }
+
+  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
+    // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
+    // steps 5 + 6. The spec assumes that the return value will include the
+    // "javascript:" URL designator, but our implementation assumes it's
+    // stripped. Thus we'll add the prefix here, but will return the string
+    // without.
+    if (do_javascript_url_check &&
+        !KURL("javascript:" + result->toString()).IsValid()) {
+      if (TrustedTypeFail(
+              kNavigateToJavascriptURLAndDefaultPolicyCreatedInvalidURL,
+              context, interface_name, property_name, exception_state,
+              script)) {
+        return String();
+      }
+      return script;
+    }
+  }
+
   return result->toString();
 }
 
@@ -702,7 +728,7 @@ GetStringForScriptExecution(const String& script,
                             ExecutionContext* context) {
   String value = GetStringFromScriptHelper(
       script, context, GetElementName(type), "text", kScriptExecution,
-      kScriptExecutionAndDefaultPolicyFailed);
+      kScriptExecutionAndDefaultPolicyFailed, false);
   if (!script.IsNull() && value.IsNull()) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
@@ -717,7 +743,8 @@ String TrustedTypesCheckForJavascriptURLinNavigation(
     ExecutionContext* context) {
   return GetStringFromScriptHelper(
       std::move(javascript_url), context, "Location", "href",
-      kNavigateToJavascriptURL, kNavigateToJavascriptURLAndDefaultPolicyFailed);
+      kNavigateToJavascriptURL, kNavigateToJavascriptURLAndDefaultPolicyFailed,
+      true);
 }
 
 String TrustedTypesCheckForExecCommand(
