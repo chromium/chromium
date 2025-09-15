@@ -362,7 +362,9 @@
   },
   "management.installReplacementWebApp": {
     "dependencies": ["manifest:replacement_web_app"],
-    "extension_types": ["extension", "platform_app"]
+    "extension_types": ["extension", "platform_app"],
+    // "desktop_android" is not supported. http://crbug.com/371332103
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "management.uninstallSelf": {
     "dependencies": [],

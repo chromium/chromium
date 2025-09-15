@@ -50,15 +50,18 @@ ChromeManagementAPIDelegate::GenerateAppForLinkFunctionDelegate(
 
 bool ChromeManagementAPIDelegate::CanContextInstallWebApps(
     content::BrowserContext* context) const {
-  NOTIMPLEMENTED();
-  return false;
+  // chrome.management.installReplacementWebApp() is disabled on desktop Android
+  // via _api_features.json. http://crbug.com/371332103
+  NOTREACHED();
 }
 
 void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
     content::BrowserContext* context,
     const GURL& web_app_url,
     InstallOrLaunchWebAppCallback callback) const {
-  NOTIMPLEMENTED();
+  // chrome.management.installReplacementWebApp() is disabled on desktop Android
+  // via _api_features.json. http://crbug.com/371332103
+  NOTREACHED();
 }
 
 void ChromeManagementAPIDelegate::ShowMv2DeprecationReEnableDialog(
