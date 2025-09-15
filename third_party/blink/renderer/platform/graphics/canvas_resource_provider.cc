@@ -68,6 +68,10 @@
 
 namespace blink {
 
+BASE_FEATURE(kSkipRedundantWillDraw,
+             "SkipRedundantWillDraw",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 class FlushForImageListener {
   // With deferred rendering it's possible for a drawImage operation on a canvas
   // to trigger a copy-on-write if another canvas has a read reference to it.
@@ -610,11 +614,15 @@ class CanvasResourceProviderSharedImageImpl
   void ExternalCanvasDrawHelper(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
       override {
-    // TODO(crbug.com/40183122): Video frames don't work without this
-    // conditional WillDraw(), but we are getting memory leak on CreatePattern
-    // with it. There should be a better way to solve this.
-    if (cached_snapshot_) {
-      WillDraw();
+    if (base::FeatureList::IsEnabled(blink::kSkipRedundantWillDraw)) {
+      cached_snapshot_.reset();
+    } else {
+      // TODO(crbug.com/40183122): Video frames don't work without this
+      // conditional WillDraw(), but we are getting memory leak on CreatePattern
+      // with it. There should be a better way to solve this.
+      if (cached_snapshot_) {
+        WillDraw();
+      }
     }
 
     draw_callback(Canvas());
