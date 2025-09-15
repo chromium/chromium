@@ -76,6 +76,10 @@ const CGFloat kGlowEffectWidth = 4.0f;
 }
 
 @interface AIMPrototypeViewController () <UITextViewDelegate>
+
+/// Whether the AI mode is enabled.
+@property(nonatomic, assign) BOOL AIModeEnabled;
+
 @end
 
 @implementation AIMPrototypeViewController {
@@ -97,8 +101,6 @@ const CGFloat kGlowEffectWidth = 4.0f;
   UIView* _mainViewForAnimation;
   /// The button to toggle AI mode.
   UIButton* _aimButton;
-  /// Whether the AI mode is enabled.
-  BOOL _aiModeEnabled;
   /// The glow effect around the input plate container.
   UIView<GlowEffect>* _glowEffectView;
 }
@@ -479,19 +481,7 @@ const CGFloat kGlowEffectWidth = 4.0f;
 }
 
 - (void)aimButtonTapped {
-  _aiModeEnabled = !_aiModeEnabled;
-  [self updateAIMButtonAppearance];
-  [self.mutator setAIModeEnabled:_aiModeEnabled];
-
-  if (_aiModeEnabled && _glowEffectView) {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                             selector:@selector(stopGlowEffect)
-                                               object:nil];
-    [_glowEffectView startGlow];
-    [self performSelector:@selector(stopGlowEffect)
-               withObject:nil
-               afterDelay:kGlowEffectDuration];
-  }
+  self.AIModeEnabled = !self.AIModeEnabled;
 }
 
 - (void)plusButtonTouchDown {
@@ -507,6 +497,25 @@ const CGFloat kGlowEffectWidth = 4.0f;
 }
 
 #pragma mark - Private
+
+- (void)setAIModeEnabled:(BOOL)AIModeEnabled {
+  if (AIModeEnabled == _AIModeEnabled) {
+    return;
+  }
+  _AIModeEnabled = AIModeEnabled;
+  [self updateAIMButtonAppearance];
+  [self.mutator setAIModeEnabled:_AIModeEnabled];
+
+  if (_AIModeEnabled && _glowEffectView) {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                             selector:@selector(stopGlowEffect)
+                                               object:nil];
+    [_glowEffectView startGlow];
+    [self performSelector:@selector(stopGlowEffect)
+               withObject:nil
+               afterDelay:kGlowEffectDuration];
+  }
+}
 
 - (UICollectionViewDiffableDataSource<NSString*, AIMInputItem*>*)
     createDataSource {
@@ -541,7 +550,7 @@ const CGFloat kGlowEffectWidth = 4.0f;
   config.imagePadding = 5;
   config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
 
-  if (_aiModeEnabled) {
+  if (self.AIModeEnabled) {
     config.image =
         DefaultSymbolWithPointSize(kCheckmarkSymbol, kAIMButtonSymbolPointSize);
     config.background.backgroundColor = [UIColor colorNamed:kBlue100Color];

@@ -12,6 +12,10 @@
 // Animator for the custom presentation of the AIM prototype.
 @interface AIMPrototypePresentAnimator
     : NSObject <UIViewControllerAnimatedTransitioning>
+
+/// Whether AIM is toggled on during the presentation.
+@property(nonatomic, assign) BOOL toggleOnAIM;
+
 - (instancetype)initWithContextProvider:
     (id<AIMPrototypeAnimationContextProvider>)contextProvider;
 @end

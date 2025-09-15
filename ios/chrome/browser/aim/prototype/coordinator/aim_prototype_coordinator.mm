@@ -8,6 +8,7 @@
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_entrypoint.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_mediator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_dismiss_animator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_present_animator.h"
@@ -119,8 +120,10 @@
     animationControllerForPresentedController:(UIViewController*)presented
                          presentingController:(UIViewController*)presenting
                              sourceController:(UIViewController*)source {
-  return [[AIMPrototypePresentAnimator alloc]
+  AIMPrototypePresentAnimator* animator = [[AIMPrototypePresentAnimator alloc]
       initWithContextProvider:_viewController];
+  animator.toggleOnAIM = _entrypoint == AIMPrototypeEntrypoint::kNTPAIMButton;
+  return animator;
 }
 
 - (id<UIViewControllerAnimatedTransitioning>)

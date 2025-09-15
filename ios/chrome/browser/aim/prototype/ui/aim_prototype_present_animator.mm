@@ -48,6 +48,10 @@ const NSTimeInterval kSlideInDuration = 0.1;
       CGRectMake(finalFrame.origin.x, containerView.bounds.size.height,
                  finalFrame.size.width, finalFrame.size.height);
 
+  BOOL toggleOnAIM = self.toggleOnAIM;
+  __weak id<AIMPrototypeAnimationContextProvider> contextProvider =
+      _contextProvider;
+
   [textView becomeFirstResponder];
   [UIView
       animateKeyframesWithDuration:[self transitionDuration:transitionContext]
@@ -66,6 +70,16 @@ const NSTimeInterval kSlideInDuration = 0.1;
                                       animations:^{
                                         inputPlateView.frame = finalFrame;
                                       }];
+
+        // Enables AIM.
+        [UIView
+            addKeyframeWithRelativeStartTime:0.2
+                            relativeDuration:0.8
+                                  animations:^{
+                                    if (toggleOnAIM) {
+                                      [contextProvider setAIModeEnabled:YES];
+                                    }
+                                  }];
       }
       completion:^(BOOL finished) {
         [transitionContext completeTransition:finished];
