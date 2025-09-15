@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -15,10 +16,13 @@
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/metrics_rotation_scheduler.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/private_metrics/data_upload_config_downloader.h"
 #include "components/metrics/private_metrics/private_metrics_reporting_service.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/federated_compute/src/fcp/confidentialcompute/cose.h"
+#include "third_party/federated_compute/src/fcp/protos/confidentialcompute/data_upload_config.pb.h"
 #include "third_party/metrics_proto/dwa/deidentified_web_analytics.pb.h"
 #include "third_party/metrics_proto/private_metrics/private_metrics.pb.h"
 
@@ -28,7 +32,9 @@ namespace metrics::dwa {
 // analytics events.
 class DwaService {
  public:
-  DwaService(MetricsServiceClient* client, PrefService* pref_service);
+  DwaService(MetricsServiceClient* client,
+             PrefService* pref_service,
+             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   DwaService(const DwaService&) = delete;
   DwaService& operator=(const DwaService&) = delete;
 
@@ -42,6 +48,25 @@ class DwaService {
 
   // Clears all event and log data.
   void Purge();
+
+  // Refresh the public key used to encrypt private metric reports.
+  void RefreshEncryptionPublicKey();
+
+  // Sets encryption public key used to encrypt private metrics reports as
+  // `test_encryption_public_key`.
+  void SetEncryptionPublicKeyForTesting(
+      std::string_view test_encryption_public_key);
+
+  // Sets the value of encryption public key verifier,
+  // `encryption_public_key_verifier_`, to
+  // `test_encryption_public_key_verifier`.
+  // TODO(crbug.com/444679397): Remove this function and instead make
+  // ValidateEncryptionPublicKey() a virtual function that can be overridden in
+  // unit tests.
+  void SetEncryptionPublicKeyVerifierForTesting(
+      const base::RepeatingCallback<
+          bool(const fcp::confidential_compute::OkpCwt&)>&
+          test_encryption_public_key_verifier);
 
   // Records coarse system profile into CoarseSystemInfo of the deidentified web
   // analytics report proto.
@@ -77,7 +102,7 @@ class DwaService {
   // k-anonymity buckets for `dwa_event` as there would be no way to enforce the
   // k-anonymity filter without the k-anonymity buckets. For `dwa_event`, the
   // combination of `dwa_event.coarse_system_info`, `dwa_event.event_hash`, and
-  // `dwa_event.field_trials` builds the first k-anbonymity bucket because the
+  // `dwa_event.field_trials` builds the first k-anonymity bucket because the
   // combination describes an user invoking an action. We want to verify there
   // is a sufficient number of users who perform this action before allowing the
   // `dwa_event` past the k-anonymity filter. Similarly,
@@ -89,6 +114,27 @@ class DwaService {
   // should be completed prior to 100% rollout of private metrics.
   static std::vector<uint64_t> BuildKAnonymityBuckets(
       const ::dwa::DeidentifiedWebAnalyticsEvent& dwa_event);
+
+  // Encrypts `report` using the public encryption key, `public_key`, which is
+  // accepted by the HPKE encryption method in //third_party/federated_compute.
+  // The encrypted private metrics report can only be decrypted in a trusted
+  // execution environment (TEE) because decryption keys are released
+  // execlusively to the TEE. This method accepts the field `decoded_public_key`
+  // as an optimization. The field `decoded_public_key` is the OkpCwt
+  // representation of `public_key`, which is parsed and validated before being
+  // passed to this method. This prevents the need to re-parse the public key to
+  // extract the key id, which is required when building the encrypted private
+  // metrics report.
+  static std::optional<::private_metrics::EncryptedPrivateMetricReport>
+  EncryptPrivateMetricReport(
+      const ::private_metrics::PrivateMetricReport& report,
+      std::string_view public_key,
+      const fcp::confidential_compute::OkpCwt& decoded_public_key);
+
+  // Returns false if the public key `cwt` is expired or should not be used.
+  // Otherwise, returns true.
+  static bool ValidateEncryptionPublicKey(
+      const fcp::confidential_compute::OkpCwt& cwt);
 
   // Register prefs from `dwa_pref_names.h`.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -114,6 +160,12 @@ class DwaService {
   // Retrieves the storage parameters to control the reporting service.
   static UnsentLogStore::UnsentLogStoreLimits GetLogStoreLimits();
 
+  // Handles updating the public key, `encryption_public_key_`, during a public
+  // key refresh.
+  void HandleEncryptionPublicKeyRefresh(
+      std::optional<fcp::confidentialcompute::DataUploadConfig>
+          maybe_data_upload_config);
+
   // Manages on-device recording of events.
   raw_ptr<DwaRecorder> recorder_;
 
@@ -128,6 +180,23 @@ class DwaService {
 
   // The scheduler for determining when uploads should happen.
   std::unique_ptr<MetricsRotationScheduler> scheduler_;
+
+  // The DataUploadConfig protocol buffer contains the public key required to
+  // encrypt private metric reports and the signed endorsements of the keys
+  // required to perform attestation verification.
+  std::unique_ptr<private_metrics::DataUploadConfigDownloader>
+      data_upload_config_downloader_;
+
+  // The public key used to encrypt PrivateMetricReport protocol buffer. The
+  // public key is fetched on startup and refreshed once every 24 hours.
+  std::string encryption_public_key_;
+
+  // A repeating callback used to verify the `encryption_public_key_`. The
+  // callback should return false if the public key is invalid, expired, or
+  // should not be used.
+  // Otherwise, the callback should return true.
+  base::RepeatingCallback<bool(const fcp::confidential_compute::OkpCwt&)>
+      encryption_public_key_verifier_;
 
   // Weak pointers factory used to post task on different threads. All weak
   // pointers managed by this factory have the same lifetime as DwaService.

@@ -290,8 +290,9 @@ void IOSChromeMetricsServiceClient::Initialize() {
   }
 
   if (metrics::dwa::DwaRecorder::IsDwaOrPrivateMetricsFeatureEnabled()) {
-    dwa_service_ =
-        std::make_unique<metrics::dwa::DwaService>(this, local_state);
+    dwa_service_ = std::make_unique<metrics::dwa::DwaService>(
+        this, local_state,
+        GetApplicationContext()->GetSharedURLLoaderFactory());
   }
 }
 

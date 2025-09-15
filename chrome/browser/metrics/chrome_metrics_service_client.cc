@@ -736,8 +736,8 @@ void ChromeMetricsServiceClient::Initialize() {
   }
 
   if (metrics::dwa::DwaRecorder::IsDwaOrPrivateMetricsFeatureEnabled()) {
-    dwa_service_ =
-        std::make_unique<metrics::dwa::DwaService>(this, local_state);
+    dwa_service_ = std::make_unique<metrics::dwa::DwaService>(
+        this, local_state, g_browser_process->shared_url_loader_factory());
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)

@@ -1996,6 +1996,7 @@ if (is_android) {
       "//components/webui/chrome_urls",
       "//content/test:android_test_message_pump_support",
       "//testing/android/native_test:native_test_support",
+      "//third_party/federated_compute:confidential_compute",
     ]
 
     deps += [
@@ -4013,6 +4014,7 @@ if (!is_android) {
       "//components/plus_addresses/core/browser:blocklist_data",
       "//components/policy/core/common:common_constants",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
+      "//third_party/federated_compute:confidential_compute",
     ]
 
     if (!is_win || target_cpu != "arm64") {

@@ -7,4 +7,7 @@ specific_include_rules = {
   "process_memory_metrics_emitter_browsertest\.cc": [
     "+third_party/iaccessible2",
   ],
+  "dwa_browsertest\.cc": [
+    "+third_party/federated_compute",
+  ],
 }

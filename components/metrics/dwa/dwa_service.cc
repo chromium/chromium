@@ -23,25 +23,9 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "third_party/federated_compute/src/fcp/confidentialcompute/crypto.h"
 
 namespace metrics::dwa {
-
-namespace {
-
-// TODO(crbug.com/411369489): Encrypt private metric report. Current
-// implementation only serializes the report and moves the serialized report
-// into the encrypted field without actually encrypting it.
-::private_metrics::EncryptedPrivateMetricReport EncryptPrivateMetricReport(
-    const ::private_metrics::PrivateMetricReport& report) {
-  std::string serialized_log;
-  report.SerializeToString(&serialized_log);
-
-  ::private_metrics::EncryptedPrivateMetricReport encrypted_report;
-  *encrypted_report.mutable_encrypted_report() = std::move(serialized_log);
-  return encrypted_report;
-}
-
-}  // namespace
 
 // Set of countries in the European Economic Area. Used by
 // RecordCoarseSystemInformation to set geo_designation fields in
@@ -89,12 +73,24 @@ const size_t kMinLogQueueCount = 10;
 const size_t kMinLogQueueSizeBytes = 300 * 1024;  // 300 KiB
 const size_t kMaxLogSizeBytes = 1024 * 1024;      // 1 MiB
 
-DwaService::DwaService(MetricsServiceClient* client, PrefService* local_state)
+DwaService::DwaService(
+    MetricsServiceClient* client,
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : recorder_(DwaRecorder::Get()),
       client_(client),
       pref_service_(local_state),
       reporting_service_(client, local_state, GetLogStoreLimits()) {
   reporting_service_.Initialize();
+
+  // Set up the downloader to refresh the encryption public key.
+  data_upload_config_downloader_ =
+      std::make_unique<private_metrics::DataUploadConfigDownloader>(
+          url_loader_factory);
+
+  encryption_public_key_verifier_ =
+      base::BindRepeating(&ValidateEncryptionPublicKey);
+
   // Set up the scheduler for DwaService.
   auto rotate_callback = base::BindRepeating(&DwaService::RotateLog,
                                              self_ptr_factory_.GetWeakPtr());
@@ -152,6 +148,66 @@ void DwaService::Purge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   recorder_->Purge();
   reporting_service_.unsent_log_store()->Purge();
+}
+
+void DwaService::RefreshEncryptionPublicKey() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Multiple calls to FetchDataUploadConfig() is acceptable because
+  // FetchDataUploadConfig() checks for an existing fetch and discards any
+  // additional attempts if one is already in progress.
+  data_upload_config_downloader_->FetchDataUploadConfig(
+      base::BindOnce(&DwaService::HandleEncryptionPublicKeyRefresh,
+                     self_ptr_factory_.GetWeakPtr()));
+}
+
+void DwaService::SetEncryptionPublicKeyForTesting(
+    std::string_view test_encryption_public_key) {
+  encryption_public_key_ = test_encryption_public_key;
+}
+
+void DwaService::SetEncryptionPublicKeyVerifierForTesting(
+    const base::RepeatingCallback<
+        bool(const fcp::confidential_compute::OkpCwt&)>&
+        test_encryption_public_key_verifier) {
+  encryption_public_key_verifier_ = test_encryption_public_key_verifier;
+}
+
+void DwaService::HandleEncryptionPublicKeyRefresh(
+    std::optional<fcp::confidentialcompute::DataUploadConfig>
+        maybe_data_upload_config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // `maybe_data_upload_config` may be empty if the http
+  // request to fetch `fcp::confidentialcompute::DataUploadConfig` results in an
+  // empty response body or if the HTTP status is non-200.
+  // `maybe_data_upload_config` may also be empty if de-serialization of
+  // DataUploadConfig into a protocol buffer object fails.
+  // If HandleEncryptionPublicKeyRefresh() fails to update or refresh the public
+  // key in one of the described error scenarios, the method will maintain the
+  // previous public key value.
+  if (maybe_data_upload_config.has_value() &&
+      // The field may be empty in the unexpected case that the protocol buffer
+      // is malformed.
+      maybe_data_upload_config.value().has_confidential_encryption_config()) {
+    auto encryption_public_key = maybe_data_upload_config.value()
+                                     .confidential_encryption_config()
+                                     .public_key();
+
+    // Validate the public key is a valid cwt before setting the in-memory
+    // field, `encryption_public_key_`. This function call is okay to use in
+    // main thread. The performance of decoding of CBOR web tokens (CWT) is
+    // generally considered to be more efficient than the decoding of JSON Web
+    // Token (JWT) decoding due to CBOR's binary nature.
+    auto cwt = fcp::confidential_compute::OkpCwt::Decode(encryption_public_key);
+    if (!cwt.ok() || !cwt->algorithm.has_value() ||
+        !cwt->public_key.has_value() ||
+        !encryption_public_key_verifier_.Run(*cwt)) {
+      return;
+    }
+
+    encryption_public_key_ = encryption_public_key;
+  }
 }
 
 // static
@@ -315,6 +371,59 @@ std::vector<uint64_t> DwaService::BuildKAnonymityBuckets(
   return k_anonymity_buckets;
 }
 
+// static
+std::optional<::private_metrics::EncryptedPrivateMetricReport>
+DwaService::EncryptPrivateMetricReport(
+    const ::private_metrics::PrivateMetricReport& report,
+    std::string_view public_key,
+    const fcp::confidential_compute::OkpCwt& decoded_public_key) {
+  std::string serialized_log;
+  report.SerializeToString(&serialized_log);
+
+  ::private_metrics::PrivateMetricReportHeader report_header;
+  report_header.set_key_id(decoded_public_key.public_key.value().key_id);
+  report_header.set_epoch_id(report.epoch_id());
+
+  std::string serialized_report_header;
+  report_header.SerializeToString(&serialized_report_header);
+
+  // The messages are encrypted with AEAD using a per-message generated
+  // symmetric key and then the symmetric key is encrypted using HPKE with the
+  // public key. This function call is considered fast for use in main thread.
+  // TODO(crbug.com/444678679): Add UMA histogram to measure performance on
+  // Encrypt() for detecting any potential regressions or edge cases.
+  fcp::confidential_compute::MessageEncryptor message_encryptor;
+  auto result = message_encryptor.Encrypt(serialized_log, public_key,
+                                          serialized_report_header);
+  if (!result.ok()) {
+    return std::nullopt;
+  }
+
+  ::private_metrics::EncryptedPrivateMetricReport encrypted_report;
+  *encrypted_report.mutable_encrypted_report() =
+      std::move(result.value().ciphertext);
+  encrypted_report.set_serialized_report_header(serialized_report_header);
+  *encrypted_report.mutable_report_header() = std::move(report_header);
+  encrypted_report.set_report_type(
+      ::private_metrics::EncryptedPrivateMetricReport::DWA);
+  return encrypted_report;
+}
+
+// static
+bool DwaService::ValidateEncryptionPublicKey(
+    const fcp::confidential_compute::OkpCwt& cwt) {
+  // In the unexpected case where the `cwt` is malformed and does not contain an
+  // expiration time, the key should not be used.
+  if (!cwt.expiration_time.has_value()) {
+    return false;
+  }
+
+  // If the encryption key is close to expiration (12 hour buffer), the key
+  // should not be used.
+  auto public_key_expiration = cwt.expiration_time.value() - absl::Hours(12);
+  return public_key_expiration >= absl::Now();
+}
+
 void DwaService::RotateLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!reporting_service_.unsent_log_store()->has_unsent_logs()) {
@@ -366,8 +475,30 @@ void DwaService::BuildPrivateMetricReportAndStoreLog(
     return;
   }
 
+  // If the encryption public key is empty, no new logs should be created.
+  if (encryption_public_key_.empty()) {
+    RefreshEncryptionPublicKey();
+    return;
+  }
+
+  auto cwt = fcp::confidential_compute::OkpCwt::Decode(encryption_public_key_);
+  if (!cwt.ok() || !cwt->algorithm.has_value() ||
+      !cwt->public_key.has_value()) {
+    RefreshEncryptionPublicKey();
+    return;
+  }
+
+  if (!encryption_public_key_verifier_.Run(*cwt)) {
+    RefreshEncryptionPublicKey();
+    return;
+  }
+
+  // Build the private metric report.
   ::private_metrics::PrivateMetricReport report;
   report.set_ephemeral_id(GetEphemeralClientId(*pref_service_));
+
+  uint64_t epoch_id = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
+  report.set_epoch_id(epoch_id);
 
   std::vector<::dwa::DeidentifiedWebAnalyticsEvent> dwa_events =
       recorder_->TakeDwaEvents();
@@ -378,7 +509,7 @@ void DwaService::BuildPrivateMetricReportAndStoreLog(
 
     auto k_anonymity_buckets = BuildKAnonymityBuckets(dwa_event);
     // Since there are no k-anonymity buckets, the k-anonymity filter cannot be
-    // enforced. As such, the bucket should be dropped.
+    // enforced. As such, the event should be dropped.
     // TODO(crbug.com/432764678): Add UMA metric when dwa_event is dropped due
     // to empty k-anonymity buckets.
     if (k_anonymity_buckets.empty()) {
@@ -392,11 +523,24 @@ void DwaService::BuildPrivateMetricReportAndStoreLog(
     *event->mutable_dwa_event() = std::move(dwa_event);
   }
 
-  ::private_metrics::EncryptedPrivateMetricReport encrypted_report =
-      EncryptPrivateMetricReport(report);
+  auto encrypted_report =
+      EncryptPrivateMetricReport(report, encryption_public_key_, cwt.value());
+  if (!encrypted_report.has_value()) {
+    // The encrypted report should be dropped in the unexpected event that
+    // private metrics report encryption fails.
+    // TODO(crbug.com/444681539): Add UMA histogram to check when private
+    // metrics encryption fails.
+    return;
+  }
 
   std::string serialized_log;
-  encrypted_report.SerializeToString(&serialized_log);
+  if (!encrypted_report.value().SerializeToString(&serialized_log)) {
+    // The encrypted report should be dropped in the unexpected event that
+    // private metrics report serialization fails.
+    // TODO(crbug.com/444681539): Add UMA histogram to check when private
+    // metrics serialization fails.
+    return;
+  }
 
   LogMetadata metadata;
   reporting_service_.unsent_log_store()->StoreLog(serialized_log, metadata,

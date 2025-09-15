@@ -17,6 +17,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/federated_compute/src/fcp/confidentialcompute/cose.h"
+#include "third_party/federated_compute/src/fcp/confidentialcompute/crypto.h"
 
 namespace metrics::dwa {
 
@@ -30,7 +32,8 @@ class DwaServiceTest : public testing::Test {
     MetricsStateManager::RegisterPrefs(prefs_.registry());
     DwaService::RegisterPrefs(prefs_.registry());
 
-    scoped_feature_list_.InitAndEnableFeature(kDwaFeature);
+    scoped_feature_list_.InitWithFeatures(
+        {dwa::kDwaFeature, dwa::kPrivateMetricsFeature}, {});
   }
 
   DwaServiceTest(const DwaServiceTest&) = delete;
@@ -39,6 +42,15 @@ class DwaServiceTest : public testing::Test {
   ~DwaServiceTest() override = default;
 
   void TearDown() override { DwaRecorder::Get()->Purge(); }
+
+  void SetEncryptionPublicKeyForTesting(DwaService* dwa_service) {
+    fcp::confidential_compute::MessageDecryptor decryptor;
+    auto recipient_public_key =
+        decryptor.GetPublicKey([](absl::string_view) { return ""; }, 0);
+    dwa_service->SetEncryptionPublicKeyForTesting(recipient_public_key.value());
+    dwa_service->SetEncryptionPublicKeyVerifierForTesting(base::BindRepeating(
+        [](const fcp::confidential_compute::OkpCwt&) -> bool { return true; }));
+  }
 
   int GetPersistedLogCount() {
     if (base::FeatureList::IsEnabled(kPrivateMetricsFeature)) {
@@ -291,8 +303,62 @@ TEST_F(DwaServiceTest, BuildsKAnonymityBuckets) {
   ASSERT_EQ(previous_bucket_value, k_anonymity_buckets.at(0));
 }
 
+TEST_F(DwaServiceTest, ValidateEncryptionPublicKey) {
+  fcp::confidential_compute::MessageDecryptor decryptor;
+  auto recipient_public_key =
+      decryptor.GetPublicKey([](absl::string_view) { return ""; }, 0);
+  ASSERT_TRUE(recipient_public_key.ok());
+
+  auto cwt = fcp::confidential_compute::OkpCwt::Decode(*recipient_public_key);
+  ASSERT_TRUE(cwt.ok());
+
+  // Validate DwaService::ValidateEncryptionPublicKey() returns false when key
+  // is already expired.
+  auto now = absl::Now();
+  cwt->expiration_time = std::make_optional(now - absl::Hours(8));
+  EXPECT_FALSE(DwaService::ValidateEncryptionPublicKey(*cwt));
+
+  // Validate DwaService::ValidateEncryptionPublicKey() returns false when key
+  // is close to expiring (less than 12 hours).
+  cwt->expiration_time = std::make_optional(now + absl::Hours(11));
+  EXPECT_FALSE(DwaService::ValidateEncryptionPublicKey(*cwt));
+
+  // Validate DwaService::ValidateEncryptionPublicKey() returns true when key
+  // valid and far from expiring (more than 12 hours).
+  cwt->expiration_time = std::make_optional(now + absl::Hours(13));
+  EXPECT_TRUE(DwaService::ValidateEncryptionPublicKey(*cwt));
+}
+
+TEST_F(DwaServiceTest, EncryptPrivateMetricReport) {
+  TestingPrefServiceSimple pref_service;
+  DwaService::RegisterPrefs(pref_service.registry());
+
+  fcp::confidential_compute::MessageDecryptor decryptor;
+  auto recipient_public_key =
+      decryptor.GetPublicKey([](absl::string_view) { return ""; }, 0);
+  auto decoded_public_key =
+      fcp::confidential_compute::OkpCwt::Decode(*recipient_public_key);
+  decoded_public_key->public_key.value().key_id = "key-id";
+
+  ::private_metrics::PrivateMetricReport report;
+  report.set_ephemeral_id(DwaService::GetEphemeralClientId(pref_service));
+  auto epoch_id = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
+  report.set_epoch_id(epoch_id);
+
+  auto encrypted_report = DwaService::EncryptPrivateMetricReport(
+      report, *recipient_public_key, *decoded_public_key);
+  ASSERT_TRUE(encrypted_report.has_value());
+
+  EXPECT_TRUE(encrypted_report->has_encrypted_report());
+  EXPECT_TRUE(encrypted_report->has_serialized_report_header());
+  EXPECT_TRUE(encrypted_report->has_report_header());
+  EXPECT_TRUE(encrypted_report->has_report_type());
+}
+
 TEST_F(DwaServiceEnvironmentTest, Flush) {
-  DwaService service(&client_, &prefs_);
+  DwaService service(&client_, &prefs_, nullptr);
+  SetEncryptionPublicKeyForTesting(&service);
+
   histogram_tester_.ExpectTotalCount(kDwaInitSequenceHistogramName,
                                      /*expected_count=*/1);
   DwaRecorder::Get()->EnableRecording();
@@ -307,7 +373,9 @@ TEST_F(DwaServiceEnvironmentTest, Flush) {
 }
 
 TEST_F(DwaServiceEnvironmentTest, Purge) {
-  DwaService service(&client_, &prefs_);
+  DwaService service(&client_, &prefs_, nullptr);
+  SetEncryptionPublicKeyForTesting(&service);
+
   histogram_tester_.ExpectTotalCount(kDwaInitSequenceHistogramName,
                                      /*expected_count=*/1);
   DwaRecorder::Get()->EnableRecording();
@@ -332,7 +400,9 @@ TEST_F(DwaServiceEnvironmentTest, Purge) {
 }
 
 TEST_F(DwaServiceEnvironmentTest, EnableDisableRecordingAndReporting) {
-  DwaService service(&client_, &prefs_);
+  DwaService service(&client_, &prefs_, nullptr);
+  SetEncryptionPublicKeyForTesting(&service);
+
   histogram_tester_.ExpectTotalCount(kDwaInitSequenceHistogramName,
                                      /*expected_count=*/1);
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0u);
@@ -390,7 +460,9 @@ TEST_F(DwaServiceEnvironmentTest, EnableDisableRecordingAndReporting) {
 }
 
 TEST_F(DwaServiceEnvironmentTest, LogsRotatedPeriodically) {
-  DwaService service(&client_, &prefs_);
+  DwaService service(&client_, &prefs_, nullptr);
+  SetEncryptionPublicKeyForTesting(&service);
+
   histogram_tester_.ExpectTotalCount(kDwaInitSequenceHistogramName,
                                      /*expected_count=*/1);
   DwaRecorder::Get()->EnableRecording();
