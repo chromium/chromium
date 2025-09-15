@@ -428,40 +428,12 @@ static_library("browser") {
     deps += [ "//components/keep_alive_registry" ]
   }
 
-  if ((!is_android || enable_vr) && !is_ios) {
-    deps += [ ":vector_icons" ]
-  }
-
-  if (is_chrome_branded) {
-    deps += [ "//components/vector_icons" ]
-  }
-
   if (!is_ios) {
     deps += [ "//ui/base/clipboard" ]
   }
 
-  if (use_blink) {
-    sources += [
-      "actions/history_clusters_action.cc",
-      "actions/history_clusters_action.h",
-      "history_cluster_provider.cc",
-      "history_cluster_provider.h",
-    ]
-    deps += [ "//content/public/common" ]
-  }
-
-  if (enable_extensions_core) {
-    deps += [
-      "//extensions/common:common_constants",
-      "//extensions/common:extension_features",
-    ]
-
-    sources += [
-      "omnibox_input_watcher.cc",
-      "omnibox_input_watcher.h",
-      "omnibox_suggestions_watcher.cc",
-      "omnibox_suggestions_watcher.h",
-    ]
+  if ((!is_android || enable_vr) && !is_ios) {
+    deps += [ ":vector_icons" ]
   }
 
   if (build_with_tflite_lib) {
@@ -483,6 +455,34 @@ static_library("browser") {
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
     ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [
+      "//extensions/common:common_constants",
+      "//extensions/common:extension_features",
+    ]
+
+    sources += [
+      "omnibox_input_watcher.cc",
+      "omnibox_input_watcher.h",
+      "omnibox_suggestions_watcher.cc",
+      "omnibox_suggestions_watcher.h",
+    ]
+  }
+
+  if (is_chrome_branded) {
+    deps += [ "//components/vector_icons" ]
+  }
+
+  if (use_blink) {
+    sources += [
+      "actions/history_clusters_action.cc",
+      "actions/history_clusters_action.h",
+      "history_cluster_provider.cc",
+      "history_cluster_provider.h",
+    ]
+    deps += [ "//content/public/common" ]
   }
 }
 
@@ -792,11 +792,6 @@ static_library("test_support") {
     "//ui/gfx",
   ]
 
-  if (toolkit_views) {
-    # Needed to get the TOOLKIT_VIEWS define.
-    deps += [ "//ui/views" ]
-  }
-
   if (build_with_tflite_lib) {
     sources += [
       "fake_autocomplete_scoring_model_service.cc",
@@ -804,6 +799,11 @@ static_library("test_support") {
       "fake_on_device_tail_model_service.cc",
       "fake_on_device_tail_model_service.h",
     ]
+  }
+
+  if (toolkit_views) {
+    # Needed to get the TOOLKIT_VIEWS define.
+    deps += [ "//ui/views" ]
   }
 }
 
@@ -909,18 +909,6 @@ source_set("unit_tests") {
     "zero_suggest_verbatim_match_provider_unittest.cc",
   ]
 
-  if ((!is_android || enable_vr) && !is_ios) {
-    sources += [ "location_bar_model_util_unittest.cc" ]
-  }
-  if (build_with_tflite_lib) {
-    sources += [
-      "autocomplete_scoring_model_executor_unittest.cc",
-      "autocomplete_scoring_model_handler_unittest.cc",
-      "on_device_tail_model_executor_unittest.cc",
-      "on_device_tail_model_service_unittest.cc",
-    ]
-  }
-
   deps = [
     ":browser",
     ":test_support",
@@ -975,6 +963,7 @@ source_set("unit_tests") {
   ]
 
   if ((!is_android || enable_vr) && !is_ios) {
+    sources += [ "location_bar_model_util_unittest.cc" ]
     deps += [
       ":buildflags",
       "//components/omnibox/browser:vector_icons",
@@ -992,6 +981,15 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     deps += [ "//chromeos/constants" ]
+  }
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "autocomplete_scoring_model_executor_unittest.cc",
+      "autocomplete_scoring_model_handler_unittest.cc",
+      "on_device_tail_model_executor_unittest.cc",
+      "on_device_tail_model_service_unittest.cc",
+    ]
   }
 
   if (enable_extensions) {
@@ -1042,10 +1040,6 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
 mojom("mojo_bindings") {
   sources = [ "omnibox.mojom" ]
 
-  if (!is_android && !is_ios) {
-    sources += [ "searchbox.mojom" ]
-  }
-
   webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
 
   public_deps = [
@@ -1053,4 +1047,8 @@ mojom("mojo_bindings") {
     "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  if (!is_android && !is_ios) {
+    sources += [ "searchbox.mojom" ]
+  }
 }
