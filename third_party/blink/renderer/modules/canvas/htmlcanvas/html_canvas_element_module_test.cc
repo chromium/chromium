@@ -7,7 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_context_provider.h"
-#include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -196,16 +196,17 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kLowLatencyCanvas2dImageChromium);
 
-  auto context_provider = viz::TestContextProvider::Create();
+  auto context_provider = viz::TestContextProvider::CreateRaster();
 #if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
   constexpr auto buffer_format = gfx::BufferFormat::BGRA_8888;
 #elif SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
   constexpr auto buffer_format = gfx::BufferFormat::RGBA_8888;
 #endif
 
-  context_provider->UnboundTestContextGL()
+  context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
+  context_provider->UnboundTestRasterInterface()
       ->set_supports_gpu_memory_buffer_format(buffer_format, true);
-  InitializeSharedGpuContextGLES2(context_provider.get());
+  InitializeSharedGpuContextRaster(context_provider.get());
 
   // To intercept SubmitCompositorFrame messages sent by a canvas's
   // CanvasResourceDispatcher, we have to override the Mojo
