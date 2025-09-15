@@ -1093,19 +1093,22 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     PaneId.INCOGNITO_TAB_SWITCHER,
                     LazyOneshotSupplier.fromSupplier(() -> createTabSwitcherPane(true)));
         }
-        if (ChromeFeatureList.sCrossDeviceTabPaneAndroid.isEnabled()) {
-            builder.registerPane(
-                    PaneId.CROSS_DEVICE,
-                    LazyOneshotSupplier.fromSupplier(this::createCrossDevicePane));
-        }
-        if (ChromeFeatureList.sHistoryPaneAndroid.isEnabled()) {
-            builder.registerPane(
-                    PaneId.HISTORY, LazyOneshotSupplier.fromSupplier(this::createHistoryPane));
-        }
-
-        if (ChromeFeatureList.sBookmarkPaneAndroid.isEnabled()) {
-            builder.registerPane(
-                    PaneId.BOOKMARKS, LazyOneshotSupplier.fromSupplier(this::createBookmarkPane));
+        if (!defaultToIncognitoPane) {
+            if (ChromeFeatureList.sCrossDeviceTabPaneAndroid.isEnabled()) {
+                builder.registerPane(
+                        PaneId.CROSS_DEVICE,
+                        LazyOneshotSupplier.fromSupplier(this::createCrossDevicePane));
+            }
+            if (ChromeFeatureList.sHistoryPaneAndroid.isEnabled()) {
+                builder.registerPane(
+                        PaneId.HISTORY, LazyOneshotSupplier.fromSupplier(this::createHistoryPane));
+            }
+            // TODO(crbug.com/444744105): Adapt the bookmark pane for incognito windows.
+            if (ChromeFeatureList.sBookmarkPaneAndroid.isEnabled()) {
+                builder.registerPane(
+                        PaneId.BOOKMARKS,
+                        LazyOneshotSupplier.fromSupplier(this::createBookmarkPane));
+            }
         }
 
         mHubProvider
