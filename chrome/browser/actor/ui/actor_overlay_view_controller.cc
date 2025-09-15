@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_context.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -160,6 +161,11 @@ void ActorOverlayViewController::ShowWebView() {
   // Disable mouse and keyboard inputs to the underlying contents.
   scoped_ignore_input_events_ =
       tab_interface_->GetContents()->IgnoreInputEvents(std::nullopt);
+  // Prevent assistive technologies from interacting with the underlying page.
+  if (auto* content_web_view =
+          tab_interface_->GetBrowserWindowInterface()->GetWebView()) {
+    content_web_view->GetViewAccessibility().SetIsIgnored(true);
+  }
   overlay_web_view_->SetVisible(true);
   contents_container_controller_->MaybeUpdateContainerVisibility();
 }
@@ -177,6 +183,11 @@ void ActorOverlayViewController::HideWebView() {
   // Re-enable mouse and keyboard events to the underlying web contents by
   // resetting the ScopedIgnoreInputEvents object.
   scoped_ignore_input_events_.reset();
+  // Allow assistive technologies to interact with the underlying page.
+  if (auto* content_web_view =
+          tab_interface_->GetBrowserWindowInterface()->GetWebView()) {
+    content_web_view->GetViewAccessibility().SetIsIgnored(false);
+  }
 }
 
 void ActorOverlayViewController::OnTabWillDetach(
