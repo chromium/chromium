@@ -46,6 +46,8 @@ message LensOverlayRequestId {
     MEDIA_TYPE_DEFAULT_IMAGE = 0;
     MEDIA_TYPE_PDF = 1;
     MEDIA_TYPE_WEBPAGE = 2;
+    MEDIA_TYPE_PDF_AND_IMAGE = 3;
+    MEDIA_TYPE_WEBPAGE_AND_IMAGE = 4;
   }
 
   // The type of media this object represents.

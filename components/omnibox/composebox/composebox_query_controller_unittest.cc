@@ -869,7 +869,7 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_context()
                 .request_id()
                 .media_type(),
-            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE);
   EXPECT_EQ(viewport_upload_request->objects_request()
                 .request_context()
                 .request_id()
@@ -889,7 +889,7 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_context()
                 .request_id()
                 .media_type(),
-            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE);
 }
 
 TEST_F(ComposeboxQueryControllerTest,
@@ -1018,7 +1018,7 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_context()
                 .request_id()
                 .media_type(),
-            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
   EXPECT_EQ(viewport_upload_request->objects_request()
                 .request_context()
                 .request_id()
@@ -1038,7 +1038,7 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_context()
                 .request_id()
                 .media_type(),
-            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
