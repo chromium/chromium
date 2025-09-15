@@ -186,9 +186,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void registerAutofillProvider(
-            Provider<List<AutofillSuggestion>> autofillProvider, AutofillDelegate delegate) {
-        mMediator.registerAutofillProvider(autofillProvider, delegate);
+    public void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate) {
+        mMediator.setSuggestions(suggestions, delegate);
     }
 
     @Override

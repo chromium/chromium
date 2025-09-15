@@ -175,14 +175,12 @@ public interface ManualFillingComponent extends BackPressHandler {
             WebContents webContents, Provider<KeyboardAccessoryData.Action[]> actionProvider);
 
     /**
-     * Registers a provider, to provide autofill suggestions for the keyboard accessory bar. Call
-     * {@link Provider#notifyObservers(Object)} to fill or update the suggestions.
+     * Sets the suggestions to be displayed in the accessory bar.
      *
-     * @param autofillProvider The {@link Provider} providing autofill suggestions.
+     * @param suggestions A list of {@link AutofillSuggestion}s to be shown.
      * @param delegate The {@link AutofillDelegate} to call for interaction with the suggestions.
      */
-    void registerAutofillProvider(
-            Provider<List<AutofillSuggestion>> autofillProvider, AutofillDelegate delegate);
+    void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate);
 
     /**
      * Signals that the accessory has permission to show.

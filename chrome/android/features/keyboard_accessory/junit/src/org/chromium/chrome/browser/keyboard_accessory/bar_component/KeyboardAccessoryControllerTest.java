@@ -20,7 +20,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATE_SUGGESTIONS_FROM_TOP;
@@ -233,13 +232,10 @@ public class KeyboardAccessoryControllerTest {
     @Test
     public void testSortsActionsBasedOnType() {
         Provider<Action[]> generationProvider = new Provider<>(GENERATE_PASSWORD_AUTOMATIC);
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
         Provider<Action[]> credManProvider = new Provider<>(CREDMAN_CONDITIONAL_UI_REENTRY);
 
         mCoordinator.registerActionProvider(generationProvider);
         mCoordinator.registerActionProvider(credManProvider);
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
 
         AutofillSuggestion suggestion1 =
                 new AutofillSuggestion.Builder()
@@ -257,7 +253,7 @@ public class KeyboardAccessoryControllerTest {
                         .build();
         Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, (a) -> {});
         Action credManAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, (a) -> {});
-        autofillSuggestionProvider.notifyObservers(List.of(suggestion1, suggestion2));
+        mCoordinator.setSuggestions(List.of(suggestion1, suggestion2), mMockAutofillDelegate);
         generationProvider.notifyObservers(new Action[] {generationAction});
         credManProvider.notifyObservers(new Action[] {credManAction});
 
@@ -282,12 +278,9 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testChangesCaptionIdForCredManEntry() {
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
         Provider<Action[]> credManProvider = new Provider<>(CREDMAN_CONDITIONAL_UI_REENTRY);
 
         mCoordinator.registerActionProvider(credManProvider);
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
 
         AutofillSuggestion suggestion =
                 new AutofillSuggestion.Builder()
@@ -296,7 +289,7 @@ public class KeyboardAccessoryControllerTest {
                         .setSuggestionType(SuggestionType.WEBAUTHN_CREDENTIAL)
                         .build();
         Action credManAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, (a) -> {});
-        autofillSuggestionProvider.notifyObservers(List.of(suggestion));
+        mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
         credManProvider.notifyObservers(new Action[] {credManAction});
 
         assertThat(mModel.get(BAR_ITEMS).size(), is(3));
@@ -310,17 +303,14 @@ public class KeyboardAccessoryControllerTest {
     @Test
     public void testMovesTabSwitcherToEnd() {
         Provider<Action[]> generationProvider = new Provider<>(GENERATE_PASSWORD_AUTOMATIC);
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
 
         mCoordinator.registerActionProvider(generationProvider);
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
 
         AutofillSuggestion.Builder builder = new AutofillSuggestion.Builder().setSubLabel("");
         AutofillSuggestion suggestion1 = builder.setLabel("kayseri").build();
         AutofillSuggestion suggestion2 = builder.setLabel("spor").build();
         Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, (a) -> {});
-        autofillSuggestionProvider.notifyObservers(List.of(suggestion1, suggestion2));
+        mCoordinator.setSuggestions(List.of(suggestion1, suggestion2), mMockAutofillDelegate);
         generationProvider.notifyObservers(new Action[] {generationAction});
 
         // Autofill suggestions should always come last, independent of when they were added.
@@ -338,11 +328,8 @@ public class KeyboardAccessoryControllerTest {
     @Test
     public void testDeletingActionsAffectsOnlyOneType() {
         Provider<Action[]> generationProvider = new Provider<>(GENERATE_PASSWORD_AUTOMATIC);
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
 
         mCoordinator.registerActionProvider(generationProvider);
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
 
         AutofillSuggestion suggestion =
                 new AutofillSuggestion.Builder()
@@ -352,17 +339,17 @@ public class KeyboardAccessoryControllerTest {
                         .setFeatureForIph("")
                         .build();
         Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, (a) -> {});
-        autofillSuggestionProvider.notifyObservers(List.of(suggestion, suggestion));
+        mCoordinator.setSuggestions(List.of(suggestion, suggestion), mMockAutofillDelegate);
         generationProvider.notifyObservers(new Action[] {generationAction});
         assertThat(mModel.get(BAR_ITEMS).size(), is(4));
 
         // Drop all Autofill suggestions. Only the generation action should remain.
-        autofillSuggestionProvider.notifyObservers(List.of());
+        mCoordinator.setSuggestions(List.of(), mMockAutofillDelegate);
         assertThat(mModel.get(BAR_ITEMS).size(), is(2));
         assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(generationAction));
 
         // Readd an Autofill suggestion and drop the generation. Only the suggestion should remain.
-        autofillSuggestionProvider.notifyObservers(List.of(suggestion));
+        mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
         generationProvider.notifyObservers(new Action[0]);
         assertThat(mModel.get(BAR_ITEMS).size(), is(2));
         assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(AutofillBarItem.class));
@@ -391,8 +378,6 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesAddressItemWithIph() {
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion addressSuggestion =
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
@@ -400,9 +385,9 @@ public class KeyboardAccessoryControllerTest {
                         .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIph("")
                         .build();
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
-        autofillSuggestionProvider.notifyObservers(
-                List.of(addressSuggestion, addressSuggestion, addressSuggestion));
+        mCoordinator.setSuggestions(
+                List.of(addressSuggestion, addressSuggestion, addressSuggestion),
+                mMockAutofillDelegate);
 
         // assertThat(getAutofillItemAt(0).getFeatureForIph(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
@@ -415,8 +400,6 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesPaymentItemWithIph() {
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion paymentSuggestion =
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
@@ -424,9 +407,9 @@ public class KeyboardAccessoryControllerTest {
                         .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                         .setFeatureForIph("")
                         .build();
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
-        autofillSuggestionProvider.notifyObservers(
-                List.of(paymentSuggestion, paymentSuggestion, paymentSuggestion));
+        mCoordinator.setSuggestions(
+                List.of(paymentSuggestion, paymentSuggestion, paymentSuggestion),
+                mMockAutofillDelegate);
 
         // assertThat(getAutofillItemAt(0).getFeatureForIph(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
@@ -439,8 +422,6 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testIphFeatureSetForAutofillSuggestion() {
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion paymentSuggestion =
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
@@ -449,9 +430,9 @@ public class KeyboardAccessoryControllerTest {
                         .setFeatureForIph(
                                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE)
                         .build();
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
-        autofillSuggestionProvider.notifyObservers(
-                List.of(paymentSuggestion, paymentSuggestion, paymentSuggestion));
+        mCoordinator.setSuggestions(
+                List.of(paymentSuggestion, paymentSuggestion, paymentSuggestion),
+                mMockAutofillDelegate);
 
         // assertThat(getAutofillItemAt(0).getFeatureForIph(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
@@ -466,8 +447,6 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesIphForSecondPasswordItem() {
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion passwordSuggestion1 =
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
@@ -482,9 +461,9 @@ public class KeyboardAccessoryControllerTest {
                         .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
                         .setFeatureForIph("")
                         .build();
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
-        autofillSuggestionProvider.notifyObservers(
-                List.of(passwordSuggestion1, passwordSuggestion2, passwordSuggestion2));
+        mCoordinator.setSuggestions(
+                List.of(passwordSuggestion1, passwordSuggestion2, passwordSuggestion2),
+                mMockAutofillDelegate);
 
         // assertThat(getAutofillItemAt(0).getFeatureForIph(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
@@ -497,8 +476,6 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesAddressItemWithExternallyProvidedIph() {
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion addressSuggestion =
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
@@ -509,9 +486,9 @@ public class KeyboardAccessoryControllerTest {
                                         .KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE)
                         .build();
 
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
-        autofillSuggestionProvider.notifyObservers(
-                List.of(addressSuggestion, addressSuggestion, addressSuggestion));
+        mCoordinator.setSuggestions(
+                List.of(addressSuggestion, addressSuggestion, addressSuggestion),
+                mMockAutofillDelegate);
 
         // assertThat(getAutofillItemAt(0).getFeatureForIph(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
@@ -590,15 +567,11 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testModelChangesUpdatesTheContentDescription() {
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
-
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
-        autofillSuggestionProvider.notifyObservers(List.of(mock(AutofillSuggestion.class)));
+        mCoordinator.setSuggestions(List.of(mock(AutofillSuggestion.class)), mMockAutofillDelegate);
 
         assertTrue(mModel.get(HAS_SUGGESTIONS));
 
-        autofillSuggestionProvider.notifyObservers(List.of());
+        mCoordinator.setSuggestions(List.of(), mMockAutofillDelegate);
         assertFalse(mModel.get(HAS_SUGGESTIONS));
     }
 
@@ -618,8 +591,6 @@ public class KeyboardAccessoryControllerTest {
                         SuggestionType.ADDRESS_ENTRY))
                 .thenReturn(FillingProduct.ADDRESS);
 
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
         AutofillProfilePayload payload = new AutofillProfilePayload("123");
         AutofillSuggestion addressSuggestion =
                 new AutofillSuggestion.Builder()
@@ -628,8 +599,7 @@ public class KeyboardAccessoryControllerTest {
                         .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setPayload(payload)
                         .build();
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
-        autofillSuggestionProvider.notifyObservers(List.of(addressSuggestion));
+        mCoordinator.setSuggestions(List.of(addressSuggestion), mMockAutofillDelegate);
 
         assertThat(getAutofillItemAt(0).getViewType(), is(BarItem.Type.HOME_AND_WORK_SUGGESTION));
     }
@@ -662,11 +632,8 @@ public class KeyboardAccessoryControllerTest {
     @Test
     public void testLargeFormFactorHasDismissButton() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
-        Provider<List<AutofillSuggestion>> autofillSuggestionProvider =
-                new Provider<>(AUTOFILL_SUGGESTION);
 
-        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
-        autofillSuggestionProvider.notifyObservers(List.of(mock(AutofillSuggestion.class)));
+        mCoordinator.setSuggestions(List.of(mock(AutofillSuggestion.class)), mMockAutofillDelegate);
 
         assertThat(mModel.get(BAR_ITEMS).size(), is(3));
         assertThat(

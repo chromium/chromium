@@ -343,11 +343,10 @@ class ManualFillingMediator
         refreshTabs();
     }
 
-    void registerAutofillProvider(
-            Provider<List<AutofillSuggestion>> autofillProvider, AutofillDelegate delegate) {
+    void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate) {
         if (!isInitialized()) return;
         if (mKeyboardAccessory == null) return;
-        mKeyboardAccessory.registerAutofillProvider(autofillProvider, delegate);
+        mKeyboardAccessory.setSuggestions(suggestions, delegate);
     }
 
     void registerActionProvider(WebContents webContents, Provider<Action[]> actionProvider) {

@@ -19,7 +19,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.AutofillSuggestion.Payload;
@@ -39,8 +38,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private WeakReference<Activity> mActivity;
     private @Nullable ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
     private @Nullable ManualFillingComponent mManualFillingComponent;
-    private final Provider<List<AutofillSuggestion>> mChipProvider =
-            new Provider<>(AccessoryAction.AUTOFILL_SUGGESTION);
     private final Callback<ManualFillingComponent> mFillingComponentObserver =
             this::connectToFillingComponent;
 
@@ -129,7 +126,9 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     @CalledByNative
     private void dismiss() {
         if (mManualFillingComponentSupplier != null) {
-            mChipProvider.notifyObservers(List.of());
+            if (mManualFillingComponent != null) {
+                mManualFillingComponent.setSuggestions(List.of(), this);
+            }
             mManualFillingComponentSupplier.removeObserver(mFillingComponentObserver);
         }
         dismissed();
@@ -142,7 +141,9 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      */
     @CalledByNative
     private void show(@JniType("std::vector") List<AutofillSuggestion> suggestions) {
-        mChipProvider.notifyObservers(suggestions);
+        if (mManualFillingComponent != null) {
+            mManualFillingComponent.setSuggestions(suggestions, this);
+        }
     }
 
     /**
@@ -237,8 +238,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private void connectToFillingComponent(@Nullable ManualFillingComponent fillingComponent) {
         if (mManualFillingComponent == fillingComponent) return;
         mManualFillingComponent = fillingComponent;
-        if (mManualFillingComponent == null) return;
-        mManualFillingComponent.registerAutofillProvider(mChipProvider, this);
     }
 
     @NativeMethods

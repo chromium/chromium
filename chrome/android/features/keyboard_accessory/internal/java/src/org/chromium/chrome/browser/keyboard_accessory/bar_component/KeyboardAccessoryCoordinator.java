@@ -317,16 +317,13 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     }
 
     /**
-     * Registers a Provider.Observer to the given Provider. The new observer will render chips into
-     * the accessory bar for every new suggestion and call the given {@link AutofillDelegate} when
-     * the user interacts with a chip.
+     * Sets the suggestions to be displayed in the accessory bar.
      *
-     * @param provider A {@link Provider<List<AutofillSuggestion>>}.
+     * @param suggestions A list of {@link AutofillSuggestion}s.
      * @param delegate A {@link AutofillDelegate}.
      */
-    public void registerAutofillProvider(
-            Provider<List<AutofillSuggestion>> provider, AutofillDelegate delegate) {
-        provider.addObserver(mMediator.createAutofillSuggestionsObserver(delegate));
+    public void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate) {
+        mMediator.setSuggestions(suggestions, delegate);
     }
 
     /**
