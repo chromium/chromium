@@ -678,7 +678,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeSimple) {
   doc_request.Complete(
       R"HTML(
 <!DOCTYPE html>
-<img id="img" width=300 height=300 src="image.png">
+<img id="img" width=400 height=300 src="image.png">
       )HTML");
   url_test_helpers::ServeAsynchronousRequests();
 }
@@ -753,12 +753,12 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeNoSizeWaitsForLayout) {
     doc_request.Complete(
         R"HTML(<!DOCTYPE html>
         <img id="i1" src="image.png">
-        <img id="i2" style="height: auto; max-height: 50px;" src="image.png">
+        <img id="i2" style="height: auto; max-height: 1000px;" src="image.png">
       )HTML");
     Compositor().BeginFrame();
     test::RunPendingTasks();
-    image_request.Complete(
-        *test::ReadFromFile(test::CoreTestDataPath("background_image.png")));
+    image_request.Complete(*test::ReadFromFile(
+        test::CoreTestDataPath("notifications/3000x2000.png")));
   }
 
   {
@@ -786,12 +786,12 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeWithExtrinsicSize) {
     EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, _)).Times(1);
     doc_request.Complete(
         R"HTML(<!DOCTYPE html>
-        <img style="width: 100px" src="image.png">
+        <img style="width: 3000px" src="image.png">
       )HTML");
     Compositor().BeginFrame();
     test::RunPendingTasks();
-    image_request.Complete(
-        *test::ReadFromFile(test::CoreTestDataPath("background_image.png")));
+    image_request.Complete(*test::ReadFromFile(
+        test::CoreTestDataPath("notifications/3000x2000.png")));
     test::RunPendingTasks();
   }
 }
@@ -806,7 +806,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeBeforeLayout) {
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
       <!DOCTYPE html>
-      <html><body><img width=13 height=17/></body></html>
+      <html><body><img width=340 height=380/></body></html>
   )HTML");
   Compositor().BeginFrame();
   HTMLImageElement* image =
@@ -814,9 +814,9 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeBeforeLayout) {
   LayoutImage* layout_image = To<LayoutImage>(image->GetLayoutObject());
   EXPECT_EQ(layout_image->CachedResourcePriority().visibility,
             ResourcePriority::kVisible);
-  // Decode size should be based on layout size (note that this does not
+  // Decode size should be based on layout size; note that this does not
   // actually match the intrinsic size of the data URL below.
-  EXPECT_EQ(layout_image->CachedSpeculativeDecodeSize(), gfx::Size(13, 17));
+  EXPECT_EQ(layout_image->CachedSpeculativeDecodeSize(), gfx::Size(340, 380));
 
   image->setAttribute(
       html_names::kSrcAttr,
