@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -106,8 +107,11 @@ class CanvasHibernationHandlerTest
   }
 
   void SetUp() override {
-    test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
+        true);
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
+
     // Make sure that we can count tasks correctly in the tests.
     task_environment_.FastForwardUntilNoTasksRemain();
   }
