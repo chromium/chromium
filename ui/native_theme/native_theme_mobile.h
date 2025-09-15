@@ -18,7 +18,7 @@ class NativeThemeMobile : public NativeThemeBase {
   // NativeThemeBase:
   gfx::Size GetPartSize(Part part,
                         State state,
-                        const ExtraParams& extra) const override;
+                        const ExtraParams& extra_params) const override;
 
  protected:
   // NativeThemeBase:
@@ -28,7 +28,6 @@ class NativeThemeMobile : public NativeThemeBase {
                           const ColorProvider* color_provider) const override;
 
  private:
-  friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeMobile>;
 
   NativeThemeMobile();

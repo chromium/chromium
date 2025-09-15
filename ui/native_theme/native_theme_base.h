@@ -8,11 +8,11 @@
 #include <optional>
 
 #include "base/component_export.h"
-#include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -30,10 +30,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   NativeThemeBase(const NativeThemeBase&) = delete;
   NativeThemeBase& operator=(const NativeThemeBase&) = delete;
 
-  // NativeTheme implementation:
+  // NativeTheme:
   gfx::Size GetPartSize(Part part,
                         State state,
-                        const ExtraParams& extra) const override;
+                        const ExtraParams& extra_params) const override;
   float GetBorderRadiusForPart(Part part,
                                float width,
                                float height) const override;
@@ -45,14 +45,13 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
              Part part,
              State state,
              const gfx::Rect& rect,
-             const ExtraParams& extra,
+             const ExtraParams& extra_params,
              bool forced_colors,
              PreferredColorScheme color_scheme,
              PreferredContrast contrast,
-             const std::optional<SkColor>& accent_color) const override;
+             std::optional<SkColor> accent_color) const override;
 
  protected:
-  // Colors for form controls refresh.
   enum ControlColorId {
     kBorder,
     kDisabledBorder,
@@ -119,40 +118,42 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                                   bool dark_mode,
                                   const ColorProvider* color_provider) const;
 
+  // Returns the amount a hovered or pressed scrollbar part should contrast with
+  // the normal version of that part. Used when there is a custom scrollbar part
+  // color to try and mimic the default behavior.
   virtual float GetContrastRatioForState(State state, Part part) const;
 
   virtual void PaintFrameTopArea(
       cc::PaintCanvas* canvas,
       State state,
       const gfx::Rect& rect,
-      const FrameTopAreaExtraParams& frame_top_area) const;
+      const FrameTopAreaExtraParams& extra_params) const;
 
   virtual void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
       const gfx::Size& size,
-      const MenuBackgroundExtraParams& menu_background) const;
+      const MenuBackgroundExtraParams& extra_params) const;
 
   virtual void PaintMenuSeparator(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
       State state,
       const gfx::Rect& rect,
-      const MenuSeparatorExtraParams& menu_separator) const;
+      const MenuSeparatorExtraParams& extra_params) const;
 
-  // Draw the arrow. Used by scrollbar and inner spin button.
+  // Paints arrow buttons for scrollbars and inner spin buttons.
   virtual void PaintArrowButton(
-      cc::PaintCanvas* gc,
+      cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
       const gfx::Rect& rect,
-      Part direction,
+      Part part,
       State state,
       bool forced_colors,
       bool dark_mode,
       PreferredContrast contrast,
       const ScrollbarArrowExtraParams& extra_params) const;
 
-  // Draw the scrollbar thumb over the track.
   virtual void PaintScrollbarThumb(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
@@ -161,8 +162,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       const gfx::Rect& rect,
       const ScrollbarThumbExtraParams& extra_params) const;
 
-  // Paint the scrollbar track. Done before the thumb so that it can contain
-  // alpha.
   virtual void PaintScrollbarTrack(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
@@ -211,109 +210,103 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                               SkScalar saturate_amount,
                               SkScalar brighten_amount) const;
 
-  virtual void PaintLightenLayer(cc::PaintCanvas* canvas,
-                                 const ColorProvider* color_provider,
-                                 SkRect skrect,
-                                 State state,
-                                 SkScalar border_radius,
-                                 bool dark_mode) const;
+  // For disabled controls, lightens the background so the translucent disabled
+  // color works regardless of what it's over.
+  void PaintLightenLayer(cc::PaintCanvas* canvas,
+                         const ColorProvider* color_provider,
+                         const SkRect& skrect,
+                         State state,
+                         float border_radius,
+                         bool dark_mode) const;
 
-  // Paints the arrow used on the scrollbar and spinner.
+  // Paints arrows for scrollbars and inner spin buttons.
   void PaintArrow(cc::PaintCanvas* canvas,
                   const gfx::Rect& rect,
-                  Part direction,
+                  Part part,
                   SkColor color) const;
 
-  SkPath PathForArrow(const gfx::Rect& bounding_rect, Part direction) const;
+  static SkPath PathForArrow(const gfx::RectF& rect, Part part);
 
-  // Adjust the colors set in `extra_params` for scrollbar buttons and thumb
-  // when the parts are hovered or pressed. The function returns a darker or
-  // lighter version of `fg_color` and ensures that it has enough contrast with
-  // `bg_color` (if present) to still be visible. Dark colors will become
-  // lighter, and light colors will become lighter; whether a color is dark is
-  // determined by `color_utils::IsDark()`. When there are no CSS colors, both
-  // `fg_color` and `bg_color` are `std::nullopt` and the function returns
-  // `std::nullopt`.
+  // Adjusts custom scrollbar button/thumb colors to meet contrast minima. When
+  // `state` is hovered or pressed, `color` (if present) will be adjusted to
+  // contrast with the normal state. If `bg_color` is present, also attempts to
+  // ensure `color` maintains visible contrast with it.
   std::optional<SkColor> GetContrastingPressedOrHoveredColor(
       std::optional<SkColor> color,
       std::optional<SkColor> bg_color,
       State state,
       Part part) const;
 
-  // Only scrollbar parts that change colors when hovered are supported.
-  bool SupportedPartsForContrastingColor(Part part) const;
-
   void PaintCheckbox(cc::PaintCanvas* canvas,
                      const ColorProvider* color_provider,
                      State state,
                      const gfx::Rect& rect,
-                     const ButtonExtraParams& button,
+                     const ButtonExtraParams& extra_params,
                      bool dark_mode,
-                     const std::optional<SkColor>& accent_color) const;
+                     std::optional<SkColor> accent_color) const;
 
-  virtual void PaintInnerSpinButton(
-      cc::PaintCanvas* canvas,
-      const ColorProvider* color_provider,
-      State state,
-      const gfx::Rect& rect,
-      const InnerSpinButtonExtraParams& spin_button,
-      bool forced_colors,
-      bool dark_mode,
-      PreferredContrast contrast) const;
+  void PaintInnerSpinButton(cc::PaintCanvas* canvas,
+                            const ColorProvider* color_provider,
+                            State state,
+                            gfx::Rect rect,
+                            const InnerSpinButtonExtraParams& extra_params,
+                            bool forced_colors,
+                            bool dark_mode,
+                            PreferredContrast contrast) const;
 
   void PaintMenuList(cc::PaintCanvas* canvas,
                      const ColorProvider* color_provider,
                      State state,
                      const gfx::Rect& rect,
-                     const MenuListExtraParams& menu_list,
+                     const MenuListExtraParams& extra_params,
                      bool dark_mode) const;
 
   void PaintProgressBar(cc::PaintCanvas* canvas,
                         const ColorProvider* color_provider,
                         State state,
                         const gfx::Rect& rect,
-                        const ProgressBarExtraParams& progress_bar,
+                        const ProgressBarExtraParams& extra_params,
                         bool dark_mode,
                         PreferredContrast contrast,
-                        const std::optional<SkColor>& accent_color) const;
+                        std::optional<SkColor> accent_color) const;
 
   void PaintButton(cc::PaintCanvas* canvas,
                    const ColorProvider* color_provider,
                    State state,
                    const gfx::Rect& rect,
-                   const ButtonExtraParams& button,
+                   const ButtonExtraParams& extra_params,
                    bool dark_mode) const;
 
   void PaintRadio(cc::PaintCanvas* canvas,
                   const ColorProvider* color_provider,
                   State state,
                   const gfx::Rect& rect,
-                  const ButtonExtraParams& button,
+                  const ButtonExtraParams& extra_params,
                   bool dark_mode,
-                  const std::optional<SkColor>& accent_color) const;
+                  std::optional<SkColor> accent_color) const;
 
   void PaintSliderTrack(cc::PaintCanvas* canvas,
                         const ColorProvider* color_provider,
                         State state,
                         const gfx::Rect& rect,
-                        const SliderExtraParams& slider,
+                        const SliderExtraParams& extra_params,
                         bool dark_mode,
                         PreferredContrast contrast,
-                        const std::optional<SkColor>& accent_color) const;
+                        std::optional<SkColor> accent_color) const;
 
   void PaintSliderThumb(cc::PaintCanvas* canvas,
                         const ColorProvider* color_provider,
                         State state,
                         const gfx::Rect& rect,
-                        const SliderExtraParams& slider,
+                        const SliderExtraParams& extra_params,
                         bool dark_mode,
-                        const std::optional<SkColor>& accent_color) const;
+                        std::optional<SkColor> accent_color) const;
 
   void PaintTextField(cc::PaintCanvas* canvas,
                       const ColorProvider* color_provider,
                       State state,
                       const gfx::Rect& rect,
-                      const TextFieldExtraParams& text,
+                      const TextFieldExtraParams& extra_params,
                       bool dark_mode) const;
 
   int scrollbar_width_ = 15;
@@ -325,9 +318,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   SkRect AlignSliderTrack(const gfx::Rect& slider_rect,
                           const NativeTheme::SliderExtraParams& slider,
                           bool is_value,
-                          float track_height) const;
+                          float thickness) const;
 
-  gfx::Rect BoundingRectForArrow(const gfx::Rect& rect) const;
+  gfx::RectF GetArrowRect(const gfx::Rect& rect) const;
 
   SkColor ControlsBackgroundColorForState(
       State state,
@@ -336,18 +329,18 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
 
   SkColor OutlineColor(SkScalar* hsv1, SkScalar* hsv2) const;
 
-  // Paint the common parts of the checkboxes and radio buttons.
-  // border_radius specifies how rounded the corners should be.
-  SkRect PaintCheckboxRadioCommon(
-      cc::PaintCanvas* canvas,
-      const ColorProvider* color_provider,
-      State state,
-      const gfx::Rect& rect,
-      const ButtonExtraParams& button,
-      bool is_checkbox,
-      const SkScalar border_radius,
-      bool dark_mode,
-      const std::optional<SkColor>& accent_color) const;
+  // Draws the common elements of checkboxes and radio buttons. Returns the
+  // rectangle within which any additional decorations should be drawn, or empty
+  // if none.
+  SkRect PaintCheckboxRadioCommon(cc::PaintCanvas* canvas,
+                                  const ColorProvider* color_provider,
+                                  State state,
+                                  const gfx::Rect& rect,
+                                  const ButtonExtraParams& button,
+                                  bool is_checkbox,
+                                  float border_radius,
+                                  bool dark_mode,
+                                  std::optional<SkColor> accent_color) const;
 
   // The length of the arrow buttons, 0 means no buttons are drawn.
   int scrollbar_button_length_ = 14;

@@ -11,7 +11,7 @@ TestNativeTheme::~TestNativeTheme() = default;
 
 gfx::Size TestNativeTheme::GetPartSize(Part part,
                                        State state,
-                                       const ExtraParams& extra) const {
+                                       const ExtraParams& extra_params) const {
   return gfx::Size();
 }
 
@@ -20,11 +20,11 @@ void TestNativeTheme::Paint(cc::PaintCanvas* canvas,
                             Part part,
                             State state,
                             const gfx::Rect& rect,
-                            const ExtraParams& extra,
+                            const ExtraParams& extra_params,
                             bool forced_colors,
                             PreferredColorScheme color_scheme,
                             PreferredContrast contrast,
-                            const std::optional<SkColor>& accent_color) const {}
+                            std::optional<SkColor> accent_color) const {}
 
 bool TestNativeTheme::SupportsNinePatch(Part part) const {
   return false;

@@ -5,7 +5,6 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_H_
 
-#include <map>
 #include <optional>
 #include <variant>
 
@@ -55,7 +54,7 @@ class NativeThemeObserver;
 // the GetPartSize() method.
 class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
  public:
-  // The part to be painted / sized.
+  // A part being sized or painted.
   enum Part {
     kCheckbox,
 #if BUILDFLAG(IS_LINUX)
@@ -76,7 +75,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     kPushButton,
     kRadio,
 
-    // The order of the arrow enums is important, do not change without also
+    // The order of these enums is important, do not change without also
     // changing the code in platform implementations.
     kScrollbarDownArrow,
     kScrollbarLeftArrow,
@@ -92,6 +91,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     // The corner is drawn when there is both a horizontal and vertical
     // scrollbar.
     kScrollbarCorner,
+
     kSliderTrack,
     kSliderThumb,
     kTabPanelBackground,
@@ -102,9 +102,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     kMaxPart,
   };
 
-  // The state of the part.
+  // The state of some part being sized or painted.
   enum State {
-    // IDs defined as specific values for use in arrays.
+    // CAUTION: These values are used as array indexes.
     kDisabled = 0,
     kHovered = 1,
     kNormal = 2,
@@ -133,12 +133,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     kMaxValue = kDark,
   };
 
-  // OS-level preferred contrast. (Ex. high contrast or increased contrast.)
   enum class PreferredContrast {
     kNoPreference = 0,
     kMore = 1,
     kLess = 2,
-    kCustom = 3,
+    kCustom = 3,  // E.g. forced colors outside of a contrast-related setting.
     kMaxValue = kCustom,
   };
 
@@ -196,7 +195,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
 
   struct MenuSeparatorExtraParams {
     raw_ptr<const gfx::Rect> paint_rect = nullptr;
-    ui::ColorId color_id = ui::kColorMenuSeparator;
+    ColorId color_id = kColorMenuSeparator;
     MenuSeparatorType type = MenuSeparatorType::NORMAL_SEPARATOR;
   };
 
@@ -361,15 +360,15 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   static NativeTheme* GetInstanceForNativeUi();
   static NativeTheme* GetInstanceForWeb();
 
+  // Convenience methods to scale a width/radius by a zoom factor.
   static float AdjustBorderWidthByZoom(float border_width, float zoom_level);
   static float AdjustBorderRadiusByZoom(Part part,
                                         float border_radius,
                                         float zoom_level);
 
-  // Return the size of the part.
   virtual gfx::Size GetPartSize(Part part,
                                 State state,
-                                const ExtraParams& extra) const = 0;
+                                const ExtraParams& extra_params) const = 0;
 
   virtual int GetPaintedScrollbarTrackInset() const;
 
@@ -393,14 +392,15 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // when the part is resized.
   virtual gfx::Rect GetNinePatchAperture(Part part) const = 0;
 
-  // Called if the theme uses solid color for scrollbar thumb.
+  // The scrollbar thumb color, if the theme uses a solid color for the
+  // scrollbar thumb.
   virtual SkColor GetScrollbarThumbColor(
-      const ui::ColorProvider& color_provider,
+      const ColorProvider* color_provider,
       State state,
       const ScrollbarThumbExtraParams& extra_params) const;
 
-  // On certain platforms, currently only Mac, there is a unique visual for
-  // pressed states.
+  // Returns the color the toolkit would use for a pressed button that has an
+  // unpressed color of `base_color`.
   virtual SkColor GetSystemButtonPressedColor(SkColor base_color) const;
 
   // Registers this instance as an observer of `OsSettingsProvider` changes.
@@ -409,42 +409,47 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // notify about setting changes as necessary.
   void BeginObservingOsSettingChanges();
 
-  // Add or remove observers to be notified when the native theme changes.
+  // Adds or removes observers to be notified when the native theme changes.
   void AddObserver(NativeThemeObserver* observer);
   void RemoveObserver(NativeThemeObserver* observer);
 
-  // Notify observers of native theme changes.
+  // Notifies observers that something has changed and they should reload
+  // settings if needed. This also resets the color provider cache.
+  // CAUTION: This is expensive; minimize unnecessary calls.
   virtual void NotifyOnNativeThemeUpdated();
 
-  // Notify observers of caption style changes.
+  // TODO(pkasting): Consider combining this with
+  // `NotifyOnNativeThemeUpdated()`. This would make it easy to move the
+  // underpinnings to the `OsSettingsProvider`, as well as replace
+  // `NativeThemeObserver` with a `CallbackList`.
   virtual void NotifyOnCaptionStyleUpdated();
 
   // Notify observers of preferred contrast changes.
   virtual void NotifyOnPreferredContrastUpdated();
 
-  // Paint the part to the canvas.
+  // Paints the provided `part`/`state`.
   virtual void Paint(cc::PaintCanvas* canvas,
                      const ui::ColorProvider* color_provider,
                      Part part,
                      State state,
                      const gfx::Rect& rect,
-                     const ExtraParams& extra,
+                     const ExtraParams& extra_params,
                      bool forced_colors,
                      PreferredColorScheme color_scheme,
                      PreferredContrast contrast,
-                     const std::optional<SkColor>& accent_color) const = 0;
+                     std::optional<SkColor> accent_color) const = 0;
   void Paint(
       cc::PaintCanvas* canvas,
       const ui::ColorProvider* color_provider,
       Part part,
       State state,
       const gfx::Rect& rect,
-      const ExtraParams& extra,
+      const ExtraParams& extra_params,
       bool forced_colors = false,
       PreferredColorScheme color_scheme = PreferredColorScheme::kNoPreference,
       PreferredContrast contrast = PreferredContrast::kNoPreference) const {
-    Paint(canvas, color_provider, part, state, rect, extra, forced_colors,
-          color_scheme, contrast, std::nullopt);
+    Paint(canvas, color_provider, part, state, rect, extra_params,
+          forced_colors, color_scheme, contrast, std::nullopt);
   }
 
   // Returns the key corresponding to this native theme object.
@@ -454,6 +459,26 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
       scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
       bool use_custom_frame = true) const;
 
+  // Accessors.
+  //
+  // NOTE: Be very cautious about using the setters here.
+  //   * Tests generally should not modify `NativeTheme` state; if the goal is
+  //     to pretend the underlying system is in a particular state, use
+  //     `MockOsSettingsProvider` instead.
+  //
+  //   * The values set below may be overwritten automatically, e.g. when system
+  //     settings change; so if the goal is to override system-native behavior,
+  //     "fire and forget" usage is insufficient.
+  //
+  //   * To avoid jank from repeated notifications, these do not automatically
+  //     call `NotifyOnNativeThemeUpdated()`. Failing to call that manually
+  //     after using them typically results in cryptic bugs.
+  //
+  // TODO(pkasting): Consider adding a scoping object to freeze update
+  // notifications until the last such object is destroyed. Then use that
+  // everywhere that currently calls these setters or writes directly to the
+  // underlying members.
+
   ui::SystemTheme system_theme() const { return system_theme_; }
 
   bool use_overlay_scrollbar() const { return use_overlay_scrollbars_; }
@@ -461,18 +486,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     use_overlay_scrollbars_ = use_overlay_scrollbar;
   }
 
-  // Returns whether we are in forced colors mode, controlled by system
-  // accessibility settings. Currently, Windows high contrast is the only system
-  // setting that triggers forced colors mode.
   bool forced_colors() const { return forced_colors_; }
   void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
 
-  // Returns the user's current page colors.
   PageColors page_colors() const { return page_colors_; }
   void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
 
-  // Returns OS-level preferred color scheme, or `kNoPreference` if not
-  // set/applicable.
   PreferredColorScheme preferred_color_scheme() const {
     return preferred_color_scheme_;
   }
@@ -480,23 +499,15 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     preferred_color_scheme_ = preferred_color_scheme;
   }
 
-  // Returns the OS-level user preferred contrast.
   PreferredContrast preferred_contrast() const { return preferred_contrast_; }
   void SetPreferredContrast(PreferredContrast preferred_contrast);
 
-  // Returns the OS-level user preferred transparency.
   bool prefers_reduced_transparency() const {
     return prefers_reduced_transparency_;
   }
-  void set_prefers_reduced_transparency(bool prefers_reduced_transparency) {
-    prefers_reduced_transparency_ = prefers_reduced_transparency;
-  }
 
-  // Returns the OS-level inverted colors setting. (Classic invert NOT smart
-  // invert)
   bool inverted_colors() const { return inverted_colors_; }
 
-  // Set the user_color for ColorProviderKey.
   std::optional<SkColor> user_color() const { return user_color_; }
   void set_user_color(std::optional<SkColor> user_color) {
     user_color_ = user_color;
@@ -566,10 +577,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   bool UpdateVariablesForToolkitSettings();
 
   base::CallbackListSubscription os_settings_changed_subscription_;
-
-  // Observers to notify when the native theme changes.
   base::ObserverList<NativeThemeObserver> native_theme_observers_;
-
   const ui::SystemTheme system_theme_;
   bool use_overlay_scrollbars_ = false;
   bool forced_colors_ = false;

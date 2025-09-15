@@ -42,7 +42,7 @@ class NativeThemeFluentTest : public ::testing::Test,
         part == NativeTheme::kScrollbarDownArrow) {
       EXPECT_EQ(button_rect.CenterPoint().x(), arrow_rect.CenterPoint().x());
       // Due to the offset the arrow rect is shifted from the center.
-      // See NativeThemeFluent::OffsetArrowRect() for more details. Same below.
+      // See NativeThemeFluent::GetArrowRect() for more details. Same below.
       EXPECT_NEAR(button_rect.CenterPoint().y(), arrow_rect.CenterPoint().y(),
                   ScaleFromDIP() * 2);
     } else {
@@ -163,7 +163,8 @@ TEST_F(NativeThemeFluentTest, GetThumbColor) {
       CreateDefaultColorProviderForBlink(/*dark_mode=*/false);
   NativeTheme::ScrollbarThumbExtraParams extra_params;
   const auto scrollbar_color = [&](auto state) {
-    return theme_.GetScrollbarThumbColor(*color_provider, state, extra_params);
+    return theme_.GetScrollbarThumbColor(color_provider.get(), state,
+                                         extra_params);
   };
 
   const SkColor normal_thumb_color =

@@ -32,11 +32,11 @@ class NativeThemeAuraTest : public testing::Test {
 
   SkPath PathForArrow(const gfx::Rect& rect,
                       NativeTheme::Part direction) const {
-    return theme_.PathForArrow(BoundingRectForArrow(rect), direction);
+    return theme_.PathForArrow(GetArrowRect(rect), direction);
   }
 
-  gfx::Rect BoundingRectForArrow(const gfx::Rect& rect) const {
-    return theme_.BoundingRectForArrow(rect);
+  gfx::RectF GetArrowRect(const gfx::Rect& rect) const {
+    return theme_.GetArrowRect(rect);
   }
 
  private:
@@ -95,7 +95,7 @@ TEST_F(NativeThemeAuraTest, ArrowForNonSquareButton) {
 }
 
 TEST_F(NativeThemeAuraTest, BoundingRectSquare) {
-  gfx::Rect bounding_rect = BoundingRectForArrow(gfx::Rect(42, 61, 21, 21));
+  gfx::RectF bounding_rect = GetArrowRect(gfx::Rect(42, 61, 21, 21));
   EXPECT_EQ(48.f, bounding_rect.x());
   EXPECT_EQ(67.f, bounding_rect.y());
   EXPECT_EQ(9.f, bounding_rect.width());
@@ -104,14 +104,14 @@ TEST_F(NativeThemeAuraTest, BoundingRectSquare) {
 
 TEST_F(NativeThemeAuraTest, BoundingRectSlightlyRectangular) {
   // Stretched horzontally.
-  gfx::Rect bounding_rect = BoundingRectForArrow(gfx::Rect(42, 61, 25, 20));
+  gfx::RectF bounding_rect = GetArrowRect(gfx::Rect(42, 61, 25, 20));
   EXPECT_EQ(49.f, bounding_rect.x());
   EXPECT_EQ(66.f, bounding_rect.y());
   EXPECT_EQ(11.f, bounding_rect.width());
   EXPECT_EQ(bounding_rect.width(), bounding_rect.height());
 
   // Stretched vertically.
-  bounding_rect = BoundingRectForArrow(gfx::Rect(42, 61, 14, 10));
+  bounding_rect = GetArrowRect(gfx::Rect(42, 61, 14, 10));
   EXPECT_EQ(46.f, bounding_rect.x());
   EXPECT_EQ(63.f, bounding_rect.y());
   EXPECT_EQ(6.f, bounding_rect.width());
@@ -120,14 +120,14 @@ TEST_F(NativeThemeAuraTest, BoundingRectSlightlyRectangular) {
 
 TEST_F(NativeThemeAuraTest, BoundingRectVeryRectangular) {
   // Stretched horzontally.
-  gfx::Rect bounding_rect = BoundingRectForArrow(gfx::Rect(42, 61, 30, 8));
+  gfx::RectF bounding_rect = GetArrowRect(gfx::Rect(42, 61, 30, 8));
   EXPECT_EQ(53.f, bounding_rect.x());
   EXPECT_EQ(61.f, bounding_rect.y());
   EXPECT_EQ(8.f, bounding_rect.width());
   EXPECT_EQ(bounding_rect.width(), bounding_rect.height());
 
   // Stretched vertically.
-  bounding_rect = BoundingRectForArrow(gfx::Rect(42, 61, 6, 44));
+  bounding_rect = GetArrowRect(gfx::Rect(42, 61, 6, 44));
   EXPECT_EQ(42.f, bounding_rect.x());
   EXPECT_EQ(80.f, bounding_rect.y());
   EXPECT_EQ(6.f, bounding_rect.width());
@@ -135,10 +135,10 @@ TEST_F(NativeThemeAuraTest, BoundingRectVeryRectangular) {
 }
 
 TEST_F(NativeThemeAuraTest, BoundingRectSnappedToWholePixels) {
-  gfx::Rect bounding_rect = BoundingRectForArrow(gfx::Rect(0, 0, 9, 10));
+  gfx::RectF bounding_rect = GetArrowRect(gfx::Rect(0, 0, 9, 10));
   EXPECT_EQ(3.f, bounding_rect.x());
 
-  bounding_rect = BoundingRectForArrow(gfx::Rect(0, 0, 10, 9));
+  bounding_rect = GetArrowRect(gfx::Rect(0, 0, 10, 9));
   EXPECT_EQ(3.f, bounding_rect.y());
 }
 

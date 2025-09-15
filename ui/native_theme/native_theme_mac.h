@@ -31,9 +31,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
   NativeThemeMac(const NativeThemeMac&) = delete;
   NativeThemeMac& operator=(const NativeThemeMac&) = delete;
 
-  // Returns the minimum size for the thumb. We will not inset the thumb if it
-  // will be smaller than this size. The scale parameter should be the device
-  // scale factor.
+  // The minimum size in px for the thumb, given device scale factor `scale`.
+  // Exposed publicly for testing.
   static gfx::Size GetThumbMinSize(bool vertical, float scale);
 
   // NativeThemeBase:
@@ -43,11 +42,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
              Part part,
              State state,
              const gfx::Rect& rect,
-             const ExtraParams& extra,
+             const ExtraParams& extra_params,
              bool forced_colors,
              PreferredColorScheme color_scheme,
              PreferredContrast contrast,
-             const std::optional<SkColor>& accent_color) const override;
+             std::optional<SkColor> accent_color) const override;
   PreferredContrast CalculatePreferredContrast() const override;
 
  protected:
@@ -60,15 +59,14 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
       const ColorProvider* color_provider,
       State state,
       const gfx::Rect& rect,
-      const MenuItemExtraParams& menu_item) const override;
+      const MenuItemExtraParams& extra_params) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
       const gfx::Size& size,
-      const MenuBackgroundExtraParams& menu_background) const override;
+      const MenuBackgroundExtraParams& extra_params) const override;
 
  private:
-  friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeMac>;
 
   enum ScrollbarPart {
@@ -100,18 +98,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
     return scale_from_dip * (is_overlay ? 2.0f : 3.0f);
   }
 
-  // Paint the selected menu item background, and a border for emphasis when in
-  // high contrast.
-  void PaintSelectedMenuItem(cc::PaintCanvas* canvas,
-                             const ColorProvider* color_provider,
-                             const gfx::Rect& rect,
-                             const MenuItemExtraParams& extra_params) const;
-
   void PaintMacScrollbarThumb(cc::PaintCanvas* canvas,
                               Part part,
                               State state,
                               const gfx::Rect& rect,
-                              const ScrollbarExtraParams& scroll_thumb,
+                              const ScrollbarExtraParams& extra_params,
                               bool dark_mode) const;
 
   // Paint the track. |track_bounds| is the bounds for the track.

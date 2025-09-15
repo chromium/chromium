@@ -4,7 +4,6 @@
 
 #include "ui/native_theme/native_theme_mobile.h"
 
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -13,16 +12,15 @@
 
 namespace ui {
 
-gfx::Size NativeThemeMobile::GetPartSize(Part part,
-                                         State state,
-                                         const ExtraParams& extra) const {
-  if (part == kCheckbox || part == kRadio) {
-    // Radio buttons and checkboxes are slightly bigger than the defaults in
-    // `NativeThemeBase`, to make touch easier on small form factor devices.
-    static constexpr gfx::Size kCheckboxAndRadioSize(16, 16);
-    return kCheckboxAndRadioSize;
-  }
-  return NativeThemeBase::GetPartSize(part, state, extra);
+gfx::Size NativeThemeMobile::GetPartSize(
+    Part part,
+    State state,
+    const ExtraParams& extra_params) const {
+  // Radio buttons and checkboxes are slightly bigger than the defaults in
+  // `NativeThemeBase`, to make touch easier on small form factor devices.
+  return (part == kCheckbox || part == kRadio)
+             ? gfx::Size(16, 16)
+             : NativeThemeBase::GetPartSize(part, state, extra_params);
 }
 
 void NativeThemeMobile::AdjustCheckboxRadioRectForPadding(SkRect* rect) const {

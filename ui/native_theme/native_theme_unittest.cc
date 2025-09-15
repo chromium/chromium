@@ -29,7 +29,7 @@ class TestNativeTheme : public NativeTheme {
   // NativeTheme:
   gfx::Size GetPartSize(Part part,
                         State state,
-                        const ExtraParams& extra) const override {
+                        const ExtraParams& extra_params) const override {
     return gfx::Size();
   }
   void Paint(cc::PaintCanvas* canvas,
@@ -37,11 +37,11 @@ class TestNativeTheme : public NativeTheme {
              Part part,
              State state,
              const gfx::Rect& rect,
-             const ExtraParams& extra,
+             const ExtraParams& extra_params,
              bool forced_colors,
              PreferredColorScheme color_scheme,
              PreferredContrast contrast,
-             const std::optional<SkColor>& accent_color) const override {}
+             std::optional<SkColor> accent_color) const override {}
   bool SupportsNinePatch(Part part) const override { return false; }
   gfx::Size GetNinePatchCanvasSize(Part part) const override {
     return gfx::Size();

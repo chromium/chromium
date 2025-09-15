@@ -273,7 +273,7 @@ SkColor4f WebThemeEngineDefault::GetScrollbarThumbColor(
 
   return SkColor4f::FromColor(
       ui::NativeTheme::GetInstanceForWeb()->GetScrollbarThumbColor(
-          *color_provider, NativeThemeState(state), native_theme_extra_params));
+          color_provider, NativeThemeState(state), native_theme_extra_params));
 }
 
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {

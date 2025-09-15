@@ -20,15 +20,15 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
   // NativeThemeBase:
   gfx::Size GetPartSize(Part part,
                         State state,
-                        const ExtraParams& extra) const override;
+                        const ExtraParams& extra_params) const override;
   gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
   SkColor GetScrollbarThumbColor(
-      const ui::ColorProvider& color_provider,
+      const ui::ColorProvider* color_provider,
       State state,
-      const ScrollbarThumbExtraParams& extra) const override;
+      const ScrollbarThumbExtraParams& extra_params) const override;
 
  protected:
   explicit NativeThemeAura(bool use_overlay_scrollbar = false);
@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
       const gfx::Size& size,
-      const MenuBackgroundExtraParams& menu_background) const override;
+      const MenuBackgroundExtraParams& extra_params) const override;
   void PaintArrowButton(
       cc::PaintCanvas* gc,
       const ColorProvider* color_provider,
@@ -75,17 +75,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
       const ScrollbarTrackExtraParams& extra_params) const override;
 
  private:
-  friend class NativeTheme;
   friend class NativeThemeAuraTest;
   friend class base::NoDestructor<NativeThemeAura>;
-
-  static void DrawPartiallyRoundRect(cc::PaintCanvas* canvas,
-                                     const gfx::Rect& rect,
-                                     const SkScalar upper_left_radius,
-                                     const SkScalar upper_right_radius,
-                                     const SkScalar lower_right_radius,
-                                     const SkScalar lower_left_radius,
-                                     const cc::PaintFlags& flags);
 };
 
 }  // namespace ui

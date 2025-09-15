@@ -32,10 +32,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   // for a theme change.
   static void CloseHandles();
 
-  // NativeTheme implementation:
+  // NativeTheme:
   gfx::Size GetPartSize(Part part,
                         State state,
-                        const ExtraParams& extra) const override;
+                        const ExtraParams& extra_params) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
@@ -44,11 +44,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
              Part part,
              State state,
              const gfx::Rect& rect,
-             const ExtraParams& extra,
+             const ExtraParams& extra_params,
              bool forced_colors,
              PreferredColorScheme color_scheme,
              PreferredContrast contrast,
-             const std::optional<SkColor>& accent_color) const override;
+             std::optional<SkColor> accent_color) const override;
   PreferredContrast CalculatePreferredContrast() const override;
 
   PreferredColorScheme CalculatePreferredColorScheme() const;
@@ -60,10 +60,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   NativeThemeWin();
   ~NativeThemeWin() override;
 
+  // NativeTheme:
   void OnToolkitSettingsChanged(bool force_notify) override;
 
  private:
-  friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeWin>;
 
   enum ThemeName {
@@ -97,7 +97,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   // Painting functions that paint to PaintCanvas.
   void PaintMenuSeparator(cc::PaintCanvas* canvas,
                           const ColorProvider* color_provider,
-                          const MenuSeparatorExtraParams& params) const;
+                          const MenuSeparatorExtraParams& extra_params) const;
   void PaintMenuGutter(cc::PaintCanvas* canvas,
                        const ColorProvider* color_provider,
                        const gfx::Rect& rect) const;
@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
                    Part part,
                    State state,
                    const gfx::Rect& rect,
-                   const ExtraParams& extra) const;
+                   const ExtraParams& extra_params) const;
 
   // Create a temporary HDC, paint to that, clean up the alpha values in the
   // temporary HDC, and then blit the result to canvas.  This is to work around
@@ -120,14 +120,14 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
                      Part part,
                      State state,
                      const gfx::Rect& rect,
-                     const ExtraParams& extra) const;
+                     const ExtraParams& extra_params) const;
 
   // Various helpers to paint specific parts.
   void PaintButtonClassic(HDC hdc,
                           Part part,
                           State state,
                           RECT* rect,
-                          const ButtonExtraParams& extra) const;
+                          const ButtonExtraParams& extra_params) const;
   void PaintLeftMenuArrowThemed(HDC hdc,
                                 HANDLE handle,
                                 int part_id,
@@ -137,31 +137,33 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
                                   Part part,
                                   State state,
                                   RECT* rect) const;
-  void PaintScrollbarTrackClassic(SkCanvas* canvas,
-                                  HDC hdc,
-                                  RECT* rect,
-                                  const ScrollbarTrackExtraParams& extra) const;
+  void PaintScrollbarTrackClassic(
+      SkCanvas* canvas,
+      HDC hdc,
+      RECT* rect,
+      const ScrollbarTrackExtraParams& extra_params) const;
   void PaintHorizontalTrackbarThumbClassic(
       SkCanvas* canvas,
       HDC hdc,
       const RECT& rect,
-      const TrackbarExtraParams& extra) const;
-  void PaintProgressBarOverlayThemed(HDC hdc,
-                                     HANDLE handle,
-                                     RECT* bar_rect,
-                                     RECT* value_rect,
-                                     const ProgressBarExtraParams& extra) const;
+      const TrackbarExtraParams& extra_params) const;
+  void PaintProgressBarOverlayThemed(
+      HDC hdc,
+      HANDLE handle,
+      RECT* bar_rect,
+      RECT* value_rect,
+      const ProgressBarExtraParams& extra_params) const;
   void PaintTextFieldThemed(HDC hdc,
                             HANDLE handle,
                             HBRUSH bg_brush,
                             int part_id,
                             int state_id,
                             RECT* rect,
-                            const TextFieldExtraParams& extra) const;
+                            const TextFieldExtraParams& extra_params) const;
   void PaintTextFieldClassic(HDC hdc,
                              HBRUSH bg_brush,
                              RECT* rect,
-                             const TextFieldExtraParams& extra) const;
+                             const TextFieldExtraParams& extra_params) const;
 
   // Paints a theme part, with support for scene scaling in high-DPI mode.
   // |theme| is the theme handle. |hdc| is the handle for the device context.
@@ -179,15 +181,19 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   // methods do further validation of the part and state that is required for
   // getting the size.
   static ThemeName GetThemeName(Part part);
-  static int GetWindowsPart(Part part, State state, const ExtraParams& extra);
-  static int GetWindowsState(Part part, State state, const ExtraParams& extra);
+  static int GetWindowsPart(Part part,
+                            State state,
+                            const ExtraParams& extra_params);
+  static int GetWindowsState(Part part,
+                             State state,
+                             const ExtraParams& extra_params);
 
-  HRESULT PaintFrameControl(HDC hdc,
-                            const gfx::Rect& rect,
-                            UINT type,
-                            UINT state,
-                            bool is_selected,
-                            State control_state) const;
+  void PaintFrameControl(HDC hdc,
+                         const gfx::Rect& rect,
+                         UINT type,
+                         UINT state,
+                         bool is_selected,
+                         State control_state) const;
 
   // Returns a handle to the theme data.
   HANDLE GetThemeHandle(ThemeName theme_name) const;

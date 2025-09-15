@@ -39,7 +39,7 @@ class MockNativeTheme : public NativeTheme {
   // Mock some pure-virtual methods even though they're not used.
   MOCK_METHOD(gfx::Size,
               GetPartSize,
-              (Part part, State state, const ExtraParams& extra),
+              (Part part, State state, const ExtraParams& extra_params),
               (const override));
   MOCK_METHOD(void,
               Paint,
@@ -48,11 +48,11 @@ class MockNativeTheme : public NativeTheme {
                Part part,
                State state,
                const gfx::Rect& rect,
-               const ExtraParams& extra,
+               const ExtraParams& extra_params,
                bool forced_colors,
                PreferredColorScheme color_scheme,
                PreferredContrast contrast,
-               const std::optional<SkColor>& accent_color),
+               std::optional<SkColor> accent_color),
               (const override));
   MOCK_METHOD(bool, SupportsNinePatch, (Part part), (const override));
   MOCK_METHOD(gfx::Size, GetNinePatchCanvasSize, (Part part), (const override));

@@ -11,11 +11,13 @@
 #include <optional>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -54,16 +56,18 @@
 namespace ui {
 
 NativeTheme::MenuListExtraParams::MenuListExtraParams() = default;
-NativeTheme::TextFieldExtraParams::TextFieldExtraParams() = default;
 
 NativeTheme::MenuListExtraParams::MenuListExtraParams(
     const NativeTheme::MenuListExtraParams&) = default;
 
+NativeTheme::MenuListExtraParams& NativeTheme::MenuListExtraParams::operator=(
+    const NativeTheme::MenuListExtraParams&) = default;
+
+NativeTheme::TextFieldExtraParams::TextFieldExtraParams() = default;
+
 NativeTheme::TextFieldExtraParams::TextFieldExtraParams(
     const NativeTheme::TextFieldExtraParams&) = default;
 
-NativeTheme::MenuListExtraParams& NativeTheme::MenuListExtraParams::operator=(
-    const NativeTheme::MenuListExtraParams&) = default;
 NativeTheme::TextFieldExtraParams& NativeTheme::TextFieldExtraParams::operator=(
     const NativeTheme::TextFieldExtraParams&) = default;
 
@@ -96,6 +100,7 @@ using NativeUiTheme = NativeThemeMobile;
 using WebUiTheme = NativeThemeMobile;
 #endif
 
+// static
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
   static base::NoDestructor<NativeUiTheme> s_native_theme;
   static bool initialized = false;
@@ -106,6 +111,7 @@ NativeTheme* NativeTheme::GetInstanceForNativeUi() {
   return s_native_theme.get();
 }
 
+// static
 NativeTheme* NativeTheme::GetInstanceForWeb() {
 #if defined(USE_AURA)
   NativeTheme* const native_theme = GetInstanceForWebImpl();
@@ -141,7 +147,7 @@ int NativeTheme::GetPaintedScrollbarTrackInset() const {
 }
 
 gfx::Insets NativeTheme::GetScrollbarSolidColorThumbInsets(Part part) const {
-  return gfx::Insets();
+  return {};
 }
 
 float NativeTheme::GetBorderRadiusForPart(Part part,
@@ -151,11 +157,9 @@ float NativeTheme::GetBorderRadiusForPart(Part part,
 }
 
 SkColor NativeTheme::GetScrollbarThumbColor(
-    const ui::ColorProvider& color_provider,
+    const ColorProvider* color_provider,
     State state,
     const ScrollbarThumbExtraParams& extra_params) const {
-  // A native theme using solid color scrollbar thumb must override this
-  // method.
   NOTREACHED();
 }
 
@@ -179,15 +183,16 @@ void NativeTheme::RemoveObserver(NativeThemeObserver* observer) {
 }
 
 void NativeTheme::NotifyOnNativeThemeUpdated() {
+  // This specific method is prone to being mistakenly called on the wrong
+  // sequence, because it is often invoked from a platform-specific event
+  // listener, and those events may be delivered on unexpected sequences.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   base::ElapsedTimer timer;
   auto& color_provider_manager = ui::ColorProviderManager::Get();
   const size_t initial_providers_initialized =
       color_provider_manager.num_providers_initialized();
 
-  // This specific method is prone to being mistakenly called on the wrong
-  // sequence, because it is often invoked from a platform-specific event
-  // listener, and those events may be delivered on unexpected sequences.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Reset the ColorProviderManager's cache so that ColorProviders requested
   // from this point onwards incorporate the changes to the system theme.
   color_provider_manager.ResetColorProviderCache();
@@ -205,6 +210,7 @@ void NativeTheme::NotifyOnCaptionStyleUpdated() {
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   native_theme_observers_.Notify(&NativeThemeObserver::OnCaptionStyleUpdated);
 }
 
@@ -213,6 +219,7 @@ void NativeTheme::NotifyOnPreferredContrastUpdated() {
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   NotifyOnPreferredContrastUpdatedImpl();
 }
 
@@ -239,23 +246,22 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
     return kForcedColorsMap.at(page_colors);
   };
 
-  const bool dark_mode =
-      preferred_color_scheme() == PreferredColorScheme::kDark;
   ui::ColorProviderKey key;
-  key.color_mode = dark_mode ? ColorProviderKey::ColorMode::kDark
-                             : ColorProviderKey::ColorMode::kLight;
+  key.color_mode = preferred_color_scheme() == PreferredColorScheme::kDark
+                       ? ColorProviderKey::ColorMode::kDark
+                       : ColorProviderKey::ColorMode::kLight;
   key.contrast_mode = preferred_contrast() == PreferredContrast::kMore
                           ? ColorProviderKey::ContrastMode::kHigh
                           : ColorProviderKey::ContrastMode::kNormal;
   key.forced_colors = get_forced_colors_key(forced_colors(), page_colors_);
-  key.system_theme = system_theme_;
+  key.system_theme = system_theme();
   key.frame_type = use_custom_frame ? ColorProviderKey::FrameType::kChromium
                                     : ColorProviderKey::FrameType::kNative;
   key.user_color_source = should_use_system_accent_color_
                               ? ColorProviderKey::UserColorSource::kAccent
                               : ColorProviderKey::UserColorSource::kBaseline;
-  key.user_color = user_color_;
-  key.scheme_variant = scheme_variant_;
+  key.user_color = user_color();
+  key.scheme_variant = scheme_variant();
   key.custom_theme = std::move(custom_theme);
 
   return key;
@@ -302,29 +308,16 @@ void NativeTheme::PaintMenuItemBackground(
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& extra_params) const {
-  DCHECK(color_provider);
   cc::PaintFlags flags;
-  switch (state) {
-    case NativeTheme::kNormal:
-    case NativeTheme::kDisabled: {
-      ui::ColorId id = kColorMenuBackground;
+  const ColorId id = (state == kHovered)
 #if BUILDFLAG(IS_CHROMEOS)
-      id = kColorAshSystemUIMenuBackground;
+                         ? kColorAshSystemUIMenuItemBackgroundSelected
+                         : kColorAshSystemUIMenuBackground;
+#else
+                         ? kColorMenuItemBackgroundSelected
+                         : kColorMenuBackground;
 #endif
-      flags.setColor(color_provider->GetColor(id));
-      break;
-    }
-    case NativeTheme::kHovered: {
-      ui::ColorId id = kColorMenuItemBackgroundSelected;
-#if BUILDFLAG(IS_CHROMEOS)
-      id = kColorAshSystemUIMenuItemBackgroundSelected;
-#endif
-      flags.setColor(color_provider->GetColor(id));
-      break;
-    }
-    default:
-      NOTREACHED() << "Invalid state " << state;
-  }
+  flags.setColor(color_provider->GetColor(id));
   if (extra_params.corner_radius > 0) {
     const SkScalar radius = SkIntToScalar(extra_params.corner_radius);
     canvas->drawRoundRect(gfx::RectToSkRect(rect), radius, radius, flags);
@@ -468,6 +461,9 @@ void NativeTheme::NotifyOnNativeThemeUpdatedImpl() {
   // NOTE: If any above observers already called `NotifyOnNativeThemeUpdated()`
   // on the web theme, this is unnecessary jank; however, it's not worth the
   // hassle to try to detect this.
+  //
+  // TODO(pkasting): Adding a scoping object to batch updates would address
+  // this; see comments in header above accessors.
   if (updated_web_instance) {
     // Calling `NotifyOnNativeThemeUpdated()` here would unnecessarily churn the
     // color provider cache.
