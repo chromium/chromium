@@ -17,7 +17,8 @@
 #include "base/values.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "third_party/skia/include/codec/SkCodec.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/skia_span_util.h"
 
@@ -231,8 +232,8 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
       // `image_bytes`.
       sk_sp<SkData> data = gfx::MakeSkDataFromSpanWithoutCopy(*image_bytes);
       SkCodec::Result decode_result;
-      std::unique_ptr<SkCodec> codec =
-          SkPngDecoder::Decode(data, &decode_result);
+      std::unique_ptr<SkCodec> codec = SkPngRustDecoder::Decode(
+          std::make_unique<SkMemoryStream>(std::move(data)), &decode_result);
       EXPECT_EQ(SkCodec::Result::kSuccess, decode_result);
 
       VizDebuggerInternal::BufferInfo buff;

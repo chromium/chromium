@@ -30,10 +30,11 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/skia/include/codec/SkCodec.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
@@ -327,12 +328,13 @@ sk_sp<SkImage> CanvasHibernationHandler::GetImage() {
     }
   }
 
-  CHECK(SkPngDecoder::IsPng(png_data->data(), png_data->size()));
+  CHECK(SkPngRustDecoder::IsPng(png_data->data(), png_data->size()));
 
   base::TimeTicks before = base::TimeTicks::Now();
   // Note: not discarding the encoded image.
   sk_sp<SkImage> image = nullptr;
-  std::unique_ptr<SkCodec> codec = SkPngDecoder::Decode(png_data, nullptr);
+  std::unique_ptr<SkCodec> codec = SkPngRustDecoder::Decode(
+      std::make_unique<SkMemoryStream>(std::move(png_data)), nullptr);
   if (codec) {
     image = std::get<0>(codec->getImage());
   }
