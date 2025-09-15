@@ -24,6 +24,7 @@ enum Attributes {
 }
 
 const ADD_FILE_CONTEXT_FN = 'addFileContext';
+const ADD_TAB_CONTEXT_FN = 'addTabContext';
 
 function generateZeroId(): string {
   // Generate 128 bit unique identifier.
@@ -821,6 +822,32 @@ suite('NewTabPageComposeboxTest', () => {
       assertFalse(!!uploadContainer);
       const contextMenuButton = $$(composeboxElement, '#contextEntrypoint');
       assertTrue(!!contextMenuButton);
+    });
+
+    test('add tab context', async () => {
+      createComposeboxElement();
+      handler.setResultFor(
+          ADD_TAB_CONTEXT_FN,
+          Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+
+      // Assert no files.
+      assertEquals(composeboxElement.$.carousel.files.length, 0);
+
+      const contextMenuButton = $$(composeboxElement, '#contextEntrypoint');
+      assertTrue(!!contextMenuButton);
+      const sampleTabTitle = 'Sample Tab';
+      contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
+        detail: {id: 1, title: sampleTabTitle},
+        bubbles: true,
+        composed: true,
+      }));
+
+      await handler.whenCalled(ADD_TAB_CONTEXT_FN);
+      await microtasksFinished();
+      const files = composeboxElement.$.carousel.files;
+      assertEquals(files.length, 1);
+      assertEquals(files[0]!.type, 'tab');
+      assertEquals(files[0]!.name, sampleTabTitle);
     });
   });
 });

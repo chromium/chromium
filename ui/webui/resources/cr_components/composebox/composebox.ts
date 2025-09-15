@@ -429,6 +429,19 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.input.focus();
   }
 
+  protected async addTabContext_(e: CustomEvent<{id: number, title: string}>) {
+    const {token} = await this.pageHandler_.addTabContext(e.detail.id);
+
+    const attachment: ComposeboxFile = {
+      uuid: token,
+      name: e.detail.title,
+      objectUrl: null,
+      type: 'tab',
+      status: FileUploadStatus.kNotUploaded,
+    };
+    this.files_ = new Map([...this.files_.entries(), [token, attachment]]);
+  }
+
   protected openImageUpload_() {
     this.$.imageInput.click();
   }

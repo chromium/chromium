@@ -56,10 +56,11 @@ export function getHtml(this: ComposeboxElement) {
       </ntp-composebox-dropdown>
     ${this.contextMenuEnabled_ ? html`
       <composebox-context-menu-entrypoint id="contextEntrypoint"
-        class="icon-fade upload-icon no-overlap"
-        @open-image-upload="${this.openImageUpload_}"
-        @open-file-upload="${this.openFileUpload_}"
-        ?inputs-disabled="${this.inputsDisabled_}">
+          class="icon-fade upload-icon no-overlap"
+          @open-image-upload="${this.openImageUpload_}"
+          @open-file-upload="${this.openFileUpload_}"
+          @add-tab-context="${this.addTabContext_}"
+          ?inputs-disabled="${this.inputsDisabled_}">
       </composebox-context-menu-entrypoint>
     ` : html`
       <div id="uploadContainer" class="icon-fade">

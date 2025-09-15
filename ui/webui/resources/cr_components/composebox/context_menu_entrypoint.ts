@@ -13,7 +13,8 @@ import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabInfo} from './composebox.mojom-webui.js';
+import type {PageHandlerRemote, TabInfo} from './composebox.mojom-webui.js';
+import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
 
@@ -49,15 +50,40 @@ export class ContextMenuEntrypointElement extends CrLitElement {
   }
 
   accessor inputsDisabled: boolean = false;
-
   protected accessor tabSuggestions_: TabInfo[] = [];
+  private pageHandler_: PageHandlerRemote;
 
-  protected onEntrypointClick_() {
+  constructor() {
+    super();
+
+    this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
+  }
+
+  protected async onEntrypointClick_() {
+    const {tabs} = await this.pageHandler_.getTabs();
+    this.tabSuggestions_ = tabs;
+
     this.$.menu.showAt(this.$.entrypointIcon, {
       top: this.$.entrypointIcon.getBoundingClientRect().bottom,
       width: MENU_WIDTH_PX,
       anchorAlignmentX: AnchorAlignment['AFTER_START'],
     });
+  }
+
+  protected addTabContext(e: Event) {
+    e.stopPropagation();
+
+    const tabElement = e.target! as HTMLInputElement;
+    const tabId = Number(tabElement.dataset['id']);
+    if (!tabId) {
+      return;
+    }
+
+    this.fire('add-tab-context', {
+      id: tabId,
+      title: tabElement.dataset['title']!,
+    });
+    this.$.menu.close();
   }
 
   protected openImageUpload() {
