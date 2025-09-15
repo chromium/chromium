@@ -38,6 +38,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
@@ -81,6 +82,7 @@ import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionIn
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodComponent.Delegate;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties;
@@ -225,6 +227,9 @@ class TouchToFillPaymentMethodMediator {
     private List<LoyaltyCard> mAllLoyaltyCards;
     private Function<LoyaltyCard, Drawable> mValuableImageFunction;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
+    private boolean mShouldShowScanCreditCard;
+    private Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
+            mCardImageFunction;
 
     private InputProtector mInputProtector = new InputProtector();
 
@@ -245,13 +250,25 @@ class TouchToFillPaymentMethodMediator {
 
         assert suggestions != null;
         mSuggestions = suggestions;
+        mShouldShowScanCreditCard = shouldShowScanCreditCard;
+        mCardImageFunction = cardImageFunction;
         mIbans = null;
         mAffiliatedLoyaltyCards = null;
         mAllLoyaltyCards = null;
         mValuableImageFunction = null;
 
-        ModelList sheetItems = mModel.get(SHEET_ITEMS);
-        sheetItems.clear();
+        mBottomSheetFocusHelper.registerForOneTimeUse();
+
+        setPaymentMethodsHomeScreenItems();
+
+        RecordHistogram.recordCount100Histogram(
+                TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, mSuggestions.size());
+    }
+
+    private void setPaymentMethodsHomeScreenItems() {
+        assert mSuggestions != null;
+
+        ModelList sheetItems = new ModelList();
         boolean cardBenefitsTermsAvailable = false;
 
         for (int i = 0; i < mSuggestions.size(); ++i) {
@@ -271,7 +288,7 @@ class TouchToFillPaymentMethodMediator {
                                 createCardSuggestionModel(
                                         suggestion,
                                         new FillableItemCollectionInfo(i + 1, mSuggestions.size()),
-                                        cardImageFunction)));
+                                        mCardImageFunction)));
             }
             PaymentsPayload payload = suggestion.getPaymentsPayload();
             if (payload != null) {
@@ -295,9 +312,9 @@ class TouchToFillPaymentMethodMediator {
         }
 
         sheetItems.add(0, buildHeaderForPayments(hasOnlyLocalCards(mSuggestions)));
-        sheetItems.add(buildFooterForCreditCard(shouldShowScanCreditCard));
+        sheetItems.add(buildFooterForCreditCard(mShouldShowScanCreditCard));
 
-        mBottomSheetFocusHelper.registerForOneTimeUse();
+        mModel.set(SHEET_ITEMS, sheetItems);
         mModel.set(
                 SHEET_CONTENT_DESCRIPTION_ID,
                 R.string.autofill_payment_method_bottom_sheet_content_description);
@@ -310,9 +327,6 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(
                 SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_payment_method_bottom_sheet_closed);
         mModel.set(VISIBLE, true);
-
-        RecordHistogram.recordCount100Histogram(
-                TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, mSuggestions.size());
     }
 
     public void showIbans(List<Iban> ibans) {
@@ -324,6 +338,8 @@ class TouchToFillPaymentMethodMediator {
         mAffiliatedLoyaltyCards = null;
         mAllLoyaltyCards = null;
         mValuableImageFunction = null;
+        mShouldShowScanCreditCard = false;
+        mCardImageFunction = null;
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
@@ -378,6 +394,8 @@ class TouchToFillPaymentMethodMediator {
         mValuableImageFunction = valuableImageFunction;
         mSuggestions = null;
         mIbans = null;
+        mShouldShowScanCreditCard = false;
+        mCardImageFunction = null;
 
         mModel.set(
                 SHEET_ITEMS,
@@ -446,13 +464,15 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(CURRENT_SCREEN, PROGRESS_SCREEN);
         ModelList progressScreenModel = new ModelList();
 
-        // TODO(crbug.com/438784993): Add header and footer UI to BNPL progress screen.
+        progressScreenModel.add(
+                buildHeaderForBnplSelectionProgress(/* isBackButtonEnabled= */ false));
         progressScreenModel.add(
                 new ListItem(
                         PROGRESS_ICON,
                         createProgressIconModel(
                                 R.string
                                         .autofill_pending_dialog_loading_accessibility_description)));
+        // TODO(crbug.com/438784993): Add footer UI to BNPL progress screen.
 
         mModel.set(SHEET_ITEMS, progressScreenModel);
         mModel.set(
@@ -501,13 +521,21 @@ class TouchToFillPaymentMethodMediator {
 
     void showHomeScreen() {
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
-        mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.all_loyalty_cards_item);
-        mModel.set(
-                SHEET_ITEMS,
-                getLoyaltyCardHomeScreenItems(
-                        mAffiliatedLoyaltyCards,
-                        mValuableImageFunction,
-                        /* firstTimeUsage= */ false));
+        if (mSuggestions != null) {
+            // TODO(crbug.com/438784993): Disable and grey out BNPL chip if no issuers are available
+            // for the transaction.
+            setPaymentMethodsHomeScreenItems();
+        } else if (mAffiliatedLoyaltyCards != null) {
+            mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.all_loyalty_cards_item);
+            mModel.set(
+                    SHEET_ITEMS,
+                    getLoyaltyCardHomeScreenItems(
+                            mAffiliatedLoyaltyCards,
+                            mValuableImageFunction,
+                            /* firstTimeUsage= */ false));
+        } else {
+            assert false : "Unhandled home screen show";
+        }
     }
 
     public void scanCreditCard() {
@@ -751,6 +779,19 @@ class TouchToFillPaymentMethodMediator {
                     R.string.autofill_loyalty_card_first_time_usage_bottom_sheet_subtitle);
         }
         return new ListItem(HEADER, headerBuilder.build());
+    }
+
+    private ListItem buildHeaderForBnplSelectionProgress(boolean isBackButtonEnabled) {
+        PropertyModel.Builder bnplSelectionProgressHeaderBuilder =
+                new PropertyModel.Builder(BnplSelectionProgressHeaderProperties.ALL_KEYS)
+                        .with(
+                                BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED,
+                                isBackButtonEnabled)
+                        .with(
+                                BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED,
+                                () -> this.showHomeScreen());
+        return new ListItem(
+                BNPL_SELECTION_PROGRESS_HEADER, bnplSelectionProgressHeaderBuilder.build());
     }
 
     private ListItem buildFooterForCreditCard(boolean hasScanCardButton) {

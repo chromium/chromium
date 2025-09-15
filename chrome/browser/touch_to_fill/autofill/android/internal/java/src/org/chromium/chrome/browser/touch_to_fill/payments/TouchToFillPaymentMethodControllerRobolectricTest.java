@@ -61,6 +61,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
@@ -676,9 +677,18 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(R.string.autofill_bnpl_progress_sheet_closed));
 
         ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        assertThat(sheetItems.size(), is(1));
+        assertThat(sheetItems.size(), is(2));
 
-        ListItem progressIconItem = sheetItems.get(0);
+        ListItem bnplSelectionProgressHeaderItem = sheetItems.get(0);
+        assertThat(
+                bnplSelectionProgressHeaderItem.type,
+                is(TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER));
+        assertFalse(
+                bnplSelectionProgressHeaderItem.model.get(
+                        TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties
+                                .BNPL_BACK_BUTTON_ENABLED));
+
+        ListItem progressIconItem = sheetItems.get(1);
         assertThat(
                 progressIconItem.type,
                 is(TouchToFillPaymentMethodProperties.ItemType.PROGRESS_ICON));
@@ -687,6 +697,40 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                         TouchToFillPaymentMethodProperties.ProgressIconProperties
                                 .PROGRESS_CONTENT_DESCRIPTION_ID),
                 is(R.string.autofill_pending_dialog_loading_accessibility_description));
+    }
+
+    @Test
+    public void testBnplSelectionProgressHeaderBackButtonReshowsHomeScreen() {
+        // Show the credit card list first to populate the mediator's suggestions.
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
+                /* shouldShowScanCreditCard= */ false);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+        assertThat(
+                getModelsOfType(mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), CREDIT_CARD)
+                        .size(),
+                is(2));
+
+        // Simulate switching to the BNPL progress screen.
+        mCoordinator.getMediatorForTesting().showProgressScreen();
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
+
+        // Find the back button action in the BNPL header and invoke it.
+        ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(sheetItems.get(0).type, is(BNPL_SELECTION_PROGRESS_HEADER));
+        PropertyModel bnplSelectionProgressHeaderModel = sheetItems.get(0).model;
+        bnplSelectionProgressHeaderModel
+                .get(
+                        TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties
+                                .BNPL_ON_BACK_BUTTON_CLICKED)
+                .run();
+
+        // Verify that the home screen is shown again with the original credit card suggestions.
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+        sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(sheetItems, CREDIT_CARD).size(), is(2));
+        assertTrue(getCardSuggestionModel(sheetItems, VISA_SUGGESTION).isPresent());
+        assertTrue(getCardSuggestionModel(sheetItems, MASTERCARD_SUGGESTION).isPresent());
     }
 
     @Test

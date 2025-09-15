@@ -1063,7 +1063,7 @@
   </message>
 
   <!-- Buy now pay later related strings -->
-  <message name="IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT" desc="Main text for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer.">
+  <message name="IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT" desc="Main text for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer." formatter_data="android_java">
     Pay later options
   </message>
   <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL" desc="One line label shows the minimum qualifying amount for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer.">
@@ -1318,7 +1318,7 @@
     <message name="IDS_AUTOFILL_BOTTOM_SHEET_ALL_LOYALTY_CARDS_SCREEN_TITLE" desc="The title of the screen in the loyalty card filling bottom sheet that displays all loyalty cards of a user." formatter_data="android_java">
       Your loyalty cards
     </message>
-    <message name="IDS_AUTOFILL_BOTTOM_SHEET_BACK_BUTTON_DESCRIPTION" desc="Accessibility string for the icon that allows closing the all loyalty cards screen and going back to the intial loyalty card filling screen." formatter_data="android_java">
+    <message name="IDS_AUTOFILL_BOTTOM_SHEET_BACK_BUTTON_DESCRIPTION" desc="Accessibility string for the icon that allows closing the current screen and going back to the intial screen on a bottomsheet." formatter_data="android_java">
       Back
     </message>
     <message name="IDS_AUTOFILL_BOTTOM_SHEET_MANAGE_LOYALTY_CARDS" desc="An option in the autofill bottom sheet that triggers navigation to the loyalty cards management UI in Google Wallet." formatter_data="android_java">

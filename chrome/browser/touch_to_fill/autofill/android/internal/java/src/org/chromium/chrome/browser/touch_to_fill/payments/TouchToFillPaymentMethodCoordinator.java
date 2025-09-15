@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FOCUSED_VIEW_ID_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
@@ -176,6 +177,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 PROGRESS_ICON,
                 TouchToFillPaymentMethodViewBinder::createProgressIconView,
                 TouchToFillPaymentMethodViewBinder::bindProgressIconView);
+        adapter.registerType(
+                BNPL_SELECTION_PROGRESS_HEADER,
+                TouchToFillPaymentMethodViewBinder::createBnplSelectionProgressHeaderItemView,
+                TouchToFillPaymentMethodViewBinder::bindBnplSelectionProgressHeaderView);
         view.setSheetItemListAdapter(adapter);
     }
 

@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BACK_PRESS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
@@ -343,6 +345,43 @@ class TouchToFillPaymentMethodViewBinder {
             TextView sheetHeaderTitle = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
             sheetHeaderTitle.setVisibility(View.VISIBLE);
             sheetHeaderTitle.setText(view.getContext().getString(model.get(SUBTITLE_ID)));
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    /**
+     * Factory used to create a new BNPL header for selection and progress screens inside the
+     * ListView inside the {@link TouchToFillPaymentMethodView}.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createBnplSelectionProgressHeaderItemView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(
+                        R.layout.touch_to_fill_bnpl_selection_and_progress_screen_header_item,
+                        parent,
+                        false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    static void bindBnplSelectionProgressHeaderView(
+            PropertyModel model, View view, PropertyKey propertyKey) {
+        ImageView back_button = view.findViewById(R.id.bnpl_header_back_button);
+
+        if (propertyKey == BNPL_BACK_BUTTON_ENABLED) {
+            final boolean isEnabled = model.get(BNPL_BACK_BUTTON_ENABLED);
+            back_button.setEnabled(isEnabled);
+            back_button.setAlpha(isEnabled ? COMPLETE_OPACITY_ALPHA : GRAYED_OUT_OPACITY_ALPHA);
+        } else if (propertyKey == BNPL_ON_BACK_BUTTON_CLICKED) {
+            back_button.setOnClickListener(
+                    unusedView -> model.get(BNPL_ON_BACK_BUTTON_CLICKED).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

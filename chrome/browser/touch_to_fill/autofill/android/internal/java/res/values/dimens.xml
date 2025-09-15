@@ -21,4 +21,5 @@ found in the LICENSE file.
     <!-- TODO(crbug.com/430575808): Set progress bar vertical margin
     dynamically to match issuer selection screen. -->
     <dimen name="bnpl_progress_bar_vertical_margin">76dp</dimen>
+    <dimen name="bnpl_back_button_margin_end">16dp</dimen>
 </resources>

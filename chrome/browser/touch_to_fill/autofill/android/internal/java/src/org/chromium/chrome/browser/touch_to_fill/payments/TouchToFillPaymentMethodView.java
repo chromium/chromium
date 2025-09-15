@@ -57,6 +57,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.WALLET_SETTINGS_BUTTON:
                 case ItemType.TERMS_LABEL:
                 case ItemType.PROGRESS_ICON:
+                case ItemType.BNPL_SELECTION_PROGRESS_HEADER:
                     return true;
                 case ItemType.CREDIT_CARD:
                 case ItemType.IBAN:
@@ -101,6 +102,9 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
         view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
+    // TODO(crbug.com/430575808): Rename function to clarify that this handles loyalty cards back
+    // button only, or refactor loyalty cards back button implementation to match BNPL header back
+    // button implementation.
     void setBackPressHandler(Runnable backPressHandler) {
         getContentView()
                 .findViewById(R.id.all_loyalty_cards_back_image_button)
