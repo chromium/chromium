@@ -11,8 +11,9 @@
 #include <vulkan/vulkan.h>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,7 +35,7 @@ class FlatlandSurfaceFactory;
 // be called on the same thread (because it may be be safe to use
 // VkBufferCollectionFUCHSIA concurrently on different threads).
 class FlatlandSysmemBufferCollection
-    : public base::RefCountedThreadSafe<FlatlandSysmemBufferCollection>,
+    : public base::RefCountedDeleteOnSequence<FlatlandSysmemBufferCollection>,
       public base::MessagePumpForIO::ZxHandleWatcher {
  public:
   static bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
@@ -100,7 +101,8 @@ class FlatlandSysmemBufferCollection
   void AddOnReleasedCallback(base::OnceClosure on_released);
 
  private:
-  friend class base::RefCountedThreadSafe<FlatlandSysmemBufferCollection>;
+  friend class base::RefCountedDeleteOnSequence<FlatlandSysmemBufferCollection>;
+  friend class base::DeleteHelper<FlatlandSysmemBufferCollection>;
 
   ~FlatlandSysmemBufferCollection() override;
 

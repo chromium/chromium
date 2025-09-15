@@ -14,6 +14,7 @@
 #include "base/fuchsia/koid.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
+#include "flatland_sysmem_buffer_collection.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -262,7 +263,9 @@ bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
   return false;
 }
 
-FlatlandSysmemBufferCollection::FlatlandSysmemBufferCollection() = default;
+FlatlandSysmemBufferCollection::FlatlandSysmemBufferCollection()
+    : base::RefCountedDeleteOnSequence<FlatlandSysmemBufferCollection>(
+          base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 bool FlatlandSysmemBufferCollection::Initialize(
     fuchsia::sysmem2::Allocator_Sync* sysmem_allocator,
