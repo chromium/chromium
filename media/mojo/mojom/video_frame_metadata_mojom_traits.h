@@ -28,6 +28,10 @@ namespace mojo {
 template <>
 struct StructTraits<media::mojom::CaptureVersionDataView,
                     media::CaptureVersion> {
+  static uint32_t source(const media::CaptureVersion& input) {
+    return input.source;
+  }
+
   static uint32_t sub_capture(const media::CaptureVersion& input) {
     return input.sub_capture;
   }

@@ -147,6 +147,8 @@ gfx::Size GetBufferSizeInPixelsForVideoPixelFormat(
   }
 }
 
+const uint32_t kSourceId = 8276;
+
 // Dummy frame sink ID.
 const VideoCaptureTarget kVideoCaptureTarget(FrameSinkId(1, 1));
 
@@ -823,7 +825,7 @@ class FrameSinkVideoCapturerTest
     capturer_ = std::make_unique<FrameSinkVideoCapturerImpl>(
         frame_sink_manager_, gmb_context_provider_.get(), mojo::NullReceiver(),
         std::move(oracle), /*log_to_webrtc=*/false,
-        /*capture_version_source=*/0);
+        /*capture_version_source=*/kSourceId);
   }
 
   void SetUp() override {
@@ -1920,13 +1922,14 @@ TEST_P(FrameSinkVideoCapturerTest, ChangeTargetIncreasesCaptureVersion) {
   MockConsumer consumer;
   StartCapture(&consumer);
 
-  // The initial capture-version is (0, 0).
+  // The initial capture-version is (kSourceId, 0).
   EXPECT_CALL(consumer, OnNewCaptureVersion(_)).Times(0);
   capturer_->ChangeTarget(target, /*sub_capture_target_version=*/0);
   PropagateMojoTasks();
 
-  // The capture-version is increased from (0, 0) to an arbitrary larger value.
-  const media::CaptureVersion capture_version(/*sub_capture=*/222);
+  // The capture-version is increased from (kSourceId, 0) to a larger value.
+  const media::CaptureVersion capture_version(/*source=*/kSourceId,
+                                              /*sub_capture=*/222);
   EXPECT_CALL(consumer, OnNewCaptureVersion(capture_version)).Times(1);
   capturer_->ChangeTarget(target, capture_version.sub_capture);
   PropagateMojoTasks();

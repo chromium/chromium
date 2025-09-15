@@ -79,6 +79,7 @@ bool EnumTraits<media::mojom::EffectState, intermediate::EffectState>::
 bool StructTraits<media::mojom::CaptureVersionDataView, media::CaptureVersion>::
     Read(media::mojom::CaptureVersionDataView data,
          media::CaptureVersion* out) {
+  out->source = data.source();
   out->sub_capture = data.sub_capture();
   return true;
 }

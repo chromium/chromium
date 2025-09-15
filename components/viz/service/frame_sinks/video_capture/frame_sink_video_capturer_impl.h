@@ -417,8 +417,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   void MaybeInformConsumerOfEmptyRegion();
 
   media::CaptureVersion capture_version() const {
-    // TODO(crbug.com/394794490): Plug `capture_version_source_` in here.
-    return media::CaptureVersion(capture_version_sub_capture_);
+    return media::CaptureVersion(capture_version_source_,
+                                 capture_version_sub_capture_);
   }
 
   // Owner/Manager of this instance.

@@ -213,6 +213,10 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
           callback);
 
+  // Returns the current capture-version (See media::CaptureVersion's
+  // documentation for details.)
+  virtual media::CaptureVersion GetCaptureVersion() const;
+
   // If a new |sub_capture_target_version| can be assigned, returns it.
   // Otherwise, returns nullopt. (Can happen if the source does not support
   // cropping/restriction, or if a change of target is not possible at this
@@ -224,16 +228,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // TODO(crbug.com/1332628): Make the sub-capture-target-version an
   // implementation detail that is not exposed to the entity
   // calling ApplySubCaptureTarget().
+  // TODO(crbug.com/394794490): Replace with GetNextCaptureVersion().
   virtual std::optional<uint32_t> GetNextSubCaptureTargetVersion();
-
-  // Returns the current sub-capture-target version.
-  // For an explanation of what a |sub_capture_target_version| is,
-  // see ApplySubCaptureTarget().
-  // The initial sub-capture-target version is zero. On platforms where cropping
-  // and restriction are not supported (Android), and for sources that don't
-  // support cropping and restriction (audio), the sub-capture-target version
-  // never goes over 0.
-  virtual uint32_t GetSubCaptureTargetVersion() const;
 
   // Notifies the source about that the number of encoded sinks have been
   // updated. Note: Can only be called if the number of encoded sinks have

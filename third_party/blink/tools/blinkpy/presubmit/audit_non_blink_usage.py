@@ -2654,6 +2654,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/web/modules/mediastream/media_stream_video_source.h'
+        ],
+        'allowed': [
+            'media::CaptureVersion',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/common/client_hints/',
             'third_party/blink/common/fenced_frame/',
             'third_party/blink/common/frame/',

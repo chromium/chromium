@@ -8,11 +8,12 @@
 
 namespace media {
 
-CaptureVersion::CaptureVersion(uint32_t sub_capture)
-    : sub_capture(sub_capture) {}
+CaptureVersion::CaptureVersion(uint32_t source, uint32_t sub_capture)
+    : source(source), sub_capture(sub_capture) {}
 
 std::string CaptureVersion::ToString() const {
-  return base::StringPrintf("{.sub_capture = %u}", sub_capture);
+  return base::StringPrintf("{.source = %u, .sub_capture = %u}", source,
+                            sub_capture);
 }
 
 }  // namespace media

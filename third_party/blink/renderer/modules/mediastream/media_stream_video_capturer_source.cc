@@ -227,8 +227,10 @@ void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
       std::move(callback));
 }
 
-uint32_t MediaStreamVideoCapturerSource::GetCaptureVersionSource() const {
-  return capture_params_.capture_version_source;
+media::CaptureVersion MediaStreamVideoCapturerSource::GetCaptureVersion()
+    const {
+  return media::CaptureVersion(capture_params_.capture_version_source,
+                               sub_capture_version_);
 }
 
 // TODO(crbug.com/394794490): Return the next CaptureVersion.
@@ -238,10 +240,6 @@ MediaStreamVideoCapturerSource::GetNextSubCaptureTargetVersion() {
     return std::nullopt;
   }
   return ++sub_capture_version_;
-}
-
-uint32_t MediaStreamVideoCapturerSource::GetSubCaptureTargetVersion() const {
-  return sub_capture_version_;
 }
 
 base::WeakPtr<MediaStreamVideoSource>

@@ -543,20 +543,20 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
 void MediaStreamVideoSource::ApplySubCaptureTarget(
     media::mojom::blink::SubCaptureTargetType type,
     const base::Token& sub_capture_target,
-    uint32_t sub_capture_target_version,
+    uint32_t sub_capture_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   std::move(callback).Run(
       media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
 }
 
+media::CaptureVersion MediaStreamVideoSource::GetCaptureVersion() const {
+  return media::CaptureVersion();
+}
+
 std::optional<uint32_t>
 MediaStreamVideoSource::GetNextSubCaptureTargetVersion() {
   return std::nullopt;
-}
-
-uint32_t MediaStreamVideoSource::GetSubCaptureTargetVersion() const {
-  return 0;
 }
 
 VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {

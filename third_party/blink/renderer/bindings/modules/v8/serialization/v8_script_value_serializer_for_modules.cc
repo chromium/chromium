@@ -706,7 +706,9 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
       MediaStreamVideoSource* const native_source =
           MediaStreamVideoSource::GetVideoSource(source);
       DCHECK(native_source);
-      WriteUint32(native_source->GetSubCaptureTargetVersion());
+      // TODO(crbug.com/40058526): Write the entire CaptureVersion if support
+      // for MST-transfer is ever finished; otherwise, remove all this code.
+      WriteUint32(native_source->GetCaptureVersion().sub_capture);
       break;
   }
   // TODO(crbug.com/1288839): Needs to move to FinalizeTransfer?

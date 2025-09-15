@@ -815,11 +815,12 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
     : MediaStreamTrackPlatform(true),
       is_screencast_(false),
       source_(source->GetWeakPtr()) {
+  // TODO(crbug.com/394794490): Pass the entire CaptureVersion.
   frame_deliverer_ =
       base::MakeRefCounted<MediaStreamVideoTrack::FrameDeliverer>(
           source->GetTaskRunner(), source->video_task_runner(),
           weak_factory_.GetWeakPtr(), source->GetWeakPtr(), enabled,
-          source->GetSubCaptureTargetVersion());
+          source->GetCaptureVersion().sub_capture);
 
   // Create the callbacks struct.
   MediaStreamVideoSourceCallbacks media_stream_callbacks;
@@ -869,11 +870,12 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
               : std::nullopt),
       pan_tilt_zoom_allowed_(pan_tilt_zoom_allowed),
       source_(source->GetWeakPtr()) {
+  // TODO(crbug.com/394794490): Pass the entire CaptureVersion.
   frame_deliverer_ =
       base::MakeRefCounted<MediaStreamVideoTrack::FrameDeliverer>(
           source->GetTaskRunner(), source->video_task_runner(),
           weak_factory_.GetWeakPtr(), source->GetWeakPtr(), enabled,
-          source->GetSubCaptureTargetVersion());
+          source->GetCaptureVersion().sub_capture);
 
   // Create the callbacks struct
   MediaStreamVideoSourceCallbacks media_stream_callbacks;

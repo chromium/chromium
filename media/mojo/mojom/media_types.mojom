@@ -352,7 +352,7 @@ enum EffectState {
 
 // See media/base/capture_version.h for a description of fields.
 struct CaptureVersion {
-  // TODO(crbug.com/394794490): Add `source` here.
+  uint32 source;
   uint32 sub_capture;
 };
 

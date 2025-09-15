@@ -159,7 +159,8 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   metadata_in.background_blur = media::EffectInfo{.enabled = true};
 
-  metadata_in.capture_version = media::CaptureVersion(123);
+  metadata_in.capture_version =
+      media::CaptureVersion(/*source=*/123, /*sub_capture=*/456);
 
   VideoFrameMetadata metadata_out;
 

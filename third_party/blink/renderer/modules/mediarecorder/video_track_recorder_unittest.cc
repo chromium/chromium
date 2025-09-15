@@ -292,9 +292,9 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
         .Times(testing::AnyNumber());
     EXPECT_CALL(*mock_source_, OnCapturingLinkSecured(_))
         .Times(testing::AnyNumber());
-    EXPECT_CALL(*mock_source_, GetSubCaptureTargetVersion())
+    EXPECT_CALL(*mock_source_, GetCaptureVersion())
         .Times(testing::AnyNumber())
-        .WillRepeatedly(Return(0));
+        .WillRepeatedly(Return(media::CaptureVersion()));
     EXPECT_CALL(*mock_source_, OnSourceCanDiscardAlpha(_))
         .Times(testing::AnyNumber());
 

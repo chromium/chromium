@@ -95,13 +95,8 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
       uint32_t sub_capture_target_version,
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
           callback) override;
-
-  // TODO(crbug.com/394794490): Replace the following three methods with
-  // two methods, GetNextCaptureVersion() and GetCaptureVersion().
-  uint32_t GetCaptureVersionSource() const;
+  media::CaptureVersion GetCaptureVersion() const override;
   std::optional<uint32_t> GetNextSubCaptureTargetVersion() override;
-  uint32_t GetSubCaptureTargetVersion() const override;
-
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
 
   // Method to bind as VideoCaptureRunningCallbackCB in

@@ -245,7 +245,8 @@ TEST_F(BroadcastingReceiverTest, OnNewCaptureVersion) {
   EXPECT_CALL(*mock_video_frame_handler_2_, DoOnNewBuffer(_, _))
       .Times(AnyNumber());
 
-  const media::CaptureVersion capture_version(321);
+  const media::CaptureVersion capture_version(/*source=*/321,
+                                              /*sub_capture=*/456);
   EXPECT_CALL(*mock_video_frame_handler_1_,
               OnNewCaptureVersion(capture_version))
       .WillOnce(RunOnceClosure(run_loop_1.QuitClosure()));

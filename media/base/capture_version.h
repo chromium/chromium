@@ -44,14 +44,13 @@ namespace media {
 // on the exact ordering of events.
 struct MEDIA_EXPORT CaptureVersion {
   CaptureVersion() = default;
-  explicit CaptureVersion(uint32_t sub_capture);
+  CaptureVersion(uint32_t source, uint32_t sub_capture);
 
   auto operator<=>(const CaptureVersion& other) const = default;
 
   std::string ToString() const;
 
-  // TODO(crbug.com/394794490): Uncomment `source` below.
-  // uint32_t source = 0;
+  uint32_t source = 0;
   uint32_t sub_capture = 0;
 };
 
