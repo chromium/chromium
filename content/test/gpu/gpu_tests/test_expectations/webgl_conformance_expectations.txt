@@ -472,6 +472,10 @@ crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures
 ## Win / Intel / D3D9
 crbug.com/395934162 [ angle-d3d9 intel-0x4680 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 
+## Test bug
+crbug.com/443182226 [ win nvidia angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
+crbug.com/443182226 [ win nvidia angle-vulkan passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
+
 ####################
 # Mac failures     #
 ####################
@@ -597,6 +601,10 @@ crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/con
 
 # Brya failures
 crbug.com/416483574 [ android android-brya ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
+
+## Test bug
+crbug.com/443182234 [ android android-brya ] conformance/misc/shader-precision-format.html [ Failure ]
+crbug.com/443182234 [ android android-brya ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
 
 
 ############
