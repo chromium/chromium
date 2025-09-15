@@ -743,7 +743,7 @@ bool CertVerifyProc::HasNameConstraintsViolation(
   // openssl x509 -noout -in <cert>.pem -pubkey | \
   //   openssl asn1parse -noout -inform pem -out - | \
   //   openssl dgst -sha256 -binary | xxd -i
-  static const struct PublicKeyDomainLimitation {
+  static constexpr struct PublicKeyDomainLimitation {
     SHA256HashValue public_key_hash;
     base::raw_span<const std::string_view> domains;
   } kLimits[] = {
