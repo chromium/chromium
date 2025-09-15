@@ -215,6 +215,11 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
   [self setDownloadListItems:filteredRecords];
 }
 
+- (void)deleteDownloadItem:(DownloadListItem*)item {
+  // TODO(crbug.com/444335357): Implement direct delete functionality.
+  // This will be completed in a subsequent CL.
+}
+
 #pragma mark - DownloadRecordObserver Methods
 
 - (void)downloadRecordWasAdded:(const DownloadRecord&)record {

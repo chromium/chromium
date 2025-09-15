@@ -134,6 +134,25 @@ NSString* const kStatusTextEmptyString = @"";
   return _fileTypeIcon;
 }
 
+- (DownloadListItemAction)availableActions {
+  DownloadListItemAction actions = DownloadListItemActionNone;
+
+  // Downloads in progress have no available actions.
+  if (_downloadRecord.state == web::DownloadTask::State::kInProgress) {
+    return actions;
+  }
+
+  // Completed downloads can be opened in Files app.
+  if (_downloadRecord.state == web::DownloadTask::State::kComplete) {
+    actions |= DownloadListItemActionOpenInFiles;
+  }
+
+  // All non-in-progress downloads can be deleted.
+  actions |= DownloadListItemActionDelete;
+
+  return actions;
+}
+
 - (BOOL)isEqualToItem:(DownloadListItem*)item {
   if (self == item) {
     return YES;

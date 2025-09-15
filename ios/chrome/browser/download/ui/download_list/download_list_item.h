@@ -5,9 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_LIST_DOWNLOAD_LIST_ITEM_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_LIST_DOWNLOAD_LIST_ITEM_H_
 
+#import <Foundation/Foundation.h>
+
 #import "base/time/time.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
+
+/// Represents available actions for a download list item.
+typedef NS_OPTIONS(NSUInteger, DownloadListItemAction) {
+  DownloadListItemActionNone = 0,
+  DownloadListItemActionOpenInFiles = 1 << 0,  // 0x01
+  DownloadListItemActionDelete = 1 << 1,       // 0x02
+};
 
 /// Table view item for download list entries.
 @interface DownloadListItem : NSObject
@@ -26,6 +35,9 @@
 
 /// Returns the icon for this download item.
 @property(nonatomic, strong, readonly) UIImage* fileTypeIcon;
+
+/// Returns the available actions for this download item.
+@property(nonatomic, assign, readonly) DownloadListItemAction availableActions;
 
 /// Initializes a download list item with the given download record.
 - (instancetype)initWithDownloadRecord:(const DownloadRecord&)downloadRecord

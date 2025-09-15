@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_service_factory.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_action_delegate.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -32,7 +34,8 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "url/gurl.h"
 
-@interface DownloadListCoordinator () <DownloadRecordCommands> {
+@interface DownloadListCoordinator () <DownloadListActionDelegate,
+                                       DownloadRecordCommands> {
   // Mediator for handling download list logic.
   DownloadListMediator* _mediator;
 
@@ -129,6 +132,7 @@
       break;
   }
   _downloadListViewController.mutator = _mediator;
+  _downloadListViewController.actionDelegate = self;
   [_mediator setConsumer:_downloadListViewController];
 
   CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
@@ -252,6 +256,13 @@
   NSURL* fileURL =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(filePath.value())];
   [_filePreviewCoordinator presentFilePreviewWithURL:fileURL];
+}
+
+#pragma mark - DownloadListActionDelegate
+
+- (void)openDownloadInFiles:(DownloadListItem*)item {
+  // TODO(crbug.com/444330914): Implement opening download in Files app.
+  // This will be completed in a subsequent CL.
 }
 
 @end

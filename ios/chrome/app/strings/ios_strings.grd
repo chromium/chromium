@@ -4038,6 +4038,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OPEN_IN_DOWNLOADS" desc="Label of the button that lets users open downloads folder. [Length: unlimited] [iOS only]">
         Open in downloads
       </message>
+      <message name="IDS_IOS_OPEN_IN_FILES_APP_ACTION_TITLE" desc="Title of the action used to open a downloaded file in the Files app. [iOS only]">
+        Open in Files App
+      </message>
       <message name="IDS_IOS_OPEN_IN_FILE_DEFAULT_TITLE" desc="Default title for a file that will be opened in another application. [Length: 30em] [iOS only]">
         Document
       </message>

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/download/ui/download_list/download_list_grouping_util.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_mutator.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_illustrated_empty_view.h"
@@ -103,6 +104,70 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
   // TODO(crbug.com/440222083): Implement download primary action handling.
+}
+
+- (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
+    contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
+                                        point:(CGPoint)point {
+  DownloadListItem* item =
+      [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+
+  // Downloads with no available actions do not support context menu.
+  if (item.availableActions == DownloadListItemActionNone) {
+    return nil;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        if (!weakSelf) {
+          return [UIMenu menuWithTitle:@"" children:@[]];
+        }
+
+        return [weakSelf createMenuForDownloadItem:item];
+      };
+
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
+}
+
+- (UIMenu*)createMenuForDownloadItem:(DownloadListItem*)item {
+  NSMutableArray<UIMenuElement*>* actions = [[NSMutableArray alloc] init];
+  __weak __typeof(self) weakSelf = self;
+  DownloadListItemAction availableActions = item.availableActions;
+
+  // Check if "Open in Files App" action is available.
+  if (availableActions & DownloadListItemActionOpenInFiles) {
+    UIAction* openInFilesAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_OPEN_IN_FILES_APP_ACTION_TITLE)
+                  image:DefaultSymbolWithPointSize(kOpenImageActionSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf.actionDelegate openDownloadInFiles:item];
+                }];
+    [actions addObject:openInFilesAction];
+  }
+
+  // Check if Delete action is available.
+  if (availableActions & DownloadListItemActionDelete) {
+    UIAction* deleteAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)
+                  image:DefaultSymbolWithPointSize(kTrashSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf.mutator deleteDownloadItem:item];
+                }];
+    deleteAction.attributes = UIMenuElementAttributesDestructive;
+    [actions addObject:deleteAction];
+  }
+
+  return [UIMenu menuWithTitle:@"" children:actions];
 }
 
 - (UIView*)tableView:(UITableView*)tableView

@@ -4,6 +4,7 @@
 
 source_set("download_list") {
   sources = [
+    "download_list_action_delegate.h",
     "download_list_consumer.h",
     "download_list_group_item.h",
     "download_list_group_item.mm",
@@ -21,6 +22,7 @@ source_set("download_list") {
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/download/ui/download_list/resources",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view:views",
