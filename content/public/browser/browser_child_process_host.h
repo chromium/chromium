@@ -17,7 +17,6 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/common/process_type.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
 #if BUILDFLAG(IS_APPLE)

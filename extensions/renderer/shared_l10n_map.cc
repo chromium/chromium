@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
-#include "ipc/ipc_sender.h"
 
 namespace extensions {
 

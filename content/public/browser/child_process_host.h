@@ -17,7 +17,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_id.h"
 #include "content/public/common/content_constants.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
 namespace base {

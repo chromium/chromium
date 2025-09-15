@@ -25,7 +25,6 @@
 #include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_sender.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

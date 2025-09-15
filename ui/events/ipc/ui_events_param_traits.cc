@@ -4,8 +4,8 @@
 
 #include "ui/events/ipc/ui_events_param_traits_macros.h"
 
+// Generate param traits write methods.
 #include "ipc/param_traits_write_macros.h"
-
 namespace IPC {
 #undef UI_EVENTS_IPC_UI_EVENTS_PARAM_TRAITS_MACROS_H_
 #include "ui/events/ipc/ui_events_param_traits_macros.h"

@@ -74,7 +74,6 @@
 #include "content/test/test_overscroll_delegate.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -6135,14 +6134,6 @@ class InputMethodResultAuraTest : public InputMethodAuraTestBase {
       delete;
 
   ~InputMethodResultAuraTest() override {}
-
- protected:
-  const IPC::Message* RunAndReturnIPCSent(base::OnceClosure closure,
-                                          MockRenderProcessHost* process,
-                                          int32_t message_id) {
-    std::move(closure).Run();
-    return nullptr;
-  }
 };
 
 // This test verifies ui::TextInputClient::SetCompositionText.

@@ -16,7 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 
 using content::BrowserThread;
@@ -47,7 +47,7 @@ void LoadOnBlockingPool(const base::FilePath& icon_path,
   data_decoder::DecodeImageIsolated(
       base::as_byte_span(data), data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/false,
-      static_cast<int64_t>(IPC::Channel::kMaximumMessageSize),
+      static_cast<int64_t>(IPC::mojom::kChannelMaximumMessageSize),
       /*desired_image_frame_size=*/gfx::Size(),
       base::BindOnce(&CreateResultFromBitmap).Then(std::move(result_callback)));
 }
