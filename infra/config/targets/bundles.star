@@ -463,6 +463,7 @@ targets.bundle(
             args = [
                 # Tests on devices with large form factor are typically slower.
                 # Double the timeout threshold to reduce test flakiness.
+                # TODO(crbug.com/444753297): Remove this config.
                 "--timeout-scale=2.0",
             ],
             # Due to the capacity concern, this suite will run as ci_only.
@@ -476,12 +477,13 @@ targets.bundle(
         ),
         "chrome_public_test_apk_desktop": targets.mixin(
             args = [
+                # Tests on devices with large form factor are typically slower.
+                # Double the timeout threshold to reduce test flakiness.
+                # TODO(crbug.com/444753297): Remove this config.
                 "--timeout-scale=2.0",
             ],
-            # TODO(crbug.com/441704684): Remove the ci_only and experiment
-            # after the suite is green.
+            # TODO(crbug.com/441704684): Remove the ci_only after green.
             ci_only = True,
-            experiment_percentage = 100,
         ),
         "chrome_public_unit_test_apk": targets.mixin(
             swarming = targets.swarming(
