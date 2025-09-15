@@ -34,7 +34,6 @@ enum ContextType {
   kOpenGLES2,
   kOpenGLES3,
   kOpenGLES31ForTesting,
-  kWebGPU,
 };
 
 // Maps to its namesake in gpu/command_buffer/common/context_creation_attribs.h.

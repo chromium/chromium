@@ -30,8 +30,6 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ContextType,
         return gpu::mojom::ContextType::kOpenGLES3;
       case gpu::CONTEXT_TYPE_OPENGLES31_FOR_TESTING:
         return gpu::mojom::ContextType::kOpenGLES31ForTesting;
-      case gpu::CONTEXT_TYPE_WEBGPU:
-        return gpu::mojom::ContextType::kWebGPU;
       default:
         NOTREACHED();
     }
@@ -53,9 +51,6 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ContextType,
         return true;
       case gpu::mojom::ContextType::kOpenGLES31ForTesting:
         *out = gpu::CONTEXT_TYPE_OPENGLES31_FOR_TESTING;
-        return true;
-      case gpu::mojom::ContextType::kWebGPU:
-        *out = gpu::CONTEXT_TYPE_WEBGPU;
         return true;
       default:
         return false;
