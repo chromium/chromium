@@ -117,7 +117,7 @@ CreateInputDataFromAnnotatedPageContent(
   // The C++ controller for this feature.
   std::unique_ptr<ComposeboxQueryControllerIOS> _composeboxQueryController;
   // The observer bridge for file upload status.
-  std::unique_ptr<ComposeboxFileUploadObserverBridge> _observerBridge;
+  std::unique_ptr<ComposeboxFileUploadObserverBridge> _composeboxObserverBridge;
   // Whether AI mode is enabled.
   BOOL _AIModeEnabled;
   // The web state list.
@@ -137,8 +137,9 @@ CreateInputDataFromAnnotatedPageContent(
     _items = [NSMutableArray array];
     _urlLoadingBrowserAgent = urlLoadingBrowserAgent;
     _composeboxQueryController = std::move(composeboxQueryController);
-    _observerBridge = std::make_unique<ComposeboxFileUploadObserverBridge>(
-        self, _composeboxQueryController.get());
+    _composeboxObserverBridge =
+        std::make_unique<ComposeboxFileUploadObserverBridge>(
+            self, _composeboxQueryController.get());
     _composeboxQueryController->NotifySessionStarted();
     _webStateList = webStateList;
   }
@@ -149,7 +150,7 @@ CreateInputDataFromAnnotatedPageContent(
   _composeboxQueryController->NotifySessionAbandoned();
   _urlLoadingBrowserAgent = nullptr;
   _composeboxQueryController.reset();
-  _observerBridge.reset();
+  _composeboxObserverBridge.reset();
 }
 
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider {
