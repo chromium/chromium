@@ -34,6 +34,42 @@
 
 namespace {
 
+void ConstrainInsets(int old_width, int min_width, int* left, int* right) {
+  int requested_total_inset = *left + *right;
+  if (requested_total_inset == 0) {
+    return;
+  }
+  int max_total_inset = old_width - min_width;
+  if (requested_total_inset < max_total_inset) {
+    return;
+  }
+  if (max_total_inset < 0) {
+    *left = *right = 0;
+    return;
+  }
+  // Multiply the right/bottom inset by the ratio by which we need to shrink the
+  // total inset. This has the effect of rounding down the right/bottom inset,
+  // if the two sides are to be affected unevenly.
+  // This is done instead of using inset scale functions to maintain expected
+  // behavior and to map to how it looks like other scrollbars work on MacOS.
+  *right *= max_total_inset * 1.0f / requested_total_inset;
+  *left = max_total_inset - *right;
+}
+
+void ConstrainedInset(gfx::Rect* rect,
+                      gfx::Size min_size,
+                      gfx::Insets initial_insets) {
+  int inset_left = initial_insets.left();
+  int inset_right = initial_insets.right();
+  int inset_top = initial_insets.top();
+  int inset_bottom = initial_insets.bottom();
+
+  ConstrainInsets(rect->width(), min_size.width(), &inset_left, &inset_right);
+  ConstrainInsets(rect->height(), min_size.height(), &inset_top, &inset_bottom);
+  rect->Inset(
+      gfx::Insets::TLBR(inset_top, inset_left, inset_bottom, inset_right));
+}
+
 ui::NativeTheme::PreferredColorScheme GetPreferredColorScheme() {
   NSAppearanceName appearance =
       [NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[
@@ -46,6 +82,14 @@ ui::NativeTheme::PreferredColorScheme GetPreferredColorScheme() {
 
 bool IsHighContrast() {
   return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldIncreaseContrast;
+}
+
+void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
+                                                void*,
+                                                CFStringRef,
+                                                const void*,
+                                                CFDictionaryRef) {
+  ui::NativeTheme::GetInstanceForWeb()->NotifyOnCaptionStyleUpdated();
 }
 
 }  // namespace
@@ -83,17 +127,6 @@ bool IsHighContrast() {
 
 @end
 
-namespace {
-
-// Helper to make indexing an array by an enum class easier.
-template <class KEY, class VALUE>
-struct EnumArray {
-  VALUE& operator[](const KEY& key) { return array[static_cast<size_t>(key)]; }
-  VALUE array[static_cast<size_t>(KEY::COUNT)];
-};
-
-}  // namespace
-
 namespace ui {
 
 struct NativeThemeMac::ObjCMembers {
@@ -101,10 +134,20 @@ struct NativeThemeMac::ObjCMembers {
   EffectiveAppearanceObserver* __strong appearance_observer;
 };
 
-NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
-    const {
-  return IsHighContrast() ? NativeThemeAura::PreferredContrast::kMore
-                          : NativeThemeAura::PreferredContrast::kNoPreference;
+gfx::Size NativeThemeMac::GetThumbMinSize(bool vertical, float scale) {
+  const int kLength = 18 * scale;
+  const int kGirth = 6 * scale;
+
+  return vertical ? gfx::Size(kGirth, kLength) : gfx::Size(kLength, kGirth);
+}
+
+SkColor NativeThemeMac::GetSystemButtonPressedColor(SkColor base_color) const {
+  // TODO crbug.com/1003612: This should probably be replaced with a color
+  // transform.
+  // Mac has a different "pressed button" styling because it doesn't use
+  // ripples.
+  return color_utils::GetResultingPaintColor(SkColorSetA(SK_ColorBLACK, 0x10),
+                                             base_color);
 }
 
 void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
@@ -152,40 +195,207 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
   }
 }
 
-void ConstrainInsets(int old_width, int min_width, int* left, int* right) {
-  int requested_total_inset = *left + *right;
-  if (requested_total_inset == 0) {
-    return;
-  }
-  int max_total_inset = old_width - min_width;
-  if (requested_total_inset < max_total_inset) {
-    return;
-  }
-  if (max_total_inset < 0) {
-    *left = *right = 0;
-    return;
-  }
-  // Multiply the right/bottom inset by the ratio by which we need to shrink the
-  // total inset. This has the effect of rounding down the right/bottom inset,
-  // if the two sides are to be affected unevenly.
-  // This is done instead of using inset scale functions to maintain expected
-  // behavior and to map to how it looks like other scrollbars work on MacOS.
-  *right *= max_total_inset * 1.0f / requested_total_inset;
-  *left = max_total_inset - *right;
+NativeTheme::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
+    const {
+  return IsHighContrast() ? NativeTheme::PreferredContrast::kMore
+                          : NativeTheme::PreferredContrast::kNoPreference;
 }
 
-void ConstrainedInset(gfx::Rect* rect,
-                      gfx::Size min_size,
-                      gfx::Insets initial_insets) {
-  int inset_left = initial_insets.left();
-  int inset_right = initial_insets.right();
-  int inset_top = initial_insets.top();
-  int inset_bottom = initial_insets.bottom();
+NativeThemeMac::NativeThemeMac() {
+  objc_members_ = std::make_unique<ObjCMembers>();
 
-  ConstrainInsets(rect->width(), min_size.width(), &inset_left, &inset_right);
-  ConstrainInsets(rect->height(), min_size.height(), &inset_top, &inset_bottom);
-  rect->Inset(
-      gfx::Insets::TLBR(inset_top, inset_left, inset_bottom, inset_right));
+  InitializeDarkModeStateAndObserver();
+
+  if (!IsForcedHighContrast()) {
+    SetPreferredContrast(CalculatePreferredContrast());
+    __block auto theme = this;
+    objc_members_->display_accessibility_notification_token =
+        [NSWorkspace.sharedWorkspace.notificationCenter
+            addObserverForName:
+                NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
+                        object:nil
+                         queue:nil
+                    usingBlock:^(NSNotification* notification) {
+                      theme->SetPreferredContrast(CalculatePreferredContrast());
+                      theme->NotifyOnNativeThemeUpdated();
+                    }];
+  }
+
+  if (static bool initialized = false; !initialized) {
+    // Observe caption style changes. Technically these notify the web instance
+    // rather than `this`, but there's a 1:1 relationship between the two, and
+    // putting this code here allows simpler cross-platform
+    // `GetInstanceFor...()` implementations.
+    CFNotificationCenterAddObserver(
+        CFNotificationCenterGetLocalCenter(), nullptr,
+        CaptionSettingsChangedNotificationCallback,
+        kMACaptionAppearanceSettingsChangedNotification, nullptr,
+        CFNotificationSuspensionBehaviorDeliverImmediately);
+    initialized = true;
+  }
+}
+
+NativeThemeMac::~NativeThemeMac() {
+  [NSNotificationCenter.defaultCenter
+      removeObserver:objc_members_->display_accessibility_notification_token];
+}
+
+void NativeThemeMac::PaintMenuItemBackground(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    State state,
+    const gfx::Rect& rect,
+    const MenuItemExtraParams& menu_item) const {
+  switch (state) {
+    case NativeTheme::kNormal:
+    case NativeTheme::kDisabled:
+      // Draw nothing over the regular background.
+      break;
+    case NativeTheme::kHovered:
+      PaintSelectedMenuItem(canvas, color_provider, rect, menu_item);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+void NativeThemeMac::PaintMenuPopupBackground(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    const gfx::Size& size,
+    const MenuBackgroundExtraParams& menu_background) const {
+  DCHECK(color_provider);
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(color_provider->GetColor(kColorMenuBackground));
+  const SkScalar radius = SkIntToScalar(menu_background.corner_radius);
+  SkRect rect = gfx::RectToSkRect(gfx::Rect(size));
+  canvas->drawRoundRect(rect, radius, radius, flags);
+}
+
+void NativeThemeMac::InitializeDarkModeStateAndObserver() {
+  __block auto theme = this;
+  set_preferred_color_scheme(GetPreferredColorScheme());
+  objc_members_->appearance_observer =
+      [[EffectiveAppearanceObserver alloc] initWithHandler:^{
+        theme->set_preferred_color_scheme(GetPreferredColorScheme());
+        theme->NotifyOnNativeThemeUpdated();
+      }];
+}
+
+std::optional<SkColor> NativeThemeMac::GetScrollbarColor(
+    ScrollbarPart part,
+    bool dark_mode,
+    const ScrollbarExtraParams& extra_params) const {
+  // This function is called from the renderer process through the scrollbar
+  // drawing functions. Due to this, it cannot use any of the dynamic NS system
+  // colors.
+  if (part == ScrollbarPart::kThumb) {
+    if (extra_params.thumb_color.has_value()) {
+      return extra_params.thumb_color.value();
+    }
+    if (extra_params.is_overlay) {
+      return dark_mode ? SkColorSetARGB(0x80, 0xFF, 0xFF, 0xFF)
+                       : SkColorSetARGB(0x80, 0, 0, 0);
+    }
+
+    if (dark_mode) {
+      return extra_params.is_hovering ? SkColorSetRGB(0x93, 0x93, 0x93)
+                                      : SkColorSetRGB(0x6B, 0x6B, 0x6B);
+    }
+
+    return extra_params.is_hovering ? SkColorSetARGB(0x80, 0, 0, 0)
+                                    : SkColorSetARGB(0x3A, 0, 0, 0);
+  } else if (part == ScrollbarPart::kTrackInnerBorder) {
+    if (extra_params.track_color.has_value()) {
+      return extra_params.track_color.value();
+    }
+
+    if (extra_params.is_overlay) {
+      return dark_mode ? SkColorSetARGB(0x33, 0xE5, 0xE5, 0xE5)
+                       : SkColorSetARGB(0xF9, 0xDF, 0xDF, 0xDF);
+    }
+
+    return dark_mode ? SkColorSetRGB(0x3D, 0x3D, 0x3D)
+                     : SkColorSetRGB(0xE8, 0xE8, 0xE8);
+  } else if (part == ScrollbarPart::kTrackOuterBorder) {
+    if (extra_params.track_color.has_value()) {
+      return extra_params.track_color.value();
+    }
+    if (extra_params.is_overlay) {
+      return dark_mode ? SkColorSetARGB(0x28, 0xD8, 0xD8, 0xD8)
+                       : SkColorSetARGB(0xC6, 0xE8, 0xE8, 0xE8);
+    }
+
+    return dark_mode ? SkColorSetRGB(0x51, 0x51, 0x51)
+                     : SkColorSetRGB(0xED, 0xED, 0xED);
+  } else if (part == ScrollbarPart::kTrack) {
+    if (extra_params.track_color.has_value()) {
+      return extra_params.track_color.value();
+    }
+  }
+
+  return std::nullopt;
+}
+
+void NativeThemeMac::PaintSelectedMenuItem(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    const gfx::Rect& rect,
+    const MenuItemExtraParams& extra_params) const {
+  DCHECK(color_provider);
+  // Draw the background.
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(color_provider->GetColor(kColorMenuItemBackgroundSelected));
+  const SkScalar radius = SkIntToScalar(extra_params.corner_radius);
+  canvas->drawRoundRect(gfx::RectToSkRect(rect), radius, radius, flags);
+}
+
+void NativeThemeMac::PaintMacScrollbarThumb(
+    cc::PaintCanvas* canvas,
+    Part part,
+    State state,
+    const gfx::Rect& rect,
+    const ScrollbarExtraParams& scroll_thumb,
+    bool dark_mode) const {
+  gfx::Canvas paint_canvas(canvas, 1.0f);
+
+  // Compute the bounds for the rounded rect for the thumb from the bounds of
+  // the thumb.
+  gfx::Rect bounds(rect);
+  {
+    // Shrink the thumb evenly in length and girth to fit within the track.
+    gfx::Insets thumb_insets(GetScrollbarThumbInset(
+        scroll_thumb.is_overlay, scroll_thumb.scale_from_dip));
+
+    // Also shrink the thumb in girth to not touch the border.
+    if (scroll_thumb.orientation == ScrollbarOrientation::kHorizontal) {
+      thumb_insets.set_top(
+          thumb_insets.top() +
+          ScrollbarTrackBorderWidth(scroll_thumb.scale_from_dip));
+      ConstrainedInset(&bounds,
+                       GetThumbMinSize(false, scroll_thumb.scale_from_dip),
+                       thumb_insets);
+    } else {
+      thumb_insets.set_left(
+          thumb_insets.left() +
+          ScrollbarTrackBorderWidth(scroll_thumb.scale_from_dip));
+      ConstrainedInset(&bounds,
+                       GetThumbMinSize(true, scroll_thumb.scale_from_dip),
+                       thumb_insets);
+    }
+  }
+
+  // Draw.
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  SkColor thumb_color =
+      GetScrollbarColor(ScrollbarPart::kThumb, dark_mode, scroll_thumb).value();
+  flags.setColor(thumb_color);
+  const SkScalar radius = std::min(bounds.width(), bounds.height());
+  paint_canvas.DrawRoundRect(bounds, radius, flags);
 }
 
 void NativeThemeMac::PaintMacScrollBarTrackOrCorner(
@@ -347,227 +557,6 @@ void NativeThemeMac::PaintScrollbarTrackOuterBorder(
     }
     paint_canvas.DrawRect(outer_border, flags);
   }
-}
-
-gfx::Size NativeThemeMac::GetThumbMinSize(bool vertical, float scale) {
-  const int kLength = 18 * scale;
-  const int kGirth = 6 * scale;
-
-  return vertical ? gfx::Size(kGirth, kLength) : gfx::Size(kLength, kGirth);
-}
-
-void NativeThemeMac::PaintMacScrollbarThumb(
-    cc::PaintCanvas* canvas,
-    Part part,
-    State state,
-    const gfx::Rect& rect,
-    const ScrollbarExtraParams& scroll_thumb,
-    bool dark_mode) const {
-  gfx::Canvas paint_canvas(canvas, 1.0f);
-
-  // Compute the bounds for the rounded rect for the thumb from the bounds of
-  // the thumb.
-  gfx::Rect bounds(rect);
-  {
-    // Shrink the thumb evenly in length and girth to fit within the track.
-    gfx::Insets thumb_insets(GetScrollbarThumbInset(
-        scroll_thumb.is_overlay, scroll_thumb.scale_from_dip));
-
-    // Also shrink the thumb in girth to not touch the border.
-    if (scroll_thumb.orientation == ScrollbarOrientation::kHorizontal) {
-      thumb_insets.set_top(
-          thumb_insets.top() +
-          ScrollbarTrackBorderWidth(scroll_thumb.scale_from_dip));
-      ConstrainedInset(&bounds,
-                       GetThumbMinSize(false, scroll_thumb.scale_from_dip),
-                       thumb_insets);
-    } else {
-      thumb_insets.set_left(
-          thumb_insets.left() +
-          ScrollbarTrackBorderWidth(scroll_thumb.scale_from_dip));
-      ConstrainedInset(&bounds,
-                       GetThumbMinSize(true, scroll_thumb.scale_from_dip),
-                       thumb_insets);
-    }
-  }
-
-  // Draw.
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  SkColor thumb_color =
-      GetScrollbarColor(ScrollbarPart::kThumb, dark_mode, scroll_thumb).value();
-  flags.setColor(thumb_color);
-  const SkScalar radius = std::min(bounds.width(), bounds.height());
-  paint_canvas.DrawRoundRect(bounds, radius, flags);
-}
-
-std::optional<SkColor> NativeThemeMac::GetScrollbarColor(
-    ScrollbarPart part,
-    bool dark_mode,
-    const ScrollbarExtraParams& extra_params) const {
-  // This function is called from the renderer process through the scrollbar
-  // drawing functions. Due to this, it cannot use any of the dynamic NS system
-  // colors.
-  if (part == ScrollbarPart::kThumb) {
-    if (extra_params.thumb_color.has_value()) {
-      return extra_params.thumb_color.value();
-    }
-    if (extra_params.is_overlay) {
-      return dark_mode ? SkColorSetARGB(0x80, 0xFF, 0xFF, 0xFF)
-                       : SkColorSetARGB(0x80, 0, 0, 0);
-    }
-
-    if (dark_mode) {
-      return extra_params.is_hovering ? SkColorSetRGB(0x93, 0x93, 0x93)
-                                      : SkColorSetRGB(0x6B, 0x6B, 0x6B);
-    }
-
-    return extra_params.is_hovering ? SkColorSetARGB(0x80, 0, 0, 0)
-                                    : SkColorSetARGB(0x3A, 0, 0, 0);
-  } else if (part == ScrollbarPart::kTrackInnerBorder) {
-    if (extra_params.track_color.has_value()) {
-      return extra_params.track_color.value();
-    }
-
-    if (extra_params.is_overlay) {
-      return dark_mode ? SkColorSetARGB(0x33, 0xE5, 0xE5, 0xE5)
-                       : SkColorSetARGB(0xF9, 0xDF, 0xDF, 0xDF);
-    }
-
-    return dark_mode ? SkColorSetRGB(0x3D, 0x3D, 0x3D)
-                     : SkColorSetRGB(0xE8, 0xE8, 0xE8);
-  } else if (part == ScrollbarPart::kTrackOuterBorder) {
-    if (extra_params.track_color.has_value()) {
-      return extra_params.track_color.value();
-    }
-    if (extra_params.is_overlay) {
-      return dark_mode ? SkColorSetARGB(0x28, 0xD8, 0xD8, 0xD8)
-                       : SkColorSetARGB(0xC6, 0xE8, 0xE8, 0xE8);
-    }
-
-    return dark_mode ? SkColorSetRGB(0x51, 0x51, 0x51)
-                     : SkColorSetRGB(0xED, 0xED, 0xED);
-  } else if (part == ScrollbarPart::kTrack) {
-    if (extra_params.track_color.has_value()) {
-      return extra_params.track_color.value();
-    }
-  }
-
-  return std::nullopt;
-}
-
-SkColor NativeThemeMac::GetSystemButtonPressedColor(SkColor base_color) const {
-  // TODO crbug.com/1003612: This should probably be replaced with a color
-  // transform.
-  // Mac has a different "pressed button" styling because it doesn't use
-  // ripples.
-  return color_utils::GetResultingPaintColor(SkColorSetA(SK_ColorBLACK, 0x10),
-                                             base_color);
-}
-
-void NativeThemeMac::PaintMenuPopupBackground(
-    cc::PaintCanvas* canvas,
-    const ColorProvider* color_provider,
-    const gfx::Size& size,
-    const MenuBackgroundExtraParams& menu_background) const {
-  DCHECK(color_provider);
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(color_provider->GetColor(kColorMenuBackground));
-  const SkScalar radius = SkIntToScalar(menu_background.corner_radius);
-  SkRect rect = gfx::RectToSkRect(gfx::Rect(size));
-  canvas->drawRoundRect(rect, radius, radius, flags);
-}
-
-void NativeThemeMac::PaintMenuItemBackground(
-    cc::PaintCanvas* canvas,
-    const ColorProvider* color_provider,
-    State state,
-    const gfx::Rect& rect,
-    const MenuItemExtraParams& menu_item) const {
-  switch (state) {
-    case NativeTheme::kNormal:
-    case NativeTheme::kDisabled:
-      // Draw nothing over the regular background.
-      break;
-    case NativeTheme::kHovered:
-      PaintSelectedMenuItem(canvas, color_provider, rect, menu_item);
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
-                                                void*,
-                                                CFStringRef,
-                                                const void*,
-                                                CFDictionaryRef) {
-  NativeTheme::GetInstanceForWeb()->NotifyOnCaptionStyleUpdated();
-}
-
-NativeThemeMac::NativeThemeMac() {
-  objc_members_ = std::make_unique<ObjCMembers>();
-
-  InitializeDarkModeStateAndObserver();
-
-  if (!IsForcedHighContrast()) {
-    SetPreferredContrast(CalculatePreferredContrast());
-    __block auto theme = this;
-    objc_members_->display_accessibility_notification_token =
-        [NSWorkspace.sharedWorkspace.notificationCenter
-            addObserverForName:
-                NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
-                        object:nil
-                         queue:nil
-                    usingBlock:^(NSNotification* notification) {
-                      theme->SetPreferredContrast(CalculatePreferredContrast());
-                      theme->NotifyOnNativeThemeUpdated();
-                    }];
-  }
-
-  if (static bool initialized = false; !initialized) {
-    // Observe caption style changes. Technically these notify the web instance
-    // rather than `this`, but there's a 1:1 relationship between the two, and
-    // putting this code here allows simpler cross-platform
-    // `GetInstanceFor...()` implementations.
-    CFNotificationCenterAddObserver(
-        CFNotificationCenterGetLocalCenter(), nullptr,
-        CaptionSettingsChangedNotificationCallback,
-        kMACaptionAppearanceSettingsChangedNotification, nullptr,
-        CFNotificationSuspensionBehaviorDeliverImmediately);
-    initialized = true;
-  }
-}
-
-NativeThemeMac::~NativeThemeMac() {
-  [NSNotificationCenter.defaultCenter
-      removeObserver:objc_members_->display_accessibility_notification_token];
-}
-
-void NativeThemeMac::PaintSelectedMenuItem(
-    cc::PaintCanvas* canvas,
-    const ColorProvider* color_provider,
-    const gfx::Rect& rect,
-    const MenuItemExtraParams& extra_params) const {
-  DCHECK(color_provider);
-  // Draw the background.
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(color_provider->GetColor(kColorMenuItemBackgroundSelected));
-  const SkScalar radius = SkIntToScalar(extra_params.corner_radius);
-  canvas->drawRoundRect(gfx::RectToSkRect(rect), radius, radius, flags);
-}
-
-void NativeThemeMac::InitializeDarkModeStateAndObserver() {
-  __block auto theme = this;
-  set_preferred_color_scheme(GetPreferredColorScheme());
-  objc_members_->appearance_observer =
-      [[EffectiveAppearanceObserver alloc] initWithHandler:^{
-        theme->set_preferred_color_scheme(GetPreferredColorScheme());
-        theme->NotifyOnNativeThemeUpdated();
-      }];
 }
 
 }  // namespace ui

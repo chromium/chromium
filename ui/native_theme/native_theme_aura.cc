@@ -59,6 +59,92 @@ BASE_FEATURE(kNewScrollbarArrowRadius, base::FEATURE_ENABLED_BY_DEFAULT);
 ////////////////////////////////////////////////////////////////////////////////
 // NativeThemeAura:
 
+gfx::Size NativeThemeAura::GetPartSize(Part part,
+                                       State state,
+                                       const ExtraParams& extra) const {
+  if (use_overlay_scrollbar()) {
+    constexpr int minimum_length =
+        kOverlayScrollbarMinimumLength + 2 * kOverlayScrollbarStrokeWidth;
+
+    // Aura overlay scrollbars need a slight tweak from the base sizes.
+    switch (part) {
+      case kScrollbarHorizontalThumb:
+        return gfx::Size(minimum_length, scrollbar_width_);
+      case kScrollbarVerticalThumb:
+        return gfx::Size(scrollbar_width_, minimum_length);
+
+      default:
+        // TODO(bokan): We should probably make sure code using overlay
+        // scrollbars isn't asking for part sizes that don't exist.
+        // crbug.com/657159.
+        break;
+    }
+  }
+
+  return NativeThemeBase::GetPartSize(part, state, extra);
+}
+
+gfx::Insets NativeThemeAura::GetScrollbarSolidColorThumbInsets(
+    Part part) const {
+  if (use_overlay_scrollbar()) {
+    return gfx::Insets();
+  }
+  // If there are no scroll buttons then provide some inset so that the thumb
+  // doesn't touch the top of the track.
+  static constexpr int kThumbInset = 2;
+  const int extra_inset = scrollbar_button_length() == 0 ? kThumbInset : 0;
+  if (part == NativeTheme::kScrollbarVerticalThumb) {
+    return gfx::Insets::VH(extra_inset, kThumbInset);
+  }
+  CHECK_EQ(part, NativeTheme::kScrollbarHorizontalThumb);
+  return gfx::Insets::VH(kThumbInset, extra_inset);
+}
+
+bool NativeThemeAura::SupportsNinePatch(Part part) const {
+  if (!use_overlay_scrollbar()) {
+    return false;
+  }
+
+  return part == kScrollbarHorizontalThumb || part == kScrollbarVerticalThumb;
+}
+
+gfx::Size NativeThemeAura::GetNinePatchCanvasSize(Part part) const {
+  DCHECK(SupportsNinePatch(part));
+
+  return gfx::Size(
+      kOverlayScrollbarBorderPatchWidth * 2 + kOverlayScrollbarCenterPatchSize,
+      kOverlayScrollbarBorderPatchWidth * 2 + kOverlayScrollbarCenterPatchSize);
+}
+
+gfx::Rect NativeThemeAura::GetNinePatchAperture(Part part) const {
+  DCHECK(SupportsNinePatch(part));
+
+  return gfx::Rect(
+      kOverlayScrollbarBorderPatchWidth, kOverlayScrollbarBorderPatchWidth,
+      kOverlayScrollbarCenterPatchSize, kOverlayScrollbarCenterPatchSize);
+}
+
+SkColor NativeThemeAura::GetScrollbarThumbColor(
+    const ui::ColorProvider& color_provider,
+    State state,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  // Only non-overlay aura scrollbars use solid color thumb.
+  CHECK(!use_overlay_scrollbar());
+  if (extra_params.thumb_color.has_value()) {
+    return GetContrastingPressedOrHoveredColor(
+               extra_params.thumb_color, extra_params.track_color, state,
+               /*part=*/Part::kScrollbarVerticalThumb)
+        .value();
+  }
+  ColorId color_id = kColorWebNativeControlScrollbarThumb;
+  if (state == NativeTheme::kHovered) {
+    color_id = kColorWebNativeControlScrollbarThumbHovered;
+  } else if (state == NativeTheme::kPressed) {
+    color_id = kColorWebNativeControlScrollbarThumbPressed;
+  }
+  return color_provider.GetColor(color_id);
+}
+
 NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbar) {
   set_use_overlay_scrollbar(use_overlay_scrollbar);
   if (use_overlay_scrollbar) {
@@ -80,6 +166,15 @@ NativeThemeAura::NativeThemeAura(SystemTheme system_theme)
 }
 
 NativeThemeAura::~NativeThemeAura() = default;
+
+float NativeThemeAura::GetContrastRatioForState(State state, Part part) const {
+  CHECK(SupportedPartsForContrastingColor(part));
+  // Calculated by taking the contrast ratio for the base colors of the thumb.
+  static constexpr float kScrollbarThumbHoveredContrastRatio = 1.3f;
+  static constexpr float kScrollbarThumbPressedContrastRatio = 1.8f;
+  return state == kPressed ? kScrollbarThumbPressedContrastRatio
+                           : kScrollbarThumbHoveredContrastRatio;
+}
 
 void NativeThemeAura::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
@@ -201,26 +296,6 @@ void NativeThemeAura::PaintArrowButton(
   PaintArrow(canvas, rect, direction, arrow_color);
 }
 
-void NativeThemeAura::PaintScrollbarTrack(
-    cc::PaintCanvas* canvas,
-    const ColorProvider* color_provider,
-    Part part,
-    State state,
-    const ScrollbarTrackExtraParams& extra_params,
-    const gfx::Rect& rect,
-    bool forced_colors,
-    PreferredContrast contrast) const {
-  // Overlay Scrollbar should never paint a scrollbar track.
-  DCHECK(!use_overlay_scrollbar());
-  cc::PaintFlags flags;
-  const SkColor track_color =
-      extra_params.track_color.has_value()
-          ? extra_params.track_color.value()
-          : GetControlColor(kScrollbarTrack, {}, color_provider);
-  flags.setColor(track_color);
-  canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
-}
-
 void NativeThemeAura::PaintScrollbarThumb(
     cc::PaintCanvas* canvas,
     const ColorProvider* color_provider,
@@ -286,41 +361,24 @@ void NativeThemeAura::PaintScrollbarThumb(
   canvas->drawIRect(gfx::RectToSkIRect(fill_rect), fill_flags);
 }
 
-gfx::Insets NativeThemeAura::GetScrollbarSolidColorThumbInsets(
-    Part part) const {
-  if (use_overlay_scrollbar()) {
-    return gfx::Insets();
-  }
-  // If there are no scroll buttons then provide some inset so that the thumb
-  // doesn't touch the top of the track.
-  static constexpr int kThumbInset = 2;
-  const int extra_inset = scrollbar_button_length() == 0 ? kThumbInset : 0;
-  if (part == NativeTheme::kScrollbarVerticalThumb) {
-    return gfx::Insets::VH(extra_inset, kThumbInset);
-  }
-  CHECK_EQ(part, NativeTheme::kScrollbarHorizontalThumb);
-  return gfx::Insets::VH(kThumbInset, extra_inset);
-}
-
-SkColor NativeThemeAura::GetScrollbarThumbColor(
-    const ui::ColorProvider& color_provider,
+void NativeThemeAura::PaintScrollbarTrack(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    Part part,
     State state,
-    const ScrollbarThumbExtraParams& extra_params) const {
-  // Only non-overlay aura scrollbars use solid color thumb.
-  CHECK(!use_overlay_scrollbar());
-  if (extra_params.thumb_color.has_value()) {
-    return GetContrastingPressedOrHoveredColor(
-               extra_params.thumb_color, extra_params.track_color, state,
-               /*part=*/Part::kScrollbarVerticalThumb)
-        .value();
-  }
-  ColorId color_id = kColorWebNativeControlScrollbarThumb;
-  if (state == NativeTheme::kHovered) {
-    color_id = kColorWebNativeControlScrollbarThumbHovered;
-  } else if (state == NativeTheme::kPressed) {
-    color_id = kColorWebNativeControlScrollbarThumbPressed;
-  }
-  return color_provider.GetColor(color_id);
+    const ScrollbarTrackExtraParams& extra_params,
+    const gfx::Rect& rect,
+    bool forced_colors,
+    PreferredContrast contrast) const {
+  // Overlay Scrollbar should never paint a scrollbar track.
+  DCHECK(!use_overlay_scrollbar());
+  cc::PaintFlags flags;
+  const SkColor track_color =
+      extra_params.track_color.has_value()
+          ? extra_params.track_color.value()
+          : GetControlColor(kScrollbarTrack, {}, color_provider);
+  flags.setColor(track_color);
+  canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
 }
 
 void NativeThemeAura::PaintScrollbarCorner(
@@ -339,40 +397,6 @@ void NativeThemeAura::PaintScrollbarCorner(
   canvas->drawIRect(RectToSkIRect(rect), flags);
 }
 
-gfx::Size NativeThemeAura::GetPartSize(Part part,
-                                       State state,
-                                       const ExtraParams& extra) const {
-  if (use_overlay_scrollbar()) {
-    constexpr int minimum_length =
-        kOverlayScrollbarMinimumLength + 2 * kOverlayScrollbarStrokeWidth;
-
-    // Aura overlay scrollbars need a slight tweak from the base sizes.
-    switch (part) {
-      case kScrollbarHorizontalThumb:
-        return gfx::Size(minimum_length, scrollbar_width_);
-      case kScrollbarVerticalThumb:
-        return gfx::Size(scrollbar_width_, minimum_length);
-
-      default:
-        // TODO(bokan): We should probably make sure code using overlay
-        // scrollbars isn't asking for part sizes that don't exist.
-        // crbug.com/657159.
-        break;
-    }
-  }
-
-  return NativeThemeBase::GetPartSize(part, state, extra);
-}
-
-float NativeThemeAura::GetContrastRatioForState(State state, Part part) const {
-  CHECK(SupportedPartsForContrastingColor(part));
-  // Calculated by taking the contrast ratio for the base colors of the thumb.
-  static constexpr float kScrollbarThumbHoveredContrastRatio = 1.3f;
-  static constexpr float kScrollbarThumbPressedContrastRatio = 1.8f;
-  return state == kPressed ? kScrollbarThumbPressedContrastRatio
-                           : kScrollbarThumbHoveredContrastRatio;
-}
-
 void NativeThemeAura::DrawPartiallyRoundRect(cc::PaintCanvas* canvas,
                                              const gfx::Rect& rect,
                                              const SkScalar upper_left_radius,
@@ -386,30 +410,6 @@ void NativeThemeAura::DrawPartiallyRoundRect(cc::PaintCanvas* canvas,
       lower_right_radius, lower_left_radius, lower_left_radius);
 
   canvas->drawRRect(static_cast<SkRRect>(rounded_rect), flags);
-}
-
-bool NativeThemeAura::SupportsNinePatch(Part part) const {
-  if (!use_overlay_scrollbar()) {
-    return false;
-  }
-
-  return part == kScrollbarHorizontalThumb || part == kScrollbarVerticalThumb;
-}
-
-gfx::Size NativeThemeAura::GetNinePatchCanvasSize(Part part) const {
-  DCHECK(SupportsNinePatch(part));
-
-  return gfx::Size(
-      kOverlayScrollbarBorderPatchWidth * 2 + kOverlayScrollbarCenterPatchSize,
-      kOverlayScrollbarBorderPatchWidth * 2 + kOverlayScrollbarCenterPatchSize);
-}
-
-gfx::Rect NativeThemeAura::GetNinePatchAperture(Part part) const {
-  DCHECK(SupportsNinePatch(part));
-
-  return gfx::Rect(
-      kOverlayScrollbarBorderPatchWidth, kOverlayScrollbarBorderPatchWidth,
-      kOverlayScrollbarCenterPatchSize, kOverlayScrollbarCenterPatchSize);
 }
 
 }  // namespace ui

@@ -21,9 +21,6 @@ class NativeThemeMobile : public NativeThemeBase {
                         const ExtraParams& extra) const override;
 
  protected:
-  friend class NativeTheme;
-  friend class base::NoDestructor<NativeThemeMobile>;
-
   // NativeThemeBase:
   void AdjustCheckboxRadioRectForPadding(SkRect* rect) const override;
   SkColor GetControlColor(ControlColorId color_id,
@@ -31,6 +28,9 @@ class NativeThemeMobile : public NativeThemeBase {
                           const ColorProvider* color_provider) const override;
 
  private:
+  friend class NativeTheme;
+  friend class base::NoDestructor<NativeThemeMobile>;
+
   NativeThemeMobile();
   ~NativeThemeMobile() override;
 };

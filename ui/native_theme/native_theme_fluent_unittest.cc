@@ -106,6 +106,13 @@ class NativeThemeFluentTest : public ::testing::Test,
     return gfx::RectF(0, 0, button_length, track_thickness);
   }
 
+  void PaintScrollbarThumb(cc::PaintCanvas* canvas) const {
+    ColorProvider color_provider;
+    theme_.PaintScrollbarThumb(canvas, &color_provider,
+                               NativeTheme::kScrollbarVerticalThumb,
+                               NativeTheme::kNormal, gfx::Rect(15, 100), {});
+  }
+
   float ScaleFromDIP() const { return GetParam(); }
 
   // Mocks the availability of the font for drawing arrow icons.
@@ -143,14 +150,7 @@ TEST_P(NativeThemeFluentTest, VerifyArrowRectWithArrowIcons) {
 // PaintOp called to draw the thumb.
 TEST_F(NativeThemeFluentTest, PaintThumbRoundedCorners) {
   cc::RecordPaintCanvas canvas;
-  ColorProvider color_provider;
-  constexpr gfx::Rect kRect(15, 100);
-  // `is_web_test` is `false` by default.
-  const NativeTheme::ScrollbarThumbExtraParams extra_params;
-  theme_.PaintScrollbarThumb(&canvas, &color_provider,
-                             /*part=*/NativeTheme::kScrollbarVerticalThumb,
-                             /*state=*/NativeTheme::kNormal, kRect,
-                             extra_params);
+  PaintScrollbarThumb(&canvas);
   EXPECT_EQ(canvas.TotalOpCount(), 1u);
   EXPECT_EQ(canvas.ReleaseAsRecord().GetFirstOp().GetType(),
             cc::PaintOpType::kDrawRRect);

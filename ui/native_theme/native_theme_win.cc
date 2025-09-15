@@ -216,6 +216,20 @@ gfx::Size NativeThemeWin::GetPartSize(Part part,
                                                : gfx::Size();
 }
 
+bool NativeThemeWin::SupportsNinePatch(Part part) const {
+  // The only nine-patch resources currently supported (overlay scrollbar) are
+  // painted by NativeThemeAura on Windows.
+  return false;
+}
+
+gfx::Size NativeThemeWin::GetNinePatchCanvasSize(Part part) const {
+  NOTREACHED() << "NativeThemeWin doesn't support nine-patch resources.";
+}
+
+gfx::Rect NativeThemeWin::GetNinePatchAperture(Part part) const {
+  NOTREACHED() << "NativeThemeWin doesn't support nine-patch resources.";
+}
+
 void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
                            const ui::ColorProvider* color_provider,
                            Part part,
@@ -249,6 +263,85 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
       PaintIndirect(canvas, part, state, rect, extra);
       return;
   }
+}
+
+NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
+    const {
+  if (!forced_colors() || IsForcedHighContrast()) {
+    return NativeTheme::CalculatePreferredContrast();
+  }
+
+  // TODO(sartang@microsoft.com): Update the spec page at
+  // https://www.w3.org/TR/css-color-adjust-1/#forced, it currently does not
+  // mention the relation between forced-colors-active and prefers-contrast.
+  //
+  // According to spec [1], "in addition to forced-colors: active, the user
+  // agent must also match one of prefers-contrast: more or
+  // prefers-contrast: less if it can determine that the forced color
+  // palette chosen by the user has a particularly high or low contrast,
+  // and must make prefers-contrast: custom match otherwise".
+  //
+  // Using WCAG definitions [2], we have decided to match 'more' in Forced
+  // Colors Mode if the contrast ratio between the foreground and background
+  // color is 7:1 or greater.
+  //
+  // "A contrast ratio of 3:1 is the minimum level recommended by [[ISO-9241-3]]
+  // and [[ANSI-HFES-100-1988]] for standard text and vision"[2]. Given this,
+  // we will start by matching to 'less' in Forced Colors Mode if the contrast
+  // ratio between the foreground and background color is 2.5:1 or less.
+  //
+  // These ratios will act as an experimental baseline that we can adjust based
+  // on user feedback.
+  //
+  // [1]
+  // https://drafts.csswg.org/mediaqueries-5/#valdef-media-forced-colors-active
+  // [2] https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced
+  const auto& os_settings_provider = OsSettingsProvider::Get();
+  using enum OsSettingsProvider::ColorId;
+  if (const auto bg_color = os_settings_provider.Color(kWindow),
+      fg_color = os_settings_provider.Color(kWindowText);
+      bg_color.has_value() && fg_color.has_value()) {
+    const float contrast_ratio =
+        color_utils::GetContrastRatio(bg_color.value(), fg_color.value());
+    if (contrast_ratio >= 7) {
+      return PreferredContrast::kMore;
+    }
+    return contrast_ratio <= 2.5 ? PreferredContrast::kLess
+                                 : PreferredContrast::kCustom;
+  }
+  return PreferredContrast::kNoPreference;
+}
+
+NativeTheme::PreferredColorScheme
+NativeThemeWin::CalculatePreferredColorScheme() const {
+  if (IsForcedDarkMode()) {
+    return NativeTheme::PreferredColorScheme::kDark;
+  }
+
+  if (forced_colors()) {
+    // According to the spec, the preferred color scheme for web content is
+    // "dark" if the Canvas color has L<33% and "light" if L>67%, where "L" is
+    // LAB lightness. The Canvas color is mapped to the Window system color.
+    // https://www.w3.org/TR/css-color-adjust-1/#forced
+    if (const auto bg_color = OsSettingsProvider::Get().Color(
+            OsSettingsProvider::ColorId::kWindow)) {
+      const SkColor srgb_legacy = bg_color.value();
+      const auto [r, g, b] = gfx::SRGBLegacyToSRGB(SkColorGetR(srgb_legacy),
+                                                   SkColorGetG(srgb_legacy),
+                                                   SkColorGetB(srgb_legacy));
+      const auto [x, y, z] = gfx::SRGBToXYZD50(r, g, b);
+      const float lab_lightness = std::get<0>(gfx::XYZD50ToLab(x, y, z));
+      if (lab_lightness < 33.0f) {
+        return PreferredColorScheme::kDark;
+      }
+      if (lab_lightness > 67.0f) {
+        return PreferredColorScheme::kLight;
+      }
+    }
+  }
+
+  return in_dark_mode_ ? NativeTheme::PreferredColorScheme::kDark
+                       : NativeTheme::PreferredColorScheme::kLight;
 }
 
 NativeThemeWin::NativeThemeWin() {
@@ -599,99 +692,6 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
     case kMaxPart:
       NOTREACHED();
   }
-}
-
-bool NativeThemeWin::SupportsNinePatch(Part part) const {
-  // The only nine-patch resources currently supported (overlay scrollbar) are
-  // painted by NativeThemeAura on Windows.
-  return false;
-}
-
-gfx::Size NativeThemeWin::GetNinePatchCanvasSize(Part part) const {
-  NOTREACHED() << "NativeThemeWin doesn't support nine-patch resources.";
-}
-
-gfx::Rect NativeThemeWin::GetNinePatchAperture(Part part) const {
-  NOTREACHED() << "NativeThemeWin doesn't support nine-patch resources.";
-}
-
-NativeTheme::PreferredColorScheme
-NativeThemeWin::CalculatePreferredColorScheme() const {
-  if (IsForcedDarkMode()) {
-    return NativeTheme::PreferredColorScheme::kDark;
-  }
-
-  if (forced_colors()) {
-    // According to the spec, the preferred color scheme for web content is
-    // "dark" if the Canvas color has L<33% and "light" if L>67%, where "L" is
-    // LAB lightness. The Canvas color is mapped to the Window system color.
-    // https://www.w3.org/TR/css-color-adjust-1/#forced
-    if (const auto bg_color = OsSettingsProvider::Get().Color(
-            OsSettingsProvider::ColorId::kWindow)) {
-      const SkColor srgb_legacy = bg_color.value();
-      const auto [r, g, b] = gfx::SRGBLegacyToSRGB(SkColorGetR(srgb_legacy),
-                                                   SkColorGetG(srgb_legacy),
-                                                   SkColorGetB(srgb_legacy));
-      const auto [x, y, z] = gfx::SRGBToXYZD50(r, g, b);
-      const float lab_lightness = std::get<0>(gfx::XYZD50ToLab(x, y, z));
-      if (lab_lightness < 33.0f) {
-        return PreferredColorScheme::kDark;
-      }
-      if (lab_lightness > 67.0f) {
-        return PreferredColorScheme::kLight;
-      }
-    }
-  }
-
-  return in_dark_mode_ ? NativeTheme::PreferredColorScheme::kDark
-                       : NativeTheme::PreferredColorScheme::kLight;
-}
-
-NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
-    const {
-  if (!forced_colors() || IsForcedHighContrast()) {
-    return NativeTheme::CalculatePreferredContrast();
-  }
-
-  // TODO(sartang@microsoft.com): Update the spec page at
-  // https://www.w3.org/TR/css-color-adjust-1/#forced, it currently does not
-  // mention the relation between forced-colors-active and prefers-contrast.
-  //
-  // According to spec [1], "in addition to forced-colors: active, the user
-  // agent must also match one of prefers-contrast: more or
-  // prefers-contrast: less if it can determine that the forced color
-  // palette chosen by the user has a particularly high or low contrast,
-  // and must make prefers-contrast: custom match otherwise".
-  //
-  // Using WCAG definitions [2], we have decided to match 'more' in Forced
-  // Colors Mode if the contrast ratio between the foreground and background
-  // color is 7:1 or greater.
-  //
-  // "A contrast ratio of 3:1 is the minimum level recommended by [[ISO-9241-3]]
-  // and [[ANSI-HFES-100-1988]] for standard text and vision"[2]. Given this,
-  // we will start by matching to 'less' in Forced Colors Mode if the contrast
-  // ratio between the foreground and background color is 2.5:1 or less.
-  //
-  // These ratios will act as an experimental baseline that we can adjust based
-  // on user feedback.
-  //
-  // [1]
-  // https://drafts.csswg.org/mediaqueries-5/#valdef-media-forced-colors-active
-  // [2] https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced
-  const auto& os_settings_provider = OsSettingsProvider::Get();
-  using enum OsSettingsProvider::ColorId;
-  if (const auto bg_color = os_settings_provider.Color(kWindow),
-      fg_color = os_settings_provider.Color(kWindowText);
-      bg_color.has_value() && fg_color.has_value()) {
-    const float contrast_ratio =
-        color_utils::GetContrastRatio(bg_color.value(), fg_color.value());
-    if (contrast_ratio >= 7) {
-      return PreferredContrast::kMore;
-    }
-    return contrast_ratio <= 2.5 ? PreferredContrast::kLess
-                                 : PreferredContrast::kCustom;
-  }
-  return PreferredContrast::kNoPreference;
 }
 
 void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,

@@ -13,20 +13,30 @@ namespace ui {
 
 // Aura implementation of native theme support.
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
- protected:
-  friend class NativeTheme;
-  friend class NativeThemeAuraTest;
-  friend class base::NoDestructor<NativeThemeAura>;
-
-  explicit NativeThemeAura(bool use_overlay_scrollbar = false);
-  explicit NativeThemeAura(SystemTheme system_theme);
-
+ public:
   NativeThemeAura(const NativeThemeAura&) = delete;
   NativeThemeAura& operator=(const NativeThemeAura&) = delete;
 
+  // NativeThemeBase:
+  gfx::Size GetPartSize(Part part,
+                        State state,
+                        const ExtraParams& extra) const override;
+  gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
+  bool SupportsNinePatch(Part part) const override;
+  gfx::Size GetNinePatchCanvasSize(Part part) const override;
+  gfx::Rect GetNinePatchAperture(Part part) const override;
+  SkColor GetScrollbarThumbColor(
+      const ui::ColorProvider& color_provider,
+      State state,
+      const ScrollbarThumbExtraParams& extra) const override;
+
+ protected:
+  explicit NativeThemeAura(bool use_overlay_scrollbar = false);
+  explicit NativeThemeAura(SystemTheme system_theme);
   ~NativeThemeAura() override;
 
   // NativeThemeBase:
+  float GetContrastRatioForState(State state, Part part) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
@@ -42,6 +52,13 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
       bool dark_mode,
       PreferredContrast contrast,
       const ScrollbarArrowExtraParams& extra_params) const override;
+  void PaintScrollbarThumb(
+      cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
+      Part part,
+      State state,
+      const gfx::Rect& rect,
+      const ScrollbarThumbExtraParams& extra_params) const override;
   void PaintScrollbarTrack(cc::PaintCanvas* canvas,
                            const ColorProvider* color_provider,
                            Part part,
@@ -50,33 +67,18 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
                            const gfx::Rect& rect,
                            bool forced_colors,
                            PreferredContrast contrast) const override;
-  void PaintScrollbarThumb(
-      cc::PaintCanvas* canvas,
-      const ColorProvider* color_provider,
-      Part part,
-      State state,
-      const gfx::Rect& rect,
-      const ScrollbarThumbExtraParams& extra_params) const override;
-  gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
-  SkColor GetScrollbarThumbColor(
-      const ui::ColorProvider& color_provider,
-      State state,
-      const ScrollbarThumbExtraParams& extra) const override;
   void PaintScrollbarCorner(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
       State state,
       const gfx::Rect& rect,
       const ScrollbarTrackExtraParams& extra_params) const override;
-  gfx::Size GetPartSize(Part part,
-                        State state,
-                        const ExtraParams& extra) const override;
-  float GetContrastRatioForState(State state, Part part) const override;
-  bool SupportsNinePatch(Part part) const override;
-  gfx::Size GetNinePatchCanvasSize(Part part) const override;
-  gfx::Rect GetNinePatchAperture(Part part) const override;
 
  private:
+  friend class NativeTheme;
+  friend class NativeThemeAuraTest;
+  friend class base::NoDestructor<NativeThemeAura>;
+
   static void DrawPartiallyRoundRect(cc::PaintCanvas* canvas,
                                      const gfx::Rect& rect,
                                      const SkScalar upper_left_radius,

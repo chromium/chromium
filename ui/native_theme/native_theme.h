@@ -356,13 +356,42 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   NativeTheme(const NativeTheme&) = delete;
   NativeTheme& operator=(const NativeTheme&) = delete;
 
+  // Returns shared instances of the default native theme for native UI or the
+  // web, respectively.
+  static NativeTheme* GetInstanceForNativeUi();
+  static NativeTheme* GetInstanceForWeb();
+
+  static float AdjustBorderWidthByZoom(float border_width, float zoom_level);
+  static float AdjustBorderRadiusByZoom(Part part,
+                                        float border_radius,
+                                        float zoom_level);
+
   // Return the size of the part.
   virtual gfx::Size GetPartSize(Part part,
                                 State state,
                                 const ExtraParams& extra) const = 0;
+
   virtual int GetPaintedScrollbarTrackInset() const;
 
   virtual gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const;
+
+  virtual float GetBorderRadiusForPart(Part part,
+                                       float width,
+                                       float height) const;
+
+  // Returns whether the theme uses a nine-patch resource for the given part.
+  // If true, calling code should always paint into a canvas the size of which
+  // can be gotten from GetNinePatchCanvasSize.
+  virtual bool SupportsNinePatch(Part part) const = 0;
+
+  // If the part paints into a nine-patch resource, the size of the canvas
+  // which should be painted into.
+  virtual gfx::Size GetNinePatchCanvasSize(Part part) const = 0;
+
+  // If the part paints into a nine-patch resource, the rect in the canvas
+  // which defines the center tile. This is the tile that should be resized out
+  // when the part is resized.
+  virtual gfx::Rect GetNinePatchAperture(Part part) const = 0;
 
   // Called if the theme uses solid color for scrollbar thumb.
   virtual SkColor GetScrollbarThumbColor(
@@ -370,9 +399,28 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
       State state,
       const ScrollbarThumbExtraParams& extra_params) const;
 
-  virtual float GetBorderRadiusForPart(Part part,
-                                       float width,
-                                       float height) const;
+  // On certain platforms, currently only Mac, there is a unique visual for
+  // pressed states.
+  virtual SkColor GetSystemButtonPressedColor(SkColor base_color) const;
+
+  // Registers this instance as an observer of `OsSettingsProvider` changes.
+  // This should not be called on an instance marked as the "associated web
+  // instance" of another theme, since in that case the other theme should
+  // notify about setting changes as necessary.
+  void BeginObservingOsSettingChanges();
+
+  // Add or remove observers to be notified when the native theme changes.
+  void AddObserver(NativeThemeObserver* observer);
+  void RemoveObserver(NativeThemeObserver* observer);
+
+  // Notify observers of native theme changes.
+  virtual void NotifyOnNativeThemeUpdated();
+
+  // Notify observers of caption style changes.
+  virtual void NotifyOnCaptionStyleUpdated();
+
+  // Notify observers of preferred contrast changes.
+  virtual void NotifyOnPreferredContrastUpdated();
 
   // Paint the part to the canvas.
   virtual void Paint(cc::PaintCanvas* canvas,
@@ -399,20 +447,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
           color_scheme, contrast, std::nullopt);
   }
 
-  // Returns whether the theme uses a nine-patch resource for the given part.
-  // If true, calling code should always paint into a canvas the size of which
-  // can be gotten from GetNinePatchCanvasSize.
-  virtual bool SupportsNinePatch(Part part) const = 0;
-
-  // If the part paints into a nine-patch resource, the size of the canvas
-  // which should be painted into.
-  virtual gfx::Size GetNinePatchCanvasSize(Part part) const = 0;
-
-  // If the part paints into a nine-patch resource, the rect in the canvas
-  // which defines the center tile. This is the tile that should be resized out
-  // when the part is resized.
-  virtual gfx::Rect GetNinePatchAperture(Part part) const = 0;
-
   // Returns the key corresponding to this native theme object.
   // Use `use_custom_frame` == true when Chromium renders the titlebar.
   // False when the window manager renders the titlebar (currently GTK only).
@@ -420,84 +454,52 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
       scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
       bool use_custom_frame = true) const;
 
-  // Returns shared instances of the default native theme for native UI or the
-  // web, respectively.
-  static NativeTheme* GetInstanceForNativeUi();
-  static NativeTheme* GetInstanceForWeb();
+  ui::SystemTheme system_theme() const { return system_theme_; }
 
-  // Registers this instance as an observer of `OsSettingsProvider` changes.
-  // This should not be called on an instance marked as the "associated web
-  // instance" of another theme, since in that case the other theme should
-  // notify about setting changes as necessary.
-  void BeginObservingOsSettingChanges();
-
-  // Add or remove observers to be notified when the native theme changes.
-  void AddObserver(NativeThemeObserver* observer);
-  void RemoveObserver(NativeThemeObserver* observer);
-
-  // Notify observers of native theme changes.
-  virtual void NotifyOnNativeThemeUpdated();
-
-  // Notify observers of caption style changes.
-  virtual void NotifyOnCaptionStyleUpdated();
-
-  // Notify observers of preferred contrast changes.
-  virtual void NotifyOnPreferredContrastUpdated();
+  bool use_overlay_scrollbar() const { return use_overlay_scrollbars_; }
+  void set_use_overlay_scrollbar(bool use_overlay_scrollbar) {
+    use_overlay_scrollbars_ = use_overlay_scrollbar;
+  }
 
   // Returns whether we are in forced colors mode, controlled by system
   // accessibility settings. Currently, Windows high contrast is the only system
   // setting that triggers forced colors mode.
   bool forced_colors() const { return forced_colors_; }
+  void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
 
   // Returns the user's current page colors.
   PageColors page_colors() const { return page_colors_; }
+  void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
 
   // Returns OS-level preferred color scheme, or `kNoPreference` if not
   // set/applicable.
   PreferredColorScheme preferred_color_scheme() const {
     return preferred_color_scheme_;
   }
+  void set_preferred_color_scheme(PreferredColorScheme preferred_color_scheme) {
+    preferred_color_scheme_ = preferred_color_scheme;
+  }
 
   // Returns the OS-level user preferred contrast.
   PreferredContrast preferred_contrast() const { return preferred_contrast_; }
+  void SetPreferredContrast(PreferredContrast preferred_contrast);
 
   // Returns the OS-level user preferred transparency.
   bool prefers_reduced_transparency() const {
     return prefers_reduced_transparency_;
+  }
+  void set_prefers_reduced_transparency(bool prefers_reduced_transparency) {
+    prefers_reduced_transparency_ = prefers_reduced_transparency;
   }
 
   // Returns the OS-level inverted colors setting. (Classic invert NOT smart
   // invert)
   bool inverted_colors() const { return inverted_colors_; }
 
-  void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
-  void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
-  void set_preferred_color_scheme(PreferredColorScheme preferred_color_scheme) {
-    preferred_color_scheme_ = preferred_color_scheme;
-  }
-  void set_prefers_reduced_transparency(bool prefers_reduced_transparency) {
-    prefers_reduced_transparency_ = prefers_reduced_transparency;
-  }
-  void SetPreferredContrast(PreferredContrast preferred_contrast);
-  ui::SystemTheme system_theme() const { return system_theme_; }
-
   // Set the user_color for ColorProviderKey.
+  std::optional<SkColor> user_color() const { return user_color_; }
   void set_user_color(std::optional<SkColor> user_color) {
     user_color_ = user_color;
-  }
-  std::optional<SkColor> user_color() const { return user_color_; }
-
-  void set_scheme_variant(
-      std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant) {
-    scheme_variant_ = scheme_variant;
-  }
-  std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant() const {
-    return scheme_variant_;
-  }
-
-  base::TimeDelta caret_blink_interval() const { return caret_blink_interval_; }
-  void set_caret_blink_interval(base::TimeDelta caret_blink_interval) {
-    caret_blink_interval_ = caret_blink_interval;
   }
 
   void set_should_use_system_accent_color(bool should_use_system_accent_color) {
@@ -507,23 +509,18 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     return should_use_system_accent_color_;
   }
 
-  bool use_overlay_scrollbar() const { return use_overlay_scrollbars_; }
-  void set_use_overlay_scrollbar(bool use_overlay_scrollbar) {
-    use_overlay_scrollbars_ = use_overlay_scrollbar;
+  std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant() const {
+    return scheme_variant_;
+  }
+  void set_scheme_variant(
+      std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant) {
+    scheme_variant_ = scheme_variant;
   }
 
-  // On certain platforms, currently only Mac, there is a unique visual for
-  // pressed states.
-  virtual SkColor GetSystemButtonPressedColor(SkColor base_color) const;
-
-  static float AdjustBorderWidthByZoom(float border_width, float zoom_level);
-
-  static float AdjustBorderRadiusByZoom(Part part,
-                                        float border_width,
-                                        float zoom_level);
-
-  // Whether high contrast is forced via command-line flag.
-  static bool IsForcedHighContrast();
+  base::TimeDelta caret_blink_interval() const { return caret_blink_interval_; }
+  void set_caret_blink_interval(base::TimeDelta caret_blink_interval) {
+    caret_blink_interval_ = caret_blink_interval;
+  }
 
   // Whether dark mode is forced via command-line flag.
   static bool IsForcedDarkMode();
@@ -533,6 +530,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
       ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
   virtual ~NativeTheme();
 
+  // Whether high contrast is forced via command-line flag.
+  static bool IsForcedHighContrast();
+
   // Common implementation used by several subclasses.
   virtual void PaintMenuItemBackground(
       cc::PaintCanvas* canvas,
@@ -540,9 +540,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
       State state,
       const gfx::Rect& rect,
       const MenuItemExtraParams& extra_params) const;
-
-  // Calculates and returns the current user preferred contrast.
-  virtual PreferredContrast CalculatePreferredContrast() const;
 
   // Called when toolkit settings change. Updates affected variables. If
   // anything changes or `force_notify` is set, notifies observers.
@@ -555,6 +552,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Updates the settings of any `associated_web_instance_` to match this
   // instance's current settings. Returns whether anything was changed.
   bool UpdateWebInstance() const;
+
+  // Calculates and returns the current user preferred contrast.
+  virtual PreferredContrast CalculatePreferredContrast() const;
 
  private:
   // Updates web instance and notifies observers something has changed.
@@ -570,27 +570,18 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Observers to notify when the native theme changes.
   base::ObserverList<NativeThemeObserver> native_theme_observers_;
 
-  // User's primary color. Included in the `ColorProvider::Key` as the basis of
-  // all generated colors.
-  std::optional<SkColor> user_color_;
-
-  // System color scheme variant. Used in `ColorProvider::Key` to specify the
-  // transforms of `user_color_` which generate colors.
-  std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant_;
-
-  // Determines whether generated colors should express the system's accent
-  // color if present.
-  bool should_use_system_accent_color_ = true;
-
   const ui::SystemTheme system_theme_;
+  bool use_overlay_scrollbars_ = false;
   bool forced_colors_ = false;
   PageColors page_colors_ = PageColors::kOff;
-  bool prefers_reduced_transparency_ = false;
-  bool inverted_colors_ = false;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
+  bool prefers_reduced_transparency_ = false;
+  bool inverted_colors_ = false;
+  std::optional<SkColor> user_color_;
+  std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant_;
+  bool should_use_system_accent_color_ = true;
   base::TimeDelta caret_blink_interval_;
-  bool use_overlay_scrollbars_ = false;
 
   raw_ptr<NativeTheme> associated_web_instance_ = nullptr;
 

@@ -25,6 +25,47 @@ namespace ui {
 
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
  public:
+  NativeThemeWin(const NativeThemeWin&) = delete;
+  NativeThemeWin& operator=(const NativeThemeWin&) = delete;
+
+  // Closes cached theme handles so we can unload the DLL or update our UI
+  // for a theme change.
+  static void CloseHandles();
+
+  // NativeTheme implementation:
+  gfx::Size GetPartSize(Part part,
+                        State state,
+                        const ExtraParams& extra) const override;
+  bool SupportsNinePatch(Part part) const override;
+  gfx::Size GetNinePatchCanvasSize(Part part) const override;
+  gfx::Rect GetNinePatchAperture(Part part) const override;
+  void Paint(cc::PaintCanvas* canvas,
+             const ui::ColorProvider* color_provider,
+             Part part,
+             State state,
+             const gfx::Rect& rect,
+             const ExtraParams& extra,
+             bool forced_colors,
+             PreferredColorScheme color_scheme,
+             PreferredContrast contrast,
+             const std::optional<SkColor>& accent_color) const override;
+  PreferredContrast CalculatePreferredContrast() const override;
+
+  PreferredColorScheme CalculatePreferredColorScheme() const;
+  void set_in_dark_mode_for_testing(bool in_dark_mode) {
+    in_dark_mode_ = in_dark_mode;
+  }
+
+ protected:
+  NativeThemeWin();
+  ~NativeThemeWin() override;
+
+  void OnToolkitSettingsChanged(bool force_notify) override;
+
+ private:
+  friend class NativeTheme;
+  friend class base::NoDestructor<NativeThemeWin>;
+
   enum ThemeName {
     BUTTON,
     LIST,
@@ -41,48 +82,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
     LAST
   };
 
-  NativeThemeWin(const NativeThemeWin&) = delete;
-  NativeThemeWin& operator=(const NativeThemeWin&) = delete;
-
-  // Closes cached theme handles so we can unload the DLL or update our UI
-  // for a theme change.
-  static void CloseHandles();
-
-  // NativeTheme implementation:
-  gfx::Size GetPartSize(Part part,
-                        State state,
-                        const ExtraParams& extra) const override;
-  void Paint(cc::PaintCanvas* canvas,
-             const ui::ColorProvider* color_provider,
-             Part part,
-             State state,
-             const gfx::Rect& rect,
-             const ExtraParams& extra,
-             bool forced_colors,
-             PreferredColorScheme color_scheme,
-             PreferredContrast contrast,
-             const std::optional<SkColor>& accent_color) const override;
-  bool SupportsNinePatch(Part part) const override;
-  gfx::Size GetNinePatchCanvasSize(Part part) const override;
-  gfx::Rect GetNinePatchAperture(Part part) const override;
-
-  PreferredContrast CalculatePreferredContrast() const override;
-
- protected:
-  friend class NativeTheme;
-  friend class base::NoDestructor<NativeThemeWin>;
-
-  NativeThemeWin();
-  ~NativeThemeWin() override;
-
-  void OnToolkitSettingsChanged(bool force_notify) override;
-
-  PreferredColorScheme CalculatePreferredColorScheme() const;
-  void set_in_dark_mode_for_testing(bool in_dark_mode) {
-    in_dark_mode_ = in_dark_mode;
-  }
-
- private:
   bool IsUsingHighContrastThemeInternal() const;
   void CloseHandlesInternal();
 

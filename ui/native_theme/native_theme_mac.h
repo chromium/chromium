@@ -31,11 +31,13 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
   NativeThemeMac(const NativeThemeMac&) = delete;
   NativeThemeMac& operator=(const NativeThemeMac&) = delete;
 
-  // NativeTheme:
-  SkColor GetSystemButtonPressedColor(SkColor base_color) const override;
-  PreferredContrast CalculatePreferredContrast() const override;
+  // Returns the minimum size for the thumb. We will not inset the thumb if it
+  // will be smaller than this size. The scale parameter should be the device
+  // scale factor.
+  static gfx::Size GetThumbMinSize(bool vertical, float scale);
 
   // NativeThemeBase:
+  SkColor GetSystemButtonPressedColor(SkColor base_color) const override;
   void Paint(cc::PaintCanvas* canvas,
              const ColorProvider* color_provider,
              Part part,
@@ -46,84 +48,28 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
              PreferredColorScheme color_scheme,
              PreferredContrast contrast,
              const std::optional<SkColor>& accent_color) const override;
-  void PaintMenuPopupBackground(
-      cc::PaintCanvas* canvas,
-      const ColorProvider* color_provider,
-      const gfx::Size& size,
-      const MenuBackgroundExtraParams& menu_background) const override;
+  PreferredContrast CalculatePreferredContrast() const override;
+
+ protected:
+  NativeThemeMac();
+  ~NativeThemeMac() override;
+
+  // NativeThemeBase:
   void PaintMenuItemBackground(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
       State state,
       const gfx::Rect& rect,
       const MenuItemExtraParams& menu_item) const override;
-  void PaintMacScrollbarThumb(cc::PaintCanvas* canvas,
-                              Part part,
-                              State state,
-                              const gfx::Rect& rect,
-                              const ScrollbarExtraParams& scroll_thumb,
-                              bool dark_mode) const;
-  // Paint the track. |track_bounds| is the bounds for the track.
-  void PaintMacScrollBarTrackOrCorner(cc::PaintCanvas* canvas,
-                                      Part part,
-                                      State state,
-                                      const ScrollbarExtraParams& extra_params,
-                                      const gfx::Rect& rect,
-                                      bool dark_mode,
-                                      bool is_corner) const;
-
-  // Paints the styled button shape used for default controls on Mac. The basic
-  // style is used for dialog buttons, comboboxes, and tabbed pane tabs.
-  // Depending on the control part being drawn, the left or the right side can
-  // be given rounded corners.
-  static void PaintStyledGradientButton(cc::PaintCanvas* canvas,
-                                        const gfx::Rect& bounds,
-                                        ButtonBackgroundType type,
-                                        bool round_left,
-                                        bool round_right,
-                                        bool focus);
-
-  // Returns the minimum size for the thumb. We will not inset the thumb if it
-  // will be smaller than this size. The scale parameter should be the device
-  // scale factor.
-  static gfx::Size GetThumbMinSize(bool vertical, float scale);
-
- protected:
-  friend class NativeTheme;
-  friend class base::NoDestructor<NativeThemeMac>;
-
-  NativeThemeMac();
-  ~NativeThemeMac() override;
+  void PaintMenuPopupBackground(
+      cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
+      const gfx::Size& size,
+      const MenuBackgroundExtraParams& menu_background) const override;
 
  private:
-  // Because this header is #included from C++ source, we can't use Obj-C here.
-  // Instead the Obj-C members are defined entirely in the .mm.
-  struct ObjCMembers;
-
-  // Paint the selected menu item background, and a border for emphasis when in
-  // high contrast.
-  void PaintSelectedMenuItem(cc::PaintCanvas* canvas,
-                             const ColorProvider* color_provider,
-                             const gfx::Rect& rect,
-                             const MenuItemExtraParams& extra_params) const;
-
-  void PaintScrollBarTrackGradient(cc::PaintCanvas* canvas,
-                                   const gfx::Rect& rect,
-                                   const ScrollbarExtraParams& extra_params,
-                                   bool is_corner,
-                                   bool dark_mode) const;
-  void PaintScrollbarTrackInnerBorder(cc::PaintCanvas* canvas,
-                                      const gfx::Rect& rect,
-                                      const ScrollbarExtraParams& extra_params,
-                                      bool is_corner,
-                                      bool dark_mode) const;
-  void PaintScrollbarTrackOuterBorder(cc::PaintCanvas* canvas,
-                                      const gfx::Rect& rect,
-                                      const ScrollbarExtraParams& extra_params,
-                                      bool is_corner,
-                                      bool dark_mode) const;
-
-  void InitializeDarkModeStateAndObserver();
+  friend class NativeTheme;
+  friend class base::NoDestructor<NativeThemeMac>;
 
   enum ScrollbarPart {
     kThumb,
@@ -131,6 +77,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
     kTrackInnerBorder,
     kTrackOuterBorder,
   };
+
+  // Because this header is #included from C++ source, we can't use Obj-C here.
+  // Instead the Obj-C members are defined entirely in the .mm.
+  struct ObjCMembers;
+
+  void InitializeDarkModeStateAndObserver();
 
   std::optional<SkColor> GetScrollbarColor(
       ScrollbarPart part,
@@ -147,6 +99,45 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
   int GetScrollbarThumbInset(bool is_overlay, float scale_from_dip) const {
     return scale_from_dip * (is_overlay ? 2.0f : 3.0f);
   }
+
+  // Paint the selected menu item background, and a border for emphasis when in
+  // high contrast.
+  void PaintSelectedMenuItem(cc::PaintCanvas* canvas,
+                             const ColorProvider* color_provider,
+                             const gfx::Rect& rect,
+                             const MenuItemExtraParams& extra_params) const;
+
+  void PaintMacScrollbarThumb(cc::PaintCanvas* canvas,
+                              Part part,
+                              State state,
+                              const gfx::Rect& rect,
+                              const ScrollbarExtraParams& scroll_thumb,
+                              bool dark_mode) const;
+
+  // Paint the track. |track_bounds| is the bounds for the track.
+  void PaintMacScrollBarTrackOrCorner(cc::PaintCanvas* canvas,
+                                      Part part,
+                                      State state,
+                                      const ScrollbarExtraParams& extra_params,
+                                      const gfx::Rect& rect,
+                                      bool dark_mode,
+                                      bool is_corner) const;
+
+  void PaintScrollBarTrackGradient(cc::PaintCanvas* canvas,
+                                   const gfx::Rect& rect,
+                                   const ScrollbarExtraParams& extra_params,
+                                   bool is_corner,
+                                   bool dark_mode) const;
+  void PaintScrollbarTrackInnerBorder(cc::PaintCanvas* canvas,
+                                      const gfx::Rect& rect,
+                                      const ScrollbarExtraParams& extra_params,
+                                      bool is_corner,
+                                      bool dark_mode) const;
+  void PaintScrollbarTrackOuterBorder(cc::PaintCanvas* canvas,
+                                      const gfx::Rect& rect,
+                                      const ScrollbarExtraParams& extra_params,
+                                      bool is_corner,
+                                      bool dark_mode) const;
 
   std::unique_ptr<ObjCMembers> objc_members_;
 };

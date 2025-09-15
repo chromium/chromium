@@ -39,12 +39,82 @@
 
 namespace ui {
 
+gfx::Size NativeThemeFluent::GetPartSize(Part part,
+                                         State state,
+                                         const ExtraParams& extra) const {
+  switch (part) {
+    case kScrollbarHorizontalThumb:
+      return gfx::Size(kFluentScrollbarMinimalThumbLength,
+                       kFluentScrollbarThumbThickness);
+    case kScrollbarVerticalThumb:
+      return gfx::Size(kFluentScrollbarThumbThickness,
+                       kFluentScrollbarMinimalThumbLength);
+    case kScrollbarHorizontalTrack:
+      return gfx::Size(0, scrollbar_width_);
+    case kScrollbarVerticalTrack:
+      return gfx::Size(scrollbar_width_, 0);
+    case kScrollbarUpArrow:
+    case kScrollbarDownArrow:
+      return gfx::Size(scrollbar_width_, kFluentScrollbarButtonSideLength);
+    case kScrollbarLeftArrow:
+    case kScrollbarRightArrow:
+      return gfx::Size(kFluentScrollbarButtonSideLength, scrollbar_width_);
+    default:
+      break;
+  }
+
+  return NativeThemeBase::GetPartSize(part, state, extra);
+}
+
+int NativeThemeFluent::GetPaintedScrollbarTrackInset() const {
+  return kFluentPaintedScrollbarTrackInset;
+}
+
+gfx::Insets NativeThemeFluent::GetScrollbarSolidColorThumbInsets(
+    Part part) const {
+  // TODO(crbug.com/40213017): We should probably move the thumb rect insetting
+  // logic from blink::ScrollbarThemeFluent::ThumbRect() to here, to make sure
+  // the web UI and the native UI use the same thumb insetting logic.
+  return gfx::Insets();
+}
+
+SkColor NativeThemeFluent::GetScrollbarThumbColor(
+    const ui::ColorProvider& color_provider,
+    State state,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  auto get_color_id = [&] {
+    if (state == NativeTheme::kPressed) {
+      return kColorWebNativeControlScrollbarThumbPressed;
+    } else if (state == NativeTheme::kHovered) {
+      return kColorWebNativeControlScrollbarThumbHovered;
+    } else if (extra_params.is_thumb_minimal_mode) {
+      return kColorWebNativeControlScrollbarThumbOverlayMinimalMode;
+    }
+    return kColorWebNativeControlScrollbarThumb;
+  };
+  return GetContrastingPressedOrHoveredColor(
+             extra_params.thumb_color,
+             extra_params.track_color.value_or(
+                 color_provider.GetColor(kColorWebNativeControlScrollbarTrack)),
+             state, /*part=*/Part::kScrollbarVerticalThumb)
+      .value_or(color_provider.GetColor(get_color_id()));
+}
+
 NativeThemeFluent::NativeThemeFluent() {
   set_use_overlay_scrollbar(IsFluentOverlayScrollbarEnabled());
   scrollbar_width_ = kScrollbarThickness;
 }
 
 NativeThemeFluent::~NativeThemeFluent() = default;
+
+float NativeThemeFluent::GetContrastRatioForState(State state,
+                                                  Part part) const {
+  CHECK(SupportedPartsForContrastingColor(part));
+  // Calculated by taking the contrast ratio between the foreground and
+  // background colors.
+  static constexpr float kFluentScrollbarForegroundContrastRatio = 1.8f;
+  return kFluentScrollbarForegroundContrastRatio;
+}
 
 void NativeThemeFluent::PaintArrowButton(
     cc::PaintCanvas* canvas,
@@ -59,6 +129,31 @@ void NativeThemeFluent::PaintArrowButton(
   PaintButton(canvas, color_provider, rect, direction, forced_colors, contrast,
               extra_params);
   PaintArrow(canvas, color_provider, rect, direction, state, extra_params);
+}
+
+void NativeThemeFluent::PaintScrollbarThumb(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    Part part,
+    State state,
+    const gfx::Rect& rect,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  DCHECK_NE(state, NativeTheme::kDisabled);
+
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(GetScrollbarThumbColor(*color_provider, state, extra_params));
+  const SkRect sk_rect = gfx::RectToSkRect(rect);
+  if (extra_params.is_web_test) {
+    // Web tests draw the thumb as a square to avoid issues that come with the
+    // differences in calculation of anti-aliasing and rounding in different
+    // platforms.
+    canvas->drawRect(sk_rect, flags);
+  } else {
+    canvas->drawRRect(SkRRect::MakeRectXY(sk_rect, kFluentScrollbarPartsRadius,
+                                          kFluentScrollbarPartsRadius),
+                      flags);
+  }
 }
 
 void NativeThemeFluent::PaintScrollbarTrack(
@@ -111,61 +206,6 @@ void NativeThemeFluent::PaintScrollbarTrack(
   canvas->drawIRect(gfx::RectToSkIRect(track_fill_rect), flags);
 }
 
-void NativeThemeFluent::PaintScrollbarThumb(
-    cc::PaintCanvas* canvas,
-    const ColorProvider* color_provider,
-    Part part,
-    State state,
-    const gfx::Rect& rect,
-    const ScrollbarThumbExtraParams& extra_params) const {
-  DCHECK_NE(state, NativeTheme::kDisabled);
-
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(GetScrollbarThumbColor(*color_provider, state, extra_params));
-  const SkRect sk_rect = gfx::RectToSkRect(rect);
-  if (extra_params.is_web_test) {
-    // Web tests draw the thumb as a square to avoid issues that come with the
-    // differences in calculation of anti-aliasing and rounding in different
-    // platforms.
-    canvas->drawRect(sk_rect, flags);
-  } else {
-    canvas->drawRRect(SkRRect::MakeRectXY(sk_rect, kFluentScrollbarPartsRadius,
-                                          kFluentScrollbarPartsRadius),
-                      flags);
-  }
-}
-
-gfx::Insets NativeThemeFluent::GetScrollbarSolidColorThumbInsets(
-    Part part) const {
-  // TODO(crbug.com/40213017): We should probably move the thumb rect insetting
-  // logic from blink::ScrollbarThemeFluent::ThumbRect() to here, to make sure
-  // the web UI and the native UI use the same thumb insetting logic.
-  return gfx::Insets();
-}
-
-SkColor NativeThemeFluent::GetScrollbarThumbColor(
-    const ui::ColorProvider& color_provider,
-    State state,
-    const ScrollbarThumbExtraParams& extra_params) const {
-  auto get_color_id = [&] {
-    if (state == NativeTheme::kPressed) {
-      return kColorWebNativeControlScrollbarThumbPressed;
-    } else if (state == NativeTheme::kHovered) {
-      return kColorWebNativeControlScrollbarThumbHovered;
-    } else if (extra_params.is_thumb_minimal_mode) {
-      return kColorWebNativeControlScrollbarThumbOverlayMinimalMode;
-    }
-    return kColorWebNativeControlScrollbarThumb;
-  };
-  return GetContrastingPressedOrHoveredColor(
-             extra_params.thumb_color,
-             extra_params.track_color.value_or(
-                 color_provider.GetColor(kColorWebNativeControlScrollbarTrack)),
-             state, /*part=*/Part::kScrollbarVerticalThumb)
-      .value_or(color_provider.GetColor(get_color_id()));
-}
-
 void NativeThemeFluent::PaintScrollbarCorner(
     cc::PaintCanvas* canvas,
     const ColorProvider* color_provider,
@@ -179,33 +219,6 @@ void NativeThemeFluent::PaintScrollbarCorner(
           : color_provider->GetColor(kColorWebNativeControlScrollbarCorner);
   flags.setColor(corner_color);
   canvas->drawIRect(RectToSkIRect(rect), flags);
-}
-
-gfx::Size NativeThemeFluent::GetPartSize(Part part,
-                                         State state,
-                                         const ExtraParams& extra) const {
-  switch (part) {
-    case kScrollbarHorizontalThumb:
-      return gfx::Size(kFluentScrollbarMinimalThumbLength,
-                       kFluentScrollbarThumbThickness);
-    case kScrollbarVerticalThumb:
-      return gfx::Size(kFluentScrollbarThumbThickness,
-                       kFluentScrollbarMinimalThumbLength);
-    case kScrollbarHorizontalTrack:
-      return gfx::Size(0, scrollbar_width_);
-    case kScrollbarVerticalTrack:
-      return gfx::Size(scrollbar_width_, 0);
-    case kScrollbarUpArrow:
-    case kScrollbarDownArrow:
-      return gfx::Size(scrollbar_width_, kFluentScrollbarButtonSideLength);
-    case kScrollbarLeftArrow:
-    case kScrollbarRightArrow:
-      return gfx::Size(kFluentScrollbarButtonSideLength, scrollbar_width_);
-    default:
-      break;
-  }
-
-  return NativeThemeBase::GetPartSize(part, state, extra);
 }
 
 void NativeThemeFluent::PaintButton(
@@ -395,19 +408,6 @@ const char* NativeThemeFluent::GetArrowCodePointForScrollbarPart(
     default:
       NOTREACHED();
   }
-}
-
-int NativeThemeFluent::GetPaintedScrollbarTrackInset() const {
-  return kFluentPaintedScrollbarTrackInset;
-}
-
-float NativeThemeFluent::GetContrastRatioForState(State state,
-                                                  Part part) const {
-  CHECK(SupportedPartsForContrastingColor(part));
-  // Calculated by taking the contrast ratio between the foreground and
-  // background colors.
-  static constexpr float kFluentScrollbarForegroundContrastRatio = 1.8f;
-  return kFluentScrollbarForegroundContrastRatio;
 }
 
 void NativeThemeFluent::PaintRoundedButton(cc::PaintCanvas* canvas,
