@@ -8,6 +8,7 @@
 
 #import "base/json/values_util.h"
 #import "base/test/task_environment.h"
+#import "base/time/clock.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service_factory.h"
@@ -54,7 +55,10 @@ TEST_F(CrossPlatformPromosServiceTest, RecordActiveDay_AddNewDay) {
 // Tests that multiple app foregrounds doesn't add duplicate days.
 TEST_F(CrossPlatformPromosServiceTest, RecordActiveDay_AddDuplicateDay) {
   SimulateAppForegrounded();
-  task_environment_.FastForwardBy(base::Hours(1));
+  base::Time now = task_environment_.GetMockClock()->Now();
+  base::Time tomorrow = (now + base::Days(1)).LocalMidnight();
+  base::TimeDelta remaining = (tomorrow - now);
+  task_environment_.FastForwardBy(remaining / 2);
   SimulateAppForegrounded();
   const base::Value::List& active_days =
       prefs_->GetList(prefs::kCrossPlatformPromosActiveDays);
