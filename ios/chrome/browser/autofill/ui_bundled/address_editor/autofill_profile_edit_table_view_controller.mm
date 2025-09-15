@@ -231,14 +231,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 
   if (itemType == AutofillProfileDetailsItemTypeCountrySelectionField) {
-    TableViewMultiDetailTextCell* multiDetailTextCell =
-        base::apple::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
-    multiDetailTextCell.accessibilityIdentifier =
-        multiDetailTextCell.textLabel.text;
     if ([self showEditView]) {
-      multiDetailTextCell.selectionStyle = UITableViewCellSelectionStyleDefault;
+      cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     }
-    return multiDetailTextCell;
+    return cell;
   }
 
   TableViewTextEditCell* textFieldCell =

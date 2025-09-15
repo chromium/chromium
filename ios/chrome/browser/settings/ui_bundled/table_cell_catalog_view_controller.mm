@@ -376,6 +376,48 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
       initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text =
+      @"Title label is very very very very very very very long";
+  tableViewMultiDetailTextItem.leadingDetailText = @"Leading Detail Text";
+  tableViewMultiDetailTextItem.trailingDetailText =
+      @"Right label is very very very very very very very long";
+  tableViewMultiDetailTextItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text = @"L";
+  tableViewMultiDetailTextItem.leadingDetailText = @"Leading Detail Text";
+  tableViewMultiDetailTextItem.trailingDetailText =
+      @"Right label is very very very very very very very long";
+  tableViewMultiDetailTextItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text = @"L";
+  tableViewMultiDetailTextItem.trailingDetailText =
+      @"Right label is very very very very very very very long";
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text =
+      @"Title label is very very very very very very very long ";
+  tableViewMultiDetailTextItem.leadingDetailText = @"Leading Detail Text";
+  tableViewMultiDetailTextItem.trailingDetailText = @"R";
+  tableViewMultiDetailTextItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeMultiDetailText];
   tableViewMultiDetailTextItem.text = @"Main Text";
   tableViewMultiDetailTextItem.leadingDetailText = @"Leading Detail Text";
   tableViewMultiDetailTextItem.trailingDetailText = @"Trailing Detail Text";

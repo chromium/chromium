@@ -40,6 +40,11 @@
 - (void)configureCell:(LegacyTableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler NS_REQUIRES_SUPER;
 
+// Potentially returns a cell for the given `tableView`. Default implementation
+// returns nil. This is used by subclasses to use their own mechanism to return
+// a cell differently.
+- (LegacyTableViewCell*)cellForTableView:(UITableView*)tableView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_ITEM_H_

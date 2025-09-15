@@ -309,7 +309,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
       assertWithMatcher:grey_notNil()];
 
   NSString* newCreditCardObjectLabel =
-      @", Visa  ‪•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠1111‬";
+      @"Visa  ‪•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠1111‬";
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
                                           newCreditCardObjectLabel)]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -333,7 +333,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
       performAction:grey_tap()];
 
   NSString* newCreditCardObjectLabel =
-      @", Fav Card  ‪•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠1111‬";
+      @"Fav Card  ‪•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠1111‬";
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
                                           newCreditCardObjectLabel)]
       assertWithMatcher:grey_sufficientlyVisible()];

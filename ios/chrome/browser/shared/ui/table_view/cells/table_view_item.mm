@@ -48,4 +48,8 @@
   }
 }
 
+- (LegacyTableViewCell*)cellForTableView:(UITableView*)tableView {
+  return nil;
+}
+
 @end

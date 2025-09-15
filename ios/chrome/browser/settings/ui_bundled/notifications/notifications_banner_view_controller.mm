@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -236,7 +237,7 @@ bool TooNarrowForBanner(UIView* view) {
            }];
 
   RegisterTableViewCell<TableViewSwitchCell>(_tableView);
-  RegisterTableViewCell<TableViewMultiDetailTextCell>(_tableView);
+  [TableViewCellContentConfiguration legacyRegisterCellForTableView:_tableView];
 
   [_dataSource applySnapshot:self.snapshot animatingDifferences:NO];
 }
@@ -389,14 +390,13 @@ bool TooNarrowForBanner(UIView* view) {
 // `item`.
 - (UITableViewCell*)detailCellForTableView:(UITableView*)tableView
                                       item:(TableViewItem*)item {
-  TableViewMultiDetailTextCell* cell =
-      DequeueTableViewCell<TableViewMultiDetailTextCell>(tableView);
+  LegacyTableViewCell* cell =
+      [TableViewCellContentConfiguration legacyDequeueTableViewCell:_tableView];
   TableViewMultiDetailTextItem* detailItem =
       base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
   [detailItem configureCell:cell withStyler:[self tableViewStyler]];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
-  cell.accessibilityIdentifier = detailItem.accessibilityIdentifier;
   return cell;
 }
 

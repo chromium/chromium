@@ -255,15 +255,19 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  Class cellClass = [item cellClass];
-  NSString* reuseIdentifier = NSStringFromClass(cellClass);
-  [self.tableView registerClass:cellClass
-         forCellReuseIdentifier:reuseIdentifier];
-  UITableViewCell* cell =
-      [self.tableView dequeueReusableCellWithIdentifier:reuseIdentifier
-                                           forIndexPath:indexPath];
-  LegacyTableViewCell* tableViewCell =
-      base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
+  LegacyTableViewCell* tableViewCell = [item cellForTableView:tableView];
+
+  if (!tableViewCell) {
+    Class cellClass = [item cellClass];
+    NSString* reuseIdentifier = NSStringFromClass(cellClass);
+    [self.tableView registerClass:cellClass
+           forCellReuseIdentifier:reuseIdentifier];
+    UITableViewCell* cell =
+        [self.tableView dequeueReusableCellWithIdentifier:reuseIdentifier
+                                             forIndexPath:indexPath];
+    tableViewCell = base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
+  }
+
   [item configureCell:tableViewCell withStyler:self.styler];
 
   // Enabling `exclusiveTouch` for all cells to prevent simultanoeus cell
@@ -275,9 +279,9 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
   // LegacyChromeTableViewController subclass that implments them.
   // TODO(crbug.com/40926228): Make Chrome Coordinators robust against the
   // launch of multiple child coordinators.
-  cell.exclusiveTouch = YES;
+  tableViewCell.exclusiveTouch = YES;
 
-  return cell;
+  return tableViewCell;
 }
 
 - (NSInteger)tableView:(UITableView*)tableView
