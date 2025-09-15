@@ -324,11 +324,11 @@ void BrowserList::MoveBrowsersInWorkspaceToFront(
 
   BrowserWindowInterface* const new_last_active =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  Browser* const new_last_active_browser =
-      new_last_active->GetBrowserForMigrationOnly();
   if (old_last_active != new_last_active) {
     for (BrowserListObserver& observer : observers_.Get()) {
-      observer.OnBrowserSetLastActive(new_last_active_browser);
+      observer.OnBrowserSetLastActive(
+          new_last_active ? new_last_active->GetBrowserForMigrationOnly()
+                          : nullptr);
     }
   }
 }
