@@ -24,7 +24,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       // DecodeIDBKey() leaves the unparsed suffix in parsed_input, so strip
       // that much off the end of input before comparing.
       input.remove_suffix(parsed_input.size());
-      CHECK_EQ(std::string_view(result), input);
+
+      // Avoid `CHECK_EQ()` since values can be multi-line and that confuses
+      // stack trace parsers in fuzzing infra. Print the values on a different
+      // line instead.
+      CHECK(result == input) << "\nResult: " << result << "\nInput: " << input;
     }
   }
 
@@ -36,9 +40,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     // Unlike the older encoding, the input has to be exactly decodeable (rather
     // than just a prefix being decodeable).
     if (key.IsValid()) {
-      CHECK_EQ(std::string_view(content::indexed_db::EncodeSortableIDBKey(key)),
-               input)
-          << " with " << key.DebugString();
+      std::string result = content::indexed_db::EncodeSortableIDBKey(key);
+
+      // Avoid `CHECK_EQ()` since values can be multi-line and that confuses
+      // stack trace parsers in fuzzing infra. Print the values on a different
+      // line instead.
+      CHECK(result == input) << "\nResult: " << result << "\nInput: " << input
+                             << "\nKey: " << key.DebugString();
     }
   }
 
