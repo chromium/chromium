@@ -60,18 +60,13 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
   TRACE_EVENT0("gpu", "RasterBufferStub::Initialize");
   UpdateActiveUrl();
 
+  const auto& attribs = *init_params.attribs->get_raster();
+
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
 
   if (share_command_buffer_stub) {
     LOG(ERROR) << "Using a share group is not supported with RasterDecoder";
-    return ContextResult::kFatalFailure;
-  }
-
-  if (init_params.attribs.gpu_preference != gl::GpuPreference::kLowPower ||
-      init_params.attribs.context_type != CONTEXT_TYPE_OPENGLES2) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: Incompatible creation attribs "
-                  "used with RasterDecoder";
     return ContextResult::kFatalFailure;
   }
 
@@ -118,9 +113,8 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
   }
 
   // Initialize the decoder with either the view or pbuffer GLContext.
-  result =
-      decoder->Initialize(init_params.attribs.enable_gpu_rasterization,
-                          init_params.attribs.lose_context_when_out_of_memory);
+  result = decoder->Initialize(attribs.enable_gpu_rasterization,
+                               attribs.lose_context_when_out_of_memory);
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize decoder.";
     return result;

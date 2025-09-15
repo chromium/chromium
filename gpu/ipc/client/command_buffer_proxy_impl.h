@@ -55,7 +55,6 @@ struct GpuFenceHandle;
 }
 
 namespace gpu {
-struct ContextCreationAttribs;
 struct SyncToken;
 }
 
@@ -93,7 +92,7 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
   // Connect to a command buffer in the GPU process.
   ContextResult Initialize(CommandBufferProxyImpl* share_group,
                            gpu::SchedulingPriority stream_priority,
-                           const gpu::ContextCreationAttribs& attribs,
+                           mojom::ContextCreationAttribsPtr attribs,
                            const GURL& active_url = GURL(),
                            const std::string_view label = "");
 

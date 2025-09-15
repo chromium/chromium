@@ -34,7 +34,8 @@ TEST_F(GpuChannelTest, CreateOffscreenCommandBuffer) {
   init_params->share_group_id = IPC::mojom::kRoutingIdNone;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
-  init_params->attribs = ContextCreationAttribs();
+  init_params->attribs =
+      mojom::ContextCreationAttribs::NewGles(mojom::GLESCreationAttribs::New());
   init_params->active_url = GURL();
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
   gpu::Capabilities capabilities;
@@ -61,6 +62,8 @@ TEST_F(GpuChannelTest, IncompatibleStreamIds) {
   init_params->share_group_id = IPC::mojom::kRoutingIdNone;
   init_params->stream_id = kStreamId1;
   init_params->stream_priority = SchedulingPriority::kNormal;
+  init_params->attribs =
+      mojom::ContextCreationAttribs::NewGles(mojom::GLESCreationAttribs::New());
   auto init_params2 = init_params.Clone();
 
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
@@ -104,7 +107,8 @@ TEST_F(GpuChannelTest, CreateFailsIfSharedContextIsLost) {
     init_params->share_group_id = IPC::mojom::kRoutingIdNone;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
-    init_params->attribs = ContextCreationAttribs();
+    init_params->attribs = mojom::ContextCreationAttribs::NewGles(
+        mojom::GLESCreationAttribs::New());
     init_params->active_url = GURL();
     gpu::ContextResult result = gpu::ContextResult::kSuccess;
     gpu::Capabilities capabilities;
@@ -124,7 +128,8 @@ TEST_F(GpuChannelTest, CreateFailsIfSharedContextIsLost) {
     init_params->share_group_id = kSharedRouteId;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
-    init_params->attribs = ContextCreationAttribs();
+    init_params->attribs = mojom::ContextCreationAttribs::NewGles(
+        mojom::GLESCreationAttribs::New());
     init_params->active_url = GURL();
     gpu::ContextResult result = gpu::ContextResult::kSuccess;
     gpu::Capabilities capabilities;
@@ -148,7 +153,8 @@ TEST_F(GpuChannelTest, CreateFailsIfSharedContextIsLost) {
     init_params->share_group_id = kSharedRouteId;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
-    init_params->attribs = ContextCreationAttribs();
+    init_params->attribs = mojom::ContextCreationAttribs::NewGles(
+        mojom::GLESCreationAttribs::New());
     init_params->active_url = GURL();
     gpu::ContextResult result = gpu::ContextResult::kSuccess;
     gpu::Capabilities capabilities;
@@ -202,7 +208,8 @@ TEST_F(GpuChannelExitForContextLostTest,
   init_params->share_group_id = IPC::mojom::kRoutingIdNone;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
-  init_params->attribs = ContextCreationAttribs();
+  init_params->attribs =
+      mojom::ContextCreationAttribs::NewGles(mojom::GLESCreationAttribs::New());
   init_params->active_url = GURL();
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
   gpu::Capabilities capabilities;
@@ -233,7 +240,8 @@ TEST_F(GpuChannelExitForContextLostTest,
   init_params->share_group_id = IPC::mojom::kRoutingIdNone;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
-  init_params->attribs = ContextCreationAttribs();
+  init_params->attribs =
+      mojom::ContextCreationAttribs::NewGles(mojom::GLESCreationAttribs::New());
   init_params->active_url = GURL();
   gpu::ContextResult result = gpu::ContextResult::kSuccess;
   gpu::Capabilities capabilities;

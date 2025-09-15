@@ -221,16 +221,11 @@ mojom("gpu_channel_mojom") {
     {
       types = [
         {
-          mojom = "gpu.mojom.ContextCreationAttribs"
-          cpp = "::gpu::ContextCreationAttribs"
-        },
-        {
           mojom = "gpu.mojom.ContextType"
           cpp = "::gpu::ContextType"
         },
       ]
       traits_headers = [ "context_creation_attribs_mojom_traits.h" ]
-      traits_sources = [ "context_creation_attribs_mojom_traits.cc" ]
       traits_public_deps = [ "//gpu/command_buffer/common" ]
     },
     {

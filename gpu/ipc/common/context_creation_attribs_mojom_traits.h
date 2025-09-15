@@ -63,49 +63,6 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ContextType,
   }
 };
 
-template <>
-struct GPU_IPC_COMMON_EXPORT StructTraits<
-    gpu::mojom::ContextCreationAttribsDataView,
-    gpu::ContextCreationAttribs> {
-  static gl::GpuPreference gpu_preference(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.gpu_preference;
-  }
-
-  static bool fail_if_major_perf_caveat(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.fail_if_major_perf_caveat;
-  }
-
-  static bool lose_context_when_out_of_memory(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.lose_context_when_out_of_memory;
-  }
-
-  static bool enable_gles2_interface(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.enable_gles2_interface;
-  }
-
-  static bool enable_raster_interface(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.enable_raster_interface;
-  }
-
-  static bool enable_gpu_rasterization(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.enable_gpu_rasterization;
-  }
-
-  static gpu::ContextType context_type(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.context_type;
-  }
-
-  static bool Read(gpu::mojom::ContextCreationAttribsDataView data,
-                   gpu::ContextCreationAttribs* out);
-};
-
 }  // namespace mojo
 
 #endif  // GPU_IPC_COMMON_CONTEXT_CREATION_ATTRIBS_MOJOM_TRAITS_H_

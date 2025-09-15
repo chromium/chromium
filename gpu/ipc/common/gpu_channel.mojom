@@ -51,17 +51,27 @@ enum SchedulingPriority {
   kLow,
 };
 
-// Maps to its namesake in gpu/command_buffer/common/context_creation_attribs.h.
-struct ContextCreationAttribs {
-  gl.mojom.GpuPreference gpu_preference = kLowPower;
+struct RasterCreationAttribs {
+  bool enable_gpu_rasterization = false;
+  bool lose_context_when_out_of_memory = false;
+};
 
+struct GLESCreationAttribs {
+  gl.mojom.GpuPreference gpu_preference = kLowPower;
   bool fail_if_major_perf_caveat = false;
   bool lose_context_when_out_of_memory = false;
-  bool enable_gles2_interface = true;
-  bool enable_raster_interface = false;
-  bool enable_gpu_rasterization = false;
-
   ContextType context_type = kOpenGLES2;
+};
+
+struct WebGPUCreationAttribs {
+  // WebGPU doesn't have any configurable attributes on the command buffer
+  // level.
+};
+
+union ContextCreationAttribs {
+  GLESCreationAttribs gles;
+  RasterCreationAttribs raster;
+  WebGPUCreationAttribs webgpu;
 };
 
 struct CreateCommandBufferParams {

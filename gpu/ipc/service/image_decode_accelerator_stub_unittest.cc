@@ -356,9 +356,8 @@ class ImageDecodeAcceleratorStubTest
     init_params->share_group_id = IPC::mojom::kRoutingIdNone;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
-    init_params->attribs = ContextCreationAttribs();
-    init_params->attribs.enable_gles2_interface = false;
-    init_params->attribs.enable_raster_interface = true;
+    init_params->attribs = mojom::ContextCreationAttribs::NewRaster(
+        mojom::RasterCreationAttribs::New());
     init_params->active_url = GURL();
     ContextResult result = ContextResult::kTransientFailure;
     Capabilities capabilities;

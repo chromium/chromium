@@ -70,7 +70,7 @@ CommandBufferProxyImpl::~CommandBufferProxyImpl() {
 ContextResult CommandBufferProxyImpl::Initialize(
     CommandBufferProxyImpl* share_group,
     gpu::SchedulingPriority stream_priority,
-    const gpu::ContextCreationAttribs& attribs,
+    mojom::ContextCreationAttribsPtr attribs,
     const GURL& active_url,
     const std::string_view label) {
   DCHECK(!share_group || (stream_id_ == share_group->stream_id_));
@@ -85,7 +85,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
       share_group ? share_group->route_id_ : IPC::mojom::kRoutingIdNone;
   params->stream_id = stream_id_;
   params->stream_priority = stream_priority;
-  params->attribs = attribs;
+  params->attribs = std::move(attribs);
   params->active_url = active_url;
   params->label = label;
 

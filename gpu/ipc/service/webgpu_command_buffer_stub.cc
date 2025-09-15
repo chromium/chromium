@@ -81,12 +81,6 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
     return ContextResult::kFatalFailure;
   }
 
-  if (init_params.attribs.context_type != CONTEXT_TYPE_WEBGPU) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: Incompatible creation attribs "
-                  "used with WebGPUDecoder";
-    return ContextResult::kFatalFailure;
-  }
-
   ContextResult result;
   scoped_refptr<SharedContextState> shared_context_state =
       manager->GetSharedContextState(&result);

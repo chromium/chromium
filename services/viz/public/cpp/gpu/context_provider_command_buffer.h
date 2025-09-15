@@ -25,6 +25,7 @@
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
 #include "skia/buildflags.h"
@@ -115,7 +116,7 @@ class ContextProviderCommandBuffer
       bool automatic_flushes,
       bool support_locking,
       const gpu::SharedMemoryLimits& memory_limits,
-      const gpu::ContextCreationAttribs& attributes,
+      gpu::mojom::ContextCreationAttribsPtr attributes,
       command_buffer_metrics::ContextType type,
       base::SharedMemoryMapper* buffer_mapper = nullptr);
 
@@ -182,7 +183,7 @@ class ContextProviderCommandBuffer
   const bool automatic_flushes_;
   const bool support_locking_;
   const gpu::SharedMemoryLimits memory_limits_;
-  const gpu::ContextCreationAttribs attributes_;
+  const gpu::mojom::ContextCreationAttribsPtr attributes_;
   const command_buffer_metrics::ContextType context_type_;
 
   scoped_refptr<gpu::GpuChannelHost> channel_;

@@ -99,10 +99,16 @@ DevToolsChannelData::CreateForChannel(GpuChannel* channel) {
   return base::WrapUnique(new DevToolsChannelData(base::Value(std::move(res))));
 }
 
-bool IsStateful(const ContextCreationAttribs& attribs) {
-  return attribs.context_type == CONTEXT_TYPE_WEBGL1 ||
-         attribs.context_type == CONTEXT_TYPE_WEBGL2 ||
-         attribs.context_type == CONTEXT_TYPE_WEBGPU;
+bool IsStateful(const mojom::ContextCreationAttribs& attribs) {
+  switch (attribs.which()) {
+    case mojom::ContextCreationAttribs::Tag::kWebgpu:
+      return true;
+    case mojom::ContextCreationAttribs::Tag::kGles:
+      return attribs.get_gles()->context_type == CONTEXT_TYPE_WEBGL1 ||
+             attribs.get_gles()->context_type == CONTEXT_TYPE_WEBGL2;
+    case mojom::ContextCreationAttribs::Tag::kRaster:
+      return false;
+  }
 }
 
 }  // namespace
@@ -129,7 +135,7 @@ CommandBufferStub::CommandBufferStub(
       last_flush_id_(0),
       previous_processed_num_(0),
       wait_set_get_buffer_count_(0),
-      has_stateful_context_(IsStateful(init_params.attribs)) {
+      has_stateful_context_(IsStateful(*init_params.attribs)) {
   process_delayed_work_timer_.SetTaskRunner(channel_->task_runner());
 }
 

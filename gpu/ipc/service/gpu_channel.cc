@@ -1037,24 +1037,27 @@ void GpuChannel::CreateCommandBuffer(
   }
 
   std::unique_ptr<CommandBufferStub> stub;
-  if (init_params->attribs.context_type == CONTEXT_TYPE_WEBGPU) {
-    if (!gpu_channel_manager_->gpu_preferences().enable_webgpu) {
-      DLOG(ERROR) << "ContextResult::kFatalFailure: WebGPU not enabled";
-      return;
-    }
+  switch (init_params->attribs->which()) {
+    case mojom::ContextCreationAttribs::Tag::kGles:
+      stub = std::make_unique<GLES2CommandBufferStub>(
+          this, *init_params, command_buffer_id, sequence_id, stream_id,
+          route_id);
+      break;
+    case mojom::ContextCreationAttribs::Tag::kRaster:
+      stub = std::make_unique<RasterCommandBufferStub>(
+          this, *init_params, command_buffer_id, sequence_id, stream_id,
+          route_id);
+      break;
+    case mojom::ContextCreationAttribs::Tag::kWebgpu:
+      if (!gpu_channel_manager_->gpu_preferences().enable_webgpu) {
+        DLOG(ERROR) << "ContextResult::kFatalFailure: WebGPU not enabled";
+        return;
+      }
 
-    stub = std::make_unique<WebGPUCommandBufferStub>(
-        this, *init_params, command_buffer_id, sequence_id, stream_id,
-        route_id);
-  } else if (init_params->attribs.enable_raster_interface &&
-             !init_params->attribs.enable_gles2_interface) {
-    stub = std::make_unique<RasterCommandBufferStub>(
-        this, *init_params, command_buffer_id, sequence_id, stream_id,
-        route_id);
-  } else {
-    stub = std::make_unique<GLES2CommandBufferStub>(
-        this, *init_params, command_buffer_id, sequence_id, stream_id,
-        route_id);
+      stub = std::make_unique<WebGPUCommandBufferStub>(
+          this, *init_params, command_buffer_id, sequence_id, stream_id,
+          route_id);
+      break;
   }
 
   stub->BindEndpoints(std::move(receiver), std::move(client), io_task_runner_);

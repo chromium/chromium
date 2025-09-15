@@ -40,22 +40,6 @@ GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsWebGPUContextType(
 GPU_COMMAND_BUFFER_COMMON_EXPORT const char* ContextTypeToLabel(
     ContextType context_type);
 
-struct GPU_COMMAND_BUFFER_COMMON_EXPORT ContextCreationAttribs {
-  ContextCreationAttribs();
-  ContextCreationAttribs(const ContextCreationAttribs& other);
-  ContextCreationAttribs& operator=(const ContextCreationAttribs& other);
-
-  gl::GpuPreference gpu_preference = gl::GpuPreference::kLowPower;
-
-  bool fail_if_major_perf_caveat = false;
-  bool lose_context_when_out_of_memory = false;
-  bool enable_gles2_interface = true;
-  bool enable_raster_interface = false;
-  bool enable_gpu_rasterization = false;
-
-  ContextType context_type = CONTEXT_TYPE_OPENGLES2;
-};
-
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_COMMON_CONTEXT_CREATION_ATTRIBS_H_

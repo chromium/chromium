@@ -439,9 +439,11 @@ class MojoGpuVideoAcceleratorFactoriesTest : public testing::Test {
     gpu_command_buffer_proxy_ = std::make_unique<gpu::CommandBufferProxyImpl>(
         gpu_channel_host_, kGpuStreamIdDefault,
         task_environment_.GetMainThreadTaskRunner());
-    gpu_command_buffer_proxy_->Initialize(nullptr, kGpuStreamPriorityDefault,
-                                          gpu::ContextCreationAttribs(),
-                                          GURL());
+    gpu_command_buffer_proxy_->Initialize(
+        nullptr, kGpuStreamPriorityDefault,
+        gpu::mojom::ContextCreationAttribs::NewGles(
+            gpu::mojom::GLESCreationAttribs::New()),
+        GURL());
     ON_CALL(*mock_context_provider_, GetCommandBufferProxy())
         .WillByDefault(Return(gpu_command_buffer_proxy_.get()));
   }

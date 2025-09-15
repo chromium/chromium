@@ -64,7 +64,7 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
     bool automatic_flushes,
     bool support_locking,
     const gpu::SharedMemoryLimits& memory_limits,
-    const gpu::ContextCreationAttribs& attributes,
+    gpu::mojom::ContextCreationAttribsPtr attributes,
     command_buffer_metrics::ContextType type,
     base::SharedMemoryMapper* buffer_mapper)
     : base::subtle::RefCountedThreadSafeBase(
@@ -75,7 +75,7 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
       automatic_flushes_(automatic_flushes),
       support_locking_(support_locking),
       memory_limits_(memory_limits),
-      attributes_(attributes),
+      attributes_(std::move(attributes)),
       context_type_(type),
       channel_(std::move(channel)),
       buffer_mapper_(buffer_mapper) {
@@ -94,7 +94,8 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
           /*automatic_flushes=*/false,
           /*support_locking=*/false,
           gpu::SharedMemoryLimits(),
-          gpu::ContextCreationAttribs(),
+          gpu::mojom::ContextCreationAttribs::NewGles(
+              gpu::mojom::GLESCreationAttribs::New()),
           command_buffer_metrics::ContextType::FOR_TESTING) {}
 
 // static
@@ -106,16 +107,15 @@ ContextProviderCommandBuffer::CreateForGL(
     const GURL& active_url,
     command_buffer_metrics::ContextType type,
     bool lose_context_when_out_of_memory) {
-  gpu::ContextCreationAttribs attributes;
-  attributes.enable_gles2_interface = true;
-  attributes.enable_raster_interface = false;
-  attributes.lose_context_when_out_of_memory = lose_context_when_out_of_memory;
+  auto attributes = gpu::mojom::GLESCreationAttribs::New();
+  attributes->lose_context_when_out_of_memory = lose_context_when_out_of_memory;
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
       base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
       stream_id, stream_priority, active_url,
       /*automatic_flushes=*/false, /*support_locking=*/false,
-      gpu::SharedMemoryLimits::ForMailboxContext(), attributes, type);
+      gpu::SharedMemoryLimits::ForMailboxContext(),
+      gpu::mojom::ContextCreationAttribs::NewGles(std::move(attributes)), type);
 }
 
 // static
@@ -126,23 +126,19 @@ ContextProviderCommandBuffer::CreateForWebGL(
     WebGLContextType context_type,
     bool prefer_low_power_gpu,
     bool fail_if_major_performance_caveat) {
-  gpu::ContextCreationAttribs attributes;
-  attributes.enable_raster_interface = false;
-  attributes.enable_gpu_rasterization = false;
-  attributes.enable_gles2_interface = true;
+  auto attributes = gpu::mojom::GLESCreationAttribs::New();
+  attributes->gpu_preference = prefer_low_power_gpu
+                                   ? gl::GpuPreference::kLowPower
+                                   : gl::GpuPreference::kHighPerformance;
 
-  attributes.gpu_preference = prefer_low_power_gpu
-                                  ? gl::GpuPreference::kLowPower
-                                  : gl::GpuPreference::kHighPerformance;
-
-  attributes.fail_if_major_perf_caveat = fail_if_major_performance_caveat;
+  attributes->fail_if_major_perf_caveat = fail_if_major_performance_caveat;
 
   switch (context_type) {
     case WebGLContextType::kWebGL1:
-      attributes.context_type = gpu::CONTEXT_TYPE_WEBGL1;
+      attributes->context_type = gpu::CONTEXT_TYPE_WEBGL1;
       break;
     case WebGLContextType::kWebGL2:
-      attributes.context_type = gpu::CONTEXT_TYPE_WEBGL2;
+      attributes->context_type = gpu::CONTEXT_TYPE_WEBGL2;
       break;
   }
 
@@ -150,7 +146,8 @@ ContextProviderCommandBuffer::CreateForWebGL(
       base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
       /*stream_id=*/0, gpu::SchedulingPriority::kNormal, active_url,
       /*automatic_flushes=*/true, /*support_locking=*/false,
-      gpu::SharedMemoryLimits(), attributes,
+      gpu::SharedMemoryLimits(),
+      gpu::mojom::ContextCreationAttribs::NewGles(std::move(attributes)),
       command_buffer_metrics::ContextType::WEBGL);
 }
 
@@ -161,18 +158,15 @@ ContextProviderCommandBuffer::CreateForWebGPU(
     const GURL& active_url,
     command_buffer_metrics::ContextType type,
     base::SharedMemoryMapper* buffer_mapper) {
-  gpu::ContextCreationAttribs attributes;
-  // TODO(kainino): It's not clear yet how GPU preferences work for WebGPU.
-  attributes.gpu_preference = gl::GpuPreference::kHighPerformance;
-  attributes.enable_gles2_interface = false;
-  attributes.context_type = gpu::CONTEXT_TYPE_WEBGPU;
+  auto attributes = gpu::mojom::WebGPUCreationAttribs::New();
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
       base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
       /*stream_id=*/0, gpu::SchedulingPriority::kNormal, active_url,
       /*automatic_flushes=*/true,
       /*support_locking=*/false, gpu::SharedMemoryLimits::ForWebGPUContext(),
-      attributes, type, buffer_mapper);
+      gpu::mojom::ContextCreationAttribs::NewWebgpu(std::move(attributes)),
+      type, buffer_mapper);
 }
 
 // static
@@ -188,16 +182,16 @@ ContextProviderCommandBuffer::CreateForRaster(
     command_buffer_metrics::ContextType type,
     bool enable_gpu_rasterization,
     bool lose_context_when_out_of_memory) {
-  gpu::ContextCreationAttribs attributes;
-  attributes.enable_gles2_interface = false;
-  attributes.enable_raster_interface = true;
-  attributes.enable_gpu_rasterization = enable_gpu_rasterization;
-  attributes.lose_context_when_out_of_memory = lose_context_when_out_of_memory;
+  auto attributes = gpu::mojom::RasterCreationAttribs::New();
+  attributes->enable_gpu_rasterization = enable_gpu_rasterization;
+  attributes->lose_context_when_out_of_memory = lose_context_when_out_of_memory;
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
       base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
       stream_id, stream_priority, active_url, automatic_flushes,
-      support_locking, memory_limits, attributes, type);
+      support_locking, memory_limits,
+      gpu::mojom::ContextCreationAttribs::NewRaster(std::move(attributes)),
+      type);
 }
 
 ContextProviderCommandBuffer::~ContextProviderCommandBuffer() {
@@ -266,7 +260,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
       channel_, stream_id_, default_task_runner_, buffer_mapper_);
   bind_result_ = command_buffer_->Initialize(
-      /*shared_command_buffer=*/nullptr, stream_priority_, attributes_,
+      /*shared_command_buffer=*/nullptr, stream_priority_, attributes_.Clone(),
       active_url_, command_buffer_metrics::ContextTypeToString(context_type_));
   if (bind_result_ != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "GpuChannelHost failed to create command buffer.";
@@ -274,122 +268,123 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     return bind_result_;
   }
 
-  if (attributes_.context_type == gpu::CONTEXT_TYPE_WEBGPU) {
-    CHECK(!attributes_.enable_raster_interface);
-    CHECK(!attributes_.enable_gles2_interface);
+  switch (attributes_->which()) {
+    case gpu::mojom::ContextCreationAttribs::Tag::kWebgpu: {
+      auto webgpu_helper =
+          std::make_unique<gpu::webgpu::WebGPUCmdHelper>(command_buffer_.get());
+      webgpu_helper->SetAutomaticFlushes(automatic_flushes_);
+      bind_result_ =
+          webgpu_helper->Initialize(memory_limits_.command_buffer_size);
+      if (bind_result_ != gpu::ContextResult::kSuccess) {
+        DLOG(ERROR) << "Failed to initialize WebGPUCmdHelper.";
+        return bind_result_;
+      }
 
-    auto webgpu_helper =
-        std::make_unique<gpu::webgpu::WebGPUCmdHelper>(command_buffer_.get());
-    webgpu_helper->SetAutomaticFlushes(automatic_flushes_);
-    bind_result_ =
-        webgpu_helper->Initialize(memory_limits_.command_buffer_size);
-    if (bind_result_ != gpu::ContextResult::kSuccess) {
-      DLOG(ERROR) << "Failed to initialize WebGPUCmdHelper.";
-      return bind_result_;
-    }
+      // The transfer buffer is used to serialize Dawn commands
+      auto transfer_buffer =
+          std::make_unique<gpu::TransferBuffer>(webgpu_helper.get());
 
-    // The transfer buffer is used to serialize Dawn commands
-    auto transfer_buffer =
-        std::make_unique<gpu::TransferBuffer>(webgpu_helper.get());
+      // The WebGPUImplementation exposes the WebGPUInterface, as well as the
+      // gpu::ContextSupport interface.
+      auto webgpu_impl = std::make_unique<gpu::webgpu::WebGPUImplementation>(
+          webgpu_helper.get(), transfer_buffer.get(), command_buffer_.get());
+      bind_result_ = webgpu_impl->Initialize(memory_limits_);
+      if (bind_result_ != gpu::ContextResult::kSuccess) {
+        DLOG(ERROR) << "Failed to initialize WebGPUImplementation.";
+        return bind_result_;
+      }
 
-    // The WebGPUImplementation exposes the WebGPUInterface, as well as the
-    // gpu::ContextSupport interface.
-    auto webgpu_impl = std::make_unique<gpu::webgpu::WebGPUImplementation>(
-        webgpu_helper.get(), transfer_buffer.get(), command_buffer_.get());
-    bind_result_ = webgpu_impl->Initialize(memory_limits_);
-    if (bind_result_ != gpu::ContextResult::kSuccess) {
-      DLOG(ERROR) << "Failed to initialize WebGPUImplementation.";
-      return bind_result_;
-    }
+      std::string type_name =
+          command_buffer_metrics::ContextTypeToString(context_type_);
+      std::string unique_context_name =
+          base::StringPrintf("%s-%p", type_name.c_str(), webgpu_impl.get());
 
-    std::string type_name =
-        command_buffer_metrics::ContextTypeToString(context_type_);
-    std::string unique_context_name =
-        base::StringPrintf("%s-%p", type_name.c_str(), webgpu_impl.get());
+      // IMPORTANT: These hold raw_ptrs to each other, so must be set together.
+      // See note in the header (and keep it up to date if things change).
+      impl_ = webgpu_impl.get();
+      webgpu_interface_ = std::move(webgpu_impl);
+      transfer_buffer_ = std::move(transfer_buffer);
+      helper_ = std::move(webgpu_helper);
+    } break;
+    case gpu::mojom::ContextCreationAttribs::Tag::kRaster: {
+      // The raster helper writes the command buffer protocol.
+      auto raster_helper =
+          std::make_unique<gpu::raster::RasterCmdHelper>(command_buffer_.get());
+      raster_helper->SetAutomaticFlushes(automatic_flushes_);
+      bind_result_ =
+          raster_helper->Initialize(memory_limits_.command_buffer_size);
+      if (bind_result_ != gpu::ContextResult::kSuccess) {
+        DLOG(ERROR) << "Failed to initialize RasterCmdHelper.";
+        return bind_result_;
+      }
+      // The transfer buffer is used to copy resources between the client
+      // process and the GPU process.
+      auto transfer_buffer =
+          std::make_unique<gpu::TransferBuffer>(raster_helper.get());
 
-    // IMPORTANT: These hold raw_ptrs to each other, so must be set together.
-    // See note in the header (and keep it up to date if things change).
-    impl_ = webgpu_impl.get();
-    webgpu_interface_ = std::move(webgpu_impl);
-    transfer_buffer_ = std::move(transfer_buffer);
-    helper_ = std::move(webgpu_helper);
-  } else if (attributes_.enable_raster_interface) {
-    CHECK(!attributes_.enable_gles2_interface);
-    // The raster helper writes the command buffer protocol.
-    auto raster_helper =
-        std::make_unique<gpu::raster::RasterCmdHelper>(command_buffer_.get());
-    raster_helper->SetAutomaticFlushes(automatic_flushes_);
-    bind_result_ =
-        raster_helper->Initialize(memory_limits_.command_buffer_size);
-    if (bind_result_ != gpu::ContextResult::kSuccess) {
-      DLOG(ERROR) << "Failed to initialize RasterCmdHelper.";
-      return bind_result_;
-    }
-    // The transfer buffer is used to copy resources between the client
-    // process and the GPU process.
-    auto transfer_buffer =
-        std::make_unique<gpu::TransferBuffer>(raster_helper.get());
+      // The RasterImplementation exposes the RasterInterface, as well as the
+      // gpu::ContextSupport interface.
+      DCHECK(channel_);
+      auto raster_impl = std::make_unique<gpu::raster::RasterImplementation>(
+          raster_helper.get(), transfer_buffer.get(),
+          attributes_->get_raster()->lose_context_when_out_of_memory,
+          command_buffer_.get(), channel_->image_decode_accelerator_proxy());
+      bind_result_ = raster_impl->Initialize(memory_limits_);
+      if (bind_result_ != gpu::ContextResult::kSuccess) {
+        DLOG(ERROR) << "Failed to initialize RasterImplementation.";
+        return bind_result_;
+      }
 
-    // The RasterImplementation exposes the RasterInterface, as well as the
-    // gpu::ContextSupport interface.
-    DCHECK(channel_);
-    auto raster_impl = std::make_unique<gpu::raster::RasterImplementation>(
-        raster_helper.get(), transfer_buffer.get(),
-        attributes_.lose_context_when_out_of_memory, command_buffer_.get(),
-        channel_->image_decode_accelerator_proxy());
-    bind_result_ = raster_impl->Initialize(memory_limits_);
-    if (bind_result_ != gpu::ContextResult::kSuccess) {
-      DLOG(ERROR) << "Failed to initialize RasterImplementation.";
-      return bind_result_;
-    }
+      std::string type_name =
+          command_buffer_metrics::ContextTypeToString(context_type_);
+      std::string unique_context_name =
+          base::StringPrintf("%s-%p", type_name.c_str(), raster_impl.get());
+      raster_impl->TraceBeginCHROMIUM("gpu_toplevel",
+                                      unique_context_name.c_str());
 
-    std::string type_name =
-        command_buffer_metrics::ContextTypeToString(context_type_);
-    std::string unique_context_name =
-        base::StringPrintf("%s-%p", type_name.c_str(), raster_impl.get());
-    raster_impl->TraceBeginCHROMIUM("gpu_toplevel",
-                                    unique_context_name.c_str());
+      // IMPORTANT: These hold raw_ptrs to each other, so must be set together.
+      // See note in the header (and keep it up to date if things change).
+      impl_ = raster_impl.get();
+      raster_interface_ = std::move(raster_impl);
+      transfer_buffer_ = std::move(transfer_buffer);
+      helper_ = std::move(raster_helper);
+    } break;
+    case gpu::mojom::ContextCreationAttribs::Tag::kGles: {
+      // The GLES2 helper writes the command buffer protocol.
+      auto gles2_helper =
+          std::make_unique<gpu::gles2::GLES2CmdHelper>(command_buffer_.get());
+      gles2_helper->SetAutomaticFlushes(automatic_flushes_);
+      bind_result_ =
+          gles2_helper->Initialize(memory_limits_.command_buffer_size);
+      if (bind_result_ != gpu::ContextResult::kSuccess) {
+        DLOG(ERROR) << "Failed to initialize GLES2CmdHelper.";
+        return bind_result_;
+      }
 
-    // IMPORTANT: These hold raw_ptrs to each other, so must be set together.
-    // See note in the header (and keep it up to date if things change).
-    impl_ = raster_impl.get();
-    raster_interface_ = std::move(raster_impl);
-    transfer_buffer_ = std::move(transfer_buffer);
-    helper_ = std::move(raster_helper);
-  } else {
-    CHECK(attributes_.enable_gles2_interface);
-    // The GLES2 helper writes the command buffer protocol.
-    auto gles2_helper =
-        std::make_unique<gpu::gles2::GLES2CmdHelper>(command_buffer_.get());
-    gles2_helper->SetAutomaticFlushes(automatic_flushes_);
-    bind_result_ = gles2_helper->Initialize(memory_limits_.command_buffer_size);
-    if (bind_result_ != gpu::ContextResult::kSuccess) {
-      DLOG(ERROR) << "Failed to initialize GLES2CmdHelper.";
-      return bind_result_;
-    }
+      // The transfer buffer is used to copy resources between the client
+      // process and the GPU process.
+      auto transfer_buffer =
+          std::make_unique<gpu::TransferBuffer>(gles2_helper.get());
 
-    // The transfer buffer is used to copy resources between the client
-    // process and the GPU process.
-    auto transfer_buffer =
-        std::make_unique<gpu::TransferBuffer>(gles2_helper.get());
+      // The GLES2Implementation exposes the OpenGLES2 API, as well as the
+      // gpu::ContextSupport interface.
+      auto gles2_impl = std::make_unique<gpu::gles2::GLES2Implementation>(
+          gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
+          attributes_->get_gles()->lose_context_when_out_of_memory,
+          command_buffer_.get());
+      bind_result_ = gles2_impl->Initialize(memory_limits_);
+      if (bind_result_ != gpu::ContextResult::kSuccess) {
+        DLOG(ERROR) << "Failed to initialize GLES2Implementation.";
+        return bind_result_;
+      }
 
-    // The GLES2Implementation exposes the OpenGLES2 API, as well as the
-    // gpu::ContextSupport interface.
-    auto gles2_impl = std::make_unique<gpu::gles2::GLES2Implementation>(
-        gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
-        attributes_.lose_context_when_out_of_memory, command_buffer_.get());
-    bind_result_ = gles2_impl->Initialize(memory_limits_);
-    if (bind_result_ != gpu::ContextResult::kSuccess) {
-      DLOG(ERROR) << "Failed to initialize GLES2Implementation.";
-      return bind_result_;
-    }
-
-    // IMPORTANT: These hold raw_ptrs to each other, so must be set together.
-    // See note in the header (and keep it up to date if things change).
-    impl_ = gles2_impl.get();
-    gles2_impl_ = std::move(gles2_impl);
-    transfer_buffer_ = std::move(transfer_buffer);
-    helper_ = std::move(gles2_helper);
+      // IMPORTANT: These hold raw_ptrs to each other, so must be set together.
+      // See note in the header (and keep it up to date if things change).
+      impl_ = gles2_impl.get();
+      gles2_impl_ = std::move(gles2_impl);
+      transfer_buffer_ = std::move(transfer_buffer);
+      helper_ = std::move(gles2_helper);
+    } break;
   }
 
   if (command_buffer_->GetLastState().error != gpu::error::kNoError) {
@@ -460,9 +455,6 @@ gpu::gles2::GLES2Interface* ContextProviderCommandBuffer::ContextGL() {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
   CheckValidSequenceOrLockAcquired();
-
-  if (!attributes_.enable_gles2_interface)
-    return nullptr;
 
   if (trace_impl_)
     return trace_impl_.get();

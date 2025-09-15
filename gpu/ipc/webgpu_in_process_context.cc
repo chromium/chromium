@@ -40,16 +40,15 @@ WebGPUInProcessContext::~WebGPUInProcessContext() {
 
 ContextResult WebGPUInProcessContext::Initialize(
     CommandBufferTaskExecutor* task_executor) {
-  ContextCreationAttribs attribs;
-  attribs.enable_gles2_interface = false;
-  attribs.context_type = CONTEXT_TYPE_WEBGPU;
+  auto attribs = mojom::ContextCreationAttribs::NewWebgpu(
+      mojom::WebGPUCreationAttribs::New());
 
   client_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   command_buffer_ =
       std::make_unique<InProcessCommandBuffer>(task_executor, GURL());
 
   auto result =
-      command_buffer_->Initialize(attribs, client_task_runner_,
+      command_buffer_->Initialize(std::move(attribs), client_task_runner_,
                                   /*gr_shader_cache=*/nullptr,
                                   /*use_shader_cache_shm_count=*/nullptr);
   if (result != ContextResult::kSuccess) {

@@ -140,12 +140,4 @@ const char* ContextTypeToLabel(ContextType context_type) {
   NOTREACHED();
 }
 
-ContextCreationAttribs::ContextCreationAttribs() = default;
-
-ContextCreationAttribs::ContextCreationAttribs(
-    const ContextCreationAttribs& other) = default;
-
-ContextCreationAttribs& ContextCreationAttribs::operator=(
-    const ContextCreationAttribs& other) = default;
-
 }  // namespace gpu

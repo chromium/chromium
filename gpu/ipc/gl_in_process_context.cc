@@ -60,9 +60,11 @@ ContextResult GLInProcessContext::Initialize(
   command_buffer_ = std::make_unique<InProcessCommandBuffer>(
       task_executor, GURL("chrome://gpu/GLInProcessContext::Initialize"));
 
+  auto attribs =
+      mojom::ContextCreationAttribs::NewGles(mojom::GLESCreationAttribs::New());
+
   auto result = command_buffer_->Initialize(
-      ContextCreationAttribs(),
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      std::move(attribs), base::SingleThreadTaskRunner::GetCurrentDefault(),
       /*gr_shader_cache=*/nullptr,
       /*use_shader_cache_shm_count=*/nullptr);
   if (result != ContextResult::kSuccess) {

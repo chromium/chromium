@@ -75,14 +75,17 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
     GpuChannel* channel = CreateChannel(kClientId, true);
     EXPECT_TRUE(channel);
 
+    auto attribs = mojom::GLESCreationAttribs::New();
+    attribs->context_type = type;
+
     int32_t kRouteId =
         static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
     auto init_params = mojom::CreateCommandBufferParams::New();
     init_params->share_group_id = IPC::mojom::kRoutingIdNone;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
-    init_params->attribs = ContextCreationAttribs();
-    init_params->attribs.context_type = type;
+    init_params->attribs =
+        mojom::ContextCreationAttribs::NewGles(std::move(attribs));
     init_params->active_url = GURL();
 
     ContextResult result = ContextResult::kFatalFailure;
