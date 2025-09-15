@@ -13,6 +13,8 @@ BASE_DECLARE_FEATURE(kEnableSinglePageAppDataProtection);
 
 BASE_DECLARE_FEATURE(kEnableForceDownloadToCloud);
 
+BASE_DECLARE_FEATURE(kEnableVerdictCache);
+
 }  // namespace enterprise_data_protection
 
 #endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_FEATURES_H_

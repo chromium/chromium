@@ -13,4 +13,6 @@ BASE_FEATURE(kEnableSinglePageAppDataProtection,
 
 BASE_FEATURE(kEnableForceDownloadToCloud, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableVerdictCache, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_data_protection
