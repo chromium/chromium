@@ -64,7 +64,9 @@
       "D95D50CDFE6F14769DA2D1E59DF853BFA56BFC3C",   // Net iD for Chrome OS
       "5C825E850034490380BCB756D43ABB2CF537AA91",   // https://crbug.com/359290130
       // https://crbug.com/383855830
-      "1FC31C9D42DF1B51EA7648F73DF26400322999A8"    // IDmelon Accesskey
+      "1FC31C9D42DF1B51EA7648F73DF26400322999A8",   // IDmelon Accesskey
+      // https://crbug.com/433867146
+      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF"    // AuthX Secure for ChromeOS
     ]
   }, {
     // Explicitly allowlist extensions that should always be available
