@@ -24,6 +24,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
@@ -56,7 +57,8 @@ class NavigationAttachmentsMediator {
     private final ModelList mModelList;
     private final Drawable mFallbackDrawable;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
-    private boolean mUseAiMode;
+    private final ObservableSupplierImpl<@NavigationFulfillmentType Integer>
+            mNavigationFulfillmentTypeSupplier;
 
     NavigationAttachmentsMediator(
             Context context,
@@ -64,7 +66,9 @@ class NavigationAttachmentsMediator {
             PropertyModel model,
             NavigationAttachmentsViewHolder viewHolder,
             ModelList modelList,
-            ObservableSupplier<Profile> profileObservableSupplier) {
+            ObservableSupplier<Profile> profileObservableSupplier,
+            ObservableSupplierImpl<@NavigationFulfillmentType Integer>
+                    navigationFulfillmentTypeSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -73,6 +77,7 @@ class NavigationAttachmentsMediator {
         mModelList = modelList;
         mFallbackDrawable =
                 AppCompatResources.getDrawable(mContext, R.drawable.ic_attach_file_24dp);
+        mNavigationFulfillmentTypeSupplier = navigationFulfillmentTypeSupplier;
 
         mModel.set(
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
@@ -105,7 +110,8 @@ class NavigationAttachmentsMediator {
      * @param enabled Whether the AI mode is enabled.
      */
     void onUseAiModeChanged(boolean enabled) {
-        mUseAiMode = enabled;
+        mNavigationFulfillmentTypeSupplier.set(
+                enabled ? NavigationFulfillmentType.AI_MODE : NavigationFulfillmentType.DEFAULT);
         setComposeboxSessionState(enabled);
     }
 
@@ -141,10 +147,11 @@ class NavigationAttachmentsMediator {
     }
 
     /**
-     * @return Whether the user has enabled the AI mode.
+     * @return An {@link ObservableSupplier} that notifies observers when the navigation fulfillment
+     *     type changes.
      */
-    boolean isUsingAiMode() {
-        return mUseAiMode;
+    ObservableSupplier<@NavigationFulfillmentType Integer> getNavigationFulfillmentTypeSupplier() {
+        return mNavigationFulfillmentTypeSupplier;
     }
 
     /**

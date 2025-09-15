@@ -64,6 +64,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/navattach/NavigationAttachmentsRecyclerViewAdapter.java",
     "java/src/org/chromium/chrome/browser/omnibox/navattach/NavigationAttachmentsViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/navattach/NavigationAttachmentsViewHolder.java",
+    "java/src/org/chromium/chrome/browser/omnibox/navattach/NavigationFulfillmentType.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/PageInfoIphController.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusCoordinator.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusIconView.java",

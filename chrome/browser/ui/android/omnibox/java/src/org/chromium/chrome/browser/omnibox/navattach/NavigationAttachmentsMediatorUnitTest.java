@@ -72,7 +72,8 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 mModel,
                                 mViewHolder,
                                 new ModelList(),
-                                mProfileSupplier));
+                                mProfileSupplier,
+                                new ObservableSupplierImpl<>()));
         ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mNativeMock);
         doReturn(123L).when(mNativeMock).init(mProfile);
         Clipboard.setInstanceForTesting(mClipboard);
@@ -163,7 +164,13 @@ public class NavigationAttachmentsMediatorUnitTest {
         ModelList modelList = new ModelList();
         mMediator =
                 new NavigationAttachmentsMediator(
-                        mContext, mWindowAndroid, mModel, mViewHolder, modelList, mProfileSupplier);
+                        mContext,
+                        mWindowAndroid,
+                        mModel,
+                        mViewHolder,
+                        modelList,
+                        mProfileSupplier,
+                        new ObservableSupplierImpl<>());
         mMediator.initializeBridge(mProfile);
         modelList.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
         assertEquals(1, modelList.size());
@@ -192,7 +199,8 @@ public class NavigationAttachmentsMediatorUnitTest {
                         mModel,
                         mViewHolder,
                         new ModelList(),
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        new ObservableSupplierImpl<>());
 
         // The bridge is not initialized, so no native calls should be made.
         mediator.setToolbarVisible(true);

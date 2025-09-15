@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
+import org.chromium.chrome.browser.omnibox.navattach.NavigationFulfillmentType;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -222,6 +223,8 @@ class LocationBarMediator
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable AddToHomescreenCoordinator mAddToHomescreenCoordinatorForTesting;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final ObservableSupplier<@NavigationFulfillmentType Integer>
+            mNavigationFulfillmentTypeSupplier;
 
     /*package */ LocationBarMediator(
             Context context,
@@ -241,7 +244,9 @@ class LocationBarMediator
             OmniboxSuggestionsDropdownEmbedderImpl dropdownEmbedder,
             @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            ObservableSupplier<@NavigationFulfillmentType Integer>
+                    navigationFulfillmentTypeSupplier) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -265,6 +270,9 @@ class LocationBarMediator
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mNavigationFulfillmentTypeSupplier = navigationFulfillmentTypeSupplier;
+        mNavigationFulfillmentTypeSupplier.addObserver(
+                mCallbackController.makeCancelable((v) -> updateButtonVisibility()));
         AppBannerManager.addObserver(this);
     }
 
@@ -775,8 +783,9 @@ class LocationBarMediator
     void composeplateButtonClicked(View view) {
         TabModelSelector tabModelSelector =
                 mTabModelSelectorSupplier == null ? null : mTabModelSelectorSupplier.get();
-        if (!mNativeInitialized || mLocationBarDataProvider == null || tabModelSelector == null)
+        if (!mNativeInitialized || mLocationBarDataProvider == null || tabModelSelector == null) {
             return;
+        }
 
         Tab tab = tabModelSelector.getCurrentTab();
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
@@ -1348,6 +1357,10 @@ class LocationBarMediator
 
     @VisibleForTesting
     boolean shouldShowLensButton() {
+        if (mNavigationFulfillmentTypeSupplier.get() != NavigationFulfillmentType.DEFAULT) {
+            return false;
+        }
+
         if (shouldShowDeleteButton()) return false;
 
         // When this method is called on UI inflation, return false as the native is not ready.

@@ -229,6 +229,15 @@ public class LocationBarCoordinator
                         bottomWindowPaddingSupplier);
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
+        final boolean isIncognito =
+                incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
+        mNavigationAttachmentsCoordinator =
+                new NavigationAttachmentsCoordinator(
+                        context,
+                        windowAndroid,
+                        mLocationBarLayout,
+                        profileObservableSupplier,
+                        locationBarDataProvider);
         // TODO(crbug.com/40733049): Inject LocaleManager instance to LocationBarCoordinator instead
         // of using the singleton.
         mLocationBarMediator =
@@ -250,20 +259,12 @@ public class LocationBarCoordinator
                         mOmniboxDropdownEmbedderImpl,
                         tabModelSelectorSupplier,
                         browserControlsStateProvider,
-                        modalDialogManagerSupplier);
+                        modalDialogManagerSupplier,
+                        mNavigationAttachmentsCoordinator.getNavigationFulfillmentTypeSupplier());
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }
         mActivityLifecycleDispatcher.register(mLocationBarMediator);
-        final boolean isIncognito =
-                incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
-        mNavigationAttachmentsCoordinator =
-                new NavigationAttachmentsCoordinator(
-                        context,
-                        windowAndroid,
-                        mLocationBarLayout,
-                        profileObservableSupplier,
-                        locationBarDataProvider);
         mUrlCoordinator =
                 new UrlBarCoordinator(
                         context,

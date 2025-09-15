@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsCoordinator;
+import org.chromium.chrome.browser.omnibox.navattach.NavigationFulfillmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
@@ -179,7 +180,7 @@ class AutocompleteMediator
             mOmniboxSuggestionsVisualStateObserver = Optional.empty();
     private final NavigationAttachmentsCoordinator mNavigationAttachmentsCoordinator;
 
-    public AutocompleteMediator(
+    AutocompleteMediator(
             Context context,
             AutocompleteDelegate delegate,
             UrlBarEditingTextStateProvider textProvider,
@@ -978,7 +979,10 @@ class AutocompleteMediator
             // For Hub Search, default behavior kicks off search by pressing enter, do not return.
         }
 
-        if (mNavigationAttachmentsCoordinator.shouldUseAimUrl()) {
+        if (mNavigationAttachmentsCoordinator
+                .getNavigationFulfillmentTypeSupplier()
+                .get()
+                .equals(NavigationFulfillmentType.AI_MODE)) {
             AutocompleteMatch suggestionMatch = getSuggestionMatchForUrlText(urlText);
             if (suggestionMatch == null) return;
             loadUrlForOmniboxMatch(

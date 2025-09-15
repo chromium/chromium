@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -28,6 +29,9 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
     private final @Nullable NavigationAttachmentsMediator mMediator;
     private final @Nullable NavigationAttachmentsViewHolder mViewHolder;
     private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
+    private final ObservableSupplierImpl<@NavigationFulfillmentType Integer>
+            mNavigationFulfillmentTypeSupplier =
+                    new ObservableSupplierImpl<>(NavigationFulfillmentType.DEFAULT);
 
     public NavigationAttachmentsCoordinator(
             Context context,
@@ -68,7 +72,8 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                         model,
                         mViewHolder,
                         modelList,
-                        profileObservableSupplier);
+                        profileObservableSupplier,
+                        mNavigationFulfillmentTypeSupplier);
     }
 
     public void destroy() {
@@ -99,11 +104,12 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
     }
 
     /**
-     * Whether the url returned by {@link #getAimUrl} should be used when the user submits a typed
-     * query.
+     * @return An {@link ObservableSupplier} that notifies observers when the navigation fulfillment
+     *     type changes.
      */
-    public boolean shouldUseAimUrl() {
-        return mMediator != null && mMediator.isUsingAiMode();
+    public ObservableSupplier<@NavigationFulfillmentType Integer>
+            getNavigationFulfillmentTypeSupplier() {
+        return mNavigationFulfillmentTypeSupplier;
     }
 
     /** Returns the URL associated with the current AIM session. */

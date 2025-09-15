@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsCoordinator;
+import org.chromium.chrome.browser.omnibox.navattach.NavigationFulfillmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactoryImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAnswerAction;
@@ -1774,7 +1775,10 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onOmniboxSessionStateChange(true);
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
-        when(mNavigationAttachmentsCoordinator.shouldUseAimUrl()).thenReturn(true);
+        ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
+        supplier.set(NavigationFulfillmentType.AI_MODE);
+        when(mNavigationAttachmentsCoordinator.getNavigationFulfillmentTypeSupplier())
+                .thenReturn(supplier);
         GURL url = JUnitTestGURLs.BLUE_2;
         when(mNavigationAttachmentsCoordinator.getAimUrl("test")).thenReturn(url);
 
