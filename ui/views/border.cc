@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_flags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
@@ -50,22 +51,30 @@ SolidSidedBorder::SolidSidedBorder(const gfx::Insets& insets,
 }
 
 void SolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
-  // Undo DSF so that we can be sure to draw an integral number of pixels for
-  // the border. Integral scale factors should be unaffected by this, but for
-  // fractional scale factors this ensures sharp lines.
   gfx::ScopedCanvas scoped(canvas);
-  float dsf = canvas->UndoDeviceScaleFactor();
-
   gfx::RectF scaled_bounds;
-  if (view.layer()) {
-    scaled_bounds = gfx::ConvertRectToPixels(
-        view.GetLocalBounds(), view.layer()->device_scale_factor());
+  gfx::InsetsF insets_in_pixels;
+
+  if (!features::IsPixelCanvasRecordingEnabled()) {
+    // Undo DSF so that we can be sure to draw an integral number of pixels for
+    // the border. Integral scale factors should be unaffected by this, but for
+    // fractional scale factors this ensures sharp lines.
+    const float dsf = canvas->UndoDeviceScaleFactor();
+
+    // Use the layer's specific DSF if available, otherwise fallback to the
+    // canvas DSF we just undid.
+    const float bounds_dsf =
+        view.layer() ? view.layer()->device_scale_factor() : dsf;
+
+    scaled_bounds = gfx::ConvertRectToPixels(view.GetLocalBounds(), bounds_dsf);
+    insets_in_pixels = gfx::ConvertInsetsToPixels(insets_, dsf);
   } else {
+    // PixelCanvasRecording handles scaling, so we use the logical coordinates
+    // directly.
     scaled_bounds = gfx::RectF(view.GetLocalBounds());
-    scaled_bounds.Scale(dsf);
+    insets_in_pixels = gfx::InsetsF(insets_);
   }
 
-  gfx::InsetsF insets_in_pixels(gfx::ConvertInsetsToPixels(insets_, dsf));
   scaled_bounds.Inset(insets_in_pixels);
   gfx::Rect clip_bounds = ToEnclosedRect(scaled_bounds);
   canvas->sk_canvas()->clipRect(gfx::RectToSkRect(clip_bounds),
