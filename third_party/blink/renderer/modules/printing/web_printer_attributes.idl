@@ -25,7 +25,7 @@ dictionary WebPrintingMediaSize {
 };
 
 dictionary WebPrintingMediaCollection {
-  DOMString mediaSizeName;
+  USVString mediaSizeName;
   WebPrintingMediaSize mediaSize;
 };
 
@@ -42,7 +42,7 @@ dictionary WebPrintJobTemplateAttributes {
   unsigned long copies;
 
   WebPrintingMediaCollectionRequested mediaCol;
-  DOMString mediaSource;
+  USVString mediaSource;
   WebPrintingMultipleDocumentHandling multipleDocumentHandling;
   WebPrintingOrientationRequested orientationRequested;
   WebPrintingResolution printerResolution;
@@ -52,8 +52,8 @@ dictionary WebPrintJobTemplateAttributes {
 };
 
 dictionary WebPrinterAttributes {
-  DOMString printerName;
-  DOMString printerId;
+  USVString printerName;
+  USVString printerId;
 
   unsigned long copiesDefault;
   WebPrintingRange copiesSupported;
@@ -61,8 +61,8 @@ dictionary WebPrinterAttributes {
   WebPrintingMediaCollection mediaColDefault;
   sequence<WebPrintingMediaCollection> mediaColDatabase;
 
-  DOMString mediaSourceDefault;
-  sequence<DOMString> mediaSourceSupported;
+  USVString mediaSourceDefault;
+  sequence<USVString> mediaSourceSupported;
 
   WebPrintingMimeMediaType documentFormatDefault;
   sequence<WebPrintingMimeMediaType> documentFormatSupported;
@@ -80,7 +80,7 @@ dictionary WebPrinterAttributes {
   sequence<WebPrintColorMode> printColorModeSupported;
 
   WebPrinterState printerState;
-  DOMString printerStateMessage;
+  USVString printerStateMessage;
   sequence<WebPrinterStateReason> printerStateReasons;
 
   WebPrintQuality printQualityDefault;

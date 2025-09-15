@@ -17,7 +17,7 @@ interface WebPrinter {
 
   [CallWith=ScriptState, RaisesException, MeasureAs=WebPrinterPrintJobFunction]
   Promise<WebPrintJob> submitPrintJob(
-    DOMString job_name,
+    USVString job_name,
     WebPrintDocumentDescription document,
     WebPrintJobTemplateAttributes attributes);
 };
