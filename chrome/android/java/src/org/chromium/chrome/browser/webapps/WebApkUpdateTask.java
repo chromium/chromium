@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabLocator;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
@@ -20,11 +24,12 @@ import java.util.List;
  * Handles servicing of background WebAPK update requests coming via background_task_scheduler
  * component. Will update multiple WebAPKs if there are multiple WebAPKs pending update.
  */
+@NullMarked
 public class WebApkUpdateTask extends NativeBackgroundTask {
     /** The WebappDataStorage for the WebAPK to update. */
-    private WebappDataStorage mStorageToUpdate;
+    private @Nullable WebappDataStorage mStorageToUpdate;
 
-    /** Whether there are more WebAPKs to update than just {@link mStorageToUpdate}. */
+    /** Whether there are more WebAPKs to update than just {@link #mStorageToUpdate}. */
     private boolean mMoreToUpdate;
 
     @Override
@@ -39,6 +44,8 @@ public class WebApkUpdateTask extends NativeBackgroundTask {
         List<String> ids = WebappRegistry.getInstance().findWebApksWithPendingUpdate();
         for (String id : ids) {
             WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(id);
+            assumeNonNull(storage);
+
             WeakReference<BaseCustomTabActivity> activity =
                     CustomTabLocator.findRunningWebappActivityWithId(storage.getId());
             if (activity == null || activity.get() == null) {
@@ -54,6 +61,7 @@ public class WebApkUpdateTask extends NativeBackgroundTask {
     protected void onStartTaskWithNative(
             Context context, TaskParameters taskParameters, final TaskFinishedCallback callback) {
         assert taskParameters.getTaskId() == TaskIds.WEBAPK_UPDATE_JOB_ID;
+        assert mStorageToUpdate != null;
 
         WebApkUpdateManager.updateWhileNotRunning(
                 mStorageToUpdate, () -> callback.taskFinished(mMoreToUpdate));
