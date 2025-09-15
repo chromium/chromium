@@ -8,8 +8,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "skia/ext/skia_utils_win.h"
 
 namespace gfx {
@@ -19,10 +21,18 @@ void CreateBitmapV4HeaderForARGB888(int width,
                                     BITMAPV4HEADER* hdr) {
   // Because bmp v4 header is just an extension, we just create a v3 header and
   // copy the bits over to the v4 header.
+  //
+  // Due to strict aliasing rules, we cannot just cast a v4 header to a v3
+  // header, this requires an extra copy to reuse the existing v3 header
+  // creation code.
   BITMAPINFOHEADER header_v3;
   skia::CreateBitmapHeaderForXRGB888(width, height, &header_v3);
-  UNSAFE_TODO(memset(hdr, 0, sizeof(BITMAPV4HEADER)));
-  UNSAFE_TODO(memcpy(hdr, &header_v3, sizeof(BITMAPINFOHEADER)));
+
+  base::span bytes_v4 = base::byte_span_from_ref(*hdr);
+  base::span bytes_v3 = base::byte_span_from_ref(header_v3);
+
+  std::ranges::fill(bytes_v4, 0);
+  bytes_v4.copy_prefix_from(bytes_v3);
 
   // Correct the size of the header and fill in the mask values.
   hdr->bV4Size = sizeof(BITMAPV4HEADER);
