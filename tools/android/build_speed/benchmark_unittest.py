@@ -5,6 +5,7 @@
 """Unit tests for tools.android.build_speed.benchmark."""
 
 import contextlib
+import json
 import pathlib
 import subprocess
 import sys
@@ -115,6 +116,67 @@ class TestBenchmarkScript(unittest.TestCase):
                 'gn_gen: 1.2s\n'
                 'chrome_nosig_compile: 10.6s')
             self.assertEqual(printed_output, expected_output)
+
+    @unittest.mock.patch('builtins.print')
+    @unittest.mock.patch('benchmark.run_benchmarks')
+    def test_main_json_output(self, mock_run_benchmarks, mock_print):
+        mock_run_benchmarks.return_value = {
+            'gn_gen': [1.23],
+            'chrome_nosig_compile': [10.56],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            constants.SetOutputDirectory(tmpdir)
+            with unittest.mock.patch('sys.argv', [
+                    'benchmark.py', 'chrome_nosig', '--json', '--emulator',
+                    'fake_emu'
+            ]):
+                benchmark.main()
+
+        # Verify run_benchmarks call
+        args, _kwargs = mock_run_benchmarks.call_args
+        self.assertEqual(args[0], ['chrome_nosig'])
+        self.assertEqual(args[5], 'fake_emu')
+
+        # Verify JSON output
+        printed_output = mock_print.call_args.args[0]
+        parsed_json = json.loads(printed_output)
+        expected_json = [
+            {
+                'name':
+                'gn_gen',
+                'timings': [1.23],
+                'emulator':
+                'fake_emu',
+                'gn_args': [
+                    'target_os="android"',
+                    'use_remoteexec=true',
+                    'use_siso=true',
+                    'android_static_analysis="build_server"',
+                    'incremental_install=true',
+                    'target_cpu="x64"',
+                ],
+                'target':
+                'chrome_public_apk',
+            },
+            {
+                'name':
+                'chrome_nosig_compile',
+                'timings': [10.56],
+                'emulator':
+                'fake_emu',
+                'gn_args': [
+                    'target_os="android"',
+                    'use_remoteexec=true',
+                    'use_siso=true',
+                    'android_static_analysis="build_server"',
+                    'incremental_install=true',
+                    'target_cpu="x64"',
+                ],
+                'target':
+                'chrome_public_apk',
+            },
+        ]
+        self.assertEqual(parsed_json, expected_json)
 
 
 if __name__ == '__main__':

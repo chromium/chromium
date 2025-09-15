@@ -25,6 +25,7 @@ import collections
 import contextlib
 import dataclasses
 import functools
+import json
 import logging
 import os
 import pathlib
@@ -469,7 +470,7 @@ def _parse_benchmarks(benchmarks: List[str]) -> Iterator[Benchmark]:
 
 def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                    output_directory: pathlib.Path, target: str, repeat: int,
-                   emulator_avd_name: Optional[str]) -> Dict[str, List[float]]:
+                   emulator_avd_name: Optional[str]) -> Dict:
     args_gn_path = output_directory / 'args.gn'
     if emulator_avd_name is None:
         emulator_ctx = contextlib.nullcontext
@@ -566,6 +567,9 @@ def main():
                         '--quiet',
                         action='store_true',
                         help='Do not print the summary.')
+    parser.add_argument('--json',
+                        action='store_true',
+                        help='Output machine-readable output per benchmark.')
     args = parser.parse_args()
 
     if args.output_directory:
@@ -621,7 +625,18 @@ def main():
     results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
                              args.repeat, args.emulator)
 
-    if not args.quiet:
+    if args.json:
+        json_results = []
+        for name, timings in results.items():
+            json_results.append({
+                'name': name,
+                'timings': timings,
+                'emulator': args.emulator,
+                'gn_args': gn_args,
+                'target': target,
+            })
+        print(json.dumps(json_results, indent=2))
+    elif not args.quiet:
         print(f'Summary')
         print(f'emulator: {args.emulator}')
         print(f'gn args: {" ".join(gn_args)}')
