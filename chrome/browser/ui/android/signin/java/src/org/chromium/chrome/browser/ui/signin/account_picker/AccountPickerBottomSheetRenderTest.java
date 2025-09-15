@@ -419,7 +419,7 @@ public class AccountPickerBottomSheetRenderTest {
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
-                                            mSigninAccessPoint),
+                                            mActivityTestRule.getActivity(), mSigninAccessPoint),
                                     null,
                                     AccountPickerLaunchMode.DEFAULT,
                                     /* isWebSignin= */ mSigninAccessPoint

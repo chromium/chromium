@@ -4,18 +4,18 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
+import android.text.TextUtils;
+
 import androidx.annotation.IntDef;
-import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.signin.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
-/* Class containing IDs of resources for the history sync opt-in view. */
+/** Class containing strings for the history sync opt-in view. */
 @NullMarked
 public final class HistorySyncConfig {
 
@@ -33,16 +33,14 @@ public final class HistorySyncConfig {
         int REQUIRED = 2;
     }
 
-    public final @StringRes int titleId;
-    public final @StringRes int subtitleId;
+    public final String title;
+    public final String subtitle;
 
-    public HistorySyncConfig() {
-        this(/* titleId= */ 0, /* subtitleId= */ 0);
-    }
-
-    public HistorySyncConfig(@StringRes int titleId, @StringRes int subtitleId) {
-        this.titleId = titleId == 0 ? R.string.history_sync_title : titleId;
-        this.subtitleId = subtitleId == 0 ? R.string.history_sync_subtitle : subtitleId;
+    public HistorySyncConfig(String title, String subtitle) {
+        assert !TextUtils.isEmpty(title);
+        assert !TextUtils.isEmpty(subtitle);
+        this.title = title;
+        this.subtitle = subtitle;
     }
 
     @Override
@@ -51,11 +49,11 @@ public final class HistorySyncConfig {
             return false;
         }
         HistorySyncConfig other = (HistorySyncConfig) object;
-        return titleId == other.titleId && subtitleId == other.subtitleId;
+        return Objects.equals(title, other.title) && Objects.equals(subtitle, other.subtitle);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(titleId, subtitleId);
+        return Objects.hash(title, subtitle);
     }
 }

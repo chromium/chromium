@@ -88,7 +88,7 @@ public abstract class SigninPromoDelegate {
 
     AccountPickerBottomSheetStrings getBottomSheetStrings() {
         return new AccountPickerBottomSheetStrings.Builder(
-                        R.string.signin_account_picker_bottom_sheet_title)
+                        mContext.getString(R.string.signin_account_picker_bottom_sheet_title))
                 .build();
     }
 
@@ -128,10 +128,11 @@ public abstract class SigninPromoDelegate {
                                 getBottomSheetStrings(),
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                getHistoryOptInMode())
+                                getHistoryOptInMode(),
+                                mContext.getString(R.string.history_sync_title),
+                                mContext.getString(R.string.history_sync_subtitle))
                         .build();
-        @Nullable
-        Intent intent =
+        @Nullable Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
                         mContext, mProfile, config, getAccessPoint());
         if (intent != null) {
@@ -147,10 +148,11 @@ public abstract class SigninPromoDelegate {
                                 getBottomSheetStrings(),
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                                getHistoryOptInMode())
+                                getHistoryOptInMode(),
+                                mContext.getString(R.string.history_sync_title),
+                                mContext.getString(R.string.history_sync_subtitle))
                         .build();
-        @Nullable
-        Intent intent =
+        @Nullable Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
                         mContext, mProfile, config, getAccessPoint());
         if (intent != null) {

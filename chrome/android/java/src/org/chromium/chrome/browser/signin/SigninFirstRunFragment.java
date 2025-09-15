@@ -84,6 +84,11 @@ public class SigninFirstRunFragment extends Fragment
                         this,
                         PrivacyPreferencesManagerImpl.getInstance(),
                         new FullscreenSigninConfig(
+                                /* title= */ context.getString(R.string.signin_fre_title),
+                                /* subtitle= */ context.getString(R.string.signin_fre_subtitle),
+                                /* dismissText= */ context.getString(
+                                        R.string.signin_fre_dismiss_button),
+                                /* logoId= */ 0,
                                 /* shouldDisableSignin= */ DeviceInfo.isAutomotive()),
                         SigninAccessPoint.START_PAGE);
 

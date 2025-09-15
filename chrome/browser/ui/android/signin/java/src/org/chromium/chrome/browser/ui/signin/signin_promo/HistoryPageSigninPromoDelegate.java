@@ -119,8 +119,10 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
     @Override
     AccountPickerBottomSheetStrings getBottomSheetStrings() {
         return new AccountPickerBottomSheetStrings.Builder(
-                        R.string.signin_account_picker_bottom_sheet_title)
-                .setSubtitleStringId(R.string.signin_account_picker_bottom_sheet_benefits_subtitle)
+                        mContext.getString(R.string.signin_account_picker_bottom_sheet_title))
+                .setSubtitleString(
+                        mContext.getString(
+                                R.string.signin_account_picker_bottom_sheet_benefits_subtitle))
                 .build();
     }
 

@@ -12,6 +12,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -46,6 +49,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+
+import java.lang.ref.WeakReference;
 
 /** JUnit tests for the class {@link SigninBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -197,6 +202,8 @@ public class SigninBridgeTest {
     public void testAccountPickerShown() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        Context context = ApplicationProvider.getApplicationContext();
+        when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
 
         SigninBridge.openAccountPickerBottomSheet(
                 mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);

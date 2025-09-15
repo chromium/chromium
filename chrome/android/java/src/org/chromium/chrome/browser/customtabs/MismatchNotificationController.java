@@ -160,18 +160,22 @@ public class MismatchNotificationController
         // TODO(crbug.com/369562441): Update these strings once specs are finalized.
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
-                                org.chromium.chrome.browser.ui.signin.R.string
-                                        .signin_account_picker_bottom_sheet_title)
-                        .setSubtitleStringId(
-                                org.chromium.chrome.browser.ui.signin.R.string
-                                        .signin_account_picker_bottom_sheet_benefits_subtitle)
+                                context.getString(
+                                        org.chromium.chrome.browser.ui.signin.R.string
+                                                .signin_account_picker_bottom_sheet_title))
+                        .setSubtitleString(
+                                context.getString(
+                                        org.chromium.chrome.browser.ui.signin.R.string
+                                                .signin_account_picker_bottom_sheet_benefits_subtitle))
                         .build();
         BottomSheetSigninAndHistorySyncConfig config =
                 new BottomSheetSigninAndHistorySyncConfig.Builder(
                                 bottomSheetStrings,
                                 NoAccountSigninMode.NO_SIGNIN,
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                HistorySyncConfig.OptInMode.NONE)
+                                HistorySyncConfig.OptInMode.NONE,
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
                         .selectedCoreAccountId(mAppAccountId)
                         .build();
 

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
-import androidx.annotation.StringRes;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
@@ -22,12 +20,10 @@ class HistorySyncViewBinder {
         if (key == HistorySyncProperties.PROFILE_DATA) {
             view.getAccountImageView()
                     .setImageDrawable(model.get(HistorySyncProperties.PROFILE_DATA).getImage());
-        } else if (key == HistorySyncProperties.TITLE_STRING_ID) {
-            @StringRes int textId = model.get(HistorySyncProperties.TITLE_STRING_ID);
-            view.getTitle().setText(textId);
-        } else if (key == HistorySyncProperties.SUBTITLE_STRING_ID) {
-            @StringRes int textId = model.get(HistorySyncProperties.SUBTITLE_STRING_ID);
-            view.getSubtitle().setText(textId);
+        } else if (key == HistorySyncProperties.TITLE_STRING) {
+            view.getTitle().setText(model.get(HistorySyncProperties.TITLE_STRING));
+        } else if (key == HistorySyncProperties.SUBTITLE_STRING) {
+            view.getSubtitle().setText(model.get(HistorySyncProperties.SUBTITLE_STRING));
         } else if (key == HistorySyncProperties.FOOTER_STRING) {
             view.getDetailsDescription().setText(model.get(HistorySyncProperties.FOOTER_STRING));
         } else if (key == HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -66,8 +65,8 @@ public final class BottomSheetSigninAndHistorySyncConfig {
     /** Builder for {@link BottomSheetSigninAndHistorySyncConfig}. */
     public static class Builder {
         private final AccountPickerBottomSheetStrings mBottomSheetStrings;
-        private @StringRes int mHistorySyncTitleId;
-        private @StringRes int mHistorySyncSubtitleId;
+        private final String mHistorySyncTitle;
+        private final String mHistorySyncSubtitle;
         private final @NoAccountSigninMode int mNoAccountSigninMode;
         private final @WithAccountSigninMode int mWithAccountSigninMode;
         private final @HistorySyncConfig.OptInMode int mHistoryOptInMode;
@@ -83,16 +82,22 @@ public final class BottomSheetSigninAndHistorySyncConfig {
          *     there are 1+ accounts on the device.
          * @param historyOptInMode Whether the history opt-in should be always, optionally or never
          *     shown.
+         * @param historySyncTitle the history sync screen title.
+         * @param historySyncSubtitle the history sync screen subtitle.
          */
         public Builder(
                 AccountPickerBottomSheetStrings bottomSheetStrings,
                 @NoAccountSigninMode int noAccountSigninMode,
                 @WithAccountSigninMode int withAccountSigninMode,
-                @HistorySyncConfig.OptInMode int historyOptInMode) {
+                @HistorySyncConfig.OptInMode int historyOptInMode,
+                String historySyncTitle,
+                String historySyncSubtitle) {
             mBottomSheetStrings = bottomSheetStrings;
             mNoAccountSigninMode = noAccountSigninMode;
             mWithAccountSigninMode = withAccountSigninMode;
             mHistoryOptInMode = historyOptInMode;
+            mHistorySyncTitle = historySyncTitle;
+            mHistorySyncSubtitle = historySyncSubtitle;
         }
 
         /**
@@ -104,33 +109,10 @@ public final class BottomSheetSigninAndHistorySyncConfig {
             return this;
         }
 
-        /**
-         * Set the resource ID for the string to use as the history sync screen title.
-         *
-         * @param historySyncTitleId the resource ID of the history sync screen title.
-         */
-        public Builder historySyncTitleId(@StringRes int historySyncTitleId) {
-            assert historySyncTitleId != 0;
-            mHistorySyncTitleId = historySyncTitleId;
-            return this;
-        }
-
-        /**
-         * Set the resource ID for the string to use as the history sync screen subtitle.
-         *
-         * @param historySyncSubtitleId the resource ID of the history sync screen subtitle.
-         */
-        public Builder historySyncSubtitleId(@StringRes int historySyncSubtitleId) {
-            assert historySyncSubtitleId != 0;
-            mHistorySyncSubtitleId = historySyncSubtitleId;
-            return this;
-        }
-
         public BottomSheetSigninAndHistorySyncConfig build() {
             final HistorySyncConfig historySyncConfig =
                     new HistorySyncConfig(
-                            /* titleId= */ mHistorySyncTitleId,
-                            /* subtitleId= */ mHistorySyncSubtitleId);
+                            /* title= */ mHistorySyncTitle, /* subtitle= */ mHistorySyncSubtitle);
             return new BottomSheetSigninAndHistorySyncConfig(
                     mBottomSheetStrings,
                     historySyncConfig,

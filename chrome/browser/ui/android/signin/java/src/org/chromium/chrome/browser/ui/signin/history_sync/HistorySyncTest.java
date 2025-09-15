@@ -79,7 +79,7 @@ public class HistorySyncTest {
 
     private static final @SigninAccessPoint int SIGNIN_ACCESS_POINT = SigninAccessPoint.UNKNOWN;
     private static final int MINOR_MODE_RESTRICTIONS_FETCH_DEADLINE_MS = 1000;
-    private static final HistorySyncConfig CONFIG = new HistorySyncConfig();
+    private static final HistorySyncConfig CONFIG = new HistorySyncConfig("Title", "Subtitle");
 
     @Mock private SyncService mSyncServiceMock;
     @Mock private HistorySyncCoordinator.HistorySyncDelegate mHistorySyncDelegateMock;

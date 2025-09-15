@@ -22,7 +22,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,9 +54,7 @@ public class SyncPromoControllerTest {
             SyncPromoController.SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS;
 
     private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
-            new AccountPickerBottomSheetStrings.Builder(
-                            R.string.signin_account_picker_bottom_sheet_title)
-                    .build();
+            new AccountPickerBottomSheetStrings.Builder("Title").build();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);

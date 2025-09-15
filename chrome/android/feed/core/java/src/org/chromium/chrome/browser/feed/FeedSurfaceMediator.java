@@ -1000,7 +1000,8 @@ public class FeedSurfaceMediator
         } else {
             AccountPickerBottomSheetStrings bottomSheetStrings =
                     new AccountPickerBottomSheetStrings.Builder(
-                                    R.string.signin_account_picker_bottom_sheet_title)
+                                    mContext.getString(
+                                            R.string.signin_account_picker_bottom_sheet_title))
                             .build();
             SyncPromoController promoController =
                     new SyncPromoController(

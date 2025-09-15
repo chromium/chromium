@@ -89,6 +89,7 @@ public class FullscreenSigninPromoLauncherTest {
         when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME)).thenReturn("");
         mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
+        when(mContext.getString(anyInt())).thenReturn("string");
     }
 
     @After

@@ -146,9 +146,9 @@ public class FullscreenSigninMediator
                         ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                                 && !mConfig.shouldDisableSignin,
                         mConfig.logoId,
-                        R.string.fre_welcome,
-                        mConfig.subtitleId,
-                        mConfig.dismissTextId,
+                        mContext.getString(R.string.fre_welcome),
+                        mConfig.subtitle,
+                        mConfig.dismissText,
                         /* showInitialLoadProgressSpinner= */ !mInitialLoadCompleted);
 
         if (mInitialLoadCompleted) {
@@ -283,7 +283,7 @@ public class FullscreenSigninMediator
         mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
         if (isSigninSupported) {
-            mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
+            mModel.set(FullscreenSigninProperties.TITLE_STRING, mConfig.title);
             SyncService syncService = SyncServiceFactory.getForProfile(profile);
             assumeNonNull(syncService);
             boolean isSyncDataManaged = false;
@@ -296,12 +296,12 @@ public class FullscreenSigninMediator
                 }
             }
             mModel.set(
-                    FullscreenSigninProperties.SUBTITLE_STRING_ID,
+                    FullscreenSigninProperties.SUBTITLE_STRING,
                     isSyncDataManaged
-                            ? R.string.signin_fre_subtitle_without_sync
-                            : mConfig.subtitleId);
+                            ? mContext.getString(R.string.signin_fre_subtitle_without_sync)
+                            : mConfig.subtitle);
         } else {
-            mModel.set(FullscreenSigninProperties.SUBTITLE_STRING_ID, 0);
+            mModel.set(FullscreenSigninProperties.SUBTITLE_STRING, null);
         }
 
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;

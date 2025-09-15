@@ -92,7 +92,9 @@ public class HistorySyncFirstRunFragment extends Fragment
                         getActivity(),
                         this,
                         profile,
-                        new HistorySyncConfig(),
+                        new HistorySyncConfig(
+                                getActivity().getString(R.string.history_sync_title),
+                                getActivity().getString(R.string.history_sync_subtitle)),
                         SigninAccessPoint.START_PAGE,
                         false,
                         false,

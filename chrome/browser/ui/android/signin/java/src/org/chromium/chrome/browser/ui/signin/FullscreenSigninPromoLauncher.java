@@ -52,9 +52,14 @@ public final class FullscreenSigninPromoLauncher {
         }
 
         FullscreenSigninAndHistorySyncConfig config =
-                new FullscreenSigninAndHistorySyncConfig.Builder().build();
-        @Nullable
-        Intent intent =
+                new FullscreenSigninAndHistorySyncConfig.Builder(
+                                context.getString(R.string.signin_fre_title),
+                                context.getString(R.string.signin_fre_subtitle),
+                                context.getString(R.string.signin_fre_dismiss_button),
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
+                        .build();
+        @Nullable Intent intent =
                 signinAndHistorySyncActivityLauncher.createFullscreenSigninIntent(
                         context, profile, config, SigninAccessPoint.SIGNIN_PROMO);
         if (intent == null) {

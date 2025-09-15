@@ -186,12 +186,14 @@ public class SendTabToSelfCoordinator {
                 {
                     AccountPickerBottomSheetStrings strings =
                             new AccountPickerBottomSheetStrings.Builder(
-                                            R.string
-                                                    .signin_account_picker_bottom_sheet_title_for_send_tab_to_self)
-                                    .setSubtitleStringId(
-                                            R.string
-                                                    .signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self)
-                                    .setDismissButtonStringId(R.string.cancel)
+                                            mContext.getString(
+                                                    R.string
+                                                            .signin_account_picker_bottom_sheet_title_for_send_tab_to_self))
+                                    .setSubtitleString(
+                                            mContext.getString(
+                                                    R.string
+                                                            .signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self))
+                                    .setDismissButtonString(mContext.getString(R.string.cancel))
                                     .build();
                     var identityManager =
                             IdentityServicesProvider.get().getIdentityManager(mProfile);

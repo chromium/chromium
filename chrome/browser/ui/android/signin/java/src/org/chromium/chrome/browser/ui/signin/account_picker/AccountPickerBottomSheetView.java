@@ -212,7 +212,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     /** Sets the title, subtitle, and dismiss button text. */
     void setBottomSheetStrings(
-            @StringRes int title, @StringRes int subtitle, @StringRes int cancelButton) {
+            String title, @Nullable String subtitle, @Nullable String cancelButton) {
         final int[] viewStates = {
             ViewState.COLLAPSED_ACCOUNT_LIST, ViewState.EXPANDED_ACCOUNT_LIST, ViewState.NO_ACCOUNTS
         };
@@ -222,7 +222,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
             TextViewWithLeading subtitleView =
                     view.findViewById(R.id.account_picker_header_subtitle);
-            if (subtitle == 0) {
+            if (subtitle == null) {
                 subtitleView.setVisibility(View.GONE);
             } else {
                 subtitleView.setText(subtitle);
@@ -230,7 +230,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
             }
         }
 
-        if (cancelButton == 0) {
+        if (cancelButton == null) {
             showDismissButton(false);
         } else {
             mDismissButton.setText(cancelButton);

@@ -83,8 +83,8 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
                         profileData,
                         this::onAcceptClicked,
                         this::onDeclineClicked,
-                        mConfig.titleId,
-                        mConfig.subtitleId,
+                        mConfig.title,
+                        mConfig.subtitle,
                         footerString,
                         mUseLandscapeLayout);
     }

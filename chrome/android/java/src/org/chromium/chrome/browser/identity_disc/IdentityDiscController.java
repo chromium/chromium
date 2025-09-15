@@ -413,19 +413,23 @@ public class IdentityDiscController
                 && UserPrefs.get(originalProfile).getBoolean(Pref.SIGNIN_ALLOWED)) {
             AccountPickerBottomSheetStrings bottomSheetStrings =
                     new AccountPickerBottomSheetStrings.Builder(
-                                    R.string.signin_account_picker_bottom_sheet_title)
-                            .setSubtitleStringId(
-                                    R.string.signin_account_picker_bottom_sheet_benefits_subtitle)
+                                    mContext.getString(
+                                            R.string.signin_account_picker_bottom_sheet_title))
+                            .setSubtitleString(
+                                    mContext.getString(
+                                            R.string
+                                                    .signin_account_picker_bottom_sheet_benefits_subtitle))
                             .build();
             BottomSheetSigninAndHistorySyncConfig config =
                     new BottomSheetSigninAndHistorySyncConfig.Builder(
                                     bottomSheetStrings,
                                     NoAccountSigninMode.BOTTOM_SHEET,
                                     WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    HistorySyncConfig.OptInMode.OPTIONAL)
+                                    HistorySyncConfig.OptInMode.OPTIONAL,
+                                    mContext.getString(R.string.history_sync_title),
+                                    mContext.getString(R.string.history_sync_subtitle))
                             .build();
-            @Nullable
-            Intent intent =
+            @Nullable Intent intent =
                     SigninAndHistorySyncActivityLauncherImpl.get()
                             .createBottomSheetSigninIntentOrShowError(
                                     mContext,

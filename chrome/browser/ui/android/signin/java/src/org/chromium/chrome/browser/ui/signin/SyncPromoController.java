@@ -518,10 +518,11 @@ public class SyncPromoController {
                                 mBottomSheetStrings,
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                mHistoryOptInMode)
+                                mHistoryOptInMode,
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
                         .build();
-        @Nullable
-        Intent intent =
+        @Nullable Intent intent =
                 mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         context, mProfile, config, mAccessPoint);
         if (intent != null) {
@@ -536,10 +537,11 @@ public class SyncPromoController {
                                 mBottomSheetStrings,
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                mHistoryOptInMode)
+                                mHistoryOptInMode,
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
                         .build();
-        @Nullable
-        Intent intent =
+        @Nullable Intent intent =
                 mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         context, mProfile, config, mAccessPoint);
         if (intent != null) {
@@ -554,10 +556,11 @@ public class SyncPromoController {
                                 mBottomSheetStrings,
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                                mHistoryOptInMode)
+                                mHistoryOptInMode,
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
                         .build();
-        @Nullable
-        Intent intent =
+        @Nullable Intent intent =
                 mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         context, mProfile, config, mAccessPoint);
         if (intent != null) {

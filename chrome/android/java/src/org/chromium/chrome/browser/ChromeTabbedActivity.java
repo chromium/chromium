@@ -3168,23 +3168,30 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
             @Override
             public void showHistorySyncOptIn(Runnable dismissHistorySyncModuleCallback) {
+                AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
+                        new AccountPickerBottomSheetStrings.Builder(
+                                        getContext()
+                                                .getString(
+                                                        R.string
+                                                                .signin_account_picker_bottom_sheet_title))
+                                .setSubtitleString(
+                                        getContext()
+                                                .getString(
+                                                        R.string
+                                                                .signin_account_picker_bottom_sheet_benefits_subtitle))
+                                .build();
                 BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
                         new BottomSheetSigninAndHistorySyncConfig.Builder(
-                                        new AccountPickerBottomSheetStrings.Builder(
-                                                        R.string
-                                                                .signin_account_picker_bottom_sheet_title)
-                                                .setSubtitleStringId(
-                                                        R.string
-                                                                .signin_account_picker_bottom_sheet_benefits_subtitle)
-                                                .build(),
+                                        accountPickerBottomSheetStrings,
                                         BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode
                                                 .NO_SIGNIN,
                                         BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
                                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                        HistorySyncConfig.OptInMode.REQUIRED)
+                                        HistorySyncConfig.OptInMode.REQUIRED,
+                                        getContext().getString(R.string.history_sync_title),
+                                        getContext().getString(R.string.history_sync_subtitle))
                                 .build();
-                @Nullable
-                Intent intent =
+                @Nullable Intent intent =
                         SigninAndHistorySyncActivityLauncherImpl.get()
                                 .createBottomSheetSigninIntentOrShowError(
                                         ChromeTabbedActivity.this,

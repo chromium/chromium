@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -103,6 +104,7 @@ public class SafetyHubModuleDelegateTest {
     @Test
     public void testLaunchSigninPromo() {
         mSafetyHubTestRule.setSignedInState(false);
+        when(mContext.getString(anyInt())).thenReturn("string");
         when(mSigninLauncher.createBottomSheetSigninIntentOrShowError(
                         eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SAFETY_CHECK)))
                 .thenReturn(mSigninIntent);

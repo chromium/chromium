@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.creator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -71,6 +72,7 @@ public class CreatorActionDelegateImplTest {
     @Test
     public void testShowSignInInterstitial() {
         @SigninAccessPoint int signinAccessPoint = SigninAccessPoint.NTP_FEED_BOTTOM_PROMO;
+        when(mActivity.getString(anyInt())).thenReturn("string");
         when(mSigninLauncher.createBottomSheetSigninIntentOrShowError(
                         any(), any(), any(), eq(signinAccessPoint)))
                 .thenReturn(mSigninIntent);

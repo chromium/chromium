@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -14,10 +13,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 
 import java.util.Objects;
 
-/**
- * Class containing IDs of resources for the fullscreen sign-in view and the history sync opt-in
- * view.
- */
+/** Class containing resources for the fullscreen sign-in view and the history sync opt-in view. */
 @NullMarked
 public final class FullscreenSigninAndHistorySyncConfig {
     public final FullscreenSigninConfig signinConfig;
@@ -25,38 +21,31 @@ public final class FullscreenSigninAndHistorySyncConfig {
     public final @HistorySyncConfig.OptInMode int historyOptInMode;
 
     /**
-     * Builder for {@link FullscreenSigninAndHistorySyncConfig} which contains resource IDs for the
+     * Builder for {@link FullscreenSigninAndHistorySyncConfig} which contains resources for the
      * sign-in and history sync fullscreen views.
      */
     public static class Builder {
-        private @StringRes int mSigninTitleId = R.string.signin_fre_title;
-        private @StringRes int mSigninSubtitleId = R.string.signin_fre_subtitle;
-        private @StringRes int mSigninDismissTextId = R.string.signin_fre_dismiss_button;
+        private final String mSigninTitle;
+        private final String mSigninSubtitle;
+        private final String mSigninDismissText;
         private @DrawableRes int mSigninLogoId;
         private boolean mShouldDisableSignin;
-        private @StringRes int mHistorySyncTitleId;
-        private @StringRes int mHistorySyncSubtitleId;
+        private final String mHistorySyncTitle;
+        private final String mHistorySyncSubtitle;
         private @HistorySyncConfig.OptInMode int mHistoryOptInMode =
                 HistorySyncConfig.OptInMode.OPTIONAL;
 
-        public Builder() {}
-
-        public Builder signinTitleId(@StringRes int signinTitleId) {
-            assert signinTitleId != 0;
-            mSigninTitleId = signinTitleId;
-            return this;
-        }
-
-        public Builder signinSubtitleId(@StringRes int signinSubtitleId) {
-            assert signinSubtitleId != 0;
-            mSigninSubtitleId = signinSubtitleId;
-            return this;
-        }
-
-        public Builder signinDismissTextId(@StringRes int signinDismissTextId) {
-            assert signinDismissTextId != 0;
-            mSigninDismissTextId = signinDismissTextId;
-            return this;
+        public Builder(
+                String signinTitle,
+                String signinSubtitle,
+                String signinDismissText,
+                String historySyncTitle,
+                String historySyncSubtitle) {
+            mSigninTitle = signinTitle;
+            mSigninSubtitle = signinSubtitle;
+            mSigninDismissText = signinDismissText;
+            mHistorySyncTitle = historySyncTitle;
+            mHistorySyncSubtitle = historySyncSubtitle;
         }
 
         // Set the drawable id of the sign-in screen logo. Should not be 0.
@@ -73,18 +62,6 @@ public final class FullscreenSigninAndHistorySyncConfig {
             return this;
         }
 
-        public Builder historySyncTitleId(@StringRes int historySyncTitleId) {
-            assert historySyncTitleId != 0;
-            mHistorySyncTitleId = historySyncTitleId;
-            return this;
-        }
-
-        public Builder historySyncSubtitleId(@StringRes int historySyncSubtitleId) {
-            assert historySyncSubtitleId != 0;
-            mHistorySyncSubtitleId = historySyncSubtitleId;
-            return this;
-        }
-
         public Builder historyOptInMode(@HistorySyncConfig.OptInMode int historyOptInMode) {
             mHistoryOptInMode = historyOptInMode;
             return this;
@@ -93,15 +70,14 @@ public final class FullscreenSigninAndHistorySyncConfig {
         public FullscreenSigninAndHistorySyncConfig build() {
             final FullscreenSigninConfig signinConfig =
                     new FullscreenSigninConfig(
-                            /* titleId= */ mSigninTitleId,
-                            /* subtitleId= */ mSigninSubtitleId,
-                            /* dismissTextId= */ mSigninDismissTextId,
+                            /* title= */ mSigninTitle,
+                            /* subtitle= */ mSigninSubtitle,
+                            /* dismissText= */ mSigninDismissText,
                             /* logoId= */ mSigninLogoId,
                             /* shouldDisableSignin= */ mShouldDisableSignin);
             final HistorySyncConfig historySyncConfig =
                     new HistorySyncConfig(
-                            /* titleId= */ mHistorySyncTitleId,
-                            /* subtitleId= */ mHistorySyncSubtitleId);
+                            /* title= */ mHistorySyncTitle, /* subtitle= */ mHistorySyncSubtitle);
 
             return new FullscreenSigninAndHistorySyncConfig(
                     signinConfig, historySyncConfig, mHistoryOptInMode);

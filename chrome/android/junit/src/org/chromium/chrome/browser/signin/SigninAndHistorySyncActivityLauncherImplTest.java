@@ -76,17 +76,23 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
-            new AccountPickerBottomSheetStrings.Builder(
-                            R.string.signin_account_picker_bottom_sheet_title)
-                    .build();
+            new AccountPickerBottomSheetStrings.Builder("title").build();
     private static final FullscreenSigninAndHistorySyncConfig FULLSCREEN_CONFIG =
-            new FullscreenSigninAndHistorySyncConfig.Builder().build();
+            new FullscreenSigninAndHistorySyncConfig.Builder(
+                            "title",
+                            "subtitle",
+                            "dismiss",
+                            "history sync title",
+                            "history sync subtitle")
+                    .build();
     private static final BottomSheetSigninAndHistorySyncConfig BOTTOM_SHEET_CONFIG =
             new BottomSheetSigninAndHistorySyncConfig.Builder(
                             BOTTOM_SHEET_STRINGS,
                             NoAccountSigninMode.BOTTOM_SHEET,
                             WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                            HistorySyncConfig.OptInMode.REQUIRED)
+                            HistorySyncConfig.OptInMode.REQUIRED,
+                            "history sync title",
+                            "history sync subtitle")
                     .build();
 
     private final Context mContext = ContextUtils.getApplicationContext();
@@ -144,7 +150,9 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             BOTTOM_SHEET_STRINGS,
                                             NoAccountSigninMode.BOTTOM_SHEET,
                                             WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED)
+                                            HistorySyncConfig.OptInMode.REQUIRED,
+                                            "title",
+                                            "subtitle")
                                     .selectedCoreAccountId(TestAccounts.ACCOUNT1.getId())
                                     .build();
                     @Nullable
@@ -268,7 +276,9 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             BOTTOM_SHEET_STRINGS,
                                             NoAccountSigninMode.BOTTOM_SHEET,
                                             WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.NONE)
+                                            HistorySyncConfig.OptInMode.NONE,
+                                            mContext.getString(R.string.history_sync_title),
+                                            mContext.getString(R.string.history_sync_subtitle))
                                     .build();
                     @Nullable
                     Intent intent =

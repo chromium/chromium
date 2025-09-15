@@ -398,8 +398,11 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mThreadChecker.assertOnValidThread();
         AccountPickerBottomSheetStrings strings =
                 new AccountPickerBottomSheetStrings.Builder(
-                                R.string.collaboration_signin_bottom_sheet_title)
-                        .setSubtitleStringId(R.string.collaboration_signin_bottom_sheet_description)
+                                mActivity.getString(
+                                        R.string.collaboration_signin_bottom_sheet_title))
+                        .setSubtitleString(
+                                mActivity.getString(
+                                        R.string.collaboration_signin_bottom_sheet_description))
                         .build();
 
         BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
@@ -407,9 +410,9 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                                 strings,
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                HistorySyncConfig.OptInMode.REQUIRED)
-                        .historySyncTitleId(R.string.collaboration_sync_title)
-                        .historySyncSubtitleId(R.string.collaboration_sync_description)
+                                HistorySyncConfig.OptInMode.REQUIRED,
+                                mActivity.getString(R.string.collaboration_sync_title),
+                                mActivity.getString(R.string.collaboration_sync_description))
                         .build();
         @SigninAccessPoint int accessPoint;
         if (mFlowType == FlowType.SHARE_OR_MANAGE) {
@@ -427,14 +430,14 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     private @Nullable Intent createFullscreenSigninIntent() {
         mThreadChecker.assertOnValidThread();
         FullscreenSigninAndHistorySyncConfig fullscreenConfig =
-                new FullscreenSigninAndHistorySyncConfig.Builder()
+                new FullscreenSigninAndHistorySyncConfig.Builder(
+                                mActivity.getString(R.string.collaboration_signin_title),
+                                mActivity.getString(R.string.collaboration_signin_description),
+                                mActivity.getString(R.string.collaboration_signin_sync_dismiss),
+                                mActivity.getString(R.string.collaboration_sync_title),
+                                mActivity.getString(R.string.collaboration_sync_description))
                         .historyOptInMode(HistorySyncConfig.OptInMode.REQUIRED)
-                        .signinTitleId(R.string.collaboration_signin_title)
-                        .signinSubtitleId(R.string.collaboration_signin_description)
-                        .signinDismissTextId(R.string.collaboration_signin_sync_dismiss)
                         .signinLogoId(R.drawable.signin_logo)
-                        .historySyncTitleId(R.string.collaboration_sync_title)
-                        .historySyncSubtitleId(R.string.collaboration_sync_description)
                         .build();
 
         return mSigninAndHistorySyncActivityLauncher.createFullscreenSigninIntentOrShowError(

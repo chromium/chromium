@@ -184,14 +184,22 @@ final class SigninBridge {
             // bottom sheet.
             return;
         }
+        final Context context = windowAndroid.getContext().get();
+        if (context == null) {
+            return;
+        }
         // TODO(b/41493784): Update this when the new sign-in flow will be used for the web signin
         // entry point.
         AccountPickerBottomSheetStrings strings =
                 new AccountPickerBottomSheetStrings.Builder(
-                                R.string.signin_account_picker_bottom_sheet_title)
-                        .setSubtitleStringId(
-                                R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin)
-                        .setDismissButtonStringId(R.string.signin_account_picker_dismiss_button)
+                                context.getString(
+                                        R.string.signin_account_picker_bottom_sheet_title))
+                        .setSubtitleString(
+                                context.getString(
+                                        R.string
+                                                .signin_account_picker_bottom_sheet_subtitle_for_web_signin))
+                        .setDismissButtonString(
+                                context.getString(R.string.signin_account_picker_dismiss_button))
                         .build();
 
         factory.create(
