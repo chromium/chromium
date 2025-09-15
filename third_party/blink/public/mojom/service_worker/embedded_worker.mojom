@@ -13,6 +13,7 @@ import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
+import "third_party/blink/public/mojom/fingerprinting_protection/noise_token.mojom";
 import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
@@ -174,7 +175,7 @@ struct EmbeddedWorkerStartParams {
   // This is the initial value used to indicate the enablement state of the
   // canvas noising feature and the initial seed value the noising should use,
   // and must be available to the renderer prior to JavaScript execution.
-  uint64? canvas_noise_token;
+  NoiseToken? canvas_noise_token;
 };
 
 // Holds timing information about the start worker sequence for UMA.

@@ -64,7 +64,7 @@ void AddHostPermissions(const std::string& host, RenderFrameHost* rfh) {
   run_loop.Run();
 }
 
-std::optional<uint64_t> NavigateAndGetCanvasNoiseToken(
+std::optional<blink::NoiseToken> NavigateAndGetCanvasNoiseToken(
     const GURL& url,
     RenderFrameHost* frame_host) {
   return GetCanvasNoiseTokenForPage(
@@ -1821,7 +1821,7 @@ class MockPageBroadcastForCanvasNoise : public TestPageBroadcast {
   using TestPageBroadcast::TestPageBroadcast;
   MOCK_METHOD(void,
               UpdateCanvasNoiseToken,
-              (const std::optional<uint64_t> canvas_noise_token),
+              (std::optional<blink::NoiseToken> canvas_noise_token),
               (override));
 };
 
@@ -1856,11 +1856,11 @@ TEST_F(RenderFrameHostImplTest,
   // this test only checks to ensure the PageBroadcast gets called when
   // navigating to different origins and std::nullopt is a valid value for
   // UpdateCanvasNoiseToken PageBroadcast method.
-  std::optional<uint64_t> token_init =
+  std::optional<blink::NoiseToken> token_init =
       NavigateAndGetCanvasNoiseToken(initial_url, main_rfh());
   EXPECT_EQ(token_init, std::nullopt);
 
-  std::optional<uint64_t> token_next =
+  std::optional<blink::NoiseToken> token_next =
       NavigateAndGetCanvasNoiseToken(next_url, main_rfh());
   EXPECT_EQ(token_next, std::nullopt);
   // Since token_init == token_next == std::nullopt, this is fine.

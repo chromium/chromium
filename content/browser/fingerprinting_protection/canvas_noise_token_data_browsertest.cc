@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataDisabledBrowserTest,
                        DisabledCanvasNoiseNullOptCanvasNoiseToken) {
   GURL frame_url = embedded_test_server()->GetURL("/defaultresponse");
   ASSERT_TRUE(NavigateToURL(shell(), frame_url));
-  std::optional<uint64_t> committed_token =
+  std::optional<blink::NoiseToken> committed_token =
       GetCanvasNoiseTokenForPage(shell()->web_contents()->GetPrimaryPage());
   EXPECT_FALSE(committed_token.has_value());
 }
@@ -107,14 +107,14 @@ class CanvasNoiseTokenDataBrowserTest : public content::ContentBrowserTest {
 
   // Returns the canvas noise token from the RenderFrameHost's corresponding
   // blink::WebView in the renderer process.
-  std::optional<uint64_t> GetRendererToken(ToRenderFrameHost adapter) {
+  std::optional<blink::NoiseToken> GetRendererToken(ToRenderFrameHost adapter) {
     mojo::Remote<mojom::RenderFrameTestHelper> remote;
     adapter.render_frame_host()->GetRemoteInterfaces()->GetInterface(
         remote.BindNewPipeAndPassReceiver());
-    std::optional<uint64_t> token_from_renderer = std::nullopt;
+    std::optional<blink::NoiseToken> token_from_renderer = std::nullopt;
     base::RunLoop run_loop;
-    remote->GetCanvasNoiseToken(
-        base::BindLambdaForTesting([&](const std::optional<uint64_t> token) {
+    remote->GetCanvasNoiseToken(base::BindLambdaForTesting(
+        [&](const std::optional<blink::NoiseToken> token) {
           token_from_renderer = token;
           run_loop.Quit();
         }));
@@ -134,15 +134,15 @@ class CanvasNoiseTokenDataBrowserTest : public content::ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
                        DifferentBrowserContextDifferCanvasNoiseTokens) {
-  uint64_t normal_token = CanvasNoiseTokenData::GetToken(
+  blink::NoiseToken normal_token = CanvasNoiseTokenData::GetToken(
       CreateBrowser()->web_contents()->GetBrowserContext(),
       url::Origin::Create(GURL("https://example.test")));
-  uint64_t incognito_token = CanvasNoiseTokenData::GetToken(
+  blink::NoiseToken incognito_token = CanvasNoiseTokenData::GetToken(
       CreateOffTheRecordBrowser()->web_contents()->GetBrowserContext(),
       url::Origin::Create(GURL("https://example.test")));
 
-  EXPECT_NE(normal_token, 0UL);
-  EXPECT_NE(incognito_token, 0UL);
+  EXPECT_NE(normal_token.Value(), 0UL);
+  EXPECT_NE(incognito_token.Value(), 0UL);
   EXPECT_NE(normal_token, incognito_token);
 }
 
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
   ASSERT_TRUE(main_frame);
 
-  std::optional<uint64_t> first_committed_token =
+  std::optional<blink::NoiseToken> first_committed_token =
       GetCanvasNoiseTokenForPage(main_frame->GetPage());
   url::Origin first_origin = main_frame->GetLastCommittedOrigin();
   EXPECT_EQ(first_committed_token, GetRendererToken(main_frame));
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(main_frame, same_url));
   main_frame = web_contents()->GetPrimaryMainFrame();
 
-  std::optional<uint64_t> second_committed_token =
+  std::optional<blink::NoiseToken> second_committed_token =
       GetCanvasNoiseTokenForPage(main_frame->GetPage());
   url::Origin second_origin = main_frame->GetLastCommittedOrigin();
   EXPECT_EQ(second_committed_token, GetRendererToken(main_frame));
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
   ASSERT_TRUE(main_frame);
 
-  std::optional<uint64_t> first_committed_token =
+  std::optional<blink::NoiseToken> first_committed_token =
       GetCanvasNoiseTokenForPage(main_frame->GetPage());
   url::Origin first_origin = main_frame->GetLastCommittedOrigin();
   EXPECT_EQ(first_committed_token, GetRendererToken(main_frame));
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURLFromRenderer(main_frame, second_url));
   main_frame = web_contents()->GetPrimaryMainFrame();
 
-  std::optional<uint64_t> second_committed_token =
+  std::optional<blink::NoiseToken> second_committed_token =
       GetCanvasNoiseTokenForPage(main_frame->GetPage());
   url::Origin second_origin = main_frame->GetLastCommittedOrigin();
   EXPECT_EQ(second_committed_token, GetRendererToken(main_frame));
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
   url::Origin opaque_origin = main_frame->GetLastCommittedOrigin();
 
-  std::optional<uint64_t> first_committed_token =
+  std::optional<blink::NoiseToken> first_committed_token =
       GetCanvasNoiseTokenForPage(main_frame->GetPage());
   EXPECT_EQ(first_committed_token, GetRendererToken(main_frame));
 
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
 
   main_frame = web_contents()->GetPrimaryMainFrame();
   url::Origin opaque_origin_second = main_frame->GetLastCommittedOrigin();
-  std::optional<uint64_t> second_committed_token =
+  std::optional<blink::NoiseToken> second_committed_token =
       GetCanvasNoiseTokenForPage(main_frame->GetPage());
   EXPECT_EQ(second_committed_token, GetRendererToken(main_frame));
 
@@ -265,9 +265,9 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
   EXPECT_FALSE(rfh_b->IsInPrimaryMainFrame());
   EXPECT_EQ(&rfh_a->GetPage(), &rfh_b->GetPage());
 
-  std::optional<uint64_t> token_a =
+  std::optional<blink::NoiseToken> token_a =
       GetCanvasNoiseTokenForPage(rfh_a->GetPage());
-  std::optional<uint64_t> token_b =
+  std::optional<blink::NoiseToken> token_b =
       GetCanvasNoiseTokenForPage(rfh_b->GetPage());
 
   EXPECT_EQ(token_a, token_b);
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
   ASSERT_TRUE(main_frame);
 
-  std::optional<uint64_t> first_nav_token =
+  std::optional<blink::NoiseToken> first_nav_token =
       GetCanvasNoiseTokenForPage(main_frame->GetPage());
 
   EXPECT_NE(first_nav_token, std::nullopt);
@@ -304,8 +304,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(main_frame_wrapper.IsDestroyed());
 
   // Use the next main frame from WebContents.
-  std::optional<uint64_t> second_nav_token = GetCanvasNoiseTokenForPage(
-      web_contents()->GetPrimaryMainFrame()->GetPage());
+  std::optional<blink::NoiseToken> second_nav_token =
+      GetCanvasNoiseTokenForPage(
+          web_contents()->GetPrimaryMainFrame()->GetPage());
 
   EXPECT_NE(second_nav_token, std::nullopt);
   EXPECT_NE(first_nav_token, second_nav_token);
@@ -321,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_a_with_child));
 
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
-  std::optional<uint64_t> main_frame_nav_token =
+  std::optional<blink::NoiseToken> main_frame_nav_token =
       GetCanvasNoiseTokenForPage(main_frame->GetPage());
   EXPECT_NE(main_frame_nav_token, std::nullopt);
   EXPECT_EQ(main_frame_nav_token, GetRendererToken(main_frame));
@@ -331,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
   ASSERT_TRUE(child_frame);
 
   // Noise token post-cross site navigation.
-  std::optional<uint64_t> child_frame_nav_token_a =
+  std::optional<blink::NoiseToken> child_frame_nav_token_a =
       GetCanvasNoiseTokenForPage(child_frame->GetPage());
   EXPECT_NE(child_frame_nav_token_a, std::nullopt);
   EXPECT_EQ(child_frame_nav_token_a, GetRendererToken(child_frame));
@@ -348,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
 
   child_frame = static_cast<RenderFrameHostImpl*>(ChildFrameAt(shell(), 0));
   // Noise token post-cross site navigation.
-  std::optional<uint64_t> child_frame_nav_token_b =
+  std::optional<blink::NoiseToken> child_frame_nav_token_b =
       GetCanvasNoiseTokenForPage(child_frame->GetPage());
   EXPECT_NE(child_frame_nav_token_b, std::nullopt);
   EXPECT_EQ(child_frame_nav_token_b, GetRendererToken(child_frame));
@@ -375,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
 
   RenderFrameHostImpl* main_frame_a = web_contents()->GetPrimaryMainFrame();
-  std::optional<uint64_t> main_frame_a_nav_token =
+  std::optional<blink::NoiseToken> main_frame_a_nav_token =
       GetCanvasNoiseTokenForPage(main_frame_a->GetPage());
   EXPECT_NE(main_frame_a_nav_token, std::nullopt);
   EXPECT_EQ(main_frame_a_nav_token, GetRendererToken(main_frame_a));
@@ -392,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
   EXPECT_NE(main_frame_a, main_frame_b);
 
   // Check b.com's token.
-  std::optional<uint64_t> main_frame_b_nav_token =
+  std::optional<blink::NoiseToken> main_frame_b_nav_token =
       GetCanvasNoiseTokenForPage(main_frame_b->GetPage());
   EXPECT_NE(main_frame_b_nav_token, std::nullopt);
   EXPECT_NE(main_frame_b_nav_token, main_frame_a_nav_token);
@@ -404,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(CanvasNoiseTokenDataBrowserTest,
 
   // Check a.com's token under b.com's iframe, which should the be the same as
   // b.com's token.
-  std::optional<uint64_t> child_frame_a_nav_token =
+  std::optional<blink::NoiseToken> child_frame_a_nav_token =
       GetCanvasNoiseTokenForPage(child_frame_a->GetPage());
   EXPECT_NE(child_frame_a_nav_token, std::nullopt);
   EXPECT_EQ(child_frame_a_nav_token, GetRendererToken(child_frame_a));

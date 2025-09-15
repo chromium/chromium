@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -281,7 +282,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   GetDipReporter();
 
   // Helper to get or create a new canvas noise token for this worker.
-  std::optional<uint64_t> GetOrCreateCanvasNoiseToken();
+  std::optional<blink::NoiseToken> GetOrCreateCanvasNoiseToken();
 
  private:
   typedef base::ObserverList<Listener>::Unchecked ListenerList;

@@ -1230,7 +1230,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverCanvasNoiseTokenBrowserTest,
 
   url::Origin origin = url::Origin::Create(url);
 
-  uint64_t original_token =
+  blink::NoiseToken original_token =
       content::CanvasNoiseTokenData::GetToken(browser_context, origin);
 
   constexpr uint64_t kRemoveMask =

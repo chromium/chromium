@@ -13,7 +13,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -147,7 +146,6 @@ TEST_F(HTMLCanvasElementModuleTest,
 }
 
 TEST_F(HTMLCanvasElementModuleTest, CanvasNoisedAfterTransferToOffscreen) {
-  CanvasNoiseToken::Set(0x1234567890123456);
   V8TestingScope scope;
   NonThrowableExceptionState exception_state;
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
@@ -177,7 +175,8 @@ TEST_F(HTMLCanvasElementModuleTest, CanvasNoisedAfterTransferToOffscreen) {
 
   String data_url_no_interventions =
       canvas_element().toDataURL("image/png", exception_state);
-  GetDocument().GetExecutionContext()->SetCanvasNoiseToken(0x1234567890123456);
+  GetDocument().GetExecutionContext()->SetCanvasNoiseToken(
+      NoiseToken(0x1234567890123456));
   String data_url_with_interventions =
       canvas_element().toDataURL("image/png", exception_state);
   EXPECT_NE(data_url_no_interventions, data_url_with_interventions);

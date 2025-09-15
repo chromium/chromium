@@ -12,12 +12,14 @@
 
 namespace blink {
 
+class NoiseToken;
+
 // Uses the FNV1a hash function as a pseudo-random number generator. The caller
 // should make sure that |Update| is called before the 64 bits of the current
 // token hash have been consumed by |GetValueBelow|.
 class CORE_EXPORT NoiseHash {
  public:
-  explicit NoiseHash(const uint64_t token);
+  explicit NoiseHash(NoiseToken token);
 
   // Computes a new pseudo-random value by hashing with the provided value.
   void Update(const uint64_t value);

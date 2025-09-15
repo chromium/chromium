@@ -49,7 +49,7 @@
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
@@ -503,7 +503,7 @@ WebView* WebView::Create(
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
     int32_t history_index,
     int32_t history_length,
-    const std::optional<uint64_t>& canvas_noise_token) {
+    const std::optional<NoiseToken>& canvas_noise_token) {
   return WebViewImpl::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
@@ -534,7 +534,7 @@ WebViewImpl* WebViewImpl::Create(
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
     int32_t history_index,
     int32_t history_length,
-    const std::optional<uint64_t>& canvas_noise_token) {
+    const std::optional<NoiseToken>& canvas_noise_token) {
   return new WebViewImpl(
       client, visibility, std::move(prerender_param), fenced_frame_mode,
       compositing_enabled, widgets_never_composited, opener,
@@ -610,7 +610,7 @@ WebViewImpl::WebViewImpl(
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
     int32_t history_index,
     int32_t history_length,
-    const std::optional<uint64_t>& canvas_noise_token)
+    const std::optional<NoiseToken>& canvas_noise_token)
     : widgets_never_composited_(widgets_never_composited),
       web_view_client_(client),
       chrome_client_(MakeGarbageCollected<ChromeClientImpl>(this)),
@@ -3481,11 +3481,11 @@ void WebViewImpl::UpdateUseOverlayScrollbar(bool use_overlay_scrollbar) {
 #endif
 
 void WebViewImpl::UpdateCanvasNoiseToken(
-    std::optional<uint64_t> canvas_noise_token) {
+    std::optional<NoiseToken> canvas_noise_token) {
   GetPage()->SetCanvasNoiseToken(canvas_noise_token);
 }
 
-std::optional<uint64_t> WebViewImpl::CanvasNoiseTokenForTesting() {
+std::optional<NoiseToken> WebViewImpl::CanvasNoiseTokenForTesting() {
   return GetPage()->CanvasNoiseToken();
 }
 

@@ -8035,13 +8035,13 @@ class ServiceWorkerCanvasNoiseTokenBrowserTest
   // This can change depending on the origin of the currently navigated site.
   // See https://crbug.com/442616874 on why we don't use the CanvasNoiseToken
   // from the Page.
-  std::optional<uint64_t> GetCurrentPageToken() {
+  std::optional<blink::NoiseToken> GetCurrentPageToken() {
     return GetCanvasNoiseTokenForPage(
         web_contents()->GetPrimaryMainFrame()->GetPage());
   }
 
   // Gets the canvas noise token from the Service Worker in the renderer.
-  std::optional<uint64_t> GetNoiseHashesFromServiceWorker(
+  std::optional<blink::NoiseToken> GetNoiseHashesFromServiceWorker(
       RenderFrameHost* rfh) {
     EvalJsResult js_result = EvalJs(rfh, R"(
 	new Promise(resolve => {
@@ -8057,7 +8057,7 @@ class ServiceWorkerCanvasNoiseTokenBrowserTest
     }
     uint64_t token;
     CHECK(base::StringToUint64(js_result.ExtractString(), &token));
-    return token;
+    return blink::NoiseToken(token);
   }
 
   scoped_refptr<ServiceWorkerVersion> RegisterCanvasServiceWorkerVersion(
@@ -8087,7 +8087,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerCanvasNoiseTokenBrowserTest,
   EXPECT_NE(GetCurrentPageToken(),
             version->embedded_worker()->GetOrCreateCanvasNoiseToken());
 
-  std::optional<uint64_t> worker_token =
+  std::optional<blink::NoiseToken> worker_token =
       GetNoiseHashesFromServiceWorker(web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(worker_token,
             version->embedded_worker()->GetOrCreateCanvasNoiseToken());
@@ -8109,7 +8109,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerCanvasNoiseTokenBrowserTest,
   ASSERT_EQ(subframe_rfh->GetLastCommittedURL(), iframe_url);
   EXPECT_EQ("DONE",
             EvalJs(subframe_rfh, "register('canvas_noise_worker.js');"));
-  std::optional<uint64_t> subframe_worker_token =
+  std::optional<blink::NoiseToken> subframe_worker_token =
       GetNoiseHashesFromServiceWorker(subframe_rfh);
 
   std::vector<ServiceWorkerVersionInfo> versions =

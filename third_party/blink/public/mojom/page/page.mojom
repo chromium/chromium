@@ -3,18 +3,20 @@
 // found in the LICENSE file.
 
 module blink.mojom;
+
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "skia/public/mojom/skcolor.mojom";
 import "services/network/public/mojom/attribution.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "third_party/blink/public/mojom/fingerprinting_protection/noise_token.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/remote_frame.mojom";
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
+import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
-import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "ui/color/color_id.mojom";
 
 enum PagehideDispatch {
@@ -179,5 +181,5 @@ interface PageBroadcast {
   // Update the page's canvas noise token. This allows the browser to compute
   // the noise token at ReadyToCommit time and update blink::WebViews that
   // were made at request time.
-  UpdateCanvasNoiseToken(uint64? canvas_noise_token);
+  UpdateCanvasNoiseToken(blink.mojom.NoiseToken? canvas_noise_token);
 };

@@ -33,6 +33,7 @@
 
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -71,7 +72,7 @@ struct WebEmbeddedWorkerStartData {
 
   std::unique_ptr<WebPolicyContainer> policy_container;
 
-  std::optional<uint64_t> canvas_noise_token;
+  std::optional<NoiseToken> canvas_noise_token;
 
   explicit WebEmbeddedWorkerStartData(
       WebFetchClientSettingsObject outside_fetch_client_settings_object)

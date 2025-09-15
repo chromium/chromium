@@ -60,7 +60,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
         coep_reporting_observer,
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
         dip_reporting_observer,
-    std::optional<uint64_t> canvas_noise_token)
+    std::optional<NoiseToken> canvas_noise_token)
     : script_url(script_url),
       script_type(script_type),
       global_scope_name(global_scope_name),

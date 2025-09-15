@@ -134,7 +134,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
       int32_t history_index,
       int32_t history_length,
-      const std::optional<uint64_t>& canvas_noise_token);
+      const std::optional<NoiseToken>& canvas_noise_token);
 
   // All calls to Create() should be balanced with a call to Close(). This
   // synchronously destroys the WebViewImpl.
@@ -324,9 +324,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void UpdateColorProviders(
       const ColorProviderColorMaps& color_provider_colors) override;
   void UpdateCanvasNoiseToken(
-      std::optional<uint64_t> canvas_noise_token) override;
+      std::optional<NoiseToken> canvas_noise_token) override;
 
-  std::optional<uint64_t> CanvasNoiseTokenForTesting() override;
+  std::optional<NoiseToken> CanvasNoiseTokenForTesting() override;
 
   void DispatchPersistedPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);
@@ -730,7 +730,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
       int32_t history_index,
       int32_t history_length,
-      const std::optional<uint64_t>& canvas_noise_token);
+      const std::optional<NoiseToken>& canvas_noise_token);
   ~WebViewImpl() override;
 
   void ConfigureAutoResizeMode();

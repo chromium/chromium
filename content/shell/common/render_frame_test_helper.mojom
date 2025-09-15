@@ -4,7 +4,9 @@
 
 module content.mojom;
 
+import "third_party/blink/public/mojom/fingerprinting_protection/noise_token.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
 
 // Helper to facilitate testing of renderer-side state in content_browsertests.
 interface RenderFrameTestHelper {
@@ -16,5 +18,5 @@ interface RenderFrameTestHelper {
   // Get the CanvasNoiseToken used for the RenderFrame's active document.
   // The CanvasNoiseToken should remain constant for the frame's content::Page,
   // unless the page is reused for a cross-document navigation.
-  GetCanvasNoiseToken() => (uint64? canvas_noise_token);
+  GetCanvasNoiseToken() => (blink.mojom.NoiseToken? canvas_noise_token);
 };

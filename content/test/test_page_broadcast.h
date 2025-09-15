@@ -52,7 +52,7 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
   void UpdateColorProviders(
       const blink::ColorProviderColorMaps& color_provider_colors) override;
   void UpdateCanvasNoiseToken(
-      std::optional<uint64_t> canvas_noise_token) override;
+      std::optional<blink::NoiseToken> canvas_noise_token) override;
 
   mojo::AssociatedReceiver<blink::mojom::PageBroadcast> receiver_;
 };

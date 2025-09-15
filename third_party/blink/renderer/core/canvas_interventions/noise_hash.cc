@@ -13,6 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 
 namespace blink {
 
@@ -22,7 +23,7 @@ namespace {
 constexpr uint64_t kFnvPrime = 0x00000100000001b3;
 }  // namespace
 
-NoiseHash::NoiseHash(const uint64_t token) : token_hash_(token) {}
+NoiseHash::NoiseHash(NoiseToken token) : token_hash_(token.Value()) {}
 
 void NoiseHash::Update(const uint64_t value) {
   token_hash_ ^= value;

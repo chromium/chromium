@@ -37,21 +37,23 @@ const void* const kBrowserContextCanvasNoiseTokenKey =
 constexpr uint64_t kFnvPrime = 0x00000100000001b3;
 constexpr uint64_t kFnvOffset = 0xcbf29ce484222325;
 
-uint64_t DeriveInitialNoiseHash(uint64_t token, std::string_view domain) {
+blink::NoiseToken DeriveInitialNoiseHash(blink::NoiseToken token,
+                                         std::string_view domain) {
   uint64_t token_hash = kFnvOffset;
   crypto::hash::Hasher hasher(crypto::hash::kSha256);
-  hasher.Update(base::U64ToLittleEndian(token));
+  hasher.Update(base::U64ToLittleEndian(token.Value()));
   hasher.Update(base::as_byte_span(domain));
   std::array<uint8_t, crypto::hash::kSha256Size> digest;
   hasher.Finish(digest);
   token_hash ^= base::U64FromLittleEndian(base::span(digest).first<8>());
   token_hash *= kFnvPrime;
-  return token_hash;
+  return blink::NoiseToken(token_hash);
 }
 }  // namespace
 
 // static
-uint64_t CanvasNoiseTokenData::GetBrowserToken(BrowserContext* context) {
+blink::NoiseToken CanvasNoiseTokenData::GetBrowserToken(
+    BrowserContext* context) {
   CHECK(base::FeatureList::IsEnabled(
       fingerprinting_protection_interventions::features::kCanvasNoise));
 
@@ -64,8 +66,8 @@ uint64_t CanvasNoiseTokenData::GetBrowserToken(BrowserContext* context) {
 }
 
 // static
-uint64_t CanvasNoiseTokenData::GetToken(BrowserContext* context,
-                                        const url::Origin& origin) {
+blink::NoiseToken CanvasNoiseTokenData::GetToken(BrowserContext* context,
+                                                 const url::Origin& origin) {
   if (!origin.opaque()) {
     return DeriveInitialNoiseHash(GetBrowserToken(context), origin.Serialize());
   }
@@ -74,12 +76,12 @@ uint64_t CanvasNoiseTokenData::GetToken(BrowserContext* context,
 }
 
 // static
-uint64_t CanvasNoiseTokenData::SetNewToken(BrowserContext* context) {
+blink::NoiseToken CanvasNoiseTokenData::SetNewToken(BrowserContext* context) {
   CHECK(base::FeatureList::IsEnabled(
       fingerprinting_protection_interventions::features::kCanvasNoise));
 
   auto new_data = std::make_unique<CanvasNoiseTokenData>();
-  uint64_t token = new_data->session_token_;
+  blink::NoiseToken token = new_data->session_token_;
   context->SetUserData(&kBrowserContextCanvasNoiseTokenKey,
                        std::move(new_data));
   return token;

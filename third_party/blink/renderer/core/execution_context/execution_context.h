@@ -36,6 +36,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
@@ -485,11 +486,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
     return net::StorageAccessApiStatus::kNone;
   }
 
-  std::optional<uint64_t> CanvasNoiseToken() const {
+  const std::optional<NoiseToken>& CanvasNoiseToken() const {
     return canvas_noise_token_;
   }
 
-  void SetCanvasNoiseToken(std::optional<uint64_t> token) {
+  void SetCanvasNoiseToken(std::optional<NoiseToken> token) {
     canvas_noise_token_ = token;
   }
 
@@ -557,7 +558,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   bool require_trusted_types_ = false;
 
-  std::optional<uint64_t> canvas_noise_token_;
+  std::optional<NoiseToken> canvas_noise_token_;
 };
 
 }  // namespace blink

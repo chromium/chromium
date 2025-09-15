@@ -226,7 +226,7 @@ Page* Page::CreateOrdinary(
     const base::UnguessableToken& browsing_context_group_token,
     const ColorProviderColorMaps* color_provider_colors,
     blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
-    const std::optional<uint64_t>& canvas_noise_token) {
+    const std::optional<NoiseToken>& canvas_noise_token) {
   Page* page = MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
       browsing_context_group_token, color_provider_colors,
@@ -256,7 +256,7 @@ Page::Page(base::PassKey<Page>,
            const base::UnguessableToken& browsing_context_group_token,
            const ColorProviderColorMaps* color_provider_colors,
            blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
-           const std::optional<uint64_t>& canvas_noise_token,
+           const std::optional<NoiseToken>& canvas_noise_token,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
@@ -545,11 +545,11 @@ Page::GetPartitionedPopinOpenerProperties() const {
   return *partitioned_popin_opener_properties_;
 }
 
-void Page::SetCanvasNoiseToken(std::optional<uint64_t> canvas_noise_token) {
+void Page::SetCanvasNoiseToken(std::optional<NoiseToken> canvas_noise_token) {
   canvas_noise_token_ = canvas_noise_token;
 }
 
-const std::optional<uint64_t> Page::CanvasNoiseToken() {
+std::optional<NoiseToken> Page::CanvasNoiseToken() const {
   return canvas_noise_token_;
 }
 

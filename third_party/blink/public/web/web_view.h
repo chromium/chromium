@@ -35,6 +35,7 @@
 
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
@@ -162,7 +163,7 @@ class BLINK_EXPORT WebView {
       blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
       int32_t history_index,
       int32_t history_length,
-      const std::optional<uint64_t>& canvas_noise_token);
+      const std::optional<NoiseToken>& canvas_noise_token);
 
   // Destroys the WebView synchronously.
   virtual void Close() = 0;
@@ -482,7 +483,7 @@ class BLINK_EXPORT WebView {
 
   // Returns the canvas noise token assigned in the WebView's blink::Page, used
   // for testing.
-  virtual std::optional<uint64_t> CanvasNoiseTokenForTesting() = 0;
+  virtual std::optional<NoiseToken> CanvasNoiseTokenForTesting() = 0;
 
  protected:
   ~WebView() = default;

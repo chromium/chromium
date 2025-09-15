@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/viz/test/test_context_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float16array_float32array_uint8clampedarray.h"
@@ -68,7 +67,7 @@ class CanvasNoiseTest : public PageTestBase {
     static_cast<CanvasRenderingContext2D*>(CanvasElement().RenderingContext())
         ->GetOrCreateCanvas2DResourceProvider();
     GetDocument().GetExecutionContext()->SetCanvasNoiseToken(
-        0x1234567890123456);
+        NoiseToken(0x1234567890123456));
     EnableInterventions();
   }
 
@@ -98,7 +97,7 @@ class CanvasNoiseTest : public PageTestBase {
 
   void EnableInterventions() {
     GetFrame().DomWindow()->GetExecutionContext()->SetCanvasNoiseToken(
-        0x1234567890123456);
+        NoiseToken(0x1234567890123456));
   }
 
   base::span<uint8_t> GetNoisedPixels(ExecutionContext* ec) {
@@ -299,7 +298,7 @@ TEST_P(MaybeNoiseSnapshotTest, NoiseWhenCanvasInterventionsEnabled) {
 
   auto test = base::BindOnce([](ExecutionContext* execution_context) {
     // Enable CanvasInterventions.
-    execution_context->SetCanvasNoiseToken(0x1234567890123456);
+    execution_context->SetCanvasNoiseToken(NoiseToken(0x1234567890123456));
 
     auto snapshot = CreateTriggeringSnapshot();
     auto snapshot_copy = snapshot;
@@ -422,7 +421,7 @@ TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDifferentNoiseTokenNoiseDiffers) {
   EXPECT_EQ(original_noised_pixels, GetNoisedPixels(window));
 
   // Now change the noise token.
-  window->SetCanvasNoiseToken(0xdeadbeef);
+  window->SetCanvasNoiseToken(NoiseToken(0xdeadbeef));
   base::span<uint8_t> updated_noised_pixels = GetNoisedPixels(window);
 
   EXPECT_NE(original_noised_pixels, updated_noised_pixels);
@@ -591,7 +590,8 @@ TEST_F(CanvasNoiseTest, OffscreenCanvasNoise) {
   host->GetExecutionContext()->SetCanvasNoiseToken(std::nullopt);
   base::span<uint8_t> pixels_no_interventions =
       GetPixels(context, host->width(), host->height());
-  host->GetExecutionContext()->SetCanvasNoiseToken(0x1234567890123456);
+  host->GetExecutionContext()->SetCanvasNoiseToken(
+      NoiseToken(0x1234567890123456));
   int num_changed_pixel_values =
       GetNumChangedPixels(pixels_no_interventions,
                           GetPixels(context, host->width(), host->height()),
@@ -615,7 +615,8 @@ TEST_F(CanvasNoiseTest, NoiseDiffersPerSite) {
   // Navigate to a different origin.
   NavigateTo(KURL("https://different.example"));
   // Need to re-enable with a different noise token after navigating.
-  GetDocument().GetExecutionContext()->SetCanvasNoiseToken(0x43251612612781);
+  GetDocument().GetExecutionContext()->SetCanvasNoiseToken(
+      NoiseToken(0x43251612612781));
 
   SetHtmlInnerHTML("<body><canvas id='c' width='300' height='300'></body>");
   UpdateAllLifecyclePhasesForTest();

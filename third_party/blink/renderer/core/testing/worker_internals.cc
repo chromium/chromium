@@ -62,10 +62,10 @@ bool WorkerInternals::isCanvasImageSourceAccelerated(
 }
 
 String WorkerInternals::getCanvasNoiseToken(ScriptState* script_state) {
-  std::optional<uint64_t> token =
+  std::optional<NoiseToken> token =
       ExecutionContext::From(script_state)->CanvasNoiseToken();
   if (token.has_value()) {
-    return String::Number(token.value());
+    return String::Number(token->Value());
   }
   return String();
 }

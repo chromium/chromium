@@ -33,6 +33,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
@@ -141,7 +142,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
       blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
-      const std::optional<uint64_t>& canvas_noise_token);
+      const std::optional<NoiseToken>& canvas_noise_token);
 
   Page(base::PassKey<Page>,
        ChromeClient& chrome_client,
@@ -149,7 +150,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
        const base::UnguessableToken& browsing_context_group_token,
        const ColorProviderColorMaps* color_provider_colors,
        blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
-       const std::optional<uint64_t>& canvas_noise_token,
+       const std::optional<NoiseToken>& canvas_noise_token,
        bool is_ordinary);
   Page(const Page&) = delete;
   Page& operator=(const Page&) = delete;
@@ -562,8 +563,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   const PartitionedPopinOpenerProperties& GetPartitionedPopinOpenerProperties()
       const;
 
-  void SetCanvasNoiseToken(std::optional<uint64_t> canvas_noise_token);
-  const std::optional<uint64_t> CanvasNoiseToken();
+  void SetCanvasNoiseToken(std::optional<NoiseToken> canvas_noise_token);
+  std::optional<NoiseToken> CanvasNoiseToken() const;
 
  private:
   friend class ScopedPagePauser;
@@ -739,7 +740,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   blink::FencedFrame::DeprecatedFencedFrameMode fenced_frame_mode_ =
       blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
 
-  std::optional<uint64_t> canvas_noise_token_;
+  std::optional<NoiseToken> canvas_noise_token_;
 
   mojom::blink::TextAutosizerPageInfo web_text_autosizer_page_info_;
 

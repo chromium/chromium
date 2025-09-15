@@ -16,6 +16,7 @@
 #include "base/test/gtest_util.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_hash.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -52,7 +53,7 @@ TEST_F(NoiseHelperTest, NoisePixels) {
   EXPECT_EQ(pixels, pixels_orig);
 
   // When noised, the pixels should be perturbed by at most kMaxNoisePerChannel.
-  const uint64_t token = 0x01234678901234567;
+  const NoiseToken token(0x01234678901234567);
   const auto token_hash = NoiseHash(token);
   NoisePixels(token_hash, pixels, width, height);
   EXPECT_NE(pixels, pixels_orig);
@@ -79,7 +80,7 @@ TEST_F(NoiseHelperTest, NoisePixels) {
   EXPECT_EQ(pixels, pixels2);
 
   // Using a different token hash should result in different noise being added.
-  const uint64_t other_token = 0x02234561728192389;
+  const NoiseToken other_token(0x02234561728192389);
   const auto token_hash2 = NoiseHash(other_token);
   pixels2.copy_from(pixels_orig);
   NoisePixels(token_hash2, pixels2, width, height);
@@ -93,7 +94,7 @@ TEST_F(NoiseHelperTest, NoisePixelsAllSameValue) {
   std::array<uint8_t, width * height * 4> pixel_arr;
   std::ranges::fill(pixel_arr, channel_value);
   base::span<uint8_t> pixels(pixel_arr);
-  const uint64_t token = 0x01234678901234567;
+  const NoiseToken token(0x01234678901234567);
   auto token_hash = NoiseHash(token);
   std::array<uint8_t, 4> first_pixel;
   std::ranges::fill(first_pixel, channel_value);
@@ -114,7 +115,7 @@ TEST_F(NoiseHelperTest, NoisePixelsAllSameValue) {
 TEST_F(NoiseHelperTest, NoisePixelsVerticalStripes) {
   const size_t width = 16u;
   const size_t height = 16u;
-  const uint64_t token = 0x01234678901234567;
+  const NoiseToken token(0x01234678901234567);
   auto token_hash = NoiseHash(token);
 
   const std::vector<uint8_t> image_data_orig = GetRandomPixels(width, height);
@@ -141,7 +142,7 @@ TEST_F(NoiseHelperTest, NoisePixelsVerticalStripes) {
 TEST_F(NoiseHelperTest, NoisePixelsHorizontalStripes) {
   const size_t width = 16u;
   const size_t height = 16u;
-  const uint64_t token = 0x01234678901234567;
+  const NoiseToken token(0x01234678901234567);
   auto token_hash = NoiseHash(token);
 
   const std::vector<uint8_t> image_data_orig = GetRandomPixels(width, height);
@@ -183,7 +184,7 @@ TEST_F(NoiseHelperTest, NoisePixelsSingleNeighbor) {
 
   for (const auto& [changed, checked] : changed_to_checked) {
     pixels.copy_from(pixel_arr_orig);
-    const uint64_t token = 0x01234678901234567;
+    const NoiseToken token(0x01234678901234567);
     auto token_hash = NoiseHash(token);
     auto changed_pixel =
         pixels.subspan((changed.first + changed.second * width) * 4, 4u);
@@ -238,7 +239,7 @@ TEST_F(NoiseHelperTest, NoisePixelsAlphaNonZero) {
   EXPECT_EQ(pixels, pixels_orig);
 
   // When noised, the alpha channel should remain > 0.
-  const uint64_t token = 0x01234678901234567;
+  const NoiseToken token(0x01234678901234567);
   const auto token_hash = NoiseHash(token);
   NoisePixels(token_hash, pixels, width, height);
   EXPECT_NE(pixels, pixels_orig);

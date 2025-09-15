@@ -1491,7 +1491,7 @@ class CONTENT_EXPORT NavigationRequest
   // the content::Page and subsequent blink::Pages. Subframes should not use
   // this accessor, but instead should use `PageImpl::canvas_noise_token()` to
   // get the canvas noise token.
-  std::optional<uint64_t> canvas_noise_token() {
+  std::optional<blink::NoiseToken> canvas_noise_token() {
     CHECK(IsInMainFrame());
     return canvas_noise_token_;
   }
@@ -3348,7 +3348,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // The token value for canvas noising. This should only be set on main frame
   // navigations that subsequently set the token value on the page.
-  std::optional<uint64_t> canvas_noise_token_ = std::nullopt;
+  std::optional<blink::NoiseToken> canvas_noise_token_ = std::nullopt;
 
   // For NavigationRequests not in a prerendered page, the value will be the
   // default-constructed null value.

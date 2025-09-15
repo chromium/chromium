@@ -24,6 +24,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -84,10 +85,10 @@ class CONTENT_EXPORT PageImpl : public Page {
   // window can be resized or not. `std::nullopt` means the value is not set.
   void SetResizable(std::optional<bool> resizable);
 
-  std::optional<uint64_t> canvas_noise_token() const {
+  std::optional<blink::NoiseToken> canvas_noise_token() const {
     return canvas_noise_token_;
   }
-  void set_canvas_noise_token(std::optional<uint64_t> token) {
+  void set_canvas_noise_token(std::optional<blink::NoiseToken> token) {
     canvas_noise_token_ = token;
   }
 
@@ -369,8 +370,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   // more details). Modifying the token value must happen prior to the commit of
   // the page's main frame navigation and will be communicated to the renderer
   // process during commit via CommitNavigationParams.
-  // TODO(https://crbug.com/377325952): Make a more specific type than uint64_t.
-  std::optional<uint64_t> canvas_noise_token_ = std::nullopt;
+  std::optional<blink::NoiseToken> canvas_noise_token_ = std::nullopt;
 
   // The theme color for the underlying document as specified
   // by theme-color meta tag.

@@ -148,7 +148,6 @@ source_set("common") {
     "fenced_frame/redacted_fenced_frame_config.cc",
     "fenced_frame/redacted_fenced_frame_config_mojom_traits.cc",
     "fetch/fetch_api_request_body_mojom_traits.cc",
-    "fingerprinting_protection/canvas_noise_token.cc",
     "frame/delegated_capability_request_token.cc",
     "frame/frame_ad_evidence.cc",
     "frame/frame_ad_evidence_mojom_traits.cc",

@@ -12300,7 +12300,7 @@ void RenderFrameHostImpl::CommitNavigation(
     // blink::WebView prior to commit. This must be done at CommitNavigation
     // time as the origin will not be available when the blink::Page is created
     // earlier.
-    std::optional<uint64_t> canvas_noise_token =
+    std::optional<blink::NoiseToken> canvas_noise_token =
         navigation_request->canvas_noise_token();
     frame_tree()->root()->render_manager()->ExecutePageBroadcastMethod(
         [canvas_noise_token](RenderViewHostImpl* rvh) {
