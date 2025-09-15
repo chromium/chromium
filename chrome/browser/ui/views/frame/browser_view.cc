@@ -4978,12 +4978,8 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
     // content view.
     gfx::Point screen_point(point);
     View::ConvertPointToScreen(this, &screen_point);
-    if (tab_overlay_widget()->GetWindowBoundsInScreen().Contains(
-            screen_point)) {
-      return HTCAPTION;
-    } else if (overlay_widget()->GetWindowBoundsInScreen().Contains(
-                   screen_point)) {
-      return HTCLIENT;
+    if (overlay_widget()->GetWindowBoundsInScreen().Contains(screen_point)) {
+      return HTNOWHERE;
     }
     return views::ClientView::NonClientHitTest(point);
   }
