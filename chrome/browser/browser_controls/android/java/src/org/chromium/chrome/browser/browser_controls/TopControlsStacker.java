@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.browser_controls;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -84,7 +86,10 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     private final Map<@TopControlType Integer, TopControlLayer> mControls;
 
     private final BrowserControlsSizer mBrowserControlsSizer;
-    private @BrowserControlsState int mBrowserControlsState;
+    private final BrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
+    private final Callback<@BrowserControlsState Integer> mBrowserControlsStateCallback =
+            this::updateBrowserControlsState;
+    private @BrowserControlsState int mBrowserControlsState = BrowserControlsState.BOTH;
 
     private boolean mScrollingDisabled;
 
@@ -102,7 +107,10 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     public TopControlsStacker(BrowserControlsSizer browserControlsSizer) {
         mControls = new HashMap<>();
         mBrowserControlsSizer = browserControlsSizer;
+        mBrowserControlsVisibilityDelegate = mBrowserControlsSizer.getBrowserVisibilityDelegate();
+
         mBrowserControlsSizer.addObserver(this);
+        mBrowserControlsVisibilityDelegate.addObserver(mBrowserControlsStateCallback);
     }
 
     /**
@@ -225,6 +233,14 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         }
     }
 
+    private void updateBrowserControlsState(@BrowserControlsState int newState) {
+        if (mBrowserControlsState == newState) return;
+        mBrowserControlsState = newState;
+        if (mScrollingDisabled) {
+            requestLayerUpdate(false);
+        }
+    }
+
     // BrowserControlsStateProvider.Observer implementation:
 
     @Override
@@ -245,10 +261,11 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             @BrowserControlsState int constraints,
             boolean shouldUpdateOffsets) {
         // TODO(crbug.com/417238089): Consider pushing updated OffsetTags to TopControlLayers.
-        if (mTopControlsOffsetTag != offsetTagsInfo.getTopControlsOffsetTag()) {
-            mTopControlsOffsetTag = offsetTagsInfo.getTopControlsOffsetTag();
+        if (mTopControlsOffsetTag == offsetTagsInfo.getTopControlsOffsetTag()
+                && mBrowserControlsState == constraints) {
+            return;
         }
-        if (mBrowserControlsState == constraints) return;
+        mTopControlsOffsetTag = offsetTagsInfo.getTopControlsOffsetTag();
         mBrowserControlsState = constraints;
         if (mScrollingDisabled) {
             requestLayerUpdate(false);
@@ -258,6 +275,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     /** Tear down |this| and clear all existing controls from the Map. */
     public void destroy() {
         mControls.clear();
+        mBrowserControlsVisibilityDelegate.removeObserver(mBrowserControlsStateCallback);
         mBrowserControlsSizer.removeObserver(this);
     }
 }

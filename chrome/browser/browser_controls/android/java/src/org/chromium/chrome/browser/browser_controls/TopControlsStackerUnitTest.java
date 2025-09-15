@@ -4,16 +4,21 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBehavior;
@@ -32,7 +37,7 @@ public class TopControlsStackerUnitTest {
         private final boolean mContributesToTotalHeight;
         private final int mHeight;
 
-        public TestLayer(
+        TestLayer(
                 @TopControlType int type,
                 @TopControlVisibility int visibility,
                 @ScrollBehavior int scrollBehavior,
@@ -72,12 +77,16 @@ public class TopControlsStackerUnitTest {
     }
 
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
+    @Mock private BrowserStateBrowserControlsVisibilityDelegate mVisibilityDelegate;
+    @Captor private ArgumentCaptor<Callback<Integer>> mVisibilityCallbackCaptor;
 
     private TopControlsStacker mTopControlsStacker;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        doReturn(mVisibilityDelegate).when(mBrowserControlsSizer).getBrowserVisibilityDelegate();
+        doReturn(BrowserControlsState.BOTH).when(mVisibilityDelegate).get();
         mTopControlsStacker = new TopControlsStacker(mBrowserControlsSizer);
     }
 
@@ -281,5 +290,31 @@ public class TopControlsStackerUnitTest {
                 "Total height should be 0.",
                 0,
                 mTopControlsStacker.getVisibleTopControlsTotalHeight());
+    }
+
+    @Test
+    public void testBrowserControlsStateChange() {
+        TestLayer toolbar =
+                new TestLayer(
+                        TopControlType.TOOLBAR,
+                        TopControlVisibility.VISIBLE,
+                        ScrollBehavior.DEFAULT_SCROLLABLE,
+                        /* contributesToTotalHeight= */ true,
+                        100);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.setScrollingDisabled(true);
+        mTopControlsStacker.onControlsConstraintsChanged(
+                new BrowserControlsOffsetTagsInfo(),
+                new BrowserControlsOffsetTagsInfo(),
+                BrowserControlsState.HIDDEN,
+                false);
+        verify(mBrowserControlsSizer).setTopControlsHeight(100, 0);
+
+        // Simulate a browser controls state change without offset tag update.
+        reset(mBrowserControlsSizer);
+
+        verify(mVisibilityDelegate).addObserver(mVisibilityCallbackCaptor.capture());
+        mVisibilityCallbackCaptor.getValue().onResult(BrowserControlsState.SHOWN);
+        verify(mBrowserControlsSizer).setTopControlsHeight(100, 100);
     }
 }

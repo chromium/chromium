@@ -83,6 +83,9 @@ public interface BrowserControlsStateProvider {
          * the same as the visibility of the controls container, which is observed by
          * onAndroidControlsVisibilityChanged.
          *
+         * <p>NOTE: This method might not be called when constraint is changed between HIDDEN <>
+         * SHOWN.
+         *
          * @param oldOffsetTagsInfo the old OffsetTags for moving browser controls in viz.
          * @param offsetTagsInfo the new OffsetTags moving browser controls in viz. A null tag means
          *     the controls will no longer be moved by viz, which happens only when the browser is
@@ -90,6 +93,7 @@ public interface BrowserControlsStateProvider {
          * @param constraints the visibility constraints of the browser controls.
          * @param shouldUpdateOffsets should the offset be updated with the renderer's offset.
          */
+        // TODO(https://crbug.com/444753454): Rename the method to focus on offset tags.
         default void onControlsConstraintsChanged(
                 BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                 BrowserControlsOffsetTagsInfo offsetTagsInfo,

@@ -360,7 +360,7 @@ public interface TabObserver {
             int bottomControlsMinHeightOffsetY);
 
     /**
-     * @see BrowserControlsStateProvider.onControlsConstraintsChanged
+     * @see BrowserControlsStateProvider.Observer#onControlsConstraintsChanged
      */
     void onBrowserControlsConstraintsChanged(
             Tab tab,
