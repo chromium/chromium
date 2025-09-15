@@ -9,7 +9,7 @@
 
 #include "components/manta/features.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
@@ -118,7 +118,7 @@ std::optional<SkBitmap> DeserializeImage(const std::vector<uint8_t>& bytes) {
   if (SkJpegDecoder::IsJpeg(bytes.data(), bytes.size())) {
     return gfx::JPEGCodec::Decode(bytes);
   }
-  if (SkPngDecoder::IsPng(bytes.data(), bytes.size())) {
+  if (SkPngRustDecoder::IsPng(bytes.data(), bytes.size())) {
     return gfx::PNGCodec::Decode(bytes);
   }
   return std::nullopt;
