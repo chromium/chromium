@@ -37,16 +37,16 @@ void SetScrollViewProperties(views::ScrollView* scroll_view) {
 VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
-  pinned_tabs_scroll_view_ =
-      AddChildView(std::make_unique<views::ScrollView>());
+  pinned_tabs_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled));
   SetScrollViewProperties(pinned_tabs_scroll_view_);
 
   auto tabs_separator = std::make_unique<views::Separator>();
   tabs_separator->SetColorId(kColorTabDividerFrameActive);
   tabs_separator_ = AddChildView(std::move(tabs_separator));
 
-  unpinned_tabs_scroll_view_ =
-      AddChildView(std::make_unique<views::ScrollView>());
+  unpinned_tabs_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled));
   SetScrollViewProperties(unpinned_tabs_scroll_view_);
 
   collection_node->set_add_child_to_node(base::BindRepeating(

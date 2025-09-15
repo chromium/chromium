@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -406,13 +407,15 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   ASSERT_EQ(pinned_node->children().size(), 1u);
   EXPECT_EQ(pinned_node->children()[0]->GetType(),
             TabCollectionNode::Type::kTab);
-  // TODO(crbug.com/442567140): Verify tab view is created.
+  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
+      pinned_node->children()[0]->get_view_for_testing()));
 
   // The unpinned Node should contain a tab, a tab group, and a split tab.
   ASSERT_EQ(unpinned_node->children().size(), 3u);
   EXPECT_EQ(unpinned_node->children()[0]->GetType(),
             TabCollectionNode::Type::kTab);
-  // TODO(crbug.com/442567140): Verify tab view is created.
+  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
+      unpinned_node->children()[0]->get_view_for_testing()));
 
   const auto& group_node = unpinned_node->children()[1];
   EXPECT_EQ(group_node->GetType(), TabCollectionNode::Type::kTabGroup);
@@ -420,7 +423,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   ASSERT_EQ(group_node->children().size(), 1u);
   EXPECT_EQ(group_node->children()[0]->GetType(),
             TabCollectionNode::Type::kTab);
-  // TODO(crbug.com/442567140): Verify tab view is created.
+  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
+      group_node->children()[0]->get_view_for_testing()));
 
   const auto& split_node = unpinned_node->children()[2];
   EXPECT_EQ(split_node->GetType(), TabCollectionNode::Type::kSplitTab);
@@ -428,10 +432,12 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   ASSERT_EQ(split_node->children().size(), 2u);
   EXPECT_EQ(split_node->children()[0]->GetType(),
             TabCollectionNode::Type::kTab);
-  // TODO(crbug.com/442567140): Verify tab view is created.
+  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
+      split_node->children()[0]->get_view_for_testing()));
   EXPECT_EQ(split_node->children()[1]->GetType(),
             TabCollectionNode::Type::kTab);
-  // TODO(crbug.com/442567140): Verify tab view is created.
+  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
+      split_node->children()[1]->get_view_for_testing()));
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
@@ -638,4 +644,48 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_NE(child_views[1], non_collection_view);
   EXPECT_NE(child_views[0], non_collection_view_2);
   EXPECT_NE(child_views[1], non_collection_view_2);
+}
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+                       VerticalTabViewIsCreatedForTabs) {
+  // Add an unpinned tab.
+  AppendTab();
+  // Add a pinned tab.
+  AppendPinnedTab();
+
+  auto parent_view = std::make_unique<views::View>();
+
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
+      base::BindRepeating(static_cast<views::View* (
+                              views::View::*)(std::unique_ptr<views::View>)>(
+                              &views::View::AddChildView),
+                          base::Unretained(parent_view.get())));
+
+  // Wait for the root node to populate its children.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
+
+  // Get the pinned and unpinned tab container nodes.
+  const auto& pinned_node = root_node.children()[0];
+  const auto& unpinned_node = root_node.children()[1];
+
+  // Verify the pinned node contains a single child.
+  ASSERT_EQ(pinned_node->children().size(), 1u);
+  // Verify that child is a VerticalTabView.
+  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
+      pinned_node->children()[0]->get_view_for_testing()));
+
+  // Verify the unpinned node contains two children: the initial empty tab and
+  // the newly appended tab.
+  ASSERT_EQ(unpinned_node->children().size(), 2u);
+  // Verify both children are VerticalTabView instances.
+  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
+      unpinned_node->children()[0]->get_view_for_testing()));
+  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
+      unpinned_node->children()[1]->get_view_for_testing()));
 }

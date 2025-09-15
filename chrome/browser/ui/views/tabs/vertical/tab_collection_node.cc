@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "ui/views/view.h"
 #include "vertical_unpinned_tab_container_view.h"
@@ -66,8 +67,7 @@ std::unique_ptr<views::View> TabCollectionNode::CreateViewForNode(
       // TODO(crbug.com/442567916): support tab groups.
       break;
     case Type::kTab:
-      // TODO(crbug.com/442567140): support tabs.
-      break;
+      return std::make_unique<VerticalTabView>(node_for_view);
   }
   return std::make_unique<CollectionTestViewImpl>(node_for_view);
 }

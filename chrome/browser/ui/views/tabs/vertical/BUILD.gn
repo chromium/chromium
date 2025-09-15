@@ -12,6 +12,8 @@ source_set("vertical") {
     "vertical_pinned_tab_container_view.h",
     "vertical_tab_strip_view.cc",
     "vertical_tab_strip_view.h",
+    "vertical_tab_view.cc",
+    "vertical_tab_view.h",
     "vertical_unpinned_tab_container_view.cc",
     "vertical_unpinned_tab_container_view.h",
   ]

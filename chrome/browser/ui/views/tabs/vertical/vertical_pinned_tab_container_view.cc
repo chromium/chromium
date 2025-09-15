@@ -56,13 +56,19 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
     int available_width =
         size_bounds.width().value() -
         GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING);
-    children_on_row = std::floor((available_width - child_width) /
-                                 (child_width + kTabVerticalPadding)) +
-                      1;
-    // Allocate extra space to the tabs.
-    available_width -= (children_on_row * child_width) +
-                       (kTabVerticalPadding * (children_on_row - 1));
-    child_width += std::floor(available_width / children_on_row);
+
+    if (available_width > 0) {
+      children_on_row = std::floor((available_width - child_width) /
+                                   (child_width + kTabVerticalPadding)) +
+                        1;
+
+      // Allocate extra space to the tabs.
+      available_width -= (children_on_row * child_width) +
+                         (kTabVerticalPadding * (children_on_row - 1));
+      child_width += std::floor(available_width / children_on_row);
+    } else {
+      children_on_row = 1;
+    }
   }
 
   int row_index = 0;
