@@ -213,8 +213,10 @@ class BrowserView : public BrowserWindow,
   views::Widget* overlay_widget() { return overlay_widget_.get(); }
   const views::Widget* overlay_widget() const { return overlay_widget_.get(); }
 
-  views::View* overlay_view() { return overlay_view_.get(); }
-  const views::View* overlay_view() const { return overlay_view_.get(); }
+  views::View* overlay_view() { return overlay_view_tracker_.view(); }
+  const views::View* overlay_view() const {
+    return overlay_view_tracker_.view();
+  }
 
   views::Widget* tab_overlay_widget() { return tab_overlay_widget_.get(); }
   const views::Widget* tab_overlay_widget() const {
@@ -1162,7 +1164,7 @@ class BrowserView : public BrowserWindow,
   // during immersive reveal.
   // On Aura, this view is owned by the browser frame. On mac, this view is
   // owned by `overlay_widget_`.
-  raw_ptr<views::View, DanglingUntriaged> overlay_view_ = nullptr;
+  views::ViewTracker overlay_view_tracker_;
 
 #if BUILDFLAG(IS_MAC)
   // Used when calling CreateMacOverlayView(). This widget owns `overlay_view_`.
