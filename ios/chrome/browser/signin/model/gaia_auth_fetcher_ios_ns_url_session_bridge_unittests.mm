@@ -161,11 +161,12 @@ class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
+  // Fake delegate for `ns_url_session_bridge_` (this needs to be deallocated
+  // after `ns_url_session_bridge_`).
+  std::unique_ptr<FakeGaiaAuthFetcherIOSBridgeDelegate> delegate_;
   // Instance used for the tests.
   std::unique_ptr<TestGaiaAuthFetcherIOSNSURLSessionBridge>
       ns_url_session_bridge_;
-  // Fake delegate for `ns_url_session_bridge_`.
-  std::unique_ptr<FakeGaiaAuthFetcherIOSBridgeDelegate> delegate_;
   // Delegate for `url_session_mock_`, provided by `ns_url_session_bridge_`.
   id<NSURLSessionTaskDelegate> url_session_delegate_;
 
@@ -386,9 +387,7 @@ bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::FetchURL(const GURL& url) {
 
 // Tests to send a request with no cookies set in the cookie store and receive
 // multiples cookies from the request.
-// TODO(crbug.com/433316893): Re-enable this test.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
-       DISABLED_FetchWithEmptyCookieStore) {
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithEmptyCookieStore) {
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_TRUE(completion_handler_);
@@ -407,9 +406,7 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
 
 // Tests to send a request with one cookie set in the cookie store and receive
 // another cookies from the request.
-// TODO(crbug.com/433316893): Re-enable this test.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
-       DISABLED_FetchWithCookieStore) {
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCookieStore) {
   NSHTTPCookie* cookie_to_send = GetCookie1();
   ASSERT_TRUE(SetCookiesInCookieManager(@[ cookie_to_send ]));
 
@@ -436,8 +433,7 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
 
 // Tests to a request with a redirect. One cookie is received by the first
 // request, and a second one by the redirected request.
-// TODO(crbug.com/433316893): Re-enable this test.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, DISABLED_FetchWithRedirect) {
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithRedirect) {
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(completion_handler_);
@@ -470,8 +466,7 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, DISABLED_FetchWithRedirect) {
 }
 
 // Tests to cancel the request.
-// TODO(crbug.com/433316893): Re-enable this test.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, DISABLED_FetchWithCancel) {
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCancel) {
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(completion_handler_);
@@ -485,9 +480,7 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, DISABLED_FetchWithCancel) {
 }
 
 // Tests a request with error.
-// TODO(crbug.com/433316893): Re-enable this test.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
-       DISABLED_FetchWithError) {
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithError) {
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(completion_handler_);
