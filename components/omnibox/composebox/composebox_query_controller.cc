@@ -242,10 +242,7 @@ ComposeboxQueryController::GetNextRequestId(
 
   suggest_inputs_.set_encoded_request_id(
       lens::Base64EncodeRequestId(*request_id));
-  if (mime_type == lens::MimeType::kImage) {
-    // Image suggest should not set the vit param.
-    suggest_inputs_.clear_contextual_visual_input_type();
-  } else if (!base::Contains(lens::kUnsupportedVitMimeTypes, mime_type)) {
+  if (!base::Contains(lens::kUnsupportedVitMimeTypes, mime_type)) {
     suggest_inputs_.set_contextual_visual_input_type(
         lens::VitQueryParamValueForMimeType(mime_type));
   }
