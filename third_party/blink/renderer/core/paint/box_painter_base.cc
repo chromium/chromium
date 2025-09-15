@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
@@ -85,11 +86,6 @@ void ApplySpreadToShadowShape(ContouredRect& shadow_shape, float spread) {
 
   shadow_shape.OutsetForMarginOrShadow(spread);
   shadow_shape.ConstrainRadii();
-}
-
-Node* GeneratingNode(Node* node) {
-  return node && node->IsPseudoElement() ? node->ParentOrShadowHostNode()
-                                         : node;
 }
 
 BackgroundColorPaintImageGenerator* GetBackgroundColorPaintImageGenerator(
@@ -834,13 +830,13 @@ bool PaintBGColorWithPaintWorklet(const Document& document,
   return true;
 }
 
-bool WillDrawImage(
+bool NotifyImageTimingOnWillDrawImage(
     Node* node,
     const Image& image,
     const StyleImage& style_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::RectF& image_rect) {
-  Node* generating_node = GeneratingNode(node);
+  Node* generating_node = paint_timing::ImageGeneratingNode(node);
 
   //  StyleFetchedImage and StyleImageSet are the only two that could be passed
   //  here that could have a non-null CachedImage.
@@ -869,7 +865,7 @@ ImagePaintTimingInfo ComputeImagePaintTimingInfo(Node* node,
                                                  const StyleImage& style_image,
                                                  const GraphicsContext& context,
                                                  const gfx::RectF& rect) {
-  bool image_may_be_lcp_candidate = WillDrawImage(
+  bool image_may_be_lcp_candidate = NotifyImageTimingOnWillDrawImage(
       node, image, style_image,
       context.GetPaintController().CurrentPaintChunkProperties(), rect);
 

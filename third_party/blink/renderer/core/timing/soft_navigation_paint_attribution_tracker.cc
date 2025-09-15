@@ -9,6 +9,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
@@ -16,12 +17,6 @@
 namespace blink {
 
 namespace {
-
-// TODO(crbug.com/423670827): Consider moving this to ImagePaintTimingDetector.
-bool IsImageType(const LayoutObject& object) {
-  return object.IsImage() || object.IsSVGImage() || object.IsVideo() ||
-         object.StyleRef().HasBackgroundImage();
-}
 
 // When enabled, text aggregator nodes are marked as needing repaint in the
 // `TextPaintTimingDetector` when the `SoftNavigationContext` associated with
@@ -130,9 +125,11 @@ SoftNavigationPaintAttributionTracker::UpdateOnPrePaint(
     // that this also includes nodes with background images, which may not be
     // leaf nodes -- but it's fine to store intermediate nodes in the tree whose
     // parent and descendants have the same context.
-    if (node->IsTextNode() || IsImageType(*node->GetLayoutObject())) {
+    if (paint_timing::IsTextType(*node) || paint_timing::IsImageType(object)) {
       MarkNodeForPaintTrackingIfNeeded(
-          node->IsTextNode() ? text_aggregator : node, inherited_state);
+          node->IsTextNode() ? text_aggregator
+                             : paint_timing::ImageGeneratingNode(node),
+          inherited_state);
     } else if (auto iter = marked_nodes_.find(node);
                iter != marked_nodes_.end()) {
       // Otherwise, update the cached state if the inherited context is from a
@@ -163,7 +160,7 @@ void SoftNavigationPaintAttributionTracker::
   if (!base::FeatureList::IsEnabled(kMarkTextNodesForRepaintOnContextChange)) {
     return;
   }
-  if (IsImageType(object)) {
+  if (paint_timing::IsImageType(object)) {
     return;
   }
   text_paint_timing_detector_->ResetPaintTrackingOnInteraction(object);

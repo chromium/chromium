@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Soft Navigation Detection supports adding nodes with image pseudo elements and text
+  promise_test: Unhandled rejection with value: object "Error: ICPs not detected."
+Harness: the test ran to completion.
+
