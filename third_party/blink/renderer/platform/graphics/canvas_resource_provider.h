@@ -628,6 +628,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       scoped_refptr<CanvasResourceSharedImage>&& resource);
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
   bool IsResourceUsable(CanvasResourceSharedImage* resource);
+  CanvasResourceSharedImage* resource() {
+    return static_cast<CanvasResourceSharedImage*>(resource_.get());
+  }
+  const CanvasResourceSharedImage* resource() const {
+    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
+  }
 
  private:
   // `viz::ContextLostObserver` implementation.
@@ -635,6 +641,14 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override;
+
+  void OnDestroyResource() override { --num_inflight_resources_; }
+  void SetResourceRecyclingEnabled(bool value) override;
+  void OnResourceRefReturned(
+      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+  void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource);
+  void MaybePostUnusedResourcesReclaimTask();
+  void ClearOldUnusedResources();
 
   virtual base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr() = 0;
 };

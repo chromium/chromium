@@ -318,6 +318,69 @@ bool CanvasResourceProviderSharedImage::IsResourceUsable(
       shared_image_usage_flags_);
 }
 
+void CanvasResourceProviderSharedImage::OnResourceRefReturned(
+    scoped_refptr<CanvasResourceSharedImage>&& resource) {
+  if (!resource->IsLost() && resource->HasOneRef()) {
+    RecycleResource(std::move(resource));
+  }
+}
+
+void CanvasResourceProviderSharedImage::SetResourceRecyclingEnabled(
+    bool value) {
+  resource_recycling_enabled_ = value;
+  if (!resource_recycling_enabled_) {
+    ClearUnusedResources();
+  }
+}
+
+void CanvasResourceProviderSharedImage::RecycleResource(
+    scoped_refptr<CanvasResourceSharedImage>&& resource) {
+  // We don't want to keep an arbitrary large number of canvases.
+  if (unused_resources_.size() >
+      static_cast<unsigned int>(kMaxRecycledCanvasResources)) {
+    return;
+  }
+
+  // Need to check HasOneRef() because if there are outstanding references to
+  // the resource, it cannot be safely recycled. In addition, we must check
+  // whether the state of the resource provider has changed such that the
+  // resource has become unusable in the interim.
+  if (resource->HasOneRef() && resource_recycling_enabled_ &&
+      !IsSingleBuffered() && IsResourceUsable(resource.get())) {
+    RegisterUnusedResource(std::move(resource));
+    MaybePostUnusedResourcesReclaimTask();
+  }
+}
+
+void CanvasResourceProviderSharedImage::MaybePostUnusedResourcesReclaimTask() {
+  if (!base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources)) {
+    return;
+  }
+
+  if (resource_recycling_enabled_ && !IsSingleBuffered() &&
+      !unused_resources_reclaim_timer_.IsRunning() &&
+      !unused_resources_.empty()) {
+    unused_resources_reclaim_timer_.Start(
+        FROM_HERE, kUnusedResourceExpirationTime,
+        base::BindOnce(
+            &CanvasResourceProviderSharedImage::ClearOldUnusedResources,
+            base::Unretained(this)));
+  }
+}
+
+void CanvasResourceProviderSharedImage::ClearOldUnusedResources() {
+  EraseIf(unused_resources_, [](const UnusedResource& resource) {
+    return base::TimeTicks::Now() - resource.last_use >=
+           kUnusedResourceExpirationTime;
+  });
+  // May have destroyed resources above that contains shared images.
+  // ClientSharedImage destructor calls DestroySharedImage which in turn
+  // ensures that the deferred destroy request from above is flushed. Thus,
+  // SharedImageInterface::Flush in not needed here explicitly.
+
+  MaybePostUnusedResourcesReclaimTask();
+}
+
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
 class CanvasResourceProviderSharedImageImpl
@@ -913,15 +976,6 @@ class CanvasResourceProviderSharedImageImpl
     current_resource_has_write_access_ = false;
   }
 
-  CanvasResourceSharedImage* resource() {
-    return static_cast<CanvasResourceSharedImage*>(resource_.get());
-  }
-  const CanvasResourceSharedImage* resource() const {
-    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
-  }
-
-  void OnDestroyResource() override { --num_inflight_resources_; }
-
   // For WebGpu RecyclableCanvasResource.
   void OnAcquireRecyclableCanvasResource() override { EnsureWriteAccess(); }
   void OnDestroyRecyclableCanvasResource(
@@ -944,67 +998,6 @@ class CanvasResourceProviderSharedImageImpl
   }
 
  private:
-  void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override {
-    if (!resource->IsLost() && resource->HasOneRef()) {
-      RecycleResource(std::move(resource));
-    }
-  }
-
-  void SetResourceRecyclingEnabled(bool value) override {
-    resource_recycling_enabled_ = value;
-    if (!resource_recycling_enabled_) {
-      ClearUnusedResources();
-    }
-  }
-
-  void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource) {
-    // We don't want to keep an arbitrary large number of canvases.
-    if (unused_resources_.size() >
-        static_cast<unsigned int>(kMaxRecycledCanvasResources)) {
-      return;
-    }
-
-    // Need to check HasOneRef() because if there are outstanding references to
-    // the resource, it cannot be safely recycled. In addition, we must check
-    // whether the state of the resource provider has changed such that the
-    // resource has become unusable in the interim.
-    if (resource->HasOneRef() && resource_recycling_enabled_ &&
-        !IsSingleBuffered() && IsResourceUsable(resource.get())) {
-      RegisterUnusedResource(std::move(resource));
-      MaybePostUnusedResourcesReclaimTask();
-    }
-  }
-
-  void MaybePostUnusedResourcesReclaimTask() {
-    if (!base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources)) {
-      return;
-    }
-
-    if (resource_recycling_enabled_ && !IsSingleBuffered() &&
-        !unused_resources_reclaim_timer_.IsRunning() &&
-        !unused_resources_.empty()) {
-      unused_resources_reclaim_timer_.Start(
-          FROM_HERE, kUnusedResourceExpirationTime,
-          base::BindOnce(
-              &CanvasResourceProviderSharedImageImpl::ClearOldUnusedResources,
-              base::Unretained(this)));
-    }
-  }
-
-  void ClearOldUnusedResources() {
-    EraseIf(unused_resources_, [](const UnusedResource& resource) {
-      return base::TimeTicks::Now() - resource.last_use >=
-             kUnusedResourceExpirationTime;
-    });
-    // May have destroyed resources above that contains shared images.
-    // ClientSharedImage destructor calls DestroySharedImage which in turn
-    // ensures that the deferred destroy request from above is flushed. Thus,
-    // SharedImageInterface::Flush in not needed here explicitly.
-
-    MaybePostUnusedResourcesReclaimTask();
-  }
-
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override {
     if (is_software_) {
       // This class creates software SharedImages only on demand and might not
