@@ -1798,9 +1798,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   restore_observer.Wait();
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
-  ui_test_utils::BrowserChangeObserver browser_removed_observer(
-      params.browser,
-      ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
+      params.browser);
 
   // Have the page trigger closing the browser.
   ASSERT_TRUE(
@@ -1809,7 +1808,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 
   // Wait for the browser to close as a result of the single tab closing
   // itself.
-  browser_removed_observer.Wait();
+  browser_destroyed_observer.Wait();
 
   ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
   SessionRestoreTestHelper restore_observer2;

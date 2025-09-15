@@ -883,8 +883,7 @@ Browser* WaitForBrowserToOpen() {
 }
 
 void WaitForBrowserToClose(Browser* browser) {
-  BrowserChangeObserver(browser, BrowserChangeObserver::ChangeType::kRemoved)
-      .Wait();
+  BrowserDestroyedObserver(browser).Wait();
 }
 
 TabAddedWaiter::TabAddedWaiter(Browser* browser) {
@@ -941,6 +940,29 @@ void AllBrowserTabAddedWaiter::OnTabStripModelChanged(
 
 void AllBrowserTabAddedWaiter::OnBrowserAdded(Browser* browser) {
   browser->tab_strip_model()->AddObserver(this);
+}
+
+BrowserDestroyedObserver::BrowserDestroyedObserver(
+    BrowserWindowInterface* browser)
+    : session_id_(browser ? std::make_optional(browser->GetSessionID())
+                          : std::nullopt) {
+  browser_list_observation_.Observe(BrowserList::GetInstance());
+}
+
+BrowserDestroyedObserver::~BrowserDestroyedObserver() = default;
+
+void BrowserDestroyedObserver::Wait() {
+  if (!was_removed_) {
+    run_loop_.Run();
+  }
+}
+
+void BrowserDestroyedObserver::OnBrowserRemoved(Browser* browser) {
+  if (!session_id_.has_value() ||
+      browser->GetSessionID() == session_id_.value()) {
+    was_removed_ = true;
+    run_loop_.Quit();
+  }
 }
 
 BrowserChangeObserver::BrowserChangeObserver(Browser* browser, ChangeType type)

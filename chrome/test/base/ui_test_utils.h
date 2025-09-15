@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -30,6 +31,8 @@
 #endif
 
 class Browser;
+class BrowserList;
+class BrowserWindowInterface;
 class FullscreenController;
 class Profile;
 
@@ -576,6 +579,28 @@ class HistoryEnumerator {
 
  private:
   std::vector<GURL> urls_;
+};
+
+// Waits for the destruction of `browser`. If `browser` is null will wait on the
+// destruction of any Browser.
+class BrowserDestroyedObserver : public BrowserListObserver {
+ public:
+  explicit BrowserDestroyedObserver(BrowserWindowInterface* browser = nullptr);
+  BrowserDestroyedObserver(const BrowserDestroyedObserver&) = delete;
+  BrowserDestroyedObserver& operator=(const BrowserDestroyedObserver&) = delete;
+  ~BrowserDestroyedObserver() override;
+
+  void Wait();
+
+  // BrowserListObserver:
+  void OnBrowserRemoved(Browser* browser) override;
+
+ private:
+  bool was_removed_ = false;
+  const std::optional<SessionID> session_id_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
 };
 
 // In general, tests should use WaitForBrowserToClose() and

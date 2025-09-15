@@ -192,8 +192,7 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
   // No notice shown if there is another browser for this profile.
   CloseBrowserSynchronously(browser_2);
 
-  ui_test_utils::BrowserChangeObserver browser_close_observer(
-      browser(), ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(browser());
 
   views::DialogDelegate* dialog_delegate =
       TryCloseBrowserAndWaitForNotice(*browser());
@@ -207,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
   dialog_delegate->AcceptDialog();
 
   // User is migrated and browser is closed.
-  browser_close_observer.Wait();
+  browser_destroyed_observer.Wait();
   EXPECT_TRUE(GetProfile()->GetPrefs()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
 }

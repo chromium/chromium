@@ -1118,11 +1118,10 @@ void WebAppIntegrationTestDriver::ClosePwa() {
   }
   ASSERT_TRUE(app_browser()) << "No current app browser";
 
-  ui_test_utils::BrowserChangeObserver close_observer(
-      app_browser(),
-      ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
+      app_browser());
   app_browser()->window()->Close();
-  close_observer.Wait();
+  browser_destroyed_observer.Wait();
   app_browser_ = nullptr;
 
   AfterStateChangeAction();

@@ -56,6 +56,7 @@ using content::test::PrerenderHostObserver;
 using content::test::PrerenderHostRegistryObserver;
 using content::test::PrerenderTestHelper;
 using ui_test_utils::BrowserChangeObserver;
+using ui_test_utils::BrowserDestroyedObserver;
 
 namespace web_app {
 namespace {
@@ -362,8 +363,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
             base::ok());
 
   ExpectTabs(browser(), {about_blank_});
-  BrowserChangeObserver removed_observer(
-      browser(), BrowserChangeObserver::ChangeType::kRemoved);
+  BrowserDestroyedObserver browser_destroyed_observer(browser());
 
   // Navigate an about:blank page.
   BrowserChangeObserver observer(nullptr,
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   ExpectTabs(app_browser, {in_scope_1});
 
   // Old about:blank page cleaned up.
-  removed_observer.Wait();
+  browser_destroyed_observer.Wait();
 }
 
 // JavaScript initiated link captures from about:blank cleans up the about:blank
@@ -390,8 +390,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
             base::ok());
 
   ExpectTabs(browser(), {about_blank_});
-  BrowserChangeObserver removed_observer(
-      browser(), BrowserChangeObserver::ChangeType::kRemoved);
+  BrowserDestroyedObserver browser_destroyed_observer(browser());
 
   // Navigate an about:blank page using JavaScript.
   BrowserChangeObserver added_observer(
@@ -403,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   ExpectTabs(app_browser, {in_scope_1});
 
   // Old about:blank page cleaned up.
-  removed_observer.Wait();
+  browser_destroyed_observer.Wait();
 
   // Must wait for link capturing launch to complete so that its keep alives go
   // out of scope.

@@ -169,10 +169,10 @@ webapps::AppId InstallWebAppFromPageAndCloseAppBrowser(Browser* browser,
   Browser* app_browser = observer.Wait();
   DCHECK_NE(app_browser, browser);
   DCHECK(AppBrowserController::IsForWebApp(app_browser, app_id));
-  ui_test_utils::BrowserChangeObserver on_close(
-      app_browser, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
+      app_browser);
   chrome::CloseWindow(app_browser);
-  on_close.Wait();
+  browser_destroyed_observer.Wait();
 
   return app_id;
 }

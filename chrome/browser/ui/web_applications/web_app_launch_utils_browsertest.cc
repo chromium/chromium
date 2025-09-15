@@ -122,10 +122,10 @@ IN_PROC_BROWSER_TEST_P(ReparentWebContentsTest, ReparentToAppAndBack) {
 
   // Reparent back into the browser window, and wait for the app window to
   // close.
-  ui_test_utils::BrowserChangeObserver closed_observer(
-      app_browser, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
+      app_browser);
   ReparentWebContentsIntoBrowserImpl(app_browser, to_reparent, browser());
-  closed_observer.Wait();
+  browser_destroyed_observer.Wait();
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), to_reparent);
 
