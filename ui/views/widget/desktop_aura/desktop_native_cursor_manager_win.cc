@@ -18,14 +18,17 @@ namespace {
 
 constexpr int kDefaultCursorSize = 32;
 
+wm::NativeCursorManagerDelegate* g_delegate = nullptr;
+
 }  // namespace
 
 DesktopNativeCursorManagerWin::DesktopNativeCursorManagerWin() = default;
 
-DesktopNativeCursorManagerWin::~DesktopNativeCursorManagerWin() = default;
+DesktopNativeCursorManagerWin::~DesktopNativeCursorManagerWin() {
+  g_delegate = nullptr;
+}
 
-void DesktopNativeCursorManagerWin::SetSystemCursorSize(
-    wm::NativeCursorManagerDelegate* delegate) {
+void DesktopNativeCursorManagerWin::SetSystemCursorSize() {
   DWORD cursor_base_size = 0;
   if (hkcu_cursor_regkey_.Valid() &&
       hkcu_cursor_regkey_.ReadValueDW(L"CursorBaseSize", &cursor_base_size) ==
@@ -35,37 +38,40 @@ void DesktopNativeCursorManagerWin::SetSystemCursorSize(
   }
 
   // Report cursor size.
-  delegate->CommitSystemCursorSize(system_cursor_size_);
+  DCHECK(g_delegate);
+  g_delegate->CommitSystemCursorSize(system_cursor_size_);
 }
 
-void DesktopNativeCursorManagerWin::RegisterCursorRegkeyObserver(
-    wm::NativeCursorManagerDelegate* delegate) {
+void DesktopNativeCursorManagerWin::RegisterCursorRegkeyObserver() {
   if (!hkcu_cursor_regkey_.Valid()) {
     return;
   }
 
   hkcu_cursor_regkey_.StartWatching(base::BindOnce(
-      [](DesktopNativeCursorManagerWin* manager,
-         wm::NativeCursorManagerDelegate* delegate) {
-        manager->SetSystemCursorSize(delegate);
+      [](DesktopNativeCursorManagerWin* manager) {
+        manager->SetSystemCursorSize();
         // RegKey::StartWatching only provides one notification.
         // Reregistration is required to get future notifications.
-        manager->RegisterCursorRegkeyObserver(delegate);
+        manager->RegisterCursorRegkeyObserver();
       },
       // It's safe to use |base::Unretained(this)| here, because |this| owns
       // the |hkcu_cursor_regkey_|, and the callback will be cancelled if
       // |hkcu_cursor_regkey_| is destroyed.
-      base::Unretained(this), delegate));
+      base::Unretained(this)));
 }
 
 void DesktopNativeCursorManagerWin::InitCursorSizeObserver(
     wm::NativeCursorManagerDelegate* delegate) {
+  DCHECK(!g_delegate);
+  // DesktopNativeCursorManager(Win) operates as a singleton through
+  // aura::client::SetCursorShapeClient().
+  g_delegate = delegate;
   // Validity of this key is checked at time-of-use.
   (void)hkcu_cursor_regkey_.Open(HKEY_CURRENT_USER, L"Control Panel\\Cursors",
                                  KEY_READ | KEY_NOTIFY);
   system_cursor_size_ = gfx::Size(kDefaultCursorSize, kDefaultCursorSize);
-  RegisterCursorRegkeyObserver(delegate);
-  SetSystemCursorSize(delegate);
+  RegisterCursorRegkeyObserver();
+  SetSystemCursorSize();
 }
 
 }  // namespace views

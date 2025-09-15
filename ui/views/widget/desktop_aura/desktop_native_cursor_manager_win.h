@@ -35,8 +35,8 @@ class VIEWS_EXPORT DesktopNativeCursorManagerWin
 
  private:
   // Retrieve and report the cursor size to cursor manager.
-  void SetSystemCursorSize(wm::NativeCursorManagerDelegate* delegate);
-  void RegisterCursorRegkeyObserver(wm::NativeCursorManagerDelegate* delegate);
+  void SetSystemCursorSize();
+  void RegisterCursorRegkeyObserver();
 
   base::win::RegKey hkcu_cursor_regkey_;
   gfx::Size system_cursor_size_;
