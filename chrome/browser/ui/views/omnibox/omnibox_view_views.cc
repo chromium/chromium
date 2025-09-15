@@ -1142,7 +1142,7 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
 
 void OmniboxViewViews::OnBeforePossibleChange() {
   // Record our state.
-  GetState(&state_before_change_);
+  state_before_change_ = GetState();
   ime_composing_before_change_ = IsIMEComposing();
 
   // User is editing or traversing the text, as opposed to moving
@@ -1153,8 +1153,7 @@ void OmniboxViewViews::OnBeforePossibleChange() {
 
 bool OmniboxViewViews::OnAfterPossibleChange(bool allow_keyword_ui_change) {
   // See if the text or selection have changed since OnBeforePossibleChange().
-  State new_state;
-  GetState(&new_state);
+  State new_state = GetState();
   OmniboxView::StateChanges state_changes =
       GetStateChanges(state_before_change_, new_state);
 

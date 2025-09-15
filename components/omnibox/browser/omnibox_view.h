@@ -16,9 +16,8 @@
 #include <memory>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -51,9 +50,9 @@ class OmniboxView {
     bool just_deleted_text;
   };
 
-  virtual ~OmniboxView();
   OmniboxView(const OmniboxView&) = delete;
   OmniboxView& operator=(const OmniboxView&) = delete;
+  virtual ~OmniboxView();
 
   OmniboxEditModel* model();
   const OmniboxEditModel* model() const;
@@ -73,6 +72,7 @@ class OmniboxView {
   // the field is empty.
   bool IsEditingOrEmpty() const;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the icon to display as the location icon. If a favicon is
   // available, `on_icon_fetched` may be called later asynchronously.
   // `color_current_page_icon` is used for the page icon (i.e. when the popup is
@@ -93,6 +93,7 @@ class OmniboxView {
                          SkColor color_vectors_with_background,
                          IconFetchedCallback on_icon_fetched,
                          bool dark_mode) const;
+#endif
 
   // The user text is the text the user has manually keyed in.  When present,
   // this is shown in preference to the permanent text; hitting escape will
@@ -252,11 +253,11 @@ class OmniboxView {
 
   explicit OmniboxView(std::unique_ptr<OmniboxClient> client);
 
-  // Fills |state| with the current text state.
-  void GetState(State* state);
+  // Returns the current text state.
+  State GetState() const;
 
   // Returns the delta between |before| and |after|.
-  StateChanges GetStateChanges(const State& before, const State& after);
+  static StateChanges GetStateChanges(const State& before, const State& after);
 
   // Internally invoked whenever the text changes in some way.
   virtual void TextChanged();
@@ -292,7 +293,7 @@ class OmniboxView {
   friend class OmniboxViewMacTest;
   friend class TestOmniboxView;
 
-  std::unique_ptr<OmniboxController> controller_;
+  const std::unique_ptr<OmniboxController> controller_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_VIEW_H_

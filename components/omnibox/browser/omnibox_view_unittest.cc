@@ -275,7 +275,8 @@ TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {
     auto state_before =
         TestOmniboxView::CreateState("google.com", 10, 3);  // goo[gle.com]
     auto state_after = TestOmniboxView::CreateState("goog", 4, 4);  // goog|
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
+    auto state_changes =
+        TestOmniboxView::GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
   {
@@ -283,7 +284,8 @@ TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {
     auto state_before =
         TestOmniboxView::CreateState("google.com", 1, 10);  // g[oogle.com]
     auto state_after = TestOmniboxView::CreateState("gi", 2, 2);  // gi|
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
+    auto state_changes =
+        TestOmniboxView::GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
   {
@@ -291,7 +293,8 @@ TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {
     auto state_before =
         TestOmniboxView::CreateState("google.com", 1, 10);       // g[oogle.com]
     auto state_after = TestOmniboxView::CreateState("g", 1, 1);  // g|
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
+    auto state_changes =
+        TestOmniboxView::GetStateChanges(state_before, state_after);
     EXPECT_TRUE(state_changes.just_deleted_text);
   }
   {
@@ -300,7 +303,8 @@ TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {
         TestOmniboxView::CreateState("goole.com", 3, 3);  // goo|le.com
     auto state_after =
         TestOmniboxView::CreateState("google.com", 4, 4);  // goog|le.com
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
+    auto state_changes =
+        TestOmniboxView::GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
   {
@@ -309,7 +313,8 @@ TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {
         TestOmniboxView::CreateState("googgle.com", 5, 5);  // googg|le.com
     auto state_after =
         TestOmniboxView::CreateState("google.com", 4, 4);  // goog|le.com
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
+    auto state_changes =
+        TestOmniboxView::GetStateChanges(state_before, state_after);
     EXPECT_TRUE(state_changes.just_deleted_text);
   }
   {
@@ -318,7 +323,8 @@ TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {
         TestOmniboxView::CreateState("goojle.com", 3, 4);  // goo[j]le.com
     auto state_after =
         TestOmniboxView::CreateState("google.com", 4, 4);  // goog|le.com
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
+    auto state_changes =
+        TestOmniboxView::GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
 }

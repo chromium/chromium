@@ -12,11 +12,7 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -28,19 +24,14 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "ui/gfx/paint_vector_icon.h"
-
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -69,7 +60,8 @@ bool OmniboxView::IsEditingOrEmpty() const {
           model()->PopupIsOpen());
 }
 
-// TODO (manukh) OmniboxView::GetIcon is very similar to
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// TODO(manukh): OmniboxView::GetIcon is very similar to
 // OmniboxPopupModel::GetMatchIcon. They contain certain inconsistencies
 // concerning what flags are required to display url favicons and bookmark star
 // icons. OmniboxPopupModel::GetMatchIcon also doesn't display default search
@@ -82,11 +74,6 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     SkColor color_vectors_with_background,
                                     IconFetchedCallback on_icon_fetched,
                                     bool dark_mode) const {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // This is used on desktop only.
-  NOTREACHED();
-#else
-
   if (model()->ShouldShowCurrentPageIcon()) {
     return ui::ImageModel::FromVectorIcon(
         controller_->client()->GetVectorIcon(), color_current_page_icon,
@@ -158,9 +145,10 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     }
   }
 
-  if (!favicon.IsEmpty())
+  if (!favicon.IsEmpty()) {
     return ui::ImageModel::FromImage(
         controller_->client()->GetSizedIcon(favicon));
+  }
   // If the client returns an empty favicon, fall through to provide the
   // generic vector icon. |on_icon_fetched| may or may not be called later.
   // If it's never called, the vector icon we provide below should remain.
@@ -199,8 +187,8 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
       vector_icon,
       HasVectorIconBackground(match) ? color_vectors_with_background : color,
       dip_size);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void OmniboxView::SetUserText(const std::u16string& text) {
   SetUserText(text, true);
@@ -248,13 +236,16 @@ bool OmniboxView::IsIndicatingQueryRefinement() const {
   return false;
 }
 
-void OmniboxView::GetState(State* state) {
-  state->text = GetText();
-  state->keyword = model()->keyword();
-  state->is_keyword_selected = model()->is_keyword_selected();
-  GetSelectionBounds(&state->sel_start, &state->sel_end);
+OmniboxView::State OmniboxView::GetState() const {
+  State state;
+  state.text = GetText();
+  state.keyword = model()->keyword();
+  state.is_keyword_selected = model()->is_keyword_selected();
+  GetSelectionBounds(&state.sel_start, &state.sel_end);
+  return state;
 }
 
+// static
 OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
                                                        const State& after) {
   OmniboxView::StateChanges state_changes;
@@ -327,13 +318,14 @@ void OmniboxView::UpdateTextStyle(
   }
 
   enum DemphasizeComponents {
-    EVERYTHING,
-    ALL_BUT_SCHEME,
-    ALL_BUT_HOST,
-    NOTHING,
-  } deemphasize = NOTHING;
+    kEverything,
+    kAllButScheme,
+    kAllButHost,
+    kNothing,
+  } deemphasize = kNothing;
 
-  url::Component scheme, host;
+  url::Component scheme;
+  url::Component host;
   AutocompleteInput::ParseForEmphasizeComponents(display_text, classifier,
                                                  &scheme, &host);
 
@@ -352,35 +344,37 @@ void OmniboxView::UpdateTextStyle(
   // Data URLs are rarely human-readable and can be used for spoofing, so draw
   // attention to the scheme to emphasize "this is just a bunch of data".
   // For normal URLs, the host is the best proxy for "identity".
-  if (is_extension_url)
-    deemphasize = EVERYTHING;
-  else if (url_scheme == url::kDataScheme16)
-    deemphasize = ALL_BUT_SCHEME;
-  else if (host.is_nonempty())
-    deemphasize = ALL_BUT_HOST;
+  if (is_extension_url) {
+    deemphasize = kEverything;
+  } else if (url_scheme == url::kDataScheme16) {
+    deemphasize = kAllButScheme;
+  } else if (host.is_nonempty()) {
+    deemphasize = kAllButHost;
+  }
 
   gfx::Range scheme_range = scheme.is_nonempty()
                                 ? gfx::Range(scheme.begin, scheme.end())
                                 : gfx::Range::InvalidRange();
   switch (deemphasize) {
-    case EVERYTHING:
+    case kEverything:
       SetEmphasis(false, gfx::Range::InvalidRange());
       break;
-    case NOTHING:
-      SetEmphasis(true, gfx::Range::InvalidRange());
-      break;
-    case ALL_BUT_SCHEME:
+    case kAllButScheme:
       DCHECK(scheme_range.IsValid());
       SetEmphasis(false, gfx::Range::InvalidRange());
       SetEmphasis(true, scheme_range);
       break;
-    case ALL_BUT_HOST:
+    case kAllButHost:
       SetEmphasis(false, gfx::Range::InvalidRange());
       SetEmphasis(true, gfx::Range(host.begin, host.end()));
+      break;
+    case kNothing:
+      SetEmphasis(true, gfx::Range::InvalidRange());
       break;
   }
 
   // Emphasize the scheme for security UI display purposes (if necessary).
-  if (!model()->user_input_in_progress() && scheme_range.IsValid())
+  if (!model()->user_input_in_progress() && scheme_range.IsValid()) {
     UpdateSchemeStyle(scheme_range);
+  }
 }
