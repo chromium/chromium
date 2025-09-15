@@ -299,12 +299,12 @@ def _check_btrfs(root_path) -> bool:
     return btrfs
 
 
-def discover_testcase_files() -> list[pathlib.Path]:
+def _discover_testcase_files() -> list[pathlib.Path]:
     """Discovers all testcase files that can be run by this test runner.
 
     Returns:
         A list of Paths, each path pointing to a .yaml file containing a
-        promptfoo test case.
+        promptfoo test case. No specific ordering is guaranteed.
     """
     extensions_path = CHROMIUM_SRC / 'agents' / 'extensions'
     all_tests = list(extensions_path.glob(f'*/tests/**/*{TESTCASE_EXTENSION}'))
@@ -447,7 +447,7 @@ def main() -> int:
     shard_index, total_shards = _determine_shard_values(
         args.shard_index, args.total_shards)
 
-    configs_to_run = discover_testcase_files()
+    configs_to_run = _discover_testcase_files()
     configs_to_run.sort()
     if args.filter:
         configs_to_run = [c for c in configs_to_run if args.filter in str(c)]

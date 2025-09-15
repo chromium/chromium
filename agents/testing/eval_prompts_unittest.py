@@ -406,6 +406,131 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
         mock_rmtree.assert_not_called()
 
 
+class CheckUncommittedChangesUnittest(fake_filesystem_unittest.TestCase):
+    """Unit tests for the `_check_uncommitted_changes` function."""
+
+    def setUp(self):
+        self.setUpPyfakefs()
+
+    @mock.patch('subprocess.run')
+    def test_check_uncommitted_changes_clean(self, mock_run):
+        """Tests that no warning is issued for a clean checkout."""
+        mock_run.return_value = subprocess.CompletedProcess(
+            args=['git', 'status', '--porcelain'], returncode=0, stdout='')
+        self.fs.create_dir('/tmp/src/out/Default')
+        with self.assertNoLogs():
+            eval_prompts._check_uncommitted_changes('/tmp/src')
+
+    @mock.patch('subprocess.run')
+    def test_check_uncommitted_changes_dirty(self, mock_run):
+        """Tests that a warning is issued for a dirty checkout."""
+        mock_run.return_value = subprocess.CompletedProcess(
+            args=['git', 'status', '--porcelain'],
+            returncode=0,
+            stdout=' M some_file.py')
+        with self.assertLogs(level='WARNING') as cm:
+            eval_prompts._check_uncommitted_changes('/tmp/src')
+            self.assertIn(
+                'Warning: There are uncommitted changes in the repository.',
+                cm.output[0])
+
+    @mock.patch('subprocess.run')
+    def test_check_uncommitted_changes_extra_out_dir(self, mock_run):
+        """Tests that a warning is issued for extra directories in out."""
+        mock_run.return_value = subprocess.CompletedProcess(
+            args=['git', 'status', '--porcelain'], returncode=0, stdout='')
+        self.fs.create_dir('/tmp/src/out/Default')
+        self.fs.create_dir('/tmp/src/out/Release')
+        self.fs.create_dir('/tmp/src/out/Debug')
+
+        with self.assertLogs(level='WARNING') as cm:
+            eval_prompts._check_uncommitted_changes('/tmp/src')
+            self.assertIn(
+                'Warning: The out directory contains unexpected directories',
+                cm.output[0])
+
+
+class BuildChromiumUnittest(fake_filesystem_unittest.TestCase):
+    """Unit tests for the `_build_chromium` function."""
+
+    def setUp(self):
+        self.setUpPyfakefs()
+
+    @mock.patch('subprocess.check_call')
+    def test_build_chromium(self, mock_check_call):
+        """Tests that the correct commands are called to build chromium."""
+        eval_prompts._build_chromium('/tmp/src')
+        mock_check_call.assert_has_calls([
+            mock.call(['gn', 'gen', 'out/Default'], cwd='/tmp/src'),
+            mock.call(['autoninja', '-C', 'out/Default'], cwd='/tmp/src'),
+        ])
+
+
+class CheckBtrfsUnittest(fake_filesystem_unittest.TestCase):
+    """Unit tests for the `_check_btrfs` function."""
+
+    def setUp(self):
+        self.setUpPyfakefs()
+
+    @mock.patch('subprocess.run')
+    def test_check_btrfs_is_btrfs(self, mock_run):
+        """Tests that btrfs is detected correctly."""
+        mock_run.return_value = subprocess.CompletedProcess(
+            args=['stat', '-c', '%i', '/tmp'], returncode=0, stdout='256\n')
+        with self.assertNoLogs():
+            self.assertTrue(eval_prompts._check_btrfs('/tmp'))
+
+    @mock.patch('subprocess.run')
+    def test_check_btrfs_is_not_btrfs(self, mock_run):
+        """Tests that non-btrfs is detected correctly."""
+        mock_run.return_value = subprocess.CompletedProcess(
+            args=['stat', '-c', '%i', '/tmp'], returncode=0, stdout='123\n')
+        with self.assertLogs(level='WARNING') as cm:
+            self.assertFalse(eval_prompts._check_btrfs('/tmp'))
+            self.assertIn(
+                'Warning: This is not running in a btrfs environment',
+                cm.output[0])
+
+
+class DiscoverTestcaseFilesUnittest(fake_filesystem_unittest.TestCase):
+    """Unit tests for the `_discover_testcase_files` function."""
+
+    def setUp(self):
+        self.setUpPyfakefs()
+
+    @mock.patch('eval_prompts.CHROMIUM_SRC', pathlib.Path('/chromium/src'))
+    def test_discover_testcase_files(self):
+        """Tests that testcase files are discovered correctly."""
+        self.fs.create_file(
+            '/chromium/src/agents/extensions/ext1/tests/test1.promptfoo.yaml')
+        self.fs.create_file('/chromium/src/agents/extensions/ext2/tests/sub/'
+                            'test2.promptfoo.yaml')
+        self.fs.create_file(
+            '/chromium/src/agents/prompts/eval/test3.promptfoo.yaml')
+        self.fs.create_file(
+            '/chromium/src/agents/prompts/eval/sub/test4.promptfoo.yaml')
+        self.fs.create_file('/chromium/src/agents/prompts/eval/test5.yaml')
+
+        expected_files = [
+            pathlib.Path('/chromium/src/agents/extensions/ext1/tests/'
+                         'test1.promptfoo.yaml'),
+            pathlib.Path('/chromium/src/agents/extensions/ext2/tests/sub/'
+                         'test2.promptfoo.yaml'),
+            pathlib.Path(
+                '/chromium/src/agents/prompts/eval/test3.promptfoo.yaml'),
+            pathlib.Path(
+                '/chromium/src/agents/prompts/eval/sub/test4.promptfoo.yaml'),
+        ]
+
+        found_files = eval_prompts._discover_testcase_files()
+        # We need to convert to strings before comparing since pathlib.Paths
+        # created using pyfakefs are different than those created manually even
+        # if they refer to the same path.
+        self.assertCountEqual([str(p) for p in found_files],
+                              [str(p) for p in expected_files])
+
+
+
 class DetermineShardValuesUnittest(unittest.TestCase):
     """Unit tests for the `_determine_shard_values` function."""
 
