@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -65,11 +64,6 @@ struct PendingPaintTimingRecord {
   HashSet<PaintEvent> paint_events;
   base::TimeTicks rendering_update_end_time;
 };
-
-// When enabled, `PaintTiming::MarkPaintTimingInternal()` is only called from
-// `PaintTiming::NotifyPaintFinished()`.
-BASE_FEATURE(kMarkPaintTimingInternalOnlyOnFinish,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -238,10 +232,6 @@ void PaintTiming::NotifyPaint(bool is_first_paint,
 
   if (is_first_paint)
     GetFrame()->OnFirstPaint(text_painted, image_painted);
-
-  if (!base::FeatureList::IsEnabled(kMarkPaintTimingInternalOnlyOnFinish)) {
-    MarkPaintTimingInternal();
-  }
 }
 
 // https://w3c.github.io/paint-timing/#mark-paint-timing
