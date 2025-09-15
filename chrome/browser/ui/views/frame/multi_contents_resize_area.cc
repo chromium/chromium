@@ -54,8 +54,8 @@ MultiContentsResizeHandle::MultiContentsResizeHandle() {
       kColorSidePanelHoverResizeAreaHandle, kHandleCornerRadius));
 }
 
-void MultiContentsResizeHandle::UpdateVisibility(bool visible) {
-  layer()->SetVisible(visible);
+void MultiContentsResizeHandle::UpdateVisibility() {
+  layer()->SetVisible(HasFocus() || parent()->IsMouseHovered());
 }
 
 void MultiContentsResizeHandle::AddedToWidget() {
@@ -66,9 +66,9 @@ void MultiContentsResizeHandle::RemovedFromWidget() {
   GetFocusManager()->RemoveFocusChangeListener(this);
 }
 
-void MultiContentsResizeHandle::OnWillChangeFocus(views::View* before,
-                                                  views::View* now) {
-  UpdateVisibility(now == this);
+void MultiContentsResizeHandle::OnDidChangeFocus(views::View* before,
+                                                 views::View* now) {
+  UpdateVisibility();
 }
 
 BEGIN_METADATA(MultiContentsResizeHandle)
@@ -125,11 +125,11 @@ bool MultiContentsResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void MultiContentsResizeArea::OnMouseMoved(const ui::MouseEvent& event) {
-  resize_handle_->UpdateVisibility(true);
+  resize_handle_->UpdateVisibility();
 }
 
 void MultiContentsResizeArea::OnMouseExited(const ui::MouseEvent& event) {
-  resize_handle_->UpdateVisibility(false);
+  resize_handle_->UpdateVisibility();
 }
 
 BEGIN_METADATA(MultiContentsResizeArea)
