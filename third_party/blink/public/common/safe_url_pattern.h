@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SAFE_URL_PATTERN_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SAFE_URL_PATTERN_H_
 
+#include <ostream>
 #include <vector>
 
 #include "third_party/blink/public/common/common_export.h"
@@ -57,6 +58,10 @@ BLINK_COMMON_EXPORT bool operator==(const SafeUrlPattern& left,
 
 BLINK_COMMON_EXPORT bool operator==(const SafeUrlPatternOptions& left,
                                     const SafeUrlPatternOptions& right);
+
+// Print method for gtest. Do not use in production.
+BLINK_COMMON_EXPORT void PrintTo(const SafeUrlPattern& pattern,
+                                 std::ostream* o);
 
 }  // namespace blink
 
