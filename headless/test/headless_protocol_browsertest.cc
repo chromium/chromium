@@ -677,4 +677,14 @@ HEADLESS_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
 
 HEADLESS_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
 
+HEADLESS_PROTOCOL_TEST(DispatchMouseEventScreenCoordinates,
+                       "shared/dispatch-mouse-event-screen-coordinates.js")
+
+HEADLESS_PROTOCOL_TEST(DispatchTouchEventScreenCoordinates,
+                       "shared/dispatch-touch-event-screen-coordinates.js")
+
+HEADLESS_PROTOCOL_TEST(
+    EmulateTouchFromMouseEventScreenCoordinates,
+    "shared/emulate-touch-from-mouse-event-screen-coordinates.js")
+
 }  // namespace headless

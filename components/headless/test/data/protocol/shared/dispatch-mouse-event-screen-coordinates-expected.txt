@@ -1,0 +1,7 @@
+Tests that screen coordinates are correctly applied for mouse events.
+{
+    clientX : 40
+    clientY : 60
+    isScreenXOffsetCorrect : true
+    isScreenYOffsetCorrect : true
+}

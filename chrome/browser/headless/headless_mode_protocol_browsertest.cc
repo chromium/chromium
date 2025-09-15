@@ -491,6 +491,16 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowScreenSizeOrientation,
 HEADLESS_MODE_PROTOCOL_TEST(AutofillTriggerCreditCard,
                             "autofill/autofill-trigger-credit-card.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(DispatchMouseEventScreenCoordinates,
+                            "shared/dispatch-mouse-event-screen-coordinates.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(DispatchTouchEventScreenCoordinates,
+                            "shared/dispatch-touch-event-screen-coordinates.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(
+    EmulateTouchFromMouseEventScreenCoordinates,
+    "shared/emulate-touch-from-mouse-event-screen-coordinates.js")
+
 // These are only supported on Linux and Mac at this time,
 // see http://crbug.com/437387607.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
