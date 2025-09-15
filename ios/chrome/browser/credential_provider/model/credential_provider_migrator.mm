@@ -29,7 +29,7 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
 
 @interface CredentialProviderMigrator () {
   // Passkey store.
-  raw_ptr<webauthn::PasskeyModel> _passkeyStore;
+  raw_ptr<webauthn::PasskeyModel, DanglingUntriaged> _passkeyStore;
 }
 
 // Key used to retrieve the temporal storage.

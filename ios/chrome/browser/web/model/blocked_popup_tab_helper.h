@@ -80,7 +80,7 @@ class BlockedPopupTabHelper
   // The WebState that this object is attached to.
   raw_ptr<web::WebState> web_state_;
   // The currently displayed infobar.
-  raw_ptr<infobars::InfoBar> infobar_;
+  raw_ptr<infobars::InfoBar, DanglingUntriaged> infobar_;
   // The popups to open.
   std::vector<Popup> popups_;
   // For management of infobars::InfoBarManager::Observer registration.  This
