@@ -32,12 +32,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.StyleRes;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
-import org.chromium.build.annotations.EnsuresNonNull;
-import org.chromium.build.annotations.MonotonicNonNull;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
@@ -59,7 +54,6 @@ import java.util.function.Function;
  * Observes {@link KeyboardAccessoryProperties} changes (like a newly available tab) and modifies
  * the view accordingly.
  */
-@NullMarked
 class KeyboardAccessoryViewBinder {
     private static final float GRAYED_OUT_OPACITY_ALPHA = 0.38f;
     private static final float COMPLETE_OPACITY_ALPHA = 1.0f;
@@ -86,22 +80,15 @@ class KeyboardAccessoryViewBinder {
                 return new BarItemActionChipViewHolder(parent);
             case BarItem.Type.DISMISS_CHIP:
                 return new BarItemTextViewHolder(parent, R.layout.keyboard_accessory_dismiss);
-            default:
-                throw new IllegalStateException("Action type " + viewType + " was not handled!");
         }
+        assert false : "Action type " + viewType + " was not handled!";
+        return null;
     }
 
     /** Generic UI Configurations that help to transform specific model data. */
     static class UiConfiguration {
         /** Converts an {@link AutofillSuggestion} to the appropriate drawable. */
-        public final Function<@Nullable AutofillSuggestion, @Nullable Drawable>
-                suggestionDrawableFunction;
-
-        UiConfiguration(
-                Function<@Nullable AutofillSuggestion, @Nullable Drawable>
-                        suggestionDrawableFunction) {
-            this.suggestionDrawableFunction = suggestionDrawableFunction;
-        }
+        public Function<AutofillSuggestion, Drawable> suggestionDrawableFunction;
     }
 
     abstract static class BarItemViewHolder<T extends BarItem, V extends View>
@@ -138,14 +125,12 @@ class KeyboardAccessoryViewBinder {
         private static final float LARGE_FONT_THRESHOLD = 1.3f;
         private final View mRootViewForIPH;
         private final KeyboardAccessoryView mKeyboardAccessory;
-        private final Function<@Nullable AutofillSuggestion, @Nullable Drawable>
-                mSuggestionDrawableFunction;
+        private final Function<AutofillSuggestion, Drawable> mSuggestionDrawableFunction;
 
         BarItemChipViewHolder(
                 ViewGroup parent,
                 KeyboardAccessoryView keyboardAccessory,
-                Function<@Nullable AutofillSuggestion, @Nullable Drawable>
-                        suggestionDrawableFunction,
+                Function<AutofillSuggestion, Drawable> suggestionDrawableFunction,
                 @BarItem.Type int barItemType) {
             super(
                     new ChipView(
@@ -216,11 +201,10 @@ class KeyboardAccessoryViewBinder {
                         item.maybeEmitEventForIph(mKeyboardAccessory.getFeatureEngagementTracker());
                         action.getCallback().onResult(action);
                     });
-            @Nullable Callback<Action> longPressCallback = action.getLongPressCallback();
-            if (longPressCallback != null) {
+            if (action.getLongPressCallback() != null) {
                 chipView.setOnLongClickListener(
                         view -> {
-                            longPressCallback.onResult(action);
+                            action.getLongPressCallback().onResult(action);
                             return true; // Click event consumed!
                         });
             }
@@ -326,33 +310,30 @@ class KeyboardAccessoryViewBinder {
 
         @Override
         protected void bind(BarItem item, ChipView chipView) {
+            Action action = item.getAction();
             chipView.getPrimaryTextView().setText(item.getCaptionId());
-            @Nullable Action action = item.getAction();
-            if (action != null) {
-                chipView.setOnClickListener(view -> action.getCallback().onResult(action));
-            }
+            chipView.setOnClickListener(view -> action.getCallback().onResult(action));
         }
     }
 
     static class SheetOpenerViewHolder extends BarItemViewHolder<SheetOpenerBarItem, View> {
-        private @MonotonicNonNull SheetOpenerBarItem mSheetOpenerItem;
+        private SheetOpenerBarItem mSheetOpenerItem;
+        private View mView;
 
         SheetOpenerViewHolder(ViewGroup parent) {
             super(parent, R.layout.keyboard_accessory_buttons);
         }
 
         @Override
-        @EnsuresNonNull("mSheetOpenerItem")
         protected void bind(SheetOpenerBarItem sheetOpenerItem, View view) {
             mSheetOpenerItem = sheetOpenerItem;
-            sheetOpenerItem.notifyAboutViewCreation(itemView);
+            mView = view;
+            sheetOpenerItem.notifyAboutViewCreation(view);
         }
 
         @Override
         protected void recycle() {
-            if (mSheetOpenerItem != null) {
-                mSheetOpenerItem.notifyAboutViewDestruction(itemView);
-            }
+            mSheetOpenerItem.notifyAboutViewDestruction(mView);
         }
     }
 
@@ -367,9 +348,7 @@ class KeyboardAccessoryViewBinder {
         if (propertyKey == BAR_ITEMS) {
             // Intentionally empty. The adapter will observe changes to BAR_ITEMS.
         } else if (propertyKey == DISABLE_ANIMATIONS_FOR_TESTING) {
-            if (model.get(DISABLE_ANIMATIONS_FOR_TESTING)) {
-                view.disableAnimationsForTesting(); // IN-TEST
-            }
+            if (model.get(DISABLE_ANIMATIONS_FOR_TESTING)) view.disableAnimationsForTesting();
         } else if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
         } else if (propertyKey == SKIP_CLOSING_ANIMATION) {

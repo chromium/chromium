@@ -14,19 +14,19 @@ import android.widget.LinearLayout;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 
-/** A {@link LinearLayout} containing the sheet opener buttons in the keyboard accessory. */
-@NullMarked
+/**
+ * A {@link LinearLayout} containing the sheet opener buttons in the keyboard
+ * accessory.
+ */
 public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     private final ArrayList<ChromeImageButton> mButtons = new ArrayList<>();
-    private @Nullable KeyboardAccessoryButtonGroupListener mListener;
+    private KeyboardAccessoryButtonGroupListener mListener;
 
     /**
      * This interface should be implemented by classes which want to observe clicks on the buttons

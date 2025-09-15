@@ -8,8 +8,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.button_group_compon
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -17,10 +15,9 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Stateless {@link ListModelChangeProcessor.ViewBinder} that binds a {@link ListModel}'s data to a
- * {@link KeyboardAccessoryButtonGroupView}.
+ * Stateless {@link ListModelChangeProcessor.ViewBinder} that binds a {@link ListModel}'s data to
+ * a {@link KeyboardAccessoryButtonGroupView}.
  */
-@NullMarked
 public class KeyboardAccessoryButtonGroupViewBinder
         implements ListModelChangeProcessor.ViewBinder<
                 ListModel<KeyboardAccessoryData.Tab>, KeyboardAccessoryButtonGroupView, Void> {
@@ -50,7 +47,7 @@ public class KeyboardAccessoryButtonGroupViewBinder
             KeyboardAccessoryButtonGroupView view,
             int index,
             int count,
-            @Nullable Void payload) {
+            Void payload) {
         updateAllButtons(view, model);
     }
 
@@ -80,8 +77,7 @@ public class KeyboardAccessoryButtonGroupViewBinder
             PropertyModel model, KeyboardAccessoryButtonGroupView view, PropertyKey propertyKey) {
         if (propertyKey == TABS) {
             KeyboardAccessoryButtonGroupViewBinder viewBinder =
-                    KeyboardAccessoryButtonGroupCoordinator.createButtonGroupViewBinder(
-                            model, view);
+                    KeyboardAccessoryButtonGroupCoordinator.createButtonGroupViewBinder(model, view);
             viewBinder.updateAllButtons(view, model.get(TABS));
             viewBinder.registerTabIconObservers(view, model.get(TABS));
         } else if (propertyKey == BUTTON_SELECTION_CALLBACKS) {

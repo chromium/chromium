@@ -4,25 +4,20 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 /** This ViewPager disables all animations - swipes and smooth transitions. */
-@NullMarked
 class NoSwipeViewPager extends ViewPager {
-    NoSwipeViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public NoSwipeViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return false;

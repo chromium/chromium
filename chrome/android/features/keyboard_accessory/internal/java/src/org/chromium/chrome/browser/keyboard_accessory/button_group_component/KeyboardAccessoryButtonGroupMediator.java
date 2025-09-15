@@ -8,10 +8,9 @@ import static org.chromium.chrome.browser.keyboard_accessory.button_group_compon
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
 
+import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.AccessoryTabObserver;
@@ -28,7 +27,6 @@ import java.util.Set;
  * This mediator observes and changes a {@link PropertyModel} that contains the visual appearance of
  * a {@link KeyboardAccessoryButtonGroupView}. It manages {@link ViewPager.OnPageChangeListener}s.
  */
-@NullMarked
 class KeyboardAccessoryButtonGroupMediator
         implements KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener,
                 PropertyObservable.PropertyObserver<PropertyKey>,
@@ -122,7 +120,7 @@ class KeyboardAccessoryButtonGroupMediator
     }
 
     @Override
-    public KeyboardAccessoryData.@Nullable Tab getActiveTab() {
+    public @Nullable KeyboardAccessoryData.Tab getActiveTab() {
         if (mModel.get(ACTIVE_TAB) == null) return null;
         return mModel.get(TABS).get(mModel.get(ACTIVE_TAB));
     }
