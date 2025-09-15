@@ -177,10 +177,13 @@ bool ExtensionAPIEnabledForServiceWorkerScript(const GURL& scope,
     return false;
   }
 
-  const Extension* extension =
-      RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(script_url);
+  // This code runs on the service worker thread, so it needs to use the
+  // thread-safe refcounted version of GetExtensionOrAppByURL.
+  scoped_refptr<const Extension> extension =
+      RendererExtensionRegistry::Get()->GetRefCountedExtensionOrAppByURL(
+          script_url);
 
-  if (!extension || !BackgroundInfo::IsServiceWorkerBased(extension)) {
+  if (!extension || !BackgroundInfo::IsServiceWorkerBased(extension.get())) {
     return false;
   }
 
@@ -188,7 +191,7 @@ bool ExtensionAPIEnabledForServiceWorkerScript(const GURL& scope,
     return false;
   }
 
-  return BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension) ==
+  return BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension.get()) ==
          script_url;
 }
 
@@ -640,8 +643,11 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
       },
       context_proxy));
 
-  const Extension* extension =
-      RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(script_url);
+  // This function is called from a service worker thread, so we use the
+  // thread-safe refcounted version of GetExtensionOrAppByURL.
+  scoped_refptr<const Extension> extension =
+      RendererExtensionRegistry::Get()->GetRefCountedExtensionOrAppByURL(
+          script_url);
 
   ExtensionRendererLoadStatus load_status =
       ExtensionRendererLoadStatus::kUnknownExtension;
@@ -704,8 +710,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   // them to service workers that aren't registered by extensions.
   ScriptContext* context = new ScriptContext(
       v8_context, nullptr, GenerateHostIdFromExtensionId(extension->id()),
-      extension, /*blink_isolated_world_id=*/std::nullopt,
-      mojom::ContextType::kPrivilegedExtension, extension,
+      extension.get(), /*blink_isolated_world_id=*/std::nullopt,
+      mojom::ContextType::kPrivilegedExtension, extension.get(),
       mojom::ContextType::kPrivilegedExtension);
   context->set_url(script_url);
   context->set_service_worker_scope(service_worker_scope);
