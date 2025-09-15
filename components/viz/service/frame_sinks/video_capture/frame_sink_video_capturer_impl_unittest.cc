@@ -822,7 +822,8 @@ class FrameSinkVideoCapturerTest
 
     capturer_ = std::make_unique<FrameSinkVideoCapturerImpl>(
         frame_sink_manager_, gmb_context_provider_.get(), mojo::NullReceiver(),
-        std::move(oracle), false);
+        std::move(oracle), /*log_to_webrtc=*/false,
+        /*capture_version_source=*/0);
   }
 
   void SetUp() override {
@@ -1907,6 +1908,28 @@ TEST_P(FrameSinkVideoCapturerTest, ClientCaptureStartsAndStops) {
   // Stop capturing. frame_sink_ should now have no client capturing.
   StopCapture();
   EXPECT_EQ(frame_sink_.number_clients_capturing(), 0);
+}
+
+TEST_P(FrameSinkVideoCapturerTest, ChangeTargetIncreasesCaptureVersion) {
+  const auto kCropId = RegionCaptureCropId::CreateRandom();
+  VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id, kCropId);
+
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  MockConsumer consumer;
+  StartCapture(&consumer);
+
+  // The initial capture-version is (0, 0).
+  EXPECT_CALL(consumer, OnNewCaptureVersion(_)).Times(0);
+  capturer_->ChangeTarget(target, /*sub_capture_target_version=*/0);
+  PropagateMojoTasks();
+
+  // The capture-version is increased from (0, 0) to an arbitrary larger value.
+  const media::CaptureVersion capture_version(/*sub_capture=*/222);
+  EXPECT_CALL(consumer, OnNewCaptureVersion(capture_version)).Times(1);
+  capturer_->ChangeTarget(target, capture_version.sub_capture);
+  PropagateMojoTasks();
 }
 
 TEST_P(FrameSinkVideoCapturerTest, RegionCaptureCropId) {

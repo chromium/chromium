@@ -188,13 +188,15 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   // Creates a FrameSinkVideoCapturer instance in viz.
   void CreateVideoCapturer(
-      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver);
+      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
+      uint32_t capture_version_source = 0);
 
   // Creates a FrameSinkVideoCapturer instance in viz and returns a
   // ClientFrameSinkVideoCapturer that's connected to it. Clients should prefer
   // this version because ClientFrameSinkVideoCapturer is resilient to viz
   // crashes.
-  std::unique_ptr<ClientFrameSinkVideoCapturer> CreateVideoCapturer();
+  std::unique_ptr<ClientFrameSinkVideoCapturer> CreateVideoCapturer(
+      uint32_t capture_version_source = 0);
 
   // Marks the given SurfaceIds for destruction.
   void EvictSurfaces(const std::vector<SurfaceId>& surface_ids);

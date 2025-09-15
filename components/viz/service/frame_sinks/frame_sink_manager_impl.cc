@@ -445,12 +445,13 @@ void FrameSinkManagerImpl::AddVideoDetectorObserver(
 }
 
 void FrameSinkManagerImpl::CreateVideoCapturer(
-    mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver) {
+    mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
+    uint32_t capture_version_source) {
   video_capturers_.emplace(std::make_unique<FrameSinkVideoCapturerImpl>(
       *this, gmb_context_provider_, std::move(receiver),
       std::make_unique<media::VideoCaptureOracle>(
           true /* enable_auto_throttling */),
-      log_capture_pipeline_in_webrtc_));
+      log_capture_pipeline_in_webrtc_, capture_version_source));
 }
 
 void FrameSinkManagerImpl::EvictSurfaces(

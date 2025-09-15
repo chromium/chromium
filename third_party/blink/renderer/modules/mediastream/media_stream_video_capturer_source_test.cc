@@ -386,6 +386,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, ChangeSource) {
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
   EXPECT_FALSE(source_stopped_);
+  EXPECT_EQ(video_capturer_source_->GetCaptureVersionSource(), 0u);
 
   // |ChangeSourceImpl()| will recreate the |delegate_|, so check the
   // |MockStartCapture()| invoking in the |RecreateVideoCapturerSource()|.
@@ -397,6 +398,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, ChangeSource) {
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
   EXPECT_FALSE(source_stopped_);
+  EXPECT_EQ(video_capturer_source_->GetCaptureVersionSource(), 1u);
 
   // If the delegate stops, the source should stop.
   EXPECT_CALL(mock_delegate(), MockStopCapture());

@@ -328,6 +328,11 @@ struct VideoCaptureParams {
   // TODO(crbug.com/40255351): remove this once HiDPI is enabled for
   // all video capture sessions.
   [MinVersion=1] bool is_high_dpi_enabled;
+
+  // Starts at 0 when the capture starts, and is incremented
+  // whenever the target of the capture is dynamically changed,
+  // as for example when using share-this-tab-instead.
+  [MinVersion=2] uint32 capture_version_source;
 };
 
 [Stable, RenamedFrom="media.mojom.VideoFrameFeedback"]

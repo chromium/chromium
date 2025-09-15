@@ -308,18 +308,21 @@ void HostFrameSinkManager::AddVideoDetectorObserver(
 }
 
 void HostFrameSinkManager::CreateVideoCapturer(
-    mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver) {
-  frame_sink_manager_->CreateVideoCapturer(std::move(receiver));
+    mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
+    uint32_t capture_version_source) {
+  frame_sink_manager_->CreateVideoCapturer(std::move(receiver),
+                                           capture_version_source);
 }
 
 std::unique_ptr<ClientFrameSinkVideoCapturer>
-HostFrameSinkManager::CreateVideoCapturer() {
+HostFrameSinkManager::CreateVideoCapturer(uint32_t capture_version_source) {
   return std::make_unique<ClientFrameSinkVideoCapturer>(base::BindRepeating(
       [](base::WeakPtr<HostFrameSinkManager> self,
+         uint32_t capture_version_source,
          mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver) {
-        self->CreateVideoCapturer(std::move(receiver));
+        self->CreateVideoCapturer(std::move(receiver), capture_version_source);
       },
-      weak_ptr_factory_.GetWeakPtr()));
+      weak_ptr_factory_.GetWeakPtr(), capture_version_source));
 }
 
 void HostFrameSinkManager::EvictSurfaces(

@@ -89,7 +89,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
       GmbVideoFramePoolContextProvider* gmb_video_frame_pool_context_provider,
       mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
       std::unique_ptr<media::VideoCaptureOracle> oracle,
-      bool log_to_webrtc);
+      bool log_to_webrtc,
+      uint32_t capture_version_source);
 
   FrameSinkVideoCapturerImpl(const FrameSinkVideoCapturerImpl&) = delete;
   FrameSinkVideoCapturerImpl& operator=(const FrameSinkVideoCapturerImpl&) =
@@ -416,6 +417,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   void MaybeInformConsumerOfEmptyRegion();
 
   media::CaptureVersion capture_version() const {
+    // TODO(crbug.com/394794490): Plug `capture_version_source_` in here.
     return media::CaptureVersion(capture_version_sub_capture_);
   }
 
@@ -541,6 +543,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // The current version of the capture, indicating source-changes and the
   // application of sub-capture.
+  const uint32_t capture_version_source_;
   uint32_t capture_version_sub_capture_ = 0;
 
   // A weak pointer factory used for cancelling the results from any in-flight

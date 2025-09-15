@@ -580,25 +580,28 @@ void FrameSinkVideoCaptureDevice::DidStop() {}
 
 void FrameSinkVideoCaptureDevice::CreateCapturer(
     mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver) {
-  CreateCapturerViaGlobalManager(std::move(receiver));
+  CreateCapturerViaGlobalManager(std::move(receiver),
+                                 capture_params_.capture_version_source);
 }
 
 // static
 void FrameSinkVideoCaptureDevice::CreateCapturerViaGlobalManager(
-    mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver) {
+    mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver,
+    uint32_t capture_version_source) {
   // Send the receiver to UI thread because that's where HostFrameSinkManager
   // lives.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer>
-                 receiver) {
+          [](mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver,
+             uint32_t capture_version_source) {
             viz::HostFrameSinkManager* const manager =
                 GetHostFrameSinkManager();
             DCHECK(manager);
-            manager->CreateVideoCapturer(std::move(receiver));
+            manager->CreateVideoCapturer(std::move(receiver),
+                                         capture_version_source);
           },
-          std::move(receiver)));
+          std::move(receiver), capture_version_source));
 }
 
 void FrameSinkVideoCaptureDevice::MaybeStartConsuming() {

@@ -155,7 +155,8 @@ interface FrameSinkManager {
   AddVideoDetectorObserver(pending_remote<VideoDetectorObserver> observer);
 
   // Creates a FrameSinkVideoCapturer instance.
-  CreateVideoCapturer(pending_receiver<FrameSinkVideoCapturer> receiver);
+  CreateVideoCapturer(pending_receiver<FrameSinkVideoCapturer> receiver,
+                      uint32 capture_version_source);
 
   // Marks the given SurfaceIds for destruction. The client must supply a sorted
   // `surface_ids`.

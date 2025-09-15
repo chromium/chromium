@@ -164,7 +164,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void AddVideoDetectorObserver(
       mojo::PendingRemote<mojom::VideoDetectorObserver> observer) override;
   void CreateVideoCapturer(
-      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver) override;
+      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
+      uint32_t capture_version_source) override;
   void EvictSurfaces(const std::vector<SurfaceId>& surface_ids) override;
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request,

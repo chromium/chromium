@@ -196,6 +196,8 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
   SetDevice(new_device);
   source_ = device_capturer_factory_callback_.Run(new_device.session_id());
 
+  capture_params_.capture_version_source += 1;
+
   VideoCaptureCallbacks video_capture_callbacks;
   video_capture_callbacks.deliver_frame_cb = frame_callback_;
   video_capture_callbacks.capture_version_cb = capture_version_callback_;
@@ -223,6 +225,10 @@ void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
   GetMediaStreamDispatcherHost()->ApplySubCaptureTarget(
       session_id.value(), type, sub_capture_target, sub_capture_version,
       std::move(callback));
+}
+
+uint32_t MediaStreamVideoCapturerSource::GetCaptureVersionSource() const {
+  return capture_params_.capture_version_source;
 }
 
 // TODO(crbug.com/394794490): Return the next CaptureVersion.

@@ -136,8 +136,11 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
   // Establishes connection to FrameSinkVideoCapturer using the global
   // viz::HostFrameSinkManager.
+  // `capture_version_source` indicates how many times the source was changed
+  // in the current capture-session. Changing the source resets sub-capture.
   static void CreateCapturerViaGlobalManager(
-      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver);
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver,
+      uint32_t capture_version_source);
 
  private:
   using BufferId = decltype(media::VideoCaptureDevice::Client::Buffer::id);

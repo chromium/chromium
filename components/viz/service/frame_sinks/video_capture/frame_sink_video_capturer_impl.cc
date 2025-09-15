@@ -207,7 +207,8 @@ FrameSinkVideoCapturerImpl::FrameSinkVideoCapturerImpl(
     GmbVideoFramePoolContextProvider* gmb_video_frame_pool_context_provider,
     mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
     std::unique_ptr<media::VideoCaptureOracle> oracle,
-    bool log_to_webrtc)
+    bool log_to_webrtc,
+    uint32_t capture_version_source)
     : frame_sink_manager_(frame_sink_manager),
       copy_request_source_(base::UnguessableToken::Create()),
       clock_(base::DefaultTickClock::GetInstance()),
@@ -215,7 +216,8 @@ FrameSinkVideoCapturerImpl::FrameSinkVideoCapturerImpl(
       gmb_video_frame_pool_context_provider_(
           gmb_video_frame_pool_context_provider),
       feedback_weak_factory_(oracle_.get()),
-      log_to_webrtc_(log_to_webrtc) {
+      log_to_webrtc_(log_to_webrtc),
+      capture_version_source_(capture_version_source) {
   CHECK(oracle_);
   if (log_to_webrtc_) {
     oracle_->SetLogCallback(base::BindRepeating(
