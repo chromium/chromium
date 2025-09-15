@@ -41,14 +41,16 @@ android_library("lib_java") {
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/DeviceAccessibilitySettingsHandler.java",
     "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
-    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomCoordinator.java",
-    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomCoordinatorDelegate.java",
-    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarCoordinator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarCoordinatorDelegate.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarMediator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarViewBinder.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomManager.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomManagerDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMetrics.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomSeekbarPreference.java",
-    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewBinder.java",
   ]
 
   deps = [
@@ -115,7 +117,8 @@ robolectric_library("junit") {
   testonly = true
 
   sources = [
-    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediatorUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarMediatorUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomManagerUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtilsUnitTest.java",
   ]
 
@@ -141,7 +144,7 @@ android_library("unit_device_javatests") {
   sources = [
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsSeekbarTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsTest.java",
-    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewTest.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarViewTest.java",
   ]
 
   deps = [

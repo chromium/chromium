@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -30,7 +31,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link PageZoomMediator}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
-public class PageZoomMediatorUnitTest {
+public class PageZoomBarMediatorUnitTest {
     // Error messages
     private static final String CURRENT_ZOOM_FAILURE =
             "Failure in fetching the current zoom factor for the model or web contents.";
@@ -58,12 +59,14 @@ public class PageZoomMediatorUnitTest {
             "Failure in bar value method. Expected 1 JNI call but none occurred.";
     private static final String RESET_ZOOM_FAILURE = "Failure to reset to the default zoom level.";
 
-    @Mock private WebContents mWebContentsMock;
-
     @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
+    @Mock private PageZoomManagerDelegate mPageZoomManagerDelegateMock;
+    @Mock private WebContents mWebContentsMock;
+    @Mock private BrowserContextHandle mBrowserContextHandleMock;
 
     private PropertyModel mModel;
-    private PageZoomMediator mMediator;
+    private PageZoomManager mManager;
+    private PageZoomBarMediator mMediator;
 
     @Before
     public void setUp() {
@@ -71,16 +74,21 @@ public class PageZoomMediatorUnitTest {
 
         HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapMock);
 
+        when(mPageZoomManagerDelegateMock.getWebContents()).thenReturn(mWebContentsMock);
+        when(mPageZoomManagerDelegateMock.getBrowserContextHandle())
+                .thenReturn(mBrowserContextHandleMock);
+
         mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
         mModel.set(PageZoomProperties.DEFAULT_ZOOM_FACTOR, 0.0);
-        mMediator = new PageZoomMediator(mModel);
+        mManager = new PageZoomManager(mPageZoomManagerDelegateMock);
+        mMediator = new PageZoomBarMediator(mModel, mManager, (Void unused) -> {});
     }
 
     @Test
     public void testDecreaseZoom() {
         // Verify that calling decrease zoom method sends expected value to native code.
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
-        mMediator.setWebContents(mWebContentsMock);
+        mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         mMediator.handleDecreaseClicked(null);
@@ -96,7 +104,7 @@ public class PageZoomMediatorUnitTest {
         HostZoomMap.setSystemFontScaleForTesting(0.85f);
         HostZoomMap.setShouldAdjustForOSLevelForTesting(true);
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
-        mMediator.setWebContents(mWebContentsMock);
+        mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 126, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         mMediator.handleDecreaseClicked(null);
@@ -110,7 +118,7 @@ public class PageZoomMediatorUnitTest {
     public void testIncreaseZoom() {
         // Verify that calling increase zoom method sends expected value to native code.
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
-        mMediator.setWebContents(mWebContentsMock);
+        mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         mMediator.handleIncreaseClicked(null);
@@ -126,7 +134,7 @@ public class PageZoomMediatorUnitTest {
         HostZoomMap.setSystemFontScaleForTesting(1.3f);
         HostZoomMap.setShouldAdjustForOSLevelForTesting(true);
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
-        mMediator.setWebContents(mWebContentsMock);
+        mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 65, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         mMediator.handleIncreaseClicked(null);
@@ -148,7 +156,7 @@ public class PageZoomMediatorUnitTest {
         // of 6.03. For the zoom scales defined above, this will be equivalent to a display value of
         // 300/2.2 ~ 137%.
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(6.03);
-        mMediator.setWebContents(mWebContentsMock);
+        mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 87, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
 
@@ -166,7 +174,7 @@ public class PageZoomMediatorUnitTest {
     public void testBarValueChanged() {
         // Verify the calling bar value change method sends expected value to native code.
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
-        mMediator.setWebContents(mWebContentsMock);
+        mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         mMediator.handleBarValueChanged(108);
@@ -184,7 +192,7 @@ public class PageZoomMediatorUnitTest {
     public void testDecreaseZoomEnabledChange() {
         // Verify that when already at the minimum zoom, the decrease button is disabled.
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(-3.8);
-        mMediator.setWebContents(mWebContentsMock);
+        mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 0, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         Assert.assertFalse(
@@ -200,7 +208,7 @@ public class PageZoomMediatorUnitTest {
     public void testIncreaseZoomEnabledChange() {
         // Verify that when already at the maximum zoom, the increase button is disabled
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(6.03);
-        mMediator.setWebContents(mWebContentsMock);
+        mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 250, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         Assert.assertFalse(
@@ -218,7 +226,7 @@ public class PageZoomMediatorUnitTest {
         // value in the assert() statements refers to the bar value listed in the table in
         // PageZoomUtils.java
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(0.0);
-        mMediator.setWebContents(mWebContentsMock);
+        mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         mMediator.handleResetClicked(null);

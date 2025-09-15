@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@ import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content_public.browser.HostZoomMap;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -24,13 +23,15 @@ import org.chromium.ui.modelutil.PropertyModel;
  * be accessed outside the component.
  */
 @NullMarked
-public class PageZoomMediator {
+class PageZoomBarMediator {
     private final PropertyModel mModel;
-    private WebContents mWebContents;
+    private final PageZoomManager mManager;
     private double mLatestZoomValue;
     private double mDefaultZoomFactor;
 
-    public PageZoomMediator(PropertyModel model) {
+    PageZoomBarMediator(
+            PropertyModel model, PageZoomManager manager, Callback<Void> userInteractionCallback) {
+        mManager = manager;
         mModel = model;
 
         mModel.set(PageZoomProperties.DECREASE_ZOOM_CALLBACK, this::handleDecreaseClicked);
@@ -38,6 +39,7 @@ public class PageZoomMediator {
         mModel.set(PageZoomProperties.RESET_ZOOM_CALLBACK, this::handleResetClicked);
         mModel.set(PageZoomProperties.BAR_VALUE_CHANGE_CALLBACK, this::handleBarValueChanged);
         mModel.set(PageZoomProperties.MAXIMUM_BAR_VALUE, PAGE_ZOOM_MAXIMUM_BAR_VALUE);
+        mModel.set(PageZoomProperties.USER_INTERACTION_CALLBACK, userInteractionCallback);
 
         // Update the stored system font scale based on OS-level configuration. |this| will be
         // re-constructed after configuration changes, so this will be up-to-date for this session.
@@ -45,21 +47,31 @@ public class PageZoomMediator {
                 ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale);
     }
 
-    /**
-     * Set the web contents that should be controlled by this instance.
-     *
-     * @param webContents The WebContents this instance should control.
-     */
+    /** Initializes the mediator. */
     @Initializer
-    protected void setWebContents(WebContents webContents) {
-        mWebContents = webContents;
-        initialize();
+    protected void pushProperties() {
+        // We must first fetch the current zoom factor for the given web contents.
+        double currentZoomFactor = mManager.getZoomLevel();
+        mDefaultZoomFactor = mManager.getDefaultZoomLevel();
+
+        // The seekbar should start at the seek value that corresponds to this zoom factor.
+        mModel.set(
+                PageZoomProperties.CURRENT_BAR_VALUE,
+                convertZoomFactorToBarValue(currentZoomFactor));
+
+        mModel.set(PageZoomProperties.DEFAULT_ZOOM_FACTOR, mDefaultZoomFactor);
+
+        updateButtonStates(currentZoomFactor);
+
+        // Reset latest zoom value when initializing.
+        mLatestZoomValue = 0.0;
     }
 
     /**
      * Returns the latest updated user selected zoom value during this session.
+     *
      * @return double representing latest updated zoom value. Returns placeholder 0.0 if user did
-     *         not select a zoom value during this session.
+     *     not select a zoom value during this session.
      */
     protected double latestZoomValue() {
         return mLatestZoomValue;
@@ -67,29 +79,18 @@ public class PageZoomMediator {
 
     /** Logs UKM for the user changing the zoom level on the page from the slider. */
     protected void logZoomLevelUKM(double value) {
-        PageZoomMetrics.logZoomLevelUKM(mWebContents, value);
+        assert mManager.getWebContents() != null : "WebContents is null";
+        PageZoomMetrics.logZoomLevelUKM(mManager.getWebContents(), value);
     }
 
     @VisibleForTesting
     void handleDecreaseClicked(@Nullable Void unused) {
-        // When decreasing zoom, "snap" to the greatest preset value that is less than the current.
-        double currentZoomFactor = getZoomLevel(mWebContents);
-        int index = PageZoomUtils.getNextIndex(true, currentZoomFactor);
-
-        if (index >= 0) {
-            handleIndexChanged(index);
-        }
+        handleIndexChanged(mManager.decrementZoomLevel());
     }
 
     @VisibleForTesting
     void handleIncreaseClicked(@Nullable Void unused) {
-        // When increasing zoom, "snap" to the smallest preset value that is more than the current.
-        double currentZoomFactor = getZoomLevel(mWebContents);
-        int index = PageZoomUtils.getNextIndex(false, currentZoomFactor);
-
-        if (index <= AVAILABLE_ZOOM_FACTORS.length - 1) {
-            handleIndexChanged(index);
-        }
+        handleIndexChanged(mManager.incrementZoomLevel());
     }
 
     @VisibleForTesting
@@ -102,38 +103,19 @@ public class PageZoomMediator {
         if (PageZoomUtils.shouldSnapBarValueToDefaultZoom(newValue, mDefaultZoomFactor)) {
             newValue = PageZoomUtils.convertZoomFactorToBarValue(mDefaultZoomFactor);
         }
-
-        setZoomLevel(mWebContents, PageZoomUtils.convertBarValueToZoomFactor(newValue));
         mModel.set(PageZoomProperties.CURRENT_BAR_VALUE, newValue);
-        updateButtonStates(PageZoomUtils.convertBarValueToZoomFactor(newValue));
+        double zoomFactor = PageZoomUtils.convertBarValueToZoomFactor(newValue);
+        mManager.setZoomLevel(zoomFactor);
+        updateButtonStates(zoomFactor);
         mLatestZoomValue = PageZoomUtils.convertBarValueToZoomLevel(newValue);
-    }
-
-    @Initializer
-    private void initialize() {
-        // We must first fetch the current zoom factor for the given web contents.
-        double currentZoomFactor = getZoomLevel(mWebContents);
-
-        // The bar should start at the bar value that corresponds to this zoom factor.
-        mModel.set(
-                PageZoomProperties.CURRENT_BAR_VALUE,
-                convertZoomFactorToBarValue(currentZoomFactor));
-
-        mDefaultZoomFactor = mModel.get(PageZoomProperties.DEFAULT_ZOOM_FACTOR);
-
-        updateButtonStates(currentZoomFactor);
-
-        // Reset latest zoom value when initializing
-        mLatestZoomValue = 0.0;
     }
 
     private void handleIndexChanged(int index) {
         double zoomFactor = AVAILABLE_ZOOM_FACTORS[index];
         int barValue = PageZoomUtils.convertZoomFactorToBarValue(zoomFactor);
         mModel.set(PageZoomProperties.CURRENT_BAR_VALUE, barValue);
-        setZoomLevel(mWebContents, zoomFactor);
-        updateButtonStates(zoomFactor);
         mLatestZoomValue = PageZoomUtils.convertBarValueToZoomLevel(barValue);
+        updateButtonStates(zoomFactor);
     }
 
     private void updateButtonStates(double newZoomFactor) {
@@ -146,16 +128,5 @@ public class PageZoomMediator {
         mModel.set(
                 PageZoomProperties.INCREASE_ZOOM_ENABLED,
                 newZoomFactor < AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
-    }
-
-    // Pass-through methods to HostZoomMap, which has static methods to call through JNI.
-    @VisibleForTesting
-    void setZoomLevel(WebContents webContents, double newZoomLevel) {
-        HostZoomMap.setZoomLevel(webContents, newZoomLevel);
-    }
-
-    @VisibleForTesting
-    double getZoomLevel(WebContents webContents) {
-        return HostZoomMap.getZoomLevel(webContents);
     }
 }

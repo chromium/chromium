@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for the page zoom feature. */
 @NullMarked
-class PageZoomViewBinder {
+class PageZoomBarViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         SeekBar seekBar = view.findViewById(R.id.page_zoom_slider);
         if (PageZoomProperties.CURRENT_BAR_VALUE == propertyKey) {

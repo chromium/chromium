@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@ import android.widget.LinearLayout.LayoutParams;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
@@ -30,30 +29,36 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * calling methods in this class only.
  */
 @NullMarked
-public class PageZoomCoordinator {
-    private final PageZoomCoordinatorDelegate mDelegate;
+public class PageZoomBarCoordinator {
+    private final PageZoomBarCoordinatorDelegate mDelegate;
     private final PropertyModel mModel;
-    private final PageZoomMediator mMediator;
+    private final PageZoomManager mManager;
+    private final PageZoomBarMediator mMediator;
 
     private @Nullable WebContentsObserver mWebContentsObserver;
     private int mBottomControlsOffset;
     private final Runnable mDismissalCallback;
 
     private @Nullable View mView;
-    private @Nullable BrowserContextHandle mBrowserContextHandle;
 
     private static @Nullable Boolean sShouldShowMenuItemForTesting;
 
-    public PageZoomCoordinator(PageZoomCoordinatorDelegate delegate) {
+    /**
+     * @param delegate Used to interact with the coordinator.
+     * @param manager The manager used to interact with the zoom functionality.
+     */
+    public PageZoomBarCoordinator(
+            PageZoomBarCoordinatorDelegate delegate, PageZoomManager manager) {
         mDelegate = delegate;
+        mManager = manager;
         mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
-        mModel.set(PageZoomProperties.USER_INTERACTION_CALLBACK, this::onViewInteraction);
-        mMediator = new PageZoomMediator(mModel);
+        mMediator = new PageZoomBarMediator(mModel, mManager, this::onViewInteraction);
         mDismissalCallback = () -> hide();
     }
 
     /**
      * Returns true if the AppMenu item for Zoom should be displayed, false otherwise.
+     *
      * @return boolean
      */
     public static boolean shouldShowMenuItem() {
@@ -63,7 +68,8 @@ public class PageZoomCoordinator {
 
     /**
      * Show the zoom feature UI to the user.
-     * @param webContents   WebContents that this zoom UI will control.
+     *
+     * @param webContents WebContents that this zoom UI will control.
      */
     public void show(WebContents webContents) {
         PageZoomUma.logAppMenuSliderOpenedHistogram();
@@ -72,20 +78,12 @@ public class PageZoomCoordinator {
         if (mView == null) {
             // If the view has not been created, lazily inflate from the view stub.
             mView = mDelegate.getZoomControlView();
-            PropertyModelChangeProcessor.create(mModel, mView, PageZoomViewBinder::bind);
+            PropertyModelChangeProcessor.create(mModel, mView, PageZoomBarViewBinder::bind);
             mView.startAnimation(getInAnimation());
         } else if (mView.getVisibility() != View.VISIBLE) {
             mView.setVisibility(View.VISIBLE);
             mView.startAnimation(getInAnimation());
         }
-
-        if (mBrowserContextHandle == null) {
-            mBrowserContextHandle = mDelegate.getBrowserContextHandle();
-        }
-
-        mModel.set(
-                PageZoomProperties.DEFAULT_ZOOM_FACTOR,
-                PageZoomUtils.getDefaultZoomLevelAsZoomFactor(mBrowserContextHandle));
 
         adjustPadding();
         adjustResetSymmetry();
@@ -96,7 +94,7 @@ public class PageZoomCoordinator {
         // Adjust bottom margin for any bottom controls
         setBottomMargin(mBottomControlsOffset);
 
-        mMediator.setWebContents(webContents);
+        mMediator.pushProperties();
         mWebContentsObserver =
                 new WebContentsObserver(webContents) {
                     @Override
@@ -149,7 +147,7 @@ public class PageZoomCoordinator {
      * Handle when height of bottom controls changes
      *
      * @param bottomControlsOffset the height of the bottom controls (if they are visible) by which
-     *         the slider should be offset in the y direction. 0 otherwise.
+     *     the slider should be offset in the y direction. 0 otherwise.
      */
     public void onBottomControlsHeightChanged(int bottomControlsOffset) {
         mBottomControlsOffset = bottomControlsOffset;
@@ -171,7 +169,8 @@ public class PageZoomCoordinator {
 
     /**
      * Used for testing only, allows a mocked value for the {@link shouldShowMenuItem} method.
-     * @param isEnabled     Should show the menu item or not.
+     *
+     * @param isEnabled Should show the menu item or not.
      */
     public static void setShouldShowMenuItemForTesting(@Nullable Boolean isEnabled) {
         sShouldShowMenuItemForTesting = isEnabled;

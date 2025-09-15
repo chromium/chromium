@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,7 @@ import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -52,7 +53,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @RunWith(BaseJUnit4ClassRunner.class)
 @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2, ContentFeatureList.SMART_ZOOM})
 @Batch(Batch.PER_CLASS)
-public class PageZoomViewTest {
+public class PageZoomBarViewTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -62,13 +63,14 @@ public class PageZoomViewTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private PageZoomCoordinatorDelegate mDelegate;
     @Mock private HostZoomMapImpl.Natives mHostZoomMapJniMock;
     @Mock private PageZoomMetrics.Natives mPageZoomMetricsJniMock;
     @Mock private BrowserContextHandle mBrowserContextHandle;
     @Mock private MockWebContents mWebContents;
 
-    private PageZoomCoordinator mCoordinator;
+    private PageZoomBarCoordinator mCoordinator;
+    private PageZoomBarCoordinatorDelegate mDelegate;
+    private PageZoomManagerDelegate mPageZoomManagerDelegate;
     private View mPageZoomView;
 
     @BeforeClass
@@ -96,10 +98,18 @@ public class PageZoomViewTest {
         when(mHostZoomMapJniMock.getZoomLevel(any())).thenReturn(0.0);
 
         mDelegate =
-                new PageZoomCoordinatorDelegate() {
+                new PageZoomBarCoordinatorDelegate() {
                     @Override
                     public View getZoomControlView() {
                         return mPageZoomView;
+                    }
+                };
+
+        mPageZoomManagerDelegate =
+                new PageZoomManagerDelegate() {
+                    @Override
+                    public WebContents getWebContents() {
+                        return mWebContents;
                     }
 
                     @Override
@@ -116,7 +126,9 @@ public class PageZoomViewTest {
                                     .inflate(R.layout.page_zoom_view, sContentView, false);
                     sContentView.addView(mPageZoomView);
 
-                    mCoordinator = new PageZoomCoordinator(mDelegate);
+                    mCoordinator =
+                            new PageZoomBarCoordinator(
+                                    mDelegate, new PageZoomManager(mPageZoomManagerDelegate));
                     mCoordinator.show(mWebContents);
                 });
     }
