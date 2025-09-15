@@ -1277,11 +1277,10 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
   switch (feature) {
     case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
     case wgpu::FeatureName::MultiDrawIndirect:
-    case wgpu::FeatureName::Unorm16TextureFormats:
-    case wgpu::FeatureName::Snorm16TextureFormats:
     case wgpu::FeatureName::SharedBufferMemoryD3D12Resource:
     case wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix:
     case wgpu::FeatureName::TextureComponentSwizzle:
+    case wgpu::FeatureName::TextureFormatsTier1:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     case wgpu::FeatureName::AdapterPropertiesD3D:
     case wgpu::FeatureName::AdapterPropertiesVk:

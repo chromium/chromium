@@ -731,14 +731,12 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::ClipDistances;
     case V8GPUFeatureName::Enum::kChromiumExperimentalMultiDrawIndirect:
       return wgpu::FeatureName::MultiDrawIndirect;
-    case V8GPUFeatureName::Enum::kChromiumExperimentalUnorm16TextureFormats:
-      return wgpu::FeatureName::Unorm16TextureFormats;
-    case V8GPUFeatureName::Enum::kChromiumExperimentalSnorm16TextureFormats:
-      return wgpu::FeatureName::Snorm16TextureFormats;
     case V8GPUFeatureName::Enum::kChromiumExperimentalSubgroupMatrix:
       return wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix;
     case V8GPUFeatureName::Enum::kPrimitiveIndex:
       return wgpu::FeatureName::PrimitiveIndex;
+    case V8GPUFeatureName::Enum::kTextureFormatsTier1:
+      return wgpu::FeatureName::TextureFormatsTier1;
   }
 }
 

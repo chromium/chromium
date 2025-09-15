@@ -119,12 +119,10 @@ std::optional<V8GPUFeatureName::Enum> RequiredFeatureForTextureFormat(
     case V8GPUTextureFormat::Enum::kR16Unorm:
     case V8GPUTextureFormat::Enum::kRg16Unorm:
     case V8GPUTextureFormat::Enum::kRgba16Unorm:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalUnorm16TextureFormats;
-
     case V8GPUTextureFormat::Enum::kR16Snorm:
     case V8GPUTextureFormat::Enum::kRg16Snorm:
     case V8GPUTextureFormat::Enum::kRgba16Snorm:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalSnorm16TextureFormats;
+      return V8GPUFeatureName::Enum::kTextureFormatsTier1;
 
     default:
       return std::nullopt;

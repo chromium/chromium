@@ -52,14 +52,12 @@ std::optional<V8GPUFeatureName::Enum> GPUSupportedFeatures::ToV8FeatureNameEnum(
       return V8GPUFeatureName::Enum::kClipDistances;
     case wgpu::FeatureName::MultiDrawIndirect:
       return V8GPUFeatureName::Enum::kChromiumExperimentalMultiDrawIndirect;
-    case wgpu::FeatureName::Unorm16TextureFormats:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalUnorm16TextureFormats;
-    case wgpu::FeatureName::Snorm16TextureFormats:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalSnorm16TextureFormats;
     case wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix:
       return V8GPUFeatureName::Enum::kChromiumExperimentalSubgroupMatrix;
     case wgpu::FeatureName::PrimitiveIndex:
       return V8GPUFeatureName::Enum::kPrimitiveIndex;
+    case wgpu::FeatureName::TextureFormatsTier1:
+      return V8GPUFeatureName::Enum::kTextureFormatsTier1;
     default:
       return std::nullopt;
   }
