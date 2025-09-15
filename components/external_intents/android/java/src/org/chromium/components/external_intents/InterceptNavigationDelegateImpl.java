@@ -527,7 +527,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         try (TraceEvent e = TraceEvent.scoped("shouldOverrideUrlLoading")) {
             OverrideUrlLoadingResult result = null;
             WebContents webContents = assumeNonNull(mClient.getWebContents());
-            if (shouldReparentTab(webContents)) {
+            if (shouldReparentTab(webContents, params.getUrl())) {
                 // Catches all cases where a navigation that starts in a PWA should cause a Tab
                 // reparenting towards the Chrome browser.
                 // TODO(crbug.com/416562397): eventually consider in-scope PWAs in the reparenting
@@ -537,12 +537,14 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 result = OverrideUrlLoadingResult.forReparentToBrowser();
             } else if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER.isEnabled(
                             mClient.isInDesktopWindowingMode())
-                    && isBrowserAuxiliaryNavigation()) {
+                    && isBrowserAuxiliaryNavigation()
+                    && UrlUtilities.isHttpOrHttps(params.getUrl())) {
                 // A new auxiliary browsing context navigation starting in the browser should not be
                 // captured.
                 result = OverrideUrlLoadingResult.forNoOverride();
             } else if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_PWA.isEnabled()
-                    && isPWAAuxiliaryNavigationInFullscreenWM()) {
+                    && isPWAAuxiliaryNavigationInFullscreenWM()
+                    && UrlUtilities.isHttpOrHttps(params.getUrl())) {
                 // A new auxiliary browsing context navigation starting in the PWA should not be
                 // captured.
                 result = OverrideUrlLoadingResult.forNoOverride();
@@ -565,7 +567,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             RecordHistogram.recordBooleanHistogram(
                     OVERRIDE_BROWSER_AUXILIARY_NAVIGATION,
                     isBrowserAuxiliaryNavigation()
-                            && result.getResultType() != OverrideUrlLoadingResultType.NO_OVERRIDE);
+                            && result.getResultType() != OverrideUrlLoadingResultType.NO_OVERRIDE
+                            && UrlUtilities.isHttpOrHttps(params.getUrl()));
 
             int scheme = InterceptScheme.UNKNOWN_SCHEME;
             String digitalCredentialHistogramSuffix = null;
@@ -676,14 +679,15 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     /** Returns whether a Tab instance should be reparented from the PWA to the browser. */
-    public boolean shouldReparentTab(WebContents webContents) {
+    public boolean shouldReparentTab(WebContents webContents, GURL url) {
         return ExternalIntentsFeatures.REPARENT_AUXILIARY_NAVIGATION_FROM_PWA.isEnabled()
                 && isInitialNavigation()
                 && mClient.isTabInPWA()
                 && mClient.isInDesktopWindowingMode()
                 && webContents.hasOpener()
                 && webContents.getOriginalWindowOpenDisposition()
-                        == WindowOpenDisposition.NEW_FOREGROUND_TAB;
+                        == WindowOpenDisposition.NEW_FOREGROUND_TAB
+                && UrlUtilities.isHttpOrHttps(url);
     }
 
     private boolean isBrowserAuxiliaryNavigation() {
