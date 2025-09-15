@@ -72,6 +72,7 @@ source_set("permissions") {
     "//chrome/browser:browser_process",
     "//chrome/browser/app_mode",
     "//chrome/browser/background_fetch",
+    "//chrome/browser/background_sync",
     "//chrome/browser/content_extraction",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/favicon",

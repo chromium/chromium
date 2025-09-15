@@ -201,12 +201,6 @@ static_library("browser") {
     "accessibility/prefers_default_scrollbar_styles_prefs.h",
     "after_startup_task_utils.cc",
     "after_startup_task_utils.h",
-    "background_sync/background_sync_controller_factory.cc",
-    "background_sync/background_sync_controller_factory.h",
-    "background_sync/background_sync_delegate_impl.cc",
-    "background_sync/background_sync_delegate_impl.h",
-    "background_sync/periodic_background_sync_permission_context.cc",
-    "background_sync/periodic_background_sync_permission_context.h",
     "bad_message.cc",
     "bad_message.h",
     "bluetooth/bluetooth_chooser_context_factory.cc",
@@ -1830,12 +1824,20 @@ static_library("browser") {
     # - c/b/profiles/profile_manager.h"
     "//chrome/browser/usb:impl",
 
+    # TODO(crbug.com/353332589): Remove this circular dependencies when the following
     # headers are componentized:
     # - c/b/download/download_request_limiter.h
     # - c/b/download/background_download_service_factory.h
     # - c/b/offline_items_collection/offline_content_aggregator_factory.h
     # - c/b/metrics/ukm_background_recorder_service.h
     "//chrome/browser/background_fetch:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependencies when the following
+    # headers get componentized:
+    # - c/b/metrics/ukm_background_recorder_service.h
+    # - c/b/engagement/site_engagement_service_factory.h
+    # - c/b/webapps/installable/installable_utils.h
+    "//chrome/browser/background_sync:impl",
   ]
 
   public_deps = [
@@ -1893,6 +1895,8 @@ static_library("browser") {
     "//chrome/browser/background:impl",
     "//chrome/browser/background_fetch",
     "//chrome/browser/background_fetch:impl",
+    "//chrome/browser/background_sync",
+    "//chrome/browser/background_sync:impl",
     "//chrome/browser/battery",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
@@ -4657,10 +4661,12 @@ static_library("browser") {
       "//chrome/browser/ui/passwords/bubble_controllers:impl",
 
       # TODO(crbug.com/438226511): Remove this circular dependency when:
-      # - headers in c/b/notifications/ and c/b/sessions/
+      # - c/b/engagement/site_engagement_service_factory.h
+      # - c/b/sessions/app_session_service.h
+      # - c/b/sessions/app_session_service_factory.h
+      # - c/b/sessions/session_service_base.h
+      # - c/b/sessions/session_service_lookup.h
       # - c/b/after_startup_task_utils.h
-      # - c/b/app_mode/app_mode_utils.h
-      # - app_mode/app_mode_utils.h
       # ... get componentized.
       "//chrome/browser/ui/web_applications:impl",
 
