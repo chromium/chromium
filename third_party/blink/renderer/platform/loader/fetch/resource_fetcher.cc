@@ -2813,7 +2813,8 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
   speculative_decode_candidate_images_.erase_if(
       [](const WeakMember<Resource>& resource) -> bool {
         return resource->PriorityFromObservers().first.visibility ==
-               ResourcePriority::kNotVisible;
+                   ResourcePriority::kNotVisible ||
+               !resource->IsAboveSpeculativeDecodeSizeThreshold();
       });
   MaybeStartSpeculativeImageDecode();
 
