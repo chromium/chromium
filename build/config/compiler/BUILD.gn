@@ -2162,7 +2162,7 @@ config("default_warnings") {
       ]
     }
 
-    if (is_component_build && use_clang_warning_suppression_file && !is_win) {
+    if (is_component_build && use_clang_warning_suppression_file) {
       # Warn for globally unique objects which might get duplicated if built
       # into different components, due to hidden visibility. Only applicable
       # to component builds.
