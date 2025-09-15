@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -162,7 +163,7 @@ class CookieControlsController final
 
     // Cache of cookie access details that have been already reported for the
     // current page load.
-    std::set<AccessDetails> cookie_accessed_set_;
+    base::LRUCacheSet<AccessDetails> cookie_accessed_set_;
 
     void ResetReloadCounter();
 

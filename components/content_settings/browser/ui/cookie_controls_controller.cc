@@ -4,10 +4,13 @@
 
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 
+#include <limits>
 #include <memory>
 #include <string>
 
+#include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -57,6 +60,12 @@ constexpr char kEntryPointAnimatedKey[] = "entry_point_animated";
 constexpr char kLastExpirationKey[] = "last_expiration";
 constexpr char kLastVisitedActiveException[] = "last_visited_active_exception";
 constexpr char kActivationsCountKey[] = "activations_count_key";
+
+using CacheSizeType =
+    base::LRUCacheSet<content_settings::AccessDetails>::size_type;
+constexpr CacheSizeType kAccessDetailsCacheSize = 1000;
+constexpr CacheSizeType kMaximumCacheCapacity =
+    std::numeric_limits<CacheSizeType>::max();
 
 base::Value::Dict GetMetadata(HostContentSettingsMap* settings_map,
                               const GURL& url) {
@@ -697,7 +706,12 @@ CookieControlsController::TabObserver::TabObserver(
     : content_settings::PageSpecificContentSettings::SiteDataObserver(
           web_contents),
       content::WebContentsObserver(web_contents),
-      cookie_controls_(cookie_controls) {
+      cookie_controls_(cookie_controls),
+      // When under the ReducePPMs experiment reduce the capacity of the
+      // cache and leave it practically unbounded otherwise.
+      cookie_accessed_set_(base::features::IsReducePPMsEnabled()
+                               ? kAccessDetailsCacheSize
+                               : kMaximumCacheCapacity) {
   last_visited_url_ =
       content::WebContentsObserver::web_contents()->GetVisibleURL();
   auto* fpf_web_contents_helper = fingerprinting_protection_filter::
@@ -743,10 +757,11 @@ void CookieControlsController::TabObserver::OnSiteDataAccessed(
   // Model's StorageType, which would let us remove an enum, and let us cache
   // all accesses here.
 
-  if (cookie_accessed_set_.count(access_details)) {
+  if (cookie_accessed_set_.Get(access_details) != cookie_accessed_set_.end()) {
     return;
   }
-  cookie_accessed_set_.insert(access_details);
+
+  cookie_accessed_set_.Put(AccessDetails(access_details));
   cookie_controls_->UpdateUserBypass();
 }
 
@@ -767,7 +782,7 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
     content::Page& page) {
   const GURL& current_url =
       content::WebContentsObserver::web_contents()->GetVisibleURL();
-  cookie_accessed_set_.clear();
+  cookie_accessed_set_.Clear();
 
   if (current_url != last_visited_url_) {
     reload_count_ = 0;
