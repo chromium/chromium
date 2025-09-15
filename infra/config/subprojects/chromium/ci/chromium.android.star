@@ -2524,11 +2524,6 @@ ci.builder(
             "chrome_nocompile_tests",
         ],
         mixins = [
-            targets.mixin(
-                args = [
-                    "--disable-field-trial-config",
-                ],
-            ),
             "has_native_resultdb_integration",
             "isolate_profile_data",
             "10-x86-emulator",
@@ -2537,7 +2532,6 @@ ci.builder(
             "x86-64",
         ],
         per_test_modifications = {
-            # If you change this, make similar changes in android-x86-code-coverage
             "android_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.android_browsertests.filter",
@@ -2547,17 +2541,16 @@ ci.builder(
                     shards = 9,
                 ),
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "android_sync_integration_tests": targets.mixin(
                 ci_only = True,
                 swarming = targets.swarming(
                     shards = 2,
                 ),
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.chrome_public_test_apk.filter",
+                    "--disable-field-trial-config",
                 ],
                 swarming = targets.swarming(
                     dimensions = {
@@ -2567,13 +2560,16 @@ ci.builder(
                     shards = 75,
                 ),
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
+            "chrome_public_unit_test_apk": targets.mixin(
+                args = [
+                    "--disable-field-trial-config",
+                ],
+            ),
             "components_browsertests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 4,
                 ),
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "content_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_browsertests.filter",
@@ -2586,12 +2582,13 @@ ci.builder(
                     shards = 75,
                 ),
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "content_shell_crash_test": targets.remove(
                 reason = "crbug.com/1084353",
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "content_shell_test_apk": targets.mixin(
+                args = [
+                    "--disable-field-trial-config",
+                ],
                 swarming = targets.swarming(
                     dimensions = {
                         # use 8-core to shorten runtime
@@ -2600,38 +2597,32 @@ ci.builder(
                     shards = 6,
                 ),
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "content_unittests": targets.mixin(
                 ci_only = True,
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "gl_tests_validating": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.gl_tests.filter",
                 ],
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "perfetto_unittests": targets.mixin(
                 args = [
                     # TODO(crbug.com/40201873): Fix the failed test
                     "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
                 ],
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "media_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.media_unittests.filter",
                 ],
                 ci_only = True,
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "services_unittests": targets.mixin(
                 ci_only = True,
                 swarming = targets.swarming(
                     shards = 3,
                 ),
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "system_webview_shell_layout_test_apk": targets.mixin(
                 args = [
                     # TODO(crbug.com/390676579): Fix the failed test
@@ -2639,11 +2630,9 @@ ci.builder(
                 ],
                 ci_only = True,
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "telemetry_chromium_minidump_unittests": targets.mixin(
                 ci_only = True,
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "telemetry_perf_unittests_android_chrome": targets.mixin(
                 # For whatever reason, automatic browser selection on this bot chooses
                 # webview instead of the full browser, so explicitly specify it here.
@@ -2652,20 +2641,20 @@ ci.builder(
                 ],
                 ci_only = True,
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.webview_instrumentation_test_apk.filter",
                     "--use-persistent-shell",
+                    "--disable-field-trial-config",
                 ],
                 swarming = targets.swarming(
                     shards = 18,
                 ),
             ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
                 args = [
                     "--use-persistent-shell",
+                    "--disable-field-trial-config",
                 ],
                 # Only multiple process tests run in CQ.
                 ci_only = True,
