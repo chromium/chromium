@@ -12902,7 +12902,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-open-incognito-as-window",
      flag_descriptions::kAndroidOpenIncognitoAsWindowName,
      flag_descriptions::kAndroidOpenIncognitoAsWindowDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidOpenIncognitoAsWindow)},
+     FEATURE_VALUE_TYPE(feed::kAndroidOpenIncognitoAsWindow)},
 
     {"android-desktop-webprefs-large-display",
      flag_descriptions::kAndroidDesktopWebPrefsLargeDisplaysName,
