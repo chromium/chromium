@@ -14,7 +14,10 @@
 #include "base/values.h"
 #include "extensions/browser/api/web_request/form_data_parser.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/upload_file_element_reader.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace keys = extension_web_request_api_constants;
 

@@ -18,8 +18,11 @@
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/re2/src/re2/re2.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using re2::RE2;
 

@@ -14,10 +14,13 @@
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ipc/constants.mojom.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {

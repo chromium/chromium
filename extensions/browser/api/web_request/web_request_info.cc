@@ -40,6 +40,8 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace keys = extension_web_request_api_constants;
 
 namespace extensions {

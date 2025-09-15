@@ -9,6 +9,10 @@
 
 #include <string_view>
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace network {
 struct ResourceRequest;
 }

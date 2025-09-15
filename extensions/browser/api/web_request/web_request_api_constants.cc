@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extension_web_request_api_constants {
 
