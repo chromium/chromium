@@ -22,6 +22,9 @@ from typing import Optional
 _START_TIME = time.time()
 _QUIET = False
 
+# Adjust this if benchmarking takes too long.
+_MAX_BUILD_COMBINATIONS = 4
+
 
 def _log(message: str):
     if not _QUIET:
@@ -102,8 +105,8 @@ def _run_benchmark(options: _Options):
     _log(f"Done {options=}")
 
 
-def _run_benchmarks(bos: list[_Options], **kwargs):
-    for o in bos:
+def _run_benchmarks(benchmark_options: list[_Options], **kwargs):
+    for o in benchmark_options:
         _run_benchmark(dataclasses.replace(o, **kwargs))
 
 
@@ -140,21 +143,38 @@ def run(debug: bool):
     else:
         repeat = 3
 
-    bos = [
-        _Options(benchmark=benchmark, r=repeat, e=emulator, i=i, n=n, s=s)
-        for benchmark, emulator, i, n, s in itertools.product(
-            benchmarks, emulators, [True, False], [True, False], [True, False])
-    ]
+    incremental_opts = [True, False]
+    nocomponent_opts = [True, False]
+    server_opts = [True, False]
 
-    # shuffle bos
+    benchmark_options = []
+    for benchmark, emulator in itertools.product(benchmarks, emulators):
+        # i: incremental_install, n: no_component_build, s: server
+        build_options = [(i, n, s) for i, n, s in itertools.product(
+            incremental_opts, nocomponent_opts, server_opts)]
+        if debug:
+            build_options = [build_options[0]]
+        else:
+            random.shuffle(build_options)
+            build_options = build_options[:_MAX_BUILD_COMBINATIONS]
+        for i, n, s in build_options:
+            benchmark_options.append(
+                _Options(benchmark=benchmark,
+                         r=repeat,
+                         e=emulator,
+                         i=i,
+                         n=n,
+                         s=s))
+
+    # shuffle benchmark_options
     if debug:
-        bos = [bos[0]]
+        benchmark_options = [benchmark_options[0]]
     else:
-        random.shuffle(bos)
+        random.shuffle(benchmark_options)
 
-    _log(pformat(bos))
+    _log(pformat(benchmark_options))
 
-    _run_benchmarks(bos=bos)
+    _run_benchmarks(benchmark_options=benchmark_options)
 
 
 def main():
