@@ -46,6 +46,7 @@ export class ViewerSaveToDriveBubbleElement extends
 
   static override get properties() {
     return {
+      docTitle: {type: String},
       progress: {type: Object},
       state: {type: String},
 
@@ -61,6 +62,7 @@ export class ViewerSaveToDriveBubbleElement extends
     };
   }
 
+  accessor docTitle: string = '';
   accessor progress: chrome.pdfViewerPrivate.SaveToDriveProgress = {
     status: chrome.pdfViewerPrivate.SaveToDriveStatus.NOT_STARTED,
     errorType: chrome.pdfViewerPrivate.SaveToDriveErrorType.NO_ERROR,
@@ -104,7 +106,7 @@ export class ViewerSaveToDriveBubbleElement extends
   }
 
   protected getFileName_(): string {
-    return this.progress.fileName ?? '';
+    return this.progress.fileName ?? this.docTitle;
   }
 
   protected getFileSizeBytes_(): number {

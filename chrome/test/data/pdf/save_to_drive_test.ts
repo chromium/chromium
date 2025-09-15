@@ -64,7 +64,6 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
       uploadedBytes: uploadedBytes,
       fileSizeBytes: fileSizeBytes,
       fileMetadata: 'uploading, 2 minutes left',
-      fileName: 'save_to_drive_test.pdf',
     });
   }
 
@@ -163,7 +162,7 @@ const tests = [
         'uploading, 2 minutes left', fileMetadata.textContent.trim());
     const filename = getRequiredElement(bubble, '#filename');
     assert(filename.textContent);
-    chrome.test.assertEq('save_to_drive_test.pdf', filename.textContent.trim());
+    chrome.test.assertEq('test.pdf', filename.textContent.trim());
 
     // Save to drive uploading 88/226 bytes.
     privateProxy.sendUploadInProgress(88, 226);
@@ -237,6 +236,9 @@ const tests = [
     chrome.test.assertEq(
         'Saved to your test-parent-folder-name folder',
         description.textContent.trim());
+    const filename = getRequiredElement(bubble, '#filename');
+    chrome.test.assertTrue(!!filename.textContent);
+    chrome.test.assertEq('save_to_drive_test.pdf', filename.textContent.trim());
 
     const button = bubble.shadowRoot.querySelector<HTMLButtonElement>(
         '#open-in-drive-button')!;
