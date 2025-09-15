@@ -51,19 +51,21 @@ void SVGStringListBase::Replace(uint32_t index, const String& new_item) {
 }
 
 template <typename CharType>
-void SVGStringListBase::ParseInternal(const CharType* ptr,
-                                      const CharType* end,
+void SVGStringListBase::ParseInternal(const base::span<const CharType> chars,
                                       char list_delimiter) {
-  while (ptr < end) {
-    const CharType* start = ptr;
-    while (ptr < end && *ptr != list_delimiter &&
-           !IsHTMLSpace<CharType>(*ptr)) {
-      UNSAFE_TODO(ptr++);
+  size_t position = 0;
+  while (position < chars.size()) {
+    const size_t start = position;
+    while (position < chars.size() && chars[position] != list_delimiter &&
+           !IsHTMLSpace<CharType>(chars[position])) {
+      ++position;
     }
-    if (ptr == start)
+    if (position == start) {
       break;
-    values_.push_back(String(UNSAFE_TODO(base::span(start, ptr))));
-    SkipOptionalSVGSpacesOrDelimiter(ptr, end, list_delimiter);
+    }
+    values_.push_back(String(chars.subspan(start, position - start)));
+    position =
+        SkipOptionalSVGSpacesOrDelimiter(chars, position, list_delimiter);
   }
 }
 
@@ -76,9 +78,8 @@ SVGParsingError SVGStringListBase::SetValueAsStringWithDelimiter(
   if (data.empty())
     return SVGParseStatus::kNoError;
 
-  VisitCharacters(data, [&](auto chars) {
-    ParseInternal(chars.data(), chars.data() + chars.size(), list_delimiter);
-  });
+  VisitCharacters(data,
+                  [&](auto chars) { ParseInternal(chars, list_delimiter); });
   return SVGParseStatus::kNoError;
 }
 

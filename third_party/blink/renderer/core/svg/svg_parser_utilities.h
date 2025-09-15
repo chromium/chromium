@@ -106,6 +106,24 @@ inline bool SkipOptionalSVGSpacesOrDelimiter(const CharType*& ptr,
 }
 
 template <typename CharType>
+[[nodiscard]] size_t SkipOptionalSVGSpacesOrDelimiter(
+    const base::span<const CharType> chars,
+    size_t position,
+    char delimiter = ',') {
+  if (position < chars.size() && !IsHTMLSpace<CharType>(chars[position]) &&
+      chars[position] != delimiter) {
+    return false;
+  }
+  if (SkipOptionalSVGSpaces(chars, position)) {
+    if (chars[position] == delimiter) {
+      ++position;
+      SkipOptionalSVGSpaces(chars, position);
+    }
+  }
+  return position;
+}
+
+template <typename CharType>
 constexpr inline bool SkipOptionalSVGSpacesOrDelimiter(
     base::span<const CharType>& span,
     char delimiter = ',') {
