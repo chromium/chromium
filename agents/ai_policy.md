@@ -13,7 +13,8 @@ changes. Beyond code quality, Chromium has a strict 2-committer code review
 requirement and when the author is a committer they are considered one of the
 two human reviewers. **Any account that sends for review CLs which are not
 actually understood by the human behind the account is at risk of losing their
-committer status.**
+committer status. Further violations after being warned may result in the
+account being banned from the system.**
 
 To aid reviewers, authors **should** flag areas that they are not confident
 about that had AI assistance. This can be done in code review comments, the CL
