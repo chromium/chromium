@@ -344,7 +344,8 @@ void VerifyNoActionsRan() {
 
 // Tests that the idle timeout confirmation dialog is shown on the other window
 // when the window presenting the dialog is closed.
-- (void)testIdleTimeoutDialogWithMultiWindows {
+// TODO(crbug.com/442534095): Re-enable the test once the bug is fixed.
+- (void)DISABLED_testIdleTimeoutDialogWithMultiWindows {
   // TODO(crbug.com/444650008): Re-enable the test.
 #if !TARGET_OS_SIMULATOR
   if (base::ios::IsRunningOnIOS26OrLater()) {
