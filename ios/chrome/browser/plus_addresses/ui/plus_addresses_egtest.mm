@@ -289,12 +289,10 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 - (void)testCreatePlusAddressIPH {
   [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
 
-#if TARGET_OS_SIMULATOR
   // Synchronization off because the tap on element 'kEmailFieldId' completes
   // only after the IPH has already disappeared. This leads to a subsequent
   // error when trying to verify that the IPH appeared.
   ScopedSynchronizationDisabler disabler;
-#endif
 
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
