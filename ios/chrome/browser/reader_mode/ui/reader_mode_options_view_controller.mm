@@ -26,15 +26,11 @@ constexpr CGFloat kBottomPadding = 54.0;
 // The spacing between items in the main stack view.
 constexpr CGFloat kMainStackViewSpacing = 16.0;
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 // The corner radius for the controls view.
 constexpr CGFloat kControlsViewMinimumCornerRadius = 24.0;
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
 
 // Opacity of the controls view when using a blur effect background.
 constexpr CGFloat kBlurEffectBackgroundControlsOpacity = 0.95;
-
 }  // namespace
 
 @interface ReaderModeOptionsViewController ()
@@ -170,20 +166,14 @@ constexpr CGFloat kBlurEffectBackgroundControlsOpacity = 0.95;
       [[UIColor colorNamed:kGroupedSecondaryBackgroundColor]
           colorWithAlphaComponent:kBlurEffectBackgroundControlsOpacity];
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     controlsView.cornerConfiguration = [UICornerConfiguration
         configurationWithUniformRadius:
             [UICornerRadius containerConcentricRadiusWithMinimum:
                                 kControlsViewMinimumCornerRadius]];
   } else {
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
     controlsView.layer.cornerRadius = kPrimaryButtonCornerRadius;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
 
   _controlsView = controlsView;
   return _controlsView;

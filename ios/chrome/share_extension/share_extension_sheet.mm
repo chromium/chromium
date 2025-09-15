@@ -59,9 +59,7 @@ CGFloat const kAccountRowHeight = 57.0;
 CGFloat const kMIMViewCornerRadius = 25.0;
 CGFloat const kAccountCellCornerRadius = 10.0;
 CGFloat const kAvatarImageDimension = 30.0;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 CGFloat const kUpdatedMainViewCornerRadius = 32.0;
-#endif
 
 }  // namespace
 
@@ -407,11 +405,9 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 
   mainView.backgroundColor = [UIColor colorNamed:kGrey100Color];
   mainView.layer.cornerRadius = kMainViewCornerRadius;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     mainView.layer.cornerRadius = kUpdatedMainViewCornerRadius;
   }
-#endif
 
   innerView.translatesAutoresizingMaskIntoConstraints = NO;
   mainView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -433,11 +429,9 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   UIView* mainView = [self configureMainView];
   mainView.backgroundColor = [UIColor colorNamed:kGrey200Color];
   mainView.layer.cornerRadius = kMIMViewCornerRadius;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     mainView.layer.cornerRadius = kUpdatedMainViewCornerRadius;
   }
-#endif
 
   _accountTableView = [self createSelectedAccountTableView];
   UIStackView* underTitleView = [[UIStackView alloc]
@@ -454,11 +448,9 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   containerTable.rowHeight = UITableViewAutomaticDimension;
   containerTable.separatorStyle = UITableViewCellSeparatorStyleNone;
   containerTable.layer.cornerRadius = kAccountCellCornerRadius;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     containerTable.layer.cornerRadius = kUpdatedMainViewCornerRadius;
   }
-#endif
   containerTable.scrollEnabled = NO;
   [containerTable registerClass:[UITableViewCell class]
          forCellReuseIdentifier:@"Account"];

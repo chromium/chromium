@@ -7,11 +7,7 @@
 #import "ios/chrome/common/ui/util/device_util.h"
 
 const CGFloat kTableViewHeaderFooterViewHeight = 48.0;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 const CGFloat kChromeTableViewCellHeight = 52.0;
-#else
-const CGFloat kChromeTableViewCellHeight = 48.0;
-#endif
 const CGFloat kTableViewHorizontalSpacing = 16.0;
 const CGFloat kTableViewOneLabelCellVerticalSpacing = 14.0;
 const CGFloat kTableViewTwoLabelsCellVerticalSpacing = 11.0;

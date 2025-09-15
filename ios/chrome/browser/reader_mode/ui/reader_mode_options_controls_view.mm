@@ -163,35 +163,27 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
   fontFamilyButtonContainer.translatesAutoresizingMaskIntoConstraints = NO;
   [fontFamilyButtonContainer addSubview:fontFamilyButton];
   AddSameConstraints(fontFamilyButtonContainer, fontFamilyButton);
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+
   if (@available(iOS 26, *)) {
     fontFamilyButtonContainer.cornerConfiguration = [UICornerConfiguration
         configurationWithUniformRadius:[UICornerRadius
                                            containerConcentricRadius]];
   } else {
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
     fontFamilyButtonContainer.layer.cornerRadius = kCornerRadius;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
+
   [firstRowStack addArrangedSubview:fontFamilyButtonContainer];
 
   UIView* fontSizeStack = [self createFontSizeStack];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+
   if (@available(iOS 26, *)) {
     fontSizeStack.cornerConfiguration = [UICornerConfiguration
         configurationWithUniformRadius:[UICornerRadius
                                            containerConcentricRadius]];
   } else {
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
     fontSizeStack.layer.cornerRadius = kCornerRadius;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
-#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
-        // __IPHONE_26_0
+
   [firstRowStack addArrangedSubview:fontSizeStack];
 
   NSLayoutConstraint* heightConstraint = [firstRowStack.heightAnchor
