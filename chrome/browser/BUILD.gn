@@ -3716,11 +3716,6 @@ static_library("browser") {
       "accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h",
       "apps/intent_helper/intent_chip_display_prefs.cc",
       "apps/intent_helper/intent_chip_display_prefs.h",
-      "badging/badge_manager.cc",
-      "badging/badge_manager.h",
-      "badging/badge_manager_delegate.h",
-      "badging/badge_manager_factory.cc",
-      "badging/badge_manager_factory.h",
       "banners/app_banner_manager_desktop.cc",
       "banners/app_banner_manager_desktop.h",
       "bookmarks/bookmark_expanded_state_tracker.cc",
@@ -4340,6 +4335,8 @@ static_library("browser") {
       "//chrome/browser/actor/ui",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/badging",
+      "//chrome/browser/badging:impl",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/device_notifications",
@@ -4701,6 +4698,11 @@ static_library("browser") {
       # TODO(crbug.com/353332589): Remove this circular dependency when c/b/profiles/profile_manager.h
       # gets componentized.
       "//chrome/browser/device_notifications:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when:
+      # - c/b/taskbar/taskbar_decorator_win.h
+      # gets componentized.
+      "//chrome/browser/badging:impl",
     ]
 
     #!is_android
@@ -6335,8 +6337,6 @@ static_library("browser") {
     sources += [
       "accessibility/caption_settings_dialog.h",
       "accessibility/caption_settings_dialog_win.cc",
-      "badging/badge_manager_delegate_win.cc",
-      "badging/badge_manager_delegate_win.h",
       "browser_switcher/browser_switcher_policy_migrator.cc",
       "browser_switcher/browser_switcher_policy_migrator.h",
       "browser_switcher/browser_switcher_service_win.cc",
@@ -6558,8 +6558,6 @@ static_library("browser") {
       "accessibility/caption_settings_dialog_mac.cc",
       "app_controller_mac.h",
       "app_controller_mac.mm",
-      "badging/badge_manager_delegate_mac.cc",
-      "badging/badge_manager_delegate_mac.h",
       "browser_process_platform_part_mac.h",
       "browser_process_platform_part_mac.mm",
       "chrome_browser_application_mac.h",

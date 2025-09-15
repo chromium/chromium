@@ -811,6 +811,7 @@ static_library("test_support") {
     # Non-android deps for "test_support" target.
     deps += [
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/badging:test_support",
       "//chrome/browser/task_manager",
       "//chrome/browser/themes",
       "//chrome/browser/ui/apps",
@@ -838,8 +839,6 @@ static_library("test_support") {
     }
 
     sources += [
-      "../browser/badging/test_badge_manager_delegate.cc",
-      "../browser/badging/test_badge_manager_delegate.h",
       "../browser/banners/test_app_banner_manager_desktop.cc",
       "../browser/banners/test_app_banner_manager_desktop.h",
       "../browser/download/download_browsertest_utils.cc",
@@ -2347,6 +2346,7 @@ if (!is_android) {
       "//chrome/browser/background:test_support",
       "//chrome/browser/background_fetch:browser_tests",
       "//chrome/browser/background_sync:browser_tests",
+      "//chrome/browser/badging",
       "//chrome/browser/battery",
       "//chrome/browser/bitmap_fetcher:browser_tests",
       "//chrome/browser/breadcrumbs:browser_tests",
@@ -8383,11 +8383,6 @@ test("unit_tests") {
     }
 
     sources += [
-      # Badging isn't supported on Android.
-      "../browser/badging/badge_manager_unittest.cc",
-    ]
-
-    sources += [
       # Device API isn't supported on Android.
       "../browser/device_api/device_service_unittest.cc",
       "../browser/device_api/managed_configuration_service_unittest.cc",
@@ -8503,6 +8498,7 @@ test("unit_tests") {
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/apps/link_capturing:unit_tests",
       "//chrome/browser/background",
+      "//chrome/browser/badging:unit_tests",
       "//chrome/browser/companion/text_finder:unit_tests",
       "//chrome/browser/content_settings:unit_tests",
       "//chrome/browser/enterprise/connectors/analysis:features",

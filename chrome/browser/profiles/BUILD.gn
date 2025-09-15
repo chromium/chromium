@@ -338,6 +338,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/accessibility/tree_fixing:service",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
+      "//chrome/browser/badging",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/devtools",
       "//chrome/browser/feedback",

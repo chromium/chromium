@@ -358,6 +358,7 @@ source_set("app_service_browser_tests") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/link_capturing",
     "//chrome/browser/apps/link_capturing:test_support",
+    "//chrome/browser/badging:test_support",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/ui/web_applications/diagnostics:app_service_browser_tests",
     "//chrome/browser/web_applications",

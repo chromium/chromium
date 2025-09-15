@@ -19,6 +19,7 @@ source_set("app_service") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/badging",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/notifications",
   ]
