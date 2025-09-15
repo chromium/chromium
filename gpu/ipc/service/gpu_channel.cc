@@ -46,6 +46,7 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/command_buffer/service/task_graph.h"
@@ -459,8 +460,16 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     // Android is by importing an external AHB).
     std::move(callback).Run(std::move(handle));
 #else
-    handle = gpu_memory_buffer_factory_->CreateNativeGmbHandle(size, format,
-                                                               buffer_usage);
+    base::AutoLock auto_lock(gpu_channel_lock_);
+    if (!gpu_channel_) {
+      std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+      return;
+    }
+
+    handle =
+        gpu_channel_->shared_image_stub()
+            ->factory()
+            ->CreateNativeGpuMemoryBufferHandle(size, format, buffer_usage);
 #endif
   } else {
     if (SharedMemoryImageBackingFactory::IsBufferUsageSupported(buffer_usage) &&
