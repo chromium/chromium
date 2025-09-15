@@ -1699,21 +1699,6 @@ interface RTCRtpAcks
     getter remoteSendTimestamp
     method acks
     method constructor
-interface RTCRtpSendResult
-    attribute @@toStringTag
-    getter sent
-    getter unsent
-    method constructor
-interface RTCRtpSendStream
-    attribute @@toStringTag
-    method constructor
-    method sendRtp
-interface RTCRtpSent
-    attribute @@toStringTag
-    getter ackId
-    getter size
-    getter time
-    method constructor
 interface ReadableByteStreamController
     attribute @@toStringTag
     getter byobRequest

@@ -1838,21 +1838,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter writable
 [Worker]     method constructor
 [Worker]     method sendKeyFrameRequest
-[Worker] interface RTCRtpSendResult
-[Worker]     attribute @@toStringTag
-[Worker]     getter sent
-[Worker]     getter unsent
-[Worker]     method constructor
-[Worker] interface RTCRtpSendStream
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method sendRtp
-[Worker] interface RTCRtpSent
-[Worker]     attribute @@toStringTag
-[Worker]     getter ackId
-[Worker]     getter size
-[Worker]     getter time
-[Worker]     method constructor
 [Worker] interface RTCTransformEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter transformer

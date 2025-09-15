@@ -19,10 +19,6 @@ interface RTCRtpSender {
     [Measure,
      CallWith=ScriptState,
      RaisesException] RTCInsertableStreams createEncodedStreams();
-
-    [RuntimeEnabled=RTCRtpTransport]
-    Promise<sequence<RTCRtpSendStream>> replaceSendStreams();
-
     [RuntimeEnabled=RTCRtpScriptTransform, RaisesException=Setter]
     attribute RTCRtpScriptTransform? transform;
 };
