@@ -324,8 +324,13 @@ def fuzz_target_builder(
         fail("Unexpected fuzz target test builder name: got " +
              test_builder_name + ", expected " + expected_name)
 
+    description = "Builds and runs fuzz target tests."
+    if name:
+        description += " Mirrors the build configuration of \"" + name + "\"."
+
     ci_builder(
         name = test_builder_name,
+        description_html = description,
         # We have 1 machine per builder.
         max_concurrent_invocations = 1,
         # Use the builderless machine pool.
