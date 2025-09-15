@@ -2894,6 +2894,16 @@ void WizardController::OnFjordStationSetupScreenExit() {
   NOTREACHED() << "Expected a kiosk app to be available";
 }
 
+void WizardController::ExitFjordTouchControllerScreen() {
+  if (current_screen()->screen_id() ==
+      FjordTouchControllerScreenView::kScreenId) {
+    OnScreenExit(FjordTouchControllerScreenView::kScreenId, kDefaultExitReason);
+    ShowFjordStationSetupScreen();
+  } else {
+    LOG(ERROR) << "Can't exit: Fjord touch controller screen is not showing.";
+  }
+}
+
 void WizardController::OnOobeFlowFinished() {
   if (GetLoginDisplayHost()
           ->GetWizardContext()

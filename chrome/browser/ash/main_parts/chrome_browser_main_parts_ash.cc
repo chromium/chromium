@@ -48,6 +48,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/branding_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
+#include "build/config/cuttlefish/buildflags.h"  // PLATFORM_CUTTLEFISH
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -300,6 +301,10 @@
 #include "chrome/browser/ash/chromebox_for_meetings/cfm_chrome_services.h"
 #endif
 
+#if BUILDFLAG(PLATFORM_CUTTLEFISH)
+#include "chrome/browser/ash/dbus/fjord_oobe_service_provider.h"
+#endif
+
 namespace ash {
 
 namespace {
@@ -533,6 +538,16 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<ArcCroshServiceProvider>()));
 
+#if BUILDFLAG(PLATFORM_CUTTLEFISH)
+    if (features::IsFjordOobeEnabled()) {
+      fjord_oobe_service_ = CrosDBusService::Create(
+          system_bus, chromeos::kFjordOobeServiceName,
+          dbus::ObjectPath(chromeos::kFjordOobeServicePath),
+          CrosDBusService::CreateServiceProviderList(
+              std::make_unique<FjordOobeServiceProvider>()));
+    }
+#endif
+
     // Initialize PowerDataCollector after DBusThreadManager is initialized.
     PowerDataCollector::Initialize();
 
@@ -599,6 +614,9 @@ class DBusServices {
     fusebox_service_.reset();
     mojo_connection_service_.reset();
     arc_crosh_service_.reset();
+#if BUILDFLAG(PLATFORM_CUTTLEFISH)
+    fjord_oobe_service_.reset();
+#endif
     PowerDataCollector::Shutdown();
     chromeos::PowerPolicyController::Shutdown();
     device::BluetoothAdapterFactory::Shutdown();
@@ -635,6 +653,9 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> dlp_files_policy_service_;
   std::unique_ptr<CrosDBusService> arc_tracing_service_;
   std::unique_ptr<CrosDBusService> arc_crosh_service_;
+#if BUILDFLAG(PLATFORM_CUTTLEFISH)
+  std::unique_ptr<CrosDBusService> fjord_oobe_service_;
+#endif
 };
 
 }  // namespace internal

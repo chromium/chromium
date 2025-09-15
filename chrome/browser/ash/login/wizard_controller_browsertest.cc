@@ -93,6 +93,7 @@
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_station_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -1439,7 +1440,9 @@ class WizardControllerFjordOOBETest
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
-                       TouchControllerScreenShowsAfterEnroll) {
+                       TouchControllerScreenShowsAndExitsToStationSetup) {
+  WizardController* const wizard_controller =
+      WizardController::default_controller();
   ScopedEnrollmentStateFetcherFactory fetcher_factory(
       auto_enrollment_controller());
   ProgressUntilAutoEnrollmentCheckScreen();
@@ -1464,6 +1467,36 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   CheckCurrentScreen(FjordTouchControllerScreenView::kScreenId);
+
+  wizard_controller->ExitFjordTouchControllerScreen();
+  CheckCurrentScreen(FjordStationSetupScreenView::kScreenId);
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
+                       ExitTouchControllerScreenDoesNothing) {
+  WizardController* const wizard_controller =
+      WizardController::default_controller();
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl());
+  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl());
+  base::Value::Dict device_state;
+  device_state.Set(
+      policy::kDeviceStateMode,
+      base::Value(policy::kDeviceStateRestoreModeReEnrollmentEnforced));
+  g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
+                                            std::move(device_state));
+  fetcher_factory.ReportEnrollmentState(
+      policy::AutoEnrollmentResult::kEnrollment);
+
+  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
+
+  // Expect that Exit has no affect since TC setup screen is not showing.
+  wizard_controller->ExitFjordTouchControllerScreen();
+  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
 }
 
 class WizardControllerScreenPriorityOOBETest : public OobeBaseTest {
