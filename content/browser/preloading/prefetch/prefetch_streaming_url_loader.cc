@@ -341,6 +341,10 @@ void PrefetchStreamingURLLoader::StartServiceWorkerInterceptor(
 
   interceptor_ = ServiceWorkerMainResourceLoaderInterceptor::CreateForPrefetch(
       request, service_worker_handle_->AsWeakPtr(), network_url_loader_factory);
+  if (!interceptor_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
 
   interceptor_->MaybeCreateLoader(
       request, browser_context, std::move(callback),
