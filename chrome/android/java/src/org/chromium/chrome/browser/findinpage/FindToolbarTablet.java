@@ -12,7 +12,6 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -173,7 +172,7 @@ public class FindToolbarTablet extends FindToolbar {
 
         if (show && getVisibility() != View.VISIBLE && mCurrentAnimation != mAnimationEnter) {
             View anchorView = getRootView().findViewById(R.id.toolbar);
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getLayoutParams();
+            var lp = (MarginLayoutParams) getLayoutParams();
             lp.topMargin = anchorView.getBottom() - mYInsetPx;
             setLayoutParams(lp);
             nextAnimator = mAnimationEnter;
