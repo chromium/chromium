@@ -232,7 +232,6 @@ static_library("browser") {
     ]
     public_deps += [ ":split_stores_and_local_upm" ]
     deps += [
-      "//components/one_time_tokens/android/backend/sms:backend",
       "//components/webauthn/android",
       "//services/metrics/public/cpp:ukm_builders",
     ]

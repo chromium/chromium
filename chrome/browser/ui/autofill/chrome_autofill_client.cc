@@ -147,6 +147,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
@@ -1185,6 +1186,16 @@ ChromeAutofillClient::GetContentCredentialManager() {
 
 OtpFieldDetector* ChromeAutofillClient::GetOtpFieldDetector() {
   return otp_field_detector_.get();
+}
+
+one_time_tokens::SmsOtpBackend* ChromeAutofillClient::GetSmsOtpBackend() const {
+#if BUILDFLAG(IS_ANDROID)
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return AndroidSmsOtpBackendFactory::GetForProfile(profile);
+#else
+  return nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeAutofillClient::set_test_addresses(

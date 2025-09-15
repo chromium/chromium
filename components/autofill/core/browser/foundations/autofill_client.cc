@@ -307,4 +307,8 @@ OtpFieldDetector* AutofillClient::GetOtpFieldDetector() {
   return nullptr;
 }
 
+one_time_tokens::SmsOtpBackend* AutofillClient::GetSmsOtpBackend() const {
+  return nullptr;
+}
+
 }  // namespace autofill

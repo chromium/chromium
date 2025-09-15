@@ -67,6 +67,10 @@ namespace syncer {
 class SyncService;
 }
 
+namespace one_time_tokens {
+class SmsOtpBackend;
+}
+
 namespace optimization_guide {
 class ModelQualityLogsUploaderService;
 }
@@ -702,6 +706,9 @@ class AutofillClient {
 
   // May return null on platforms where OTPs are not supported.
   virtual OtpFieldDetector* GetOtpFieldDetector();
+
+  // May return null on platforms where no SmsOtpBackend is supported.
+  virtual one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const;
 };
 
 }  // namespace autofill

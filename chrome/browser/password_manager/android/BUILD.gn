@@ -672,6 +672,5 @@ group("password_manager_android") {
     ":utils_jni_headers",
     "add_username_dialog:android",
     "grouped_affiliations:public",
-    "one_time_passwords:backend",
   ]
 }

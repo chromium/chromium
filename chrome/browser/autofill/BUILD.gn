@@ -81,6 +81,8 @@ static_library("autofill") {
   if (is_android) {
     sources += [
       "android/android_autofill_availability_status.h",
+      "android/android_sms_otp_backend_factory.cc",
+      "android/android_sms_otp_backend_factory.h",
       "android/autofill_image_fetcher_impl.cc",
       "android/autofill_image_fetcher_impl.h",
       "android/autofill_profile_bridge.cc",
@@ -107,6 +109,7 @@ static_library("autofill") {
       "//components/autofill/core/common:credit_card_number_validation",
       "//components/autofill/core/common/mojom:mojo_types",
       "//components/messages/android:feature_flags",
+      "//components/one_time_tokens/android/backend/sms:backend",
       "//components/password_manager/core/browser",
       "//third_party/libaddressinput",
 

@@ -152,7 +152,6 @@
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
-#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_backend_factory.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_helper_bridge_impl.h"
@@ -1410,7 +1409,11 @@ void ChromePasswordManagerClient::MarkSharedCredentialsAsNotified(
 
 one_time_tokens::SmsOtpBackend* ChromePasswordManagerClient::GetSmsOtpBackend()
     const {
-  return AndroidSmsOtpBackendFactory::GetForProfile(profile_);
+  if (auto* client =
+          autofill::ContentAutofillClient::FromWebContents(web_contents())) {
+    return client->GetSmsOtpBackend();
+  }
+  return nullptr;
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

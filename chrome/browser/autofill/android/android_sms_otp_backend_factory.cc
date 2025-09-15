@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_backend_factory.h"
+#include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
