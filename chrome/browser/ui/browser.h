@@ -1061,6 +1061,8 @@ class Browser : public TabStripModelObserver,
                              bool blocked) override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
       content::WebContents* web_contents) override;
+  void OnWebContentsModalDialogShown(
+      content::WebContents* web_contents) override;
 
   // Overridden from BookmarkTabHelperObserver:
   void URLStarredChanged(content::WebContents* web_contents,
