@@ -21,8 +21,11 @@
 #include "content/public/common/mhtml_generation_params.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;

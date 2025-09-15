@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 using tabs::TabModel;
 #endif
