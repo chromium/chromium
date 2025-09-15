@@ -28,6 +28,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -79,10 +80,12 @@ class FrameSinkHolderTest : public AshTestBase {
         /*on_frame_sink_lost_callback=*/base::DoNothing());
 
     holder_weak_ptr_ = frame_sink_holder_->GetWeakPtr();
+
+    sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   }
 
   std::unique_ptr<UiResource> MakeResource() {
-    auto resource = std::make_unique<UiResource>();
+    auto resource = std::make_unique<UiResource>(sii_);
     resource->ui_source_id = 1u;
     resource->format = viz::SinglePlaneFormat::kBGRA_8888;
     resource->resource_size = gfx::Size(20, 20);
@@ -93,6 +96,8 @@ class FrameSinkHolderTest : public AshTestBase {
   UiResourceManager& GetResourceManager() {
     return frame_sink_holder_->resource_manager();
   }
+
+  scoped_refptr<gpu::SharedImageInterface> sii_;
 
   // If `frame_sink_holder_` lifetime has been extended in a unittest and the
   // holder did not schedule a delete task, it will get destroyed once we

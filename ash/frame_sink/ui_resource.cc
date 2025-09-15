@@ -8,15 +8,18 @@
 
 namespace ash {
 
-UiResource::UiResource() = default;
+UiResource::UiResource(scoped_refptr<gpu::SharedImageInterface> sii)
+    : shared_image_interface(std::move(sii)) {
+  CHECK(shared_image_interface);
+}
 
 UiResource::~UiResource() {
-  if (!context_provider || !client_shared_image_) {
+  if (!client_shared_image_) {
     return;
   }
 
-  gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, std::move(client_shared_image_));
+  shared_image_interface->DestroySharedImage(sync_token,
+                                             std::move(client_shared_image_));
 }
 
 }  // namespace ash

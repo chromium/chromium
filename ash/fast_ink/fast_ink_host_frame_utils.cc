@@ -120,14 +120,15 @@ std::unique_ptr<UiResource> CreateUiResource(
   DCHECK(ui_source_id > 0);
   CHECK(!mailbox.IsZero());
 
-  auto resource = std::make_unique<UiResource>();
+  auto context_provider = GetContextProvider();
 
-  resource->context_provider = GetContextProvider();
-
-  if (!resource->context_provider) {
+  if (!context_provider) {
     LOG(ERROR) << "Failed to acquire a context provider";
     return nullptr;
   }
+
+  auto resource =
+      std::make_unique<UiResource>(context_provider->SharedImageInterface());
 
   // This UiResource is operating on a shared SharedImage.
   resource->SetExternallyOwnedMailbox(mailbox);
@@ -176,12 +177,10 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   }
 
   if (resource->damaged) {
-    DCHECK(resource->context_provider);
-    gpu::SharedImageInterface* sii =
-        resource->context_provider->SharedImageInterface();
-
-    sii->UpdateSharedImage(resource->sync_token, resource->mailbox());
-    resource->sync_token = sii->GenVerifiedSyncToken();
+    resource->shared_image_interface->UpdateSharedImage(resource->sync_token,
+                                                        resource->mailbox());
+    resource->sync_token =
+        resource->shared_image_interface->GenVerifiedSyncToken();
     resource->damaged = false;
   }
 

@@ -23,7 +23,7 @@ inline constexpr UiSourceId kInvalidUiSourceId(0u);
 // map the resource back to the source of the resource.
 class ASH_EXPORT UiResource {
  public:
-  UiResource();
+  UiResource(scoped_refptr<gpu::SharedImageInterface> sii);
 
   UiResource(const UiResource&) = delete;
   UiResource& operator=(const UiResource&) = delete;
@@ -55,7 +55,7 @@ class ASH_EXPORT UiResource {
     return client_shared_image_;
   }
 
-  scoped_refptr<viz::RasterContextProvider> context_provider;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
   gpu::SyncToken sync_token;
   viz::SharedImageFormat format;
   gfx::Size resource_size;

@@ -12,6 +12,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -33,7 +34,7 @@ class UiResourceManagerTest : public testing::Test {
       const gfx::Size& resource_size = kDefaultSize,
       viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888,
       UiSourceId ui_source_id = kTestUiSourceId_1) {
-    auto resource = std::make_unique<UiResource>();
+    auto resource = std::make_unique<UiResource>(sii_);
     resource->ui_source_id = ui_source_id;
     resource->format = format;
     resource->resource_size = resource_size;
@@ -42,11 +43,13 @@ class UiResourceManagerTest : public testing::Test {
   }
 
   void SetUp() override {
+    sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     resource_manager_ = std::make_unique<UiResourceManager>();
   }
 
   void TearDown() override { resource_manager_->LostExportedResources(); }
 
+  scoped_refptr<gpu::SharedImageInterface> sii_;
   std::unique_ptr<UiResourceManager> resource_manager_;
 };
 

@@ -60,35 +60,37 @@ std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::CreateUiResource(
   DCHECK(!size.IsEmpty());
   DCHECK(ui_source_id > 0);
 
-  auto resource = std::make_unique<UiResource>();
-  resource->context_provider = aura::Env::GetInstance()
-                                   ->context_factory()
-                                   ->SharedMainThreadRasterContextProvider();
-  if (!resource->context_provider) {
+  auto context_provider = aura::Env::GetInstance()
+                              ->context_factory()
+                              ->SharedMainThreadRasterContextProvider();
+  if (!context_provider) {
     LOG(ERROR) << "Failed to acquire a context provider";
     return nullptr;
   }
 
-  gpu::SharedImageInterface* sii =
-      resource->context_provider->SharedImageInterface();
+  auto resource =
+      std::make_unique<UiResource>(context_provider->SharedImageInterface());
 
   gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   if (is_overlay_candidate &&
-      sii->GetCapabilities().supports_scanout_shared_images) {
+      resource->shared_image_interface->GetCapabilities()
+          .supports_scanout_shared_images) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  auto client_shared_image = sii->CreateSharedImage(
-      {format, size, gfx::ColorSpace(), usage, "FastInkRootViewFrame"},
-      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+  auto client_shared_image =
+      resource->shared_image_interface->CreateSharedImage(
+          {format, size, gfx::ColorSpace(), usage, "FastInkRootViewFrame"},
+          gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
   if (!client_shared_image) {
     LOG(ERROR) << "Failed to create MappableSharedImage";
     return nullptr;
   }
   resource->SetClientSharedImage(std::move(client_shared_image));
 
-  resource->sync_token = sii->GenVerifiedSyncToken();
+  resource->sync_token =
+      resource->shared_image_interface->GenVerifiedSyncToken();
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
   resource->format = format;
@@ -154,12 +156,10 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
   Paint(total_damage_rect, rotation_transform, resource.get());
 
   if (resource->damaged) {
-    DCHECK(resource->context_provider);
-    gpu::SharedImageInterface* sii =
-        resource->context_provider->SharedImageInterface();
-
-    sii->UpdateSharedImage(resource->sync_token, resource->mailbox());
-    resource->sync_token = sii->GenVerifiedSyncToken();
+    resource->shared_image_interface->UpdateSharedImage(resource->sync_token,
+                                                        resource->mailbox());
+    resource->sync_token =
+        resource->shared_image_interface->GenVerifiedSyncToken();
     resource->damaged = false;
   }
 
