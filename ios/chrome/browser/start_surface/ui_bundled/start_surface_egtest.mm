@@ -9,7 +9,6 @@
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
@@ -72,13 +71,14 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
       ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
       "/" + "0");
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
+  config.additional_args.push_back("--mock-shopping-service=is-eligible,"
+                                   "has-empty-price-tracked-bookmarks-results");
   return config;
 }
 
 - (void)setUp {
   [super setUp];
   [[self class] closeAllTabs];
-  [TabResumptionAppInterface setUpMockShoppingService];
   [ChromeEarlGrey openNewTab];
 }
 

@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
@@ -101,6 +100,8 @@ NSString* HostnameFromGURL(GURL URL) {
   config.additional_args.push_back(std::string("--") +
                                    kTabResumptionShowItemImmediately);
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
+  config.additional_args.push_back("--mock-shopping-service=is-eligible,"
+                                   "has-empty-price-tracked-bookmarks-results");
   // kVisitedURLRankingHistoryVisibilityScoreFilter require the network, keep
   // it disabled for tests.
   config.features_disabled.push_back(
@@ -140,7 +141,6 @@ NSString* HostnameFromGURL(GURL URL) {
   SignInAndEnableHistorySync();
   [NewTabPageAppInterface disableSetUpList];
   [[self class] closeAllTabs];
-  [TabResumptionAppInterface setUpMockShoppingService];
   [ChromeEarlGrey openNewTab];
 }
 

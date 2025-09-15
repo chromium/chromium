@@ -136,7 +136,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
     "//ios/chrome/browser/content_suggestions/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/content_suggestions/ui_bundled:ui",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption:eg_app_support+eg2",
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/device_sharing/model:eg_app_support+eg2",
