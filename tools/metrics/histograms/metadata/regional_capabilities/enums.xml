@@ -87,6 +87,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:ProgramAndLocationMatch) -->
 
+<!-- LINT.IfChange(RegionalProgramSpecificExclusion) -->
+
+<enum name="RegionalProgramSpecificExclusion">
+  <int value="0" label="NotRecordingChoiceFromSettings">
+    User choices made from the Chrome settings that will not result in a search
+    engine choice being seen as valid choice. Recorded at the moment of the
+    choice.
+  </int>
+  <int value="1" label="NotPreservingChoiceFromOtherProgram">
+    Pre-existing user choices made in the context of a program that is not the
+    currently active one, and that are not being seen as valid choices for this
+    active program. Recorded on each evaluation of the validity of the choice.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/regional_capabilities/regional_capabilities_metrics.h:ProgramSpecificExclusion) -->
+
 </enums>
 
 </histogram-configuration>

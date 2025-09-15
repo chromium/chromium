@@ -37,6 +37,7 @@
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_choice/buildflags.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -628,6 +629,16 @@ void SearchEngineChoiceService::RecordChoiceMade(
     return;
   }
 
+  if ((choice_location == ChoiceMadeLocation::kSearchSettings ||
+       choice_location == ChoiceMadeLocation::kSearchEngineSettings) &&
+      !regional_capabilities_service_
+           ->ShouldRecordSearchEngineChoicesMadeFromSettings()) {
+    regional_capabilities::RecordProgramSpecificExclusion(
+        regional_capabilities::ProgramSpecificExclusion::
+            kNotRecordingChoiceFromSettings);
+    return;
+  }
+
   RecordChoiceScreenDefaultSearchProviderType(
       GetDefaultSearchEngineType(CHECK_DEREF(template_url_service)),
       choice_location);
@@ -903,6 +914,12 @@ SearchEngineChoiceService::EvaluateSearchProviderChoice(
             template_url_service.search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
       return ChoiceStatus::kCurrentIsNonGooglePrepopulated;
     }
+  }
+
+  if (renewal_reasons.Has(ChoiceRenewalReason::kIncompatibleProgram)) {
+    regional_capabilities::RecordProgramSpecificExclusion(
+        regional_capabilities::ProgramSpecificExclusion::
+            kNotPreservingChoiceFromOtherProgram);
   }
 
   // We don't have a good way for now to distinguish explicit Google selections

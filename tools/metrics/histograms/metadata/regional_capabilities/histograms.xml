@@ -37,6 +37,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="RegionalCapabilities.Debug.ProgramSpecificExclusion"
+    enum="RegionalProgramSpecificExclusion" expires_after="2026-03-01">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Reports occurrences of some of program specific conditions for which we
+    don't have some dedicated histogram, but want to monitor for debugging
+    purposes. See the individual events for record timing.
+  </summary>
+</histogram>
+
 <histogram name="RegionalCapabilities.FallbackCountryMatching"
     enum="CountryMatchingStatus" expires_after="2026-03-01">
   <owner>dgn@chromium.org</owner>

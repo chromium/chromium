@@ -151,6 +151,19 @@ void RecordTriggeringFunnelStageDetails(
 void RecordActiveRegionalProgram(
     const absl::flat_hash_set<ActiveRegionalProgram> programs);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProgramSpecificExclusion)
+enum class ProgramSpecificExclusion {
+  kNotRecordingChoiceFromSettings = 0,
+  kNotPreservingChoiceFromOtherProgram = 1,
+  kMaxValue = kNotPreservingChoiceFromOtherProgram,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:RegionalProgramSpecificExclusion)
+
+void RecordProgramSpecificExclusion(ProgramSpecificExclusion exclusion);
+
 }  // namespace regional_capabilities
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_METRICS_H_

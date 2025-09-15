@@ -222,7 +222,7 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 }
 
-TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_ByLocation) {
+TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_ByLocation_Waffle) {
   // Configure to an EEA region country.
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
@@ -269,6 +269,69 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_ByLocation) {
                                 SearchEngineChoiceWipeReason::kCommandLineFlag);
   }
 }
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_ByLocation_Taiyaki) {
+  if (!regional_capabilities::IsClientCompatibleWithProgram(
+          regional_capabilities::Program::kTaiyaki)) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList feature_list{switches::kTaiyaki};
+
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kSearchEngineChoiceCountry);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kSearchEngineChoiceCountry, switches::kTaiyakiProgramOverride);
+  EXPECT_EQ(template_url_service().GetDefaultSearchProvider()->prepopulate_id(),
+            TemplateURLPrepopulateData::google.id);
+
+  auto locations = {ChoiceMadeLocation::kChoiceScreen,
+                    ChoiceMadeLocation::kSearchSettings,
+                    ChoiceMadeLocation::kSearchEngineSettings};
+  for (const ChoiceMadeLocation& choice_location : locations) {
+    base::HistogramTester scoped_histogram_tester;
+    int expected_v1_records = 0;
+    int expected_v2_records = 0;
+    bool expect_choice_prefs_presence = false;
+    switch (choice_location) {
+      case ChoiceMadeLocation::kChoiceScreen:
+        // For the choice screen, the choice should be recorded in the both
+        // histograms.
+        expected_v1_records = 1;
+        expected_v2_records = 1;
+        expect_choice_prefs_presence = true;
+        break;
+
+      case ChoiceMadeLocation::kSearchSettings:
+      case ChoiceMadeLocation::kSearchEngineSettings:
+        // For other locations, the choice should not be recorded.
+        break;
+      case ChoiceMadeLocation::kOther:
+        NOTREACHED();  // Not an allowed value for `RecordChoiceMade()`.
+    }
+
+    search_engine_choice_service().RecordChoiceMade(choice_location,
+                                                    &template_url_service());
+    scoped_histogram_tester.ExpectBucketCount(
+        search_engines::
+            kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+        SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v1_records);
+    scoped_histogram_tester.ExpectBucketCount(
+        search_engines::
+            kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+        SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v2_records);
+
+    EXPECT_EQ(
+        expect_choice_prefs_presence,
+        pref_service()->HasPrefPath(
+            prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+
+    WipeSearchEngineChoicePrefs(*pref_service(),
+                                SearchEngineChoiceWipeReason::kCommandLineFlag);
+  }
+}
+#endif
 
 TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DistributionCustom) {
   // A distribution custom search engine will have a `prepopulate_id` > 1000.

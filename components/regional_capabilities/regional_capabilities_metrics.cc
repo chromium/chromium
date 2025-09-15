@@ -115,4 +115,9 @@ void RecordActiveRegionalProgram(
                                 merged_program);
 }
 
+void RecordProgramSpecificExclusion(ProgramSpecificExclusion exclusion) {
+  base::UmaHistogramEnumeration(
+      "RegionalCapabilities.Debug.ProgramSpecificExclusion", exclusion);
+}
+
 }  // namespace regional_capabilities

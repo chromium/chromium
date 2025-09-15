@@ -23,6 +23,7 @@ constexpr ProgramSettings kWaffleSettings{
         kEeaChoiceCountriesIds.begin(),
         kEeaChoiceCountriesIds.end()),
     .search_engine_list_type = SearchEngineListType::kShuffled,
+    .selection_from_settings_counts_as_choice_screen_choice = true,
     .choice_screen_eligibility_config =
         ChoiceScreenEligibilityConfig{
             .managed_users_can_be_eligible = true,
@@ -38,6 +39,7 @@ constexpr ProgramSettings kTaiyakiSettings{
     .associated_countries =
         base::raw_span<const country_codes::CountryId>(&kTaiyakiCountry, 1u),
     .search_engine_list_type = SearchEngineListType::kShuffled,
+    .selection_from_settings_counts_as_choice_screen_choice = false,
     .choice_screen_eligibility_config =
         ChoiceScreenEligibilityConfig{
             .managed_users_can_be_eligible = false,
@@ -52,6 +54,7 @@ constexpr ProgramSettings kDefaultSettings{
     .program = Program::kDefault,
     .associated_countries = base::raw_span<const country_codes::CountryId>(),
     .search_engine_list_type = SearchEngineListType::kTopN,
+    .selection_from_settings_counts_as_choice_screen_choice = false,
     .choice_screen_eligibility_config = std::nullopt,
 };
 

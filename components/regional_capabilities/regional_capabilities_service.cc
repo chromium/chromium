@@ -307,6 +307,12 @@ bool RegionalCapabilitiesService::
                         client_->GetVariationsLatestCountryId());
 }
 
+bool RegionalCapabilitiesService::
+    ShouldRecordSearchEngineChoicesMadeFromSettings() {
+  return GetActiveProgramSettings()
+      .selection_from_settings_counts_as_choice_screen_choice;
+}
+
 std::optional<RegionalCapabilitiesService::ChoiceScreenDesign>
 RegionalCapabilitiesService::GetChoiceScreenDesign() {
   // TODO(crbug.com/440549533): Investigate minimizing apk size by excluding

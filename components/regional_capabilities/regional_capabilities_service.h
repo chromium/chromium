@@ -117,6 +117,8 @@ class RegionalCapabilitiesService : public KeyedService {
   // the regional scope.
   bool IsChoiceScreenCompatibleWithCurrentLocation();
 
+  bool ShouldRecordSearchEngineChoicesMadeFromSettings();
+
   // Returns the appropriate choice screen design strings for the active
   // program, if one is required. Returns `std::nullopt` if the region does not
   // require a search engine choice screen.

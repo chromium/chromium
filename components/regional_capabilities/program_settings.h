@@ -63,9 +63,25 @@ struct ChoiceScreenEligibilityConfig {
 
 // Describes how features should adjust themselves based on the program.
 struct ProgramSettings {
+  // Identifier for the program represented by this settings instance.
   Program program;
+
+  // Countries associated with this program. May be used to check that the
+  // profile country and sometimes the current variations country are matching
+  // with the active program.
   base::raw_span<const country_codes::CountryId> associated_countries;
+
+  // Indicates how list of search engines to be loaded in this profile should be
+  // put together.
   SearchEngineListType search_engine_list_type;
+
+  // Indicates whether user search engine selections made from settings (as the
+  // current only non strictly choice screen choice surface) can count the same
+  // way a choice from a choice screen with the same provided options would.
+  bool selection_from_settings_counts_as_choice_screen_choice;
+
+  // Indicates how the choice screen eligibility is affected by the active
+  // program.
   // When `std::nullopt`, it means the program does not involve choice screens.
   std::optional<ChoiceScreenEligibilityConfig> choice_screen_eligibility_config;
 };
