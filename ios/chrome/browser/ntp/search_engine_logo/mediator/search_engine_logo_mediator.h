@@ -25,7 +25,8 @@ class WebState;
 
 @interface SearchEngineLogoMediator : NSObject
 
-// Whether the logo should be multicolor or monochrome.
+// Whether the logo should be multicolor or monochrome. If the logo is a doodle,
+// that will supercede a potential monochrome logo.
 @property(nonatomic, assign) BOOL usesMonochromeLogo;
 @property(nonatomic, weak) id<SearchEngineLogoConsumer> consumer;
 

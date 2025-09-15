@@ -88,6 +88,7 @@ bundle_data("unit_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "fixed_logo_api_unittest.cc",
     "google_logo_api_unittest.cc",
     "logo_cache_unittest.cc",
     "logo_service_impl_unittest.cc",

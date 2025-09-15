@@ -61,6 +61,7 @@ const char kDarkShareButtonOpacity[] = "dark_share_button_opacity";
 const char kDarkShareButtonIcon[] = "dark_share_button_icon";
 const char kDarkShareButtonBg[] = "dark_share_button_bg";
 
+const char kLogoType[] = "LOGO";
 const char kSimpleType[] = "SIMPLE";
 const char kAnimatedType[] = "ANIMATED";
 const char kInteractiveType[] = "INTERACTIVE";
@@ -85,6 +86,9 @@ void SetTimeValue(base::Value::Dict& dict,
 }
 
 LogoType LogoTypeFromString(std::string_view type) {
+  if (type == kLogoType) {
+    return LogoType::LOGO;
+  }
   if (type == kSimpleType) {
     return LogoType::SIMPLE;
   }
@@ -95,11 +99,13 @@ LogoType LogoTypeFromString(std::string_view type) {
     return LogoType::INTERACTIVE;
   }
   LOG(WARNING) << "invalid type " << type;
-  return LogoType::SIMPLE;
+  return LogoType::LOGO;
 }
 
 std::string LogoTypeToString(LogoType type) {
   switch (type) {
+    case LogoType::LOGO:
+      return kLogoType;
     case LogoType::SIMPLE:
       return kSimpleType;
     case LogoType::ANIMATED:

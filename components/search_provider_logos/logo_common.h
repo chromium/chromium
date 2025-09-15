@@ -24,6 +24,9 @@ namespace search_provider_logos {
 extern const int64_t kMaxTimeToLiveMS;
 
 enum class LogoType {
+  // A logo.
+  LOGO,
+  // A simple doodle.
   SIMPLE,
   ANIMATED,
   INTERACTIVE,
@@ -41,39 +44,42 @@ struct LogoMetadata {
 
   // For use by the client ----------------------------------------------------
 
-  // SIMPLE, ANIMATED, or INTERACTIVE.
-  LogoType type = LogoType::SIMPLE;
+  // LOGO, SIMPLE, ANIMATED, or INTERACTIVE.
+  LogoType type = LogoType::LOGO;
 
-  // SIMPLE, ANIMATED: The URL to load when the logo is clicked.
+  // LOGO, SIMPLE, ANIMATED: The URL to load when the logo is clicked.
   // INTERACTIVE: Unused, on Desktop. Same as SIMPLE/ANIMATED on Mobile.
   GURL on_click_url;
 
   // INTERACTIVE: The URL of a full-page version of the logo. On Desktop, logo
   // is embedded into an <iframe> on the NTP.
-  // SIMPLE, ANIMATED: not used.
+  // LOGO, SIMPLE, ANIMATED: not used.
   GURL full_page_url;
 
-  // SIMPLE: The accessibility text for the logo.
+  // LOGO: The accessibility text for the logo.
+  // SIMPLE: The accessibility text for the simple doodle.
   // ANIMATED: The accessibility text for the CTA and animated logos.
   // INTERACTIVE: The accessibility text for the iframe, on Desktop.
   std::string alt_text;
 
-  // SIMPLE: The mime type of the logo image.
+  // LOGO: The mime type of the logo image.
+  // SIMPLE: The mime type of the simple doodle image.
   // ANIMATED: The mime type of the CTA image.
   std::string mime_type;
 
-  // SIMPLE: The mime type of the dark logo image. May be empty.
+  // LOGO: The mime type of the dark logo image. May be empty.
+  // SIMPLE: The mime type of the simple dark doodle image. May be empty.
   // ANIMATED: The mime type of the dark CTA image. May be empty.
   std::string dark_mime_type;
 
-  // SIMPLE, ANIMATED: The background color to use in dark mode.
+  // LOGO, SIMPLE, ANIMATED: The background color to use in dark mode.
   // INTERACTIVE: not used.
   std::string dark_background_color;
 
   // ANIMATED: The URL for an animated image to display when the call to action
   // logo is clicked. If |animated_url| is not empty, |encoded_image| refers to
   // a call to action image.
-  // SIMPLE, INTERACTIVE: not used.
+  // LOGO, SIMPLE, INTERACTIVE: not used.
   GURL animated_url;
   GURL dark_animated_url;
 
@@ -88,14 +94,14 @@ struct LogoMetadata {
   // The URL used for sharing doodles.
   GURL short_link;
 
-  // SIMPLE, ANIMATED: original dimensions of the image.
+  // LOGO, SIMPLE, ANIMATED: original dimensions of the image.
   // INTERACTIVE: not used.
   int width_px = 0;
   int height_px = 0;
   int dark_width_px = 0;
   int dark_height_px = 0;
 
-  // SIMPLE, ANIMATED: ignored
+  // LOGO, SIMPLE, ANIMATED: ignored
   // INTERACTIVE: appropriate dimensions for the iframe.
   int iframe_width_px = 0;
   int iframe_height_px = 0;

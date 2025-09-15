@@ -38,6 +38,9 @@
 @property(strong, nonatomic, readonly)
     SearchEngineLogoContainerView* containerView;
 
+// The state of the current logo.
+@property(assign, nonatomic) SearchEngineLogoState logoState;
+
 // Called when the logo is downloaded or failed to be downloaded.
 - (void)logoDownloaded:(const search_provider_logos::Logo*)logo
         callbackReason:
@@ -99,7 +102,6 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
   scoped_refptr<network::SharedURLLoaderFactory> _sharedURLLoaderFactory;
   std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper> _imageFetcher;
-  SearchEngineLogoState _logoState;
   BOOL _offTheRecord;
 }
 
@@ -148,14 +150,11 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 }
 
 - (void)setUsesMonochromeLogo:(BOOL)usesMonochromeLogo {
-  if (usesMonochromeLogo != _usesMonochromeLogo) {
-    _usesMonochromeLogo = usesMonochromeLogo;
-    if (search::DefaultSearchProviderIsGoogle(_templateURLService) &&
-        self.containerView) {
-      // TODO(crbug.com/438460743): Need implementation.
-      self.containerView.shrunkLogoView.image = [self offlineGoogleLogoImage];
-    }
+  if (usesMonochromeLogo == _usesMonochromeLogo) {
+    return;
   }
+  _usesMonochromeLogo = usesMonochromeLogo;
+  [self setContainerMonochromeLogoIfAllowed];
 }
 
 #pragma mark - Accessors
@@ -193,6 +192,14 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   [self searchEngineChanged];
 }
 
+- (void)setLogoState:(SearchEngineLogoState)logoState {
+  if (logoState == _logoState) {
+    return;
+  }
+  _logoState = logoState;
+  [self setContainerMonochromeLogoIfAllowed];
+}
+
 #pragma mark - SearchEngineLogoContainerViewDelegate
 
 - (void)searchEngineLogoContainerViewDoodleWasTapped:
@@ -217,12 +224,12 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   _logoService->SetCachedLogo(nullptr);
   self.containerView.doodleAltText = nil;
   if (search::DefaultSearchProviderIsGoogle(_templateURLService)) {
-    _logoState = SearchEngineLogoState::kLogo;
+    self.logoState = SearchEngineLogoState::kLogo;
     // For legacy reason, the Google logo should be displayed with aspect fill.
     self.containerView.shrunkLogoView.contentMode =
         UIViewContentModeScaleAspectFill;
   } else {
-    _logoState = SearchEngineLogoState::kNone;
+    self.logoState = SearchEngineLogoState::kNone;
   }
   self.containerView.shrunkLogoView.image = [self offlineGoogleLogoImage];
   if (_defaultSearchProvider) {
@@ -233,7 +240,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     self.containerView.accessibilityLabel = nil;
   }
   _fingerprint = "";
-  [self.containerView setLogoState:_logoState animated:YES];
+  [self.containerView setLogoState:self.logoState animated:YES];
   self.containerView.isAccessibilityElement = YES;
   if ([self canShowLogoOrDoodle]) {
     [self fetchLogoOrDoodle];
@@ -241,6 +248,24 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 }
 
 #pragma mark - Private
+
+// Sets the container view's logo to monochrome if state allows for it.
+- (void)setContainerMonochromeLogoIfAllowed {
+  if (!self.usesMonochromeLogo) {
+    return;
+  }
+
+  // Doodle supercedes monochrome logo.
+  if (self.logoState == SearchEngineLogoState::kDoodle) {
+    return;
+  }
+
+  // TODO(crbug.com/438460743): Need implementation.
+  if (!search::DefaultSearchProviderIsGoogle(_templateURLService)) {
+    return;
+  }
+  self.containerView.shrunkLogoView.image = [self offlineGoogleLogoImage];
+}
 
 // Returns whether a logo or doodle can be shown with the current search engine.
 - (BOOL)canShowLogoOrDoodle {
@@ -301,8 +326,8 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
            animate:(BOOL)animate {
   if (!logo) {
     _fingerprint = "";
-    [self.containerView setLogoState:SearchEngineLogoState::kNone
-                            animated:animate];
+    self.logoState = SearchEngineLogoState::kNone;
+    [self.containerView setLogoState:self.logoState animated:animate];
     self.containerView.isAccessibilityElement = YES;
     return;
   }
@@ -337,30 +362,33 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   UIImage* doodle = skia::SkBitmapToUIImageWithColorSpace(
       logo->image, 1 /* scale */, color_space.get());
 
-  // Animate this view seperately in case the doodle has updated multiple times.
-  // This can happen when a particular doodle cycles thru multiple images.
-  SearchEngineLogoState logoState = SearchEngineLogoState::kNone;
+  self.logoState = SearchEngineLogoState::kNone;
   switch (logo->metadata.type) {
-    case search_provider_logos::LogoType::SIMPLE:
-      logoState = SearchEngineLogoState::kLogo;
+    case search_provider_logos::LogoType::LOGO:
+      self.logoState = SearchEngineLogoState::kLogo;
       break;
+    case search_provider_logos::LogoType::SIMPLE:
     case search_provider_logos::LogoType::ANIMATED:
     case search_provider_logos::LogoType::INTERACTIVE:
-      logoState = SearchEngineLogoState::kDoodle;
+      self.logoState = SearchEngineLogoState::kDoodle;
       break;
   }
-  if (logoState == SearchEngineLogoState::kLogo &&
+  if (self.logoState == SearchEngineLogoState::kLogo &&
       base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3)) {
     // For 3rd party search engine, the logo needs to fit the image view.
     self.containerView.shrunkLogoView.contentMode =
         UIViewContentModeScaleAspectFit;
     self.containerView.isAccessibilityElement = YES;
     self.containerView.shrunkLogoView.image = doodle;
-    [self.containerView setLogoState:logoState animated:animate];
-    [self doodleAppearanceAnimationDidFinish:logoState];
+    [self.containerView setLogoState:self.logoState animated:animate];
+    [self doodleAppearanceAnimationDidFinish:self.logoState];
     return;
   }
+
+  // Animate this view seperately in case the doodle has updated multiple times.
+  // This can happen when a particular doodle cycles thru multiple images.
   __weak __typeof(self) weakSelf = self;
+  SearchEngineLogoState logoState = self.logoState;
   [self.containerView
       setDoodleImage:doodle
             animated:animate
@@ -383,7 +411,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
       _animatedUrl.is_valid() ? SHOWN_LOGO_TYPE_CTA : SHOWN_LOGO_TYPE_STATIC,
       SHOWN_LOGO_TYPE_COUNT);
 
-  [self.containerView setLogoState:logoState animated:animate];
+  [self.containerView setLogoState:self.logoState animated:animate];
 }
 
 - (void)logoDownloaded:(const search_provider_logos::Logo*)logo
@@ -432,8 +460,8 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
 // Called when the doodle's appearance animation completes.
 - (void)doodleAppearanceAnimationDidFinish:(SearchEngineLogoState)logoState {
-  _logoState = logoState;
-  self.view.hidden = (_logoState == SearchEngineLogoState::kNone);
+  self.logoState = logoState;
+  self.view.hidden = (self.logoState == SearchEngineLogoState::kNone);
   [self.consumer searchEngineLogoStateDidChange:logoState];
 }
 

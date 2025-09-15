@@ -220,9 +220,7 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
     }
   }
 
-  const bool is_eligible_for_share_button =
-      (logo->metadata.type == LogoType::ANIMATED ||
-       logo->metadata.type == LogoType::SIMPLE);
+  const bool is_eligible_for_share_button = is_simple || is_animated;
 
   if (is_eligible_for_share_button) {
     const std::string* short_link_ptr = ddljson->FindString("short_link");
