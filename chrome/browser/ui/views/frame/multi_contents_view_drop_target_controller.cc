@@ -139,7 +139,7 @@ void MultiContentsViewDropTargetController::OnDragExited() {
 }
 
 void MultiContentsViewDropTargetController::OnDragDone() {
-  drop_target_view_->Hide();
+  drop_target_view_->Hide(/*suppress_animation=*/true);
 }
 
 int MultiContentsViewDropTargetController::OnDragUpdated(
@@ -161,7 +161,7 @@ void MultiContentsViewDropTargetController::DoDrop(
   CHECK(drop_target_view_->side().has_value());
   MultiContentsDropTargetView::DropSide side =
       drop_target_view_->side().value();
-  drop_target_view_->Hide();
+  drop_target_view_->Hide(/*suppress_animation=*/true);
   drop_delegate_->HandleLinkDrop(side, event);
   output_drag_op = ui::mojom::DragOperation::kLink;
 }
@@ -172,7 +172,7 @@ void MultiContentsViewDropTargetController::HandleTabDrop(
   CHECK(drop_target_view_->side().has_value());
   MultiContentsDropTargetView::DropSide side =
       drop_target_view_->side().value();
-  drop_target_view_->Hide();
+  drop_target_view_->Hide(/*suppress_animation=*/true);
   drop_delegate_->HandleTabDrop(side, controller);
 }
 
@@ -329,7 +329,8 @@ void MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget() {
 void MultiContentsViewDropTargetController::StartDropTargetHideTimer() {
   hide_drop_target_timer_.Start(
       FROM_HERE, features::kSideBySideHideDropTargetDelay.Get(),
-      base::to_address(drop_target_view_), &MultiContentsDropTargetView::Hide);
+      base::BindOnce(&MultiContentsDropTargetView::Hide,
+                     base::Unretained(drop_target_view_), false));
 }
 
 bool MultiContentsViewDropTargetController::PointOverlapsWithOSDropTarget(

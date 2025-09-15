@@ -233,7 +233,9 @@ void MultiContentsDropTargetView::Show(DropSide side,
   UpdateVisibility(true);
 }
 
-void MultiContentsDropTargetView::Hide() {
+void MultiContentsDropTargetView::Hide(bool suppress_animation /*=false*/) {
+  base::AutoReset<bool> auto_reset(&should_suppress_animation_,
+                                   suppress_animation);
   UpdateVisibility(false);
 }
 
@@ -268,7 +270,7 @@ void MultiContentsDropTargetView::UpdateVisibility(bool should_be_open) {
 
 bool MultiContentsDropTargetView::ShouldShowAnimation() const {
   return gfx::Animation::ShouldRenderRichAnimation() &&
-         !gfx::Animation::PrefersReducedMotion();
+         !gfx::Animation::PrefersReducedMotion() && !should_suppress_animation_;
 }
 
 void MultiContentsDropTargetView::OnThemeChanged() {
