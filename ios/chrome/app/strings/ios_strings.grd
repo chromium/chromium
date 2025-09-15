@@ -2084,6 +2084,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_TITLE" desc="Title shown on the Download List screen when there are no entries.">
           You'll find your downloads here
       </message>
+      <message name="IDS_IOS_DOWNLOAD_LIST_TITLE" desc="Title for the Downloads list [iOS only]">
+        Downloads
+      </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_CANCEL_CONFIRMATION" desc="Alert title to confirm download cancellation [Length: 30em] [iOS only]">
         Stop download?
       </message>
@@ -2230,6 +2233,21 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_DOWNLOAD_RESTRICTION_SNACKBAR_TEXT" desc="The snackbar message to inform users that the download is blocked. [iOS only]">
           Saving files is blocked by your organization
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_STATE_CANCELLED" desc="Label for the download state when a file has been cancelled. [iOS only]">
+        Download Cancelled
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_STATE_COMPLETED" desc="Label for the download state when a file has been completed. [iOS only]">
+        Download Completed
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_STATE_FAILED" desc="Label for the download state when a file has failed to download. [iOS only]">
+        Download Failed
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_STATE_IN_PROGRESS" desc="Label for the download state when a file is being downloaded. [iOS only]">
+        Downloading
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_STATE_PAUSED" desc="Label for the download state when a file is paused. [iOS only]">
+        Download Paused
       </message>
       <message name="IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE" desc="Warning message displayed inside an alert before downloading a .order file. The file represents an order that can be tracked in Apple Wallet. 'Wallet' should be translated according to the 'Wallet' app title on iOS. [iOS only]">
           This website wants to download a file and open it in your Wallet.

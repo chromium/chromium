@@ -219,34 +219,6 @@ NSString* const kStatusTextEmptyString = @"";
 
 /// Returns a localized status text string for the given download state.
 - (NSString*)statusText {
-  // TODO(crbug.com/440222083): For all translatable strings, a separate commit
-  // will handle them later. This requires contributors with @google.com
-  // accounts to upload screenshots to Google Cloud Storage and provide the
-  // corresponding .sha1 files. (https://g.co/chrome/translation)
-  /*
-  <message name="IDS_IOS_DOWNLOAD_STATE_CANCELLED"
-    desc="Label for the download state when a file has been cancelled. [iOS
-  only]"> Download Cancelled
-  </message>
-  <message name="IDS_IOS_DOWNLOAD_STATE_COMPLETED"
-    desc="Label for the download state when a file has been completed. [iOS
-  only]"> Download Completed
-  </message>
-  <message name="IDS_IOS_DOWNLOAD_STATE_FAILED"
-    desc="Label for the download state when a file has failed to download. [iOS
-  only]"> Download Failed
-  </message>
-  <message name="IDS_IOS_DOWNLOAD_STATE_IN_PROGRESS"
-    desc="Label for the download state when a file is being downloaded. [iOS
-  only]"> Downloading
-  </message>
-  <message name="IDS_IOS_DOWNLOAD_STATE_PAUSED"
-    desc="Label for the download state when a file is paused. [iOS only]">
-      Download Paused
-  </message>
-  */
-
-  /*
   switch (_downloadRecord.state) {
     case web::DownloadTask::State::kInProgress:
       return l10n_util::GetNSString(IDS_IOS_DOWNLOAD_STATE_IN_PROGRESS);
@@ -261,8 +233,6 @@ NSString* const kStatusTextEmptyString = @"";
     default:
       return kStatusTextEmptyString;
   }
-  */
-  return kStatusTextEmptyString;
 }
 
 #pragma mark - NSObject

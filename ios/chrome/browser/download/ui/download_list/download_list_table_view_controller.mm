@@ -35,18 +35,7 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // TODO(crbug.com/440222083): For all translatable strings, a separate commit
-  // will handle them later. This requires contributors with @google.com
-  // accounts to upload screenshots to Google Cloud Storage and provide the
-  // corresponding .sha1 files. (https://g.co/chrome/translation)
-  /*
-  <message name="IDS_IOS_DOWNLOAD_LIST_TITLE"
-    desc="Title for the Downloads list [iOS only]"
-    meaning="Title for the Downloads list [Length: 29em] [iOS only]">
-          Downloads
-  </message>
-  */
-  // self.title = l10n_util::GetNSString(IDS_IOS_DOWNLOAD_LIST_TITLE);
+  self.title = l10n_util::GetNSString(IDS_IOS_DOWNLOAD_LIST_TITLE);
 
   // Configure navigation bar.
   self.navigationController.navigationBar.prefersLargeTitles = YES;
