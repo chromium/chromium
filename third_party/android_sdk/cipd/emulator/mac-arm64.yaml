@@ -4,7 +4,7 @@
 
 package: chromium/third_party/android_sdk/public/emulator/mac-arm64
 description: emulator Android SDK Emulator library
-root: ../public/
+root: ../../public/
 data:
   - dir: emulator
 # Some tools inspect their argv0 and don't handle CIPD's symlink structure

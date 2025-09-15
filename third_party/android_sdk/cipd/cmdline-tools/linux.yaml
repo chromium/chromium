@@ -4,7 +4,7 @@
 
 package: chromium/third_party/android_sdk/public/cmdline-tools/linux
 description: Android SDK "cmdline-tools" package
-root: ../public/
+root: ../../public/
 data:
   - dir: cmdline-tools
 # Some tools inspect their argv0 and don't handle CIPD's symlink structure
