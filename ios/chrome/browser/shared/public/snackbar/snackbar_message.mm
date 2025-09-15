@@ -4,14 +4,9 @@
 
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 
+#import "base/time/time.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-
-namespace {
-
-// Default snackbar visibility duration.
-const NSTimeInterval kDefaultDuration = 4;
-
-}  // namespace
 
 @implementation SnackbarMessage
 
@@ -19,7 +14,7 @@ const NSTimeInterval kDefaultDuration = 4;
   self = [super init];
   if (self) {
     _title = [title copy];
-    _duration = kDefaultDuration;
+    _duration = kSnackbarMessageDuration.InSeconds();
   }
   return self;
 }

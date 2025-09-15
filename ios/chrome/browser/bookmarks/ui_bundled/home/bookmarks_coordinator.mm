@@ -241,10 +241,9 @@ enum class PresentedState {
   };
 
   [self.snackbarCommandsHandler
-      showCustomSnackbarMessage:[self.mediator
-                                    addBookmarkWithTitle:title
-                                                     URL:bookmarkedURL
-                                              editAction:editAction]];
+      showSnackbarMessage:[self.mediator addBookmarkWithTitle:title
+                                                          URL:bookmarkedURL
+                                                   editAction:editAction]];
 
   // Show non-modal sign-in promo for bookmarks if the feature is enabled.
   if (IsNonModalSignInPromoEnabled()) {
@@ -503,8 +502,7 @@ enum class PresentedState {
       bookmark_utils_ios::GetBookmarkStorageType(folder, _bookmarkModel.get());
   SetLastUsedBookmarkFolder(_profile->GetPrefs(), folder, type);
   [self.snackbarCommandsHandler
-      showCustomSnackbarMessage:[self.mediator addBookmarks:_URLs
-                                                   toFolder:folder]];
+      showSnackbarMessage:[self.mediator addBookmarks:_URLs toFolder:folder]];
   _URLs = nil;
 
   default_browser::NotifyBookmarkAddOrEdit(
@@ -619,9 +617,8 @@ enum class PresentedState {
   };
 
   [self.snackbarCommandsHandler
-      showCustomSnackbarMessage:[self.mediator
-                                    bulkAddBookmarksWithURLs:URLs
-                                                  viewAction:viewAction]];
+      showSnackbarMessage:[self.mediator bulkAddBookmarksWithURLs:URLs
+                                                       viewAction:viewAction]];
 }
 
 - (void)addOrEditBookmark:(URLWithTitle*)URLWithTitle {

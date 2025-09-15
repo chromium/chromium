@@ -41,10 +41,10 @@ using policy_test_utils::SetPolicy;
 
 namespace {
 
-// Wait a bit more than kSnackbarMessageTestDuration to avoid flakiness due to
+// Wait a bit more than kSnackbarMessageDuration to avoid flakiness due to
 // time lags.
 constexpr base::TimeDelta kSnackbarDisappearanceTimeout =
-    kSnackbarMessageTestDuration + base::Seconds(4);
+    kSnackbarMessageDuration + base::Seconds(4);
 
 // Returns a matcher for the idle timeout dialog's "Continue using Chrome"
 // button.

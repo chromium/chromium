@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
@@ -117,7 +117,7 @@
 
 - (void)displayInSnackbar:(NSString*)message {
   [self.snackbarCommandsHandler
-      showCustomSnackbarMessage:CreateCustomSnackbarMessage(message)];
+      showSnackbarMessage:[[SnackbarMessage alloc] initWithTitle:message]];
 }
 
 @end

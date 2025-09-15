@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
@@ -256,7 +255,8 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   // Create and config the snackbar.
   NSString* messageLabel = base::SysUTF16ToNSString(
       l10n_util::GetPluralStringFUTF16(IDS_IOS_TAB_GROUP_SNACKBAR_LABEL, 1));
-  SnackbarMessage* message = CreateCustomSnackbarMessage(messageLabel);
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:messageLabel];
   SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.handler = openTabGroupPanelAction;
   action.title = l10n_util::GetNSString(IDS_IOS_TAB_GROUP_SNACKBAR_ACTION);
@@ -264,7 +264,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarCommandsHandler showCustomSnackbarMessage:message];
+  [snackbarCommandsHandler showSnackbarMessage:message];
 }
 
 - (void)showIPHForSharedTabGroupForegrounded {

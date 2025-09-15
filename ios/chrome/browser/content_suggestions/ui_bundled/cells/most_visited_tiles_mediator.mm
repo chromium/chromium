@@ -41,7 +41,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -383,10 +382,11 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   action.title = l10n_util::GetNSString(IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE);
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  SnackbarMessage* message = CreateCustomSnackbarMessage(
-      l10n_util::GetNSString(IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED));
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)];
   message.action = action;
-  [self.snackbarHandler showCustomSnackbarMessage:message];
+  [self.snackbarHandler showSnackbarMessage:message];
 }
 
 - (void)allowMostVisitedURL:(GURL)URL {

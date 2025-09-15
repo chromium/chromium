@@ -1119,7 +1119,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
                                            : UINotificationFeedbackTypeError);
   SnackbarMessage* snackbarMessage =
       [[SnackbarMessage alloc] initWithTitle:message];
-  [self.snackbarHandler showCustomSnackbarMessage:snackbarMessage];
+  [self.snackbarHandler showSnackbarMessage:snackbarMessage];
 
   if ([self.tableView indexPathForSelectedRow]) {
     [self.tableView

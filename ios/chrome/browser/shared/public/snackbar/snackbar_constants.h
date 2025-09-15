@@ -24,8 +24,7 @@ extern NSString* const kSnackbarLeadingAccessoryAccessibilityId;
 // Accessibility identifier for the snackbar trailing accessory view.
 extern NSString* const kSnackbarTrailingAccessoryAccessibilityId;
 
-// Test-only duration for snackbars.
-inline constexpr base::TimeDelta kSnackbarMessageTestDuration =
-    base::Seconds(10);
+// Duration for snackbars.
+inline constexpr base::TimeDelta kSnackbarMessageDuration = base::Seconds(4);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_SNACKBAR_SNACKBAR_CONSTANTS_H_

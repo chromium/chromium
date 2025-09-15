@@ -216,8 +216,7 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
         l10n_util::GetNSString(IDS_IOS_TRANSLATE_SETTING_RESET_NOTIFICATION);
     SnackbarMessage* message =
         [[SnackbarMessage alloc] initWithTitle:messageText];
-    [self.snackbarCommandsHandler showCustomSnackbarMessage:message
-                                               bottomOffset:0];
+    [self.snackbarCommandsHandler showSnackbarMessage:message bottomOffset:0];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }

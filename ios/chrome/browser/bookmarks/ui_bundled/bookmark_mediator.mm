@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -100,7 +99,7 @@ using bookmarks::BookmarkNode;
       defaultFolder, _bookmarkModel.get(), !IsLastUsedBookmarkFolderSet(_prefs),
       /*showCount=*/false, /*count=*/1, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  SnackbarMessage* message = CreateCustomSnackbarMessage(text);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
   message.action = action;
   return message;
 }
@@ -155,7 +154,7 @@ using bookmarks::BookmarkNode;
       _syncService);
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  SnackbarMessage* message = CreateCustomSnackbarMessage(result);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:result];
   message.action = action;
 
   return message;
@@ -176,7 +175,7 @@ using bookmarks::BookmarkNode;
       folder, _bookmarkModel.get(), /*choosenByUser=*/YES,
       /*showCount=*/false, URLs.count, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  SnackbarMessage* message = CreateCustomSnackbarMessage(text);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
   return message;
 }
 

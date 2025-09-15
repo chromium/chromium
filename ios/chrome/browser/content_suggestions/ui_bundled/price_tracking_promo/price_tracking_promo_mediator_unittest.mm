@@ -229,7 +229,7 @@ TEST_F(PriceTrackingPromoMediatorTest,
       pref_service()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
   id mockDispatcher = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   mediator().dispatcher = mockDispatcher;
-  OCMExpect([mockDispatcher showCustomSnackbarMessage:[OCMArg isNotNil]]);
+  OCMExpect([mockDispatcher showSnackbarMessage:[OCMArg isNotNil]]);
   [mediator() enablePriceTrackingSettingsAndShowSnackbar];
   EXPECT_TRUE(
       pref_service()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));

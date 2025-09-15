@@ -41,7 +41,6 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -269,10 +268,10 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   NSString* text =
       l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
                               base::SysNSStringToUTF16(deviceName));
-  SnackbarMessage* message = CreateCustomSnackbarMessage(text);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
   id<SnackbarCommands> handler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [handler showCustomSnackbarMessage:message];
+  [handler showSnackbarMessage:message];
 }
 
 // Closes the current tab in preparation for changing the profile.

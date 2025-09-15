@@ -231,8 +231,7 @@ TEST_F(IdleTimeoutPolicySceneAgentTest,
   // after actions ran since the app is foregrounded and active.
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnBackground);
-  OCMExpect(
-      [mock_snackbar_handler_ showCustomSnackbarMessage:[OCMArg isNotNil]]);
+  OCMExpect([mock_snackbar_handler_ showSnackbarMessage:[OCMArg isNotNil]]);
   idle_service_->OnActionsCompleted();
   EXPECT_FALSE(idle_service_->ShouldIdleTimeoutSnackbarBePresented());
   EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
@@ -247,7 +246,7 @@ TEST_F(IdleTimeoutPolicySceneAgentTest,
   // Simulate that app ran actions on reforeground. The snack bar does not show
   // after actions run since the app is not foregrounded. The snackbar will be
   // pending display.
-  OCMReject([mock_snackbar_handler_ showCustomSnackbarMessage:[OCMArg any]]);
+  OCMReject([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnBackground);
   idle_service_->OnActionsCompleted();
@@ -266,8 +265,7 @@ TEST_F(IdleTimeoutPolicySceneAgentTest,
   // transitions to `SceneActivationLevelForegroundActive`.
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnBackground);
-  OCMExpect(
-      [mock_snackbar_handler_ showCustomSnackbarMessage:[OCMArg isNotNil]]);
+  OCMExpect([mock_snackbar_handler_ showSnackbarMessage:[OCMArg isNotNil]]);
   idle_service_->OnActionsCompleted();
   EXPECT_TRUE(idle_service_->ShouldIdleTimeoutSnackbarBePresented());
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;

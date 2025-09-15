@@ -227,11 +227,10 @@
   }
 
   [self.snackbarCommandsHandler
-      showCustomSnackbarMessage:bookmark_utils_ios::UpdateBookmarkWithUndoToast(
-                                    self.bookmark, name, url, _originalFolder,
-                                    self.folder, _bookmarkModel.get(),
-                                    self.profile, _authenticationService,
-                                    _syncService)];
+      showSnackbarMessage:bookmark_utils_ios::UpdateBookmarkWithUndoToast(
+                              self.bookmark, name, url, _originalFolder,
+                              self.folder, _bookmarkModel.get(), self.profile,
+                              _authenticationService, _syncService)];
   if (_manuallyChangedTheFolder) {
     BookmarkStorageType type = bookmark_utils_ios::GetBookmarkStorageType(
         _folder, _bookmarkModel.get());
@@ -258,7 +257,7 @@
     // it is not the case.
     //  Temporary fix for crbug.com/1444667
     [self.snackbarCommandsHandler
-        showCustomSnackbarMessageOverBrowserToolbar:
+        showSnackbarMessageOverBrowserToolbar:
             bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                 nodes, _bookmarkModel.get(), self.profile, FROM_HERE)];
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];

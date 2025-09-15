@@ -22,7 +22,7 @@ NSString* const kRegularTabTitlePrefix = @"RegularTab";
 NSString* const kPinnedTabTitlePrefix = @"PinnedTab";
 
 constexpr base::TimeDelta kSnackbarDisappearanceTimeout =
-    kSnackbarMessageTestDuration + base::Seconds(1);
+    kSnackbarMessageDuration + base::Seconds(1);
 
 }  // namespace
 

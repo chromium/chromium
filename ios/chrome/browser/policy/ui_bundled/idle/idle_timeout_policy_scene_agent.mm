@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -284,10 +283,11 @@
 }
 
 - (void)showSnackbar:(NSString*)messageText {
-  SnackbarMessage* message = CreateCustomSnackbarMessage(messageText);
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:messageText];
   message.duration = kIdleTimeoutSnackbarDuration;
   message.accessibilityLabel = messageText;
-  [_snackbarHandler showCustomSnackbarMessage:message];
+  [_snackbarHandler showSnackbarMessage:message];
 }
 
 // Returns whether the scene and app states allow for the idle timeout

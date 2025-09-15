@@ -41,6 +41,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -1283,17 +1284,25 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                      kBulkUploadTableViewPasswordsItemAccessibilityIdentifer)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
-  // Tap on the save button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kBulkUploadSaveButtonAccessibilityIdentifer)]
-      performAction:grey_tap()];
+  {
+    // Workaround for Earl Grey synchronization bug on iOS 26 that prevents
+    // snackbar detection. Temporarily disabling synchronization allows the
+    // view to be found.
+    ScopedSynchronizationDisabler disabler;
+
+    // Tap on the save button.
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(kBulkUploadSaveButtonAccessibilityIdentifer)]
+        performAction:grey_tap()];
+
+    // Ensure the correct snackbar appears.
+    ExpectBatchUploadConfirmationSnackbar(2, fakeIdentity.userEmail);
+  }
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
-  // Ensure the correct snackbar appears.
-  ExpectBatchUploadConfirmationSnackbar(2, fakeIdentity.userEmail);
 
   [ChromeEarlGreyUI waitForAppToIdle];
 

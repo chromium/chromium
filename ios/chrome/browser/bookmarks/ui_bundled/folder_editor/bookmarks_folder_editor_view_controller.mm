@@ -279,9 +279,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   std::set<const BookmarkNode*> editedNodes;
   editedNodes.insert(_folder);
   [self.snackbarCommandsHandler
-      showCustomSnackbarMessage:
-          bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-              editedNodes, _bookmarkModel.get(), self.profile, FROM_HERE)];
+      showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
+                              editedNodes, _bookmarkModel.get(), self.profile,
+                              FROM_HERE)];
   [self.delegate bookmarksFolderEditorDidDeleteEditedFolder:self];
 }
 
@@ -306,10 +306,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       base::AutoReset<BOOL> autoReset(&_ignoresOwnMove, YES);
       std::vector<const BookmarkNode*> bookmarksVector{_folder};
       [self.snackbarCommandsHandler
-          showCustomSnackbarMessage:
-              bookmark_utils_ios::MoveBookmarksWithUndoToast(
-                  bookmarksVector, _bookmarkModel.get(), _parentFolder,
-                  self.profile, _authService->GetWeakPtr(), _syncService)];
+          showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
+                                  bookmarksVector, _bookmarkModel.get(),
+                                  _parentFolder, self.profile,
+                                  _authService->GetWeakPtr(), _syncService)];
       // Move might change the pointer, grab the updated value.
       CHECK_EQ(bookmarksVector.size(), 1u);
       _folder = bookmarksVector[0];

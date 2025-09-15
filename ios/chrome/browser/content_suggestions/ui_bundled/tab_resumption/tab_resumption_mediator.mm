@@ -80,7 +80,6 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
@@ -583,8 +582,7 @@ class TabResumptionMediatorProxy {
 
 - (void)onTracked:(ShopCardTrackItemResult)result
              item:(TabResumptionItem*)item {
-  [self.dispatcher showCustomSnackbarMessage:[self snackbarMessage:result
-                                                              item:item]];
+  [self.dispatcher showSnackbarMessage:[self snackbarMessage:result item:item]];
 }
 
 - (SnackbarMessage*)snackbarMessage:(ShopCardTrackItemResult)result
@@ -617,14 +615,20 @@ class TabResumptionMediatorProxy {
 
   SnackbarMessage* message;
   if (result == ShopCardTrackItemResult::kTrackSuccess) {
-    message = CreateCustomSnackbarMessage(l10n_util::GetNSString(
-        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR));
+    message = [[SnackbarMessage alloc]
+        initWithTitle:
+            l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR)];
   } else if (result == ShopCardTrackItemResult::kTrackSuccesNoNotification) {
-    message = CreateCustomSnackbarMessage(l10n_util::GetNSString(
-        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_NO_PUSH_PERMISSION_SNACKBAR));
+    message = [[SnackbarMessage alloc]
+        initWithTitle:
+            l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_NO_PUSH_PERMISSION_SNACKBAR)];
   } else {
-    message = CreateCustomSnackbarMessage(l10n_util::GetNSString(
-        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR));
+    message = [[SnackbarMessage alloc]
+        initWithTitle:
+            l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR)];
   }
 
   message.action = action;

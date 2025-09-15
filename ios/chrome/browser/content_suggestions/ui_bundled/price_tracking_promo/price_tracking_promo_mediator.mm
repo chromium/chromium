@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -183,7 +182,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 - (void)enablePriceTrackingSettingsAndShowSnackbar {
   [self enablePriceTrackingNotificationsSettings];
-  [self.dispatcher showCustomSnackbarMessage:[self snackbarMessage]];
+  [self.dispatcher showSnackbarMessage:[self snackbarMessage]];
 }
 
 #pragma mark - Public
@@ -270,7 +269,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
   if (granted && !error) {
     [self enablePriceTrackingNotificationsSettings];
-    [self.dispatcher showCustomSnackbarMessage:[self snackbarMessage]];
+    [self.dispatcher showSnackbarMessage:[self snackbarMessage]];
     [self disableModule];
   } else if (!granted && !promptShown && !error) {
     // If the prompt wasn't shown and permission is denied, the user
@@ -307,8 +306,10 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   action.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_MANAGE);
 
-  SnackbarMessage* message = CreateCustomSnackbarMessage(l10n_util::GetNSString(
-      IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_TITLE));
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_TITLE)];
   message.action = action;
   return message;
 }

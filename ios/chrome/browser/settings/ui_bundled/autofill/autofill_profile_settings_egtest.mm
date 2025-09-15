@@ -57,7 +57,7 @@ NSString* const kCountryForSelection = @"Germany";
 constexpr base::TimeDelta kSnackbarAppearanceTimeout = base::Seconds(5);
 
 constexpr base::TimeDelta kSnackbarDisappearanceTimeout =
-    kSnackbarMessageTestDuration + base::Seconds(1);
+    kSnackbarMessageDuration + base::Seconds(1);
 
 const DisplayStringIDToExpectedResult kExpectedFields[] = {
     {IDS_IOS_AUTOFILL_FULLNAME, @"John H. Doe"},

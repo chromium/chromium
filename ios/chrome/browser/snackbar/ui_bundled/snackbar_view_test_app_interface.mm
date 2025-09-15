@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/snackbar/ui_bundled/snackbar_view_test_app_interface.h"
 
 #import "base/time/time.h"
-#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -22,7 +21,6 @@
           hasLeadingAccessory:(BOOL)hasLeadingAccessory
          hasTrailingAccessory:(BOOL)hasTrailingAccessory {
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
-  message.duration = tests_hook::GetOverriddenSnackbarDuration().InSeconds();
   message.subtitle = subtitle;
   message.secondarySubtitle = secondarySubtitle;
 
@@ -46,7 +44,7 @@
   id<SnackbarCommands> handler = HandlerForProtocol(
       chrome_test_util::GetCurrentBrowser()->GetCommandDispatcher(),
       SnackbarCommands);
-  [handler showCustomSnackbarMessage:message];
+  [handler showSnackbarMessage:message];
 }
 
 @end

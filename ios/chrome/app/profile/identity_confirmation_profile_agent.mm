@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_utils.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -217,7 +216,7 @@ enum class IdentityConfirmationSnackbarDecision {
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarCommandsHandler showCustomSnackbarMessageOverBrowserToolbar:message];
+  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:message];
 }
 
 - (BOOL)isStartSurfaceWithBrowser:(Browser*)browser {

@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -69,14 +68,15 @@ void ReadingListBrowserAgent::AddURLsToReadingList(
         l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
   }
 
-  SnackbarMessage* message = CreateCustomSnackbarMessage(snackbar_text);
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:snackbar_text];
   message.accessibilityLabel = snackbar_text;
   message.action = snackbar_action;
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
   id<SnackbarCommands> snackbar_commands_handler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbar_commands_handler showCustomSnackbarMessage:message];
+  [snackbar_commands_handler showSnackbarMessage:message];
 }
 
 void ReadingListBrowserAgent::BulkAddURLsToReadingListWithViewSnackbar(
@@ -140,13 +140,13 @@ void ReadingListBrowserAgent::BulkAddURLsToReadingListWithViewSnackbar(
   SnackbarMessageAction* action = CreateViewAction();
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  SnackbarMessage* message = CreateCustomSnackbarMessage(result);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:result];
   message.action = action;
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
   id<SnackbarCommands> snackbar_commands_handler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbar_commands_handler showCustomSnackbarMessage:message];
+  [snackbar_commands_handler showSnackbarMessage:message];
 }
 
 #pragma mark - Private

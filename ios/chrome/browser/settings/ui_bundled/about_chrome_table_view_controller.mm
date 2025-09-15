@@ -165,7 +165,7 @@ const CGFloat kDefaultHeight = 70;
   NSString* messageText = l10n_util::GetNSString(IDS_IOS_VERSION_COPIED);
   SnackbarMessage* message =
       [[SnackbarMessage alloc] initWithTitle:messageText];
-  [self.snackbarHandler showCustomSnackbarMessage:message bottomOffset:0];
+  [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 
 #pragma mark - Private methods

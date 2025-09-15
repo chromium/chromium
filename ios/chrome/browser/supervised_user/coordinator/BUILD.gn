@@ -23,7 +23,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/snackbar",
-    "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/supervised_user/ui",
     "//ios/chrome/browser/supervised_user/ui:constants",

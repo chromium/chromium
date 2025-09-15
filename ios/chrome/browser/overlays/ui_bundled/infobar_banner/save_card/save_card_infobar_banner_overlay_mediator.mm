@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -77,7 +76,7 @@
     // Create and show the snackbar message.
     SnackbarMessage* message = [self createCardSavedSnackbarMessage];
     if (message) {
-      [self.snackbarCommandsHandler showCustomSnackbarMessage:message];
+      [self.snackbarCommandsHandler showSnackbarMessage:message];
     }
 
     [self dismissOverlay];

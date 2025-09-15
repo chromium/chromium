@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
@@ -548,8 +547,9 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 - (void)contextMenuConfigurationProvider:
             (ContextMenuConfigurationProvider*)configurationProvider
         didOpenNewTabInBackgroundWithURL:(GURL)URL {
-  SnackbarMessage* snackbarMessage = CreateCustomSnackbarMessage(
-      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_NEW_TAB_MESSAGE));
+  SnackbarMessage* snackbarMessage = [[SnackbarMessage alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_LENS_OVERLAY_NEW_TAB_MESSAGE)];
   SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   __weak __typeof__(self) weakSelf = self;
   action.handler = ^() {
@@ -559,8 +559,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   action.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_GO_TO_NEW_TAB);
   snackbarMessage.action = action;
-  [self.snackbarHandler showCustomSnackbarMessage:snackbarMessage
-                                     bottomOffset:0];
+  [self.snackbarHandler showSnackbarMessage:snackbarMessage bottomOffset:0];
   [self.delegate
        lensResultPageMediator:self
       didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kContextMenu];

@@ -320,12 +320,6 @@ base::TimeDelta PasswordCheckMinimumDuration() {
   return base::Seconds(0);
 }
 
-base::TimeDelta GetOverriddenSnackbarDuration() {
-  // Increase the snackbar duration for EGTests for test to catch it more
-  // easily.
-  return kSnackbarMessageTestDuration;
-}
-
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
   return std::make_unique<drive::TestDriveService>();
 }

@@ -475,7 +475,7 @@ void ReaderModeTabHelper::PageDistillationCompleted(
     SnackbarMessage* message =
         [[SnackbarMessage alloc] initWithTitle:@"Distillation Result:"];
     message.subtitle = GetDistillationResultString(is_distillable_page);
-    [snackbar_handler_ showCustomSnackbarMessage:message];
+    [snackbar_handler_ showSnackbarMessage:message];
   }
 
   if (IsReaderModeAvailable()) {

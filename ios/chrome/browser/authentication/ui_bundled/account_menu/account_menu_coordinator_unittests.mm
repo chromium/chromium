@@ -260,7 +260,7 @@ TEST_P(AccountMenuCoordinatorTest, testSignOut) {
   base::RepeatingClosure closure = run_loop.QuitClosure();
   CGRect rect = CGRect();
   OCMExpect([mock_snackbar_commands_handler_
-      showCustomSnackbarMessageOverBrowserToolbar:[OCMArg isNotNil]]);
+      showSnackbarMessageOverBrowserToolbar:[OCMArg isNotNil]]);
   [coordinator_ signOutFromTargetRect:rect
                            completion:^(BOOL success, SceneState* scene_state) {
                              EXPECT_TRUE(success);
@@ -283,7 +283,7 @@ TEST_P(AccountMenuCoordinatorTest, testMediatorWantsToBeDismissed) {
 // callback.
 TEST_P(AccountMenuCoordinatorTest, testTriggerSignout) {
   OCMExpect([mock_snackbar_commands_handler_
-      showCustomSnackbarMessageOverBrowserToolbar:[OCMArg any]]);
+      showSnackbarMessageOverBrowserToolbar:[OCMArg any]]);
 
   base::RunLoop run_loop;
   base::RepeatingClosure closure = run_loop.QuitClosure();

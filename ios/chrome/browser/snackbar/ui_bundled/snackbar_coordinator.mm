@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view_delegate.h"
@@ -65,28 +64,28 @@
 
 #pragma mark - SnackbarCommands
 
-- (void)showCustomSnackbarMessage:(SnackbarMessage*)message {
+- (void)showSnackbarMessage:(SnackbarMessage*)message {
   CGFloat offset =
       [_delegate snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:self
                                                       forceBrowserToolbar:NO];
-  [self showCustomSnackbarMessage:message bottomOffset:offset];
+  [self showSnackbarMessage:message bottomOffset:offset];
 }
 
-- (void)showCustomSnackbarMessageOverBrowserToolbar:(SnackbarMessage*)message {
+- (void)showSnackbarMessageOverBrowserToolbar:(SnackbarMessage*)message {
   CGFloat offset =
       [_delegate snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:self
                                                       forceBrowserToolbar:YES];
-  [self showCustomSnackbarMessage:message bottomOffset:offset];
+  [self showSnackbarMessage:message bottomOffset:offset];
 }
 
-- (void)showCustomSnackbarMessage:(SnackbarMessage*)message
-                   withHapticType:(UINotificationFeedbackType)type {
+- (void)showSnackbarMessage:(SnackbarMessage*)message
+             withHapticType:(UINotificationFeedbackType)type {
   TriggerHapticFeedbackForNotification(type);
-  [self showCustomSnackbarMessage:message];
+  [self showSnackbarMessage:message];
 }
 
-- (void)showCustomSnackbarMessage:(SnackbarMessage*)message
-                     bottomOffset:(CGFloat)offset {
+- (void)showSnackbarMessage:(SnackbarMessage*)message
+               bottomOffset:(CGFloat)offset {
   [self presentSnackbar:message withBottomOffset:offset];
 }
 
@@ -94,7 +93,8 @@
                      buttonText:(NSString*)buttonText
                   messageAction:(void (^)(void))messageAction
                completionAction:(void (^)(BOOL))completionAction {
-  SnackbarMessage* message = CreateCustomSnackbarMessage(messageText);
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:messageText];
   if (buttonText) {
     SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
     action.handler = messageAction;
@@ -104,7 +104,7 @@
   }
   message.completionHandler = completionAction;
 
-  [self showCustomSnackbarMessage:message];
+  [self showSnackbarMessage:message];
 }
 
 - (void)showSnackbarWithMessage:(NSString*)messageText
@@ -112,7 +112,8 @@
         buttonAccessibilityHint:(NSString*)buttonAccessibilityHint
                   messageAction:(void (^)(void))messageAction
                completionAction:(void (^)(BOOL))completionAction {
-  SnackbarMessage* message = CreateCustomSnackbarMessage(messageText);
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:messageText];
   if (buttonText) {
     SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
     action.handler = messageAction;
@@ -122,7 +123,7 @@
   }
   message.completionHandler = completionAction;
 
-  [self showCustomSnackbarMessage:message];
+  [self showSnackbarMessage:message];
 }
 
 - (void)dismissAllSnackbars {

@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator_delegate.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper.h"
@@ -139,7 +138,7 @@
 #pragma mark - ParentAccessMediatorDelegate
 
 - (void)hideParentAccessBottomSheetOnTimeout {
-  [_snackbarCommandsHandler showCustomSnackbarMessage:[self snackbarMessage]];
+  [_snackbarCommandsHandler showSnackbarMessage:[self snackbarMessage]];
   [self hideParentAccessBottomSheetWithResult:supervised_user::
                                                   LocalApprovalResult::kError
                                     errorType:supervised_user::
@@ -174,8 +173,10 @@
   action.title = l10n_util::GetNSString(
       IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_BACK_BUTTON);
 
-  SnackbarMessage* message = CreateCustomSnackbarMessage(l10n_util::GetNSString(
-      IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_TITLE));
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:
+          l10n_util::GetNSString(
+              IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_TITLE)];
   message.action = action;
   return message;
 }

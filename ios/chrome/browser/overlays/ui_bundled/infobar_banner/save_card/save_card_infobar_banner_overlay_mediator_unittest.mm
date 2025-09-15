@@ -264,8 +264,8 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, ShowSnackbarForLocalSave) {
 
   // Set up expectation for the snackbar message.
   OCMExpect([mock_snackbar_commands_handler_
-      showCustomSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
-                                            SnackbarMessage* message) {
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
+                                      SnackbarMessage* message) {
         EXPECT_NSEQ(expectedTitleText, message.title);
         EXPECT_NSEQ(expectedSubtitleText, message.subtitle);
         // Check that action is not nil, "Got it" button is present.
@@ -288,8 +288,7 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, NoSnackbarForUploadSave) {
   OCMExpect([mediator_ presentInfobarModalFromBanner]);
   // No expectation on mock_snackbar_commands_handler_ as it shouldn't be
   // called.
-  OCMReject(
-      [mock_snackbar_commands_handler_ showCustomSnackbarMessage:OCMOCK_ANY]);
+  OCMReject([mock_snackbar_commands_handler_ showSnackbarMessage:OCMOCK_ANY]);
 
   [mediator_ bannerInfobarButtonWasPressed:nil];
 }

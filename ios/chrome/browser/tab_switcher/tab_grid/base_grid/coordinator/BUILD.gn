@@ -27,7 +27,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/snackbar",
-    "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui:grid_mediator_item_provider",
     "//ios/chrome/browser/tab_switcher/ui_bundled:tab_group_confirmation",

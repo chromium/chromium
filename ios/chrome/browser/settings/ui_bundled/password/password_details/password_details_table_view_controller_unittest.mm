@@ -171,21 +171,21 @@ NSString* DisplayName() {
 
 @implementation FakeSnackbarImplementation
 
-- (void)showCustomSnackbarMessage:(SnackbarMessage*)message {
+- (void)showSnackbarMessage:(SnackbarMessage*)message {
   self.snackbarMessage = message.title;
 }
 
-- (void)showCustomSnackbarMessageOverBrowserToolbar:(SnackbarMessage*)message {
+- (void)showSnackbarMessageOverBrowserToolbar:(SnackbarMessage*)message {
   self.snackbarMessage = message.title;
 }
 
-- (void)showCustomSnackbarMessage:(SnackbarMessage*)message
-                   withHapticType:(UINotificationFeedbackType)type {
+- (void)showSnackbarMessage:(SnackbarMessage*)message
+             withHapticType:(UINotificationFeedbackType)type {
   self.snackbarMessage = message.title;
 }
 
-- (void)showCustomSnackbarMessage:(SnackbarMessage*)message
-                     bottomOffset:(CGFloat)offset {
+- (void)showSnackbarMessage:(SnackbarMessage*)message
+               bottomOffset:(CGFloat)offset {
   self.snackbarMessage = message.title;
 }
 

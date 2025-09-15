@@ -44,10 +44,10 @@ void ChangeProfileSignoutCompletion(
 
     if (force_snackbar_over_toolbar) {
       [snackbar_commands_handler
-          showCustomSnackbarMessageOverBrowserToolbar:snackbar_message];
+          showSnackbarMessageOverBrowserToolbar:snackbar_message];
     } else {
-      [snackbar_commands_handler showCustomSnackbarMessage:snackbar_message
-                                              bottomOffset:0];
+      [snackbar_commands_handler showSnackbarMessage:snackbar_message
+                                        bottomOffset:0];
     }
   }
 

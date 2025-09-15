@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -142,6 +141,5 @@ void TriggerAccountSwitchSnackbarWithIdentity(id<SystemIdentity> identity,
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbar_commands_handler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbar_commands_handler
-      showCustomSnackbarMessageOverBrowserToolbar:message];
+  [snackbar_commands_handler showSnackbarMessageOverBrowserToolbar:message];
 }

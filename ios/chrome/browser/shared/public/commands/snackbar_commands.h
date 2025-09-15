@@ -15,21 +15,21 @@
 // Shows a snackbar using a SnackbarMessage. On navigation controllers,
 // use the bottom toolbar height as bottom offset. Otherwise, use the browser's
 // bottom toolbar height as bottom offset.
-- (void)showCustomSnackbarMessage:(SnackbarMessage*)message;
+- (void)showSnackbarMessage:(SnackbarMessage*)message;
 
 // Shows a snackbar using a SnackbarMessage. Use the browser's bottom
 // toolbar height as bottom offset. This is used when the presented view will be
 // dismissed and web content will become visible.
-- (void)showCustomSnackbarMessageOverBrowserToolbar:(SnackbarMessage*)message;
+- (void)showSnackbarMessageOverBrowserToolbar:(SnackbarMessage*)message;
 
 // Shows a snackbar using a SnackbarMessage, with haptic feedback.
-- (void)showCustomSnackbarMessage:(SnackbarMessage*)message
-                   withHapticType:(UINotificationFeedbackType)type;
+- (void)showSnackbarMessage:(SnackbarMessage*)message
+             withHapticType:(UINotificationFeedbackType)type;
 
 // Shows a snackbar using a SnackbarMessage, with a specific bottom
 // offset.
-- (void)showCustomSnackbarMessage:(SnackbarMessage*)message
-                     bottomOffset:(CGFloat)offset;
+- (void)showSnackbarMessage:(SnackbarMessage*)message
+               bottomOffset:(CGFloat)offset;
 
 // Shows a snackbar displaying a message with `messageText` and a button with
 // `buttonText` which triggers `messageAction` on tap. `completionAction` will
