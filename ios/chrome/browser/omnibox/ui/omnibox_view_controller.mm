@@ -84,16 +84,17 @@ using base::UserMetricsAction;
   /// Clear button owned by `view` (OmniboxContainerView).
   __weak UIButton* _clearButton;
 
-  /// Whether the view is presented in the lens overlay.
-  BOOL _isLensOverlay;
+  /// The context in which the omnibox is presented.
+  OmniboxPresentationContext _presentationContext;
 }
 
 @dynamic view;
 
-- (instancetype)initWithIsLensOverlay:(BOOL)isLensOverlay {
+- (instancetype)initWithPresentationContext:
+    (OmniboxPresentationContext)presentationContext {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _isLensOverlay = isLensOverlay;
+    _presentationContext = presentationContext;
   }
   return self;
 }
@@ -110,7 +111,7 @@ using base::UserMetricsAction;
                                                 textColor:textColor
                                             textInputTint:textInputTintColor
                                                  iconTint:iconTintColor
-                                            isLensOverlay:_isLensOverlay];
+                                      presentationContext:_presentationContext];
   self.view.layoutGuideCenter = self.layoutGuideCenter;
   _clearButton = self.view.clearButton;
 
@@ -177,7 +178,7 @@ using base::UserMetricsAction;
 
 - (void)viewIsAppearing:(BOOL)animated {
   [super viewIsAppearing:animated];
-  if (_isLensOverlay) {
+  if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
     self.semanticContentAttribute =
         [self.textInput bestSemanticContentAttribute];
     [self.textInput updateTextDirection];

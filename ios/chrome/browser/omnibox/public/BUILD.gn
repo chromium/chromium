@@ -6,6 +6,7 @@ source_set("public") {
   sources = [
     "omnibox_metrics_helper.h",
     "omnibox_metrics_helper.mm",
+    "omnibox_presentation_context.h",
     "omnibox_suggestion_icon_util.h",
     "omnibox_suggestion_icon_util.mm",
     "omnibox_util.h",

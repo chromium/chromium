@@ -10,6 +10,7 @@
 #import <string>
 
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 
 @protocol AutocompleteSuggestion;
 @class OmniboxAutocompleteController;
@@ -38,10 +39,10 @@ class OmniboxClient;
 /// Returns the current selection range.
 @property(nonatomic, assign, readonly) NSRange currentSelection;
 
-/// Temporary initializer, used during the refactoring. crbug.com/390409559
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
                      omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
-                        inLensOverlay:(BOOL)inLensOverlay
+                  presentationContext:
+                      (OmniboxPresentationContext)presentationContext
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

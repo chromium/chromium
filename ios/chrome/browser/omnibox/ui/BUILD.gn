@@ -45,6 +45,7 @@ source_set("model_interface") {
     ":omnibox_popup_shared",
     ":omnibox_util",
     "//base",
+    "//ios/chrome/browser/omnibox/public",
   ]
 }
 
@@ -117,6 +118,7 @@ source_set("unit_tests") {
     ":ui",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_conversions",

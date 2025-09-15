@@ -10,6 +10,7 @@ source_set("popup") {
   deps = [
     ":popup_ui_protocols",
     "//base",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",

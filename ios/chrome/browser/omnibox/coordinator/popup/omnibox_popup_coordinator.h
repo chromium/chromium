@@ -11,6 +11,7 @@ class AutocompleteController;
 @class OmniboxAutocompleteController;
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxPopupPresenterDelegate;
+enum class OmniboxPresentationContext;
 @protocol ToolbarOmniboxConsumer;
 
 /// Coordinator for the Omnibox Popup.
@@ -22,7 +23,8 @@ class AutocompleteController;
                         (AutocompleteController*)autocompleteController
              omniboxAutocompleteController:
                  (OmniboxAutocompleteController*)omniboxAutocompleteController
-                             isLensOverlay:(BOOL)isLensOverlay
+                       presentationContext:
+                           (OmniboxPresentationContext)presentationContext
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

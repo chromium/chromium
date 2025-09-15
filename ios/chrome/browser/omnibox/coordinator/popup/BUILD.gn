@@ -36,6 +36,7 @@ source_set("popup") {
     "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/omnibox/model/suggestions",
     "//ios/chrome/browser/omnibox/model/suggestions:omnibox_pedal_swift",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui/popup",
     "//ios/chrome/browser/omnibox/ui/popup:popup_icon",

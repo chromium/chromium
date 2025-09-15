@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 
 /// UITextField subclass to allow for adjusting borders.
@@ -21,10 +22,11 @@
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
                     tintColor:(UIColor*)tintColor
-                isLensOverlay:(BOOL)isLensOverlay;
+          presentationContext:(OmniboxPresentationContext)presentationContext;
 
 /// Initialize the omnibox with the given `frame`.
-- (instancetype)initWithFrame:(CGRect)frame isLensOverlay:(BOOL)isLensOverlay;
+- (instancetype)initWithFrame:(CGRect)frame
+          presentationContext:(OmniboxPresentationContext)presentationContext;
 
 @end
 

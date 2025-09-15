@@ -54,15 +54,16 @@ const CGFloat kClearButtonImageSize = 17.0f;
 const CGFloat kClearButtonSize = 28.0f;
 
 /// Creates and configures the text field.
-UIView<OmniboxTextInput>* CreateTextInput(CGRect frame,
-                                          UIColor* text_color,
-                                          UIColor* tint_color,
-                                          BOOL is_lens_overlay) {
+UIView<OmniboxTextInput>* CreateTextInput(
+    CGRect frame,
+    UIColor* text_color,
+    UIColor* tint_color,
+    OmniboxPresentationContext presentation_context) {
   OmniboxTextFieldIOS* text_field =
       [[OmniboxTextFieldIOS alloc] initWithFrame:frame
                                        textColor:text_color
                                        tintColor:tint_color
-                                   isLensOverlay:is_lens_overlay];
+                             presentationContext:presentation_context];
   text_field.translatesAutoresizingMaskIntoConstraints = NO;
   // Do not use the system clear button. Use a custom view instead.
   text_field.clearButtonMode = UITextFieldViewModeNever;
@@ -145,8 +146,8 @@ UIButton* CreateClearButton() {
   // The text input view.
   UIView<OmniboxTextInput>* _textInputView;
 
-  /// Whether the view is presented in the lens overlay.
-  BOOL _isLensOverlay;
+  /// The context in which the omnibox is presented.
+  OmniboxPresentationContext _presentationContext;
 
   // The constraint for the textfield's leading anchor when the thumbnail is
   // visible.
@@ -162,12 +163,12 @@ UIButton* CreateClearButton() {
                     textColor:(UIColor*)textColor
                 textInputTint:(UIColor*)textInputTint
                      iconTint:(UIColor*)iconTint
-                isLensOverlay:(BOOL)isLensOverlay {
+          presentationContext:(OmniboxPresentationContext)presentationContext {
   self = [super initWithFrame:frame];
   if (self) {
-    _isLensOverlay = isLensOverlay;
+    _presentationContext = presentationContext;
     _textInputView =
-        CreateTextInput(frame, textColor, textInputTint, isLensOverlay);
+        CreateTextInput(frame, textColor, textInputTint, presentationContext);
     _leadingImageView = CreateLeadingImageView(iconTint);
     self.clearButton = CreateClearButton();
 
@@ -184,8 +185,9 @@ UIButton* CreateClearButton() {
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
     CGFloat leadingImageLeadingOffset =
-        _isLensOverlay ? kLeadingImageLeadingMarginLensOverlay
-                       : kOmniboxLeadingImageViewEdgeOffset;
+        _presentationContext == OmniboxPresentationContext::kLensOverlay
+            ? kLeadingImageLeadingMarginLensOverlay
+            : kOmniboxLeadingImageViewEdgeOffset;
 
     [NSLayoutConstraint activateConstraints:@[
       [_leadingImageView.leadingAnchor
@@ -224,8 +226,9 @@ UIButton* CreateClearButton() {
     }
 
     CGFloat textInputViewLeadingOffset =
-        _isLensOverlay ? kLeadingImageTrailingMarginLensOverlay
-                       : kOmniboxTextFieldLeadingOffsetImage;
+        _presentationContext == OmniboxPresentationContext::kLensOverlay
+            ? kLeadingImageTrailingMarginLensOverlay
+            : kOmniboxTextFieldLeadingOffsetImage;
     _textInputViewLeadingToIconConstraint = [_textInputView.leadingAnchor
         constraintEqualToAnchor:_leadingImageView.trailingAnchor
                        constant:textInputViewLeadingOffset];

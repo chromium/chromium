@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 
 @class LayoutGuideCenter;
@@ -33,13 +34,14 @@
 /// thumbnail.
 @property(nonatomic, strong) UIImage* thumbnailImage;
 
-/// Initialize the container view with the given frame, text color, and tint
-/// color for omnibox.
+/// Initialize the container view with the given frame, text color, tint
+/// color and presentation context for the omnibox.
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
                 textInputTint:(UIColor*)textInputTint
                      iconTint:(UIColor*)iconTint
-                isLensOverlay:(BOOL)isLensOverlay NS_DESIGNATED_INITIALIZER;
+          presentationContext:(OmniboxPresentationContext)presentationContext
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;

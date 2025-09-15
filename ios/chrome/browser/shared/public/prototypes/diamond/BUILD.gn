@@ -27,6 +27,7 @@ source_set("diamond") {
     "//ios/chrome/browser/ntp/ui_bundled/incognito",
     "//ios/chrome/browser/omnibox/coordinator",
     "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/ui/popup",
     "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

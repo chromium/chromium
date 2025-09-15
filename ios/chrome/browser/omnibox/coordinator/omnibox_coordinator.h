@@ -7,6 +7,7 @@
 
 #import <memory>
 
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 class OmniboxClient;
@@ -21,11 +22,11 @@ class OmniboxClient;
 // The coordinator for the omnibox.
 @interface OmniboxCoordinator : ChromeCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                             omniboxClient:
-                                 (std::unique_ptr<OmniboxClient>)client
-                             isLensOverlay:(BOOL)isLensOverlay
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                 omniboxClient:(std::unique_ptr<OmniboxClient>)client
+           presentationContext:(OmniboxPresentationContext)presentationContext
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

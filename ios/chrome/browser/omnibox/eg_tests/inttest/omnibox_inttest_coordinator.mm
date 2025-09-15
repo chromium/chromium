@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_view_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller+Testing.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "url/gurl.h"
@@ -51,7 +52,7 @@
       initWithBaseViewController:nil
                          browser:browser
                    omniboxClient:std::move(omniboxClient)
-                   isLensOverlay:YES];
+             presentationContext:OmniboxPresentationContext::kLensOverlay];
 
   omniboxCoordinator.presenterDelegate = _viewController;
   omniboxCoordinator.searchOnlyUI = YES;

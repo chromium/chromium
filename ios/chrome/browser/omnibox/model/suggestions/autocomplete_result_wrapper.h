@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
+
 @protocol AutocompleteResultWrapperDelegate;
 @protocol AutocompleteSuggestion;
 @protocol AutocompleteSuggestionGroup;
@@ -43,8 +45,8 @@ class TemplateURLService;
 /// Whether the omnibox has a thumbnail.
 @property(nonatomic, assign) BOOL hasThumbnail;
 
-/// Whether it's the lens overlay omnibox.
-@property(nonatomic, assign) BOOL isLensOverlay;
+/// The context in which the omnibox is presented.
+@property(nonatomic, assign) OmniboxPresentationContext presentationContext;
 
 /// Disconnects the wrapper.
 - (void)disconnect;

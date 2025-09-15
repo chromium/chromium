@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_mutator.h"
 
 class FaviconLoader;
@@ -63,7 +64,9 @@ class Tracker;
 
 - (instancetype)initWithIncognito:(BOOL)isIncognito
                           tracker:(feature_engagement::Tracker*)tracker
-                    isLensOverlay:(BOOL)isLensOverlay NS_DESIGNATED_INITIALIZER;
+              presentationContext:
+                  (OmniboxPresentationContext)presentationContext
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 /// Sets the image used in image search.

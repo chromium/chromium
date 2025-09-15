@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
 #import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -123,7 +124,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                        _locationBar.get(), _browser,
                                        feature_engagement::TrackerFactory::
                                            GetForProfile(profile))
-                     isLensOverlay:NO];
+               presentationContext:OmniboxPresentationContext::kLocationBar];
     _omniboxCoordinator.presenterDelegate = self;
 
     [_omniboxCoordinator start];

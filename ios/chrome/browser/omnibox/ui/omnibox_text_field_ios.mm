@@ -72,7 +72,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   UITapGestureRecognizer* _tapGestureRecognizer;
   /// Whether the pasteboard currently has strings.
   BOOL _pasteboardHasStrings;
-  BOOL _isLensOverlay;
+  OmniboxPresentationContext _presentationContext;
 }
 
 @synthesize omniboxTextInputDelegate = _omniboxTextInputDelegate;
@@ -83,23 +83,24 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 #pragma mark - Public methods
 
 // Overload to allow for code-based initialization.
-- (instancetype)initWithFrame:(CGRect)frame isLensOverlay:(BOOL)isLensOverlay {
+- (instancetype)initWithFrame:(CGRect)frame
+          presentationContext:(OmniboxPresentationContext)presentationContext {
   return [self initWithFrame:frame
                    textColor:TextColor()
                    tintColor:nil
-               isLensOverlay:isLensOverlay];
+         presentationContext:presentationContext];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
                     tintColor:(UIColor*)tintColor
-                isLensOverlay:(BOOL)isLensOverlay {
+          presentationContext:(OmniboxPresentationContext)presentationContext {
   self = [super initWithFrame:frame];
   if (self) {
     if (tintColor) {
       [self setTintColor:tintColor];
     }
-    _isLensOverlay = isLensOverlay;
+    _presentationContext = presentationContext;
     self.textColor = textColor;
     self.autocorrectionType = UITextAutocorrectionTypeNo;
     self.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -317,7 +318,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   // point, the baseWritingDirectionForPosition doesn't yet return the correct
   // direction if the text field is empty. Instead, treat this as a special case
   // and calculate the direction from the keyboard locale if there is no text.
-  if (self.text.length == 0 || _isLensOverlay) {
+  if (self.text.length == 0 ||
+      _presentationContext == OmniboxPresentationContext::kLensOverlay) {
     NSLocaleLanguageDirection direction = [NSLocale
         characterDirectionForLanguage:self.textInputMode.primaryLanguage];
     return direction == NSLocaleLanguageDirectionRightToLeft
@@ -355,7 +357,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 - (void)updateTextDirection {
   // If the keyboard language direction does not match the device
   // language direction, the alignment of the placeholder text will be off.
-  if (self.text.length == 0 || _isLensOverlay) {
+  if (self.text.length == 0 ||
+      _presentationContext == OmniboxPresentationContext::kLensOverlay) {
     NSLocaleLanguageDirection direction = [NSLocale
         characterDirectionForLanguage:self.textInputMode.primaryLanguage];
     if (direction == NSLocaleLanguageDirectionRightToLeft) {

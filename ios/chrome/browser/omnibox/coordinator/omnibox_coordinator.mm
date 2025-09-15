@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_factory.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_annotator.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
@@ -109,23 +110,23 @@
   // The handler for ToolbarCommands.
   id<ToolbarCommands> _toolbarHandler;
 
-  // Whether it's the lens overlay omnibox.
-  BOOL _isLensOverlay;
+  // The context in which the omnibox is presented.
+  OmniboxPresentationContext _presentationContext;
 }
 @synthesize viewController = _viewController;
 @synthesize mediator = _mediator;
 
 #pragma mark - public
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                             omniboxClient:
-                                 (std::unique_ptr<OmniboxClient>)client
-                             isLensOverlay:(BOOL)isLensOverlay {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                 omniboxClient:(std::unique_ptr<OmniboxClient>)client
+           presentationContext:(OmniboxPresentationContext)presentationContext {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _client = std::move(client);
-    _isLensOverlay = isLensOverlay;
+    _presentationContext = presentationContext;
   }
   return self;
 }
@@ -139,8 +140,8 @@
   _toolbarHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ToolbarCommands);
 
-  OmniboxViewController* viewController =
-      [[OmniboxViewController alloc] initWithIsLensOverlay:_isLensOverlay];
+  OmniboxViewController* viewController = [[OmniboxViewController alloc]
+      initWithPresentationContext:_presentationContext];
   self.viewController = viewController;
   viewController.defaultLeadingImage =
       GetOmniboxSuggestionIcon(OmniboxSuggestionIconType::kDefaultFavicon);
@@ -149,10 +150,10 @@
 
   BOOL incognito = profile->IsOffTheRecord();
   OmniboxMediator* mediator = [[OmniboxMediator alloc]
-      initWithIncognito:incognito
-                tracker:feature_engagement::TrackerFactory::GetForProfile(
-                            profile)
-          isLensOverlay:_isLensOverlay];
+        initWithIncognito:incognito
+                  tracker:feature_engagement::TrackerFactory::GetForProfile(
+                              profile)
+      presentationContext:_presentationContext];
   self.mediator = mediator;
 
   mediator.delegate = self;
@@ -214,7 +215,7 @@
   _omniboxTextController = [[OmniboxTextController alloc]
       initWithOmniboxClient:_client.get()
            omniboxTextModel:_omniboxTextModel.get()
-              inLensOverlay:_isLensOverlay];
+        presentationContext:_presentationContext];
   _omniboxTextController.delegate = mediator;
   _omniboxTextController.focusDelegate = self.focusDelegate;
   _omniboxTextController.omniboxAutocompleteController =
@@ -249,7 +250,7 @@
           autocompleteProviderClient:_omniboxAutocompleteController
                                          .autocompleteProviderClient];
   autocompleteResultWrapper.pedalAnnotator = annotator;
-  autocompleteResultWrapper.isLensOverlay = _isLensOverlay;
+  autocompleteResultWrapper.presentationContext = _presentationContext;
   autocompleteResultWrapper.templateURLService = templateURLService;
   autocompleteResultWrapper.incognito = incognito;
   autocompleteResultWrapper.delegate = _omniboxAutocompleteController;
@@ -319,7 +320,7 @@
              autocompleteController:[_omniboxAutocompleteController
                                         autocompleteController]
       omniboxAutocompleteController:_omniboxAutocompleteController
-                      isLensOverlay:_isLensOverlay];
+                presentationContext:_presentationContext];
   coordinator.presenterDelegate = presenterDelegate;
 
   self.viewController.popupKeyboardDelegate = coordinator.KeyboardDelegate;

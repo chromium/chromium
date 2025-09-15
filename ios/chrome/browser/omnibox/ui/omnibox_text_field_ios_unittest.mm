@@ -10,6 +10,7 @@
 #import "base/path_service.h"
 #import "base/strings/string_split.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -31,8 +32,9 @@ class OmniboxTextFieldIOSTest : public PlatformTest {
     // This rect is fairly arbitrary. The text field just needs a non-zero width
     // so that the pre-edit label's text alignment can be tested.
     CGRect rect = CGRectMake(0, 0, 100, 20);
-    textfield_ = [[OmniboxTextFieldIOS alloc] initWithFrame:rect
-                                              isLensOverlay:NO];
+    textfield_ = [[OmniboxTextFieldIOS alloc]
+              initWithFrame:rect
+        presentationContext:OmniboxPresentationContext::kLocationBar];
     root_view_controller_ = GetAnyKeyWindow().rootViewController;
     [root_view_controller_.view addSubview:textfield_];
   }

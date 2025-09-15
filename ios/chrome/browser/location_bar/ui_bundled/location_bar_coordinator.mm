@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_state_provider.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_factory.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -247,7 +248,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                      _locationBar.get(), self.browser,
                                      feature_engagement::TrackerFactory::
                                          GetForProfile(self.profile))
-                   isLensOverlay:NO];
+             presentationContext:OmniboxPresentationContext::kLocationBar];
   self.omniboxCoordinator.focusDelegate = self.delegate;
 
   self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;

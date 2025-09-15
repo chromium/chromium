@@ -42,8 +42,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   BOOL _suggestionsListScrolled;
   /// The omnbibox text model, holding the text state.
   raw_ptr<OmniboxTextModel, DanglingUntriaged> _omniboxTextModel;
-  /// Whether it's the lens overlay omnibox.
-  BOOL _inLensOverlay;
+  /// The context in which the omnibox is presented.
+  OmniboxPresentationContext _presentationContext;
   /// The previous omnibox text state.
   OmniboxTextState _stateBeforeChange;
   /// The marked text before the change.
@@ -56,12 +56,13 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
                      omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
-                        inLensOverlay:(BOOL)inLensOverlay {
+                  presentationContext:
+                      (OmniboxPresentationContext)presentationContext {
   self = [super init];
   if (self) {
     _omniboxClient = omniboxClient;
     _omniboxTextModel = omniboxTextModel;
-    _inLensOverlay = inLensOverlay;
+    _presentationContext = presentationContext;
     _currentSelection = NSMakeRange(0, 0);
     _oldSelection = NSMakeRange(0, 0);
   }
@@ -457,7 +458,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   if (_omniboxTextModel) {
     _omniboxTextModel->OnSetFocus();
 
-    if (_inLensOverlay) {
+    if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
       if (textInput.userText.length) {
         [self setUserText:textInput.userText.cr_UTF16String];
         [self startAutocompletePreventingInline:YES];
@@ -486,7 +487,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   // regaining focus after a popup scroll took focus away, so the pre-edit
   // behavior should not be invoked. When `is_lens_overlay_` is true, the
   // omnibox only display search terms.
-  if (!popupOpenBeforeEdit && !_inLensOverlay) {
+  if (!popupOpenBeforeEdit &&
+      _presentationContext != OmniboxPresentationContext::kLensOverlay) {
     [textInput enterPreEditState];
   }
 

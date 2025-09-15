@@ -121,7 +121,8 @@
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
   _aimShortcutAvailable =
-      !self.isLensOverlay && _autocompleteProviderClient &&
+      self.presentationContext != OmniboxPresentationContext::kLensOverlay &&
+      _autocompleteProviderClient &&
       OmniboxFieldTrial::IsDeterministicAimActionInTypedStateEnabled(
           _autocompleteProviderClient.get());
 }

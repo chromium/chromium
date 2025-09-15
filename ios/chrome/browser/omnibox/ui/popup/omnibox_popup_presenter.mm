@@ -60,8 +60,8 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   /// animation of focusing/defocusing the omnibox changes depending on this
   /// position.
   ToolbarType _unfocusedOmniboxToolbarType;
-  // Whether it's the lens overlay managing this popup.
-  BOOL _isLensOverlay;
+  // The context in which the omnibox is presented.
+  OmniboxPresentationContext _presentationContext;
   /// The amount of padding to add to the bottom of the popup.
   CGFloat _bottomOmniboxOffset;
 }
@@ -72,13 +72,14 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
                    (UIViewController<ContentProviding>*)viewController
                  layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                          incognito:(BOOL)incognito
-                     isLensOverlay:(BOOL)isLensOverlay {
+               presentationContext:
+                   (OmniboxPresentationContext)presentationContext {
   self = [super init];
   if (self) {
     _delegate = delegate;
     _viewController = viewController;
     _layoutGuideCenter = layoutGuideCenter;
-    _isLensOverlay = isLensOverlay;
+    _presentationContext = presentationContext;
 
     UIView* containerView = [[UIView alloc] init];
     [containerView addSubview:viewController.view];
@@ -286,12 +287,13 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   // Bottom constraints.
   if (tabletFormFactor) {
     BOOL paddingAmmount =
-        _isLensOverlay
+        _presentationContext == OmniboxPresentationContext::kLensOverlay
             ? 0
             : kPopupBottomPaddingTablet + kSecondaryToolbarWithoutOmniboxHeight;
     NSLayoutAnchor* superviewAnchor =
-        _isLensOverlay ? popup.superview.bottomAnchor
-                       : popup.superview.safeAreaLayoutGuide.bottomAnchor;
+        _presentationContext == OmniboxPresentationContext::kLensOverlay
+            ? popup.superview.bottomAnchor
+            : popup.superview.safeAreaLayoutGuide.bottomAnchor;
     self.bottomConstraintPhone =
         [superviewAnchor constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
                                                      constant:paddingAmmount];
