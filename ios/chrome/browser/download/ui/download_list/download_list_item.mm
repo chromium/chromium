@@ -25,6 +25,7 @@ NSString* const kStatusTextEmptyString = @"";
 @implementation DownloadListItem {
   DownloadRecord _downloadRecord;
   NSString* _downloadID;
+  UIImage* _fileTypeIcon;
 }
 
 #pragma mark - Initialization
@@ -108,9 +109,29 @@ NSString* const kStatusTextEmptyString = @"";
 }
 
 - (UIImage*)fileTypeIcon {
-  // TODO(crbug.com/440222083): File type icon implementation will be added
-  // separately.
-  return nil;
+  if (_fileTypeIcon) {
+    return _fileTypeIcon;
+  }
+
+  NSString* pathString;
+  if (!_downloadRecord.file_path.empty()) {
+    pathString = base::SysUTF8ToNSString(_downloadRecord.file_path.value());
+  } else {
+    // Use a temporary path if the actual file path is not available.
+    pathString =
+        [NSTemporaryDirectory() stringByAppendingPathComponent:self.fileName];
+  }
+  NSURL* fileURL = [NSURL fileURLWithPath:pathString];
+
+  // Use UIDocumentInteractionController to get the file icon.
+  // The file at fileURL does not need to actually exist.
+  // The system can return the corresponding result as long as the fileURL has
+  // the correct file extension.
+  UIDocumentInteractionController* docController =
+      [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+  _fileTypeIcon = docController.icons.lastObject;
+
+  return _fileTypeIcon;
 }
 
 - (BOOL)isEqualToItem:(DownloadListItem*)item {
