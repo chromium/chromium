@@ -991,16 +991,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.InitializeFontConfigDuration" units="ms"
-    expires_after="2025-10-26">
-  <owner>thestig@chromium.org</owner>
-  <owner>thomasanderson@chromium.org</owner>
-  <summary>
-    The time taken to initialize FontConfig. Recorded once on startup on Linux
-    and ChromeOS.
-  </summary>
-</histogram>
-
 <histogram name="Startup.IOSColdStartType" enum="IOSColdStartType"
     expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>

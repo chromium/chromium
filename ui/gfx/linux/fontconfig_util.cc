@@ -9,11 +9,9 @@
 #include "base/check_op.h"
 #include "base/environment.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/trace_event/trace_event.h"
 #include "ui/gfx/font_render_params.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -50,9 +48,6 @@ constexpr base::FilePath::CharType kImageloaderMountBase[] =
 class COMPONENT_EXPORT(GFX) GlobalFontConfig {
  public:
   GlobalFontConfig() {
-    TRACE_EVENT0("ui", "GlobalFontConfig::GlobalFontConfig");
-    SCOPED_UMA_HISTOGRAM_TIMER("Startup.InitializeFontConfigDuration");
-
     if (base::FeatureList::IsEnabled(features::kFontConfigFontationsIndexing)) {
       std::unique_ptr<base::Environment> environment =
           base::Environment::Create();
