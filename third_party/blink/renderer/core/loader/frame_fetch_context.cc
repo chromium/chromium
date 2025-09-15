@@ -52,9 +52,11 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -120,6 +122,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -511,6 +514,85 @@ bool FrameFetchContext::AllowImage() const {
     }
   }
   return images_enabled;
+}
+
+// TODO(crbug.com/441240973): add browsertests once prototype has settled.
+void FrameFetchContext::CheckGuardrailsPolicyForRequest(
+    ResourceType resource_type,
+    mojom::blink::RequestContextType request_context,
+    const ResourceResponse& response,
+    const KURL& url) {
+  if (GetResourceFetcherProperties().IsDetached()) {
+    return;
+  }
+
+  // Probe the policy lists to set disposition accordingly. IsFeatureEnabled
+  // assumes a value of |false| is stricter than |true|, but that's reversed for
+  // this configuration point.
+  const DocumentPolicy* enforced_policy =
+      GetExecutionContext()->GetSecurityContext().GetDocumentPolicy();
+  bool is_enforced_policy =
+      enforced_policy &&
+      enforced_policy
+          ->GetFeatureValue(
+              mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails)
+          .BoolValue();
+
+  const DocumentPolicy* report_only_policy =
+      GetExecutionContext()->GetSecurityContext().GetReportOnlyDocumentPolicy();
+  bool is_report_only_policy =
+      report_only_policy &&
+      report_only_policy
+          ->GetFeatureValue(
+              mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails)
+          .BoolValue();
+
+  if (!is_enforced_policy && !is_report_only_policy) {
+    return;
+  }
+
+  mojom::blink::PolicyDisposition disposition =
+      is_enforced_policy ? mojom::blink::PolicyDisposition::kEnforce
+                         : mojom::blink::PolicyDisposition::kReport;
+
+  bool should_check_for_compression = false;
+  switch (resource_type) {
+    case ResourceType::kScript:
+    case ResourceType::kCSSStyleSheet:
+      should_check_for_compression = true;
+      break;
+    case ResourceType::kRaw:
+      if (MIMETypeRegistry::IsJSONMimeType(response.MimeType()) &&
+          (request_context == mojom::blink::RequestContextType::JSON ||
+           request_context == mojom::blink::RequestContextType::FETCH ||
+           request_context ==
+               mojom::blink::RequestContextType::XML_HTTP_REQUEST)) {
+        should_check_for_compression = true;
+      }
+      break;
+    // List all ResourceTypes so that we can find this by a compile error when
+    // a new ResourceType is added.
+    case ResourceType::kImage:
+    case ResourceType::kFont:
+    case ResourceType::kSVGDocument:
+    case ResourceType::kXSLStyleSheet:
+    case ResourceType::kLinkPrefetch:
+    case ResourceType::kTextTrack:
+    case ResourceType::kAudio:
+    case ResourceType::kVideo:
+    case ResourceType::kManifest:
+    case ResourceType::kSpeculationRules:
+    case ResourceType::kMock:
+    case ResourceType::kDictionary:
+      return;
+  }
+
+  if (should_check_for_compression &&
+      response.HttpHeaderField(http_names::kContentEncoding).empty()) {
+    GetExecutionContext()->ReportDocumentPolicyViolation(
+        mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails,
+        disposition, "resource compression is required", url);
+  }
 }
 
 void FrameFetchContext::ModifyRequestForMixedContentUpgrade(

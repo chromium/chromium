@@ -241,6 +241,7 @@ Called by update_document_policy_enum.py.-->
   <int value="13" label="DocumentDomain"/>
   <int value="14" label="IncludeJSCallStacksInCrashReports"/>
   <int value="15" label="ExpectNoLinkedResources"/>
+  <int value="16" label="NetworkEfficiencyGuardrails"/>
 </enum>
 
 <!-- LINT.IfChange(FeatureObserver) -->

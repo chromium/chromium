@@ -43,6 +43,10 @@ enum DocumentPolicyFeature {
   // Hints if the document is not expecting linked resources.
   // https://github.com/explainers-by-googlers/expect-no-linked-resources
   kExpectNoLinkedResources = 15,
+  // Controls whether network usage constraints are enabled for resources in
+  // the document.
+  // https://aka.ms/webembeddedperf
+  kNetworkEfficiencyGuardrails = 16,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

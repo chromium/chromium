@@ -98,6 +98,12 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                          const AtomicString& initiator_type) override;
   bool AllowImage() const override;
 
+  void CheckGuardrailsPolicyForRequest(
+      ResourceType resource_type,
+      mojom::blink::RequestContextType request_context,
+      const ResourceResponse& response,
+      const KURL& url) override;
+
   void ModifyRequestForMixedContentUpgrade(ResourceRequest&) override;
 
   void PopulateResourceRequestBeforeCacheAccess(

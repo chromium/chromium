@@ -163,6 +163,14 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return ResourceRequestBlockedReason::kOther;
   }
 
+  // Check for policy on the resource and report if necessary, per the explainer
+  // here: https://aka.ms/webembeddedperf
+  virtual void CheckGuardrailsPolicyForRequest(
+      ResourceType resource_type,
+      mojom::blink::RequestContextType request_context,
+      const ResourceResponse& response,
+      const KURL& url) {}
+
   // Called from RequestResource() to upgrade insecure ResourceRequests if
   // necessary and prepare them for checking CSP. A mutable ResourceRequest is
   // passed as the URL may be modified. After this call returns, it is not

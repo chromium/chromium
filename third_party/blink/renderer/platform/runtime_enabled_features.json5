@@ -1972,6 +1972,12 @@
       base_feature: "none",
     },
     // Enables the ability to use Document Policy header to control feature
+    // NetworkEfficiencyGuardrails. https://chromestatus.com/feature/5156240166223872
+    {
+      name: "DocumentPolicyNetworkEfficiencyGuardrails",
+      status: "experimental",
+    },
+    // Enables the ability to use Document Policy header to control feature
     // SyncXHR.
     {
       name: "DocumentPolicySyncXHR",

@@ -913,6 +913,9 @@ void ResourceLoader::DidReceiveResponseInternal(
   const ResourceRequest::RedirectInfo redirect_info(original_url,
                                                     request.Url());
 
+  Context().CheckGuardrailsPolicyForRequest(resource_type, request_context,
+                                            response, request.Url());
+
   if (response.WasFetchedViaServiceWorker()) {
     // Run post-request CSP checks. This is the "Should response to request be
     // blocked by Content Security Policy?" algorithm in the CSP specification:

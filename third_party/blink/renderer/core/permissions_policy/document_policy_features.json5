@@ -91,6 +91,15 @@
       value_type: "Bool",
       default_value: "false",
       depends_on: ["DocumentPolicyExpectNoLinkedResources"]
+    },
+    {
+      name: "NetworkEfficiencyGuardrails",
+      document_policy_name: "network-efficiency-guardrails",
+      // TODO(crbug.com/1456695): consider turning into enum for versioning
+      // support
+      value_type: "Bool",
+      default_value: "false",
+      depends_on: ["DocumentPolicyNetworkEfficiencyGuardrails"]
     }
   ],
 }
