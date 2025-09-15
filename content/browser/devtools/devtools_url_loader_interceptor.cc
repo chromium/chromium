@@ -43,6 +43,7 @@
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/referrer_policy.h"
+#include "net/url_request/url_request_job.h"  // For static util methods.
 #include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/header_util.h"
@@ -1158,8 +1159,25 @@ void InterceptionJob::ApplyModificationsToRequest(
   if (modifications->modified_url.has_value()) {
     DCHECK_EQ(url_chain_.back(), request->url);
     const GURL new_url(modifications->modified_url.value());
+    const bool is_same_site =
+        net::SchemefulSite::IsSameSite(request->url, new_url);
     request->url = new_url;
     url_chain_.back() = new_url;
+
+    if (!is_same_site) {
+      GURL new_referrer = net::URLRequestJob::ComputeReferrerForPolicy(
+          request->referrer_policy, request->referrer, new_url,
+          /* same_origin_out_for_metrics*/ nullptr);
+      // net/ has a similar check but would block a request with wrong referrer,
+      // so help clients a bit.
+      if (new_referrer != request->referrer) {
+        request->referrer = {};
+      }
+      request->site_for_cookies = net::SiteForCookies::FromUrl(new_url);
+      if (request->trusted_params) {
+        request->trusted_params->isolation_info = {};
+      }
+    }
   }
 
   if (modifications->modified_method.has_value()) {
