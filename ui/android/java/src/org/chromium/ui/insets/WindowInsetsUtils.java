@@ -19,6 +19,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.List;
 
 /** Helper functions for working with WindowInsets and Rects. */
@@ -28,6 +29,15 @@ public final class WindowInsetsUtils {
 
     private static final Size DEFAULT_INSETS_FRAME = new Size(0, 0);
     private static final List<Rect> DEFAULT_INSETS_BOUNDING_RECTS = List.of();
+
+    // When a window is expanded, updates to the frame and the bounding rects for the window insets
+    // are not synchronized. This can cause issues, such as confusing the desktop windowing
+    // heuristics that impact caption bar customization. To account for this, bounding rects will be
+    // corrected to match the window frame width, as long as the difference between the bounding
+    // rects and frame width are within this threshold.
+    // TODO(crbug.com/443865885): Remove this once bounding rects are synchronized with window
+    //  configuration changes.
+    private static final float EXPANDING_WINDOW_GUTTER_BOUNDING_RECT_THRESHOLD = 0.1f;
 
     private static boolean sGetFrameMethodNotFound;
     private static boolean sGetBoundingRectsMethodNotFound;
@@ -192,7 +202,11 @@ public final class WindowInsetsUtils {
         }
     }
 
-    /** See {@link WindowInsets#getBoundingRects(int)} for details. */
+    /**
+     * See {@link WindowInsets#getBoundingRects(int)} for details. Note that this specific method
+     * may make modifications to the bounding rects to correct for window inset updates where the
+     * bounding rects and window frame are not synchronized.
+     */
     @SuppressWarnings("NewApi")
     public static List<Rect> getBoundingRectsFromInsets(
             @Nullable WindowInsets windowInsets, @InsetsType int insetType) {
@@ -200,15 +214,45 @@ public final class WindowInsetsUtils {
         // #getBoundingRects() API on pre-V devices. On pre-V devices not supporting this API, a
         // default value will be cached on the first failure and returned subsequently.
         if (sGetBoundingRectsMethodNotFound) return DEFAULT_INSETS_BOUNDING_RECTS;
+
         try {
-            return windowInsets == null
-                    ? DEFAULT_INSETS_BOUNDING_RECTS
-                    : windowInsets.getBoundingRects(insetType);
+            if (windowInsets == null) return DEFAULT_INSETS_BOUNDING_RECTS;
+            return maybeCorrectStartAndEndRects(
+                    windowInsets.getBoundingRects(insetType), getFrameFromInsets(windowInsets));
         } catch (NoSuchMethodError e) {
             Log.w(TAG, e.toString());
             sGetBoundingRectsMethodNotFound = true;
             return DEFAULT_INSETS_BOUNDING_RECTS;
         }
+    }
+
+    /**
+     * When a window is being resized, updates in the {@link WindowInsets} values for the window
+     * frame (height, width) are not synchronized to changes in the bounding rects. This causes
+     * issues, as the laggy update to the bounding rects gives the impression of unoccluded space on
+     * the right side. This corrects the leftmost and rightmost bounding rects to align with the
+     * edges of the window frame, as long as they are within a certain threshold.
+     */
+    private static List<Rect> maybeCorrectStartAndEndRects(
+            List<Rect> boundingRects, Size windowFrame) {
+        if (boundingRects.size() < 1) return boundingRects;
+
+        float differenceThreshold =
+                windowFrame.getWidth() * EXPANDING_WINDOW_GUTTER_BOUNDING_RECT_THRESHOLD;
+
+        boundingRects.sort(Comparator.comparingInt(rect -> rect.left));
+        Rect startRect = boundingRects.get(0);
+        startRect.left = startRect.left <= differenceThreshold ? 0 : startRect.left;
+
+        boundingRects.sort(Comparator.comparingInt(rect -> rect.right));
+        Rect endRect = boundingRects.get(boundingRects.size() - 1);
+        if (endRect.right != windowFrame.getWidth()) {
+            int widthDiff = Math.abs(endRect.right - windowFrame.getWidth());
+            if (widthDiff <= differenceThreshold) {
+                endRect.right = windowFrame.getWidth();
+            }
+        }
+        return boundingRects;
     }
 
     /** Sets the window frame size for testing purposes. */
