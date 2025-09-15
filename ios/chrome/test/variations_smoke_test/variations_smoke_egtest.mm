@@ -36,6 +36,23 @@ static const NSTimeInterval kWaitForFetchTimeout = 30.0;
 
 @implementation VariationsSmokeTestCase
 
+#pragma mark - Helpers
+// Helper method to synchronously wait for the async hasSafeSeed check
+- (BOOL)isVariationsSeedStored {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"Wait for hasSafeSeed check"];
+  __block BOOL safeSeedPresent = NO;
+  [VariationsSmokeTestAppInterface isVariationsSeedStored:^(BOOL hasSeed) {
+    safeSeedPresent = hasSeed;
+    [expectation fulfill];
+  }];
+  NSTimeInterval timeout = 5.0;
+  [self waitForExpectationsWithTimeout:timeout handler:nil];
+
+  return safeSeedPresent;
+}
+
+#pragma mark - Lifecycle
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(kSeedArg)) {
@@ -54,6 +71,7 @@ static const NSTimeInterval kWaitForFetchTimeout = 30.0;
   return config;
 }
 
+#pragma mark - Tests
 // Waits for variations seed to appear in Local State prefs. The test will only
 // pass in official build with accepted EULA in Local State prefs.
 - (void)testVariationsSeedPresentsInPrefs {
@@ -78,8 +96,7 @@ static const NSTimeInterval kWaitForFetchTimeout = 30.0;
   GREYCondition* condition = [GREYCondition
       conditionWithName:@"Waiting for variations seed fetch."
                   block:^BOOL {
-                    BOOL variationsSeedExists = [VariationsSmokeTestAppInterface
-                        isVariationsSeedStored];
+                    BOOL variationsSeedExists = [self isVariationsSeedStored];
                     BOOL expectedLastFetchTimeCondition =
                         !verifyFetchedInCurrentLaunch ||
                         [VariationsSmokeTestAppInterface

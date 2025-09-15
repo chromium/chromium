@@ -68,6 +68,21 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
                   actualStreak);
 }
 
+// Helper method to synchronously wait for the async hasSafeSeed check
+- (BOOL)hasSafeSeed {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"Wait for hasSafeSeed check"];
+  __block BOOL safeSeedPresent = NO;
+  [VariationsAppInterface hasSafeSeed:^(BOOL hasSeed) {
+    safeSeedPresent = hasSeed;
+    [expectation fulfill];
+  }];
+  NSTimeInterval timeout = 5.0;
+  [self waitForExpectationsWithTimeout:timeout handler:nil];
+
+  return safeSeedPresent;
+}
+
 // Restarts the app and ensures there's no variations/crash state active.
 - (void)resetAppState:(AppLaunchConfiguration)config {
   // Clear local state variations prefs since local state is persisted between
@@ -86,7 +101,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   //   * No active crash streak
   XCTAssertTrue([[AppLaunchManager sharedManager] appIsLaunched],
                 @"App should be launched.");
-  GREYAssertFalse([VariationsAppInterface hasSafeSeed], @"No safe seed.");
+  GREYAssertFalse([self hasSafeSeed], @"No safe seed.");
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
                   @"No field trial from test seed.");
   [self checkCrashStreakValue:0];
@@ -132,7 +147,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 
   // Set the safe seed value. Validate that the seed is set but not active.
   [VariationsAppInterface setTestSafeSeedAndSignature];
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
+  GREYAssertTrue([self hasSafeSeed],
                  @"The variations safe seed pref should be set.");
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
                   @"Safe seed field trials should not be active.");
@@ -158,7 +173,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   XCTAssertTrue([[AppLaunchManager sharedManager] appIsLaunched],
                 @"App should be launched.");
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
+  GREYAssertTrue([self hasSafeSeed],
                  @"The variations safe seed pref should be set.");
   GREYAssertTrue([VariationsAppInterface fieldTrialExistsForTestSeed],
                  @"There should be field trials from kTestSeedData.");

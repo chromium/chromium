@@ -72,17 +72,12 @@ variations::SeedReaderWriter* GetSafeSeedReaderWriter() {
   return variations::FieldTrialListHasAllStudiesFrom(variations::kTestSeedData);
 }
 
-+ (BOOL)hasSafeSeed {
-  BOOL hasSafeSeed = NO;
-  base::RunLoop run_loop;
++ (void)hasSafeSeed:(void (^)(BOOL hasSeed))completion {
   GetSafeSeedReaderWriter()->ReadSeedData(base::BindLambdaForTesting(
-      [&hasSafeSeed,
-       &run_loop](variations::SeedReaderWriter::ReadSeedDataResult result) {
-        hasSafeSeed = (result.result != variations::LoadSeedResult::kEmpty);
-        run_loop.Quit();
+      [completion](variations::SeedReaderWriter::ReadSeedDataResult result) {
+        BOOL hasSeed = (result.result != variations::LoadSeedResult::kEmpty);
+        completion(hasSeed);
       }));
-  run_loop.Run();
-  return hasSafeSeed;
 }
 
 + (void)setTestSafeSeedAndSignature {

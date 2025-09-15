@@ -96,6 +96,21 @@
                   actualStreak);
 }
 
+// Helper method to synchronously wait for the async hasSafeSeed check
+- (BOOL)hasSafeSeed {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"Wait for hasSafeSeed check"];
+  __block BOOL safeSeedPresent = NO;
+  [VariationsAppInterface hasSafeSeed:^(BOOL hasSeed) {
+    safeSeedPresent = hasSeed;
+    [expectation fulfill];
+  }];
+  NSTimeInterval timeout = 5.0;
+  [self waitForExpectationsWithTimeout:timeout handler:nil];
+
+  return safeSeedPresent;
+}
+
 // Restarts the app and ensures there's no variations/crash state active.
 - (void)resetAppState:(AppLaunchConfiguration)config {
   // Clear local state variations prefs since local state is persisted between
@@ -114,7 +129,7 @@
   //   * No active crash streak
   XCTAssertTrue([[AppLaunchManager sharedManager] appIsLaunched],
                 @"App should be launched.");
-  GREYAssertFalse([VariationsAppInterface hasSafeSeed], @"No safe seed.");
+  GREYAssertFalse([self hasSafeSeed], @"No safe seed.");
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
                   @"No field trial from test seed.");
   [self checkCrashStreakValue:0];
@@ -151,8 +166,7 @@
   // with the study only after variations safe mode is triggered.
   [self checkCrashStreakValue:0];
   [self checkFailedFetchStreakValue:0];
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
-                 @"The variations safe seed should exist.");
+  GREYAssertTrue([self hasSafeSeed], @"The variations safe seed should exist.");
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
                   @"There should be no field trials from kTestSeedData.");
 
@@ -173,8 +187,7 @@
   // Third crash.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   [self checkCrashStreakValue:3];
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
-                 @"The variations safe seed should exist.");
+  GREYAssertTrue([self hasSafeSeed], @"The variations safe seed should exist.");
   // Verify that Chrome fell back to variations safe mode by checking that there
   // is a field trial for the test safe seed's study.
   GREYAssertTrue([VariationsAppInterface fieldTrialExistsForTestSeed],
@@ -203,8 +216,7 @@
   // and the safe seed were persisted, and (iii) safe mode was triggered.
   [self checkCrashStreakValue:0];
   [self checkFailedFetchStreakValue:25];
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
-                 @"The variations safe seed should exist.");
+  GREYAssertTrue([self hasSafeSeed], @"The variations safe seed should exist.");
   // Verify that Chrome fell back to variations safe mode by checking that there
   // is a field trial for the test safe seed's study.
   GREYAssertTrue([VariationsAppInterface fieldTrialExistsForTestSeed],
@@ -237,8 +249,7 @@
   // the safe seed was stored, and (iii) safe mode was not triggered.
   [self checkCrashStreakValue:2];
   [self checkFailedFetchStreakValue:24];
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
-                 @"The variations safe seed should exist.");
+  GREYAssertTrue([self hasSafeSeed], @"The variations safe seed should exist.");
   // Verify that Chrome did not fall back to variations safe mode by checking
   // that there isn't a field trial for the test safe seed's study.
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
