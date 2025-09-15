@@ -426,7 +426,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     // Handling the dismissal of tab modal dialog.
     private TabModalLifetimeHandler mTabModalLifetimeHandler;
     private ViewGroup mBaseChromeLayout;
-    private boolean mIsTopResumedActivity;
 
     private @Nullable TabStateThemeResourceProvider mThemeResourceProvider;
 
@@ -1064,24 +1063,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         super.onWindowFocusChanged(hasFocus);
 
         Clipboard.getInstance().onWindowFocusChanged(hasFocus);
-
-        // If we've lost window focus but we're still top Resumed, then we've probably either
-        // entered the app switcher, or opened a dialog. When an app is swiped away from the app
-        // switcher, Android attempts to run onPause, but gives apps are very short deadline in
-        // which to save state and on slower devices we can fail to save tab state/flush UMA
-        // records to disk/etc. In order to give ourselves more time to save state in case the
-        // user swipes our task away, save state immediately upon entering the app switcher.
-        if (mNativeInitialized
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)
-                && !hasFocus
-                && mIsTopResumedActivity) {
-            // We should also be checking for Alert Dialogs or other windows we open over our own
-            // Activity here, but Android provides no general way to check for obscuring
-            // windows/dialogs/etc. Unnecessary flushes aren't harmful so this isn't a major issue.
-            if (!getModalDialogManagerSupplier().get().isShowing()) {
-                flushPersistentState();
-            }
-        }
     }
 
     @Override
@@ -1192,7 +1173,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {
-        mIsTopResumedActivity = isTopResumedActivity;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
             if (isTopResumedActivity) {
                 startUmaSession();
@@ -1327,14 +1307,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
             endUmaSession();
         } else {
-            flushPersistentState();
+            mUmaActivityObserver.flushUmaSession();
+            ProfileManagerUtils.flushPersistentDataForAllProfiles();
         }
-    }
-
-    @CallSuper
-    public void flushPersistentState() {
-        mUmaActivityObserver.flushUmaSession();
-        ProfileManagerUtils.flushPersistentDataForAllProfiles();
     }
 
     @Override
