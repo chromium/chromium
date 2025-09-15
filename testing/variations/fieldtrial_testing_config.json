@@ -16785,6 +16785,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "MlUrlScoreCaching",
                         "MlUrlScoring",
                         "UrlScoringModel"
                     ]
