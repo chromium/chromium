@@ -468,12 +468,8 @@ void OmniboxViewViews::EnterKeywordModeForDefaultSearchProvider() {
       OmniboxEventProto::KEYBOARD_SHORTCUT);
 }
 
-void OmniboxViewViews::GetSelectionBounds(
-    std::u16string::size_type* start,
-    std::u16string::size_type* end) const {
-  const gfx::Range range = GetSelectedRange();
-  *start = static_cast<size_t>(range.start());
-  *end = static_cast<size_t>(range.end());
+gfx::Range OmniboxViewViews::GetSelectionBounds() const {
+  return GetSelectedRange();
 }
 
 void OmniboxViewViews::SelectAll(bool reversed) {
@@ -812,19 +808,18 @@ std::u16string_view OmniboxViewViews::GetSelectedText() const {
 }
 
 void OmniboxViewViews::UpdateAccessibleTextSelection() {
-  std::u16string::size_type entry_start;
-  std::u16string::size_type entry_end;
+  gfx::Range entry;
 
   if (saved_selection_for_focus_change_.IsValid()) {
-    entry_start = saved_selection_for_focus_change_.start();
-    entry_end = saved_selection_for_focus_change_.end();
+    entry = {saved_selection_for_focus_change_.start(),
+             saved_selection_for_focus_change_.end()};
   } else {
-    GetSelectionBounds(&entry_start, &entry_end);
+    entry = GetSelectionBounds();
   }
 
   GetViewAccessibility().SetTextSelStart(
-      entry_start + friendly_suggestion_text_prefix_length_);
-  GetViewAccessibility().SetTextSelEnd(entry_end +
+      entry.start() + friendly_suggestion_text_prefix_length_);
+  GetViewAccessibility().SetTextSelEnd(entry.end() +
                                        friendly_suggestion_text_prefix_length_);
 }
 
@@ -1081,8 +1076,7 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
   }
 
   // Get the original selection bounds so we can adjust it later.
-  size_t start, end;
-  GetSelectionBounds(&start, &end);
+  gfx::Range selection = GetSelectionBounds();
 
   // Try to unelide. Early exit if there's no unelisions to perform.
   const std::u16string original_text = GetText();
@@ -1112,7 +1106,7 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
     model()->ClassifyString(original_selected_text, &match, nullptr);
     const bool selection_classifes_as_search =
         AutocompleteMatch::IsSearchType(match.type);
-    if (start != end && gesture == UnelisionGesture::MOUSE_RELEASE &&
+    if (!selection.is_empty() && gesture == UnelisionGesture::MOUSE_RELEASE &&
         !selection_classifes_as_search) {
       // For user selections that look like a URL instead of a Search:
       // If we are uneliding at the end of a drag-select (on mouse release),
@@ -1120,15 +1114,15 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
       // the new selection spans to the beginning of the unelided URL too.
       // i.e. google.com/maps => https://www.google.com/maps
       //      ^^^^^^^^^^         ^^^^^^^^^^^^^^^^^^^^^^
-      if (start != 0) {
-        start += offset;
+      if (selection.start() != 0) {
+        selection.set_start(selection.start() + offset);
       }
-      if (end != 0) {
-        end += offset;
+      if (selection.end() != 0) {
+        selection.set_end(selection.end() + offset);
       }
     } else {
-      start += offset;
-      end += offset;
+      selection.set_start(selection.start() + offset);
+      selection.set_end(selection.end() + offset);
     }
 
     // Since we are changing the text in the double-click event handler, we
@@ -1136,7 +1130,7 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
     OffsetDoubleClickWord(offset);
   }
 
-  SetSelectedRange(gfx::Range(start, end));
+  SetSelectedRange(selection);
   return true;
 }
 
@@ -2010,9 +2004,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
         if (shift) {
           // After uneliding, we need to move the end of the selection range
           // to the beginning of the full unelided URL.
-          size_t start, end;
-          GetSelectionBounds(&start, &end);
-          SetSelectedRange(gfx::Range(start, 0));
+          SetSelectedRange(gfx::Range(GetSelectionBounds().start(), 0));
         } else {
           // After uneliding, move the caret to the beginning of the full
           // unelided URL.

@@ -196,7 +196,7 @@ void OmniboxView::SetUserText(const std::u16string& text) {
 
 void OmniboxView::SetUserText(const std::u16string& text, bool update_popup) {
   model()->SetUserText(text);
-  SetWindowTextAndCaretPos(text, text.length(), update_popup, true);
+  SetWindowTextAndCaretPos(text, text.size(), update_popup, true);
 }
 
 void OmniboxView::RevertAll() {
@@ -241,7 +241,7 @@ OmniboxView::State OmniboxView::GetState() const {
   state.text = GetText();
   state.keyword = model()->keyword();
   state.is_keyword_selected = model()->is_keyword_selected();
-  GetSelectionBounds(&state.sel_start, &state.sel_end);
+  state.selection = GetSelectionBounds();
   return state;
 }
 
@@ -251,17 +251,10 @@ OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
   OmniboxView::StateChanges state_changes;
   state_changes.old_text = &before.text;
   state_changes.new_text = &after.text;
-  state_changes.new_sel_start = after.sel_start;
-  state_changes.new_sel_end = after.sel_end;
-  const bool old_sel_empty = before.sel_start == before.sel_end;
-  const bool new_sel_empty = after.sel_start == after.sel_end;
-  const bool sel_same_ignoring_direction =
-      std::min(before.sel_start, before.sel_end) ==
-          std::min(after.sel_start, after.sel_end) &&
-      std::max(before.sel_start, before.sel_end) ==
-          std::max(after.sel_start, after.sel_end);
+  state_changes.new_selection = after.selection;
   state_changes.selection_differs =
-      (!old_sel_empty || !new_sel_empty) && !sel_same_ignoring_direction;
+      (!before.selection.is_empty() || !after.selection.is_empty()) &&
+      !before.selection.EqualsIgnoringDirection(after.selection);
   state_changes.text_differs = before.text != after.text;
   state_changes.keyword_differs =
       (after.is_keyword_selected != before.is_keyword_selected) ||
@@ -274,8 +267,8 @@ OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
   // sure the caret, which should be after any insertion, hasn't moved
   // forward of the old selection start.)
   state_changes.just_deleted_text =
-      before.text.length() > after.text.length() &&
-      after.sel_start <= std::min(before.sel_start, before.sel_end);
+      before.text.size() > after.text.size() &&
+      after.selection.start() <= before.selection.GetMin();
 
   return state_changes;
 }

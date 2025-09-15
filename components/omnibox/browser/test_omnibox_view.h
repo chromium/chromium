@@ -40,7 +40,7 @@ class TestOmniboxView : public OmniboxView {
   void SetAdditionalText(const std::u16string& text) override {}
   void EnterKeywordModeForDefaultSearchProvider() override {}
   bool IsSelectAll() const override;
-  void GetSelectionBounds(size_t* start, size_t* end) const override;
+  gfx::Range GetSelectionBounds() const override;
   void SelectAll(bool reversed) override;
   void UpdatePopup() override {}
   void SetFocus(bool is_user_initiated) override {}

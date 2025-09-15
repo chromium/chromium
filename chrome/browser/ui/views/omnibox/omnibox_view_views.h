@@ -129,8 +129,7 @@ class OmniboxViewViews
   void SetAdditionalText(const std::u16string& additional_text) override;
   void EnterKeywordModeForDefaultSearchProvider() override;
   bool IsSelectAll() const override;
-  void GetSelectionBounds(std::u16string::size_type* start,
-                          std::u16string::size_type* end) const override;
+  gfx::Range GetSelectionBounds() const override;
   void SelectAll(bool reversed) override;
   void RevertAll() override;
   void SetFocus(bool is_user_initiated) override;

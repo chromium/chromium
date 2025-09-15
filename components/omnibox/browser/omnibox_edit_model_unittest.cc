@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
@@ -41,7 +42,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/url_formatter/url_fixer.h"
 #include "extensions/buildflags/buildflags.h"
-#include "omnibox_triggered_feature_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -159,7 +159,7 @@ TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
   std::u16string text_before = u"he";
   std::u16string text_after = u"hel";
   OmniboxView::StateChanges state_changes{
-      &text_before, &text_after, 3, 3, false, true, false, false};
+      &text_before, &text_after, {3, 3}, false, true, false, false};
   model()->OnAfterPossibleChange(state_changes, true);
   EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
   model()->OnPopupDataChanged(std::u16string(),
@@ -437,8 +437,8 @@ TEST_F(OmniboxEditModelTest, ConsumeCtrlKeyOnRequestFocus) {
 // Tests the ctrl key is consumed on a ctrl-action (e.g. ctrl-c to copy)
 TEST_F(OmniboxEditModelTest, ConsumeCtrlKeyOnCtrlAction) {
   model()->control_key_state_ = TestOmniboxEditModel::DOWN;
-  OmniboxView::StateChanges state_changes{nullptr, nullptr, 0,     0,
-                                          false,   false,   false, false};
+  OmniboxView::StateChanges state_changes{nullptr, nullptr, {},   false,
+                                          false,   false,   false};
   model()->OnAfterPossibleChange(state_changes, false);
   EXPECT_EQ(model()->control_key_state_,
             TestOmniboxEditModel::DOWN_AND_CONSUMED);
@@ -462,10 +462,9 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesInlineAutocompleteText) {
   {
     EXPECT_TRUE(view()->GetText().empty());
     EXPECT_TRUE(model()->user_text().empty());
-    size_t start = 0, end = 0;
-    view()->GetSelectionBounds(&start, &end);
-    EXPECT_EQ(0U, start);
-    EXPECT_EQ(0U, end);
+    gfx::Range selection = view()->GetSelectionBounds();
+    EXPECT_EQ(0U, selection.start());
+    EXPECT_EQ(0U, selection.end());
   }
 }
 

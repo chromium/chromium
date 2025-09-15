@@ -587,9 +587,9 @@ void OmniboxEditModel::Revert() {
     view_->OnKeywordPlaceholderTextChange();
   }
   has_temporary_text_ = false;
-  size_t start, end;
+  gfx::Range selection;
   if (view_) {
-    view_->GetSelectionBounds(&start, &end);
+    selection = view_->GetSelectionBounds();
   }
   current_match_ = AutocompleteMatch();
   // First home the cursor, so view of text is scrolled to left, then correct
@@ -598,7 +598,8 @@ void OmniboxEditModel::Revert() {
   std::u16string current_permanent_url = GetPermanentDisplayText();
   if (view_) {
     view_->SetWindowTextAndCaretPos(current_permanent_url, 0, false, true);
-    view_->SetCaretPos(std::min(current_permanent_url.length(), start));
+    view_->SetCaretPos(
+        std::min(current_permanent_url.size(), selection.start()));
   }
   controller_->client()->OnRevert();
 }
@@ -607,11 +608,10 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
                                          bool prevent_inline_autocomplete) {
   const std::u16string input_text = MaybePrependKeyword(user_text_);
 
-  size_t start, cursor_position;
   // This method currently only works when there's a view, but ideally the
   // model should be primary for determining such state.
   CHECK(view_);
-  view_->GetSelectionBounds(&start, &cursor_position);
+  size_t cursor_position = view_->GetSelectionBounds().end();
 
   // For keyword searches, the text that AutocompleteInput expects is
   // of the form "<keyword> <query>", where our query is |user_text_|.
@@ -1368,8 +1368,9 @@ bool OmniboxEditModel::OnAfterPossibleChange(
     if (url.is_valid()) {
       controller_->client()->OnUserPastedInOmniboxResultingInValidURL();
     }
-  } else if (state_changes.text_differs)
+  } else if (state_changes.text_differs) {
     paste_state_ = NONE;
+  }
 
   if (state_changes.text_differs || state_changes.selection_differs) {
     // Restore caret visibility whenever the user changes text or selection in
@@ -1404,8 +1405,7 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   has_temporary_text_ = false;
   just_deleted_text_ = state_changes.just_deleted_text;
 
-  const bool no_selection =
-      state_changes.new_sel_start == state_changes.new_sel_end;
+  const bool no_selection = state_changes.new_selection.is_empty();
 
   // Update the popup for the change, in the process changing to keyword mode
   // if the user hit space in mid-string after a keyword.
@@ -1419,7 +1419,8 @@ bool OmniboxEditModel::OnAfterPossibleChange(
       allow_keyword_ui_change && !state_changes.just_deleted_text &&
       no_selection &&
       CreatedKeywordSearchByInsertingSpaceInMiddle(
-          *state_changes.old_text, user_text_, state_changes.new_sel_start);
+          *state_changes.old_text, user_text_,
+          state_changes.new_selection.start());
   if (view_) {
     view_->UpdatePopup();
   }
@@ -1440,7 +1441,7 @@ bool OmniboxEditModel::OnAfterPossibleChange(
 
   // If the user input a "?" at the beginning of the text, put them into
   // keyword mode for their default search provider.
-  if ((state_changes.new_sel_start == 1) && (user_text_[0] == '?')) {
+  if ((state_changes.new_selection.start() == 1) && (user_text_[0] == '?')) {
     EnterKeywordModeForDefaultSearchProvider(OmniboxEventProto::QUESTION_MARK);
     return false;
   }
@@ -1456,7 +1457,7 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   // If MaybeAcceptKeywordBySpace() accepts the keyword and returns true, that
   // will have updated our state already, so in that case we don't also return
   // true from this function.
-  return (state_changes.new_sel_start != user_text_.length()) ||
+  return (state_changes.new_selection.start() != user_text_.size()) ||
          !MaybeAcceptKeywordBySpace(user_text_);
 }
 

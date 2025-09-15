@@ -20,8 +20,7 @@ OmniboxView::State TestOmniboxView::CreateState(std::string text,
   state.text = base::UTF8ToUTF16(text);
   state.keyword = std::u16string();
   state.is_keyword_selected = false;
-  state.sel_start = sel_start;
-  state.sel_end = sel_end;
+  state.selection = {sel_start, sel_end};
   return state;
 }
 
@@ -41,16 +40,16 @@ bool TestOmniboxView::IsSelectAll() const {
   return selection_.EqualsIgnoringDirection(gfx::Range(0, text_.size()));
 }
 
-void TestOmniboxView::GetSelectionBounds(size_t* start, size_t* end) const {
-  *start = selection_.start();
-  *end = selection_.end();
+gfx::Range TestOmniboxView::GetSelectionBounds() const {
+  return selection_;
 }
 
 void TestOmniboxView::SelectAll(bool reversed) {
-  if (reversed)
+  if (reversed) {
     selection_ = gfx::Range(text_.size(), 0);
-  else
+  } else {
     selection_ = gfx::Range(0, text_.size());
+  }
 }
 
 bool TestOmniboxView::AimButtonVisible() const {
@@ -64,8 +63,9 @@ void TestOmniboxView::OnTemporaryTextMaybeChanged(
     bool notify_text_changed) {
   text_ = display_text;
 
-  if (save_original_selection)
+  if (save_original_selection) {
     saved_temporary_selection_ = selection_;
+  }
 }
 
 void TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(

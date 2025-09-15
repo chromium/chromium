@@ -42,8 +42,7 @@ class OmniboxView {
     // |old_text| and |new_text| are not owned.
     raw_ptr<const std::u16string> old_text;
     raw_ptr<const std::u16string> new_text;
-    size_t new_sel_start;
-    size_t new_sel_end;
+    gfx::Range new_selection;
     bool selection_differs;
     bool text_differs;
     bool keyword_differs;
@@ -122,11 +121,11 @@ class OmniboxView {
   // Returns true if all text is selected. Returns false if there is no text.
   virtual bool IsSelectAll() const = 0;
 
-  // Fills |start| and |end| with the indexes of the current selection's bounds.
-  // It is not guaranteed that |*start < *end|, as the selection can be
-  // directed.  If there is no selection, |start| and |end| will both be equal
-  // to the current cursor position.
-  virtual void GetSelectionBounds(size_t* start, size_t* end) const = 0;
+  // Returns the indexes of the current selection's bounds. Note that the
+  // selection can be directed, so the result may be a reverse range.
+  // If there is no selection, the range's values will both be equal to the
+  // current cursor position.
+  virtual gfx::Range GetSelectionBounds() const = 0;
 
   // Selects all the text in the edit.  Use this in place of SetSelAll() to
   // avoid selecting the "phantom newline" at the end of the edit.
@@ -247,8 +246,7 @@ class OmniboxView {
     std::u16string text;
     std::u16string keyword;
     bool is_keyword_selected;
-    size_t sel_start;
-    size_t sel_end;
+    gfx::Range selection;
   };
 
   explicit OmniboxView(std::unique_ptr<OmniboxClient> client);

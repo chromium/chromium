@@ -632,8 +632,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 
   // Save cursor position, before blur.
-  size_t prev_start, end;
-  omnibox_view->GetSelectionBounds(&prev_start, &end);
+  size_t prev_start = omnibox_view->GetSelectionBounds().start();
 
   chrome::FocusAppMenu(browser());
   EXPECT_FALSE(omnibox_view->model()->PopupIsOpen());
@@ -642,9 +641,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
   chrome::FocusLocationBar(browser());
 
   // Make sure cursor is restored.
-  size_t start;
-  omnibox_view->GetSelectionBounds(&start, &end);
-  EXPECT_EQ(prev_start, start);
+  EXPECT_EQ(prev_start, omnibox_view->GetSelectionBounds().start());
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, BackgroundIsOpaque) {
