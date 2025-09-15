@@ -5,6 +5,7 @@
 #include "services/network/restricted_udp_socket.h"
 
 #include "base/functional/bind.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -18,12 +19,36 @@ namespace network {
 RestrictedUDPSocket::RestrictedUDPSocket(
     std::unique_ptr<UDPSocket> udp_socket,
     net::MutableNetworkTrafficAnnotationTag traffic_annotation,
-    std::unique_ptr<SimpleHostResolver> resolver)
+    std::unique_ptr<SimpleHostResolver> resolver,
+    bool allow_multicast)
     : udp_socket_(std::move(udp_socket)),
       traffic_annotation_(std::move(traffic_annotation)),
-      resolver_(std::move(resolver)) {}
+      resolver_(std::move(resolver)),
+      allow_multicast_(allow_multicast) {}
 
 RestrictedUDPSocket::~RestrictedUDPSocket() = default;
+
+void RestrictedUDPSocket::JoinGroup(const net::IPAddress& group_address,
+                                    JoinGroupCallback callback) {
+  if (!allow_multicast_) {
+    // Calling this method without the permission means that the renderer is
+    // sending faulty IPCs.
+    mojo::ReportBadMessage("no permission to use multicast");
+    return;
+  }
+  udp_socket_->JoinGroup(group_address, std::move(callback));
+}
+
+void RestrictedUDPSocket::LeaveGroup(const net::IPAddress& group_address,
+                                     LeaveGroupCallback callback) {
+  if (!allow_multicast_) {
+    // Calling this method without the permission means that the renderer is
+    // sending faulty IPCs.
+    mojo::ReportBadMessage("no permission to use multicast");
+    return;
+  }
+  udp_socket_->LeaveGroup(group_address, std::move(callback));
+}
 
 void RestrictedUDPSocket::ReceiveMore(uint32_t num_additional_datagrams) {
   udp_socket_->ReceiveMore(num_additional_datagrams);

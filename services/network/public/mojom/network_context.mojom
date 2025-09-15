@@ -1347,6 +1347,9 @@ interface NetworkContext {
   // Creates a Restricted UDP socket that wraps an internal UDP Socket connected
   // or bound to |addr| with |params| depending on the provided |mode|.
   //
+  // if |allow_multicast| is false, then using joinGroup or leaveGroup
+  // on RestrictedUDPSocket will report mojo bad message.
+  //
   // The socket created can only be used for the purpose specified in
   // |traffic_annotation|, and cannot be re-used for other purposes.
   //
@@ -1365,7 +1368,8 @@ interface NetworkContext {
       MutableNetworkTrafficAnnotationTag traffic_annotation,
       RestrictedUDPSocketParams? params,
       pending_receiver<RestrictedUDPSocket> receiver,
-      pending_remote<UDPSocketListener>? listener)
+      pending_remote<UDPSocketListener>? listener,
+      bool allow_multicast)
       => (int32 result, IPEndPoint? local_addr_out);
 
   // Creates a TCP server socket that listens on |local_addr|. The socket

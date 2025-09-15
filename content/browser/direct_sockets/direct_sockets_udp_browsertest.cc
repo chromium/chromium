@@ -33,6 +33,10 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -320,6 +324,89 @@ class DirectSocketsBoundUdpBrowserTest : public DirectSocketsUdpBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, ExchangeUdp) {
   ASSERT_THAT(EvalJs(shell(), "exchangeUdpPacketsBetweenClientAndServer()")
+                  .ExtractString(),
+              testing::HasSubstr("succeeded"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, JoinGroup) {
+  // Invalid ip.
+  EXPECT_THAT(
+      EvalJs(shell(), "joinGroup({ localAddress: '0.0.0.0' }, '256.255.20.11')")
+          .ExtractString(),
+      ::testing::StartsWith("joinGroup failed:"));
+
+  // Ip is not multicast.
+  EXPECT_THAT(
+      EvalJs(shell(), "joinGroup({ localAddress: '0.0.0.0' }, '10.10.10.10')")
+          .ExtractString(),
+      ::testing::StartsWith("joinGroup failed:"));
+
+  // Valid multicast ip.
+  EXPECT_EQ("joinGroup succeeded.",
+            EvalJs(shell(),
+                   "joinGroup({ localAddress: '0.0.0.0' }, '237.132.100.17')"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, JoinGroupTwice) {
+  const std::string script = "joinGroupTwice({ localAddress: '0.0.0.0' })";
+
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              ::testing::StartsWith("joinGroupTwice failed:"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, LeaveGroupAfterJoin) {
+  EXPECT_EQ(
+      "leaveGroupAfterJoin succeeded.",
+      EvalJs(shell(), "leaveGroupAfterJoin({ localAddress: '0.0.0.0' })"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
+                       LeaveGroupTwiceAfterJoin) {
+  const std::string script =
+      "leaveGroupTwiceAfterJoin({ localAddress: '0.0.0.0' })";
+
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              ::testing::StartsWith("leaveGroupTwiceAfterJoin failed:"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, JoinGroupAfterClose) {
+  const std::string script = "joinGroupAfterClose({ localAddress: '0.0.0.0' })";
+
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              ::testing::StartsWith("joinGroupAfterClose failed:"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, LeaveGroupAfterClose) {
+  const std::string script =
+      "leaveGroupAfterClose({ localAddress: '0.0.0.0' })";
+
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              ::testing::StartsWith("leaveGroupAfterClose failed:"));
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MulticastExchangeUdp DISABLED_MulticastExchangeUdp
+#else
+#define MAYBE_MulticastExchangeUdp MulticastExchangeUdp
+#endif
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
+                       MAYBE_MulticastExchangeUdp) {
+  ASSERT_THAT(EvalJs(shell(), "exchangeUdpMulticastPackets()").ExtractString(),
+              testing::HasSubstr("succeeded"));
+}
+
+// TODO(crbug.com/443716695): Fails on mac-rel bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MulticastExchangeUdpMultipleReceivers \
+  DISABLED_MulticastExchangeUdpMultipleReceivers
+#else
+#define MAYBE_MulticastExchangeUdpMultipleReceivers \
+  MulticastExchangeUdpMultipleReceivers
+#endif
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
+                       MAYBE_MulticastExchangeUdpMultipleReceivers) {
+  ASSERT_THAT(EvalJs(shell(), "exchangeUdpMulticastPacketsMultipleReceivers()")
                   .ExtractString(),
               testing::HasSubstr("succeeded"));
 }

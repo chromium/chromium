@@ -426,6 +426,16 @@ void UDPSocket::FinishOpen(
     open_info->setLocalAddress(local_address);
     open_info->setLocalPort(local_addr->port());
 
+    if (mode == network::mojom::RestrictedUDPSocketMode::BOUND &&
+        RuntimeEnabledFeatures::MulticastInDirectSocketsEnabled() &&
+        GetExecutionContext()->IsFeatureEnabled(
+            network::mojom::blink::PermissionsPolicyFeature::
+                kMulticastInDirectSockets)) {
+      multicast_controller_ = MakeGarbageCollected<MulticastController>(
+          GetExecutionContext(), udp_socket_.Get());
+      open_info->setMulticastController(multicast_controller_.Get());
+    }
+
     opened_->Resolve(open_info);
 
     SetState(State::kOpen);
@@ -489,7 +499,7 @@ bool UDPSocket::HasPendingActivity() const {
     return false;
   }
   return writable_stream_wrapper_->HasPendingWrite() ||
-         multicast_controller_->HasPendingActivity();
+         (multicast_controller_ && multicast_controller_->HasPendingActivity());
 }
 
 void UDPSocket::ContextDestroyed() {
