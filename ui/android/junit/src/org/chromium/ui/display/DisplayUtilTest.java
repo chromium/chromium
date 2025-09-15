@@ -568,4 +568,55 @@ public class DisplayUtilTest {
                 displayLocalBounds,
                 DisplayUtil.clampWindowToDisplay(testBounds, mDisplayAndroid));
     }
+
+    @Test
+    public void scaleToEnclosingRect() {
+        Rect rect = new Rect(-10, -20, 10, 20);
+
+        // An empty rect.
+        assertEquals(
+                "Scaling an empty rect.",
+                new Rect(0, 0, 0, 0),
+                DisplayUtil.scaleToEnclosingRect(new Rect(0, 0, 0, 0), 1.5f));
+
+        // Scale = 0.
+        assertEquals(
+                "Scaling by 0.0 should result in an empty rect at the origin.",
+                new Rect(0, 0, 0, 0),
+                DisplayUtil.scaleToEnclosingRect(rect, 0.0f));
+
+        // Scale = 1.0, should be a no-op.
+        assertEquals(
+                "Scaling by 1.0 should not change the rect.",
+                rect,
+                DisplayUtil.scaleToEnclosingRect(rect, 1.0f));
+
+        // Scaling Up.
+        assertEquals(
+                "Scaling a rect with negative coordinates.",
+                new Rect(-15, -30, 15, 30),
+                DisplayUtil.scaleToEnclosingRect(rect, 1.5f));
+
+        // Scaling down.
+        assertEquals(
+                "Scaling down by 0.5 should halve the coordinates.",
+                new Rect(-5, -10, 5, 10),
+                DisplayUtil.scaleToEnclosingRect(rect, 0.5f));
+
+        // Fractional results.
+        // left = -10 * 1.33 = -13.3, top = -20 * 1.33 = -26.6
+        // right = 10 * 1.33 = 13.3, bottom = 20 * 1.33 = 26.6
+        assertEquals(
+                "Scaling a rect with fractional results.",
+                new Rect(-14, -27, 14, 27),
+                DisplayUtil.scaleToEnclosingRect(rect, 1.33f));
+
+        // Fractional results.
+        // left = -10 * 1.05 = -10.5, top = -20 * 1.05 = -21
+        // right = 10 * 1.05 = 10.5, bottom = 20 * 1.05 = 21
+        assertEquals(
+                "Scaling a rect with 0.5 fractional results.",
+                new Rect(-11, -21, 11, 21),
+                DisplayUtil.scaleToEnclosingRect(rect, 1.05f));
+    }
 }

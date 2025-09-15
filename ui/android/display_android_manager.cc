@@ -189,9 +189,11 @@ void DisplayAndroidManager::UpdateDisplay(
     jint sdkDisplayId,
     const base::android::JavaRef<jstring>& label,
     const base::android::JavaRef<jintArray>&
-        jBounds,  // the order is: left, top, right, bottom
+        jBounds,  // {left, top, right, bottom} in dip
     const base::android::JavaRef<jintArray>&
-        jInsets,  // the order is: left, top, right, bottom
+        jWorkArea,  // {left, top, right, bottom} in dip
+    jint width,     // in physical pixels
+    jint height,    // in physical pixels
     jfloat dipScale,
     jfloat pixelsPerInchX,
     jfloat pixelsPerInchY,
@@ -206,26 +208,24 @@ void DisplayAndroidManager::UpdateDisplay(
     dipScale = Display::GetForcedDeviceScaleFactor();
   }
 
-  std::vector<int> bounds, insets;
-  base::android::JavaIntArrayToIntVector(env, jBounds, &bounds);
-  base::android::JavaIntArrayToIntVector(env, jInsets, &insets);
+  std::vector<int> bounds_array, work_area_array;
+  base::android::JavaIntArrayToIntVector(env, jBounds, &bounds_array);
+  base::android::JavaIntArrayToIntVector(env, jWorkArea, &work_area_array);
 
-  gfx::Rect bounds_in_pixels;
-  bounds_in_pixels.SetByBounds(bounds[0], bounds[1], bounds[2], bounds[3]);
+  CHECK(bounds_array.size() == 4);
+  CHECK(work_area_array.size() == 4);
 
-  const gfx::Rect dip_bounds =
-      gfx::ScaleToEnclosingRect(bounds_in_pixels, 1.0f / dipScale);
-
-  gfx::Rect work_area_in_pixels = bounds_in_pixels;
-  work_area_in_pixels.Inset(
-      gfx::Insets::TLBR(insets[1], insets[0], insets[3], insets[2]));
-  const gfx::Rect dip_work_area =
-      gfx::ScaleToEnclosingRect(work_area_in_pixels, 1.0f / dipScale);
+  gfx::Rect bounds, work_area;
+  bounds.SetByBounds(bounds_array[0], bounds_array[1], bounds_array[2],
+                     bounds_array[3]);
+  work_area.SetByBounds(work_area_array[0], work_area_array[1],
+                        work_area_array[2], work_area_array[3]);
+  const gfx::Size size_in_pixels(width, height);
 
   display::Display display(sdkDisplayId);
   DoUpdateDisplay(&display, base::android::ConvertJavaStringToUTF8(env, label),
-                  dip_bounds, dip_work_area, bounds_in_pixels.size(), dipScale,
-                  pixelsPerInchX, pixelsPerInchY, rotationDegrees, bitsPerPixel,
+                  bounds, work_area, size_in_pixels, dipScale, pixelsPerInchX,
+                  pixelsPerInchY, rotationDegrees, bitsPerPixel,
                   bitsPerComponent,
                   isWideColorGamut && use_display_wide_color_gamut_, isHdr,
                   hdrMaxLuminanceRatio);

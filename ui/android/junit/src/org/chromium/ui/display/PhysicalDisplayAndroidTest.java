@@ -50,7 +50,7 @@ public class PhysicalDisplayAndroidTest {
     private static final int TEST_DISPLAY_ID = 3;
     private static final String TEST_DISPLAY_NAME = "TEST DISPLAY NAME";
 
-    private static final Rect TEST_DISPLAY_BOUNDS = new Rect(0, 0, 1920, 1080);
+    private static final Rect TEST_DISPLAY_PIXEL_BOUNDS = new Rect(0, 0, 1920, 1080);
     private static final Insets TEST_DISPLAY_INSETS = Insets.of(10, 20, 30, 40);
 
     private static final int TEST_DISPLAY_ROTATION = Surface.ROTATION_180;
@@ -60,11 +60,24 @@ public class PhysicalDisplayAndroidTest {
     private static final float TEST_DISPLAY_XDPI = 1.15f;
     private static final float TEST_DISPLAY_YDPI = 1.35f;
 
+    // TEST_DISPLAY_PIXEL_BOUNDS = {0, 0, 1920, 1080}, TEST_DISPLAY_DIP_SCALE = 1.25.
+    private static final Rect TEST_DISPLAY_DIP_BOUNDS = new Rect(0, 0, 1536, 864);
+    // TEST_DISPLAY_INSETS = {10, 20, 30, 40}, TEST_DISPLAY_DIP_SCALE = 1.25.
+    private static final Rect TEST_DISPLAY_DIP_WORK_AREA = new Rect(8, 16, 1512, 832);
+
     private static final float TEST_DISPLAY_REFRESH_RATE = 15.45f;
     private static final Display.Mode TEST_DISPLAY_MODE_CURRENT =
-            new Display.Mode(1, TEST_DISPLAY_BOUNDS.width(), TEST_DISPLAY_BOUNDS.height(), 60.0f);
+            new Display.Mode(
+                    1,
+                    TEST_DISPLAY_PIXEL_BOUNDS.width(),
+                    TEST_DISPLAY_PIXEL_BOUNDS.height(),
+                    60.0f);
     private static final Display.Mode TEST_DISPLAY_MODE =
-            new Display.Mode(2, TEST_DISPLAY_BOUNDS.width(), TEST_DISPLAY_BOUNDS.height(), 90.0f);
+            new Display.Mode(
+                    2,
+                    TEST_DISPLAY_PIXEL_BOUNDS.width(),
+                    TEST_DISPLAY_PIXEL_BOUNDS.height(),
+                    90.0f);
     private static final Display.Mode[] TEST_DISPLAY_SUPPORTED_MODES =
             new Display.Mode[] {TEST_DISPLAY_MODE_CURRENT, TEST_DISPLAY_MODE};
 
@@ -140,7 +153,7 @@ public class PhysicalDisplayAndroidTest {
                         eq(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout()));
 
         doReturn(mMaximumWindowMetrics).when(mWindowManager).getMaximumWindowMetrics();
-        doReturn(TEST_DISPLAY_BOUNDS).when(mMaximumWindowMetrics).getBounds();
+        doReturn(TEST_DISPLAY_PIXEL_BOUNDS).when(mMaximumWindowMetrics).getBounds();
     }
 
     /** Helper method to configure mocks for Android versions older than S. */
@@ -148,8 +161,8 @@ public class PhysicalDisplayAndroidTest {
         doAnswer(
                         invocation -> {
                             Point outSize = invocation.getArgument(0);
-                            outSize.x = TEST_DISPLAY_BOUNDS.width();
-                            outSize.y = TEST_DISPLAY_BOUNDS.height();
+                            outSize.x = TEST_DISPLAY_PIXEL_BOUNDS.width();
+                            outSize.y = TEST_DISPLAY_PIXEL_BOUNDS.height();
 
                             return null;
                         })
@@ -172,8 +185,14 @@ public class PhysicalDisplayAndroidTest {
     public void testPhysicalDisplayAndroidGeneralUpdateFromDisplay() {
         final PhysicalDisplayAndroid physicalDisplayAndroid =
                 new PhysicalDisplayAndroid(mDisplay, null, false);
+
         checkDisplayGeneral(physicalDisplayAndroid);
-        checkDisplaySize(physicalDisplayAndroid, TEST_DISPLAY_BOUNDS);
+        // Insets are not taken into account, so dipGlobalBounds and dipWorkArea are the same.
+        checkDisplaySize(
+                physicalDisplayAndroid,
+                TEST_DISPLAY_PIXEL_BOUNDS,
+                TEST_DISPLAY_DIP_BOUNDS,
+                TEST_DISPLAY_DIP_BOUNDS);
         checkDisplayIsInternal(physicalDisplayAndroid, DEFAULT_DISPLAY_IS_INTERNAL);
     }
 
@@ -182,22 +201,30 @@ public class PhysicalDisplayAndroidTest {
     public void testPhysicalDisplayAndroidGeneralUpdateFromConfiguration() {
         final PhysicalDisplayAndroid physicalDisplayAndroid =
                 new PhysicalDisplayAndroid(mDisplay, null, false);
+
         checkDisplayGeneral(physicalDisplayAndroid);
-        checkDisplaySize(physicalDisplayAndroid, TEST_DISPLAY_BOUNDS);
+        checkDisplaySize(
+                physicalDisplayAndroid,
+                TEST_DISPLAY_PIXEL_BOUNDS,
+                TEST_DISPLAY_DIP_BOUNDS,
+                TEST_DISPLAY_DIP_WORK_AREA);
         checkDisplayIsInternal(physicalDisplayAndroid, DEFAULT_DISPLAY_IS_INTERNAL);
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.S)
     public void testPhysicalDisplayAndroidWithAbsoluteCoordinates() {
-        final RectF displayDipAbsoluteCoordinates = new RectF(100f, 200f, 300f, 400f);
+        final RectF displayDipAbsoluteCoordinates = new RectF(100f, 200f, 1636f, 1064f);
         final PhysicalDisplayAndroid physicalDisplayAndroid =
                 new PhysicalDisplayAndroid(mDisplay, displayDipAbsoluteCoordinates, false);
 
-        final Rect displayPixelAbsoluteCoordinates =
-                DisplayUtil.convertDipToPixelDisplayCoordinates(
-                        displayDipAbsoluteCoordinates, TEST_DISPLAY_DIP_SCALE);
-        checkDisplaySize(physicalDisplayAndroid, displayPixelAbsoluteCoordinates);
+        // displayDipAbsoluteCoordinates = {0, 0, 1636, 1064}.
+        final Rect dipGlobalBounds = new Rect(100, 200, 1636, 1064);
+        // displayDipAbsoluteCoordinates = {0, 0, 1636, 1064}, insets = {10, 20, 30, 40}, dipScale =
+        // 1.25.
+        final Rect dipWorkArea = new Rect(108, 216, 1612, 1032);
+        checkDisplaySize(
+                physicalDisplayAndroid, TEST_DISPLAY_PIXEL_BOUNDS, dipGlobalBounds, dipWorkArea);
     }
 
     @Test
@@ -224,24 +251,47 @@ public class PhysicalDisplayAndroidTest {
         }
     }
 
-    private void checkDisplaySize(PhysicalDisplayAndroid physicalDisplayAndroid, Rect bounds) {
+    private void checkDisplaySize(
+            PhysicalDisplayAndroid physicalDisplayAndroid,
+            Rect pixelLocalBounds,
+            Rect dipGlobalBounds,
+            Rect dipWorkArea) {
         assertEquals(
                 "Display height is incorrect: ",
-                bounds.height(),
+                pixelLocalBounds.height(),
                 physicalDisplayAndroid.getDisplayHeight());
         assertEquals(
                 "Display width is incorrect: ",
-                bounds.width(),
+                pixelLocalBounds.width(),
                 physicalDisplayAndroid.getDisplayWidth());
-        assertEquals("Display bounds is incorrect: ", bounds, physicalDisplayAndroid.getBounds());
+        assertEquals(
+                "Display bounds is incorrect: ",
+                dipGlobalBounds,
+                physicalDisplayAndroid.getBounds());
         assertArrayEquals(
                 "Display bounds as array is incorrect: ",
-                new int[] {bounds.left, bounds.top, bounds.right, bounds.bottom},
+                new int[] {
+                    dipGlobalBounds.left,
+                    dipGlobalBounds.top,
+                    dipGlobalBounds.right,
+                    dipGlobalBounds.bottom
+                },
                 physicalDisplayAndroid.getBoundsAsArray());
         assertEquals(
                 "Display localBounds is incorrect: ",
-                new Rect(0, 0, bounds.width(), bounds.height()),
+                pixelLocalBounds,
                 physicalDisplayAndroid.getLocalBounds());
+
+        assertEquals(
+                "Display workArea is incorrect: ",
+                dipWorkArea,
+                physicalDisplayAndroid.getWorkArea());
+        assertArrayEquals(
+                "Display workArea as array is incorrect: ",
+                new int[] {
+                    dipWorkArea.left, dipWorkArea.top, dipWorkArea.right, dipWorkArea.bottom
+                },
+                physicalDisplayAndroid.getWorkAreaAsArray());
     }
 
     public void checkDisplayIsInternal(
@@ -261,23 +311,6 @@ public class PhysicalDisplayAndroidTest {
                 "Display name is incorrect: ",
                 TEST_DISPLAY_NAME,
                 physicalDisplayAndroid.getDisplayName());
-
-        // It works from API level S.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            assertEquals(
-                    "Display insets is incorrect: ",
-                    TEST_DISPLAY_INSETS,
-                    physicalDisplayAndroid.getInsets());
-            assertArrayEquals(
-                    "Display insets as array is incorrect: ",
-                    new int[] {
-                        TEST_DISPLAY_INSETS.left,
-                        TEST_DISPLAY_INSETS.top,
-                        TEST_DISPLAY_INSETS.right,
-                        TEST_DISPLAY_INSETS.bottom
-                    },
-                    physicalDisplayAndroid.getInsetsAsArray());
-        }
 
         assertEquals(
                 "Display rotation is incorrect: ",

@@ -4,16 +4,10 @@
 
 package org.chromium.ui.display;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
-import android.graphics.Insets;
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.Display;
 import android.view.Surface;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -99,8 +93,14 @@ public class DisplayAndroid {
 
     private final int mDisplayId;
     private @Nullable String mName;
+    /* Display bounds in dip */
     private Rect mBounds;
-    private @Nullable Insets mInsets;
+    /* Display work area in dip */
+    private Rect mWorkArea;
+    /* Display width in physical pixels */
+    private int mWidth;
+    /* Display height in physical pixels */
+    private int mHeight;
     private float mDipScale;
     private float mXdpi;
     private float mYdpi;
@@ -154,21 +154,21 @@ public class DisplayAndroid {
 
     /** Returns display height in physical pixels. */
     public int getDisplayHeight() {
-        return mBounds.height();
+        return mHeight;
     }
 
     /** Returns display width in physical pixels. */
     public int getDisplayWidth() {
-        return mBounds.width();
+        return mWidth;
     }
 
-    /** Returns the bounds of the display. */
+    /** Returns the bounds of the display in dip. */
     public Rect getBounds() {
         return new Rect(mBounds);
     }
 
-    /** Returns the bounds as an array. */
-    public int[] getBoundsAsArray() {
+    /** Returns the bounds of the display in dip as an array. */
+    /* package */ int[] getBoundsAsArray() {
         return new int[] {mBounds.left, mBounds.top, mBounds.right, mBounds.bottom};
     }
 
@@ -177,17 +177,14 @@ public class DisplayAndroid {
         return new Rect(0, 0, getDisplayWidth(), getDisplayHeight());
     }
 
-    /** Returns the insets of the display. */
-    @RequiresApi(Build.VERSION_CODES.R)
-    public Insets getInsets() {
-        return assumeNonNull(mInsets);
+    /** Returns the work area of the display in dip. */
+    public Rect getWorkArea() {
+        return mWorkArea;
     }
 
-    /** Returns the insets as an array. */
-    @RequiresApi(Build.VERSION_CODES.R)
-    public int[] getInsetsAsArray() {
-        Insets insets = assumeNonNull(mInsets);
-        return new int[] {insets.left, insets.top, insets.right, insets.bottom};
+    /** Returns the work area of the dusplay in dip as an array. */
+    /* package */ int[] getWorkAreaAsArray() {
+        return new int[] {mWorkArea.left, mWorkArea.top, mWorkArea.right, mWorkArea.bottom};
     }
 
     /** Returns current orientation. One of Surface.ORIENTATION_* values. */
@@ -319,9 +316,7 @@ public class DisplayAndroid {
         mDisplayId = displayId;
         mObservers = new WeakHashMap<>();
         mBounds = new Rect();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            mInsets = Insets.of(0, 0, 0, 0);
-        }
+        mWorkArea = new Rect();
     }
 
     private DisplayAndroidObserver[] getObservers() {
@@ -334,7 +329,9 @@ public class DisplayAndroid {
         update(
                 /* name= */ null,
                 /* bounds= */ null,
-                /* insets= */ null,
+                /* workArea= */ null,
+                /* width= */ null,
+                /* height= */ null,
                 /* dipScale= */ null,
                 /* xdpi= */ null,
                 /* ydpi= */ null,
@@ -357,7 +354,9 @@ public class DisplayAndroid {
     protected void update(
             @Nullable String name,
             @Nullable Rect bounds,
-            @Nullable Insets insets,
+            @Nullable Rect workArea,
+            @Nullable Integer width,
+            @Nullable Integer height,
             @Nullable Float dipScale,
             @Nullable Float xdpi,
             @Nullable Float ydpi,
@@ -375,7 +374,9 @@ public class DisplayAndroid {
             @Nullable AdaptiveRefreshRateInfo arrInfo) {
         boolean nameChanged = name != null && !name.equals(mName);
         boolean boundsChanged = bounds != null && !bounds.equals(mBounds);
-        boolean insetsChanged = insets != null && !insets.equals(mInsets);
+        boolean workAreaChanged = workArea != null && !workArea.equals(mWorkArea);
+        boolean widthChanged = width != null && width != mWidth;
+        boolean heightChanged = height != null && height != mHeight;
         // Intentional comparison of floats: we assume that if scales differ, they differ
         // significantly.
         boolean dipScaleChanged = dipScale != null && mDipScale != dipScale;
@@ -407,7 +408,9 @@ public class DisplayAndroid {
         boolean changed =
                 nameChanged
                         || boundsChanged
-                        || insetsChanged
+                        || workAreaChanged
+                        || widthChanged
+                        || heightChanged
                         || dipScaleChanged
                         || bitsPerPixelChanged
                         || bitsPerComponentChanged
@@ -425,7 +428,9 @@ public class DisplayAndroid {
 
         if (nameChanged) mName = name;
         if (boundsChanged) mBounds = bounds;
-        if (insetsChanged) mInsets = insets;
+        if (workAreaChanged) mWorkArea = workArea;
+        if (widthChanged) mWidth = width;
+        if (heightChanged) mHeight = height;
         if (dipScaleChanged) mDipScale = dipScale;
         if (xdpiChanged) mXdpi = xdpi;
         if (ydpiChanged) mYdpi = ydpi;

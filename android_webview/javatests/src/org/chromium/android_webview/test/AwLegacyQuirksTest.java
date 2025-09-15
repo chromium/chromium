@@ -193,15 +193,16 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
         float physicalDisplayWidth = displayAndroid.getDisplayWidth();
         float physicalDisplayHeight = displayAndroid.getDisplayHeight();
 
-        Rect workArea = displayAndroid.getBounds();
+        float physicalWorkAreaWidth = physicalDisplayWidth;
+        float physicalWorkAreaHeight = physicalDisplayHeight;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                 && UiAndroidFeatureMap.isEnabled(
                         UiAndroidFeatures.ANDROID_USE_CORRECT_DISPLAY_WORK_AREA)) {
-            workArea.inset(displayAndroid.getInsets());
+            final Rect workArea = displayAndroid.getWorkArea();
+            physicalWorkAreaWidth = workArea.width() * dipScale;
+            physicalWorkAreaHeight = workArea.height() * dipScale;
         }
-
-        float workAreaWidth = workArea.width();
-        float workAreaHeight = workArea.height();
 
         float screenWidth =
                 Integer.parseInt(
@@ -212,7 +213,7 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
                 Integer.parseInt(
                         mActivityTestRule.executeJavaScriptAndWaitForResult(
                                 awContents, contentClient, "screen.availWidth"));
-        Assert.assertEquals(workAreaWidth, screenAvailWidth, 10f);
+        Assert.assertEquals(physicalWorkAreaWidth, screenAvailWidth, 10f);
         float outerWidth =
                 Integer.parseInt(
                         mActivityTestRule.executeJavaScriptAndWaitForResult(
@@ -240,7 +241,7 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
                 Integer.parseInt(
                         mActivityTestRule.executeJavaScriptAndWaitForResult(
                                 awContents, contentClient, "screen.availHeight"));
-        Assert.assertEquals(workAreaHeight, screenAvailHeight, 10f);
+        Assert.assertEquals(physicalWorkAreaHeight, screenAvailHeight, 10f);
         float outerHeight =
                 Integer.parseInt(
                         mActivityTestRule.executeJavaScriptAndWaitForResult(

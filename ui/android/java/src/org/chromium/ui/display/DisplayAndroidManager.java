@@ -12,8 +12,6 @@ import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
 import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.SparseArray;
@@ -333,18 +331,15 @@ public class DisplayAndroidManager {
     /* package */ void updateDisplayOnNativeSide(DisplayAndroid displayAndroid) {
         if (mNativePointer == 0) return;
 
-        int[] insetsArray = new int[] {0, 0, 0, 0};
-        if (VERSION.SDK_INT >= VERSION_CODES.R) {
-            insetsArray = displayAndroid.getInsetsAsArray();
-        }
-
         DisplayAndroidManagerJni.get()
                 .updateDisplay(
                         mNativePointer,
                         displayAndroid.getDisplayId(),
                         displayAndroid.getDisplayName(),
                         displayAndroid.getBoundsAsArray(),
-                        insetsArray,
+                        displayAndroid.getWorkAreaAsArray(),
+                        displayAndroid.getDisplayWidth(),
+                        displayAndroid.getDisplayHeight(),
                         displayAndroid.getDipScale(),
                         displayAndroid.getXdpi(),
                         displayAndroid.getYdpi(),
@@ -363,8 +358,10 @@ public class DisplayAndroidManager {
                 long nativeDisplayAndroidManager,
                 int sdkDisplayId,
                 @Nullable String label,
-                int[] bounds, // the order is: left, top, right, bottom
-                int[] insets, // the order is: left, top, right, bottom
+                int[] bounds, // {left, top, right, bottom} in dip
+                int[] workArea, // {left, top, right, bottom} in dip
+                int wight, // in physical pixels
+                int height, // in physical pixels
                 float dipScale,
                 float xDpi,
                 float yDpi,

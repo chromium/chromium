@@ -26,10 +26,9 @@ namespace {
 struct DisplayParams {
   int32_t sdk_display_id;
   std::string label;
-  std::vector<int32_t> bounds;  // {left, top, right, bottom}
-  gfx::Rect scaled_bounds;
-  std::vector<int32_t> insets;  // {left, top, right, bottom}
-  gfx::Rect scaled_work_area;
+  std::vector<int32_t> bounds;     // {left, top, right, bottom} in dip
+  std::vector<int32_t> work_area;  // {left, top, right, bottom} in dip
+  gfx::Size size_in_pixels;
   float dip_scale;
   float pixels_per_inch_x;
   float pixels_per_inch_y;
@@ -39,41 +38,36 @@ struct DisplayParams {
   bool is_internal;
 };
 
-const DisplayParams kPrimaryDisplayParams = {
-    .sdk_display_id = 0,
-    .label = "primary",
-    .bounds = {0, 0, 1920, 1080},
-    .scaled_bounds = {0, 0, 1536, 864},
-    .insets = {10, 20, 30, 40},
-    .scaled_work_area = {8, 16, 1504, 816},
-    .dip_scale = 1.25,
-    .pixels_per_inch_x = 160,
-    .pixels_per_inch_y = 160,
-    .rotation_degrees = 0,
-    .bits_per_pixel = 24,
-    .bits_per_component = 8,
-    .is_internal = true};
-const DisplayParams kExternalDisplayParams{
-    .sdk_display_id = 1,
-    .label = "external",
-    .bounds = {0, -1440, 900, 0},
-    .scaled_bounds = {0, -1440, 900, 1440},
-    .insets = {1, 2, 3, 4},
-    .scaled_work_area = {1, -1438, 896, 1434},
-    .dip_scale = 1,
-    .pixels_per_inch_x = 160,
-    .pixels_per_inch_y = 160,
-    .rotation_degrees = 90,
-    .bits_per_pixel = 12,
-    .bits_per_component = 0,
-    .is_internal = false};
+const DisplayParams kPrimaryDisplayParams{.sdk_display_id = 0,
+                                          .label = "primary",
+                                          .bounds = {0, 0, 1536, 864},
+                                          .work_area = {8, 16, 1504, 816},
+                                          .size_in_pixels = {1920, 1080},
+                                          .dip_scale = 1.25,
+                                          .pixels_per_inch_x = 160,
+                                          .pixels_per_inch_y = 160,
+                                          .rotation_degrees = 0,
+                                          .bits_per_pixel = 24,
+                                          .bits_per_component = 8,
+                                          .is_internal = true};
+const DisplayParams kExternalDisplayParams{.sdk_display_id = 1,
+                                           .label = "external",
+                                           .bounds = {0, -1440, 900, 0},
+                                           .work_area = {1, -1438, 896, 1434},
+                                           .size_in_pixels = {1440, 900},
+                                           .dip_scale = 1,
+                                           .pixels_per_inch_x = 160,
+                                           .pixels_per_inch_y = 160,
+                                           .rotation_degrees = 90,
+                                           .bits_per_pixel = 12,
+                                           .bits_per_component = 0,
+                                           .is_internal = false};
 const DisplayParams kSecondExternalDisplayParams{
     .sdk_display_id = 2,
     .label = "second_external",
     .bounds = {-720, 192, 0, 672},
-    .scaled_bounds = {-720, 192, 720, 480},
-    .insets = {0, 0, 0, 0},
-    .scaled_work_area = {-720, 192, 720, 480},
+    .work_area = {-720, 192, 0, 672},
+    .size_in_pixels = {720, 480},
     .dip_scale = 1,
     .pixels_per_inch_x = 160,
     .pixels_per_inch_y = 160,
@@ -97,10 +91,12 @@ class DisplayAndroidManagerTest : public testing::Test {
         env_, display_params.sdk_display_id,
         base::android::ConvertUTF8ToJavaString(env_, display_params.label),
         base::android::ToJavaIntArray(env_, display_params.bounds),
-        base::android::ToJavaIntArray(env_, display_params.insets),
-        display_params.dip_scale, display_params.pixels_per_inch_x,
-        display_params.pixels_per_inch_y, display_params.rotation_degrees,
-        display_params.bits_per_pixel, display_params.bits_per_component,
+        base::android::ToJavaIntArray(env_, display_params.work_area),
+        display_params.size_in_pixels.width(),
+        display_params.size_in_pixels.height(), display_params.dip_scale,
+        display_params.pixels_per_inch_x, display_params.pixels_per_inch_y,
+        display_params.rotation_degrees, display_params.bits_per_pixel,
+        display_params.bits_per_component,
         /* isWideColorGamut= */ false, /* isHdr= */ false,
         /* hdrMaxLuminanceRatio= */ 1.0, display_params.is_internal);
   }
@@ -135,18 +131,25 @@ class DisplayAndroidManagerTest : public testing::Test {
     EXPECT_EQ(display.id(), display_params.sdk_display_id);
     EXPECT_EQ(display.label(), display_params.label);
 
-    EXPECT_EQ(display.GetSizeInPixel(),
-              gfx::Size(display_params.bounds[2] - display_params.bounds[0],
-                        display_params.bounds[3] - display_params.bounds[1]));
     EXPECT_EQ(display.RotationAsDegree(), display_params.rotation_degrees);
     EXPECT_EQ(display.device_scale_factor(), display_params.dip_scale);
-    EXPECT_EQ(display.bounds(), display_params.scaled_bounds);
+
+    gfx::Rect bounds;
+    bounds.SetByBounds(display_params.bounds[0], display_params.bounds[1],
+                       display_params.bounds[2], display_params.bounds[3]);
+    EXPECT_EQ(display.bounds(), bounds);
 
     if (base::FeatureList::IsEnabled(kAndroidUseCorrectDisplayWorkArea)) {
-      EXPECT_EQ(display.work_area(), display_params.scaled_work_area);
+      gfx::Rect work_area;
+      work_area.SetByBounds(
+          display_params.work_area[0], display_params.work_area[1],
+          display_params.work_area[2], display_params.work_area[3]);
+      EXPECT_EQ(display.work_area(), work_area);
     } else {
-      EXPECT_EQ(display.work_area(), display_params.scaled_bounds);
+      EXPECT_EQ(display.work_area(), display.bounds());
     }
+
+    EXPECT_EQ(display.GetSizeInPixel(), display_params.size_in_pixels);
 
     EXPECT_EQ(display.color_depth(), display_params.bits_per_pixel);
     EXPECT_EQ(display.depth_per_component(), display_params.bits_per_component);

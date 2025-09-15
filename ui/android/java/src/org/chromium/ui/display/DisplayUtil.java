@@ -421,6 +421,28 @@ public abstract class DisplayUtil {
     }
 
     /**
+     * Scales a given rectangle by a specified factor and rounds the result to the smallest
+     * integer-based rectangle that encloses it.
+     *
+     * @param rect The original {@link android.graphics.Rect} to be scaled.
+     * @param scale The scaling factor.
+     * @return The new {@link android.graphics.Rect} that encloses the scaled rectangle.
+     */
+    public static Rect scaleToEnclosingRect(Rect rect, float scale) {
+        final RectF scaledRect =
+                new RectF(
+                        rect.left * scale,
+                        rect.top * scale,
+                        rect.right * scale,
+                        rect.bottom * scale);
+
+        final Rect enclosingRect = new Rect();
+        scaledRect.roundOut(enclosingRect);
+
+        return enclosingRect;
+    }
+
+    /**
      * Determine whether the given context is associated with the default display.
      *
      * @param context The context to determine display state.

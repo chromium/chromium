@@ -184,12 +184,12 @@ public class DisplayAndroidManagerTest {
                 displayAndroidManager.mIdMap.get(Display.DEFAULT_DISPLAY).getBounds());
         assertEquals(
                 "External Display bounds incorrect after initialization.",
-                new Rect(0, -2160, 3840, 0),
+                new Rect(0, -1440, 2560, 0),
                 displayAndroidManager.mIdMap.get(externalDisplayId).getBounds());
 
         mBounds.put(externalDisplayId, new RectF(0, -1080, 1920, 0));
 
-        // Update only bounds.
+        // Update bounds.
         updateDisplayTopology(displayAndroidManager);
 
         assertEquals(
@@ -198,12 +198,10 @@ public class DisplayAndroidManagerTest {
                 displayAndroidManager.mIdMap.get(Display.DEFAULT_DISPLAY).getBounds());
         assertEquals(
                 "External Display absolute bounds incorrect after bounds update.",
-                new Rect(0, -1620, 2880, 0),
+                new Rect(0, -1080, 1920, 0),
                 displayAndroidManager.mIdMap.get(externalDisplayId).getBounds());
 
-        // Update only density.
-        updateDensity(externalDisplayId, DisplayMetrics.DENSITY_300);
-        // DisplayListenerBackend.onDisplayChanged should process this update
+        // DisplayListenerBackend.onDisplayChanged should process this update.
         ShadowDisplayManager.changeDisplay(externalDisplayId, "+");
 
         assertEquals(
@@ -212,21 +210,7 @@ public class DisplayAndroidManagerTest {
                 displayAndroidManager.mIdMap.get(Display.DEFAULT_DISPLAY).getBounds());
         assertEquals(
                 "External Display absolute bounds incorrect after density update.",
-                new Rect(0, -2025, 3600, 0),
-                displayAndroidManager.mIdMap.get(externalDisplayId).getBounds());
-
-        // Update bounds and density.
-        updateDensity(externalDisplayId, DisplayMetrics.DENSITY_200);
-        mBounds.put(externalDisplayId, new RectF(0, -1728, 3072, 0));
-        updateDisplayTopology(displayAndroidManager);
-
-        assertEquals(
-                "BuiltIn Display bounds incorrect after bounds and density update.",
-                new Rect(0, 0, 1920, 1080),
-                displayAndroidManager.mIdMap.get(Display.DEFAULT_DISPLAY).getBounds());
-        assertEquals(
-                "External Display bounds incorrect after bounds and density update.",
-                new Rect(0, -2160, 3840, 0),
+                new Rect(0, -1080, 1920, 0),
                 displayAndroidManager.mIdMap.get(externalDisplayId).getBounds());
     }
 
