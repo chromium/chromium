@@ -114,9 +114,7 @@ static std::string SerializeCommand(int command_id,
   command.Set(kMethodParam, method);
   command.Set(kParamsParam, std::move(params));
 
-  std::string json_command;
-  base::JSONWriter::Write(command, &json_command);
-  return json_command;
+  return base::WriteJson(command).value_or("");
 }
 
 net::NetworkTrafficAnnotationTag kPortForwardingControllerTrafficAnnotation =

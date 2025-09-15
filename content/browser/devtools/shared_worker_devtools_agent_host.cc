@@ -72,9 +72,7 @@ std::string SharedWorkerDevToolsAgentHost::GetDescription() {
 
   base::Value::Dict description;
   description.Set("extendedLifetime", true);
-  std::string json;
-  base::JSONWriter::Write(description, &json);
-  return json;
+  return base::WriteJson(description).value_or("");
 }
 
 GURL SharedWorkerDevToolsAgentHost::GetURL() {
