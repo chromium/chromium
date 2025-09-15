@@ -62,12 +62,23 @@ enum AIPageContentAnnotatedRole {
 };
 
 struct AIPageContentGeometry {
-  // The bounding box of the content node, in the page coordinate system.
-  // IOW, the outerBox is relative to the root of the top (root) document.
+  // The bounding box of the content node mapped to the viewport ignoring any
+  // ancestor clips (including the viewport clip). This can be thought of as the
+  // where the element would be relative to the viewport if it "popped out" of
+  // the page and was painted on top of all the content. A few use-case for this
+  // are:
+  //
+  // - If empty, this implies the node is not hit-testable, even once
+  //   scrolled onscreen.
+  // - The rect's origin indicates whether it starts above or below the
+  //   viewport. A negative y-coordinate means the node's content starts
+  //   above the viewport.
   gfx.mojom.Rect outer_bounding_box;
 
-  // Subset of this node visible on the page. Empty if offscreen.
-  // Relative to viewport origin (unlike the outer bounding box).
+  // The bounding box of the content node relative to the viewport after
+  // applying all ancestor and viewport clipping. These are the element
+  // bounds visible to the user and immediately hit-testable (even without
+  // scrolling). Empty if fully offscreen or has no area.
   gfx.mojom.Rect visible_bounding_box;
 
   // Multiple boxes are used when there are multiple rectangles belonging to

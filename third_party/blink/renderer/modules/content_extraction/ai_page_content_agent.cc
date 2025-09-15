@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_caption.h"
@@ -64,7 +65,9 @@
 namespace blink {
 namespace {
 
-constexpr MapCoordinatesFlags kMapCoordinatesFlags =
+// Coordinate mapping flags
+// - Viewport mapping: positions relative to the window/viewport origin.
+constexpr MapCoordinatesFlags kMapToViewportFlags =
     kTraverseDocumentBoundaries | kApplyRemoteViewportTransform;
 constexpr VisualRectFlags kVisualRectFlags = static_cast<VisualRectFlags>(
     kUseGeometryMapper | kVisualRectApplyRemoteViewportTransform |
@@ -139,11 +142,11 @@ gfx::Rect ComputeOuterBoundingBox(const LayoutObject& object) {
 
   if (clip_path_box.has_value()) {
     gfx::QuadF absolute_quad = object.LocalToAbsoluteQuad(
-        gfx::QuadF(clip_path_box.value()), kMapCoordinatesFlags);
+        gfx::QuadF(clip_path_box.value()), kMapToViewportFlags);
     return gfx::ToEnclosingRect(absolute_quad.BoundingBox());
   }
 
-  return object.AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
+  return object.AbsoluteBoundingBoxRect(kMapToViewportFlags);
 }
 
 // Processes fragment bounding boxes for layout objects that can be split.
@@ -164,7 +167,7 @@ void ComputeFragmentBoundingBoxes(
     mojom::blink::AIPageContentGeometry& geometry) {
   Vector<gfx::QuadF> fragment_quads_in_viewport_coords;
   object.QuadsInAncestor(fragment_quads_in_viewport_coords,
-                         /*ancestor=*/nullptr, kMapCoordinatesFlags);
+                         /*ancestor=*/nullptr, kMapToViewportFlags);
 
   Vector<gfx::Rect> fragment_rects_in_viewport_coords;
   for (const auto& fragment_quad_in_viewport_coords :
@@ -1533,18 +1536,20 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
 
   // Compute the two fundamental bounding boxes:
   //
-  // 1. outer_bounding_box: The object's full bounding box in document
-  // coordinates
-  //    This includes the entire object regardless of viewport visibility
+  // 1. outer_bounding_box: The object's full bounding box in viewport
+  //    coordinates, ignoring all ancestor clipping (including the viewport
+  //    clip). This includes the entire object regardless of viewport
+  //    visibility. The origin is relative to the viewport; negative values
+  //    indicate the object begins above/left of the viewport.
   //
-  // 2. visible_bounding_box: The portion visible in the viewport
-  //    This is clipped by viewport bounds and scroll positions
+  // 2. visible_bounding_box: The portion visible in the viewport, expressed in
+  //    viewport coordinates after applying all ancestor and viewport clipping.
   //
   // These boxes serve different purposes:
-  // - outer_bounding_box: Used for hit-testing and determining object size
-  // (page coordinates)
-  // - visible_bounding_box: Used for determining what's actually visible to
-  // users (viewport coordinates)
+  // - outer_bounding_box: Used for hit-testing semantics and determining the
+  //   object’s overall size and position relative to the viewport.
+  // - visible_bounding_box: Used for determining what is actually visible to
+  //   users and immediately hit-testable without scrolling.
   geometry.outer_bounding_box = ComputeOuterBoundingBox(object);
   geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
 
@@ -1587,7 +1592,7 @@ void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
 
   const auto local_visible_viewport_rect =
       document.GetLayoutView()->AbsoluteToLocalRect(PhysicalRect(viewport_rect),
-                                                    kMapCoordinatesFlags);
+                                                    kMapToViewportFlags);
   HitTestLocation location(local_visible_viewport_rect);
 
   std::vector<DOMNodeId> hit_nodes;
