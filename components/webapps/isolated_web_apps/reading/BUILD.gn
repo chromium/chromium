@@ -42,6 +42,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "reader_registry_unittest.cc",
+    "response_reader_factory_unittest.cc",
     "response_reader_unittest.cc",
     "signed_web_bundle_reader_unittest.cc",
     "validator_unittest.cc",

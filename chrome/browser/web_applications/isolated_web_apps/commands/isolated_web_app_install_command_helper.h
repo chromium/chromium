@@ -41,12 +41,7 @@ enum class WebAppUrlLoaderResult;
 namespace web_app {
 
 enum class IconsDownloadedResult;
-class IsolatedWebAppResponseReader;
-class IsolatedWebAppStorageLocation;
-class IsolatedWebAppResponseReaderFactory;
-class IwaSourceWithMode;
 class IwaSourceWithModeAndFileOp;
-class UnusableSwbnFileError;
 class WebAppDataRetriever;
 class WebAppRegistrar;
 
@@ -124,17 +119,12 @@ VersionChangeValidationResult ValidateVersionChangeFeasibility(
 // install and update commands.
 class IsolatedWebAppInstallCommandHelper {
  public:
-  static std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-  CreateDefaultResponseReaderFactory(Profile& profile);
-
   static std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
       Profile& profile);
 
   IsolatedWebAppInstallCommandHelper(
       IsolatedWebAppUrlInfo url_info,
-      std::unique_ptr<WebAppDataRetriever> data_retriever,
-      std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-          response_reader_factory);
+      std::unique_ptr<WebAppDataRetriever> data_retriever);
   ~IsolatedWebAppInstallCommandHelper();
 
   IsolatedWebAppInstallCommandHelper(
@@ -184,22 +174,6 @@ class IsolatedWebAppInstallCommandHelper {
           callback);
 
  private:
-  void CheckTrustAndSignaturesOfBundle(
-      const base::FilePath& path,
-      bool dev_mode,
-      base::OnceCallback<
-          void(base::expected<
-               std::optional<web_package::SignedWebBundleIntegrityBlock>,
-               std::string>)> callback);
-
-  void OnTrustAndSignaturesOfBundleChecked(
-      base::OnceCallback<
-          void(base::expected<
-               std::optional<web_package::SignedWebBundleIntegrityBlock>,
-               std::string>)> callback,
-      base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                     UnusableSwbnFileError> status);
-
   void OnLoadInstallUrl(
       base::OnceCallback<void(base::expected<void, std::string>)> callback,
       webapps::WebAppUrlLoaderResult result);
@@ -219,7 +193,6 @@ class IsolatedWebAppInstallCommandHelper {
 
   IsolatedWebAppUrlInfo url_info_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
-  std::unique_ptr<IsolatedWebAppResponseReaderFactory> response_reader_factory_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
   base::Value::Dict manifest_to_info_debug_data_;
 

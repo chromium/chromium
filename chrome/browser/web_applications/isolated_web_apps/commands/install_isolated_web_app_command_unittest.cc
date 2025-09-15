@@ -61,8 +61,6 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
-#include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
-#include "components/webapps/isolated_web_apps/reading/validator.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/test_support/test_signed_web_bundle_builder.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
@@ -392,9 +390,7 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppId) {
                                         InstallIsolatedWebAppCommandError>>
       test_future;
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
-      url_info, web_contents_manager().CreateDataRetriever(),
-      IsolatedWebAppInstallCommandHelper::CreateDefaultResponseReaderFactory(
-          *profile()));
+      url_info, web_contents_manager().CreateDataRetriever());
 
   auto command = std::make_unique<InstallIsolatedWebAppCommand>(
       url_info, IsolatedWebAppInstallSource::FromDevUi(CreateDevProxySource()),

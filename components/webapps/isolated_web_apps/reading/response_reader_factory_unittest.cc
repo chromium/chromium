@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
+
 #include <memory>
 #include <optional>
 
@@ -20,8 +22,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -31,11 +31,13 @@
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
-#include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
-#include "components/webapps/isolated_web_apps/reading/validator.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/test_support/test_iwa_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,11 +50,13 @@ namespace {
 using base::test::ErrorIs;
 using base::test::HasValue;
 using base::test::RunOnceCallback;
+using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsFalse;
 using testing::IsTrue;
 using testing::Property;
+using testing::Return;
 using testing::StartsWith;
 
 using VerifierError = web_package::SignedWebBundleSignatureVerifier::Error;
@@ -66,16 +70,10 @@ constexpr uint8_t kEd25519Signature[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
 
-class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
- public:
-  IsolatedWebAppResponseReaderFactoryTest()
-      : WebAppTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
-  }
-
+class IsolatedWebAppResponseReaderFactoryTest : public testing::Test {
  protected:
   void SetUp() override {
-    WebAppTest::SetUp();
+    IwaIdentityValidator::CreateSingleton();
 
     parser_factory_ = std::make_unique<web_package::MockWebBundleParserFactory>(
         on_create_parser_future_.GetCallback());
@@ -119,7 +117,8 @@ class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
     integrity_block_->attributes =
         web_package::test::GetAttributesForSignedWebBundleId(kWebBundleId.id());
 
-    factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(profile());
+    factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
+        &browser_context_);
 
     CHECK(temp_dir_.CreateUniqueTempDir());
     CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path_));
@@ -130,13 +129,11 @@ class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
 
-    AddTrustedWebBundleIdForTesting(kWebBundleId);
+    ON_CALL(iwa_client_, ValidateTrust(_, kWebBundleId, _))
+        .WillByDefault(Return(base::ok()));
   }
 
-  void TearDown() override {
-    factory_.reset();
-    WebAppTest::TearDown();
-  }
+  void TearDown() override { factory_.reset(); }
 
   void FulfillIntegrityBlock() {
     parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
@@ -154,11 +151,16 @@ class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
         response_->Clone());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kIsolatedWebApps};
+
+  content::BrowserTaskEnvironment env_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
   base::FilePath web_bundle_path_;
   base::test::RepeatingTestFuture<std::optional<GURL>> on_create_parser_future_;
+
+  content::TestBrowserContext browser_context_;
 
   const web_package::SignedWebBundleId kWebBundleId =
       *web_package::SignedWebBundleId::Create(
@@ -181,6 +183,8 @@ class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
       reset_signature_verifier_ =
           web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
               &signature_verifier_);
+
+  test::MockIwaClient iwa_client_;
 };
 
 using ReaderResult =
@@ -260,8 +264,7 @@ class IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest
       public ::testing::WithParamInterface<std::tuple<VerifierError, bool>> {
  public:
   IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest()
-      : IsolatedWebAppResponseReaderFactoryTest(),
-        error_(std::get<0>(GetParam())),
+      : error_(std::get<0>(GetParam())),
         skip_signature_verification_(std::get<1>(GetParam())) {}
 
  protected:

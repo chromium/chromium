@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
-#include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/web_contents.h"
@@ -43,9 +42,7 @@ class WebAppInstallInfoFetcher {
         source_(source),
         helper_(std::make_unique<IsolatedWebAppInstallCommandHelper>(
             url_info,
-            provider->web_contents_manager().CreateDataRetriever(),
-            IsolatedWebAppInstallCommandHelper::
-                CreateDefaultResponseReaderFactory(*profile))),
+            provider->web_contents_manager().CreateDataRetriever())),
         web_contents_(
             IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
                 *profile)) {}

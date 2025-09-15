@@ -40,12 +40,12 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/base32/base32.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/isolated_web_apps/bundle_operations/bundle_operations.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
-#include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
-#include "components/webapps/isolated_web_apps/reading/validator.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
@@ -67,6 +67,9 @@ constexpr static char kGeneratedInstallPagePath[] =
     "/.well-known/_generated_install_page.html";
 
 constexpr unsigned kRandomDirNameOctetsLength = 10;
+
+using web_package::SignedWebBundleId;
+using web_package::SignedWebBundleIntegrityBlock;
 
 // Returns a base32 representation of 80 random bits. This leads
 // to the 16 characters long directory name. 80 bits should be long
@@ -151,6 +154,14 @@ bool IntegrityBlockDataHasRotatedKey(
          integrity_block_data->HasPublicKey(rotated_key);
 }
 
+base::expected<std::optional<SignedWebBundleIntegrityBlock>, std::string>
+ExpectedToExpectedOptional(
+    base::expected<SignedWebBundleIntegrityBlock, std::string> result) {
+  return result.transform([](SignedWebBundleIntegrityBlock value) {
+    return std::make_optional(value);
+  });
+}
+
 }  // namespace
 
 void CleanupLocationIfOwned(const base::FilePath& profile_dir,
@@ -232,11 +243,9 @@ GetIsolatedWebAppById(const WebAppRegistrar& registrar,
   return *iwa;
 }
 
-base::flat_map<web_package::SignedWebBundleId,
-               std::reference_wrapper<const WebApp>>
+base::flat_map<SignedWebBundleId, std::reference_wrapper<const WebApp>>
 GetInstalledIwas(const WebAppRegistrar& registrar) {
-  base::flat_map<web_package::SignedWebBundleId,
-                 std::reference_wrapper<const WebApp>>
+  base::flat_map<SignedWebBundleId, std::reference_wrapper<const WebApp>>
       installed_iwas;
   for (const WebApp& web_app : registrar.GetApps()) {
     if (!web_app.isolation_data().has_value()) {
@@ -256,7 +265,7 @@ GetInstalledIwas(const WebAppRegistrar& registrar) {
 }
 
 KeyRotationLookupResult LookupRotatedKey(
-    const web_package::SignedWebBundleId& web_bundle_id,
+    const SignedWebBundleId& web_bundle_id,
     base::optional_ref<base::Value::Dict> debug_log) {
   auto log_rotated_key = [&](const std::string& value) {
     if (debug_log) {
@@ -279,9 +288,8 @@ KeyRotationLookupResult LookupRotatedKey(
   return KeyRotationLookupResult::kKeyFound;
 }
 
-KeyRotationData GetKeyRotationData(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const IsolationData& isolation_data) {
+KeyRotationData GetKeyRotationData(const SignedWebBundleId& web_bundle_id,
+                                   const IsolationData& isolation_data) {
   const auto* kr_info =
       IwaKeyDistributionInfoProvider::GetInstance().GetKeyRotationInfo(
           web_bundle_id.id());
@@ -336,21 +344,11 @@ IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
   return web_contents;
 }
 
-// static
-std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-IsolatedWebAppInstallCommandHelper::CreateDefaultResponseReaderFactory(
-    Profile& profile) {
-  return std::make_unique<IsolatedWebAppResponseReaderFactory>(&profile);
-}
-
 IsolatedWebAppInstallCommandHelper::IsolatedWebAppInstallCommandHelper(
     IsolatedWebAppUrlInfo url_info,
-    std::unique_ptr<WebAppDataRetriever> data_retriever,
-    std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-        response_reader_factory)
+    std::unique_ptr<WebAppDataRetriever> data_retriever)
     : url_info_(std::move(url_info)),
-      data_retriever_(std::move(data_retriever)),
-      response_reader_factory_(std::move(response_reader_factory)) {}
+      data_retriever_(std::move(data_retriever)) {}
 
 IsolatedWebAppInstallCommandHelper::~IsolatedWebAppInstallCommandHelper() =
     default;
@@ -359,9 +357,8 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
     const IwaSourceWithMode& location,
     Profile* profile,
     base::OnceCallback<
-        void(base::expected<
-             std::optional<web_package::SignedWebBundleIntegrityBlock>,
-             std::string>)> callback) {
+        void(base::expected<std::optional<SignedWebBundleIntegrityBlock>,
+                            std::string>)> callback) {
   std::visit(
       absl::Overload{
           [&](const IwaSourceBundleWithMode& location) {
@@ -371,8 +368,11 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
                   base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
               return;
             }
-            CheckTrustAndSignaturesOfBundle(
-                location.path(), location.dev_mode(), std::move(callback));
+            ValidateSignedWebBundleTrustAndSignatures(
+                profile, location.path(), url_info_.web_bundle_id(),
+                location.dev_mode(),
+                base::BindOnce(&ExpectedToExpectedOptional)
+                    .Then(std::move(callback)));
           },
           [&](const IwaSourceProxy& location) {
             CHECK(url_info_.web_bundle_id().is_for_proxy_mode());
@@ -395,59 +395,11 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
   CheckTrustAndSignatures(
       location, profile,
       base::BindOnce(
-          [](base::expected<
-              std::optional<web_package::SignedWebBundleIntegrityBlock>,
-              std::string> result) {
+          [](base::expected<std::optional<SignedWebBundleIntegrityBlock>,
+                            std::string> result) {
             return result.transform([](const auto&) -> void {});
           })
           .Then(std::move(callback)));
-}
-
-void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignaturesOfBundle(
-    const base::FilePath& path,
-    bool dev_mode,
-    base::OnceCallback<
-        void(base::expected<
-             std::optional<web_package::SignedWebBundleIntegrityBlock>,
-             std::string>)> callback) {
-  // To check whether the bundle is valid and trusted, we attempt to create a
-  // `IsolatedWebAppResponseReader`. If a response reader is created
-  // successfully, then this means that the Signed Web Bundle...
-  // - ...is well formatted and uses a supported Web Bundle version.
-  // - ...contains a valid integrity block with a trusted public key.
-  // - ...has signatures that were verified successfully (as long as
-  //   `skip_signature_verification` below is set to `false`).
-  // - ...contains valid metadata / no invalid URLs.
-  IsolatedWebAppResponseReaderFactory::Flags flags;
-  if (dev_mode) {
-    flags.Put(IsolatedWebAppResponseReaderFactory::Flag::kDevModeBundle);
-  }
-  response_reader_factory_->CreateResponseReader(
-      path, url_info_.web_bundle_id(), flags,
-      base::BindOnce(&IsolatedWebAppInstallCommandHelper::
-                         OnTrustAndSignaturesOfBundleChecked,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void IsolatedWebAppInstallCommandHelper::OnTrustAndSignaturesOfBundleChecked(
-    base::OnceCallback<
-        void(base::expected<
-             std::optional<web_package::SignedWebBundleIntegrityBlock>,
-             std::string>)> callback,
-    base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                   UnusableSwbnFileError> result) {
-  ASSIGN_OR_RETURN(
-      auto reader, std::move(result), [&](const UnusableSwbnFileError& error) {
-        std::move(callback).Run(base::unexpected(
-            IsolatedWebAppResponseReaderFactory::ErrorToString(error)));
-      });
-
-  auto* reader_ptr = reader.get();
-  base::OnceClosure reader_keep_alive =
-      base::DoNothingWithBoundArgs(std::move(reader));
-  reader_ptr->Close(std::move(reader_keep_alive)
-                        .Then(base::BindOnce(std::move(callback),
-                                             reader_ptr->GetIntegrityBlock())));
 }
 
 void IsolatedWebAppInstallCommandHelper::CreateStoragePartitionIfNotPresent(

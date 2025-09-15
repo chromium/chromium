@@ -120,9 +120,7 @@ void MockIwaInstallCommandWrapper::ScheduleCommand() {
           /*optional_profile_keep_alive=*/nullptr, std::move(*callback_),
           std::make_unique<IsolatedWebAppInstallCommandHelper>(
               *url_info_,
-              provider_->web_contents_manager().CreateDataRetriever(),
-              IsolatedWebAppInstallCommandHelper::
-                  CreateDefaultResponseReaderFactory(*profile_)),
+              provider_->web_contents_manager().CreateDataRetriever()),
           execution_mode_));
 }
 
