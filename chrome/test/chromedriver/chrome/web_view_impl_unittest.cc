@@ -102,9 +102,7 @@ std::string WrapToJson(base::Value value, int status = 0) {
   base::Value::Dict result;
   result.Set("value", std::move(value));
   result.Set("status", 0);
-  std::string json;
-  base::JSONWriter::Write(result, &json);
-  return json;
+  return base::WriteJson(result).value_or("");
 }
 
 base::Value::Dict GenerateResponse(int backend_node_id,

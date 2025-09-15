@@ -113,9 +113,8 @@ bool StubSyncWebSocket::Send(const std::string& message) {
         !it->second.Run(cmd_id, params, response)) {
       GenerateDefaultResponse(cmd_id, response);
     }
-    std::string serialized_response;
-    base::JSONWriter::Write(base::Value(std::move(response)),
-                            &serialized_response);
+    std::string serialized_response =
+        base::WriteJson(base::Value(std::move(response))).value_or("");
     if (response_limit_ > 0) {
       --response_limit_;
       queued_response_.push(std::move(serialized_response));
@@ -210,8 +209,8 @@ void StubSyncWebSocket::EnqueueHandshakeResponse(int cmd_id,
   base::Value::Dict result;
   result.Set("param", 1);
   response.Set("result", std::move(result));
-  std::string message;
-  base::JSONWriter::Write(base::Value(std::move(response)), &message);
+  std::string message =
+      base::WriteJson(base::Value(std::move(response))).value_or("");
   if (response_limit_ > 0) {
     --response_limit_;
     queued_response_.push(std::move(message));

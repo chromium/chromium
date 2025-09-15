@@ -103,8 +103,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
 
     const std::string* context_id = context->FindString("uniqueId");
     if (!context_id) {
-      std::string json;
-      base::JSONWriter::Write(*context, &json);
+      std::string json = base::WriteJson(*context).value_or("");
       return Status(kUnknownError, method + " has invalid 'context': " + json);
     }
 

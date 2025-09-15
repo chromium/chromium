@@ -1170,7 +1170,7 @@ Status ProcessExtension(const std::string& extension,
     }
   } else {
     manifest->Set("key", public_key_base64);
-    base::JSONWriter::Write(*manifest, &manifest_data);
+    manifest_data = base::WriteJson(*manifest).value_or("");
     if (!base::WriteFile(manifest_path, manifest_data)) {
       return Status(kUnknownError, "cannot add 'key' to manifest");
     }
@@ -1247,8 +1247,7 @@ Status WritePrefsFile(const std::string& template_string,
     }
   }
 
-  std::string prefs_str;
-  base::JSONWriter::Write(*prefs, &prefs_str);
+  std::string prefs_str = base::WriteJson(*prefs).value_or("");
   VLOG(0) << "Populating " << path.BaseName().value()
           << " file: " << PrettyPrintValue(*prefs);
   return base::WriteFile(path, prefs_str)

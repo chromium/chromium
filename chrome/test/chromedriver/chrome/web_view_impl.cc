@@ -1039,8 +1039,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
   // change in the mean time. This is detected by the remote code implementing
   // Runtime.callFunctionOn.
 
-  std::string json;
-  base::JSONWriter::Write(args, &json);
+  std::string json = base::WriteJson(args).value_or("");
   std::string w3c = base::ToString(w3c_compliant_);
   // TODO(zachconrad): Second null should be array of shadow host ids.
   std::string wrapper_function = base::StringPrintf(
