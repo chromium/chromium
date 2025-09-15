@@ -232,21 +232,6 @@
             ]
         }
     ],
-    "AccessibilityManifestV3EnhancedNetworkTts": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3EnhancedNetworkTts"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityManifestV3EspeakNGTts": [
         {
             "platforms": [

@@ -302,7 +302,7 @@ bool IsAccessibilityManifestV3EnabledForChromeVox() {
 }
 
 BASE_FEATURE(kAccessibilityManifestV3EnhancedNetworkTts,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityManifestV3EnhancedNetworkTts);
