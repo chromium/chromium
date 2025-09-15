@@ -494,10 +494,41 @@ class LocalNetworkAccessBrowserTest : public LocalNetworkAccessBrowserTestBase {
   LocalNetworkAccessBrowserTest() : LocalNetworkAccessBrowserTestBase() {
     // Some builders run with field_trial disabled, need to enable this
     // manually.
-    base::FieldTrialParams params;
-    params["LocalNetworkAccessChecksWarn"] = "false";
-    feature_list_.InitAndEnableFeatureWithParameters(
-        network::features::kLocalNetworkAccessChecks, params);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{network::features::kLocalNetworkAccessChecks,
+          {{"LocalNetworkAccessChecksWarn", "false"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This is the same as LocalNetworkAccessBrowserTest, but runs each test twice,
+// once with kOriginKeyedProcessesByDefault explicitly enabled, and once with it
+// explicitly disabled. The tests implemented using this class involve sandboxed
+// data: frames whose SiteInfo creation may vary depending on whether the
+// feature is enabled or not.
+class LocalNetworkAccessSandboxedDataBrowserTest
+    : public LocalNetworkAccessBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  LocalNetworkAccessSandboxedDataBrowserTest()
+      : LocalNetworkAccessBrowserTestBase() {
+    if (GetParam()) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{network::features::kLocalNetworkAccessChecks,
+            {{"LocalNetworkAccessChecksWarn", "false"}}},
+           {features::kOriginKeyedProcessesByDefault, {}}},
+          {});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          {
+              {network::features::kLocalNetworkAccessChecks,
+               {{"LocalNetworkAccessChecksWarn", "false"}}},
+          },
+          {features::kOriginKeyedProcessesByDefault});
+    }
   }
 
  private:
@@ -859,5 +890,816 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
 }
+
+// ========================
+// INHERITANCE TEST HELPERS
+// ========================
+
+namespace {
+
+// Creates a blob containing dummy HTML, then returns its URL.
+// Executes javascript to do so in |frame_host|, which must not be nullptr.
+GURL CreateBlobURL(RenderFrameHostImpl* frame_host) {
+  // Define a variable to avoid awkward `ExtractString()` indentation.
+  EvalJsResult result = EvalJs(frame_host, R"(
+    const blob = new Blob(["foo"], {type: "text/html"});
+    URL.createObjectURL(blob)
+  )");
+  return GURL(result.ExtractString());
+}
+
+// Executes |script| to add a new child iframe to the given |parent| document.
+//
+// |parent| must not be nullptr.
+//
+// Returns a pointer to the child frame host.
+RenderFrameHostImpl* AddChildWithScript(RenderFrameHostImpl* parent,
+                                        const std::string& script) {
+  size_t initial_child_count = parent->child_count();
+
+  EXPECT_EQ(true, ExecJs(parent, script));
+
+  EXPECT_EQ(parent->child_count(), initial_child_count + 1);
+  if (parent->child_count() < initial_child_count + 1) {
+    return nullptr;
+  }
+
+  return parent->child_at(initial_child_count)->current_frame_host();
+}
+
+// Adds a child iframe sourced from `url` to the given `parent` document and
+// waits for it to load. Returns the child RFHI.
+//
+// `parent` must not be nullptr.
+RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
+                                     std::string_view url) {
+  constexpr std::string_view kScriptTemplate = R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.src = $1;
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )";
+  return AddChildWithScript(parent, JsReplace(kScriptTemplate, url));
+}
+
+// Convenience overload for absolute URLs.
+RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
+                                     const GURL& url) {
+  return AddChildFromURL(parent, url.spec());
+}
+
+RenderFrameHostImpl* AddChildFromAboutBlank(RenderFrameHostImpl* parent) {
+  return AddChildFromURL(parent, "about:blank");
+}
+
+RenderFrameHostImpl* AddChildInitialEmptyDoc(RenderFrameHostImpl* parent) {
+  return AddChildWithScript(parent, R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = "/nocontent";  // Returns 204 NO CONTENT, thus no doc commits.
+    document.body.appendChild(iframe);
+    true  // Do not wait for iframe.onload, which never fires.
+  )");
+}
+
+RenderFrameHostImpl* AddChildFromSrcdoc(RenderFrameHostImpl* parent) {
+  return AddChildWithScript(parent, R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.srcdoc = "foo";
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )");
+}
+
+RenderFrameHostImpl* AddChildFromDataURL(RenderFrameHostImpl* parent) {
+  return AddChildFromURL(parent, "data:text/html,foo");
+}
+
+RenderFrameHostImpl* AddChildFromJavascriptURL(RenderFrameHostImpl* parent) {
+  return AddChildFromURL(parent, "javascript:'foo'");
+}
+
+RenderFrameHostImpl* AddChildFromBlob(RenderFrameHostImpl* parent) {
+  GURL blob_url = CreateBlobURL(parent);
+  return AddChildFromURL(parent, blob_url);
+}
+
+RenderFrameHostImpl* AddSandboxedChildFromURL(RenderFrameHostImpl* parent,
+                                              const GURL& url) {
+  std::string script_template = R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.src = $1;
+      iframe.sandbox = "";
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )";
+  return AddChildWithScript(parent, JsReplace(script_template, url));
+}
+
+RenderFrameHostImpl* AddSandboxedChildFromAboutBlank(
+    RenderFrameHostImpl* parent) {
+  return AddSandboxedChildFromURL(parent, GURL("about:blank"));
+}
+
+RenderFrameHostImpl* AddSandboxedChildInitialEmptyDoc(
+    RenderFrameHostImpl* parent) {
+  return AddChildWithScript(parent, R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = "/nocontent";  // Returns 204 NO CONTENT, thus no doc commits.
+    iframe.sandbox = "";
+    document.body.appendChild(iframe);
+    true  // Do not wait for iframe.onload, which never fires.
+  )");
+}
+
+RenderFrameHostImpl* AddSandboxedChildFromSrcdoc(RenderFrameHostImpl* parent) {
+  return AddChildWithScript(parent, R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.srcdoc = "foo";
+      iframe.sandbox = "";
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )");
+}
+
+RenderFrameHostImpl* AddSandboxedChildFromDataURL(RenderFrameHostImpl* parent) {
+  return AddSandboxedChildFromURL(parent, GURL("data:text/html,foo"));
+}
+
+RenderFrameHostImpl* AddSandboxedChildFromBlob(RenderFrameHostImpl* parent) {
+  GURL blob_url = CreateBlobURL(parent);
+  return AddSandboxedChildFromURL(parent, blob_url);
+}
+
+// Returns the main frame RenderFrameHostImpl in the given |shell|.
+//
+// |shell| must not be nullptr.
+//
+// Helper for OpenWindow*().
+RenderFrameHostImpl* GetPrimaryMainFrameHostImpl(Shell* shell) {
+  return static_cast<RenderFrameHostImpl*>(
+      shell->web_contents()->GetPrimaryMainFrame());
+}
+
+// Opens a new window from within |parent|, pointed at the given |url|.
+// Waits until the openee window has navigated to |url|, then returns a pointer
+// to its main frame RenderFrameHostImpl.
+//
+// |parent| must not be nullptr.
+RenderFrameHostImpl* OpenWindowFromURL(RenderFrameHostImpl* parent,
+                                       const GURL& url) {
+  return GetPrimaryMainFrameHostImpl(OpenPopup(parent, url, "_blank"));
+}
+
+RenderFrameHostImpl* OpenWindowFromAboutBlank(RenderFrameHostImpl* parent) {
+  return OpenWindowFromURL(parent, GURL("about:blank"));
+}
+
+// Same as above, but with the "noopener" window feature.
+RenderFrameHostImpl* OpenWindowFromAboutBlankNoOpener(
+    RenderFrameHostImpl* parent) {
+  // Setting the "noopener" window feature makes `window.open()` return `null`.
+  constexpr bool kNoExpectReturnFromWindowOpen = false;
+
+  return GetPrimaryMainFrameHostImpl(OpenPopup(parent, GURL("about:blank"),
+                                               "_blank", "noopener",
+                                               kNoExpectReturnFromWindowOpen));
+}
+
+RenderFrameHostImpl* OpenWindowFromURLExpectNoCommit(
+    RenderFrameHostImpl* parent,
+    const GURL& url,
+    std::string_view features = "") {
+  ShellAddedObserver observer;
+
+  std::string_view script_template = R"(
+    window.open($1, "_blank", $2);
+  )";
+  EXPECT_TRUE(ExecJs(parent, JsReplace(script_template, url, features)));
+
+  return GetPrimaryMainFrameHostImpl(observer.GetShell());
+}
+
+RenderFrameHostImpl* OpenWindowInitialEmptyDoc(RenderFrameHostImpl* parent) {
+  // Note: We do not use OpenWindowFromURL() because we do not want to wait for
+  // a navigation - none will commit.
+  return OpenWindowFromURLExpectNoCommit(parent, GURL("/nocontent"));
+}
+
+// Same as above, but with the "noopener" window feature.
+RenderFrameHostImpl* OpenWindowInitialEmptyDocNoOpener(
+    RenderFrameHostImpl* parent) {
+  // Note: We do not use OpenWindowFromURL() because we do not want to wait for
+  // a navigation - none will commit.
+  return OpenWindowFromURLExpectNoCommit(parent, GURL("/nocontent"),
+                                         "noopener");
+}
+
+GURL JavascriptURL(std::string_view script) {
+  return GURL(base::StrCat({"javascript:", script}));
+}
+
+RenderFrameHostImpl* OpenWindowFromJavascriptURL(
+    RenderFrameHostImpl* parent,
+    std::string_view script = "'foo'") {
+  // Note: We do not use OpenWindowFromURL() because we do not want to wait for
+  // a navigation, since the `javascript:` URL will not commit (`about:blank`
+  // will).
+  return OpenWindowFromURLExpectNoCommit(parent, JavascriptURL(script));
+}
+
+// Same as above, but with the "noopener" window feature.
+RenderFrameHostImpl* OpenWindowFromJavascriptURLNoOpener(
+    RenderFrameHostImpl* parent,
+    std::string_view script) {
+  // Note: We do not use OpenWindowFromURL() because we do not want to wait for
+  // a navigation - none will commit.
+  return OpenWindowFromURLExpectNoCommit(parent, JavascriptURL(script),
+                                         "noopener");
+}
+
+RenderFrameHostImpl* OpenWindowFromBlob(RenderFrameHostImpl* parent) {
+  GURL blob_url = CreateBlobURL(parent);
+  return OpenWindowFromURL(parent, blob_url);
+}
+
+}  // namespace
+
+// ===============================
+// ADDRESS SPACE INHERITANCE TESTS
+// ===============================
+//
+// These tests verify that `ClientSecurityState.ip_address_space` is correctly
+// inherited by child iframes and openee documents for a variety of URLs with
+// local schemes.
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForAboutBlankFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForAboutBlankFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsAddressSpaceForAboutBlankFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsAddressSpaceForAboutBlankFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+// This test verifies that a newly-opened window targeting `about:blank`
+// inherits its address space from the opener. In this case, the opener's
+// address space is `public`.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsAddressSpaceForAboutBlankFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+// This test verifies that a newly-opened window targeting `about:blank`
+// inherits its address space from the opener. In this case, the opener's
+// address space is `loopback`.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsAddressSpaceForAboutBlankFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+// This test verifies that a newly-opened window targeting `about:blank`,
+// opened with the "noopener" feature, has its address space set to `loopback`
+// regardless of the address space of the opener.
+//
+// Compare and contrast against the above tests without "noopener".
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeNoOpenerAddressSpaceForAboutBlankIsLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window =
+      OpenWindowFromAboutBlankNoOpener(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForInitialEmptyDocFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    IframeInheritsAddressSpaceForInitialEmptyDocFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsAddressSpaceForInitialEmptyDocFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsAddressSpaceForInitialEmptyDocFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+// This test verifies that a newly-opened window containing the initial empty
+// document inherits its address space from the opener. In this case, the
+// opener's address space is `public`.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsAddressSpaceForInitialEmptyDocFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+// This test verifies that a newly-opened window containing the initial empty
+// document inherits its address space from the opener. In this case, the
+// opener's address space is `loopback`.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    OpeneeInheritsAddressSpaceForInitialEmptyDocFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+// This test verifies that a newly-opened window containing the initial empty
+// document, opened with the "noopener" feature, has its address space set to
+// `loopback` regardless of the address space of the opener.
+//
+// Compare and contrast against the above tests without "noopener".
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeNoOpenerAddressSpaceForInitialEmptyDocIsLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window =
+      OpenWindowInitialEmptyDocNoOpener(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForAboutSrcdocFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForAboutSrcdocFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsAddressSpaceForAboutSrcdocFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsAddressSpaceForAboutSrcdocFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForDataURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForDataURLFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    LocalNetworkAccessSandboxedDataBrowserTest,
+    SandboxedIframeInheritsAddressSpaceForDataURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    LocalNetworkAccessSandboxedDataBrowserTest,
+    SandboxedIframeInheritsAddressSpaceForDataURLFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForJavascriptURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddChildFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForJavascriptURLFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddChildFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsAddressSpaceForJavascriptURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsAddressSpaceForJavascriptURLFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(
+      root_frame_host(), "var injectedCodeWasExecuted = true");
+  ASSERT_NE(nullptr, window);
+
+  // The Javascript in the URL got executed in the new window.
+  EXPECT_EQ(true, EvalJs(window, "injectedCodeWasExecuted"));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeNoOpenerAddressSpaceForJavascriptURLIsLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURLNoOpener(
+      root_frame_host(), "var injectedCodeWasExecuted = true");
+  ASSERT_NE(nullptr, window);
+
+  // The Javascript in the URL was not executed in the new window. This ensures
+  // it is safe to classify the new window as `loopback` without allowing the
+  // opener to execute arbitrary JS in the `loopback` address space.
+  EXPECT_EQ("undefined", EvalJs(window, "typeof injectedCodeWasExecuted"));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForBlobURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       IframeInheritsAddressSpaceForBlobURLFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsAddressSpaceForBlobURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    SandboxedIframeInheritsAddressSpaceForBlobURLFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsAddressSpaceForBlobURLFromPublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       OpeneeInheritsAddressSpaceForBlobURLFromLoopback) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         LocalNetworkAccessSandboxedDataBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "OriginKeyedProcessesByDefault_disabled"
+                                      : "OriginKeyedProcessesByDefault_enabled";
+                         });
 
 }  // namespace content
