@@ -23,6 +23,7 @@
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 #include "chrome/browser/performance_manager/observers/page_load_metrics_observer.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
+#include "chrome/browser/performance_manager/policies/best_effort_task_inhibiting_policy.h"
 #include "chrome/browser/performance_manager/policies/frame_throttling_policy.h"
 #include "chrome/browser/performance_manager/policies/freezing_opt_out_checker.h"
 #include "chrome/browser/performance_manager/policies/keep_alive_dse_policy.h"
@@ -219,6 +220,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
       std::make_unique<
           performance_manager::policies::UrgentPageDiscardingPolicy>());
 #endif  // URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
+
+  if (base::FeatureList::IsEnabled(performance_manager::features::
+                                       kEnableBestEffortTaskInhibitingPolicy)) {
+    graph->PassToGraph(
+        std::make_unique<
+            performance_manager::policies::BestEffortTaskInhibitingPolicy>());
+  }
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::

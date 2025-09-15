@@ -117,6 +117,13 @@ BASE_DECLARE_FEATURE_PARAM(int, kNotificationStringVersion);
 
 #endif
 
+// Enable best effort task inhibiting based on performance scenario information.
+BASE_DECLARE_FEATURE(kEnableBestEffortTaskInhibitingPolicy);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBestEffortTaskInhibitingPeriod);
+BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kBestEffortTaskInhibitingMinimumAllowedTimePerPeriod);
+
 BASE_DECLARE_FEATURE(kPMProcessPriorityPolicy);
 
 extern const base::FeatureParam<bool> kInheritParentPriority;

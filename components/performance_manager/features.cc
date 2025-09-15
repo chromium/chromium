@@ -166,6 +166,21 @@ BASE_FEATURE(kUnthrottledTabProcessReporting,
 
 #endif
 
+BASE_FEATURE(kEnableBestEffortTaskInhibitingPolicy,
+             "EnableBestEffortTaskInhibitingPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kBestEffortTaskInhibitingPeriod,
+                   &kEnableBestEffortTaskInhibitingPolicy,
+                   "enable_best_effort_task_inhibiting_period",
+                   base::Minutes(5));
+BASE_FEATURE_PARAM(
+    base::TimeDelta,
+    kBestEffortTaskInhibitingMinimumAllowedTimePerPeriod,
+    &kEnableBestEffortTaskInhibitingPolicy,
+    "enable_best_effort_task_inhibiting_minimum_allowed_time_per_period",
+    base::Seconds(30));
+
 BASE_FEATURE(kPMProcessPriorityPolicy,
              "PMProcessPriorityPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
