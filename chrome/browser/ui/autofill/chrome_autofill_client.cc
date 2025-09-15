@@ -75,6 +75,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_identity_credential_delegate.h"
+#include "components/autofill/content/browser/integrators/one_time_tokens/content_otp_field_detector.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -1116,7 +1117,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
               Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
 #endif
       ablation_study_(g_browser_process->local_state()),
-      identity_credential_delegate_(web_contents) {
+      identity_credential_delegate_(web_contents),
+      otp_field_detector_(std::make_unique<ContentOtpFieldDetector>(this)) {
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.
   GetStrikeDatabase();
@@ -1179,6 +1181,10 @@ ChromeAutofillClient::GetContentCredentialManager() {
     return chrome_password_manager_client->GetContentCredentialManager();
   }
   return nullptr;
+}
+
+OtpFieldDetector* ChromeAutofillClient::GetOtpFieldDetector() {
+  return otp_field_detector_.get();
 }
 
 void ChromeAutofillClient::set_test_addresses(

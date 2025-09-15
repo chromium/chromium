@@ -58,6 +58,7 @@ class SaveUpdateAddressProfileFlowManager;
 
 class AutofillOptimizationGuideDecider;
 class FormFieldData;
+class OtpFieldDetector;
 class LogRouter;
 enum class SuggestionType;
 
@@ -260,6 +261,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   credential_management::ContentCredentialManager* GetContentCredentialManager()
       override;
 
+  OtpFieldDetector* GetOtpFieldDetector() override;
+
  protected:
   explicit ChromeAutofillClient(content::WebContents* web_contents);
 
@@ -316,6 +319,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   const AutofillAblationStudy ablation_study_;
 
   ContentIdentityCredentialDelegate identity_credential_delegate_;
+  std::unique_ptr<OtpFieldDetector> otp_field_detector_;
+
   base::WeakPtrFactory<ChromeAutofillClient> weak_ptr_factory_{this};
 };
 

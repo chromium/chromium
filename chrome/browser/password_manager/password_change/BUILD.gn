@@ -22,8 +22,6 @@ source_set("password_change") {
     "login_state_checker.h",
     "model_quality_logs_uploader.cc",
     "model_quality_logs_uploader.h",
-    "otp_detection_helper.cc",
-    "otp_detection_helper.h",
     "password_change_hats.cc",
     "password_change_hats.h",
     "password_change_submission_verifier.cc",
@@ -61,7 +59,6 @@ source_set("unit_tests") {
     "cross_origin_navigation_observer_unittest.cc",
     "login_state_checker_unittest.cc",
     "model_quality_logs_uploader_unittest.cc",
-    "otp_detection_helper_unittest.cc",
     "password_change_hats_unittest.cc",
     "password_change_submission_verifier_unittest.cc",
   ]

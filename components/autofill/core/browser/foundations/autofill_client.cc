@@ -303,4 +303,8 @@ void AutofillClient::ShowEntitySaveOrUpdateBubble(
     std::optional<EntityInstance> old_entity,
     EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback) {}
 
+OtpFieldDetector* AutofillClient::GetOtpFieldDetector() {
+  return nullptr;
+}
+
 }  // namespace autofill

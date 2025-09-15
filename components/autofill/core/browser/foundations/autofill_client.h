@@ -106,6 +106,7 @@ class FieldClassificationModelHandler;
 class FormDataImporter;
 class LogManager;
 class OtpDelegate;
+class OtpFieldDetector;
 class PersonalDataManager;
 class SingleFieldFillRouter;
 class StrikeDatabase;
@@ -698,6 +699,9 @@ class AutofillClient {
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
       EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback);
+
+  // May return null on platforms where OTPs are not supported.
+  virtual OtpFieldDetector* GetOtpFieldDetector();
 };
 
 }  // namespace autofill

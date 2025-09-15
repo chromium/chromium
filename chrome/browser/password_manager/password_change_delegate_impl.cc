@@ -21,7 +21,6 @@
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
-#include "chrome/browser/password_manager/password_change/otp_detection_helper.h"
 #include "chrome/browser/password_manager/password_change/password_change_hats.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,6 +35,8 @@
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -234,28 +235,49 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
   ui_controller_ =
       std::make_unique<PasswordChangeUIController>(this, tab_interface);
 
-  auto* client = ChromePasswordManagerClient::FromWebContents(originator_);
-  if (!OtpDetectionHelper::IsOtpPresent(originator_, client)) {
+  // When the flow is started after a leak warning and the user just submitted
+  // their credentials, the website may still be waiting for an OTP submission
+  // in the `originator_` tab. In this case we need to wait for the OTP to be
+  // entered and submitted.
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(originator_);
+  autofill::OtpFieldDetector* otp_field_detector =
+      autofill_client->GetOtpFieldDetector();
+  if (!otp_field_detector->IsOtpFieldPresent()) {
     // Proceed with password change immediately if there is no OTP on a page.
     OnOtpNotFound();
     return;
   }
-  otp_detection_ = std::make_unique<OtpDetectionHelper>(
-      originator_, client,
-      base::BindOnce(&PasswordChangeDelegateImpl::OnOtpNotFound,
-                     weak_ptr_factory_.GetWeakPtr()));
+
   // Don't show the dialog and don't start the flow if user navigates to a
-  // different site instead of entering otp.
+  // different site instead of entering the OTP.
   navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
       originator_.get(), AffiliationServiceFactory::GetForProfile(profile_),
       base::BindOnce(
           &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
           weak_ptr_factory_.GetWeakPtr()));
+
+  // Register a callback to resume the password flow when the the OTP fields are
+  // submitted or gone, assuming that the user has entered and submitted the
+  // OTP in this case.
+  otp_fields_submitted_subscription_ =
+      otp_field_detector->RegisterOtpFieldsSubmittedCallback(
+          base::BindRepeating(&PasswordChangeDelegateImpl::OnOtpNotFound,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordChangeDelegateImpl::OnOtpNotFound() {
-  otp_detection_.reset();
-  navigation_observer_.reset();
+  // Stop listening for the removal of an OTP field.
+  otp_fields_submitted_subscription_ = {};
+
+  if (navigation_observer_ && !navigation_observer_->IsSameOrAffiliatedDomain(
+                                  originator_->GetLastCommittedURL())) {
+    // We may have detected an OTP submission that is actually a cross domain
+    // navigation. In this case we want to abort the flow because the user
+    // probably did not submit the OTP but navigated somewhere else.
+    OnCrossOriginNavigationDetected();
+    return;
+  }
 
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogMessage(BrowserSavePasswordProgressLogger::
@@ -369,7 +391,18 @@ void PasswordChangeDelegateImpl::ProceedToChangePassword() {
       executor_.get(), client, logs_uploader_.get(),
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
                      weak_ptr_factory_.GetWeakPtr()));
-  otp_observation_.Observe(client->GetOtpManager());
+
+  // Even though the user is assumed to be fully signed in by this point in
+  // time, they may still see an OTP during the password change flow, so watch
+  // for this.
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(executor_.get());
+  autofill::OtpFieldDetector* otp_field_detector =
+      autofill_client->GetOtpFieldDetector();
+  otp_fields_detected_subscription_ =
+      otp_field_detector->RegisterOtpFieldsDetectedCallback(
+          base::BindRepeating(&PasswordChangeDelegateImpl::OnOtpFieldDetected,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
@@ -383,7 +416,7 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   navigation_observer_.reset();
   submission_verifier_.reset();
   form_finder_.reset();
-  otp_observation_.Reset();
+  otp_fields_detected_subscription_ = {};
   executor_.reset();
 
   UpdateState(State::kCanceled);
@@ -473,19 +506,7 @@ void PasswordChangeDelegateImpl::OnPasswordFormSubmission(
   }
 }
 
-void PasswordChangeDelegateImpl::OnOtpFieldDetected(
-    password_manager::OtpFormManager* form_manager) {
-  CHECK(form_manager);
-
-  if (std::ranges::none_of(form_manager->otp_field_ids(),
-                           [&form_manager](const auto& field_id) {
-                             return form_manager->form_data()
-                                 .FindFieldByGlobalId(field_id)
-                                 ->is_focusable();
-                           })) {
-    return;
-  }
-
+void PasswordChangeDelegateImpl::OnOtpFieldDetected() {
   if (auto logger = GetLoggerIfAvailable(executor_.get())) {
     logger->LogMessage(BrowserSavePasswordProgressLogger::
                            STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DETECTED);
