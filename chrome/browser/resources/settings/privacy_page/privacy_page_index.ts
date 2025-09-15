@@ -89,6 +89,14 @@ export class SettingsPrivacyPageIndexElement extends
         value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
       },
 
+      enableFederatedIdentityApiContentSetting_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'enableFederatedIdentityApiContentSetting');
+        },
+      },
+
       enableExperimentalWebPlatformFeatures_: {
         type: Boolean,
         value: () => {
@@ -155,6 +163,12 @@ export class SettingsPrivacyPageIndexElement extends
         value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
       },
 
+      enableWebBluetoothNewPermissionsBackend_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
+      },
+
       enableWebPrintingContentSetting_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableWebPrintingContentSetting'),
@@ -190,6 +204,7 @@ export class SettingsPrivacyPageIndexElement extends
   declare private showPrivacyGuidePromo_: boolean;
   declare private autoPictureInPictureEnabled_: boolean;
   declare private capturedSurfaceControlEnabled_: boolean;
+  declare private enableFederatedIdentityApiContentSetting_: boolean;
   declare private enableExperimentalWebPlatformFeatures_: boolean;
   declare private enableHandTrackingContentSetting_: boolean;
   declare private enableIncognitoTrackingProtections_: boolean;
@@ -202,6 +217,7 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enablePaymentHandlerContentSetting_: boolean;
   declare private enableSecurityKeysSubpage_: boolean;
   declare private enableWebAppInstallation_: boolean;
+  declare private enableWebBluetoothNewPermissionsBackend_: boolean;
   declare private enableWebPrintingContentSetting_: boolean;
   declare private isAdPrivacyAvailable_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;

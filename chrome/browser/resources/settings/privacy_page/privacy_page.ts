@@ -86,26 +86,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('enableDeleteBrowsingDataRevamp'),
       },
 
-      enableFederatedIdentityApiContentSetting_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'enableFederatedIdentityApiContentSetting');
-        },
-      },
-
       enableExperimentalWebPlatformFeatures_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
               'enableExperimentalWebPlatformFeatures');
         },
-      },
-
-      enableWebBluetoothNewPermissionsBackend_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
       },
 
       isPrivacySandboxRestricted_: {
@@ -204,9 +190,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private showClearBrowsingDataDialog_: boolean;
   declare private showPrivacyGuideDialog_: boolean;
   declare private enableDeleteBrowsingDataRevamp_: boolean;
-  declare private enableFederatedIdentityApiContentSetting_: boolean;
   declare private enableExperimentalWebPlatformFeatures_: boolean;
-  declare private enableWebBluetoothNewPermissionsBackend_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
   declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
@@ -378,12 +362,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsAutoPictureInPicture':
       case 'siteSettingsAutoVerify':
       case 'siteSettingsBackgroundSync':
+      case 'siteSettingsBluetoothDevices':
       case 'siteSettingsBluetoothScanning':
       case 'siteSettingsCamera':
       case 'siteSettingsCapturedSurfaceControl':
       case 'siteSettingsClipboard':
+      case 'siteSettingsFederatedIdentityApi':
       case 'siteSettingsHandlers':
       case 'siteSettingsHandTracking':
+      case 'siteSettingsHidDevices':
       case 'siteSettingsIdleDetection':
       case 'siteSettingsImages':
       case 'siteSettingsJavascript':
@@ -401,6 +388,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsPopups':
       case 'siteSettingsProtectedContent':
       case 'siteSettingsSensors':
+      case 'siteSettingsSerialPorts':
       case 'siteSettingsSiteData':
       case 'siteSettingsSiteDetails':
       // <if expr="is_chromeos">
@@ -408,6 +396,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       // </if>
       case 'siteSettingsSound':
       case 'siteSettingsStorageAccess':
+      case 'siteSettingsUsbDevices':
       case 'siteSettingsVr':
       case 'siteSettingsWebAppInstallation':
       case 'siteSettingsWebPrinting':

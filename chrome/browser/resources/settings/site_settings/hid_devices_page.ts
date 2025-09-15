@@ -5,15 +5,19 @@
 import './chooser_exception_list.js';
 import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ChooserType, ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {getTemplate} from './hid_devices_page.html.js';
 
-export class HidDevicesPageElement extends PolymerElement {
+const HidDevicesPageElementBase = SettingsViewMixin(PolymerElement);
+
+export class HidDevicesPageElement extends HidDevicesPageElementBase {
   static get is() {
     return 'settings-hid-devices-page';
   }
@@ -36,6 +40,11 @@ export class HidDevicesPageElement extends PolymerElement {
         value: ChooserType,
       },
     };
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

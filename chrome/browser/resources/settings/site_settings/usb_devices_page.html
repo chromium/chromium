@@ -1,4 +1,7 @@
-  <style include="settings-shared site-settings-shared"></style>
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsUsbDevices}"
+    learn-more-url="$i18n{chooserUsbOverviewURL}"
+    route-path$="[[routePath]]">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsUsbDescription}
   </div>
@@ -13,3 +16,4 @@
       category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
       chooser-type="[[chooserTypeEnum_.USB_DEVICES]]">
   </chooser-exception-list>
+</settings-subpage>

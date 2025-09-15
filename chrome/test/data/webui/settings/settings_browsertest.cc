@@ -1319,12 +1319,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
-                       EnableWebBluetoothNewPermissionsBackend) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('EnableWebBluetoothNewPermissionsBackend')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
                        DeleteBrowsingDataRevampDisabled) {
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('DeleteBrowsingDataRevampDisabled')");

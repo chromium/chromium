@@ -147,8 +147,11 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_MIDI_DEVICES = r.SITE_SETTINGS.createChild('midiDevices');
   r.SITE_SETTINGS_MIDI_DEVICES.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_USB_DEVICES = r.SITE_SETTINGS.createChild('usbDevices');
+  r.SITE_SETTINGS_USB_DEVICES.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_HID_DEVICES = r.SITE_SETTINGS.createChild('hidDevices');
+  r.SITE_SETTINGS_HID_DEVICES.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_SERIAL_PORTS = r.SITE_SETTINGS.createChild('serialPorts');
+  r.SITE_SETTINGS_SERIAL_PORTS.hasMigratedToPlugin = true;
   if (loadTimeData.getBoolean('enableWebPrintingContentSetting')) {
     r.SITE_SETTINGS_WEB_PRINTING = r.SITE_SETTINGS.createChild('webPrinting');
     r.SITE_SETTINGS_WEB_PRINTING.hasMigratedToPlugin = true;
@@ -156,6 +159,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   if (loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend')) {
     r.SITE_SETTINGS_BLUETOOTH_DEVICES =
         r.SITE_SETTINGS.createChild('bluetoothDevices');
+    r.SITE_SETTINGS_BLUETOOTH_DEVICES.hasMigratedToPlugin = true;
   }
   r.SITE_SETTINGS_ZOOM_LEVELS = r.SITE_SETTINGS.createChild('zoomLevels');
   r.SITE_SETTINGS_ZOOM_LEVELS.hasMigratedToPlugin = true;
@@ -172,6 +176,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   if (loadTimeData.getBoolean('enableFederatedIdentityApiContentSetting')) {
     r.SITE_SETTINGS_FEDERATED_IDENTITY_API =
         r.SITE_SETTINGS.createChild('federatedIdentityApi');
+    r.SITE_SETTINGS_FEDERATED_IDENTITY_API.hasMigratedToPlugin = true;
   }
   r.SITE_SETTINGS_SITE_DATA = r.SITE_SETTINGS.createChild('siteData');
   r.SITE_SETTINGS_SITE_DATA.hasMigratedToPlugin = true;

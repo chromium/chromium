@@ -1,4 +1,8 @@
-  <style include="settings-shared site-settings-shared"></style>
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage
+    page-title="$i18n{siteSettingsCategoryFederatedIdentityApi}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsFederatedIdentityApiDescription}
   </div>
@@ -15,3 +19,4 @@
       block-header="$i18n{siteSettingsFederatedIdentityApiBlockedExceptions}"
       search-filter="[[searchTerm]]">
   </category-setting-exceptions>
+</settings-subpage>
