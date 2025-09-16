@@ -29,6 +29,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
@@ -173,7 +174,11 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
 
         Context context = ContextUtils.getApplicationContext();
         Intent trustedIncognitoIntent =
-                IntentHandler.createTrustedOpenNewTabIntent(context, /* incognito= */ true);
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? IntentHandler.createTrustedOpenNewWindowIntent(
+                                context, /* incognito= */ true)
+                        : IntentHandler.createTrustedOpenNewTabIntent(
+                                context, /* incognito= */ true);
         trustedIncognitoIntent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, true);
         trustedIncognitoIntent.addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
