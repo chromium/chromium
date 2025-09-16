@@ -35,7 +35,7 @@ BASE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode,
 
 // LINT.IfChange(autofill_isolated_content_world)
 BASE_FEATURE(kAutofillIsolatedWorldForJavascriptIos,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_isolated_content_world)
 
 BASE_FEATURE(kAutofillPaymentsSheetV2Ios, base::FEATURE_ENABLED_BY_DEFAULT);

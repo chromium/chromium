@@ -258,12 +258,10 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   }
 
   if ([self isRunningTest:@selector(testSubmissionErrorReporting_Enabled)]) {
-    config.features_enabled.push_back(kAutofillIsolatedWorldForJavascriptIos);
     config.features_enabled.push_back(kAutofillReportFormSubmissionErrors);
   }
 
   if ([self isRunningTest:@selector(testSubmissionErrorReporting_Disabled)]) {
-    config.features_enabled.push_back(kAutofillIsolatedWorldForJavascriptIos);
     config.features_disabled.push_back(kAutofillReportFormSubmissionErrors);
   }
 
@@ -273,16 +271,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
             (DISABLED_testSubmissionCountReporting_ScheduledTask)] ||
       [self isRunningTest:@selector
             (DISABLED_testSubmissionCountReporting_UnloadPage)]) {
-    config.features_enabled.push_back(kAutofillIsolatedWorldForJavascriptIos);
-    config.features_enabled.push_back(kAutofillCountFormSubmissionInRenderer);
-  }
-
-  // TODO(crbug.com/428189566): Re-enable after the test is fixed for
-  // ios-fieldtrial-rel.
-  if ([self
-          isRunningTest:@selector
-          (DISABLED_testSubmissionCountReporting_ScheduledTask_NotIsolated)]) {
-    config.features_disabled.push_back(kAutofillIsolatedWorldForJavascriptIos);
     config.features_enabled.push_back(kAutofillCountFormSubmissionInRenderer);
   }
 
@@ -1192,88 +1180,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
       @"Timed out waiting for the form submission metrics.");
 }
 
-// Tests submission count reporting with the scheduled task for the 2 types of
-// form submission, regular and programmatic - when autofill isn't in the
-// isolated world.
-// TODO(crbug.com/428189566): Re-enable after the test is fixed for
-// ios-fieldtrial-rel.
-- (void)DISABLED_testSubmissionCountReporting_ScheduledTask_NotIsolated {
-  // Load page without submitting the form.
-  [self loadFullAddressFormWithParams:{.default_prevented = true,
-                                       .multiple_submissions = true}];
 
-  // Submit the form which will trigger 4 extra submissions consisting of 3
-  // button click submissions and 1 `form.submit()` programmatic submission,
-  // for a total of 5 submissions.
-  [ChromeEarlGrey tapWebStateElementWithID:@"submit-button"];
-
-  // Navigate back so the scheduled reporting task can be completed which
-  // requires the frame to be "active".
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:"Address Form Test Page"];
-
-  // Verify that that all the form submission reporting metrics were recorded.
-  GREYAssertTrue(
-      base::test::ios::WaitUntilConditionOrTimeout(
-          base::Seconds(3),
-          ^{
-            // Expect 5 submissions in total, 4 regulars and 1 programmatic.
-            NSError* error = [MetricsAppInterface
-                 expectCount:4
-                   forBucket:static_cast<int>(CountedSubmissionType::kHtmlEvent)
-                forHistogram:
-                    @"Autofill.iOS.FormActivity."
-                    @"SubmissionDetectedBeforeProcessing.PerType.FromAll"];
-            error = [MetricsAppInterface
-                 expectCount:1
-                   forBucket:static_cast<int>(
-                                 CountedSubmissionType::kProgrammatic)
-                forHistogram:
-                    @"Autofill.iOS.FormActivity."
-                    @"SubmissionDetectedBeforeProcessing.PerType.FromAll"];
-            // Expect 2  regular submissions from the instant reports. Which
-            // is the maximal number allowed by the quotas. Regular submissions
-            // are handled in the isolated world.
-            error = [MetricsAppInterface
-                 expectCount:2
-                   forBucket:static_cast<int>(CountedSubmissionType::kHtmlEvent)
-                forHistogram:
-                    @"Autofill.iOS.FormActivity."
-                    @"SubmissionDetectedBeforeProcessing.PerType.FromInstant"];
-            // Expect 2 regular submissions from the scheduled reports as all
-            // the quotas were used for the 2 first reports.
-            error = [MetricsAppInterface
-                 expectCount:2
-                   forBucket:static_cast<int>(CountedSubmissionType::kHtmlEvent)
-                forHistogram:@"Autofill.iOS.FormActivity."
-                             @"SubmissionDetectedBeforeProcessing.PerType."
-                             @"FromScheduledTask"];
-            // Expect one programmatic submission from the scheduled report.
-            error = [MetricsAppInterface
-                 expectCount:2
-                   forBucket:static_cast<int>(
-                                 CountedSubmissionType::kProgrammatic)
-                forHistogram:@"Autofill.iOS.FormActivity."
-                             @"SubmissionDetectedBeforeProcessing.PerType."
-                             @"FromScheduledTask"];
-            // Expect 4 batches of reports, 2 from the instant reports (1
-            // report per batch) and 1 batch with the 3 reports that were
-            // reported when unloading the page.
-            error = [MetricsAppInterface
-                 expectCount:2
-                   forBucket:1
-                forHistogram:@"Autofill.iOS.FormActivity."
-                             @"SubmissionDetectedBeforeProcessing.BatchSize"];
-            error = [MetricsAppInterface
-                 expectCount:1
-                   forBucket:3
-                forHistogram:@"Autofill.iOS.FormActivity."
-                             @"SubmissionDetectedBeforeProcessing.BatchSize"];
-            return error == nil;
-          }),
-      @"Timed out waiting for the form submission metrics.");
-}
 
 // Tests submission count reporting when unloading a page.
 // TODO(crbug.com/428189566): Re-enable after the test is fixed for

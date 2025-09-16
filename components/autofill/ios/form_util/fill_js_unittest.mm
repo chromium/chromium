@@ -59,24 +59,12 @@ web::JavaScriptFeature* GetDummyFeatureForContentWorld(
 
 // TODO(crbug.com/359538514): Make test non-parameterized once Autofill in the
 // isolated world is launched.
-class FillJsTest : public web::WebTestWithWebState,
-                   public ::testing::WithParamInterface<bool> {
+class FillJsTest : public web::WebTestWithWebState {
  public:
   FillJsTest() : web::WebTestWithWebState() {}
 
   void SetUp() override {
     web::WebTestWithWebState::SetUp();
-    // Enable isolated autofill flag before the JS feature is instantiated. This
-    // way the scripts are injected in the right content world.
-
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          kAutofillIsolatedWorldForJavascriptIos);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          kAutofillIsolatedWorldForJavascriptIos);
-    }
-
     OverrideJavaScriptFeatures({FormUtilJavaScriptFeature::GetInstance(),
                                 renderer_id_java_script_feature(),
                                 GetDummyPageContentWorldFeature(),
@@ -95,17 +83,6 @@ class FillJsTest : public web::WebTestWithWebState,
   }
 
  protected:
-  // Propagates the status of kAutofillIsolatedWorldForJavascriptIos to the
-  // renderer.
-  void EnableCrossContentWorldAutofill() {
-    NSString* enable_feature_script =
-        [NSString stringWithFormat:@"__gCrWeb.autofill_form_features."
-                                   @"setAutofillIsolatedContentWorld(%@);",
-                                   GetParam() ? @"true" : @"false"];
-
-    ExecuteJavaScriptInAutofillContentWorld(enable_feature_script);
-  }
-
   // Returns the chrome-set renderer ID for the element with ID `element_id`.
   // Runs gCrWeb.fill.getUniqueID in the given content world.
   NSString* GetUniqueID(NSString* element_id, web::ContentWorld content_world) {
@@ -127,8 +104,6 @@ class FillJsTest : public web::WebTestWithWebState,
             ContentWorldForAutofillJavascriptFeatures()));
   }
 
-  base::test::ScopedFeatureList feature_list_;
-
   //  Test instances of JavaScriptFeature's that are injected in a different
   //  content world depending on kAutofillIsolatedWorldForJavascriptIos.
   //  TODO(crbug.com/359538514): Remove this variable and use
@@ -137,7 +112,7 @@ class FillJsTest : public web::WebTestWithWebState,
   TestAutofillJavaScriptFeatureContainer feature_container_;
 };
 
-TEST_P(FillJsTest, GetCanonicalActionForForm) {
+TEST_F(FillJsTest, GetCanonicalActionForForm) {
   struct TestData {
     NSString* html_action;
     NSString* expected_action;
@@ -181,7 +156,7 @@ TEST_P(FillJsTest, GetCanonicalActionForForm) {
 }
 
 // Tests the extraction of the aria-label attribute.
-TEST_P(FillJsTest, GetAriaLabel) {
+TEST_F(FillJsTest, GetAriaLabel) {
   LoadHtml(@"<input id='input' type='text' aria-label='the label'/>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
@@ -217,7 +192,7 @@ TEST_F(FillJsTest, GetAriaLabelledBySingle) {
 }
 
 // Tests that aria-labelledby works: Complex case: multiple ids referenced.
-TEST_P(FillJsTest, GetAriaLabelledByMulti) {
+TEST_F(FillJsTest, GetAriaLabelledByMulti) {
   LoadHtml(@"<html><body>"
             "<div id='billing'>Billing</div>"
             "<div>"
@@ -251,7 +226,7 @@ TEST_F(FillJsTest, GetAriaLabelledByTakesPrecedence) {
 
 // Tests that an invalid aria-labelledby reference gets ignored (as opposed to
 // crashing, for example).
-TEST_P(FillJsTest, GetAriaLabelledByInvalid) {
+TEST_F(FillJsTest, GetAriaLabelledByInvalid) {
   LoadHtml(@"<html><body>"
             "<div id='billing'>Billing</div>"
             "<div>"
@@ -267,7 +242,7 @@ TEST_P(FillJsTest, GetAriaLabelledByInvalid) {
 }
 
 // Tests that invalid aria-labelledby references fall back to aria-label.
-TEST_P(FillJsTest, GetAriaLabelledByFallback) {
+TEST_F(FillJsTest, GetAriaLabelledByFallback) {
   LoadHtml(@"<html><body>"
             "<div id='billing'>Billing</div>"
             "<div>"
@@ -284,7 +259,7 @@ TEST_P(FillJsTest, GetAriaLabelledByFallback) {
 }
 
 // Tests that aria-describedby works: Simple case: a single id referenced.
-TEST_P(FillJsTest, GetAriaDescriptionSingle) {
+TEST_F(FillJsTest, GetAriaDescriptionSingle) {
   LoadHtml(@"<html><body>"
             "<input id='input' type='text' aria-describedby='div1'/>"
             "<div id='div1'>aria description</div>"
@@ -311,7 +286,7 @@ TEST_F(FillJsTest, GetAriaDescriptionMulti) {
 }
 
 // Tests that invalid aria-describedby returns the empty string.
-TEST_P(FillJsTest, GetAriaDescriptionInvalid) {
+TEST_F(FillJsTest, GetAriaDescriptionInvalid) {
   LoadHtml(@"<html><body>"
             "<input id='input' type='text' aria-describedby='invalid'/>"
             "</body></html>");
@@ -324,13 +299,11 @@ TEST_P(FillJsTest, GetAriaDescriptionInvalid) {
 
 // Tests that gCrWeb.fill.getUniqueID returns the ID of an element from all
 // JavaScript content worlds.
-TEST_P(FillJsTest, DISABLED_GetUniqueIDInAllJavaScriptContentWorlds) {
+TEST_F(FillJsTest, DISABLED_GetUniqueIDInAllJavaScriptContentWorlds) {
   LoadHtml(@"<html><body>"
             "<form id='form'>"
             "<input id='input' type='text'></input>"
             "</form></body></html>");
-
-  EnableCrossContentWorldAutofill();
 
   // Set IDs for form and input in the content world for Autofill features.
   ExecuteJavaScriptInAutofillContentWorld(
@@ -358,12 +331,10 @@ TEST_P(FillJsTest, DISABLED_GetUniqueIDInAllJavaScriptContentWorlds) {
 
 // Tests that gCrWeb.fill.getUniqueID returns the null ID when an invalid value
 // is stored in the DOM.
-TEST_P(FillJsTest, DISABLED_GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
+TEST_F(FillJsTest, DISABLED_GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
   LoadHtml(@"<html><body>"
             "<form id='form'/>"
             "</form></body></html>");
-
-  EnableCrossContentWorldAutofill();
 
   // Set IDs for form and input in the content world for Autofill features.
   ExecuteJavaScriptInAutofillContentWorld(
@@ -401,10 +372,5 @@ TEST_P(FillJsTest, DISABLED_GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
     }
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /*No InstantiationName*/,
-    FillJsTest,
-    /*enable kAutofillIsolatedWorldForJavascriptIos*/ testing::Bool());
 
 }  // namespace autofill

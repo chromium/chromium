@@ -38,8 +38,7 @@ namespace autofill {
 class RemoteFrameTokenRegistrationTest : public web::WebTestWithWebState {
  public:
   RemoteFrameTokenRegistrationTest()
-      : web::WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
-        feature_list_(kAutofillIsolatedWorldForJavascriptIos) {
+      : web::WebTestWithWebState(std::make_unique<web::FakeWebClient>()) {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
     web_client->SetJavaScriptFeatures({
@@ -108,7 +107,6 @@ class RemoteFrameTokenRegistrationTest : public web::WebTestWithWebState {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   //  Test instances of JavaScriptFeature's that are injected in a different
   //  content world depending on kAutofillIsolatedWorldForJavascriptIos.
   //  TODO(crbug.com/359538514): Remove this variable and use

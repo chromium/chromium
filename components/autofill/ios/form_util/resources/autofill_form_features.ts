@@ -36,7 +36,7 @@ let autofillIgnoreCheckableElements: boolean = false;
  Enables the logic necessary for Autofill to work from an isolated content world
  without breaking the features that need to be in the page content world.
  */
-let autofillIsolatedContentWorld: boolean = false;
+let autofillIsolatedContentWorld: boolean = true;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_isolated_content_world)
 
 // LINT.IfChange(autofill_correct_user_edited_bit_in_parsed_field)

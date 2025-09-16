@@ -12768,21 +12768,6 @@
             ]
         }
     ],
-    "IOSAutofillInIsolatedWorld": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillIsolatedWorldForJavascriptIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillRefillForForms": [
         {
             "platforms": [

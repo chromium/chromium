@@ -284,7 +284,8 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
     // Set up the frames manager so frames can be used.
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     frames_manager_ptr_ = frames_manager.get();
-    web_state_->SetWebFramesManager(std::move(frames_manager));
+    web_state_->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                    std::move(frames_manager));
 
     // Create the PasswordTabHelper so the password provider is available.
     PasswordTabHelper::CreateForWebState(web_state_.get());
