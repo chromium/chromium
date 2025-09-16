@@ -944,6 +944,7 @@ enum CSSSampleId {
     kBlockEllipsis = 882,
     kOverscrollArea = 883,
     kOverscrollPosition = 884,
+    kFontLanguageOverride = 885,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

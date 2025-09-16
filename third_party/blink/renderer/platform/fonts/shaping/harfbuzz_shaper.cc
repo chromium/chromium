@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/harfbuzz-ng/src/src/hb-ot.h"
 
 namespace blink {
 
@@ -903,6 +904,26 @@ CapsFeatureSettingsScopedOverlay::~CapsFeatureSettingsScopedOverlay() {
   features_->EraseAt(0, count_features_);
 }
 
+inline hb_language_t GetLanguageFromFontDescription(
+    const FontDescription& font_description) {
+  // Determines the HarfBuzz language used for shaping.
+  // If the `font-language-override property` is present, its value (a
+  // four-character OpenType language system tag) is converted to a HarfBuzz
+  // language using hb_ot_tag_to_language. The tag is derived from the string
+  // using hb_tag_from_string, with -1 indicating that the string is
+  // null-terminated. If no override is specified, the locale-based HarfBuzz
+  // language is used instead.
+  if (font_description.HasLanguageOverride()) {
+    const hb_language_t override_language =
+        hb_ot_tag_to_language(hb_tag_from_string(
+            font_description.FontLanguageOverride().Utf8().data(), -1));
+    if (override_language) {
+      return override_language;
+    }
+  }
+  return font_description.LocaleOrDefault().HarfbuzzLanguage();
+}
+
 }  // namespace
 
 void HarfBuzzShaper::ShapeSegment(
@@ -914,7 +935,9 @@ void HarfBuzzShaper::ShapeSegment(
   const Font* font = range_data->font;
   const FontDescription& font_description = font->GetFontDescription();
   const LayoutLocale& locale = font_description.LocaleOrDefault();
-  const hb_language_t language = locale.HarfbuzzLanguage();
+  const hb_language_t language =
+      GetLanguageFromFontDescription(font_description);
+
   bool needs_caps_handling =
       font_description.VariantCaps() != FontDescription::kCapsNormal;
   OpenTypeCapsSupport caps_support;

@@ -155,6 +155,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForFontFeatureSettings(const ComputedStyle&);
   static CSSValue* ValueForFontVariationSettings(const ComputedStyle&);
   static const CSSValue* ValueForFontPalette(const ComputedStyle&);
+  static CSSValue* ValueForFontLanguageOverride(const ComputedStyle&);
   static CSSValue* SpecifiedValueForGridTrackSize(const GridTrackSize&,
                                                   const ComputedStyle&);
   static CSSValue* ValueForGridAutoTrackList(GridTrackSizingDirection,

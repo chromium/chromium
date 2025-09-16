@@ -1645,6 +1645,17 @@
       supports_incremental_style: false,
     },
     {
+      name: "font-language-override",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      font: true,
+      runtime_flag: "FontLanguageOverride",
+      priority: 1,
+      keywords: ["normal"],
+      typedom_types: ["Keyword"],
+      converter: "ConvertFontLanguageOverride",
+    },
+    {
       name: "font-variant-emoji",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
@@ -8588,7 +8599,7 @@
         "font-variant-position", "font-variant-emoji", "font-weight", "font-stretch",
         "font-size", "line-height", "font-family", "font-optical-sizing",
         "font-size-adjust", "font-kerning", "font-feature-settings",
-        "font-variation-settings"
+        "font-variation-settings", "font-language-override"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       // Changes to anything related to fonts require that we call style.UpdateFont(),

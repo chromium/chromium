@@ -245,6 +245,12 @@ void FontBuilder::SetVariationSettings(
   font_description_.SetVariationSettings(std::move(settings));
 }
 
+void FontBuilder::SetFontLanguageOverride(
+    const AtomicString& language_override) {
+  Set(PropertySetFlag::kFontLanguageOverride);
+  font_description_.SetFontLanguageOverride(language_override);
+}
+
 void FontBuilder::SetFamilyDescription(
     FontDescription& font_description,
     const FontDescription::FamilyDescription& family_description) {
@@ -505,6 +511,14 @@ bool FontBuilder::UpdateFontDescription(FontDescription& description,
         font_description_.VariationSettings()) {
       modified = true;
       description.SetVariationSettings(font_description_.VariationSettings());
+    }
+  }
+  if (IsSet(PropertySetFlag::kFontLanguageOverride)) {
+    if (description.FontLanguageOverride() !=
+        font_description_.FontLanguageOverride()) {
+      modified = true;
+      description.SetFontLanguageOverride(
+          font_description_.FontLanguageOverride());
     }
   }
   if (IsSet(PropertySetFlag::kFontSynthesisWeight)) {

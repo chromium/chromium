@@ -66,6 +66,7 @@ struct SameSizeAsFontDescription {
   ResolvedFontFeatures resolved_font_features_;
   FontSelectionRequest selection_request_;
   FieldsAsUnsignedType bitfields;
+  AtomicString language_override_;
 };
 
 ASSERT_SIZE(FontDescription, SameSizeAsFontDescription);
@@ -401,6 +402,10 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
 
   if (VariationSettings()) {
     AddIntToHash(hash, VariationSettings()->GetHash());
+  }
+
+  if (HasLanguageOverride()) {
+    AddIntToHash(hash, language_override_.Hash());
   }
 
   if (font_palette_) {

@@ -2445,6 +2445,11 @@
       status: "stable",
     },
     {
+      // crbug.com/41170551
+      name: "FontLanguageOverride",
+      status: "experimental",
+    },
+    {
       name: "FontMatchAliasesAsLastResort",
       status: "stable",
     },

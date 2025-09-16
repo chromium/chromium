@@ -1222,18 +1222,32 @@ String StylePropertySerializer::FontValue() const {
       return g_empty_string;
     }
 
-  if (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled()) {
-    int font_size_adjust_property_index =
-        property_set_.FindPropertyIndex(GetCSSPropertyFontSizeAdjust());
-    DCHECK_NE(font_size_adjust_property_index, -1);
-    PropertyValueForSerializer font_size_adjust_property =
-        property_set_.PropertyAt(font_size_adjust_property_index);
-    const CSSValue& size_adjust_value = font_size_adjust_property.Value();
-    if (IsPropertyNonInitial(size_adjust_value, CSSValueID::kNone) ||
-        size_adjust_value.IsNumericLiteralValue()) {
-      return g_empty_string;
+    if (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled()) {
+      int font_size_adjust_property_index =
+          property_set_.FindPropertyIndex(GetCSSPropertyFontSizeAdjust());
+      DCHECK_NE(font_size_adjust_property_index, -1);
+      PropertyValueForSerializer font_size_adjust_property =
+          property_set_.PropertyAt(font_size_adjust_property_index);
+      const CSSValue& size_adjust_value = font_size_adjust_property.Value();
+      if (IsPropertyNonInitial(size_adjust_value, CSSValueID::kNone) ||
+          size_adjust_value.IsNumericLiteralValue()) {
+        return g_empty_string;
+      }
     }
-  }
+
+    if (RuntimeEnabledFeatures::FontLanguageOverrideEnabled()) {
+      int font_language_override_property_index =
+          property_set_.FindPropertyIndex(GetCSSPropertyFontLanguageOverride());
+      DCHECK_NE(font_language_override_property_index, -1);
+      PropertyValueForSerializer font_language_override_property =
+          property_set_.PropertyAt(font_language_override_property_index);
+      const CSSValue& language_override_value =
+          font_language_override_property.Value();
+      if (IsPropertyNonInitial(language_override_value, CSSValueID::kNormal) ||
+          language_override_value.IsStringValue()) {
+        return g_empty_string;
+      }
+    }
 
   const StylePropertyShorthand& shorthand = fontShorthand();
   const StylePropertyShorthand::Properties& longhands = shorthand.properties();

@@ -118,6 +118,7 @@ namespace css_parsing_utils {
 namespace {
 
 const char kTwoDashes[] = "--";
+constexpr size_t kMaxLanguageOverrideLength = 4;
 
 bool IsLeftOrRightKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kLeft, CSSValueID::kRight>(id);
@@ -6257,6 +6258,62 @@ CSSValue* ConsumeFontFeatureSettings(CSSParserTokenStream& stream,
 CSSValue* ConsumeFontVariationSettings(CSSParserTokenStream& stream,
                                        const CSSParserContext& context) {
   return ConsumeFontSettings<CSSFontVariationValue>(stream, context);
+}
+
+CSSValue* ParseFontLanguageOverrideString(CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() != kStringToken) {
+    return nullptr;
+  }
+  String language_override = ConsumeStringAsString(stream);
+  if (language_override.IsNull() ||
+      language_override.length() > kMaxLanguageOverrideLength) {
+    return nullptr;
+  }
+
+  // The CSS Fonts Level 4 spec:
+  // https://www.w3.org/TR/css-fonts-4/#font-language-override-prop
+  // is ambiguous about when to pad strings shorter than 4 characters.
+  // To match Firefox's interpretation (Mozilla bug 1814408):
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1814408
+  // we do not apply padding during parsing. Instead, 1–4 ASCII characters
+  // are accepted as-is, this ensures consistency with shipped behavior.
+  size_t end = language_override.length() - 1;
+  while (end >= 0 && IsCSSSpace(language_override[end])) {
+    --end;
+  }
+  language_override = language_override.Substring(0, end + 1);
+
+  // "All tags are four-character strings composed of a limited set of ASCII
+  // characters" per
+  // https://learn.microsoft.com/en-us/typography/opentype/spec/languagetags
+  // Rejecting non-ASCII characters here also aligns with Firefox's behavior,
+  // even though they allow tags shorter than four characters. This apparent
+  // inconsistency is documented and justified here
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1814408
+  if (!language_override.ContainsOnlyASCIIOrEmpty()) {
+    return nullptr;
+  }
+
+  if (language_override.length()) {
+    return MakeGarbageCollected<CSSStringValue>(language_override);
+  }
+  return nullptr;
+}
+
+CSSValue* ConsumeFontLanguageOverride(CSSParserTokenStream& stream,
+                                      const CSSParserContext&) {
+  switch (stream.Peek().GetType()) {
+    case kIdentToken:
+      if (stream.Peek().Id() == CSSValueID::kNormal) {
+        return css_parsing_utils::ConsumeIdent(stream);
+      }
+      break;
+    case kStringToken:
+      return ParseFontLanguageOverrideString(stream);
+    default:
+      break;
+  }
+  return nullptr;
 }
 
 CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenStream& stream) {

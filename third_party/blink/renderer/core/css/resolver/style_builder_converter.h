@@ -162,6 +162,8 @@ class StyleBuilderConverter {
   static scoped_refptr<FontVariationSettings> ConvertFontVariationSettings(
       const StyleResolverState&,
       const CSSValue&);
+  static AtomicString ConvertFontLanguageOverride(StyleResolverState&,
+                                                  const CSSValue&);
   static scoped_refptr<FontPalette> ConvertFontPalette(
       StyleResolverState& state,
       const CSSValue& value);

@@ -345,6 +345,9 @@ class PLATFORM_EXPORT FontDescription {
   const FontVariationSettings* VariationSettings() const {
     return variation_settings_.get();
   }
+  const AtomicString& FontLanguageOverride() const {
+    return language_override_;
+  }
   FontVariantPosition VariantPosition() const {
     return static_cast<FontVariantPosition>(fields_.variant_position_);
   }
@@ -438,6 +441,9 @@ class PLATFORM_EXPORT FontDescription {
       scoped_refptr<const FontVariationSettings> settings) {
     variation_settings_ = std::move(settings);
   }
+  void SetFontLanguageOverride(const AtomicString& value) {
+    language_override_ = value;
+  }
   void SetVariantPosition(FontVariantPosition variant_position) {
     fields_.variant_position_ = variant_position;
   }
@@ -478,6 +484,8 @@ class PLATFORM_EXPORT FontDescription {
   bool IsHashTableDeletedValue() const {
     return GetHashCategory() == kHashDeletedValue;
   }
+
+  bool HasLanguageOverride() const { return !language_override_.empty(); }
 
   unsigned StyleHashWithoutFamilyList() const;
   unsigned GetHash() const;
@@ -593,6 +601,7 @@ class PLATFORM_EXPORT FontDescription {
   };
 
   static bool use_subpixel_text_positioning_;
+  AtomicString language_override_;
 };
 
 template <>
