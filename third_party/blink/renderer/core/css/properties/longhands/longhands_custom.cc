@@ -5331,7 +5331,7 @@ const CSSValue* Height::CSSValueFromComputedStyleInternal(
 }
 
 // interest-delay-start: normal | <time>
-const CSSValue* InterestShowDelay::ParseSingleValue(
+const CSSValue* InterestDelayStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
@@ -5343,12 +5343,12 @@ const CSSValue* InterestShowDelay::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
-const CSSValue* InterestShowDelay::CSSValueFromComputedStyleInternal(
+const CSSValue* InterestDelayStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  const StyleInterestDelay& value = style.InterestShowDelay();
+  const StyleInterestDelay& value = style.InterestDelayStart();
   if (value.IsNormal()) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
@@ -5357,7 +5357,7 @@ const CSSValue* InterestShowDelay::CSSValueFromComputedStyleInternal(
 }
 
 // interest-delay-end: normal | <time>
-const CSSValue* InterestHideDelay::ParseSingleValue(
+const CSSValue* InterestDelayEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
@@ -5369,12 +5369,12 @@ const CSSValue* InterestHideDelay::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
-const CSSValue* InterestHideDelay::CSSValueFromComputedStyleInternal(
+const CSSValue* InterestDelayEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  const StyleInterestDelay& value = style.InterestHideDelay();
+  const StyleInterestDelay& value = style.InterestDelayEnd();
   if (value.IsNormal()) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }

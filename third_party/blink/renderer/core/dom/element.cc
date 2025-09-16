@@ -11451,9 +11451,9 @@ void Element::ScheduleInterestGainedTask() {
   if (!style) {
     return;
   }
-  StyleInterestDelay show_delay = style->InterestShowDelay();
+  StyleInterestDelay show_delay = style->InterestDelayStart();
   float show_delay_seconds = show_delay.IsNormal()
-                                 ? kDefaultInterestShowDelaySeconds
+                                 ? kDefaultInterestDelayStartSeconds
                                  : show_delay.DelaySeconds();
   // If the value is infinite or NaN, don't schedule showing interest.
   if (!std::isfinite(show_delay_seconds)) {
@@ -11484,9 +11484,9 @@ void Element::ScheduleInterestLostTask() {
     return;
   }
 
-  StyleInterestDelay hide_delay = style->InterestHideDelay();
+  StyleInterestDelay hide_delay = style->InterestDelayEnd();
   float hide_delay_seconds = hide_delay.IsNormal()
-                                 ? kDefaultInterestHideDelaySeconds
+                                 ? kDefaultInterestDelayEndSeconds
                                  : hide_delay.DelaySeconds();
   // If the value is infinite or NaN, don't schedule losing interest.
   if (!std::isfinite(hide_delay_seconds)) {

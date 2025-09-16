@@ -67,7 +67,7 @@ promise_test(async (t) => {
   await hoverOrFocus(invokerMethod,unrelated);
   await waitForHoverTime(hoverWaitTime);
   assert_false(popover.matches(':popover-open'),'interest should be lost after delay');
-},`The interest-hide-delay causes interest to be lost after a delay, ${description}`);
+},`The interest-delay-end causes interest to be lost after a delay, ${description}`);
 
 promise_test(async (t) => {
   const {popover,invoker,unrelated} = await makeTestParts(t);

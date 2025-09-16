@@ -7986,8 +7986,8 @@ Called by update_use_counter_css.py.-->
   <int value="820" label="animation-trigger-range-end (obsolete)"/>
   <int value="821" label="animation-trigger-exit-range-start (obsolete)"/>
   <int value="822" label="animation-trigger-exit-range-end (obsolete)"/>
-  <int value="823" label="interest-show-delay"/>
-  <int value="824" label="interest-hide-delay"/>
+  <int value="823" label="interest-delay-start"/>
+  <int value="824" label="interest-delay-end"/>
   <int value="825" label="animation-trigger-range"/>
   <int value="826" label="animation-trigger-exit-range"/>
   <int value="827" label="interest-delay"/>

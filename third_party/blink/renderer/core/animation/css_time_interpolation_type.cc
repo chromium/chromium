@@ -64,17 +64,17 @@ std::optional<double> CSSTimeInterpolationType::GetSeconds(
     const CSSPropertyID& property,
     const ComputedStyle& style) {
   switch (property) {
-    case CSSPropertyID::kInterestShowDelay: {
-      StyleInterestDelay value = style.InterestShowDelay();
+    case CSSPropertyID::kInterestDelayStart: {
+      StyleInterestDelay value = style.InterestDelayStart();
       if (value.IsNormal()) {
-        return kDefaultInterestShowDelaySeconds;
+        return kDefaultInterestDelayStartSeconds;
       }
       return value.DelaySeconds();
     }
-    case CSSPropertyID::kInterestHideDelay: {
-      StyleInterestDelay value = style.InterestHideDelay();
+    case CSSPropertyID::kInterestDelayEnd: {
+      StyleInterestDelay value = style.InterestDelayEnd();
       if (value.IsNormal()) {
-        return kDefaultInterestHideDelaySeconds;
+        return kDefaultInterestDelayEndSeconds;
       }
       return value.DelaySeconds();
     }
@@ -95,8 +95,8 @@ std::optional<double> CSSTimeInterpolationType::GetSeconds(
 double CSSTimeInterpolationType::ClampTime(const CSSPropertyID& property,
                                            double value) const {
   switch (property) {
-    case CSSPropertyID::kInterestShowDelay:
-    case CSSPropertyID::kInterestHideDelay:
+    case CSSPropertyID::kInterestDelayStart:
+    case CSSPropertyID::kInterestDelayEnd:
       return ClampTo<float>(value, 0);
     default:
       NOTREACHED();
@@ -127,11 +127,11 @@ void CSSTimeInterpolationType::ApplyStandardPropertyValue(
   double clamped_seconds =
       ClampTime(property, To<InterpolableNumber>(interpolable_value).Value());
   switch (property) {
-    case CSSPropertyID::kInterestShowDelay:
-      builder.SetInterestShowDelay(StyleInterestDelay(clamped_seconds));
+    case CSSPropertyID::kInterestDelayStart:
+      builder.SetInterestDelayStart(StyleInterestDelay(clamped_seconds));
       break;
-    case CSSPropertyID::kInterestHideDelay:
-      builder.SetInterestHideDelay(StyleInterestDelay(clamped_seconds));
+    case CSSPropertyID::kInterestDelayEnd:
+      builder.SetInterestDelayEnd(StyleInterestDelay(clamped_seconds));
       break;
     default:
       NOTREACHED();

@@ -253,8 +253,8 @@ enum class CommandEventType {
 };
 
 // Defaults for the `interestfor` API's `normal` value.
-static constexpr double kDefaultInterestShowDelaySeconds = 0.5;
-static constexpr double kDefaultInterestHideDelaySeconds = 0.25;
+static constexpr double kDefaultInterestDelayStartSeconds = 0.5;
+static constexpr double kDefaultInterestDelayEndSeconds = 0.25;
 
 typedef HeapVector<Member<Attr>> AttrNodeList;
 

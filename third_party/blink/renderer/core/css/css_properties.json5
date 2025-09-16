@@ -3616,13 +3616,13 @@
       name: "interest-delay",
       runtime_flag: "CSSInterestDelayShorthand",
       longhands: [
-        "interest-show-delay", "interest-hide-delay"
+        "interest-delay-start", "interest-delay-end"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: true,
     },
     {
-      name: "interest-show-delay",
+      name: "interest-delay-start",
       runtime_flag: "HTMLInterestForAttribute",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
@@ -3635,8 +3635,8 @@
       supports_incremental_style: true,
     },
     {
-      name: "interest-hide-delay",
       runtime_flag: "HTMLInterestForAttribute",
+      name: "interest-delay-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "external",

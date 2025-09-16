@@ -243,8 +243,8 @@ All changes to this list should go through Blink's feature review process: http:
     inset-inline-end
     inset-inline-start
     interactivity
-    interest-hide-delay
-    interest-show-delay
+    interest-delay-end
+    interest-delay-start
     interpolate-size
     isolation
     item-tolerance
@@ -771,8 +771,8 @@ All changes to this list should go through Blink's feature review process: http:
         inset-inline-end
         inset-inline-start
     interest-delay
-        interest-hide-delay
-        interest-show-delay
+        interest-delay-end
+        interest-delay-start
     line-clamp
         block-ellipsis
         continue

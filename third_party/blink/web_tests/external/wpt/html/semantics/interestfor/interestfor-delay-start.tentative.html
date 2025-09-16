@@ -109,7 +109,7 @@ promise_test(async (t) => {
   if (msSinceMouseOver(token) >= longerHoverDelay)
     return; // The WPT runner was too slow.
   assert_false(showing,'interestfor should respect CSS setting');
-},`interestfor interest-show-delay is respected, ${description}`);
+},`interestfor interest-delay-start is respected, ${description}`);
 
 promise_test(async (t) => {
   const longerHoverDelay = hoverFocusWaitTimeMs*4;
@@ -179,8 +179,8 @@ promise_test(async (t) => {
   document.body.appendChild(invoker2);
   t.add_cleanup(() => invoker2.remove());
   invoker2.setAttribute('style',`
-    interest-show-delay: 0s;
-    interest-hide-delay: 10000s;
+    interest-delay-start: 0s;
+    interest-delay-end: 10000s;
     position:fixed;
     top:300px;
   `);
