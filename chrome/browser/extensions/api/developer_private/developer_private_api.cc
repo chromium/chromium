@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -21,7 +22,6 @@
 #include "ui/base/clipboard/file_info.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -74,6 +74,7 @@ void BrowserContextKeyedAPIFactory<
     DeveloperPrivateAPI>::DeclareFactoryDependencies() {
   // Keep this in sync with observers DeveloperPrivateEventRouterShared
   // implements.
+  DependsOn(AccountExtensionTracker::GetFactory());
   DependsOn(ExtensionRegistryFactory::GetInstance());
   DependsOn(ErrorConsoleFactory::GetInstance());
   DependsOn(ProcessManagerFactory::GetInstance());
@@ -88,7 +89,6 @@ void BrowserContextKeyedAPIFactory<
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(AppWindowRegistry::Factory::GetInstance());
   DependsOn(ToolbarActionsModelFactory::GetInstance());
-  DependsOn(AccountExtensionTracker::GetFactory());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
