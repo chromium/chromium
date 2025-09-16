@@ -46,7 +46,10 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "home_background_image_service_unittest.mm" ]
+  sources = [
+    "home_background_image_service_unittest.mm",
+    "user_uploaded_image_manager_unittest.mm",
+  ]
 
   deps = [
     ":model",

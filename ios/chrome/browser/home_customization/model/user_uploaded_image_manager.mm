@@ -124,7 +124,8 @@ void UserUploadedImageManager::LoadUserUploadedImage(
 }
 
 void UserUploadedImageManager::DeleteUserUploadedImage(
-    base::FilePath relative_image_file_path) {
+    base::FilePath relative_image_file_path,
+    base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::FilePath file_path =
@@ -132,14 +133,17 @@ void UserUploadedImageManager::DeleteUserUploadedImage(
 
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&base::DeleteFile), file_path));
+      base::BindOnce(base::IgnoreResult(&base::DeleteFile), file_path)
+          .Then(std::move(completion)));
 }
 
 void UserUploadedImageManager::DeleteUnusedImages(
-    std::set<base::FilePath> relative_file_paths_in_use) {
+    std::set<base::FilePath> relative_file_paths_in_use,
+    base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&DeleteUnusedImageFilePaths,
                                                    storage_directory_path_,
-                                                   relative_file_paths_in_use));
+                                                   relative_file_paths_in_use)
+                                        .Then(std::move(completion)));
 }

@@ -40,10 +40,13 @@ class UserUploadedImageManager : public KeyedService {
                              base::OnceCallback<void(UIImage*)> callback);
 
   // Deletes an image previously stored at the provided relative file path.
-  void DeleteUserUploadedImage(base::FilePath relative_image_file_path);
+  void DeleteUserUploadedImage(
+      base::FilePath relative_image_file_path,
+      base::OnceClosure completion = base::DoNothing());
 
   // Deletes all images from the managed directory that aren't currently in use.
-  void DeleteUnusedImages(std::set<base::FilePath> relative_file_paths_in_use);
+  void DeleteUnusedImages(std::set<base::FilePath> relative_file_paths_in_use,
+                          base::OnceClosure completion = base::DoNothing());
 
  private:
   // File path to store images at.
