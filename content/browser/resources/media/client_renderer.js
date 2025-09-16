@@ -702,10 +702,8 @@ export class ClientRenderer {
   createCdmRow_(cdm) {
     const template = $('cdm-row');
     const clone = document.importNode(template.content, true);
-    const header = clone.querySelector('.cdm-header');
     const tableBody = clone.querySelector('tbody');
 
-    header.textContent = cdm.key_system;
 
     const addRow = (key, value) => {
       const row = tableBody.insertRow(-1);
@@ -721,6 +719,7 @@ export class ClientRenderer {
       }
     };
 
+    addRow('Key System', cdm.key_system);
     addRow('Robustness', cdm.robustness);
     addRow('Name', cdm.name);
     addRow('Version', cdm.version);
