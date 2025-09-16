@@ -66,6 +66,10 @@ const CGFloat kGenericButtonHeight = 32.0f;
 const CGFloat kGlowEffectDuration = 1.0f;
 /// The width of the glow effect border.
 const CGFloat kGlowEffectWidth = 4.0f;
+/// The size for the close button.
+const CGFloat kCloseButtonSize = 30.0f;
+/// The alpha for the close button.
+const CGFloat kCloseButtonAlpha = 0.6f;
 }
 
 @interface AIMPrototypeViewController () <UITextViewDelegate>
@@ -121,8 +125,22 @@ const CGFloat kGlowEffectWidth = 4.0f;
   [super viewDidLoad];
 
   // Close button
-  UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeClose];
+  UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kCloseButtonSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+  UIImage* buttonImage =
+      SymbolWithPalette(DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
+                                                       symbolConfiguration),
+                        @[
+                          [[UIColor tertiaryLabelColor]
+                              colorWithAlphaComponent:kCloseButtonAlpha],
+                          [UIColor tertiarySystemFillColor]
+                        ]);
+  [closeButton setImage:buttonImage forState:UIControlStateNormal];
+
   [closeButton addTarget:self
                   action:@selector(closeButtonTapped)
         forControlEvents:UIControlEventTouchUpInside];
