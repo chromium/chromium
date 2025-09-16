@@ -41,6 +41,17 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+
+#if BUILDFLAG(IS_WIN)
+// Removes forced software compositing for `AutocompletePopupWidget` below.
+// TODO(thestig): Remove this kill switch after a safe rollout, in M145.
+BASE_FEATURE(kOmniboxRemovePopupWidgetSoftwareCompositing,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+}  // namespace
+
 class OmniboxPopupViewViews::AutocompletePopupWidget final
     : public ThemeCopyingWidget {
  public:
@@ -62,7 +73,8 @@ class OmniboxPopupViewViews::AutocompletePopupWidget final
     // On Windows use the software compositor to ensure that we don't block
     // the UI thread during command buffer creation. We can revert this change
     // once http://crbug.com/125248 is fixed.
-    params.force_software_compositing = true;
+    params.force_software_compositing = !base::FeatureList::IsEnabled(
+        kOmniboxRemovePopupWidgetSoftwareCompositing);
 #endif
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.parent = parent_widget->GetNativeView();
