@@ -60,6 +60,10 @@ class TabGroupSyncService;
 
 namespace tests_hook {
 
+// Returns true if Gemini eligibility check should be disabled as tests do
+// not have the required identity internal state to perform the verification.
+bool DisableGeminiEligibilityCheck();
+
 // Returns true if app group access should be disabled as tests don't have the
 // required entitlements.
 // This is used by internal code.

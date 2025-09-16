@@ -63,6 +63,10 @@
 
 namespace tests_hook {
 
+bool DisableGeminiEligibilityCheck() {
+  return true;
+}
+
 bool DisableAppGroupAccess() {
   return true;
 }

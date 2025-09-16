@@ -85,6 +85,7 @@ source_set("bwg_service") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
