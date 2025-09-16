@@ -198,6 +198,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Ogled fotografij in predstavnosti v telefonu.</translation>
 <translation id="1129850422003387628">Upravljanje aplikacij</translation>
+<translation id="1130116586186908674">Ustvari razdeljeni pogled</translation>
 <translation id="1130430615924359526">{0,plural, =1{Zapri anonimno okno}one{Zapri anonimna okna (# okno)}two{Zapri anonimna okna (# okni)}few{Zapri anonimna okna (# okna)}other{Zapri anonimna okna (# oken)}}</translation>
 <translation id="113050636487300043">Zaradi razlikovanja med profili izberite ime in barvno temo.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – del skupine <ph name="GROUP_NAME" /></translation>
@@ -474,6 +475,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1307431692088049276">Ne sprašuj me več</translation>
 <translation id="130744661532298792">Če želite zagotoviti, da boste lahko v računu Google vedno uporabljali gesla, potrdite, da ste to vi</translation>
 <translation id="1307559529304613120">Ojoj, sistem za to napravo ni shranil žetona za dolgoročni dostop do API-ja.</translation>
+<translation id="1311092170520822848">To spletno mesto upravlja bralnike pametnih kartic, ki so povezani z vašo napravo, in morebitnih pametnih kartic, ki so jim na voljo</translation>
 <translation id="131112695174432497">Podatki, ki vplivajo na osebno prilagajanje oglasov, so izbrisani.</translation>
 <translation id="1311294419381837540">Predvajate zavihek. Predvajanje lahko kadar koli začasno zaustavite ali ustavite.</translation>
 <translation id="131188242279372879">Odkrijte izboljšano zaščito, če si želite zagotoviti Chromovo najvišjo raven varnosti pri prenosih</translation>
@@ -736,7 +738,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1500297251995790841">Neznana naprava [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Preberite več o nepodprtih aplikacijah za Chrome</translation>
 <translation id="1501480321619201731">Izbriši skupino</translation>
-<translation id="1503392482221435031">Samodejno pošilja statistične podatke o uporabi Googlu. Poročila o zrušitvah lahko vklopite ali izklopite v nastavitvah naprave.</translation>
 <translation id="1503556098270577657">V račun <ph name="USER_EMAIL" /> ste se prijavili s telefonom Android</translation>
 <translation id="150411034776756821">Odstrani <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Pripni razdeljeni pogled</translation>
@@ -2114,6 +2115,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2431027948063157455">Pomočnika Google ni bilo mogoče naložiti. Preverite omrežno povezavo in poskusite znova.</translation>
 <translation id="243179355394256322">Zaradi omejitev vaše organizacije je včlanitev naprav dovoljena samo pooblaščenim uporabnikom. Ta uporabnik nima dovoljenja za včlanitev naprav. V razdelku Uporabniki v skrbniški konzoli preverite, ali ima uporabnik omogočeno skrbniško dovoljenje »Včlanitev strojne opreme za Google Meet«.</translation>
 <translation id="243275146591958220">Prekliči prenos</translation>
+<translation id="2433237965825924228">Izolirane spletne aplikacije upravljajo naprave za preverjanje pristnosti in pametne kartice, ki so jim dostopne. Pametne kartice običajno vsebujejo identifikatorje, ki se uporabljajo za preverjanje pristnosti.</translation>
 <translation id="2433452467737464329">V URL dodajte parameter poizvedbe, da samodejno osvežite stran: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Videz</translation>
 <translation id="2433836460518180625">Samo odklepanje naprave</translation>
@@ -3035,7 +3037,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3048589239114571785">Predvajanje (k)</translation>
 <translation id="3048742847101793553">Vaša organizacija je blokirala to datoteko, ker pregled ni uspel.</translation>
 <translation id="3048917188684939573">Dnevniki predvajanja in naprav</translation>
-<translation id="3049525403650329038">Delite vsebino strani z Geminijem in prejmite ustreznejše odgovore. Vaši podatki se ne uporabljajo za izboljšanje modelov generativne umetne inteligence.</translation>
 <translation id="3051250416341590778">Velikost prikaza</translation>
 <translation id="3053013834507634016">Raba ključa potrdila</translation>
 <translation id="3053273573829329829">Omogoči kodo PIN uporabnika</translation>
@@ -3530,6 +3531,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3429174588714165399">Ustvarjanje bližnjice do te strani</translation>
 <translation id="3429271624041785769">Jeziki za spletno vsebino</translation>
 <translation id="3429275422858276529">Dodajte to stran med zaznamke, da jo boste pozneje hitreje našli</translation>
+<translation id="343084100869297747">Izolirane spletne aplikacije samodejno upoštevajo to nastavitev</translation>
 <translation id="3431530007831146102">Upravljanje kazalca miške s premikanjem glave</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – sproščeno <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -7929,7 +7931,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6525767484449074555">Kliknite »Namesti«</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="6527574156657772563">Ni razpoložljivih naprav. Račun Google dodajte v telefon, da ga povežete s to napravo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Zgodovina v Chromu</translation>
 <translation id="6530030995840538405">Ustvarjena je bila slika št. <ph name="INDEX" /> za »<ph name="SUBJECT" />«</translation>
 <translation id="6530186581263215931">Te nastavitve je uveljavil skrbnik</translation>
 <translation id="6530267432324197764">Upravitelj profila: <ph name="MANAGER" /></translation>
@@ -8905,6 +8906,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7201535955609308429">Počakajte, medtem ko poteka preverjanje</translation>
 <translation id="7202337678781136582">Optično preberite kodo QR v telefonu Android</translation>
 <translation id="7203150201908454328">Razširjeno</translation>
+<translation id="7206252555702853828">Bralniki pametnih kartic so upravljani</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zapri stran}one{Zapri strani}two{Zapri strani}few{Zapri strani}other{Zapri strani}}</translation>
 <translation id="7207457272187520234">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To nastavitev je uveljavil lastnik naprave. Če ste vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu Google.</translation>
 <translation id="7207631048330366454">Iščite aplikacije</translation>
@@ -11670,6 +11672,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9081543426177426948">Spletna mesta, ki jih obiščete v anonimnem načinu, se ne shranijo.</translation>
 <translation id="9082750838489080452">Aplikacija: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Odpri v oknu</translation>
+<translation id="9084383457260170045">Izolirane spletne aplikacije lahko zahtevajo upravljanje bralnikov pametnih kartic</translation>
 <translation id="9085256200913095638">Podvoji izbrani zavihek</translation>
 <translation id="9085446486797400519">Dostop do kamere</translation>
 <translation id="9085776959277692427">Jezik <ph name="LANGUAGE" /> ni izbran. Pritisnite tipko za iskanje in preslednico, če želite izbirati.</translation>
@@ -11869,6 +11872,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Če želite upravljati, odprite razširitve}one{Če želite upravljati, odprite razširitve}two{Če želite upravljati, odprite razširitve}few{Če želite upravljati, odprite razširitve}other{Če želite upravljati, odprite razširitve}}</translation>
 <translation id="924818813611903184">Upravljanje jezikov v nastavitvah sistema Chrome OS</translation>
 <translation id="925575170771547168">S tem boste izbrisali <ph name="TOTAL_USAGE" /> podatkov, ki so jih shranila spletna mesta</translation>
+<translation id="927864230077808465">Izolirane spletne aplikacije ne morejo upravljati bralnikov pametnih kartic</translation>
 <translation id="930268624053534560">Podrobni časovni žigi</translation>
 <translation id="930551443325541578">Ponovi tipke in naglasna znamenja</translation>
 <translation id="930893132043726269">Trenutno v gostovanju</translation>

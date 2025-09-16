@@ -198,6 +198,7 @@
 <translation id="1129348283834595293">數碼龐克</translation>
 <translation id="1129420403709586868">查看手機上的相片和媒體</translation>
 <translation id="1129850422003387628">管理應用程式</translation>
+<translation id="1130116586186908674">建立分割檢視</translation>
 <translation id="1130430615924359526">{0,plural, =1{關閉無痕式視窗}other{關閉無痕式視窗 (# 個視窗)}}</translation>
 <translation id="113050636487300043">選擇名稱和顏色主題來區分不同設定檔</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 屬於「<ph name="GROUP_NAME" />」群組</translation>
@@ -471,6 +472,7 @@
 <translation id="1307431692088049276">不要再問我</translation>
 <translation id="130744661532298792">為確保你可隨時使用 Google 帳戶中的密碼，請驗證身分</translation>
 <translation id="1307559529304613120">糟糕！系統無法為這部裝置儲存長期 API 存取憑證。</translation>
+<translation id="1311092170520822848">此網站正控制連接至你裝置的智能讀卡器，且可能會存取讀卡器中的智能卡</translation>
 <translation id="131112695174432497">系統將刪除會影響廣告個人化的資料</translation>
 <translation id="1311294419381837540">您正在投放分頁。您可以隨時暫停或停止投放。</translation>
 <translation id="131188242279372879">探索強化保護功能，即可享有 Chrome 就下載檔案提供的最強大安全防護</translation>
@@ -733,7 +735,6 @@
 <translation id="1500297251995790841">不明裝置 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">進一步了解唔支援嘅 Chrome 應用程式</translation>
 <translation id="1501480321619201731">刪除群組</translation>
-<translation id="1503392482221435031">自動將使用情況統計傳送給 Google。您可在裝置的設定中開啟或關閉建立當機報告的功能。</translation>
 <translation id="1503556098270577657">你已使用 Android 手機登入 <ph name="USER_EMAIL" /></translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
 <translation id="1504253885059472207">固定分割檢視</translation>
@@ -2111,6 +2112,7 @@
 <translation id="2431027948063157455">無法載入「Google 助理」，請檢查您的網絡連線，然後再試一次。</translation>
 <translation id="243179355394256322">您的機構限制只有授權使用者可以註冊裝置。這位使用者未獲授權，因此無法註冊裝置。請前往管理控制台的「使用者」部分，確認該使用者擁有「註冊 Google Meet 硬件」的管理員權限。</translation>
 <translation id="243275146591958220">取消下載</translation>
+<translation id="2433237965825924228">隔離的網絡應用程式可控制驗證裝置和可存取的智能卡。智能卡通常包含用於驗證身分的識別碼。</translation>
 <translation id="2433452467737464329">在網址中新增查詢參數即可自動重新整理網頁：chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">外觀</translation>
 <translation id="2433836460518180625">只解鎖裝置</translation>
@@ -3031,7 +3033,6 @@
 <translation id="3048589239114571785">播放 (K 鍵)</translation>
 <translation id="3048742847101793553">由於掃瞄失敗，因此檔案已被機構封鎖。</translation>
 <translation id="3048917188684939573">投放和裝置記錄</translation>
-<translation id="3049525403650329038">與 Gemini 分享頁面內容以取得更相關的答案。你的資料不會用於改善生成式 AI 模型。</translation>
 <translation id="3051250416341590778">顯示大小</translation>
 <translation id="3053013834507634016">憑證金鑰用途</translation>
 <translation id="3053273573829329829">啟用使用者 PIN</translation>
@@ -3524,6 +3525,7 @@
 <translation id="3429174588714165399">建立此頁面的捷徑</translation>
 <translation id="3429271624041785769">網頁內容語言</translation>
 <translation id="3429275422858276529">將此網頁加入書籤，以便日後輕鬆查找</translation>
+<translation id="343084100869297747">隔離的網絡應用程式會自動採用此設定</translation>
 <translation id="3431530007831146102">使用頭部動作控制滑鼠游標</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - 釋出咗 <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -7913,7 +7915,6 @@
 <translation id="6525767484449074555">按一下 [安裝]。</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6527574156657772563">沒有可用的裝置。請在手機上登入 Google 帳戶，即可與此 <ph name="DEVICE_TYPE" /> 連結。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Chrome 記錄</translation>
 <translation id="6530030995840538405">AI 生成的<ph name="SUBJECT" /> 圖片 <ph name="INDEX" /></translation>
 <translation id="6530186581263215931">這些設定由管理員執行</translation>
 <translation id="6530267432324197764">由 <ph name="MANAGER" /> 管理的設定檔</translation>
@@ -8883,6 +8884,7 @@
 <translation id="7201535955609308429">正在驗證，請稍候</translation>
 <translation id="7202337678781136582">使用 Android 手機掃瞄 QR 碼</translation>
 <translation id="7203150201908454328">已展開</translation>
+<translation id="7206252555702853828">正在控制你的智能讀卡器</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="7207457272187520234">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這可協助改善系統及應用程式的穩定性及其他功能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此設定。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。</translation>
 <translation id="7207631048330366454">搜尋應用程式</translation>
@@ -11638,6 +11640,7 @@
 <translation id="9081543426177426948">在無痕模式下無法儲存您瀏覽的網站</translation>
 <translation id="9082750838489080452">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
+<translation id="9084383457260170045">隔離的網絡應用程式可要求控制智能讀卡器</translation>
 <translation id="9085256200913095638">複製已選取的分頁</translation>
 <translation id="9085446486797400519">相機存取權</translation>
 <translation id="9085776959277692427">無揀「<ph name="LANGUAGE" />」。㩒搜尋鍵加空白鍵就可以揀呢種語言。</translation>
@@ -11837,6 +11840,7 @@
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{如要管理此項目，請開啟「擴充程式」}other{如要管理這些項目，請開啟「擴充程式」}}</translation>
 <translation id="924818813611903184">在 Chrome OS 設定中管理語言</translation>
 <translation id="925575170771547168">此操作會刪除網站儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
+<translation id="927864230077808465">隔離的網絡應用程式無法控制智能讀卡器</translation>
 <translation id="930268624053534560">詳細的時間戳</translation>
 <translation id="930551443325541578">重複按鍵和重音標記</translation>
 <translation id="930893132043726269">目前正在使用漫遊</translation>

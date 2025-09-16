@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC ਅਤੇ ਵਾਤਾਵਰਨ ਕੰਟਰੋਲ</translation>
 <translation id="2740531572673183784">ਠੀਕ</translation>
 <translation id="2742128390261873684">ਹੋਮ ਆਟੋਮੇਸ਼ਨ</translation>
-<translation id="2742870351467570537">ਚੁਣੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਹਟਾਓ</translation>
 <translation id="2743512410823092182">DJ ਸੰਬੰਧੀ ਸਰੋਤ ਅਤੇ ਉਪਕਰਨ</translation>
 <translation id="2743934314332613923">ਕੀ ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2759299890026163685">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਸਥਿਰ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਹੈ</translation>
@@ -1777,6 +1776,7 @@
 <translation id="3941630233824954464">ਮੁੜ-ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲਾਜ਼ਮੀ ਪ੍ਰਕਿਰਿਆ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3942048175062210325">ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੁਬਾਰਾ ਖੋਲ੍ਹਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="3943857333388298514">ਪੇਸਟ ਕਰੋ</translation>
+<translation id="3945937463338223066">ਪ੍ਰਮਾਣੀਕਰਨ ਲਈ <ph name="READERNAME" /> ਕਿਸਮ ਦੇ ਡੀਵਾਈਸਾਂ ਅਤੇ ਉਨ੍ਹਾਂ ਦੇ ਸਮਾਰਟ ਕਾਰਡਾਂ ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="3946209740501886391">ਹਮੇਸ਼ਾ ਇਸ ਸਾਈਟ 'ਤੇ ਪੁੱਛੋ</translation>
 <translation id="3948588869002647271">ਇਹ ਐਪਲੀਕੇਸ਼ਨ ਜਾਂ ਤਾਂ ਮੌਜੂਦ ਨਹੀਂ ਹੈ ਜਾਂ ਖਰਾਬ ਹੈ</translation>
 <translation id="3949297482798028668">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸ ਸਮੱਗਰੀ ਨੂੰ ਇੱਥੇ ਪੇਸਟ ਕਰਨ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
@@ -2674,7 +2674,6 @@
 <translation id="5423269318075950257">ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕਰੋ</translation>
 <translation id="5425082381151187189">ਘਰ ਅਤੇ ਅੰਦਰੂਨੀ ਸਜਾਵਟ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
-<translation id="5430298929874300616">ਬੁੱਕਮਾਰਕ ਹਟਾਓ</translation>
 <translation id="5431318178759467895">ਰੰਗ</translation>
 <translation id="5433756542371550806">ਕਮਾਂਡ-ਲਾਈਨ ਕਿਸਮਾਂ</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ਅੱਗੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰੇਗਾ<ph name="END_EMPHASIS" />:
@@ -2872,6 +2871,7 @@
 <translation id="5750869797196646528">ਹੱਥ ਟਰੈਕ ਕਰਨਾ</translation>
 <translation id="5752327398324808817">ਇੱਕ ਜਾਂ ਦੋ ਸ਼ਬਦ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5752519522101347518">ਬੈਂਕ ਪੁਸ਼ਟੀਕਰਨ ਵੈੱਬਸਾਈਟ ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="5753570386948603678">ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਮਿਟਾਓ</translation>
 <translation id="5759751709240058861">ਆਪਣੇ ਕੈਮਰੇ ਨੂੰ ਵਰਤੋ ਅਤੇ ਹਿਲਾਓ</translation>
 <translation id="5763042198335101085">ਕੋਈ ਵੈਧ ਈਮੇਲ ਪਤਾ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5764725887548570807">ਅਵੈਧ ਮੂਲ ਫਾਰਮੈਟ।</translation>
@@ -3088,7 +3088,6 @@
 <translation id="6124058285696691147">ਨੱਥੀ ਫ਼ਾਈਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="6124432979022149706">Chrome ਐਂਟਰਪ੍ਰਾਈਜ਼ ਕਨੈਕਟਰ</translation>
 <translation id="6126565365696310362">ਚੀਨੀ #2 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
-<translation id="6127379762771434464">ਆਈਟਮ ਹਟਾਈ ਗਈ</translation>
 <translation id="6131824478727057281">ਟਿਕਾਣਾ</translation>
 <translation id="6133320744616005677">ਆਗਿਆ ਦੇਣਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="6133984428121856852">ਫ਼ਾਈਲ ਐਕਸਟੈਂਸ਼ਨ ਖਾਲੀ ਜਾਂ ਨੁਕਸਦਾਰ ਹੈ।</translation>
@@ -3102,7 +3101,6 @@
 <translation id="6151417162996330722">ਸਰਵਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਇੱਕ ਪ੍ਰਮਾਣਿਕਤਾ ਮਿਆਦ ਹੈ, ਜੋ ਬਹੁਤ ਜ਼ਿਆਦਾ ਲੰਮੀ ਹੈ।</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ਇੰਚ (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ਦੌੜਨਾ ਅਤੇ ਪੈਦਲ-ਸੈਰ ਕਰਨਾ</translation>
-<translation id="6157754950574419155">ਇਤਿਹਾਸ ਤੋਂ ਸਭ ਹਟਾਓ</translation>
 <translation id="6157877588268064908">ਸ਼ਿਪਿੰਗ ਵਿਧੀਆਂ ਅਤੇ ਲੋੜਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਇੱਕ ਪਤਾ ਚੁਣੋ</translation>
 <translation id="6159554577634054750">ਕੀਟ ਨਿਯੰਤਰਨ ਸੰਬੰਧੀ ਸੇਵਾ</translation>
 <translation id="6159908896951210943">ਫੌਰਮਲ</translation>
@@ -3788,6 +3786,7 @@
 <translation id="7292031607255951991">ਪ੍ਰਾਪਤਕਰਤਾ ਦਾ ਨਾਮ</translation>
 <translation id="7298195798382681320">ਸਿਫ਼ਾਰਿਸ਼ ਕੀਤਾ</translation>
 <translation id="7299471494012161875">ਨੱਥੀ ਕੀਤੇ ਡਿਸਪਲੇ ਪੈਰੀਫੈਰਲ</translation>
+<translation id="7299721129597238157">ਬੁੱਕਮਾਰਕ ਮਿਟਾਓ</translation>
 <translation id="7299769361777046949">Google Wallet ਵਿੱਚ ਵਫ਼ਾਦਾਰੀ ਕਾਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7304030187361489308">ਵੱਧ</translation>
 <translation id="7304562222803846232">Google ਖਾਤਾ ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>

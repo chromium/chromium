@@ -3,6 +3,7 @@
 <translationbundle lang="mn">
 <translation id="1010283278930414892">Энэ төхөөрөмж дээр хадгалсан ямар ч нууц үг байхгүй</translation>
 <translation id="1011749477052068769">Ийш зөөх</translation>
+<translation id="1014083013111769343">Унших горимын сонголтуудыг бүтэн өндрөөр нээсэн</translation>
 <translation id="1014147525163127655">Энэ төхөөрөмжид <ph name="ORIGIN" />-д зориулсан нэвтрэх түлхүүр байхгүй байна</translation>
 <translation id="1016498331642356377">Дуу хоолойгоороо шуурхай хайгаарай. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />-д илгээж байна...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Хадгал</translation>
 <translation id="1973912524893600642">Өгөгдлийг хадгалах</translation>
 <translation id="1974060860693918893">Боловсронгуй</translation>
+<translation id="1982274314082047220">Сонголтуудыг харах бол Унших горимыг дээш шударна уу</translation>
 <translation id="1984087999855033707">утасны дугаар</translation>
 <translation id="1984417487208496350">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
 <translation id="1986685561493779662">Ижил нэр ашиглалтад байна</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">Зургийн тайлбар</translation>
 <translation id="2996291259634659425">Нэвтрэх үг үүсгэх</translation>
 <translation id="2996809686854298943">URL шаардлагатай</translation>
+<translation id="3024215143424744261">Унших горимын сонголтуудыг хаасан</translation>
 <translation id="3026955690410463085">Холбоос оруулна уу</translation>
 <translation id="3027644380269727216">Таны сайт дээрх үйл ажиллагаанд тулгуурласан. Энэ тохиргоо асаалттай байна.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" />-с</translation>
@@ -1311,6 +1314,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="696447261358045621">Нууцлалтай горимоос гарах</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Хуваалцсан табын бүлгүүдэд шинэ үйл ажиллагаатай <ph name="TABS_COUNT_ONE" /> табыг харах}other{Хуваалцсан табын бүлгүүдэд шинэ үйл ажиллагаатай <ph name="TABS_COUNT_MANY" /> табыг харах}}</translation>
+<translation id="6971555615916967190">Унших горимын сонголтуудыг тал өндрөөр нээсэн</translation>
 <translation id="6971862865055170158">Бүү зөвшөөр</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, шинэ эсвэл шинэчилсэн таб</translation>
 <translation id="6976811588313110624">Шинэ товчлол нэмнэ үү.</translation>

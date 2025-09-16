@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Odprite gesla</translation>
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1433478348197382180">Način za branje</translation>
+<translation id="1435271730600332883">Odprite samodejno izpolnjevanje in gesla</translation>
 <translation id="1436671784520050284">Nadaljuj nastavitev</translation>
 <translation id="143681031165817424">Naslov je shranjen samo v tej napravi</translation>
 <translation id="1445276840641906250">Vsi zavihki v enem brskalniku</translation>
@@ -833,6 +834,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4286718549648564014">Naslov je bil premaknjen v račun <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Označi kot prebrano</translation>
 <translation id="428768789042547925">Novosti</translation>
+<translation id="428858055663163046">Tukaj lahko dostopate do prenesenih datotek, ko so na voljo</translation>
 <translation id="429074084062258019">{count,plural, =1{Dodaj zavihek skupini}one{Dodaj zavihke skupini}two{Dodaj zavihke skupini}few{Dodaj zavihke skupini}other{Dodaj zavihke skupini}}</translation>
 <translation id="4302061870579014542">Nastavi položaj</translation>
 <translation id="4304713468139749426">Upravitelj gesel</translation>
@@ -949,6 +951,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4749529195026091676">{count,plural, =1{Uvožena je {count} kartica}one{Uvožena je {count} kartica}two{Uvoženi sta {count} kartici}few{Uvožene so {count} kartice}other{Uvoženih je {count} kartic}}</translation>
 <translation id="4751645464639803239">Nov anonimni zavihek</translation>
 <translation id="4752348350801431746">Izklop obvestil varnostnega preverjanja …</translation>
+<translation id="4759238208242260848">Prenosi</translation>
 <translation id="4764612367328936189">Organizacija dovoli prijavo samo z nekaterimi računi. Nedovoljeni računi so skriti. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Odkrivanje in spremljanje</translation>
 <translation id="4769198578611055647">Pomaga vam pri dostopu do shranjenih ključev za dostop v kateri koli napravi</translation>
@@ -1270,6 +1273,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5956112131836209882">Zavihek skupine zavihkov. <ph name="TAB_INDEX_IN_GROUP" /> od <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Iskanje z iskalnikom <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Povezave do označitve ni bilo mogoče ustvariti.</translation>
+<translation id="5968400720580217226">Način umetne inteligence</translation>
 <translation id="5971459446352190251">Iskanje kod QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 zaznamek je izbrisan}one{{count} zaznamek je izbrisan}two{{count} zaznamka sta izbrisana}few{{count} zaznamki so izbrisani}other{{count} zaznamkov je izbrisanih}}</translation>
 <translation id="5972844218283131174">Počisti vse</translation>
@@ -1415,6 +1419,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6452534462676960500">Nova dejavnost</translation>
 <translation id="6459411599807878608">Podrobnosti so skrite</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">Tukaj bodo prikazani prenosi</translation>
 <translation id="6476253015009698798">Spremljanje cen ni na voljo za to spletno mesto.</translation>
 <translation id="6476284679642588870">Upravljanje plačilnih sredstev</translation>
 <translation id="6476800141292307438">Prevajanje strani v ta jezik: <ph name="LANGUAGE" />. Možnosti so na voljo blizu dna zaslona.</translation>
@@ -1460,6 +1465,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6627583120233659107">Uredi mapo</translation>
 <translation id="6629759408545977279">Od: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Vaša organizacija je izklopila anonimni način.</translation>
+<translation id="6637478299472506933">Prenos ni uspel</translation>
 <translation id="6638511529934826365">Povečaj/pomanjšaj besedilo …</translation>
 <translation id="6640268266988685324">Odprti zavihek</translation>
 <translation id="6641465290890659327">Deljenje kopije gesla</translation>
@@ -1582,6 +1588,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7102005569666697658">Prenašanje … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meni → Nastavitve → Plačilna sredstva</translation>
 <translation id="7108338896283013870">Skrij</translation>
+<translation id="7127922377013221748">Skrij orodno vrstico</translation>
 <translation id="7128693485119315539">Vaša organizacija si bo morda morala ogledati in upravljati podatke brskanja, povezane z vašim upravljanim računom, kot so zgodovina brskanja in gesla.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Fotoaparat ni na voljo</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="be">
 <translation id="1010283278930414892">На прыладзе няма захаваных пароляў</translation>
 <translation id="1011749477052068769">Перамясціць сюды</translation>
+<translation id="1014083013111769343">Налады рэжыму чытання адкрыты на ўсю вышыню</translation>
 <translation id="1014147525163127655">Для сайта <ph name="ORIGIN" /> на гэтай прыладзе няма ключоў доступу</translation>
 <translation id="1016498331642356377">Хуткі пошук з дапамогай галасавых каманд. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="1028699632127661925">Ідзе адпраўка на прыладу "<ph name="DEVICE_NAME" />"...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Пакінуць</translation>
 <translation id="1973912524893600642">Захаваць даныя</translation>
 <translation id="1974060860693918893">Пашыраныя налады</translation>
+<translation id="1982274314082047220">Каб адкрыць налады рэжыму чытання, правядзіце пальцам уверх</translation>
 <translation id="1984087999855033707">нумар тэлефона</translation>
 <translation id="1984417487208496350">Без абароны (не рэкамендуецца)</translation>
 <translation id="1986685561493779662">Такая назва ўжо існуе</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">Апісанні відарысаў</translation>
 <translation id="2996291259634659425">Стварыць фразу-пароль</translation>
 <translation id="2996809686854298943">Патрабуецца URL-адрас</translation>
+<translation id="3024215143424744261">Налады рэжыму чытання закрыты</translation>
 <translation id="3026955690410463085">Абагуліць разам са спасылкай</translation>
 <translation id="3027644380269727216">Выкарыстоўваюцца даныя пра вашы дзеянні на сайце. Гэта налада ўключана.</translation>
 <translation id="3027950907978057636">Крыніца: <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">Выйсці з рэжыму інкогніта</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Праглядзець <ph name="TABS_COUNT_ONE" /> укладку з новым дзеяннем у абагуленых групах укладак}one{Праглядзець <ph name="TABS_COUNT_MANY" /> укладку з новым дзеяннем у абагуленых групах укладак}few{Праглядзець <ph name="TABS_COUNT_MANY" /> укладкі з новым дзеяннем у абагуленых групах укладак}many{Праглядзець <ph name="TABS_COUNT_MANY" /> укладак з новым дзеяннем у абагуленых групах укладак}other{Праглядзець <ph name="TABS_COUNT_MANY" /> укладкі з новым дзеяннем у абагуленых групах укладак}}</translation>
+<translation id="6971555615916967190">Налады рэжыму чытання адкрыты на палову экрана</translation>
 <translation id="6971862865055170158">Не ўхваляць</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, новая ці абноўленая ўкладка</translation>
 <translation id="6976811588313110624">Дадаць новае спалучэнне клавіш.</translation>

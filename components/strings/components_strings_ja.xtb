@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">空調設備、温度管理</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">スマートホーム</translation>
-<translation id="2742870351467570537">選択したアイテムを削除</translation>
 <translation id="2743512410823092182">DJ 用の機材</translation>
 <translation id="2743934314332613923">運転免許証を更新しますか？</translation>
 <translation id="2759299890026163685">インターネット接続が安定していることを確認してからもう一度お試しください</translation>
@@ -2678,7 +2677,6 @@
 <translation id="5423269318075950257">価格のトラッキング</translation>
 <translation id="5425082381151187189">室内装飾、インテリア</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> が通知を送信しようとしています。</translation>
-<translation id="5430298929874300616">ブックマークを削除</translation>
 <translation id="5431318178759467895">カラー</translation>
 <translation id="5433756542371550806">コマンドラインのバリエーション</translation>
 <translation id="5434798570900738152">Chrome には、次の情報は<ph name="BEGIN_EMPHASIS" />保存されません<ph name="END_EMPHASIS" />。
@@ -2876,6 +2874,7 @@
 <translation id="5750869797196646528">ハンド トラッキング</translation>
 <translation id="5752327398324808817">1 つか 2 つの単語を入力</translation>
 <translation id="5752519522101347518">銀行確認のウェブサイトを読み込んでいます</translation>
+<translation id="5753570386948603678">履歴から削除</translation>
 <translation id="5759751709240058861">カメラの使用と移動</translation>
 <translation id="5763042198335101085">有効なメールアドレスを入力してください</translation>
 <translation id="5764725887548570807">オリジンの形式が無効です。</translation>
@@ -3092,7 +3091,6 @@
 <translation id="6124058285696691147">添付ファイルをダウンロードします</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connector</translation>
 <translation id="6126565365696310362">中国 #2 封筒</translation>
-<translation id="6127379762771434464">アイテムを削除しました</translation>
 <translation id="6131824478727057281">場所</translation>
 <translation id="6133320744616005677">引き続き許可</translation>
 <translation id="6133984428121856852">ファイル拡張子が空であるか、形式が正しくありません。</translation>
@@ -3107,7 +3105,6 @@
 <translation id="6151417162996330722">サーバー証明書の有効期限が長すぎます。</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" />（<ph name="ORIENTATION" />）</translation>
 <translation id="615506061184576470">ランニング、ウォーキング</translation>
-<translation id="6157754950574419155">履歴からすべて削除</translation>
 <translation id="6157877588268064908">配送方法と要件を確認するには、住所を選択してください</translation>
 <translation id="6159554577634054750">害虫駆除</translation>
 <translation id="6159908896951210943">よりフォーマルに</translation>
@@ -3794,6 +3791,7 @@
 <translation id="7292031607255951991">受取人の氏名</translation>
 <translation id="7298195798382681320">推奨</translation>
 <translation id="7299471494012161875">接続されたディスプレイ周辺機器</translation>
+<translation id="7299721129597238157">ブックマークを削除</translation>
 <translation id="7299769361777046949">Google ウォレットでポイントカードを管理</translation>
 <translation id="7304030187361489308">高め</translation>
 <translation id="7304562222803846232">Google アカウントのプライバシー設定を管理</translation>

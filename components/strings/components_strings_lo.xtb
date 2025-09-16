@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC ແລະ ການຄວບຄຸມສະພາບອາກາດ</translation>
 <translation id="2740531572673183784">ຕົກລົງ</translation>
 <translation id="2742128390261873684">ລະບົບຄວບຄຸມອຸປະກອນໃນເຮືອນອັດຕະໂນມັດ</translation>
-<translation id="2742870351467570537">ເອົາ​ລາ​​ຍ​ການ​ທີ່​ເລືອກອອກ</translation>
 <translation id="2743512410823092182">ແຫຼ່ງຂໍ້ມູນ ແລະ ອຸປະກອນສຳລັບດີເຈ</translation>
 <translation id="2743934314332613923">ອັບເດດໃບອະນຸຍາດຂັບຂີ່ບໍ?</translation>
 <translation id="2759299890026163685">ກວດສອບວ່າທ່ານມີການເຊື່ອມຕໍ່ອິນເຕີເນັດທີ່ສະຖຽນກ່ອນລອງໃໝ່</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">ເປີດການນຳໃຊ້ການພິສູດຢືນຢັນແບບບັງຄັບອີກຄັ້ງ</translation>
 <translation id="3942048175062210325">ລອງເປີດໄຟລ໌ຂອງທ່ານອີກຄັ້ງ</translation>
 <translation id="3943857333388298514">ແປະໃສ່</translation>
+<translation id="3945937463338223066">ຄວບຄຸມອຸປະກອນການພິສູດຢືນຢັນປະເພດ <ph name="READERNAME" /> ແລະ ບັດອັດສະລິຍະທີ່ອຸປະກອນດັ່ງກ່າວສາມາດເຂົ້າເຖິງໄດ້</translation>
 <translation id="3946209740501886391">ຖາມໃນເວັບໄຊນີ້ທຸກເທື່ອ</translation>
 <translation id="3948588869002647271">ແອັບພລິເຄຊັນນີ້ສູນຫາຍ ຫຼື ໄດ້ຮັບຄວາມເສຍຫາຍ</translation>
 <translation id="3949297482798028668">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານບລັອກການວາງເນື້ອຫານີ້ຢູ່ບ່ອນນີ້.</translation>
@@ -2677,7 +2677,6 @@
 <translation id="5423269318075950257">ຕິດຕາມລາຄາ</translation>
 <translation id="5425082381151187189">ການຈັດເຮືອນ ແລະ ຕົບແຕ່ງພາຍໃນ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ຕ້ອງການສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ</translation>
-<translation id="5430298929874300616">ເອົາບຸກມາກຄ໌ອອກໄປ</translation>
 <translation id="5431318178759467895">ສີ</translation>
 <translation id="5433756542371550806">ແຖວຄຳສັ່ງຮູບແບບຕ່າງໆ</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ຈະບໍ່ບັນທຶກ<ph name="END_EMPHASIS" /> ຂໍ້ມູນຕໍ່ໄປນີ້:
@@ -2875,6 +2874,7 @@
 <translation id="5750869797196646528">ການຕິດຕາມມື</translation>
 <translation id="5752327398324808817">ລະບຸ 1 ຄຳ ຫຼື 2 ຄຳ</translation>
 <translation id="5752519522101347518">ກຳລັງໂຫຼດເວັບໄຊການຢັ້ງຢືນທະນາຄານ</translation>
+<translation id="5753570386948603678">ລຶບອອກຈາກປະຫວັດ</translation>
 <translation id="5759751709240058861">ໃຊ້ ແລະ ຍ້າຍກ້ອງຂອງທ່ານ</translation>
 <translation id="5763042198335101085">ປ້ອນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ</translation>
 <translation id="5764725887548570807">ຮູບແບບຕົ້ນທາງບໍ່ຖືກຕ້ອງ.</translation>
@@ -3091,7 +3091,6 @@
 <translation id="6124058285696691147">ດາວໂຫຼດໄຟລ໌ແນບ</translation>
 <translation id="6124432979022149706">ເຄື່ອງມືເຊື່ອມຕໍ່ Chrome Enterprise</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
-<translation id="6127379762771434464">ລຶບລາຍການອອກແລ້ວ</translation>
 <translation id="6131824478727057281">ສະຖານທີ່</translation>
 <translation id="6133320744616005677">ສືບຕໍ່ການອະນຸຍາດ</translation>
 <translation id="6133984428121856852">ນາມສະກຸນໄຟລ໌ຫວ່າງເປົ່າ ຫຼື ມີຮູບແບບບໍ່ຖືກຕ້ອງ.</translation>
@@ -3106,7 +3105,6 @@
 <translation id="6151417162996330722">ໃບ​ຢັ້ງ​ຢືນ​ເຊີບ​ເວີ​ມີ​ໄລ​ຍະ​ຄວາມ​ສາ​ມາດ​ນຳ​ໃຊ້​ໄດ້​ທີ່​ດົນ​ເກີນ​ໄປ.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ນິ້ວ (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ແລ່ນ ແລະ ຍ່າງ</translation>
-<translation id="6157754950574419155">ລຶບທັງໝົດອອກຈາກປະຫວັດ</translation>
 <translation id="6157877588268064908">ເພື່ອເບິ່ງວິທີ ແລະ ຂໍ້ກຳນົດການຈັດສົ່ງ, ກະລຸນາເລືອກທີ່ຢູ່</translation>
 <translation id="6159554577634054750">ການຄວບຄຸມສັດຕູພືດ</translation>
 <translation id="6159908896951210943">ເປັນທາງການ</translation>
@@ -3792,6 +3790,7 @@
 <translation id="7292031607255951991">ຊື່ຜູ້ຮັບ</translation>
 <translation id="7298195798382681320">ແນະ​ນໍາ​ໃຫ້</translation>
 <translation id="7299471494012161875">ອຸປະກອນຕໍ່ພ່ວງຈໍສະແດງຜົນທີ່ເຊື່ອມຕໍ່ຢູ່</translation>
+<translation id="7299721129597238157">ລຶບບຸກມາກ</translation>
 <translation id="7299769361777046949">ຈັດການບັດສະມາຊິກໃນ Google Wallet</translation>
 <translation id="7304030187361489308">ສູງ</translation>
 <translation id="7304562222803846232">ຈັດການການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວບັນຊີ Google</translation>

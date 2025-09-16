@@ -3,6 +3,7 @@
 <translationbundle lang="de">
 <translation id="1010283278930414892">Keine gespeicherten Passwörter auf diesem Gerät</translation>
 <translation id="1011749477052068769">Hierhin verschieben</translation>
+<translation id="1014083013111769343">Einstellungen für den Lesemodus sind vollständig geöffnet</translation>
 <translation id="1014147525163127655">Für <ph name="ORIGIN" /> gibt es auf diesem Gerät keine Passkeys</translation>
 <translation id="1016498331642356377">Schnelle Sprachsuche verwenden. Zum Ändern Schaltfläche gedrückt halten.</translation>
 <translation id="1028699632127661925">Wird an <ph name="DEVICE_NAME" /> gesendet…</translation>
@@ -207,6 +208,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="197288927597451399">Behalten</translation>
 <translation id="1973912524893600642">Daten behalten</translation>
 <translation id="1974060860693918893">Erweitert</translation>
+<translation id="1982274314082047220">Im Lesemodus nach oben wischen, um die Einstellungen aufzurufen</translation>
 <translation id="1984087999855033707">Telefonnummer</translation>
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
 <translation id="1986685561493779662">Name ist bereits vorhanden</translation>
@@ -428,6 +430,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2992473221983447149">Bildbeschreibungen</translation>
 <translation id="2996291259634659425">Passphrase erstellen</translation>
 <translation id="2996809686854298943">URL erforderlich</translation>
+<translation id="3024215143424744261">Einstellungen für den Lesemodus sind geschlossen</translation>
 <translation id="3026955690410463085">Link hinzufügen</translation>
 <translation id="3027644380269727216">Basierend auf deinen Aktivitäten auf einer Website. Diese Einstellung ist aktiviert.</translation>
 <translation id="3027950907978057636">Von <ph name="APP_LABEL" /></translation>
@@ -1027,7 +1030,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5833984609253377421">Link teilen</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Möchtest du „<ph name="FILE_NAME" />“ trotzdem herunterladen?</translation>
-<translation id="5842871376175639063">Tabs und Tabgruppen, die du <ph name="DAYS_INACTIVE" /> Tage lang nicht verwendet hast, werden hierher verschoben<ph name="AUTODELETE_SECTION" />. Du kannst diese Einstellung jederzeit in den <ph name="SETTINGS_TITLE" /> ändern.</translation>
+<translation id="5842871376175639063">Tabs und Tabgruppen, die du <ph name="DAYS_INACTIVE" /> Tage lang nicht verwendet hast, werden hierher verschoben<ph name="AUTODELETE_SECTION" />. Du kannst dies jederzeit in den <ph name="SETTINGS_TITLE" /> ändern.</translation>
 <translation id="5848257610304005265">PDF mit <ph name="APP_NAME" /> öffnen?</translation>
 <translation id="5849288995120328556">Freigabe beenden?</translation>
 <translation id="5853623416121554550">pausiert</translation>
@@ -1075,7 +1078,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Hier kannst du festlegen, welche Meldungen und Aktivitäten dir angezeigt werden</translation>
 <translation id="6071995715087444295">Melde dich in deinem Google-Konto an, um nach den kompromittierten Passwörtern zu suchen</translation>
-<translation id="6078323886959318429">Verknüpfung</translation>
+<translation id="6078323886959318429">Neue Verknüpfung</translation>
 <translation id="6085886413119427067">Legt fest, wie Websites über eine sichere Verbindung aufgerufen werden</translation>
 <translation id="6087286598828478206">Blockieren und Gruppe verlassen?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> Stunden übrig</translation>
@@ -1311,6 +1314,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="696447261358045621">Inkognitomodus deaktivieren</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab mit neuer Aktivität in freigegebenen Tabgruppen ansehen}other{<ph name="TABS_COUNT_MANY" /> Tabs mit neuer Aktivität in freigegebenen Tabgruppen ansehen}}</translation>
+<translation id="6971555615916967190">Einstellungen für den Lesemodus sind halb geöffnet</translation>
 <translation id="6971862865055170158">Nicht genehmigen</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, neuer oder aktualisierter Tab</translation>
 <translation id="6976811588313110624">Neue Tastenkombination hinzufügen.</translation>

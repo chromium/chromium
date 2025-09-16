@@ -446,6 +446,9 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6180522807229584611">See vaheleht kasutab lisaressursse. Laske Chrome'il see toimivuse täiustamiseks interaktiivseks teha.</translation>
 <translation id="6182736845697986886">Installimine ebaõnnestus, kuna värskendusserveris ilmnes sisemine viga.</translation>
 <translation id="6192058120268468905">Teie konto Chrome'is</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> lisas laienduse, mis võib muuta Chrome’i tööpõhimõtteid.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Sissetuleku reegel Google Chrome'ile mDNS-liikluse lubamiseks.</translation>
 <translation id="624230925347970731">Chrome suletakse peagi</translation>
 <translation id="6247557882553405851">Google'i paroolihaldur</translation>
@@ -474,6 +477,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6506909944137591434">Chrome vajab kaamera kasutamise luba, et luua teie ümbruskonnast 3D-kaart</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Asukoha kasutamiseks andke Chrome'ile <ph name="BEGIN_LINK" />süsteemiseadetes<ph name="END_LINK" /> juurdepääs</translation>
+<translation id="652948702951888897">Chrome'i ajalugu</translation>
 <translation id="6532945796722480006">Avage teenuse Gemini Chrome'is Canary versioon</translation>
 <translation id="6585124893636629274">Sulgege Gemini Chrome'is</translation>
 <translation id="659498884637196217">Selle seadme Google'i paroolihalduris</translation>

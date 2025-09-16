@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">Chauffage, ventilation et climatisation (CVC), et contrôle de l'ambiance</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Domotique</translation>
-<translation id="2742870351467570537">Supprimer les éléments sélectionnés</translation>
 <translation id="2743512410823092182">Ressources et équipement pour DJ</translation>
 <translation id="2743934314332613923">Mettre à jour le permis de conduire?</translation>
 <translation id="2759299890026163685">Assurez-vous d'avoir une connexion Internet stable avant de réessayer</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">Activer la réauthentification obligatoire</translation>
 <translation id="3942048175062210325">Réessayez d'ouvrir vos fichiers</translation>
 <translation id="3943857333388298514">Coller</translation>
+<translation id="3945937463338223066">Contrôlez les appareils d'authentification de type <ph name="READERNAME" /> et les cartes à puce qui leur sont accessibles</translation>
 <translation id="3946209740501886391">Toujours demander sur ce site</translation>
 <translation id="3948588869002647271">Cette application est manquante ou endommagée</translation>
 <translation id="3949297482798028668">Le collage de ce contenu ici est bloqué par votre administrateur.</translation>
@@ -2677,7 +2677,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5423269318075950257">Suivre le prix</translation>
 <translation id="5425082381151187189">Décoration</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> veut vous envoyer des notifications.</translation>
-<translation id="5430298929874300616">Retirer le favori</translation>
 <translation id="5431318178759467895">Couleur</translation>
 <translation id="5433756542371550806">Variantes de ligne de commande</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />n'enregistre pas<ph name="END_EMPHASIS" /> les informations suivantes :
@@ -2875,6 +2874,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5750869797196646528">Suivi des mains</translation>
 <translation id="5752327398324808817">Saisissez un mot ou deux</translation>
 <translation id="5752519522101347518">Chargement du site Web de vérification bancaire en cours…</translation>
+<translation id="5753570386948603678">Supprimer de l'historique</translation>
 <translation id="5759751709240058861">Utiliser et déplacer la caméra de votre appareil</translation>
 <translation id="5763042198335101085">Entrez une adresse de courriel valide</translation>
 <translation id="5764725887548570807">Format d'origine incorrect.</translation>
@@ -3091,7 +3091,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6124058285696691147">Télécharger la pièce jointe</translation>
 <translation id="6124432979022149706">Connecteurs Chrome Enterprise</translation>
 <translation id="6126565365696310362">Enveloppe chinoise nᵒ 2</translation>
-<translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6131824478727057281">lieu</translation>
 <translation id="6133320744616005677">Continuer l'autorisation</translation>
 <translation id="6133984428121856852">L'extension de fichier est vide ou malformée.</translation>
@@ -3106,7 +3105,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6151417162996330722">La période de validité du certificat du serveur est trop longue.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> po (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Course et marche</translation>
-<translation id="6157754950574419155">Retirer tous les éléments de l'historique</translation>
 <translation id="6157877588268064908">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
 <translation id="6159554577634054750">Contrôle des insectes et des animaux nuisibles</translation>
 <translation id="6159908896951210943">Soutenu</translation>
@@ -3792,6 +3790,7 @@ Détails supplémentaires :
 <translation id="7292031607255951991">Nom du destinataire</translation>
 <translation id="7298195798382681320">Recommandé</translation>
 <translation id="7299471494012161875">Périphériques d'affichage connectés</translation>
+<translation id="7299721129597238157">Supprimer le favori</translation>
 <translation id="7299769361777046949">Gérer les cartes de fidélité dans Google Portefeuille</translation>
 <translation id="7304030187361489308">Élevée</translation>
 <translation id="7304562222803846232">Gérer les paramètres de confidentialité du compte Google</translation>

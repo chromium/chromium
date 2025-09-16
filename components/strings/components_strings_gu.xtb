@@ -827,6 +827,7 @@
 <translation id="2348509731468399833">કિંમતને ટ્રૅક કરવાનું બંધ કર્યું.</translation>
 <translation id="2349957959687031096">'છૂપી વિન્ડો ખોલો' બટન, ખાનગી રીતે બ્રાઉઝ કરવા, નવી છૂપી વિન્ડો ખોલવા માટે સક્રિય કરો</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> ના બદલે <ph name="HANDLER_HOSTNAME" /> ને બધી <ph name="PROTOCOL" /> લિંક્સ ખોલવાની મંજૂરી આપીએ?</translation>
+<translation id="2351718832234620840">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે કારણ કે તે એવા સુરક્ષા સર્ટિફિકેટનો ઉપયોગ કરી રહ્યું છે જેનો Chromium અથવા વેબ ટ્રાફિક એન્ક્રિપ્શન માટેની તમારી સિસ્ટમની ગોઠવણી દ્વારા વિશ્વાસ કરવામાં આવતો નથી. આવું કદાચ કોઈ ખોટી ગોઠવણી અથવા કોઈ અટૅક કરનારાએ તમારા કનેક્શનમાં અવરોધ ઊભો કર્યો હોવાને કારણે થયું હોઈ શકે છે.</translation>
 <translation id="2353297238722298836">કૅમેરા અને માઇક્રોફોનની મંજૂરી</translation>
 <translation id="2354001756790975382">અન્ય બુકમાર્ક</translation>
 <translation id="2355395290879513365">તમે આ સાઇટ પર જોઈ રહ્યાં છો તે છબીઓને હુમલાખોરો જોઈ શકે છે અને તેમાં ફેરફાર કરીને તમને છેતરી શકે છે.</translation>
@@ -971,6 +972,7 @@
 <translation id="2573170131138724450">ટેલિવિઝન</translation>
 <translation id="257674075312929031">જૂથ</translation>
 <translation id="2580031090587209073">શેર કરવાના વિકલ્પો</translation>
+<translation id="258027838577899739">ઇતિહાસમાંથી બધું ડિલીટ કરો</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબ ઉમેર્યું</translation>
 <translation id="2586657967955657006">ક્લિપબોર્ડ</translation>
 <translation id="2587841377698384444">ડિરેક્ટરી API ID:</translation>
@@ -995,6 +997,7 @@
 <translation id="2625385379895617796">તમારી ઘડિયાળ આગળ છે</translation>
 <translation id="262745152991669301">USB ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="2627847595568876492">PDFમાંથી ટેક્સ્ટ એક્સટ્રેક્ટ કરી રહ્યાં છીએ...</translation>
+<translation id="2628025184666666186">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે કારણ કે તે એવા સુરક્ષા સર્ટિફિકેટનો ઉપયોગ કરી રહ્યું છે જેનો Chrome અથવા વેબ ટ્રાફિક એન્ક્રિપ્શન માટેની તમારી સિસ્ટમની ગોઠવણી દ્વારા વિશ્વાસ કરવામાં આવતો નથી. આવું કદાચ કોઈ ખોટી ગોઠવણી અથવા કોઈ અટૅક કરનારાએ તમારા કનેક્શનમાં અવરોધ ઊભો કર્યો હોવાને કારણે થયું હોઈ શકે છે.</translation>
 <translation id="2628224721443278970">Microsoft OneDriveમાં સાઇન ઇન કરો</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />નું સર્વર IP ઍડ્રેસ ન મળ્યું.</translation>
 <translation id="2638567100095052009">સમગ્ર <ph name="FEATURED_SEARCH_LIST" /> પર શોધવા માટે @ ટાઇપ કરો</translation>
@@ -1067,7 +1070,6 @@
 <translation id="273785062888389088">HVAC અને પર્યાવરણ નિયંત્રણ</translation>
 <translation id="2740531572673183784">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2742128390261873684">હોમ ઑટોમૅશન</translation>
-<translation id="2742870351467570537">પસંદ કરેલી આઇટમ્સને દૂર કરો</translation>
 <translation id="2743512410823092182">ડીજે સંસાધનો અને સાધન</translation>
 <translation id="2743934314332613923">શું ડ્રાઇવિંગ લાઇસન્સની માહિતી અપડેટ કરીએ?</translation>
 <translation id="2759299890026163685">ફરી પ્રયાસ કરતા પહેલાં તમારું ઇન્ટરનેટ કનેક્શન સ્થિર હોય તેની ખાતરી કરો</translation>
@@ -1780,6 +1782,7 @@
 <translation id="3941630233824954464">ફરજીયાત પુન:પ્રમાણીકરણ ચાલુ કરો</translation>
 <translation id="3942048175062210325">તમારી ફાઇલોને ફરીથી ખોલવાનો પ્રયાસ કરો</translation>
 <translation id="3943857333388298514">પેસ્ટ કરો</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> પ્રકારના પ્રમાણીકરણ ડિવાઇસ અને તેમના માટે ઍક્સેસ કરી શકાતા સ્માર્ટ કાર્ડ નિયંત્રિત કરો</translation>
 <translation id="3946209740501886391">આ સાઇટ પર હંમેશાં પૂછો</translation>
 <translation id="3948588869002647271">ઍપ્લિકેશન ખૂટે છે અથવા નુકસાન થયેલી છે</translation>
 <translation id="3949297482798028668">તમારા ઍડમિનિસ્ટ્રેટરે અહીં કન્ટેન્ટ પેસ્ટ કરવાની સુવિધા બ્લૉક કરી છે.</translation>
@@ -1878,6 +1881,7 @@
 <translation id="4099048595830172239">ગોપનીય કન્ટેન્ટ દેખાતું હોય ત્યારે વ્યવસ્થાપકની પૉલિસી <ph name="APPLICATION_TITLE" /> સાથે તમારી સ્ક્રીન શેર કરવાનો સુઝાવ આપતી નથી:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeમાં ફૉન્ટના કદ અને ટાઇપફેસ કસ્ટમાઇઝ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="4101413244023615925">ટેક્સ્ટ અને ગ્રાફિક</translation>
+<translation id="4101917550061398111">પસંદ કરેલી આઇટમ ડિલીટ કરો</translation>
 <translation id="4102567721634170493">સ્થાનિક ન્યૂઝ</translation>
 <translation id="4103249731201008433">ઉપકરણ અનુક્ર્માંક નંબર અમાન્ય છે</translation>
 <translation id="4103592298805904008">કાર્ડબોર્ડ (સિંગલ વૉલ)</translation>
@@ -2677,7 +2681,6 @@
 <translation id="5423269318075950257">કિંમત ટ્રૅક કરો</translation>
 <translation id="5425082381151187189">ઘર અને તેને સંબંધિત ઇન્ટિરિયર ડેકોરેશન</translation>
 <translation id="5426179911063097041"><ph name="SITE" />તમને નોટિફિકેશનો મોકલવા માગે છે</translation>
-<translation id="5430298929874300616">બુકમાર્ક દૂર કરો</translation>
 <translation id="5431318178759467895">રંગ</translation>
 <translation id="5433756542371550806">આદેશ લાઇનમાં વેરિયેશન</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />આ સાચવશે નહીં<ph name="END_EMPHASIS" />:
@@ -2875,6 +2878,7 @@
 <translation id="5750869797196646528">હાથ ટ્રૅક કરવાની સુવિધા</translation>
 <translation id="5752327398324808817">એક કે બે શબ્દ દાખલ કરો</translation>
 <translation id="5752519522101347518">બેંક ચકાસણીની વેબસાઇટ લોડ કરી રહ્યાં છીએ</translation>
+<translation id="5753570386948603678">ઇતિહાસમાંથી ડિલીટ કરો</translation>
 <translation id="5759751709240058861">તમારા કૅમેરાનો ઉપયોગ કરો અને તેને ખસેડો</translation>
 <translation id="5763042198335101085">એક માન્ય ઇમેઇલ ઍડ્રેસ ઉમેરો</translation>
 <translation id="5764725887548570807">મૂળ ફૉર્મેટ અમાન્ય છે.</translation>
@@ -3091,7 +3095,6 @@
 <translation id="6124058285696691147">જોડાણ ડાઉનલોડ કરો</translation>
 <translation id="6124432979022149706">Chrome એન્ટરપ્રાઇઝ કનેક્ટર</translation>
 <translation id="6126565365696310362">એન્વલપ ચાઇનીઝ #2</translation>
-<translation id="6127379762771434464">આઇટમ દૂર કરી</translation>
 <translation id="6131824478727057281">સ્થાન</translation>
 <translation id="6133320744616005677">મંજૂરી આપવાનું ચાલુ રાખો</translation>
 <translation id="6133984428121856852">ફાઇલનું એક્સ્ટેન્શન ખાલી અથવા દૂષિત છે.</translation>
@@ -3106,7 +3109,6 @@
 <translation id="6151417162996330722">સર્વર પ્રમાણપત્ર પાસે ખૂબ લાંબી હોય એવી માન્યતા અવધિ છે.</translation>
 <translation id="6153243098246946146">(<ph name="ORIENTATION" />)માં <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="615506061184576470">દોડવું અને ચાલવું</translation>
-<translation id="6157754950574419155">ઇતિહાસમાંથી બધું કાઢી નાખો</translation>
 <translation id="6157877588268064908">વિતરણ પદ્ધતિ અને આવશ્યકતાઓ જોવા માટે, એક સરનામું પસંદ કરો</translation>
 <translation id="6159554577634054750">પેસ્ટ કન્ટ્રોલ સેવા</translation>
 <translation id="6159908896951210943">ફોર્મલ</translation>
@@ -3793,6 +3795,7 @@
 <translation id="7292031607255951991">પ્રાપ્તકર્તાનું નામ</translation>
 <translation id="7298195798382681320">ભલામણ કરેલ</translation>
 <translation id="7299471494012161875">ડિસ્પ્લે પેરિફેરલ જોડેલા છે</translation>
+<translation id="7299721129597238157">બુકમાર્ક કાઢી નાખો</translation>
 <translation id="7299769361777046949">Google Walletમાં લૉયલ્ટિ કાર્ડ મેનેજ કરો</translation>
 <translation id="7304030187361489308">વધુ ઝડપે</translation>
 <translation id="7304562222803846232">Google એકાઉન્ટના પ્રાઇવસી સેટિંગ મેનેજ કરો</translation>
@@ -3897,6 +3900,7 @@
 <translation id="7450577240311017924">'સિંક મેનેજ કરો' બટન, Chrome સેટિંગમાં તમે જે માહિતી સિંક કરવા ઇચ્છતા હો, તે મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="7451311239929941790">આ સમસ્યા વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">Dino ગેમ, રમવા માટે સ્પેસ દબાવો</translation>
+<translation id="7453849010505253492">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે કારણ કે તે એવા સુરક્ષા સર્ટિફિકેટનો ઉપયોગ કરી રહ્યું છે જેનો Chrome અથવા વેબ ટ્રાફિક એન્ક્રિપ્શન માટેની તમારી સિસ્ટમની ગોઠવણી દ્વારા વિશ્વાસ કરવામાં આવતો નથી. આવું કદાચ કોઈ ખોટી ગોઠવણી અથવા કોઈ અટૅક કરનારાએ તમારા કનેક્શનમાં અવરોધ ઊભો કર્યો હોવાને કારણે થયું હોઈ શકે છે. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />સર્ટિફિકેટ જુઓ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">ક્લાઉડ એકાઉન્ટ</translation>
 <translation id="7455133967321480974">વૈશ્વિક ડિફોલ્ટનો ઉપયોગ કરો (અવરોધિત કરો)</translation>
 <translation id="7455452752247248289">એન્ટરપ્રાઇઝ ટેકનોલોજી</translation>
@@ -4229,6 +4233,7 @@
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> સાથે સ્ક્રીન શેરિંગની સુવિધા ફરી શરૂ કરવામાં આવી</translation>
 <translation id="7995512525968007366">નિર્દિષ્ટ કરાયેલ નથી</translation>
 <translation id="7997855386298213183">શેર કરેલા ટૅબ</translation>
+<translation id="8001912761979890298">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે કારણ કે તે એવા સુરક્ષા સર્ટિફિકેટનો ઉપયોગ કરી રહ્યું છે જેનો Chromium અથવા વેબ ટ્રાફિક એન્ક્રિપ્શન માટેની તમારી સિસ્ટમની ગોઠવણી દ્વારા વિશ્વાસ કરવામાં આવતો નથી. આવું કદાચ કોઈ ખોટી ગોઠવણી અથવા કોઈ અટૅક કરનારાએ તમારા કનેક્શનમાં અવરોધ ઊભો કર્યો હોવાને કારણે થયું હોઈ શકે છે. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />સર્ટિફિકેટ જુઓ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">મેમરી ખાલી કરવા માટે અન્ય ટૅબ અથવા પ્રોગ્રામને બંધ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="8002230960325005199">નવા ટૅબમાં સંબંધિત સાઇટ જુઓ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
@@ -4570,6 +4575,7 @@
 <translation id="8564466070529550495">હમણાં કોઈ વર્ચ્યુઅલ કાર્ડ ઉપલબ્ધ નથી, કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="8564985650692024650">જો તમે અન્ય સાઇટ પર <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> પાસવર્ડનો ફરી ઉપયોગ કર્યો હોય, તો Chromium તેને રીસેટ કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="8570895683659698018">શોખ અને નવરાશ</translation>
+<translation id="8574570240981266561">આઇટમ ડિલીટ કરી</translation>
 <translation id="8574841453995331336">રેફ્રિજરેટર અને ફ્રીઝર</translation>
 <translation id="8577192028579836704">સામાન્ય રીતે તમામ વિકલ્પો <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">વર્ચ્યુઅલ કાર્ડ ઉપલબ્ધ નથી</translation>

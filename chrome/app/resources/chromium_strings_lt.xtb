@@ -17,6 +17,9 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1131805035311359397">Jei norite patikrinti, ar slaptažodžiai apsaugoti nuo duomenų saugos pažeidimų bei kitų saugos problemų, <ph name="BEGIN_LINK" />prisijunkite prie „Chromium“<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Spustelėkite „Chromium“ meniu</translation>
 <translation id="1157985233335035034">Naujausios kalbos</translation>
+<translation id="1171831736360285680">„<ph name="PARTNER_NAME" />“ pridėjo plėtinį, kuris gali pakeisti, kaip veikia „Chromium“.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Įdiegti nepavyko, nes jūsų „Windows“ versija nepalaikoma.</translation>
 <translation id="1185134272377778587">Apie „Chromium“</translation>
 <translation id="1203500561924088507">Dėkojame už diegimą. Turite iš naujo paleisti naršyklę, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
@@ -173,6 +176,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3068187312562070417">Kiti „Chromium“ profiliai</translation>
 <translation id="3068515742935458733">Padėkite tobulinti „Chromium“ siųsdami „Google“ strigčių ataskaitas ir <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Vienas USB įrenginys buvo pasiekiamas naudojant vieną ar daugiau „Chromium“ plėtinių}=1{Vienas USB įrenginys pasiekiamas naudojant vieną ar daugiau „Chromium“ plėtinių}one{# USB įrenginys pasiekiamas naudojant vieną ar daugiau „Chromium“ plėtinių}few{# USB įrenginiai pasiekiami naudojant vieną ar daugiau „Chromium“ plėtinių}many{# USB įrenginio pasiekiama naudojant vieną ar daugiau „Chromium“ plėtinių}other{# USB įrenginių pasiekiama naudojant vieną ar daugiau „Chromium“ plėtinių}}</translation>
+<translation id="3095811995836568724">„Chromium“ istorija</translation>
 <translation id="3101560983689755071">Naršymo istorija lemia, kokius skelbimus matysite ir kokie jūsų pomėgiai bus numatomi toliau. Siekiant apsaugoti privatumą, „Chromium“ reguliariai kiekvieną mėnesį automatiškai ištrina jūsų pomėgius. Pomėgiai gali būti atnaujinami, kol jų nepašalinate.</translation>
 <translation id="3103660991484857065">Diegimo programai nepavyko išpakuoti archyvo. Atsisiųskite „Chromium“ dar kartą.</translation>
 <translation id="310459126943037700">Nepavyko užbaigti užduoties (-čių).</translation>

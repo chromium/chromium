@@ -3,6 +3,7 @@
 <translationbundle lang="bs">
 <translation id="1010283278930414892">Nema sačuvanih lozinki na uređaju</translation>
 <translation id="1011749477052068769">Premjesti ovdje</translation>
+<translation id="1014083013111769343">Postavke načina rada za čitanje su otvorene u punoj visini</translation>
 <translation id="1014147525163127655">Nema pristupnih ključeva za <ph name="ORIGIN" /> na uređaju</translation>
 <translation id="1016498331642356377">Brzo pretražujte pomoću glasa. Dodirnite i zadržite da uredite ovu prečicu.</translation>
 <translation id="1028699632127661925">Slanje na uređaj <ph name="DEVICE_NAME" /></translation>
@@ -207,6 +208,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="197288927597451399">Zadrži</translation>
 <translation id="1973912524893600642">Zadrži podatke</translation>
 <translation id="1974060860693918893">Napredno</translation>
+<translation id="1982274314082047220">Prevlačenje nagore u načinu rada za čitanje radi postavki</translation>
 <translation id="1984087999855033707">broj telefona</translation>
 <translation id="1984417487208496350">Bez zaštite (ne preporučuje se)</translation>
 <translation id="1986685561493779662">Naziv već postoji</translation>
@@ -428,6 +430,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2992473221983447149">Opisi slike</translation>
 <translation id="2996291259634659425">Kreirajte pristupni izraz</translation>
 <translation id="2996809686854298943">Potreban je URL</translation>
+<translation id="3024215143424744261">Postavke načina rada za čitanje su zatvorene</translation>
 <translation id="3026955690410463085">Uvrsti link</translation>
 <translation id="3027644380269727216">Na osnovu vaše aktivnosti na web lokaciji. Postavka je uključena.</translation>
 <translation id="3027950907978057636">Iz aplikacije <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="696447261358045621">Napusti anonimni načina rada</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Prikaz za <ph name="TABS_COUNT_ONE" /> karticu s novom aktivnošću u dijeljenim grupama kartica}one{Prikaz za <ph name="TABS_COUNT_MANY" /> karticu s novom aktivnošću u dijeljenim grupama kartica}few{Prikaz za <ph name="TABS_COUNT_MANY" /> kartice s novom aktivnošću u dijeljenim grupama kartica}other{Prikaz za <ph name="TABS_COUNT_MANY" /> kartica s novom aktivnošću u dijeljenim grupama kartica}}</translation>
+<translation id="6971555615916967190">Postavke načina rada za čitanje su otvorene na pola visine</translation>
 <translation id="6971862865055170158">Nemoj odobriti</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, nova ili ažurirana kartica</translation>
 <translation id="6976811588313110624">Dodavanje nove prečice.</translation>

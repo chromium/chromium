@@ -3,6 +3,7 @@
 <translationbundle lang="uz">
 <translation id="1010283278930414892">Bu qurilmaga parol saqlanmagan</translation>
 <translation id="1011749477052068769">Bu yerga koʻchirish</translation>
+<translation id="1014083013111769343">Mutolaa rejimi sozlamalari toʻliq hajmda ochildi</translation>
 <translation id="1014147525163127655">Bu qurilmada <ph name="ORIGIN" /> uchun hech qanday kod mavjud emas</translation>
 <translation id="1016498331642356377">Ovoz bilan tezda qidiring. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
 <translation id="1028699632127661925">Bunga yuborilmoqda: <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="197288927597451399">Saqlash</translation>
 <translation id="1973912524893600642">Maʼlumotlar joyida qolsin</translation>
 <translation id="1974060860693918893">Qo‘shimcha</translation>
+<translation id="1982274314082047220">Mutolaa rejimini sozlamalarini ochish uchun tepaga torting</translation>
 <translation id="1984087999855033707">telefon raqami</translation>
 <translation id="1984417487208496350">Himoyasiz (tavsiya etilmaydi)</translation>
 <translation id="1986685561493779662">Bu nom band</translation>
@@ -428,6 +430,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2992473221983447149">Rasm tavsiflari</translation>
 <translation id="2996291259634659425">Kodli ibora yaratish</translation>
 <translation id="2996809686854298943">URL manzili kiritilmadi</translation>
+<translation id="3024215143424744261">Mutolaa rejimi sozlamalari yopildi</translation>
 <translation id="3026955690410463085">Havolani kiritish</translation>
 <translation id="3027644380269727216">Saytdagi harakatlaringiz asosida. Bu sozlama yoniq.</translation>
 <translation id="3027950907978057636">Manba: <ph name="APP_LABEL" /></translation>
@@ -706,6 +709,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4380055775103003110">Muammo qayta takrorlansa, <ph name="SITE_ETLD_PLUS_ONE" /> orqali boshqa usulda davom eting.</translation>
 <translation id="4384468725000734951">Asosiy qidiruv tizimi – Sogou</translation>
 <translation id="4387647248986092471">Avtomobil profil qulfini yaratish</translation>
+<translation id="4387817230000841154">Yuklanmalarni ochish</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Varaqlar va guruhlar kamida 1 kun ishlatilmagan}other{Varaqlar va guruhlar kamida # kun ishlatilmagan}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Yuklab olinmoqda…</translation>
 <translation id="4404568932422911380">Hech qanday xatcho‘p yo‘q</translation>
@@ -1311,6 +1315,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="696447261358045621">Inkognito rejimidan chiqish</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Yangi harakatli <ph name="TABS_COUNT_ONE" /> ta varaq umumiy varaqlar guruhida}other{Yangi harakatli <ph name="TABS_COUNT_MANY" /> ta varaq umumiy varaqlar guruhida}}</translation>
+<translation id="6971555615916967190">Mutolaa rejimi sozlamalari yarim hajmda ochildi</translation>
 <translation id="6971862865055170158">Tasdiqlanmasin</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, yangi yoki yangilangan varaq</translation>
 <translation id="6976811588313110624">Yangi tezkor tugma kiritish</translation>

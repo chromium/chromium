@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">Системи за отопление, вентилация и климатизация</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Автоматизиране на дома</translation>
-<translation id="2742870351467570537">Премахване на избраните елементи</translation>
 <translation id="2743512410823092182">Ресурси и оборудване за дисководещи</translation>
 <translation id="2743934314332613923">Да се актуализира ли шофьорската книжка?</translation>
 <translation id="2759299890026163685">Преди да опитате отново, уверете се, че имате стабилна връзка с интернет</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">Активиране на задължителното повторно удостоверяване</translation>
 <translation id="3942048175062210325">Опитайте отново да отворите файловете си</translation>
 <translation id="3943857333388298514">Поставяне</translation>
+<translation id="3945937463338223066">Контролиране на устройствата за удостоверяване от тип <ph name="READERNAME" /> и смарткартите, до които имат достъп</translation>
 <translation id="3946209740501886391">Винаги да се извежда запитване за този сайт</translation>
 <translation id="3948588869002647271">Това приложение липсва или е повредено</translation>
 <translation id="3949297482798028668">Поставянето на това съдържание тук е блокирано от администратора ви.</translation>
@@ -2677,7 +2677,6 @@
 <translation id="5423269318075950257">Следене на цената</translation>
 <translation id="5425082381151187189">Дом и обзавеждане</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> иска да ви изпраща известия</translation>
-<translation id="5430298929874300616">Премахване на отметката</translation>
 <translation id="5431318178759467895">Цветно</translation>
 <translation id="5433756542371550806">Варианти във формат за командния ред</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />няма да запазва<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@
 <translation id="5750869797196646528">Проследяване на ръцете</translation>
 <translation id="5752327398324808817">Въведете една или две думи</translation>
 <translation id="5752519522101347518">Уебсайтът за потвърждаване на банковата сметка се зарежда</translation>
+<translation id="5753570386948603678">Изтриване от историята</translation>
 <translation id="5759751709240058861">Използване и местене на камерата ви</translation>
 <translation id="5763042198335101085">Въведете валиден имейл адрес</translation>
 <translation id="5764725887548570807">Форматът на източника е невалиден.</translation>
@@ -3091,7 +3091,6 @@
 <translation id="6124058285696691147">Изтегляне на прикачения файл</translation>
 <translation id="6124432979022149706">Конектори за Chrome Enterprise</translation>
 <translation id="6126565365696310362">Плик, китайски №2</translation>
-<translation id="6127379762771434464">Елементът бе премахнат</translation>
 <translation id="6131824478727057281">местоположение</translation>
 <translation id="6133320744616005677">Продължаване на достъпа</translation>
 <translation id="6133984428121856852">Файловото разширение е празно или невалидно.</translation>
@@ -3106,7 +3105,6 @@
 <translation id="6151417162996330722">Сертификатът на сървъра има твърде дълъг период на валидност.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> инча (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Бягане и ходене</translation>
-<translation id="6157754950574419155">Премахване на всичко от историята</translation>
 <translation id="6157877588268064908">За да видите начините на доставка и изискванията, изберете адрес</translation>
 <translation id="6159554577634054750">Борба с вредители</translation>
 <translation id="6159908896951210943">Формален</translation>
@@ -3793,6 +3791,7 @@
 <translation id="7292031607255951991">Име на получателя</translation>
 <translation id="7298195798382681320">Препоръчително</translation>
 <translation id="7299471494012161875">Свързаните периферни екрани</translation>
+<translation id="7299721129597238157">Изтриване на отметката</translation>
 <translation id="7299769361777046949">Управление на картите за лоялност в Google Wallet</translation>
 <translation id="7304030187361489308">Висока</translation>
 <translation id="7304562222803846232">Управление на настройките за поверителност за профила в Google</translation>

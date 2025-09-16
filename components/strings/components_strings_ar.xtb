@@ -36,7 +36,7 @@
 <translation id="1062407476771304334">استبدال</translation>
 <translation id="1063822554756965137">تم حذف الملفات بنجاح</translation>
 <translation id="1064054731605354900">A3x5</translation>
-<translation id="1065369186007547872">‏يستنبط متصفِّح Chrome عدم رغبتك في تلقّي إشعارات من هذا الموقع الإلكتروني، لذا يتم إخفاء الطلبات للحدّ من المقاطعات.</translation>
+<translation id="1065369186007547872">‏يلاحظ متصفِّح Chrome عدم رغبتك في تلقّي إشعارات من هذا الموقع الإلكتروني، لذا يتم إخفاء الطلبات للحدّ من مقاطعتك.</translation>
 <translation id="1066528211000788800">JSON</translation>
 <translation id="1067029985695494416">تفاصيل محرّك البحث</translation>
 <translation id="1068467933609179019">إعدادات خدمات الملء التلقائي</translation>
@@ -1068,7 +1068,6 @@
 <translation id="273785062888389088">تدفئة وتهوية وتكييف هواء وتحكُّم في المناخ</translation>
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2742128390261873684">التشغيل الآلي للأجهزة المنزلية</translation>
-<translation id="2742870351467570537">إزالة العناصر المحددة</translation>
 <translation id="2743512410823092182">موارد ومعدات الدي جي</translation>
 <translation id="2743934314332613923">هل المطلوب تعديل بيانات رخصة القيادة؟</translation>
 <translation id="2759299890026163685">يُرجى التأكّد من استقرار اتصال جهازك بالإنترنت قبل إعادة المحاولة</translation>
@@ -1627,7 +1626,7 @@
 <translation id="3678529606614285348">‏يمكنك فتح الصفحة في نافذة جديدة للتصفح المتخفي (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">إدخال رمز التحقّق المكوَّن من <ph name="OTP_LENGTH" /> أرقام</translation>
 <translation id="3681007416295224113">معلومات الشهادة</translation>
-<translation id="3681191721636073359">‏يستنبط متصفِّح Chrome عدم رغبتك في استخدام موقعك الجغرافي على هذا الموقع الإلكتروني، لذا يتم إخفاء الطلبات للحدّ من المقاطعات.</translation>
+<translation id="3681191721636073359">‏يلاحظ متصفِّح Chrome عدم رغبتك في استخدام موقعك الجغرافي على هذا الموقع الإلكتروني، لذا يتم إخفاء الطلبات للحدّ من مقاطعتك.</translation>
 <translation id="3681421644246505351">‏يحدِّد Chrome المواضيع التي تهمُّك بناءً على أحدث سجلّ تصفّح لك.</translation>
 <translation id="3681841880472207951">‏فيديو Quicktime</translation>
 <translation id="3682094733650754138">تم تحديد خيار ملء حقول العنوان.</translation>
@@ -1781,6 +1780,7 @@
 <translation id="3941630233824954464">تفعيل ميزة إعادة المصادقة الإلزامية</translation>
 <translation id="3942048175062210325">يرجى محاولة فتح الملفات مرة أخرى.</translation>
 <translation id="3943857333388298514">لصق</translation>
+<translation id="3945937463338223066">التحكّم في أجهزة المصادقة من النوع "<ph name="READERNAME" />" والبطاقات الذكية المتاحة لها</translation>
 <translation id="3946209740501886391">السؤال دائمًا على الموقع هذا</translation>
 <translation id="3948588869002647271">هذا التطبيق غير متوفِّر أو تالف.</translation>
 <translation id="3949297482798028668">حظرَ المشرف لصق هذا المحتوى هنا.</translation>
@@ -2679,7 +2679,6 @@
 <translation id="5423269318075950257">تتبُّع السعر</translation>
 <translation id="5425082381151187189">ديكور منزلي وديكور داخلي</translation>
 <translation id="5426179911063097041">يريد موقع <ph name="SITE" /> إرسال إشعارات إليك</translation>
-<translation id="5430298929874300616">إزالة إشارة مرجعية</translation>
 <translation id="5431318178759467895">بالألوان</translation>
 <translation id="5433756542371550806">الإصدارات المُعدَّلة لسطر الأوامر</translation>
 <translation id="5434798570900738152">‏<ph name="BEGIN_EMPHASIS" />لن يحفظ<ph name="END_EMPHASIS" /> Chromium ما يلي:
@@ -2877,6 +2876,7 @@
 <translation id="5750869797196646528">تتبُّع اليد</translation>
 <translation id="5752327398324808817">إدخال كلمة أو كلمتين</translation>
 <translation id="5752519522101347518">جارٍ تحميل الموقع الإلكتروني لتأكيد المعلومات البنكية</translation>
+<translation id="5753570386948603678">الحذف من السجلّ</translation>
 <translation id="5759751709240058861">استخدام الكاميرا وتحريكها</translation>
 <translation id="5763042198335101085">أدخِل عنوان بريد إلكتروني صحيحًا</translation>
 <translation id="5764725887548570807">تنسيق المصدر غير صالح.</translation>
@@ -3093,7 +3093,6 @@
 <translation id="6124058285696691147">تنزيل المرفق</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">ظرف صيني رقم 2</translation>
-<translation id="6127379762771434464">أُزيلَ عنصر</translation>
 <translation id="6131824478727057281">الموقع الجغرافي</translation>
 <translation id="6133320744616005677">مواصلة منح الإذن</translation>
 <translation id="6133984428121856852">امتداد الملف فارغ أو غير صالح.</translation>
@@ -3108,7 +3107,6 @@
 <translation id="6151417162996330722">فترة صلاحية شهادة الخادم طويلة جدًا.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ركض وسير</translation>
-<translation id="6157754950574419155">إزالة جميع عمليات البحث من السجلّ</translation>
 <translation id="6157877588268064908">لعرض طرق الشحن ومتطلباته، يرجى اختيار عنوان</translation>
 <translation id="6159554577634054750">مكافحة حشرات</translation>
 <translation id="6159908896951210943">نص رسمي</translation>
@@ -3795,6 +3793,7 @@
 <translation id="7292031607255951991">اسم المستلم</translation>
 <translation id="7298195798382681320">موصى بها</translation>
 <translation id="7299471494012161875">أجهزة العرض الملحقة المتّصلة</translation>
+<translation id="7299721129597238157">حذف الإشارة المرجعية</translation>
 <translation id="7299769361777046949">‏إدارة بطاقات الولاء في "محفظة Google"</translation>
 <translation id="7304030187361489308">مرتفع</translation>
 <translation id="7304562222803846232">‏إدارة إعدادات خصوصية حسابك على Google</translation>

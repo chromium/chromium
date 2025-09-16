@@ -3,6 +3,7 @@
 <translationbundle lang="gl">
 <translation id="1010283278930414892">Non hai ningún contrasinal gardado neste dispositivo</translation>
 <translation id="1011749477052068769">Mover aquí</translation>
+<translation id="1014083013111769343">Abríronse as preferencias do modo de lectura a altura completa</translation>
 <translation id="1014147525163127655">Non hai ningunha clave de acceso para <ph name="ORIGIN" /> neste dispositivo</translation>
 <translation id="1016498331642356377">Buscar rapidamente coa voz. Para editar este atallo, mantén premido o botón.</translation>
 <translation id="1028699632127661925">Enviando pestana a <ph name="DEVICE_NAME" />…</translation>
@@ -207,6 +208,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="197288927597451399">Continuar</translation>
 <translation id="1973912524893600642">Conservar datos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
+<translation id="1982274314082047220">Pasa o dedo cara arriba desde o modo de lectura para ver as preferencias</translation>
 <translation id="1984087999855033707">número de teléfono</translation>
 <translation id="1984417487208496350">Sen protección (non recomendado)</translation>
 <translation id="1986685561493779662">O nome xa existe</translation>
@@ -428,6 +430,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2992473221983447149">Descricións de imaxes</translation>
 <translation id="2996291259634659425">Crear contrasinal</translation>
 <translation id="2996809686854298943">O URL é obrigatorio</translation>
+<translation id="3024215143424744261">Pecháronse as preferencias do modo de lectura</translation>
 <translation id="3026955690410463085">Incluír ligazón</translation>
 <translation id="3027644380269727216">En función da túa actividade nun sitio. Esta opción de configuración está activada.</translation>
 <translation id="3027950907978057636">De <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="696447261358045621">Saír do modo de incógnito</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestana con actividade nova en grupos de pestanas compartidos}other{Ver <ph name="TABS_COUNT_MANY" /> pestanas con actividade nova en grupos de pestanas compartidos}}</translation>
+<translation id="6971555615916967190">Abríronse as preferencias do modo de lectura a altura media.</translation>
 <translation id="6971862865055170158">Non aprobar</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, pestana nova ou actualizada</translation>
 <translation id="6976811588313110624">Engadir unha nova pestana.</translation>

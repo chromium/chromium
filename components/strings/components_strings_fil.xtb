@@ -1067,7 +1067,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="273785062888389088">HVAC at Pagkontrol sa Klima</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Home Automation</translation>
-<translation id="2742870351467570537">Alisin ang mga napiling item</translation>
 <translation id="2743512410823092182">Mga Resource at Kasangkapang Pang-DJ</translation>
 <translation id="2743934314332613923">I-update ang lisensya sa pagmamaneho?</translation>
 <translation id="2759299890026163685">Tiyaking stable ang iyong koneksyon sa internet bago subukan ulit</translation>
@@ -1780,6 +1779,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3941630233824954464">I-enable ang mandatoryong pag-authenticate ulit</translation>
 <translation id="3942048175062210325">Subukang buksan ulit ang iyong mga file</translation>
 <translation id="3943857333388298514">I-paste</translation>
+<translation id="3945937463338223066">Kontrolin ang mga device sa pag-authenticate na may uri na <ph name="READERNAME" /> at mga smart card na naa-access ng mga ito</translation>
 <translation id="3946209740501886391">Palaging hilingin sa site na ito</translation>
 <translation id="3948588869002647271">Wala o sira ang application na ito</translation>
 <translation id="3949297482798028668">Na-block ng iyong administrator ang pag-paste dito ng content na ito.</translation>
@@ -2677,7 +2677,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5423269318075950257">Subaybayan ang Presyo</translation>
 <translation id="5425082381151187189">Dekorasyon sa Bahay</translation>
 <translation id="5426179911063097041">Gusto ng <ph name="SITE" /> na padalhan ka ng mga notification</translation>
-<translation id="5430298929874300616">Alisin ang bookmark</translation>
 <translation id="5431318178759467895">Kulay</translation>
 <translation id="5433756542371550806">Mga Variation ng Command-line</translation>
 <translation id="5434798570900738152"><ph name="BEGIN_EMPHASIS" />Hindi ise-save<ph name="END_EMPHASIS" /> ng Chromium ang:
@@ -2875,6 +2874,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5750869797196646528">Pag-track sa kamay</translation>
 <translation id="5752327398324808817">Maglagay ng ilang salita</translation>
 <translation id="5752519522101347518">Nilo-load ang website ng pag-verify ng bangko</translation>
+<translation id="5753570386948603678">I-delete sa history</translation>
 <translation id="5759751709240058861">Gamitin at galawin ang iyong camera</translation>
 <translation id="5763042198335101085">Maglagay ng wastong email address</translation>
 <translation id="5764725887548570807">Invalid na format ng origin.</translation>
@@ -3091,7 +3091,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6124058285696691147">I-download ang attachment</translation>
 <translation id="6124432979022149706">Mga Chrome Enterprise Connector</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
-<translation id="6127379762771434464">Inalis ang item</translation>
 <translation id="6131824478727057281">lokasyon</translation>
 <translation id="6133320744616005677">Patuloy na pahintulutan</translation>
 <translation id="6133984428121856852">Walang laman o mali ang file extension.</translation>
@@ -3106,7 +3105,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6151417162996330722">Masyadong mahaba ang panahon ng pagkakaroon ng bisa ng certificate ng server.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Pagtakbo at Paglalakad</translation>
-<translation id="6157754950574419155">Alisin ang lahat sa history</translation>
 <translation id="6157877588268064908">Para makita ang mga paraan at kinakailangan sa pagpapadala, pumili ng address</translation>
 <translation id="6159554577634054750">Pagkontrol sa Peste</translation>
 <translation id="6159908896951210943">Pormal</translation>
@@ -3793,6 +3791,7 @@ Mga karagdagang detalye:
 <translation id="7292031607255951991">Pangalan ng tatanggap</translation>
 <translation id="7298195798382681320">Inirerekomenda</translation>
 <translation id="7299471494012161875">Ipakita ang mga naka-attach na peripheral</translation>
+<translation id="7299721129597238157">Tanggalin ang bookmark</translation>
 <translation id="7299769361777046949">Pamahalaan ang mga loyalty card sa Google Wallet</translation>
 <translation id="7304030187361489308">Mataas</translation>
 <translation id="7304562222803846232">Pamahalaan ang mga setting ng privacy ng Google Account</translation>

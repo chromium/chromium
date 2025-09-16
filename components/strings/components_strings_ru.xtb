@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">Кондиционеры и климат-контроль</translation>
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2742128390261873684">Автоматизация дома</translation>
-<translation id="2742870351467570537">Удалить выбранные элементы</translation>
 <translation id="2743512410823092182">Оборудование для диджеев</translation>
 <translation id="2743934314332613923">Обновить данные водительского удостоверения?</translation>
 <translation id="2759299890026163685">Убедитесь, что подключение к интернету стабильно, и повторите попытку.</translation>
@@ -2067,7 +2066,7 @@
 <translation id="4366943895537458493">Табличка</translation>
 <translation id="4369179505195332608">Редактировать данные водительского удостоверения</translation>
 <translation id="437040971055499437">Зарегистрировано событие безопасности</translation>
-<translation id="4371591986692297148">неактивно</translation>
+<translation id="4371591986692297148">Неактивно</translation>
 <translation id="4372948949327679948">Ожидаемое значение: <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Двери и окна</translation>
 <translation id="4377125064752653719">Вы попытались перейти на сайт <ph name="DOMAIN" />, однако сертификат, предоставленный сервером, был отозван издателем. Это означает, что учетные данные безопасности, предоставленные сервером, не заслуживают доверия. Возможно, вы имеете дело со злоумышленниками.</translation>
@@ -2677,7 +2676,6 @@
 <translation id="5423269318075950257">Отслеживание цен</translation>
 <translation id="5425082381151187189">Обустройство дома и отделка помещений</translation>
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> запрашивает разрешение на отправку уведомлений.</translation>
-<translation id="5430298929874300616">Удалить закладку</translation>
 <translation id="5431318178759467895">Цветная печать</translation>
 <translation id="5433756542371550806">Модификации для командной строки</translation>
 <translation id="5434798570900738152">В Chromium <ph name="BEGIN_EMPHASIS" />не будут сохраняться<ph name="END_EMPHASIS" />:
@@ -2875,6 +2873,7 @@
 <translation id="5750869797196646528">Отслеживание рук</translation>
 <translation id="5752327398324808817">Напишите что-нибудь</translation>
 <translation id="5752519522101347518">Загружается сайт проверки банка</translation>
+<translation id="5753570386948603678">Удалить из истории</translation>
 <translation id="5759751709240058861">Использование и перемещение вашей камеры.</translation>
 <translation id="5763042198335101085">Укажите действительный адрес электронной почты.</translation>
 <translation id="5764725887548570807">Недействительный формат источника.</translation>
@@ -3091,7 +3090,6 @@
 <translation id="6124058285696691147">Скачать прикрепленный файл</translation>
 <translation id="6124432979022149706">Коннекторы Chrome Enterprise</translation>
 <translation id="6126565365696310362">Конверт Chinese 2</translation>
-<translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
 <translation id="6131824478727057281">местоположение</translation>
 <translation id="6133320744616005677">Оставить разрешение</translation>
 <translation id="6133984428121856852">Расширение имени файла не указано или имеет неверный формат.</translation>
@@ -3106,7 +3104,6 @@
 <translation id="6151417162996330722">Слишком долгий срок действия сертификата, предоставленного сервером.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм. (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Бег и ходьба</translation>
-<translation id="6157754950574419155">Удалить все из истории</translation>
 <translation id="6157877588268064908">Выберите адрес, чтобы посмотреть способы и условия доставки.</translation>
 <translation id="6159554577634054750">Борьба с вредителями</translation>
 <translation id="6159908896951210943">Формальнее</translation>
@@ -3793,6 +3790,7 @@
 <translation id="7292031607255951991">Имя получателя</translation>
 <translation id="7298195798382681320">Рекомендованные</translation>
 <translation id="7299471494012161875">Подключенные дисплеи</translation>
+<translation id="7299721129597238157">Удалить закладку</translation>
 <translation id="7299769361777046949">Настроить карты постоянного клиента в Google Кошельке</translation>
 <translation id="7304030187361489308">Высокий</translation>
 <translation id="7304562222803846232">Управление настройками конфиденциальности аккаунта Google</translation>

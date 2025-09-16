@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Hap "Fjalëkalimet"</translation>
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1433478348197382180">Modaliteti i leximit</translation>
+<translation id="1435271730600332883">Hap "Plotësimi automatik dhe fjalëkalimet"</translation>
 <translation id="1436671784520050284">Vazhdo konfigurimin</translation>
 <translation id="143681031165817424">Adresa është ruajtur vetëm në këtë pajisje</translation>
 <translation id="1445276840641906250">Të gjitha skedat e tua në një shfletues të vetëm</translation>
@@ -833,6 +834,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4286718549648564014">Adresa u zhvendos te llogaria <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Shëno si të lexuar</translation>
 <translation id="428768789042547925">Ç'të reja ka</translation>
+<translation id="428858055663163046">Mund të kesh qasje te skedarët e ngarkuar këtu kur disponohen</translation>
 <translation id="429074084062258019">{count,plural, =1{Shto një skedë te grupi}other{Shto skeda te grupi}}</translation>
 <translation id="4302061870579014542">Cakto pozicionin</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
@@ -949,6 +951,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4749529195026091676">{count,plural, =1{U importua {count} kartë}other{U importuan {count} karta}}</translation>
 <translation id="4751645464639803239">Skedë e re "e fshehtë"</translation>
 <translation id="4752348350801431746">Çaktivizo njoftimet e "Kontrollit të sigurisë"…</translation>
+<translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4764612367328936189">Organizata jote të lejon të identifikohesh vetëm me llogari të caktuara. Llogaritë që nuk lejohen janë të fshehura. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">"Zbulo" dhe "Po ndjek"</translation>
 <translation id="4769198578611055647">Të ndihmon që të qasesh te çelësat e ruajtur të kalimit në çdo pajisje</translation>
@@ -1270,6 +1273,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5956112131836209882">Skeda e grupit të skedave. <ph name="TAB_INDEX_IN_GROUP" /> nga <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Kërko me <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Nuk mund të krijohet një lidhje për te teksti i theksuar.</translation>
+<translation id="5968400720580217226">Modaliteti i IA-së</translation>
 <translation id="5971459446352190251">Kërkim me kod QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 faqeshënues u fshi}other{{count} faqeshënues u fshinë}}</translation>
 <translation id="5972844218283131174">Anulo zgjedhjen për të gjitha</translation>
@@ -1415,6 +1419,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6452534462676960500">Aktivitet i ri</translation>
 <translation id="6459411599807878608">Detajet u fshehën</translation>
 <translation id="646394917185284261">Skedarët</translation>
+<translation id="6472069383518492189">Shkarkimet e tua do t'i gjesh këtu</translation>
 <translation id="6476253015009698798">Monitorimi i çmimeve nuk ofrohet për këtë faqe.</translation>
 <translation id="6476284679642588870">Menaxho mënyrat e pagesës</translation>
 <translation id="6476800141292307438">Po përkthen faqen në <ph name="LANGUAGE" />. Opsionet që ofrohen janë pranë fundit të ekranit.</translation>
@@ -1460,6 +1465,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6627583120233659107">Modifiko dosjen</translation>
 <translation id="6629759408545977279">Nga: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Organizata jote ka çaktivizuar modalitetin "e fshehtë"</translation>
+<translation id="6637478299472506933">Shkarkimi dështoi</translation>
 <translation id="6638511529934826365">Zmadho tekstin…</translation>
 <translation id="6640268266988685324">Skeda e hapur</translation>
 <translation id="6641465290890659327">Ndaj një kopje të fjalëkalimit tënd</translation>

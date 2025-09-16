@@ -1062,7 +1062,6 @@
 <translation id="273785062888389088">HVAC &amp; వాతావరణ నియంత్రణ</translation>
 <translation id="2740531572673183784">సరే</translation>
 <translation id="2742128390261873684">హోమ్ ఆటోమేషన్</translation>
-<translation id="2742870351467570537">ఎంచుకున్న అంశాలను తీసివేయండి</translation>
 <translation id="2743512410823092182">DJ రిసోర్స్‌లు &amp; ఎక్విప్‌మెంట్</translation>
 <translation id="2743934314332613923">డ్రైవింగ్ లైసెన్స్‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="2759299890026163685">మళ్లీ ట్రై చేయడానికి ముందు మీ వద్ద స్థిరమైన ఇంటర్నెట్ కనెక్షన్ ఉందని నిర్ధారించుకోండి</translation>
@@ -2673,7 +2672,6 @@
 <translation id="5423269318075950257">ధరను ట్రాక్ చేయండి</translation>
 <translation id="5425082381151187189">ఇల్లు &amp; ఇంటీరియర్ డెకరేషన్</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> మీకు నోటిఫికేషన్‌లను పంపాలనుకుంటోంది</translation>
-<translation id="5430298929874300616">బుక్‌మార్క్‌ను తీసివేయండి</translation>
 <translation id="5431318178759467895">రంగు</translation>
 <translation id="5433756542371550806">కమాండ్-లైన్ వేరియేషన్స్</translation>
 <translation id="5434798570900738152">Chromium ఈ కింది సమాచారాన్ని <ph name="BEGIN_EMPHASIS" />సేవ్ చేయదు<ph name="END_EMPHASIS" />:
@@ -2871,6 +2869,7 @@
 <translation id="5750869797196646528">చేతి కదలికల ట్రాకింగ్</translation>
 <translation id="5752327398324808817">ఒక పదం లేదా రెండు పదాలను ఎంటర్ చేయండి</translation>
 <translation id="5752519522101347518">బ్యాంక్ వెరిఫికేషన్ వెబ్‌సైట్ లోడ్ అవుతోంది</translation>
+<translation id="5753570386948603678">హిస్టరీ నుండి తొలగించండి</translation>
 <translation id="5759751709240058861">మీ కెమెరాను ఉపయోగించండి, తరలించండి</translation>
 <translation id="5763042198335101085">చెల్లుబాటు అయ్యే ఈమెయిల్‌ అడ్రస్‌ను నమోదు చేయండి</translation>
 <translation id="5764725887548570807">చెల్లని ఆరిజిన్ ఫార్మాట్.</translation>
@@ -3087,7 +3086,6 @@
 <translation id="6124058285696691147">అటాచ్‌మెంట్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="6124432979022149706">Chrome Enterprise కనెక్టర్‌లు</translation>
 <translation id="6126565365696310362">ఎన్వలప్ చైనీస్ #2</translation>
-<translation id="6127379762771434464">అంశాన్ని తీసివేశారు</translation>
 <translation id="6131824478727057281">లొకేషన్</translation>
 <translation id="6133320744616005677">అనుమతించడం కొనసాగించండి</translation>
 <translation id="6133984428121856852">ఫైల్ ఎక్స్‌టెన్షన్ ఖాళీగా ఉంది లేదా తప్పుగా ఫార్మాట్ చేయబడింది.</translation>
@@ -3102,7 +3100,6 @@
 <translation id="6151417162996330722">సర్వర్ ప్రమాణపత్రం చెల్లుబాటు వ్యవధి చాలా ఎక్కువ కాలం ఉంది.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> అంగుళాలు (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">రన్నింగ్ &amp; వాకింగ్</translation>
-<translation id="6157754950574419155">హిస్టరీ నుండి అన్నింటినీ తీసివేయండి</translation>
 <translation id="6157877588268064908">రవాణా పద్ధతులు మరియు అవసరాలను చూడాలంటే, అడ్రస్‌ను ఎంచుకోండి</translation>
 <translation id="6159554577634054750">తెగుళ్ల నియంత్రణ</translation>
 <translation id="6159908896951210943">గౌరవప్రదం</translation>
@@ -3789,6 +3786,7 @@
 <translation id="7292031607255951991">గ్రహీత పేరు</translation>
 <translation id="7298195798382681320">సిఫార్సు చేయబడినవి</translation>
 <translation id="7299471494012161875">అటాచ్ చేసిన డిస్‌ప్లే పెరిఫెరల్స్</translation>
+<translation id="7299721129597238157">బుక్‌మార్క్‌ను తొలగించండి</translation>
 <translation id="7299769361777046949">Google Walletలో లాయల్టీ కార్డ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7304030187361489308">అధికం</translation>
 <translation id="7304562222803846232">Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>

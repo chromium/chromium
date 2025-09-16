@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Төрөл</translation>
 <translation id="1254593899333212300">Интернетийн шууд холболт</translation>
 <translation id="1272293450992660632">ПИН кодын утга таарахгүй байна.</translation>
+<translation id="1279040297980392566">Скан хийж дуусахыг хүлээж байна. Дараа дахин оролдоно уу</translation>
 <translation id="1280820357415527819">Хөдөлгөөнт холбооны сүлжээг хайж байна</translation>
 <translation id="1293556467332435079">Файлууд</translation>
 <translation id="1297922636971898492">Google Drive одоогоор боломжгүй байна. Google Drive ажиллаж эхлэхэд байршуулалт автоматиар эхэлнэ.</translation>
@@ -1076,6 +1077,7 @@
 <translation id="9213073329713032541">Суулгалтыг амжилттай эхлүүллээ.</translation>
 <translation id="9219103736887031265">Зураг</translation>
 <translation id="9219908252191632183">Сарны гадарга</translation>
+<translation id="931652069802536959">Сүлжээг бодлогоор блоклосон</translation>
 <translation id="938470336146445890">Хэрэглэгчийн сертификат суулгана уу.</translation>
 <translation id="939736085109172342">Шинэ хавтас</translation>
 <translation id="943972244133411984">Өөрчилсөн</translation>

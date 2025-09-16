@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC болон цаг уурын орчны шинжилгээ</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Гэрийн автоматжуулалт</translation>
-<translation id="2742870351467570537">Сонгосон зүйлсийг устга</translation>
 <translation id="2743512410823092182">DJ-н нөөц болон тоног төхөөрөмж</translation>
 <translation id="2743934314332613923">Жолооны үнэмлэхийг шинэчлэх үү?</translation>
 <translation id="2759299890026163685">Та дахин оролдохоосоо өмнө тогтвортой интернэт холболттой эсэхээ нягтална уу</translation>
@@ -1781,6 +1780,7 @@
 <translation id="3941630233824954464">Зайлшгүй дахин баталгаажуулахыг идэвхжүүлэх</translation>
 <translation id="3942048175062210325">Файлуудаа дахин нээж үзнэ үү</translation>
 <translation id="3943857333388298514">Хуулан буулгах</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> төрлийн баталгаажуулах төхөөрөмжүүд болон тэдгээрт хандаж болох ухаалаг картуудыг хянана уу</translation>
 <translation id="3946209740501886391">Энэ сайтаас үргэлж асуух</translation>
 <translation id="3948588869002647271">Энэ аппликэйшн байхгүй эсвэл гэмтэлтэй байна</translation>
 <translation id="3949297482798028668">Энэ контентыг энд буулгахыг танай администратор блоклосон.</translation>
@@ -2678,7 +2678,6 @@
 <translation id="5423269318075950257">Үнэ хянах</translation>
 <translation id="5425082381151187189">Гэр, интерьер чимэглэл</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> танд мэдэгдэл илгээх хүсэлтэй байна</translation>
-<translation id="5430298929874300616">Хавчуургыг устга</translation>
 <translation id="5431318178759467895">Өнгө</translation>
 <translation id="5433756542371550806">Тушаалын мөрийн хувилбар</translation>
 <translation id="5434798570900738152">Chromium дараахыг <ph name="BEGIN_EMPHASIS" />хадгалахгүй<ph name="END_EMPHASIS" />:
@@ -2876,6 +2875,7 @@
 <translation id="5750869797196646528">Гар хянах</translation>
 <translation id="5752327398324808817">Нэг эсвэл хоёр үг оруулна уу</translation>
 <translation id="5752519522101347518">Банкны баталгаажуулалтын вебсайтыг ачаалж байна</translation>
+<translation id="5753570386948603678">Түүхээс устгах</translation>
 <translation id="5759751709240058861">Таны камерыг ашиглах, хөдөлгөх</translation>
 <translation id="5763042198335101085">Зөв имэйл хаяг оруулна уу</translation>
 <translation id="5764725887548570807">Эхийн формат буруу байна.</translation>
@@ -3092,7 +3092,6 @@
 <translation id="6124058285696691147">Хавсралтыг татах</translation>
 <translation id="6124432979022149706">Chrome байгууллагын холбогч</translation>
 <translation id="6126565365696310362">Хятад дугтуй #2</translation>
-<translation id="6127379762771434464">Хамгийн их зочилсон вэбсайтуудыг устгасан</translation>
 <translation id="6131824478727057281">байршил</translation>
 <translation id="6133320744616005677">Үргэлжлүүлэн зөвшөөрөх</translation>
 <translation id="6133984428121856852">Файлын өргөтгөл хоосон эсвэл алдаатай байна.</translation>
@@ -3106,7 +3105,6 @@
 <translation id="6151417162996330722">Сервер гэрчилгээ нь хэт урт хугацааны хүчинтэй хугацаатай байна.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> инч (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Гүйх, алхах</translation>
-<translation id="6157754950574419155">Түүхээс бүгдийг нь хасах</translation>
 <translation id="6157877588268064908">Хүргэлтийн арга болон шаардлагыг харахын тулд хаяг сонгоно уу</translation>
 <translation id="6159554577634054750">Хортон шавж устгах үйлчилгээ</translation>
 <translation id="6159908896951210943">Албан ёсны</translation>
@@ -3792,6 +3790,7 @@
 <translation id="7292031607255951991">Хүлээн авагчийн нэр</translation>
 <translation id="7298195798382681320">Санал болгосон</translation>
 <translation id="7299471494012161875">Дэлгэцийн нэмэлт төхөөрөмжүүдийг хавсаргасан</translation>
+<translation id="7299721129597238157">Хавчуурга устгах</translation>
 <translation id="7299769361777046949">Google Wallet дахь лояалти картыг удирдана уу</translation>
 <translation id="7304030187361489308">Дээд</translation>
 <translation id="7304562222803846232">Google Бүртгэлийн нууцлалын тохиргоог удирдах</translation>

@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">पासवर्ड उघडा</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1433478348197382180">वाचन मोड</translation>
+<translation id="1435271730600332883">ऑटोफिल आणि पासवर्ड उघडा</translation>
 <translation id="1436671784520050284">सेटअप सुरू ठेवा</translation>
 <translation id="143681031165817424">पत्ता फक्त या डिव्हाइसवर सेव्ह केला आहे</translation>
 <translation id="1445276840641906250">एका ब्राउझरमध्ये तुमचे सर्व टॅब</translation>
@@ -950,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{{count} कार्ड इंपोर्ट केले आहे}other{{count} कार्ड इंपोर्ट केली आहेत}}</translation>
 <translation id="4751645464639803239">नवीन गुप्त टॅब</translation>
 <translation id="4752348350801431746">सुरक्षितता तपासणीची नोटिफिकेशन बंद करा…</translation>
+<translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4764612367328936189">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते. अनुमती नसलेली खाती लपवली जातात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover आणि फॉलो करत आहे</translation>
 <translation id="4769198578611055647">यामुळे तुम्हाला कोणत्याही डिव्हाइसवर सेव्ह केलेल्या पासकी अ‍ॅक्सेस करण्यात मदत होते</translation>
@@ -1271,6 +1273,7 @@
 <translation id="5956112131836209882">टॅब गटाचा टॅब. <ph name="NUMBER_OF_TABS_IN_GROUP" /> पैकी <ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> वापरून शोधा</translation>
 <translation id="5963939892571022323">हायलाइट करण्यासाठीची लिंक तयार करू शकत नाही.</translation>
+<translation id="5968400720580217226">AI मोड</translation>
 <translation id="5971459446352190251">QR कोड शोध</translation>
 <translation id="5971872012779224351">{count,plural, =1{१ बुकमार्क हटवला}other{{count} बुकमार्क हटवले}}</translation>
 <translation id="5972844218283131174">सर्व निवड रद्द करा</translation>
@@ -1463,6 +1466,7 @@
 <translation id="6627583120233659107">फोल्डर संपादित करा</translation>
 <translation id="6629759408545977279">प्रेषक: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">तुमच्या संस्थेने गुप्त मोड बंद केलेला आहे</translation>
+<translation id="6637478299472506933">डाउनलोड अयशस्वी</translation>
 <translation id="6638511529934826365">मजकूर झूम करा…</translation>
 <translation id="6640268266988685324">टॅब उघडा</translation>
 <translation id="6641465290890659327">तुमच्या पासवर्डची कॉपी शेअर करा</translation>
@@ -1585,6 +1589,7 @@
 <translation id="7102005569666697658">डाउनलोड होत आहे… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">मेनू → सेटिंग्ज → पेमेंट पद्धती</translation>
 <translation id="7108338896283013870">लपवा</translation>
+<translation id="7127922377013221748">टूलबार लपवा</translation>
 <translation id="7128693485119315539">तुमच्या संस्थेला तुमच्या व्यवस्थापित खात्याशी जोडलेला ब्राउझिंग डेटा पाहण्याची आणि व्यवस्थापित करण्याची आवश्यकता असू शकते, जसे की तुमचा ब्राउझिंग इतिहास आणि पासवर्ड.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">कॅमेरा अनुपलब्ध आहे</translation>

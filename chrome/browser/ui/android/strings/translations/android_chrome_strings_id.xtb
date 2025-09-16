@@ -3,6 +3,7 @@
 <translationbundle lang="id">
 <translation id="1010283278930414892">Tidak ada sandi tersimpan di perangkat ini</translation>
 <translation id="1011749477052068769">Pindahkan ke sini</translation>
+<translation id="1014083013111769343">Preferensi Mode baca terbuka sepenuhnya</translation>
 <translation id="1014147525163127655">Tidak ada kunci sandi untuk <ph name="ORIGIN" /> di perangkat ini</translation>
 <translation id="1016498331642356377">Telusuri dengan cepat menggunakan suara Anda. Sentuh lama untuk mengedit pintasan ini.</translation>
 <translation id="1028699632127661925">Mengirim ke <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="197288927597451399">Tetap Download</translation>
 <translation id="1973912524893600642">Simpan Data</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
+<translation id="1982274314082047220">Geser ke atas Mode baca untuk melihat preferensi</translation>
 <translation id="1984087999855033707">nomor telepon</translation>
 <translation id="1984417487208496350">Tidak ada perlindungan (tidak direkomendasikan)</translation>
 <translation id="1986685561493779662">Nama sudah ada</translation>
@@ -428,6 +430,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2992473221983447149">Deskripsi gambar</translation>
 <translation id="2996291259634659425">Buat frasa sandi</translation>
 <translation id="2996809686854298943">Perlu URL</translation>
+<translation id="3024215143424744261">Preferensi Mode baca ditutup</translation>
 <translation id="3026955690410463085">Sertakan link</translation>
 <translation id="3027644380269727216">Berdasarkan aktivitas Anda di situs. Setelan ini aktif.</translation>
 <translation id="3027950907978057636">Dari <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="696447261358045621">Keluar dari mode Samaran</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Lihat <ph name="TABS_COUNT_ONE" /> tab dengan aktivitas baru di grup tab yang dibagikan}other{Lihat <ph name="TABS_COUNT_MANY" /> tab dengan aktivitas baru di grup tab yang dibagikan}}</translation>
+<translation id="6971555615916967190">Preferensi Mode baca terbuka setengah</translation>
 <translation id="6971862865055170158">Jangan setujui</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, Tab Baru atau yang Diperbarui</translation>
 <translation id="6976811588313110624">Tambahkan pintasan baru.</translation>

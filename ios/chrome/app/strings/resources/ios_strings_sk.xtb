@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Otvorte heslá</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1433478348197382180">Režim čítania</translation>
+<translation id="1435271730600332883">Otvorte Automatické dopĺňanie a heslá</translation>
 <translation id="1436671784520050284">Pokračovať v nastavení</translation>
 <translation id="143681031165817424">Adresa je uložená iba v tomto zariadení</translation>
 <translation id="1445276840641906250">Všetky vaše karty v jednom prehliadači</translation>
@@ -833,6 +834,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4286718549648564014">Adresa bola presunutá do vášho účtu <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Označiť ako prečítané</translation>
 <translation id="428768789042547925">Novinky</translation>
+<translation id="428858055663163046">Keď budú stiahnuté súbory k dispozícii, budete k nim mať prístup tu</translation>
 <translation id="429074084062258019">{count,plural, =1{Pridať kartu do skupiny}few{Pridať karty do skupiny}many{Pridať karty do skupiny}other{Pridať karty do skupiny}}</translation>
 <translation id="4302061870579014542">Nastaviť umiestnenie</translation>
 <translation id="4304713468139749426">Správca hesiel</translation>
@@ -949,6 +951,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4749529195026091676">{count,plural, =1{Bola importovaná {count} karta}few{Boli importované {count} karty}many{Imported {count} cards}other{Bolo importovaných {count} kariet}}</translation>
 <translation id="4751645464639803239">Nová karta inkognito</translation>
 <translation id="4752348350801431746">Vypnúť upozornenia kontroly bezpečnosti…</translation>
+<translation id="4759238208242260848">Stiahnuté</translation>
 <translation id="4764612367328936189">Vaša organizácia vám povoľuje prihlásiť sa iba určitými účtami. Nepovolené účty sú skryté. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Objaviť a sledovanie</translation>
 <translation id="4769198578611055647">Umožní vám získať prístup k uloženým prístupovým kľúčom vo všetkých zariadeniach</translation>
@@ -1270,6 +1273,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5956112131836209882">Karta skupiny kariet. <ph name="TAB_INDEX_IN_GROUP" /> z <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Hľadať prostredníctvom poskytovateľa <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Odkaz na zvýraznenie sa nedá vytvoriť.</translation>
+<translation id="5968400720580217226">Režim umelej inteligencie</translation>
 <translation id="5971459446352190251">Vyhľadávanie QR kódov</translation>
 <translation id="5971872012779224351">{count,plural, =1{Bola odstránená 1 záložka}few{Boli odstránené {count} záložky}many{{count} bookmarks deleted}other{Bolo odstránených {count} záložiek}}</translation>
 <translation id="5972844218283131174">Zrušiť výber všetkého</translation>
@@ -1415,6 +1419,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6452534462676960500">Nová aktivita</translation>
 <translation id="6459411599807878608">Podrobnosti sú skryté</translation>
 <translation id="646394917185284261">Súbory</translation>
+<translation id="6472069383518492189">Tu nájdete svoje stiahnuté súbory</translation>
 <translation id="6476253015009698798">Sledovanie ceny nie je k dispozícii pre túto stránku.</translation>
 <translation id="6476284679642588870">Spravovať spôsoby platby</translation>
 <translation id="6476800141292307438">Stránka sa prekladá do jazyka <ph name="LANGUAGE" />. Možnosti nájdete v dolnej časti obrazovky.</translation>
@@ -1460,6 +1465,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6627583120233659107">Upraviť priečinok</translation>
 <translation id="6629759408545977279">Od: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Vaša organizácia vypla režim inkognito</translation>
+<translation id="6637478299472506933">Stiahnutie zlyhalo</translation>
 <translation id="6638511529934826365">Textová lupa…</translation>
 <translation id="6640268266988685324">Otvoriť kartu</translation>
 <translation id="6641465290890659327">Zdieľajte kópiu svojho hesla</translation>
@@ -1582,6 +1588,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7102005569666697658">Sťahuje sa… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Ponuka → Nastavenia → Spôsoby platby</translation>
 <translation id="7108338896283013870">Skryť</translation>
+<translation id="7127922377013221748">Skryť Panel s nástrojmi</translation>
 <translation id="7128693485119315539">Vaša organizácia môže potrebovať zobraziť a spravovať dáta prehliadania spojené s vaším spravovaným účtom, napríklad históriu prehliadania a heslá.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera nie je k dispozícii</translation>

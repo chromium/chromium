@@ -1067,7 +1067,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="273785062888389088">Sistemi za grejanje, ventilaciju i klimatizaciju</translation>
 <translation id="2740531572673183784">Potvrdi</translation>
 <translation id="2742128390261873684">Automatizacija doma</translation>
-<translation id="2742870351467570537">Ukloni izabrane stavke</translation>
 <translation id="2743512410823092182">Aparati i oprema za di-džejeve</translation>
 <translation id="2743934314332613923">Želite da ažurirate vozačku dozvolu?</translation>
 <translation id="2759299890026163685">Uverite se da imate stabilnu internet vezu pre nego što probate ponovo</translation>
@@ -2678,7 +2677,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5423269318075950257">Pratite cenu</translation>
 <translation id="5425082381151187189">Dekoracija kuće i enterijera</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> želi da vam šalje obaveštenja</translation>
-<translation id="5430298929874300616">Uklonite obeleživač</translation>
 <translation id="5431318178759467895">U boji</translation>
 <translation id="5433756542371550806">Varijacije komandne linije</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ne čuva<ph name="END_EMPHASIS" />:
@@ -2876,6 +2874,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5750869797196646528">Praćenje ruku</translation>
 <translation id="5752327398324808817">Unesite reč ili dve</translation>
 <translation id="5752519522101347518">Učitava se veb-sajt za verifikaciju banke</translation>
+<translation id="5753570386948603678">Izbriši iz istorije</translation>
 <translation id="5759751709240058861">koristi i pomera kameru</translation>
 <translation id="5763042198335101085">Unesite važeću imejl adresu</translation>
 <translation id="5764725887548570807">Nevažeći format porekla.</translation>
@@ -3092,7 +3091,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6124058285696691147">Preuzmi prilog</translation>
 <translation id="6124432979022149706">Priključci za Chrome za preduzeća</translation>
 <translation id="6126565365696310362">Kineska koverta br. 2</translation>
-<translation id="6127379762771434464">Uklonili ste stavku</translation>
 <translation id="6131824478727057281">lokacija</translation>
 <translation id="6133320744616005677">Ne opozivaj dozvolu</translation>
 <translation id="6133984428121856852">Ekstenzija fajla je prazna ili je u pogrešnom formatu.</translation>
@@ -3106,7 +3104,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6151417162996330722">Sertifikat servera ima predugačak period važenja.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" />×<ph name="HEIGHT" /> inča (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Trčanje i hodanje</translation>
-<translation id="6157754950574419155">Ukloni sve iz istorije</translation>
 <translation id="6157877588268064908">Da biste videli načine i zahteve za slanje, izaberite adresu</translation>
 <translation id="6159554577634054750">Dezinsekcija i deratizacija</translation>
 <translation id="6159908896951210943">Formalno</translation>
@@ -3793,6 +3790,7 @@ Dodatni detalji:
 <translation id="7292031607255951991">Ime primaoca</translation>
 <translation id="7298195798382681320">Preporučeno</translation>
 <translation id="7299471494012161875">Priključeni periferni uređaji na ekranu</translation>
+<translation id="7299721129597238157">Brisanje obeleživača</translation>
 <translation id="7299769361777046949">Upravljajte karticama lojalnosti u Google novčaniku</translation>
 <translation id="7304030187361489308">Visok</translation>
 <translation id="7304562222803846232">Upravljajte podešavanjima privatnosti Google naloga</translation>

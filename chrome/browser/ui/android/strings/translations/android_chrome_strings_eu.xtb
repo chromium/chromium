@@ -3,6 +3,7 @@
 <translationbundle lang="eu">
 <translation id="1010283278930414892">Ez da pasahitzik gorde gailu honetan</translation>
 <translation id="1011749477052068769">Ekarri hona</translation>
+<translation id="1014083013111769343">Irakurtzeko modua, hobespenak altuera osoan irekita daude</translation>
 <translation id="1014147525163127655">Gailu honetan ez dago <ph name="ORIGIN" /> webgunearen sarbide-gakorik</translation>
 <translation id="1016498331642356377">Bilatu bizkor ahotsa erabilita. Lasterbidea editatzeko, eduki ezazu sakatuta.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> gailura bidaltzen…</translation>
@@ -207,6 +208,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="197288927597451399">Mantendu</translation>
 <translation id="1973912524893600642">Mantendu datuak</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
+<translation id="1982274314082047220">Irakurtzeko modua, pasatu hatza gora hobespenak ikusteko</translation>
 <translation id="1984087999855033707">telefono-zenbakia</translation>
 <translation id="1984417487208496350">Babesik gabe (ez da gomendatzen)</translation>
 <translation id="1986685561493779662">Dagoeneko erabiltzen da izen hori</translation>
@@ -428,6 +430,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2992473221983447149">Irudi-azalpenak</translation>
 <translation id="2996291259634659425">Sortu pasaesaldia</translation>
 <translation id="2996809686854298943">URLa nahitaezkoa da</translation>
+<translation id="3024215143424744261">Irakurtzeko modua, hobespenak itxita daude</translation>
 <translation id="3026955690410463085">Gehitu esteka</translation>
 <translation id="3027644380269727216">Webgune batean egin dituzun jardueretan oinarrituta. Aktibatuta dago ezarpena.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> aplikaziotik</translation>
@@ -1311,6 +1314,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="696447261358045621">Irten ezkutuko modutik</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ikusi jarduera berriak dituen fitxa <ph name="TABS_COUNT_ONE" /> partekatutako fitxa taldeetan}other{Ikusi jarduera berriak dituzten <ph name="TABS_COUNT_MANY" /> fitxa partekatutako fitxa taldeetan}}</translation>
+<translation id="6971555615916967190">Irakurtzeko modua, hobespenak altuera erdian irekita daude</translation>
 <translation id="6971862865055170158">Ez onartu</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, fitxa berria edo eguneratua</translation>
 <translation id="6976811588313110624">Gehitu lasterbide berri bat.</translation>

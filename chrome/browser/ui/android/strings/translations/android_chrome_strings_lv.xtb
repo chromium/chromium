@@ -3,6 +3,7 @@
 <translationbundle lang="lv">
 <translation id="1010283278930414892">Šajā ierīcē nav saglabātu paroļu</translation>
 <translation id="1011749477052068769">Pārvietot šurp</translation>
+<translation id="1014083013111769343">Lasīšanas režīma preferences ir atvērtas pilnā ekrāna augstumā</translation>
 <translation id="1014147525163127655">Šajā ierīcē vietnei <ph name="ORIGIN" /> nav nevienas piekļuves atslēgas.</translation>
 <translation id="1016498331642356377">Ātra meklēšana ar balsi. Lai rediģētu šo īsinājumtaustiņu, pieskarieties un turiet.</translation>
 <translation id="1028699632127661925">Notiek sūtīšana uz: <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="197288927597451399">Paturēt</translation>
 <translation id="1973912524893600642">Paturēt datus</translation>
 <translation id="1974060860693918893">Papildu</translation>
+<translation id="1982274314082047220">Velciet augšup, lai skatītu lasīšanas režīma preferences</translation>
 <translation id="1984087999855033707">tālruņa numurs</translation>
 <translation id="1984417487208496350">Bez aizsardzības (nav ieteicams)</translation>
 <translation id="1986685561493779662">Nosaukums jau pastāv</translation>
@@ -428,6 +430,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2992473221983447149">Attēlu apraksti</translation>
 <translation id="2996291259634659425">Ieejas frāzes izveide</translation>
 <translation id="2996809686854298943">URL ir jānorāda obligāti.</translation>
+<translation id="3024215143424744261">Lasīšanas režīma preferences ir aizvērtas</translation>
 <translation id="3026955690410463085">Iekļaut saiti</translation>
 <translation id="3027644380269727216">Pamatojoties uz jūsu darbībām vietnē. Šis iestatījums ir ieslēgts.</translation>
 <translation id="3027950907978057636">No <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="696447261358045621">Iziet no inkognito režīma</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Skatiet <ph name="TABS_COUNT_ONE" /> cilni ar jaunām darbībām kopīgoto ciļņu grupās}zero{Skatiet <ph name="TABS_COUNT_MANY" /> cilnes ar jaunām darbībām kopīgoto ciļņu grupās}one{Skatiet <ph name="TABS_COUNT_MANY" /> cilni ar jaunām darbībām kopīgoto ciļņu grupās}other{Skatiet <ph name="TABS_COUNT_MANY" /> cilnes ar jaunām darbībām kopīgoto ciļņu grupās}}</translation>
+<translation id="6971555615916967190">Lasīšanas režīma preferences ir atvērtas pusekrāna augstumā</translation>
 <translation id="6971862865055170158">Neapstiprināt</translation>
 <translation id="6976223255612495095">“<ph name="TAB_TITLE" />”, jauna vai atjaunināta cilne</translation>
 <translation id="6976811588313110624">Pievienot jaunu saīsni</translation>

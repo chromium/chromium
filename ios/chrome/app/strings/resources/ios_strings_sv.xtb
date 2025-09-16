@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Öppna Lösenord</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1433478348197382180">Läsläge</translation>
+<translation id="1435271730600332883">Öppna Autofyll och lösenord</translation>
 <translation id="1436671784520050284">Fortsätt med konfigurationen</translation>
 <translation id="143681031165817424">Adressen har endast sparats på den här enheten</translation>
 <translation id="1445276840641906250">Alla flikarna i en enda webbläsare</translation>
@@ -833,6 +834,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4286718549648564014">Adressen har flyttats till ditt konto, <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Markera som läst</translation>
 <translation id="428768789042547925">Nyheter</translation>
+<translation id="428858055663163046">Du kommer åt dina nedladdade filer här när de blir tillgängliga</translation>
 <translation id="429074084062258019">{count,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
 <translation id="4302061870579014542">Ange position</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
@@ -949,6 +951,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4749529195026091676">{count,plural, =1{{count} kort har importerats}other{{count} kort har importerats}}</translation>
 <translation id="4751645464639803239">Ny inkognitoflik</translation>
 <translation id="4752348350801431746">Inaktivera aviseringar från säkerhetskontroll …</translation>
+<translation id="4759238208242260848">Nedladdningar</translation>
 <translation id="4764612367328936189">Organisationen tillåter inloggning med endast vissa konton. Konton som inte tillåts är dolda. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Förslag och följer</translation>
 <translation id="4769198578611055647">Hjälper dig att få åtkomst till sparade nycklar på vilken enhet som helst</translation>
@@ -1270,6 +1273,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5956112131836209882">Flik i flikgrupp. <ph name="TAB_INDEX_IN_GROUP" /> av <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Sök med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Det gick inte att skapa en länk till markeringen.</translation>
+<translation id="5968400720580217226">AI-läge</translation>
 <translation id="5971459446352190251">Sök bland QR-koder</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bokmärke har raderats}other{{count} bokmärken har raderats}}</translation>
 <translation id="5972844218283131174">Avmarkera alla</translation>
@@ -1415,6 +1419,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6452534462676960500">Ny aktivitet</translation>
 <translation id="6459411599807878608">Informationen har dolts</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">Du hittar dina nedladdningar här</translation>
 <translation id="6476253015009698798">Prisbevakning är inte tillgänglig för den här sidan.</translation>
 <translation id="6476284679642588870">Hantera betalningsmetoder</translation>
 <translation id="6476800141292307438">Översätter sidan till <ph name="LANGUAGE" />. Alternativ finns längst ned på skärmen.</translation>
@@ -1460,6 +1465,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6627583120233659107">Redigera mapp</translation>
 <translation id="6629759408545977279">Från: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Organisationen har inaktiverat inkognitoläge</translation>
+<translation id="6637478299472506933">Nedladdningen misslyckades</translation>
 <translation id="6638511529934826365">Zooma text …</translation>
 <translation id="6640268266988685324">Öppna flik</translation>
 <translation id="6641465290890659327">Dela en kopia av ditt lösenord</translation>
@@ -1582,6 +1588,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7102005569666697658">Laddar ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meny → Inställningar → Betalningsmetod</translation>
 <translation id="7108338896283013870">Dölj</translation>
+<translation id="7127922377013221748">Dölj verktygsfält</translation>
 <translation id="7128693485119315539">Organisationen behöver kanske se och hantera webbinformation som är kopplad till ditt hanterade konto, till exempel webbhistorik och lösenord.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameran är inte tillgänglig</translation>

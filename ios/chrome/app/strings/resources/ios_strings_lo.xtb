@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">ເປີດລະຫັດຜ່ານ</translation>
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1433478348197382180">ໂໝດການອ່ານ</translation>
+<translation id="1435271730600332883">ເປີດການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ລະຫັດຜ່ານ</translation>
 <translation id="1436671784520050284">ສືບຕໍ່ການຕັ້ງຄ່າ</translation>
 <translation id="143681031165817424">ບັນທຶກທີ່ຢູ່ໃນອຸປະກອນເຄື່ອງນີ້ເທົ່ານັ້ນ</translation>
 <translation id="1445276840641906250">ແຖບທັງໝົດຂອງທ່ານໃນໂປຣແກຣມທ່ອງເວັບດຽວ</translation>
@@ -950,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{ນຳເຂົ້າ {count} ບັດແລ້ວ}other{ນຳເຂົ້າ {count} ບັດແລ້ວ}}</translation>
 <translation id="4751645464639803239">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="4752348350801431746">ປິດການແຈ້ງເຕືອນການກວດສອບຄວາມປອດໄພ…</translation>
+<translation id="4759238208242260848">ດາວ​ໂຫຼດ</translation>
 <translation id="4764612367328936189">ອົງການຂອງທ່ານອະນຸຍາດໃຫ້ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີບາງຢ່າງເທົ່ານັ້ນ. ບັນຊີທີ່ບໍ່ໄດ້ຮັບອະນຸຍາດແມ່ນຖືກເຊື່ອງໄວ້ແລ້ວ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover ແລະ ການຕິດຕາມ</translation>
 <translation id="4769198578611055647">ຊ່ວຍໃຫ້ທ່ານເຂົ້າເຖິງກະແຈຜ່ານທີ່ບັນທຶກໄວ້ໃນອຸປະກອນໃດກໍໄດ້</translation>
@@ -1271,6 +1273,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5956112131836209882">ແຖບຂອງກຸ່ມແຖບ. <ph name="TAB_INDEX_IN_GROUP" /> ຈາກທັງໝົດ <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">ຊອກຫາດ້ວຍ <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">ສ້າງລິ້ງໄປຍັງໄຮໄລ້ບໍ່ໄດ້.</translation>
+<translation id="5968400720580217226">ໂໝດ AI</translation>
 <translation id="5971459446352190251">ຊອກຫາລະຫັດ QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{ລຶບບຸກມາກ 1 ລາຍການແລ້ວ}other{ລຶບບຸກມາກ {count} ລາຍການແລ້ວ}}</translation>
 <translation id="5972844218283131174">ເຊົາເລືອກທັງໝົດ</translation>
@@ -1462,6 +1465,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6627583120233659107">ແກ້ໄຂໂຟລເດີ</translation>
 <translation id="6629759408545977279">ຈາກ: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">ອົງການຂອງທ່ານໄດ້ປິດໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໄວ້ແລ້ວ</translation>
+<translation id="6637478299472506933">ດາວ​ໂຫລດ​ບໍ່​ສໍາ​ເລັດ​.</translation>
 <translation id="6638511529934826365">ຊູມຂໍ້ຄວາມ…</translation>
 <translation id="6640268266988685324">ເປີດແຖບ</translation>
 <translation id="6641465290890659327">ແບ່ງປັນສຳເນົາລະຫັດຜ່ານຂອງທ່ານ</translation>

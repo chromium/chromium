@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Parolları açın</translation>
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1433478348197382180">Oxu Rejimi</translation>
+<translation id="1435271730600332883">Avtomatik doldurma və parolları açın</translation>
 <translation id="1436671784520050284">Quraşdırmağa davam edin</translation>
 <translation id="143681031165817424">Ünvan yalnız bu cihazda yadda saxlandı</translation>
 <translation id="1445276840641906250">Bütün tablar bir brauzerdə</translation>
@@ -833,6 +834,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4286718549648564014">Ünvan <ph name="USER_EMAIL" /> hesabına köçürüldü</translation>
 <translation id="4287172530684295552">Oxunmuş olaraq qeyd edin</translation>
 <translation id="428768789042547925">Yeniliklər</translation>
+<translation id="428858055663163046">Endirilmiş fayllar əlçatan olduqda onlara buradan daxil ola bilərsiniz</translation>
 <translation id="429074084062258019">{count,plural, =1{Qrupa tab əlavə edin}other{Qrupa tablar əlavə edin}}</translation>
 <translation id="4302061870579014542">Mövqe ayarlayın</translation>
 <translation id="4304713468139749426">Parol Meneceri</translation>
@@ -949,6 +951,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4749529195026091676">{count,plural, =1{İmport edilmiş {count} kart}other{İmport edilmiş {count} kart}}</translation>
 <translation id="4751645464639803239">Yeni Anonim Tab</translation>
 <translation id="4752348350801431746">Təhlükəsizlik yoxlanışı bildirişlərini deaktiv edin…</translation>
+<translation id="4759238208242260848">Endirmələr</translation>
 <translation id="4764612367328936189">Təşkilatınız yalnız müəyyən hesablarla daxil olmağa icazə verir. İcazə verilməyən hesablar gizlədilib. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Təkliflər və İzləmə</translation>
 <translation id="4769198578611055647">İstənilən cihazda yadda saxlanmış giriş açarlarına daxil olmağa kömək edir</translation>
@@ -1270,6 +1273,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5956112131836209882">Tab qrupu tabı. <ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ilə axtarın</translation>
 <translation id="5963939892571022323">Vurğulamaya keçid yaratmaq olmur.</translation>
+<translation id="5968400720580217226">Sİ Rejimi</translation>
 <translation id="5971459446352190251">QR kod axtarışı</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 əlfəcin silindi}other{{count} əlfəcin silindi}}</translation>
 <translation id="5972844218283131174">Bütün seçimləri silin</translation>
@@ -1415,6 +1419,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6452534462676960500">Yeni fəaliyyət</translation>
 <translation id="6459411599807878608">Detallar gizlədildi</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">Endirmələr burada olacaq</translation>
 <translation id="6476253015009698798">Bu səhifədə qiymətləri izləmək mümkün deyil.</translation>
 <translation id="6476284679642588870">Ödəniş metodlarını idarə edin</translation>
 <translation id="6476800141292307438">Səhifə <ph name="LANGUAGE" /> dilinə tərcümə edilir. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
@@ -1460,6 +1465,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6627583120233659107">Qovluğa düzəliş edin</translation>
 <translation id="6629759408545977279">Haradan: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Təşkilatınız Anonim rejimi deaktiv edib</translation>
+<translation id="6637478299472506933">Endirmə uğursuz oldu</translation>
 <translation id="6638511529934826365">Mətni Böyüdün…</translation>
 <translation id="6640268266988685324">Açıq Tab</translation>
 <translation id="6641465290890659327">Parol kopiyasını paylaşın</translation>

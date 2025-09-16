@@ -3,6 +3,7 @@
 <translationbundle lang="pa">
 <translation id="1010283278930414892">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਕੋਈ ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ ਨਹੀਂ ਹੈ</translation>
 <translation id="1011749477052068769">ਇੱਥੇ ਲਿਜਾਓ</translation>
+<translation id="1014083013111769343">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਵਿੱਚ ਤਰਜੀਹਾਂ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਹਨ</translation>
 <translation id="1014147525163127655">ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="ORIGIN" /> ਲਈ ਕੋਈ ਪਾਸਕੀ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="1016498331642356377">ਤੁਰੰਤ ਆਪਣੀ ਅਵਾਜ਼ ਨਾਲ ਖੋਜੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ।</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ਨੂੰ ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">ਡਾਟਾ ਰੱਖੋ</translation>
 <translation id="1974060860693918893">ਉੱਨਤ</translation>
+<translation id="1982274314082047220">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਵਿੱਚ ਤਰਜੀਹਾਂ ਦੇਖਣ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="1984087999855033707">ਫ਼ੋਨ ਨੰਬਰ</translation>
 <translation id="1984417487208496350">ਕੋਈ ਸੁਰੱਖਿਆ ਨਹੀਂ (ਇਸਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ)</translation>
 <translation id="1986685561493779662">ਨਾਮ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਹੈ</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">ਚਿੱਤਰ ਦੇ ਵਰਣਨ</translation>
 <translation id="2996291259634659425">ਪਾਸਫਰੇਜ਼ ਬਣਾਓ</translation>
 <translation id="2996809686854298943">URL ਲੁੜੀਂਦਾ</translation>
+<translation id="3024215143424744261">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਦੀਆਂ ਤਰਜੀਹਾਂ ਬੰਦ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
 <translation id="3026955690410463085">ਲਿੰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3027644380269727216">ਕਿਸੇ ਸਾਈਟ 'ਤੇ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦੇ ਆਧਾਰ 'ਤੇ। ਇਹ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ।</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> ਤੋਂ</translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਛੱਡੋ</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਨਵੀਂ ਸਰਗਰਮੀ ਵਾਲੀ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਦੇਖੋ}one{ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਨਵੀਂ ਸਰਗਰਮੀ ਵਾਲੀ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਦੇਖੋ}other{ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਨਵੀਂ ਸਰਗਰਮੀ ਵਾਲੀਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਦੇਖੋ}}</translation>
+<translation id="6971555615916967190">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਵਿੱਚ ਤਰਜੀਹਾਂ ਅੱਧੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਹਨ</translation>
 <translation id="6971862865055170158">ਮਨਜ਼ੂਰੀ ਨਾ ਦਿਓ</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, ਨਵੀਂ ਜਾਂ ਅੱਪਡੇਟ ਕੀਤੀ ਟੈਬ</translation>
 <translation id="6976811588313110624">ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕਰੋ।</translation>

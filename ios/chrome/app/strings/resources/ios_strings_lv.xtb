@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Atveriet sadaļu Paroles</translation>
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1433478348197382180">Lasīšanas režīms</translation>
+<translation id="1435271730600332883">Atveriet sadaļu “Automātiskā aizpilde un paroles”.</translation>
 <translation id="1436671784520050284">Turpināt iestatīšanu</translation>
 <translation id="143681031165817424">Adrese tika saglabāta tikai šajā ierīcē</translation>
 <translation id="1445276840641906250">Visas jūsu cilnes vienā pārlūkā</translation>
@@ -833,6 +834,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4286718549648564014">Adrese pārvietota uz jūsu kontu (<ph name="USER_EMAIL" />).</translation>
 <translation id="4287172530684295552">Atzīmēt kā izlasītu(-as)</translation>
 <translation id="428768789042547925">Jaunumi</translation>
+<translation id="428858055663163046">Šeit varat piekļūt lejupielādētajiem failiem, kad tie ir pieejami.</translation>
 <translation id="429074084062258019">{count,plural, =1{Pievienot cilni grupai}zero{Pievienot cilnes grupai}one{Pievienot cilnes grupai}other{Pievienot cilnes grupai}}</translation>
 <translation id="4302061870579014542">Iestatīt pozīciju</translation>
 <translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
@@ -949,6 +951,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4749529195026091676">{count,plural, =1{Importēta {count} karte}zero{Importētas {count} kartes}one{Importēta {count} karte}other{Importētas {count} kartes}}</translation>
 <translation id="4751645464639803239">Jauna inkognito cilne</translation>
 <translation id="4752348350801431746">Izslēgt drošības pārbaudes paziņojumus…</translation>
+<translation id="4759238208242260848">Lejupielādes</translation>
 <translation id="4764612367328936189">Jūsu organizācija ir atļāvusi pierakstīšanos tikai ar noteiktiem kontiem. Konti, kas nav atļauti, ir paslēpti. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4766112107778026136">Discover un sekošana</translation>
 <translation id="4769198578611055647">Palīdz piekļūt saglabātajām piekļuves atslēgām jebkurā ierīcē</translation>
@@ -1270,6 +1273,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5956112131836209882">Ciļņu grupas cilne. Numur <ph name="TAB_INDEX_IN_GROUP" />, kopējais skaits ir <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Meklēt, izmantojot meklētājprogramu <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Nevar izveidot saiti uz atzīmēto tekstu.</translation>
+<translation id="5968400720580217226">MI režīms</translation>
 <translation id="5971459446352190251">Meklēšana ar kvadrātkodu</translation>
 <translation id="5971872012779224351">{count,plural, =1{Izdzēsta viena grāmatzīme}zero{Izdzēstas {count} grāmatzīmes}one{Izdzēsta {count} grāmatzīme}other{Izdzēstas {count} grāmatzīmes}}</translation>
 <translation id="5972844218283131174">Noņemt visu atlasi</translation>
@@ -1415,6 +1419,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6452534462676960500">Nesenas darbības</translation>
 <translation id="6459411599807878608">Informācija ir paslēpta</translation>
 <translation id="646394917185284261">Faili</translation>
+<translation id="6472069383518492189">Šeit būs atrodamas jūsu lejupielādes</translation>
 <translation id="6476253015009698798">Cenu izsekošana šai lapai nav pieejama.</translation>
 <translation id="6476284679642588870">Pārvaldīt maksājumu veidus</translation>
 <translation id="6476800141292307438">Lapa tiek tulkota <ph name="LANGUAGE" /> valodā. Pieejamās opcijas redzamas ekrāna apakšdaļā.</translation>
@@ -1460,6 +1465,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6627583120233659107">Rediģēt mapi</translation>
 <translation id="6629759408545977279">No: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Jūsu organizācija izslēdza inkognito režīmu.</translation>
+<translation id="6637478299472506933">Lejupiel. neizdevās</translation>
 <translation id="6638511529934826365">Veikt teksta tālummaiņu…</translation>
 <translation id="6640268266988685324">Atvērta cilne</translation>
 <translation id="6641465290890659327">Paroles kopijas kopīgošana</translation>
@@ -1582,6 +1588,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7102005569666697658">Notiek lejupielāde… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Izvēlne → Iestatījumi → Maksājuma veidi</translation>
 <translation id="7108338896283013870">Slēpt</translation>
+<translation id="7127922377013221748">Paslēpt rīkjoslu</translation>
 <translation id="7128693485119315539">Jūsu organizācijai var būt nepieciešams skatīt un pārvaldīt pārlūkošanas datus, kas saistīti ar jūsu pārvaldīto kontu, piemēram, jūsu pārlūkošanas vēsturi un paroles.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera nav pieejama.</translation>

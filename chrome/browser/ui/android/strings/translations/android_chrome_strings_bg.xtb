@@ -3,6 +3,7 @@
 <translationbundle lang="bg">
 <translation id="1010283278930414892">На това устройство няма запазени пароли</translation>
 <translation id="1011749477052068769">Преместване тук</translation>
+<translation id="1014083013111769343">Листът с предпочитания за режима на четене е отворен на пълната височина</translation>
 <translation id="1014147525163127655">На това устройство няма ключове за достъп за <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Бързо търсене с гласа ви. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="1028699632127661925">Изпраща се до <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Запазване</translation>
 <translation id="1973912524893600642">Запазване на данните</translation>
 <translation id="1974060860693918893">Разширени</translation>
+<translation id="1982274314082047220">Плъзнете нагоре, за да отворите листа с предпочитания за режима на четене</translation>
 <translation id="1984087999855033707">телефонен номер</translation>
 <translation id="1984417487208496350">Без защита (не се препоръчва)</translation>
 <translation id="1986685561493779662">Името вече съществува</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">Описания на изображенията</translation>
 <translation id="2996291259634659425">Създаване на пропуск</translation>
 <translation id="2996809686854298943">Изисква се URL адрес</translation>
+<translation id="3024215143424744261">Листът с предпочитания за режима на четене е затворен</translation>
 <translation id="3026955690410463085">Включване на връзката</translation>
 <translation id="3027644380269727216">Въз основа на активността ви в даден сайт. Тази настройка е включена.</translation>
 <translation id="3027950907978057636">От <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">Излизане от режим „инкогнито“</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Вижте <ph name="TABS_COUNT_ONE" /> раздел с нова активност в споделените групи раздели}other{Вижте <ph name="TABS_COUNT_MANY" /> раздела с нова активност в споделените групи раздели}}</translation>
+<translation id="6971555615916967190">Листът с предпочитания за режима на четене е отворен на половината височина</translation>
 <translation id="6971862865055170158">Отхвърляне</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" /> – нов или актуализиран раздел</translation>
 <translation id="6976811588313110624">Добавяне на нова клавишна комбинация.</translation>

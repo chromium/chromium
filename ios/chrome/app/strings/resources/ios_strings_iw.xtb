@@ -833,7 +833,7 @@
 <translation id="4286718549648564014">הכתובת הועברה לחשבון שלך, <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">סימון "'נקרא"</translation>
 <translation id="428768789042547925">מה חדש</translation>
-<translation id="428858055663163046">כשהקבצים שהורדת זמינים אפשר לגשת אליהם כאן</translation>
+<translation id="428858055663163046">מכאן אפשר לגשת לקבצים שהורדת, כשהם יהיו זמינים</translation>
 <translation id="429074084062258019">{count,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
 <translation id="4302061870579014542">הגדרת המיקום</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
@@ -950,6 +950,7 @@
 <translation id="4749529195026091676">{count,plural, =1{יובא כרטיס אחד ({count})}one{יובאו {count} כרטיסים}two{יובאו {count} כרטיסים}other{יובאו {count} כרטיסים}}</translation>
 <translation id="4751645464639803239">כרטיסייה פרטית חדשה</translation>
 <translation id="4752348350801431746">השבתת ההתראות של בדיקת האבטחה…</translation>
+<translation id="4759238208242260848">הורדות</translation>
 <translation id="4764612367328936189">הארגון מאפשר לך להיכנס לדפדפן רק באמצעות חשבונות מסוימים. החשבונות שלא מותרים מוסתרים. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">‏Discover והפיד 'במעקב'</translation>
 <translation id="4769198578611055647">התכונה הזו עוזרת לך לגשת למפתחות הגישה השמורים מכל מקום</translation>
@@ -1271,6 +1272,7 @@
 <translation id="5956112131836209882">כרטיסייה של קבוצת כרטיסיות. ‫<ph name="TAB_INDEX_IN_GROUP" /> מתוך <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">חיפוש ב-<ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">לא ניתן ליצור קישור לטקסט המודגש.</translation>
+<translation id="5968400720580217226">‏מצב AI</translation>
 <translation id="5971459446352190251">‏חיפוש של קוד QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{סימנייה אחת נמחקה}one{{count} סימניות נמחקו}two{{count} סימניות נמחקו}other{{count} סימניות נמחקו}}</translation>
 <translation id="5972844218283131174">ביטול הבחירה בכול הכרטיסיות</translation>
@@ -1462,6 +1464,7 @@
 <translation id="6627583120233659107">עריכת התיקייה</translation>
 <translation id="6629759408545977279">מאת: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">הארגון שלך השבית את "מצב פרטי".</translation>
+<translation id="6637478299472506933">ההורדה נכשלה</translation>
 <translation id="6638511529934826365">הגדלת טקסט…</translation>
 <translation id="6640268266988685324">כרטיסייה פתוחה</translation>
 <translation id="6641465290890659327">שיתוף עותק של הסיסמה שלך</translation>
@@ -1584,6 +1587,7 @@
 <translation id="7102005569666697658">ההורדה מתבצעת… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">תפריט ← הגדרות ← אמצעי תשלום</translation>
 <translation id="7108338896283013870">הסתרה</translation>
+<translation id="7127922377013221748">הסתר את סרגל הכלים</translation>
 <translation id="7128693485119315539">יכול להיות שהאדמין בארגון שלך יצטרך לראות ולנהל את נתוני הגלישה שקשורים לחשבון המנוהל שלך, כמו היסטוריית הגלישה והסיסמאות.</translation>
 <translation id="713215255510512027">‫<ph name="FILENAME" /> ‏(<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">המצלמה לא זמינה</translation>

@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Ireki Passwords (pasahitzak)</translation>
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1433478348197382180">Irakurtzeko modua</translation>
+<translation id="1435271730600332883">Ireki Betetze automatikoa eta pasahitzak.</translation>
 <translation id="1436671784520050284">Jarraitu konfiguratzen</translation>
 <translation id="143681031165817424">Gailu honetan baino ez da gorde helbidea</translation>
 <translation id="1445276840641906250">Fitxa guztiak arakatzaile berean</translation>
@@ -833,6 +834,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4286718549648564014">Eraman da helbidea <ph name="USER_EMAIL" /> kontura</translation>
 <translation id="4287172530684295552">Markatu irakurritako gisa</translation>
 <translation id="428768789042547925">Berritasunak</translation>
+<translation id="428858055663163046">Hemen atzi ditzakezu deskargatutako fitxategiak, erabilgarri daudenean</translation>
 <translation id="429074084062258019">{count,plural, =1{Gehitu fitxa taldean}other{Gehitu fitxak taldean}}</translation>
 <translation id="4302061870579014542">Ezarri posizioa</translation>
 <translation id="4304713468139749426">Pasahitz-kudeatzailea</translation>
@@ -949,6 +951,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4749529195026091676">{count,plural, =1{{count} txartel inportatu da}other{{count} txartel inportatu dira}}</translation>
 <translation id="4751645464639803239">Ezkutuko moduko fitxa berria</translation>
 <translation id="4752348350801431746">Desaktibatu segurtasun-egiaztapenaren jakinarazpenak…</translation>
+<translation id="4759238208242260848">Deskargak</translation>
 <translation id="4764612367328936189">Erakundeak kontu jakin batzuekin soilik uzten du saioa hasten. Baimenduta ez dauden kontuak ezkutatuta daude. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover eta jarraitzen</translation>
 <translation id="4769198578611055647">Gordetako sarbide-gakoak edozein gailutatik atzitu ahal izango dituzu</translation>
@@ -1270,6 +1273,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5956112131836209882">Fitxa taldeko fitxa. <ph name="NUMBER_OF_TABS_IN_GROUP" /> fitxatatik <ph name="TAB_INDEX_IN_GROUP" />garrena.</translation>
 <translation id="595769230373966252">Bilatu honen bidez: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Ezin da sortu nabarmendutako testurako estekarik.</translation>
+<translation id="5968400720580217226">AA modua</translation>
 <translation id="5971459446352190251">QR kode bidezko bilaketa</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 laster-marka ezabatu da}other{{count} laster-marka ezabatu dira}}</translation>
 <translation id="5972844218283131174">Desautatu guztiak</translation>
@@ -1415,6 +1419,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6452534462676960500">Jarduera berria</translation>
 <translation id="6459411599807878608">Xehetasunak ezkutatuta daude</translation>
 <translation id="646394917185284261">Fitxategiak</translation>
+<translation id="6472069383518492189">Hemen aurkituko dituzu deskargak</translation>
 <translation id="6476253015009698798">Ezin da egin orri honetako produktuen prezioen jarraipena.</translation>
 <translation id="6476284679642588870">Kudeatu ordainketa-metodoak</translation>
 <translation id="6476800141292307438">Orria itzultzen ari gara. <ph name="LANGUAGE" /> erabiliko da orria bistaratzeko. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
@@ -1460,6 +1465,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6627583120233659107">Editatu karpeta</translation>
 <translation id="6629759408545977279">Igorlea: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Zure erakundeak ezkutuko modua desaktibatu du</translation>
+<translation id="6637478299472506933">Ezin izan da deskargatu.</translation>
 <translation id="6638511529934826365">Aplikatu zooma testuari…</translation>
 <translation id="6640268266988685324">Irekitako fitxa</translation>
 <translation id="6641465290890659327">Partekatu pasahitzaren kopia bat</translation>

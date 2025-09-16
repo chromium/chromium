@@ -436,7 +436,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1711234383449478798">Eirati, kuna reegel <ph name="POLICY_NAME" /> pole seadistatud väärtusele <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> soovib andmed alaliselt teie kohalikku arvutisse salvestada</translation>
 <translation id="1713628304598226412">Salv 2</translation>
-<translation id="1713819065634160212">Aadresside kasutamine ja salvestamine Google'i kontol</translation>
+<translation id="1713819065634160212">Kasuta minu Google’i konto aadresse ja salvesta need</translation>
 <translation id="1714807406136741351">Sirvimisrežiimis saate lülituda vormide režiimile, et kasutada graafiku hinnamuudatuste vaatamiseks vasak/paremnoolt</translation>
 <translation id="1717218214683051432">Liikumisandurid</translation>
 <translation id="1717494416764505390">Postkast 3</translation>
@@ -1067,7 +1067,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="273785062888389088">Küte, ventilatsioon, õhukonditsioneerid ja kliimaseadmed</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Kodu automatiseerimine</translation>
-<translation id="2742870351467570537">Eemalda valitud üksused</translation>
 <translation id="2743512410823092182">Diskorite seadmed ja tarvikud</translation>
 <translation id="2743934314332613923">Kas värskendada juhiluba?</translation>
 <translation id="2759299890026163685">Enne uuesti proovimist veenduge, et internetiühendus oleks stabiilne</translation>
@@ -2678,7 +2677,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5423269318075950257">Hindade jälgimine</translation>
 <translation id="5425082381151187189">Kodusisustus ja sisekujundus</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> soovib teile saata märguandeid</translation>
-<translation id="5430298929874300616">Järjehoidja eemaldamine</translation>
 <translation id="5431318178759467895">Värv</translation>
 <translation id="5433756542371550806">Käsurea variatsioonid</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ei salvesta<ph name="END_EMPHASIS" />:
@@ -2876,6 +2874,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5750869797196646528">Käeliigutuste jälgimine</translation>
 <translation id="5752327398324808817">Sisestage sõna või kaks</translation>
 <translation id="5752519522101347518">Panga kinnituse veebisaidi laadimine</translation>
+<translation id="5753570386948603678">Kustuta ajaloost</translation>
 <translation id="5759751709240058861">Kaamera kasutamine ja liigutamine</translation>
 <translation id="5763042198335101085">Sisestage kehtiv e-posti aadress</translation>
 <translation id="5764725887548570807">Vale lähtekoha vorming.</translation>
@@ -3092,7 +3091,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6124058285696691147">Manuse allalaadimine</translation>
 <translation id="6124432979022149706">Chrome Enterprise'i liidesed</translation>
 <translation id="6126565365696310362">Ümbrik Hiina nr 2</translation>
-<translation id="6127379762771434464">Üksus eemaldati</translation>
 <translation id="6131824478727057281">asukoht</translation>
 <translation id="6133320744616005677">Jätka lubamist</translation>
 <translation id="6133984428121856852">Failinimelaiend on tühi või vigane.</translation>
@@ -3107,7 +3105,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6151417162996330722">Serveri sertifikaadi kehtivusaeg on liiga pikk.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tolli (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Jooksmine ja kõndimine</translation>
-<translation id="6157754950574419155">Eemalda kõik ajaloost</translation>
 <translation id="6157877588268064908">Tarneviiside ja nõuete nägemiseks valige aadress</translation>
 <translation id="6159554577634054750">Kahjuritõrje</translation>
 <translation id="6159908896951210943">Ametlik</translation>
@@ -3794,6 +3791,7 @@ Lisateave:
 <translation id="7292031607255951991">Adressaadi nimi</translation>
 <translation id="7298195798382681320">Soovitatud</translation>
 <translation id="7299471494012161875">Välised ühendatud ekraanid</translation>
+<translation id="7299721129597238157">Kustuta järjehoidja</translation>
 <translation id="7299769361777046949">Saate hallata kliendikaarte Google Walletis</translation>
 <translation id="7304030187361489308">Kõrge</translation>
 <translation id="7304562222803846232">Google’i konto privaatsusseadete haldamine</translation>
@@ -4005,6 +4003,7 @@ Lisateave:
 <translation id="7613889955535752492">Aegub: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes paroolide vaatamiseks ja haldamiseks tabulaatorit ning seejärel sisestusklahvi</translation>
 <translation id="7615932826417658001">Lisage ID-kaart</translation>
+<translation id="7616390733770379387">Need kuvatakse juhuslikus järjestuses.</translation>
 <translation id="7616645509853975347">Teie administraator lülitas teie brauseris sisse teenuse Chrome Enterprise Connectors. Nendel liidestel on juurdepääs osadele teie andmetele.</translation>
 <translation id="7617825962482469577">Ümbrik C7/C6</translation>
 <translation id="7618270539713451657">Võitluskunstid</translation>
@@ -4828,6 +4827,7 @@ Lisateave:
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> soovib teie kohalikus võrgus otsida mis tahes seadet ja sellega ühendust luua</translation>
 <translation id="9046864189129893978">Mikrofonid (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">Teie vaikevalik võimaldab teil veebiotsinguid teha. Saate seda muuta seadetes.</translation>
 <translation id="9048035366624198823">Nende toimingute jaoks tuleb reegli <ph name="POLICY_NAME" /> väärtuseks määrata <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 × 36 tolli</translation>
 <translation id="9049981332609050619">Proovisite jõuda domeenile <ph name="DOMAIN" />, kuid server esitas kehtetu sertifikaadi.</translation>

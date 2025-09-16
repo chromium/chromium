@@ -951,6 +951,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4749529195026091676">{count,plural, =1{Zaimportowano {count} kartę}few{Zaimportowano {count} karty}many{Zaimportowano {count} kart}other{Zaimportowano {count} karty}}</translation>
 <translation id="4751645464639803239">Nowa karta incognito</translation>
 <translation id="4752348350801431746">Wyłącz powiadomienia o kontroli zabezpieczeń…</translation>
+<translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4764612367328936189">Twoja organizacja pozwala logować się tylko na określone konta. Niedozwolone konta zostały ukryte. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Odkrywanie i obserwowanie</translation>
 <translation id="4769198578611055647">Ułatwia dostęp do zapisanych kluczy dostępu na dowolnym urządzeniu</translation>
@@ -1272,6 +1273,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5956112131836209882">Karta grupy kart. <ph name="TAB_INDEX_IN_GROUP" /> z <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Szukaj w <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Nie udało się utworzyć linku do podświetlenia.</translation>
+<translation id="5968400720580217226">Tryb AI</translation>
 <translation id="5971459446352190251">Wyszukiwanie z użyciem kodu QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{Usunięto 1 zakładkę}few{Usunięto {count} zakładki}many{Usunięto {count} zakładek}other{Usunięto {count} zakładki}}</translation>
 <translation id="5972844218283131174">Odznacz wszystko</translation>
@@ -1463,6 +1465,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6627583120233659107">Edytuj folder</translation>
 <translation id="6629759408545977279">Od: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Twoja organizacja wyłączyła tryb incognito</translation>
+<translation id="6637478299472506933">Błąd pobierania</translation>
 <translation id="6638511529934826365">Powiększ tekst…</translation>
 <translation id="6640268266988685324">Otwórz kartę</translation>
 <translation id="6641465290890659327">Udostępnij kopię swojego hasła</translation>
@@ -1585,6 +1588,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7102005569666697658">Pobieram… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Ustawienia → Formy płatności</translation>
 <translation id="7108338896283013870">Ukryj</translation>
+<translation id="7127922377013221748">Ukryj pasek narzędzi</translation>
 <translation id="7128693485119315539">Twoja organizacja może potrzebować dostępu do danych przeglądania powiązanych z Twoim kontem zarządzanym, takich jak historia przeglądania i hasła, oraz chcieć nimi zarządzać.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Aparat jest niedostępny</translation>

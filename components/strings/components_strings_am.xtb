@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC እና የአየር ንብረት ቁጥጥር</translation>
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2742128390261873684">የቤት ኦቶሜሽን</translation>
-<translation id="2742870351467570537">የተመረጡትን ንጥሎች አስወግድ</translation>
 <translation id="2743512410823092182">የዲጄ መርጃዎች እና መሣሪያዎች</translation>
 <translation id="2743934314332613923">የመንጃ ፈቃድ ይዘምን?</translation>
 <translation id="2759299890026163685">እንደገና ከመሞከርዎ በፊት የተረጋጋ የበይነመረብ ግንኙነት እንዳለዎት ያረጋግጡ።</translation>
@@ -1779,6 +1778,7 @@
 <translation id="3941630233824954464">የግዴታ ዳግም ማረጋገጥን አንቃ</translation>
 <translation id="3942048175062210325">ፋይሎችዎን እንደገና ለመክፈት ይሞክሩ</translation>
 <translation id="3943857333388298514">ለጥፍ</translation>
+<translation id="3945937463338223066">የ<ph name="READERNAME" /> ዓይነት እና ለእነሱ ተደራሽ የሆኑ ዘመናዊ ካርዶችን ማረጋገጫ መሣሪያዎች ይቆጣጠሩ</translation>
 <translation id="3946209740501886391">ሁልጊዜ በዚህ ጣቢያ ላይ ጠይቅ</translation>
 <translation id="3948588869002647271">ይህ መተግበሪያ ጎድሏል ወይም ጉዳት ደርሶበታል</translation>
 <translation id="3949297482798028668">ይህን ይዘት እዚህ መለጠፍ በአስተዳዳሪዎ ታግዷል።</translation>
@@ -2676,7 +2676,6 @@
 <translation id="5423269318075950257">ዋጋ ይከታተሉ</translation>
 <translation id="5425082381151187189">የቤት እና የቤት ውስጥ ማስጌጫ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ማሳወቂያዎችን ለእርስዎ መላክ ይፈልጋል</translation>
-<translation id="5430298929874300616">ዕልባት አስወግድ</translation>
 <translation id="5431318178759467895">ቀለም</translation>
 <translation id="5433756542371550806">የትዕዛዝ መስመር አማራጭ ቅርጾች</translation>
 <translation id="5434798570900738152">Chromium የሚከተሉትን<ph name="BEGIN_EMPHASIS" />አያስቀምጥም<ph name="END_EMPHASIS" />፦
@@ -2874,6 +2873,7 @@
 <translation id="5750869797196646528">የእጅ ክትትል</translation>
 <translation id="5752327398324808817">አንድ ወይም ሁለት ቃላት ያስገቡ</translation>
 <translation id="5752519522101347518">የባንክ ማረጋገጫ ድር ጣቢያን በመጫን ላይ</translation>
+<translation id="5753570386948603678">ከታሪክ ሰርዝ</translation>
 <translation id="5759751709240058861">የእርስዎን ካሜራ ይጠቀሙ እና ያንቀሳቅሱ</translation>
 <translation id="5763042198335101085">ትክክለኛ የኢሜይል አድራሻ ያስገቡ</translation>
 <translation id="5764725887548570807">ልክ ያልኾነ የመነሻ ቅርጸት።</translation>
@@ -3090,7 +3090,6 @@
 <translation id="6124058285696691147">አባሪውን አውርድ</translation>
 <translation id="6124432979022149706">Chrome Enterprise አያያዦች</translation>
 <translation id="6126565365696310362">#2 የቻይና ፖስታ</translation>
-<translation id="6127379762771434464">ንጥል ተወግዷል</translation>
 <translation id="6131824478727057281">አካባቢ</translation>
 <translation id="6133320744616005677">መፍቀድን ቀጥል</translation>
 <translation id="6133984428121856852">የፋይል ቅጥያው ባዶ ወይም የተበላሸ ነው።</translation>
@@ -3105,7 +3104,6 @@
 <translation id="6151417162996330722">የአገልጋይ እውቅና ማረጋገጫው በጣም ረጅም የሆነ የማረጋገጫ ጊዜ አለው።</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> በ<ph name="HEIGHT" /> (<ph name="ORIENTATION" />)ውስጥ</translation>
 <translation id="615506061184576470">ሩጫ እና እርምጃ</translation>
-<translation id="6157754950574419155">ሁሉንም ከታሪክ ያስወግዱ</translation>
 <translation id="6157877588268064908">የመላኪያ ዘዴዎችን እና መስፈርቶችን ለመመልከት አድራሻ ይምረጡ</translation>
 <translation id="6159554577634054750">የተባይ ቁጥጥር</translation>
 <translation id="6159908896951210943">መደበኛ</translation>
@@ -3792,6 +3790,7 @@
 <translation id="7292031607255951991">የተቀባይ ስም</translation>
 <translation id="7298195798382681320">የተመከሩ</translation>
 <translation id="7299471494012161875">የማሳያ ተቀጥላዎች ተያይዘዋል</translation>
+<translation id="7299721129597238157">ዕልባት ሰርዝ</translation>
 <translation id="7299769361777046949">Google Wallet ውስጥ የታማኝነት ካርዶችን ያስተዳድሩ</translation>
 <translation id="7304030187361489308">ከፍ ያለ</translation>
 <translation id="7304562222803846232">የGoogle መለያ ግላዊነት ቅንብሮችን ያስተዳድሩ</translation>

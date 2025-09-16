@@ -1067,7 +1067,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="273785062888389088">Control de climatización</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2742128390261873684">Domótica</translation>
-<translation id="2742870351467570537">Eliminar elementos seleccionados</translation>
 <translation id="2743512410823092182">Equipos e recursos para DJ</translation>
 <translation id="2743934314332613923">Queres actualizar o permiso de conducir?</translation>
 <translation id="2759299890026163685">Debes ter unha conexión estable a Internet antes de tentalo de novo</translation>
@@ -1780,6 +1779,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3941630233824954464">Activar a reautenticación obrigatoria</translation>
 <translation id="3942048175062210325">Proba a abrir os ficheiros de novo</translation>
 <translation id="3943857333388298514">Pegar</translation>
+<translation id="3945937463338223066">Controlar os dispositivos de autenticación de tipo <ph name="READERNAME" /> e as tarxetas intelixentes ás que poden acceder</translation>
 <translation id="3946209740501886391">Preguntar sempre sobre este sitio</translation>
 <translation id="3948588869002647271">Esta aplicación está danada ou non está instalada</translation>
 <translation id="3949297482798028668">A persoa administradora bloqueou a opción de pegar este contido aquí.</translation>
@@ -2677,7 +2677,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5423269318075950257">Facer seguimento do prezo</translation>
 <translation id="5425082381151187189">Fogar e decoración de interiores</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quere enviarche notificacións</translation>
-<translation id="5430298929874300616">Eliminar marcador</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5433756542371550806">Variacións da liña de comandos</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />non gardará<ph name="END_EMPHASIS" /> a seguinte información:
@@ -2875,6 +2874,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5750869797196646528">Seguimento das mans</translation>
 <translation id="5752327398324808817">Escribe unha ou dúas palabras</translation>
 <translation id="5752519522101347518">Cargando sitio web de verificación bancaria</translation>
+<translation id="5753570386948603678">Eliminar do historial</translation>
 <translation id="5759751709240058861">Utilizar e mover a túa cámara</translation>
 <translation id="5763042198335101085">Introduce un enderezo de correo electrónico válido</translation>
 <translation id="5764725887548570807">O formato de orixe non é válido.</translation>
@@ -3091,7 +3091,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6124058285696691147">Descargar o anexo</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
 <translation id="6126565365696310362">Sobre chinés n.º 2</translation>
-<translation id="6127379762771434464">Eliminouse o elemento</translation>
 <translation id="6131824478727057281">localización</translation>
 <translation id="6133320744616005677">Continuar permitindo</translation>
 <translation id="6133984428121856852">A extensión de ficheiro está baleira ou ten un formato incorrecto.</translation>
@@ -3106,7 +3105,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6151417162996330722">O certificado do servidor ten un período de validez demasiado longo.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> polg. (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Correr e camiñar</translation>
-<translation id="6157754950574419155">Quitar todos os elementos do historial</translation>
 <translation id="6157877588268064908">Para consultar os requisitos e métodos de envío, selecciona un enderezo</translation>
 <translation id="6159554577634054750">Control de pragas</translation>
 <translation id="6159908896951210943">Usar rexistro formal</translation>
@@ -3792,6 +3790,7 @@ Detalles adicionais:
 <translation id="7292031607255951991">Nome do destinatario</translation>
 <translation id="7298195798382681320">Recomendada</translation>
 <translation id="7299471494012161875">Mostrar periféricos conectados</translation>
+<translation id="7299721129597238157">Elimina o marcador</translation>
 <translation id="7299769361777046949">Xestiona as tarxetas de fidelidade en Google Wallet</translation>
 <translation id="7304030187361489308">Alto</translation>
 <translation id="7304562222803846232">Xestionar configuración de privacidade da Conta de Google</translation>

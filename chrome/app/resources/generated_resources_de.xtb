@@ -198,6 +198,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Fotos und Medien von deinem Smartphone abrufen</translation>
 <translation id="1129850422003387628">Apps verwalten</translation>
+<translation id="1130116586186908674">Geteilte Ansicht erstellen</translation>
 <translation id="1130430615924359526">{0,plural, =1{Inkognitofenster schließen}other{Inkognitofenster schließen (# Fenster)}}</translation>
 <translation id="113050636487300043">Lege einen Namen und ein Farbdesign fest, um einfach zwischen Profilen unterscheiden zu können</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Teil der Gruppe <ph name="GROUP_NAME" /></translation>
@@ -471,6 +472,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1307431692088049276">Nicht mehr fragen</translation>
 <translation id="130744661532298792">Bestätige deine Identität, damit du jederzeit die Passwörter in deinem Google-Konto verwenden kannst</translation>
 <translation id="1307559529304613120">Hoppla! Das System konnte das langfristig gültige API-Zugriffstoken für das Gerät nicht speichern.</translation>
+<translation id="1311092170520822848">Diese Website steuert Smartcard-Lesegeräte, die mit deinem Gerät verbunden sind, und möglicherweise Smartcards, die für sie verfügbar sind</translation>
 <translation id="131112695174432497">Daten, die sich auf personalisierte Werbung auswirken, werden gelöscht</translation>
 <translation id="1311294419381837540">Du streamst gerade einen Tab. Du kannst den Stream jederzeit pausieren oder beenden.</translation>
 <translation id="131188242279372879">Aktiviere den erweiterten Schutz, um bei Downloads in Chrome von einem Höchstmaß an Sicherheit zu profitieren</translation>
@@ -732,7 +734,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1500297251995790841">Unbekanntes Gerät [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Weitere Informationen zu nicht unterstützten Chrome-Apps</translation>
 <translation id="1501480321619201731">Gruppe löschen</translation>
-<translation id="1503392482221435031">Nutzungsstatistiken werden automatisch an Google gesendet. Du kannst Absturzberichte in den Geräteeinstellungen aktivieren oder deaktivieren.</translation>
 <translation id="1503556098270577657">Du hast dich mit deinem Android-Smartphone im Konto <ph name="USER_EMAIL" /> angemeldet</translation>
 <translation id="150411034776756821"><ph name="SITE" /> entfernen</translation>
 <translation id="1504253885059472207">Geteilte Ansicht anpinnen</translation>
@@ -2095,6 +2096,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2431027948063157455">Google Assistant konnte nicht geladen werden. Überprüfe deine Netzverbindung und versuche es noch einmal.</translation>
 <translation id="243179355394256322">In deiner Organisation darf die Geräteregistrierung nur von autorisierten Nutzern durchgeführt werden. Dieser Nutzer ist nicht für die Geräteregistrierung autorisiert. Der Nutzer muss im Bereich „Nutzer“ in der Admin-Konsole über die Administratorberechtigung „Google Meet-Hardware registrieren“ verfügen.</translation>
 <translation id="243275146591958220">Download abbrechen</translation>
+<translation id="2433237965825924228">Isolierte Web-Apps können Geräte zur Authentifizierung und für sie zugängliche Smartcards steuern. Smartcards enthalten in der Regel Kennungen, die zur Authentifizierung verwendet werden.</translation>
 <translation id="2433452467737464329">Füge der URL einen Anfrageparameter hinzu, damit die Seite automatisch aktualisiert wird: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Darstellung</translation>
 <translation id="2433836460518180625">Gerät nur entsperren</translation>
@@ -3016,7 +3018,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3048589239114571785">Abspielen (k)</translation>
 <translation id="3048742847101793553">Deine Organisation hat diese Datei blockiert, weil beim Scannen ein Fehler aufgetreten ist.</translation>
 <translation id="3048917188684939573">Streaming- und Geräteprotokolle</translation>
-<translation id="3049525403650329038">Teile Seiteninhalte mit Gemini, um relevantere Antworten zu bekommen. Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="3051250416341590778">Anzeigegröße</translation>
 <translation id="3053013834507634016">Zertifikatschlüsselverwendung</translation>
 <translation id="3053273573829329829">Nutzer-PIN aktivieren</translation>
@@ -3509,6 +3510,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3429174588714165399">Verknüpfung zu dieser Seite erstellen</translation>
 <translation id="3429271624041785769">Sprachen für Webinhalte</translation>
 <translation id="3429275422858276529">Seite als Lesezeichen speichern, um sie später schneller zu finden</translation>
+<translation id="343084100869297747">Für isolierte Web-Apps wird diese Einstellung automatisch übernommen</translation>
 <translation id="3431530007831146102">Mauszeiger mit Kopfbewegungen steuern</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> freigegeben</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -7287,7 +7289,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6077189836672154517">Tipps und Updates für <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Zum Tippen sprechen</translation>
 <translation id="6078121669093215958">{0,plural, =1{Gast}other{# offene Gastfenster}}</translation>
-<translation id="6078323886959318429">Verknüpfung</translation>
+<translation id="6078323886959318429">Neue Verknüpfung</translation>
 <translation id="6078752646384677957">Überprüfe dein Mikrofon und die Audio-Lautstärke.</translation>
 <translation id="608029822688206592">Kein Netzwerk gefunden. Lege deine SIM-Karte ein und versuche es dann noch einmal.</translation>
 <translation id="6080689532560039067">Systemzeit überprüfen</translation>
@@ -7901,7 +7903,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6525767484449074555">Klicke auf „Installieren“</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6527574156657772563">Keine verfügbaren Geräte. Füge deinem Smartphone dein Google-Konto hinzu, um es mit diesem <ph name="DEVICE_TYPE" /> zu verbinden. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Chrome-Verlauf</translation>
 <translation id="6530030995840538405">Generiertes Bild <ph name="INDEX" /> von <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Diese Einstellungen werden von deinem Administrator erzwungen</translation>
 <translation id="6530267432324197764">Profil wird von <ph name="MANAGER" /> verwaltet</translation>
@@ -8871,6 +8872,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7201535955609308429">Bitte warten, während die Überprüfung läuft</translation>
 <translation id="7202337678781136582">QR-Code mit deinem Android-Smartphone scannen</translation>
 <translation id="7203150201908454328">Erweitert</translation>
+<translation id="7206252555702853828">Deine Smartcard-Lesegeräte werden gerade gesteuert</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Seite verlassen}other{Seiten verlassen}}</translation>
 <translation id="7207457272187520234">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google nützlich, beispielsweise Android-Entwickler. Diese Einstellung wird vom Inhaber erzwungen. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert.</translation>
 <translation id="7207631048330366454">Apps finden</translation>
@@ -9365,7 +9367,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7549250950481368089">Deine gespeicherten Passwörter kannst du hier sehen. Passwörter in <ph name="BRAND" /> <ph name="BEGIN_LINK" />importieren<ph name="END_LINK" />.</translation>
 <translation id="7549434883223124329">Gerätesprache ändern?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
-<translation id="7550885994112799211">Speicher, Leistung, Sprache</translation>
+<translation id="7550885994112799211">Speicher, Energie, Sprache</translation>
 <translation id="7551059576287086432">Fehler beim Download von <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">An Ablage anpinnen</translation>
 <translation id="7552191410769096467">Wenn du Tabgruppen teilen oder ihnen beitreten möchtest, musst du dich anmelden und die Synchronisierung aktivieren</translation>
@@ -11633,6 +11635,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9081543426177426948">Besuchte Websites werden im Inkognitomodus nicht gespeichert</translation>
 <translation id="9082750838489080452">App: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">In Fenster öffnen</translation>
+<translation id="9084383457260170045">Isolierte Web-Apps können die Erlaubnis anfordern, Smartcard-Lesegeräte steuern zu dürfen</translation>
 <translation id="9085256200913095638">Ausgewählten Tab duplizieren</translation>
 <translation id="9085446486797400519">Kamerazugriff</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> nicht ausgewählt. Drücke zum Auswählen die Suchtaste + Leertaste.</translation>
@@ -11832,6 +11835,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Öffne zum Verwalten „Erweiterungen“}other{Öffne zum Verwalten „Erweiterungen“}}</translation>
 <translation id="924818813611903184">Sprachen in den Chrome OS-Einstellungen verwalten</translation>
 <translation id="925575170771547168">Dadurch werden <ph name="TOTAL_USAGE" /> an von Websites gespeicherten Daten gelöscht</translation>
+<translation id="927864230077808465">Isolierte Web-Apps können keine Smartcard-Lesegeräte steuern</translation>
 <translation id="930268624053534560">Detaillierter Zeitstempel</translation>
 <translation id="930551443325541578">Tasten und Akzente wiederholen</translation>
 <translation id="930893132043726269">Derzeit Roaming</translation>

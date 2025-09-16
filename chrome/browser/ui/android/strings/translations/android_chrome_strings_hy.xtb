@@ -3,6 +3,7 @@
 <translationbundle lang="hy">
 <translation id="1010283278930414892">Այս սարքում պահված գաղտնաբառեր չկան</translation>
 <translation id="1011749477052068769">Տեղափոխել այստեղ</translation>
+<translation id="1014083013111769343">Ընթերցման ռեժիմի կարգավորումները բացված են ամբողջ էկրանով</translation>
 <translation id="1014147525163127655">Այս սարքում <ph name="ORIGIN" />-ի համար մուտքի բանալիներ չկան</translation>
 <translation id="1016498331642356377">Արագ որոնեք ձայնային հրահանգների օգնությամբ։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="1028699632127661925">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Տեղադրել</translation>
 <translation id="1973912524893600642">Պահպանել տվյալները</translation>
 <translation id="1974060860693918893">Լրացուցիչ</translation>
+<translation id="1982274314082047220">Սահեցրեք վերև՝ ընթերցման ռեժիմի կարգավորումները բացելու համար</translation>
 <translation id="1984087999855033707">հեռախոսահամար</translation>
 <translation id="1984417487208496350">Առանց պաշտպանության (խորհուրդ չի տրվում)</translation>
 <translation id="1986685561493779662">Անունն արդեն գոյություն ունի</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">Պատկերների նկարագրություն</translation>
 <translation id="2996291259634659425">Անցաբառի ստեղծում</translation>
 <translation id="2996809686854298943">Պահանջվում է URL-ը</translation>
+<translation id="3024215143424744261">Ընթերցման ռեժիմի կարգավորումները փակված են</translation>
 <translation id="3026955690410463085">Ներառել հղումը</translation>
 <translation id="3027644380269727216">Կայքում ձեր գործողությունների հիման վրա։ Այս կարգավորումը միացված է։</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> հավելվածից</translation>
@@ -706,6 +709,7 @@
 <translation id="4380055775103003110">Եթե խնդիրը չվերանա, փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
 <translation id="4384468725000734951">Օգտագործվում է Sogou որոնման համակարգը</translation>
 <translation id="4387647248986092471">Ստեղծել մեքենայի պրոֆիլի կողպում</translation>
+<translation id="4387817230000841154">Բացել ներբեռնումները</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Ներդիրներն ու խմբերը, որոնք չեն օգտագործվել 1 կամ ավելի օր}one{Ներդիրներն ու խմբերը, որոնք չեն օգտագործվել # կամ ավելի օր}other{Ներդիրներն ու խմբերը, որոնք չեն օգտագործվել # կամ ավելի օր}}</translation>
 <translation id="4402611456429872546">Ներբեռնվում է <ph name="LANG" /> լեզվի փաթեթը…</translation>
 <translation id="4404568932422911380">Էջանիշներ չկան</translation>
@@ -1311,6 +1315,7 @@
 <translation id="696447261358045621">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Տեսնել նոր գործողությամբ <ph name="TABS_COUNT_ONE" /> ներդիր ներդիրների ընդհանուր խմբում}one{Տեսնել նոր գործողությամբ <ph name="TABS_COUNT_MANY" /> ներդիր ներդիրների ընդհանուր խմբում}other{Տեսնել նոր գործողություններով <ph name="TABS_COUNT_MANY" /> ներդիր ներդիրների ընդհանուր խմբում}}</translation>
+<translation id="6971555615916967190">Ընթերցման ռեժիմի կարգավորումները բացված են կիսով չափ</translation>
 <translation id="6971862865055170158">Չհաստատել</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, նոր կամ թարմացված ներդիր</translation>
 <translation id="6976811588313110624">Ավելացնել նոր դյուրանցում։</translation>

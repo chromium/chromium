@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Maak Wagwoorde oop</translation>
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1433478348197382180">Leesmodus</translation>
+<translation id="1435271730600332883">Maak Outovul en Wagwoorde oop</translation>
 <translation id="1436671784520050284">Gaan voort met opstelling</translation>
 <translation id="143681031165817424">Adres is net op hierdie toestel gestoor</translation>
 <translation id="1445276840641906250">Al jou oortjies in een blaaier</translation>
@@ -833,6 +834,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4286718549648564014">Adres is na jou rekening <ph name="USER_EMAIL" /> toe geskuif</translation>
 <translation id="4287172530684295552">Merk as gelees</translation>
 <translation id="428768789042547925">Wat’s nuut</translation>
+<translation id="428858055663163046">Jy kan hier toegang tot jou afgelaaide lêers kry wanneer dit beskikbaar is</translation>
 <translation id="429074084062258019">{count,plural, =1{Voeg oortjie by groep}other{Voeg oortjies by groep}}</translation>
 <translation id="4302061870579014542">Stel posisie</translation>
 <translation id="4304713468139749426">Wagwoordbestuurder</translation>
@@ -949,6 +951,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4749529195026091676">{count,plural, =1{Het {count} kaart ingevoer}other{Het {count} kaarte ingevoer}}</translation>
 <translation id="4751645464639803239">Nuwe incognito-oortjie</translation>
 <translation id="4752348350801431746">Skakel kennisgewings vir veiligheidskontrole af …</translation>
+<translation id="4759238208242260848">Aflaaie</translation>
 <translation id="4764612367328936189">Jou organisasie laat jou toe om net met sekere rekeninge aan te meld. Rekeninge wat nie toegelaat word nie, word versteek. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Ontdek en volg</translation>
 <translation id="4769198578611055647">Help jou om toegang tot gestoorde toegangsleutels op enige toestel te kry</translation>
@@ -1270,6 +1273,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5956112131836209882">Oortjiegroep-oortjie. <ph name="TAB_INDEX_IN_GROUP" /> van <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Soek met <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Kan nie skakel na die hoogtepunt skep nie.</translation>
+<translation id="5968400720580217226">KI-modus</translation>
 <translation id="5971459446352190251">QR-kodesoektog</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 boekmerk is uitgevee}other{{count} boekmerke is uitgevee}}</translation>
 <translation id="5972844218283131174">Ontkies alles</translation>
@@ -1415,6 +1419,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6452534462676960500">Nuwe aktiwiteit</translation>
 <translation id="6459411599807878608">Besonderhede is versteek</translation>
 <translation id="646394917185284261">Lêers</translation>
+<translation id="6472069383518492189">Jy sal jou aflaaie hier kry</translation>
 <translation id="6476253015009698798">Prysnasporing is nie vir hierdie bladsy beskikbaar nie.</translation>
 <translation id="6476284679642588870">Bestuur betaalmetodes</translation>
 <translation id="6476800141292307438">Vertaal tans die bladsy in <ph name="LANGUAGE" />. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
@@ -1460,6 +1465,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6627583120233659107">Wysig vouer</translation>
 <translation id="6629759408545977279">Vanaf: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Jou organisasie het Incognitomodus afgeskakel</translation>
+<translation id="6637478299472506933">Kon nie aflaai nie</translation>
 <translation id="6638511529934826365">Zoem teks …</translation>
 <translation id="6640268266988685324">Oop oortjie</translation>
 <translation id="6641465290890659327">Deel ’n kopie van jou wagwoord</translation>

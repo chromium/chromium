@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">暖通空调与环境控制</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2742128390261873684">家居自动化</translation>
-<translation id="2742870351467570537">移除所选项</translation>
 <translation id="2743512410823092182">DJ 资源与设备</translation>
 <translation id="2743934314332613923">要更新驾照信息吗？</translation>
 <translation id="2759299890026163685">请确保您拥有稳定的网络连接，然后再重试</translation>
@@ -1776,6 +1775,7 @@
 <translation id="3941630233824954464">启用强制性身份重新验证</translation>
 <translation id="3942048175062210325">尝试重新打开文件</translation>
 <translation id="3943857333388298514">粘贴</translation>
+<translation id="3945937463338223066">控制 <ph name="READERNAME" /> 类型的身份验证设备以及这些设备可访问的智能卡</translation>
 <translation id="3946209740501886391">在该网站上一律询问</translation>
 <translation id="3948588869002647271">此应用不存在或已损坏</translation>
 <translation id="3949297482798028668">您的管理员已禁止在此处粘贴此内容。</translation>
@@ -2673,7 +2673,6 @@
 <translation id="5423269318075950257">跟踪价格</translation>
 <translation id="5425082381151187189">家居与室内装潢</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
-<translation id="5430298929874300616">移除书签</translation>
 <translation id="5431318178759467895">颜色</translation>
 <translation id="5433756542371550806">命令行变体</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />：
@@ -2871,6 +2870,7 @@
 <translation id="5750869797196646528">手部跟踪</translation>
 <translation id="5752327398324808817">请输入一到两个字词</translation>
 <translation id="5752519522101347518">正在加载银行验证网站</translation>
+<translation id="5753570386948603678">从下载记录中删除</translation>
 <translation id="5759751709240058861">使用和移动您的摄像头</translation>
 <translation id="5763042198335101085">请输入有效的电子邮件地址</translation>
 <translation id="5764725887548570807">源格式无效。</translation>
@@ -3087,7 +3087,6 @@
 <translation id="6124058285696691147">下载该附件</translation>
 <translation id="6124432979022149706">Chrome 企业版连接器</translation>
 <translation id="6126565365696310362">中式 #2 信封</translation>
-<translation id="6127379762771434464">该项已移除</translation>
 <translation id="6131824478727057281">位置</translation>
 <translation id="6133320744616005677">继续允许</translation>
 <translation id="6133984428121856852">文件扩展名为空或格式错误。</translation>
@@ -3101,7 +3100,6 @@
 <translation id="6151417162996330722">该服务器证书的有效期过长。</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 英寸（<ph name="ORIENTATION" />）</translation>
 <translation id="615506061184576470">跑步与走路</translation>
-<translation id="6157754950574419155">移除历史记录中的所有内容</translation>
 <translation id="6157877588268064908">要查看送货方式和要求，请选择相应地址</translation>
 <translation id="6159554577634054750">病虫害防治</translation>
 <translation id="6159908896951210943">正式</translation>
@@ -3788,6 +3786,7 @@
 <translation id="7292031607255951991">接收方名称</translation>
 <translation id="7298195798382681320">推荐</translation>
 <translation id="7299471494012161875">已连接显示器外围设备</translation>
+<translation id="7299721129597238157">删除书签</translation>
 <translation id="7299769361777046949">管理 Google 钱包中的会员卡</translation>
 <translation id="7304030187361489308">高</translation>
 <translation id="7304562222803846232">管理 Google 账号隐私设置</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="sq">
 <translation id="1010283278930414892">Nuk ka fjalëkalime të ruajtura në këtë pajisje</translation>
 <translation id="1011749477052068769">Zhvendose këtu</translation>
+<translation id="1014083013111769343">Preferencat e "Modalitetit të leximit" janë hapur në lartësi të plotë</translation>
 <translation id="1014147525163127655">Nuk ka asnjë çelës kalimi për <ph name="ORIGIN" /> në këtë pajisje</translation>
 <translation id="1016498331642356377">Kërko me shpejtësi me zërin tënd. Për ta modifikuar këtë shkurtore, preke dhe mbaje të prekur.</translation>
 <translation id="1028699632127661925">Po dërgohet te <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="197288927597451399">Mbaje</translation>
 <translation id="1973912524893600642">Mbaj të dhënat</translation>
 <translation id="1974060860693918893">Të përparuara</translation>
+<translation id="1982274314082047220">Rrëshqit shpejt lart për të hapur preferencat e "Modalitetit të leximit"</translation>
 <translation id="1984087999855033707">numri i telefonit</translation>
 <translation id="1984417487208496350">Asnjë mbrojtje (nuk rekomandohet)</translation>
 <translation id="1986685561493779662">Emri ekziston tashmë</translation>
@@ -428,6 +430,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2992473221983447149">Përshkrimet e imazheve</translation>
 <translation id="2996291259634659425">Krijo një frazë kalimi</translation>
 <translation id="2996809686854298943">URL-ja e detyrueshme</translation>
+<translation id="3024215143424744261">Preferencat e "Modalitetit të leximit" u mbyllën</translation>
 <translation id="3026955690410463085">Përfshi lidhjen</translation>
 <translation id="3027644380269727216">Bazuar në aktivitetin tënd në një sajt. Ky cilësim është aktiv.</translation>
 <translation id="3027950907978057636">Nga <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="696447261358045621">Dil nga modaliteti "i fshehtë"</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Shiko <ph name="TABS_COUNT_ONE" /> skedë me aktivitet të ri në grupet e ndara të skedave}other{Shiko <ph name="TABS_COUNT_MANY" /> skeda me aktivitet të ri në grupet e ndara të skedave}}</translation>
+<translation id="6971555615916967190">Preferencat e "Modalitetit të leximit" janë hapur në gjysmë lartësi</translation>
 <translation id="6971862865055170158">Mos e mirato</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, skedë e re ose e përditësuar</translation>
 <translation id="6976811588313110624">Shto një shkurtore të re.</translation>

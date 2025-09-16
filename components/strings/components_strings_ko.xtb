@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">냉난방 및 온도 조절</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2742128390261873684">홈 자동화</translation>
-<translation id="2742870351467570537">선택한 항목 삭제</translation>
 <translation id="2743512410823092182">DJ 인력 및 장비</translation>
 <translation id="2743934314332613923">운전면허증을 업데이트하시겠습니까?</translation>
 <translation id="2759299890026163685">다시 시도하기 전에 인터넷 연결이 안정적인지 확인하세요.</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">필수 재인증 사용 설정</translation>
 <translation id="3942048175062210325">파일을 다시 열어보세요.</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> 유형의 인증 기기 및 해당 기기에 액세스할 수 있는 스마트 카드를 제어합니다.</translation>
 <translation id="3946209740501886391">이 사이트에서 항상 물어보기</translation>
 <translation id="3948588869002647271">애플리케이션이 없거나 손상되었습니다.</translation>
 <translation id="3949297482798028668">관리자가 이 콘텐츠를 여기에 붙여넣지 못하도록 차단했습니다.</translation>
@@ -2677,7 +2677,6 @@
 <translation id="5423269318075950257">가격 추적</translation>
 <translation id="5425082381151187189">가정 및 인테리어 장식</translation>
 <translation id="5426179911063097041"><ph name="SITE" />에서 알림을 보내려고 합니다.</translation>
-<translation id="5430298929874300616">북마크 삭제</translation>
 <translation id="5431318178759467895">컬러</translation>
 <translation id="5433756542371550806">명령줄 변형</translation>
 <translation id="5434798570900738152">Chromium에 <ph name="BEGIN_EMPHASIS" />저장되지 않는 항목<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@
 <translation id="5750869797196646528">손 추적</translation>
 <translation id="5752327398324808817">단어를 1~2개 입력하세요.</translation>
 <translation id="5752519522101347518">은행 인증 웹사이트 로드 중</translation>
+<translation id="5753570386948603678">기록에서 삭제</translation>
 <translation id="5759751709240058861">카메라 사용 및 이동</translation>
 <translation id="5763042198335101085">올바른 이메일 주소를 입력하세요.</translation>
 <translation id="5764725887548570807">원본 형식이 잘못되었습니다.</translation>
@@ -3091,7 +3091,6 @@
 <translation id="6124058285696691147">첨부파일 다운로드</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">봉투 Chinese @2</translation>
-<translation id="6127379762771434464">항목 삭제됨</translation>
 <translation id="6131824478727057281">위치</translation>
 <translation id="6133320744616005677">계속 허용</translation>
 <translation id="6133984428121856852">파일 확장자가 비어 있거나 형식이 잘못되었습니다.</translation>
@@ -3106,7 +3105,6 @@
 <translation id="6151417162996330722">서버 인증서의 유효 기간이 너무 깁니다.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" />×<ph name="HEIGHT" />(<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">달리기 및 걷기</translation>
-<translation id="6157754950574419155">방문 기록에서 모두 삭제</translation>
 <translation id="6157877588268064908">배송 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="6159554577634054750">해충 퇴치</translation>
 <translation id="6159908896951210943">격식을 갖춰 작성</translation>
@@ -3793,6 +3791,7 @@
 <translation id="7292031607255951991">수취인 이름</translation>
 <translation id="7298195798382681320">권장</translation>
 <translation id="7299471494012161875">디스플레이 주변기기 연결됨</translation>
+<translation id="7299721129597238157">북마크 삭제</translation>
 <translation id="7299769361777046949">Google 월렛에서 포인트 카드 관리</translation>
 <translation id="7304030187361489308">높음</translation>
 <translation id="7304562222803846232">Google 계정 개인 정보 보호 설정 관리</translation>

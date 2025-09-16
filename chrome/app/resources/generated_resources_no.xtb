@@ -198,6 +198,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Se bilder og medier fra telefonen</translation>
 <translation id="1129850422003387628">Administrer apper</translation>
+<translation id="1130116586186908674">Lag delt visning</translation>
 <translation id="1130430615924359526">{0,plural, =1{Lukk Inkognito}other{Lukk Inkognito (# vinduer)}}</translation>
 <translation id="113050636487300043">Velg et navn og en farge for å differensiere profilene</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – del av gruppen <ph name="GROUP_NAME" /></translation>
@@ -471,6 +472,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1307431692088049276">Ikke spør meg igjen</translation>
 <translation id="130744661532298792">For å sikre at du alltid kan bruke passordene i Google-kontoen din, bekreft at det er deg</translation>
 <translation id="1307559529304613120">Beklager. Systemet kunne ikke lagre noe langvarig API-tilgangstoken for denne enheten.</translation>
+<translation id="1311092170520822848">Dette nettstedet kontrollerer smartkortlesere som er koblet til enheten din, og potensielt smartkort som er tilgjengelige for dem</translation>
 <translation id="131112695174432497">Data som påvirker personlig tilpasning av annonser, blir slettet</translation>
 <translation id="1311294419381837540">Du caster en fane. Du kan når som helst stoppe castingen eller sette den på pause.</translation>
 <translation id="131188242279372879">Bruk økt beskyttelse for å få det høyeste sikkerhetsnivået for nedlastinger i Chrome</translation>
@@ -733,7 +735,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1500297251995790841">Ukjent enhet [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Finn ut mer om Chrome-apper som ikke støttes</translation>
 <translation id="1501480321619201731">Slett gruppen</translation>
-<translation id="1503392482221435031">Sender bruksstatistikk til Google automatisk. Du kan slå programstopprapporter på eller av i enhetsinnstillingene.</translation>
 <translation id="1503556098270577657">Du har logget på <ph name="USER_EMAIL" /> med Android-telefonen din</translation>
 <translation id="150411034776756821">Fjern <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Fest delt visning</translation>
@@ -2105,6 +2106,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2431027948063157455">Google-assistenten kunne ikke lastes inn. Kontroller nettverkstilkoblingen din, og prøv på nytt.</translation>
 <translation id="243179355394256322">Organisasjonen din begrenser registrering av enheter til kun autoriserte brukere. Denne brukeren er ikke autorisert til å registrere enheter. Sørg for at brukeren har administratorrettigheten «Registrer Google Meet-enheter» i Brukere-delen av administrasjonskonsollen.</translation>
 <translation id="243275146591958220">Avbryt nedlastingen</translation>
+<translation id="2433237965825924228">Isolerte nettapper kontrollerer autentiseringsenheter og smartkort som er tilgjengelige for dem. Smartkort inneholder vanligvis identifikatorer som brukes til å autentisere deg.</translation>
 <translation id="2433452467737464329">Legg til en søkeparameter i nettadressen for å automatisk laste inn siden på nytt: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2433836460518180625">Lås kun opp enheten</translation>
@@ -3026,7 +3028,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3048589239114571785">Spill av (K)</translation>
 <translation id="3048742847101793553">Organisasjonen din har blokkert denne filen fordi skanningen mislyktes.</translation>
 <translation id="3048917188684939573">Logger for casting og enheter</translation>
-<translation id="3049525403650329038">Del sideinnhold med Gemini for å få mer relevante svar. Dataene dine brukes ikke til å forbedre generative AI-modeller.</translation>
 <translation id="3051250416341590778">Skjermstørrelse</translation>
 <translation id="3053013834507634016">Bruk av sertifikatnøkkel</translation>
 <translation id="3053273573829329829">Slå på bruker-PIN-kode</translation>
@@ -3521,6 +3522,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3429174588714165399">Lag en snarvei til denne siden</translation>
 <translation id="3429271624041785769">Språk for nettinnhold</translation>
 <translation id="3429275422858276529">Sett denne siden som bokmerke for å finne den enkelt senere</translation>
+<translation id="343084100869297747">Isolerte nettapper følger automatisk denne innstillingen</translation>
 <translation id="3431530007831146102">Bruk hodebevegelser for å kontrollere musepekeren</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> er frigjort</translation>
 <translation id="3432762828853624962">Delte arbeidere (SharedWorker)</translation>
@@ -7913,7 +7915,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6525767484449074555">Klikk på «Installer»</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6527574156657772563">Ingen tilgjengelige enheter. Legg til Google-kontoen din på telefonen for å koble den til denne <ph name="DEVICE_TYPE" />-enheten. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Chrome-logg</translation>
 <translation id="6530030995840538405">Generert bilde <ph name="INDEX" /> av <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Disse innstillingene håndheves av administratoren din</translation>
 <translation id="6530267432324197764">Profilen administreres av <ph name="MANAGER" /></translation>
@@ -8883,6 +8884,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7201535955609308429">Vent mens installeringspakken bekreftes</translation>
 <translation id="7202337678781136582">Skann QR-koden med Android-telefonen</translation>
 <translation id="7203150201908454328">Utvidet</translation>
+<translation id="7206252555702853828">Smartkortleserne dine kontrolleres</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Lukk siden}other{Lukk sidene}}</translation>
 <translation id="7207457272187520234">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne innstillingen håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din.</translation>
 <translation id="7207631048330366454">Søk etter apper</translation>
@@ -11645,6 +11647,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9081543426177426948">Nettsteder du besøker, lagres ikke i inkognitomodus</translation>
 <translation id="9082750838489080452">App: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Åpne som vindu</translation>
+<translation id="9084383457260170045">Isolerte nettapper kan be om å få kontrollere smartkortlesere.</translation>
 <translation id="9085256200913095638">Dupliser den valgte fanen</translation>
 <translation id="9085446486797400519">Kameratilgang</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> er ikke valgt. Trykk på Søk + mellomrom for å velge.</translation>
@@ -11844,6 +11847,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Åpne Utvidelser for å administrere den}other{Åpne Utvidelser for å administrere dem}}</translation>
 <translation id="924818813611903184">Administrer språk i ChromeOS-innstillingene</translation>
 <translation id="925575170771547168">Dette medfører sletting av <ph name="TOTAL_USAGE" /> data som er lagret av nettsteder</translation>
+<translation id="927864230077808465">Isolerte nettapper kan ikke kontrollere smartkortlesere</translation>
 <translation id="930268624053534560">Detaljerte tidsstempler</translation>
 <translation id="930551443325541578">Gjentakende taster og aksenttegn</translation>
 <translation id="930893132043726269">Roamer for øyeblikket</translation>

@@ -709,6 +709,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4380055775103003110">Kui probleem jääb korduma, võite proovida teisi viise, kuidas saidil <ph name="SITE_ETLD_PLUS_ONE" /> jätkata.</translation>
 <translation id="4384468725000734951">Otsimiseks kasutatakse teenust Sogou</translation>
 <translation id="4387647248986092471">Looge auto profiililukk</translation>
+<translation id="4387817230000841154">Ava kaust Allalaadimised</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Vahelehed ja grupid, mida pole üks päev või kauem kasutatud}other{Vahelehed ja grupid, mida pole # päeva või kauem kasutatud}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – allalaadimine …</translation>
 <translation id="4404568932422911380">Järjehoidjaid pole</translation>

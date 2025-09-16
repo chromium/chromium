@@ -3,6 +3,7 @@
 <translationbundle lang="cs">
 <translation id="1010283278930414892">V tomto zařízení nejsou uložena žádná hesla</translation>
 <translation id="1011749477052068769">Přesunout sem</translation>
+<translation id="1014083013111769343">Nastavení režimu čtení je otevřené na celou výšku</translation>
 <translation id="1014147525163127655">V tomto zařízení nejsou pro web <ph name="ORIGIN" /> žádné přístupové klíče</translation>
 <translation id="1016498331642356377">Rychle vyhledávat hlasem. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
 <translation id="1028699632127661925">Odesílání na zařízení <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="197288927597451399">Uložit</translation>
 <translation id="1973912524893600642">Zachovat data</translation>
 <translation id="1974060860693918893">Rozšířená nastavení</translation>
+<translation id="1982274314082047220">Režim čtení, přejetím prstem nahoru zobrazíte nastavení</translation>
 <translation id="1984087999855033707">telefonní číslo</translation>
 <translation id="1984417487208496350">Bez ochrany (nedoporučujeme)</translation>
 <translation id="1986685561493779662">Název již existuje</translation>
@@ -428,6 +430,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2992473221983447149">Popisy obrázků</translation>
 <translation id="2996291259634659425">Vytvoření heslové fráze</translation>
 <translation id="2996809686854298943">Je požadována adresa URL</translation>
+<translation id="3024215143424744261">Nastavení režimu čtení je zavřené</translation>
 <translation id="3026955690410463085">Zahrnout odkaz</translation>
 <translation id="3027644380269727216">Na základě vaší aktivity na webu. Toto nastavení je zapnuté.</translation>
 <translation id="3027950907978057636">Zdroj: <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="696447261358045621">Ukončit anonymní režim</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Zobrazit <ph name="TABS_COUNT_ONE" /> standardní kartu s novou aktivitou ve sdílených skupinách karet}few{Zobrazit <ph name="TABS_COUNT_MANY" /> standardní karty s novou aktivitou ve sdílených skupinách karet}many{Zobrazit <ph name="TABS_COUNT_MANY" /> standardní karty s novou aktivitou ve sdílených skupinách karet}other{Zobrazit <ph name="TABS_COUNT_MANY" /> standardních karet s novou aktivitou ve sdílených skupinách karet}}</translation>
+<translation id="6971555615916967190">Nastavení režimu čtení je otevřené do poloviny výšky</translation>
 <translation id="6971862865055170158">Neschválit</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, nová nebo aktualizovaná karta</translation>
 <translation id="6976811588313110624">Přidat novou zkratku.</translation>

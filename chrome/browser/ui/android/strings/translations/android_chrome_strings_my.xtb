@@ -3,6 +3,7 @@
 <translationbundle lang="my">
 <translation id="1010283278930414892">ဤစက်တွင် သိမ်းထားသောစကားဝှက် မရှိပါ</translation>
 <translation id="1011749477052068769">ဤနေရာသို့ ရွှေ့ရန်</translation>
+<translation id="1014083013111769343">စာဖတ်မုဒ် သတ်မှတ်ချက်များ မြင်ကွင်းအပြည့် ဖွင့်ထားသည်</translation>
 <translation id="1014147525163127655">ဤစက်တွင် <ph name="ORIGIN" /> အတွက် လျှို့ဝှက်ကီးများ မရှိပါ</translation>
 <translation id="1016498331642356377">သင့်အသံဖြင့် အမြန်ရှာပါ။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ဆင်ရန် ထိထားပါ။</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> သို့ ပို့နေသည်...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">သိမ်းမည်</translation>
 <translation id="1973912524893600642">ဒေတာများ ဆက်ထားရှိရန်</translation>
 <translation id="1974060860693918893">အဆင့်မြင့်</translation>
+<translation id="1982274314082047220">စာဖတ်မုဒ် သတ်မှတ်ချက်များ ဖွင့်ရန် အပေါ်သို့ပွတ်ဆွဲပါ</translation>
 <translation id="1984087999855033707">ဖုန်းနံပါတ်</translation>
 <translation id="1984417487208496350">ကာကွယ်မှုမရှိပါ (အကြံပြုမထားပါ)</translation>
 <translation id="1986685561493779662">အမည်မှာ ရှိနှင့်ပြီးဖြစ်သည်</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">ပုံရှင်းလင်းချက်များ</translation>
 <translation id="2996291259634659425">စကားဝှက်ဖန်တီးပါ</translation>
 <translation id="2996809686854298943">URL လိုအပ်သည်။</translation>
+<translation id="3024215143424744261">စာဖတ်မုဒ် သတ်မှတ်ချက်များ ပိတ်ထားသည်</translation>
 <translation id="3026955690410463085">လင့်ခ်ထည့်သွင်းပါ</translation>
 <translation id="3027644380269727216">ဝဘ်ဆိုက်ရှိ သင့်လုပ်ဆောင်ချက်ပေါ် အခြေခံထားသည်။ ဤဆက်တင်ကို ဖွင့်ထားသည်။</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> မှ</translation>
@@ -1310,6 +1313,7 @@
 <translation id="696447261358045621">ရုပ်ဖျက်မုဒ်မှ ထွက်ရန်</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသော တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ကြည့်ရန်}other{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသော တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ကြည့်ရန်}}</translation>
+<translation id="6971555615916967190">စာဖတ်မုဒ် သတ်မှတ်ချက်များ မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်</translation>
 <translation id="6971862865055170158">ခွင့်မပြုပါ</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />၊ အသစ် (သို့) အပ်ဒိတ်လုပ်ထားသော တဘ်</translation>
 <translation id="6976811588313110624">ဖြတ်လမ်းလင့်ခ်အသစ် ထည့်ရန်။</translation>

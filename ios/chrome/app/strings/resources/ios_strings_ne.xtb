@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">"पासवर्डहरू" खोल्नुहोस्</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1433478348197382180">रिडिङ मोड</translation>
+<translation id="1435271730600332883">अटोफिल र पासवर्डहरू खोल्नुहोस्</translation>
 <translation id="1436671784520050284">सेटअप जारी राख्नुहोस्</translation>
 <translation id="143681031165817424">यो ठेगाना यस डिभाइसमा मात्र सेभ गरिएको छ</translation>
 <translation id="1445276840641906250">एउटै ब्राउजरमा तपाईंका सबै ट्याबहरू</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">ठेगाना तपाईंको खाता <ph name="USER_EMAIL" /> मा सारियो</translation>
 <translation id="4287172530684295552">पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="428768789042547925">नयाँ के छ</translation>
+<translation id="428858055663163046">तपाईं आफूले डाउनलोड गरेका फाइलहरू उपलब्ध भएपछि यहाँ गई ती फाइलहरू एक्सेस गर्न सक्नुहुन्छ</translation>
 <translation id="429074084062258019">{count,plural, =1{समूहमा ट्याब हाल्नुहोस्}other{समूहमा ट्याबहरू हाल्नुहोस्}}</translation>
 <translation id="4302061870579014542">पोजिसन सेट गर्नुहोस्</translation>
 <translation id="4304713468139749426">पासवर्ड म्यानेजर</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{{count} कार्ड इम्पोर्ट गरियो}other{{count} वटा कार्ड इम्पोर्ट गरिए}}</translation>
 <translation id="4751645464639803239">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="4752348350801431746">सुरक्षा जाँचसम्बन्धी नोटिफिकेसन प्राप्त गर्ने सुविधा अफ गर्नुहोस्…</translation>
+<translation id="4759238208242260848">डाउनलोडहरू</translation>
 <translation id="4764612367328936189">तपाईंको सङ्गठनको नीतिअनुसार तपाईं निश्चित खातामार्फत मात्र साइन इन गर्न पाउनुहुन्छ। साइन इन गर्ने अनुमति नदिइएका खाताहरू लुकाइन्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">डिस्कभर तथा फलोइङ</translation>
 <translation id="4769198578611055647">तपाईं यसका सहायताले कुनै पनि डिभाइसमा सेभ गरिएका पासकी एक्सेस गर्न सक्नुहुन्छ</translation>
@@ -1270,6 +1273,7 @@
 <translation id="5956112131836209882">ट्याब समूहको ट्याब। <ph name="NUMBER_OF_TABS_IN_GROUP" /> मध्ये <ph name="TAB_INDEX_IN_GROUP" />।</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> मार्फत खोज्नुहोस्</translation>
 <translation id="5963939892571022323">हाइलाइट गरिएको पाठको लिंक सिर्जना गर्न सकिएन।</translation>
+<translation id="5968400720580217226">AI मोड</translation>
 <translation id="5971459446352190251">QR कोड सर्च</translation>
 <translation id="5971872012779224351">{count,plural, =1{एउटा बुकमार्क मेटाइएको छ}other{{count} वटा बुकमार्क मेटाइएका छन्}}</translation>
 <translation id="5972844218283131174">सबैको चयन रद्द गर्नुहोस्</translation>
@@ -1415,6 +1419,7 @@
 <translation id="6452534462676960500">नयाँ गतिविधि</translation>
 <translation id="6459411599807878608">विवरणहरू लुकाइएका छन्</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">तपाईंले डाउनलोड गरेका फाइलहरू यहाँ देखिने छन्</translation>
 <translation id="6476253015009698798">यो पेजमा मूल्य ट्र्याक गर्ने सुविधा उपलब्ध छैन।</translation>
 <translation id="6476284679642588870">भुक्तानी विधिहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="6476800141292307438">पृष्ठलाई <ph name="LANGUAGE" /> भाषामा अनुवाद गर्दै। विकल्पहरू स्क्रिनका पुछारमा उपलब्ध छन्।</translation>
@@ -1460,6 +1465,7 @@
 <translation id="6627583120233659107">फोल्डर सम्पादन गर्नुहोस्</translation>
 <translation id="6629759408545977279">होस्ट: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">तपाईंको सङ्गठनले इन्कोग्निटो मोड अफ गरेको छ</translation>
+<translation id="6637478299472506933">डाउनलोड असफल भयो</translation>
 <translation id="6638511529934826365">पाठ जुम गर्नुहोस्…</translation>
 <translation id="6640268266988685324">ट्याब खोल्नुहोस्</translation>
 <translation id="6641465290890659327">आफ्नो पासवर्डको कपी सेयर गर्नुहोस्</translation>

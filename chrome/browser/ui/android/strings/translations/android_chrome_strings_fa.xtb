@@ -3,6 +3,7 @@
 <translationbundle lang="fa">
 <translation id="1010283278930414892">گذرواژه‌ای در این دستگاه ذخیره نشده است</translation>
 <translation id="1011749477052068769">انتقال به اینجا</translation>
+<translation id="1014083013111769343">اولویت‌های «حالت خواندن» به‌صورت کامل باز شده است</translation>
 <translation id="1014147525163127655">هیچ گذرکلیدی برای <ph name="ORIGIN" /> در این دستگاه وجود ندارد</translation>
 <translation id="1016498331642356377">به‌سرعت با صدایتان جستجو کنید. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>
 <translation id="1028699632127661925">درحال ارسال به <ph name="DEVICE_NAME" />…</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">ادامه دادن</translation>
 <translation id="1973912524893600642">نگه داشتن داده‌ها</translation>
 <translation id="1974060860693918893">پیشرفته</translation>
+<translation id="1982274314082047220">برای اولویت‌های «حالت خواندن»، تند به بالا بکشید</translation>
 <translation id="1984087999855033707">شماره تلفن</translation>
 <translation id="1984417487208496350">بدون محافظت (توصیه نمی‌شود)</translation>
 <translation id="1986685561493779662">نام ازقبل وجود دارد</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">شرح تصویر</translation>
 <translation id="2996291259634659425">ایجاد گذرعبارت</translation>
 <translation id="2996809686854298943">نشانی وب لازم است</translation>
+<translation id="3024215143424744261">اولویت‌های «حالت خواندن» بسته شد</translation>
 <translation id="3026955690410463085">گنجاندن پیوند</translation>
 <translation id="3027644380269727216">براساس فعالیت شما در سایت. این تنظیم روشن است.</translation>
 <translation id="3027950907978057636">از <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">خروج از «حالت ناشناس»</translation>
 <translation id="6965382102122355670">تأیید</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{دیدن <ph name="TABS_COUNT_ONE" /> برگه با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}one{دیدن <ph name="TABS_COUNT_MANY" /> برگه با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}other{دیدن <ph name="TABS_COUNT_MANY" /> برگه با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}}</translation>
+<translation id="6971555615916967190">اولویت‌های «حالت خواندن» به‌صورت نیمه باز شده است</translation>
 <translation id="6971862865055170158">تأیید نکردن</translation>
 <translation id="6976223255612495095">‫<ph name="TAB_TITLE" />، زبانه جدید یا به‌روزشده</translation>
 <translation id="6976811588313110624">افزودن میان‌بر جدید.</translation>

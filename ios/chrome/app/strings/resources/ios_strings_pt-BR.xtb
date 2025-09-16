@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Abra o app Senhas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1433478348197382180">Modo de leitura</translation>
+<translation id="1435271730600332883">Abra "Preenchimento automático e senhas"</translation>
 <translation id="1436671784520050284">Continuar a configuração</translation>
 <translation id="143681031165817424">Endereço salvo apenas neste dispositivo</translation>
 <translation id="1445276840641906250">Todas as guias em um só navegador</translation>
@@ -833,6 +834,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4286718549648564014">Endereço movido para sua conta <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marcar como lida</translation>
 <translation id="428768789042547925">Novidades</translation>
+<translation id="428858055663163046">Acesse seus arquivos baixados aqui.</translation>
 <translation id="429074084062258019">{count,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gerenciador de Senhas</translation>
@@ -949,6 +951,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4749529195026091676">{count,plural, =1{{count} cartão importado}one{{count} cartão importado}other{{count} cartões importados}}</translation>
 <translation id="4751645464639803239">Nova guia anônima</translation>
 <translation id="4752348350801431746">Desativar as notificações da Confirmação de segurança…</translation>
+<translation id="4759238208242260848">Downloads</translation>
 <translation id="4764612367328936189">Sua organização permite que você faça login apenas com determinadas contas. As contas que não têm permissão para fazer login ficam ocultas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover e seguindo</translation>
 <translation id="4769198578611055647">Ajuda você a acessar as chaves de acesso salvas em qualquer dispositivo</translation>
@@ -1270,6 +1273,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5956112131836209882">Guia do grupo de guias. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Não é possível criar um link para o conteúdo destacado.</translation>
+<translation id="5968400720580217226">Modo IA</translation>
 <translation id="5971459446352190251">Pesquisa por QR code</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 favorito excluído}one{{count} favorito excluído}other{{count} favoritos excluídos}}</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>
@@ -1415,6 +1419,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6452534462676960500">Nova atividade</translation>
 <translation id="6459411599807878608">Detalhes ocultos</translation>
 <translation id="646394917185284261">Arquivos</translation>
+<translation id="6472069383518492189">Seus downloads serão salvos aqui</translation>
 <translation id="6476253015009698798">O monitoramento de preços não está disponível para esta página.</translation>
 <translation id="6476284679642588870">Gerenciar formas de pagamento</translation>
 <translation id="6476800141292307438">Tradução da página para <ph name="LANGUAGE" />. Opções disponíveis na parte inferior da tela.</translation>
@@ -1460,6 +1465,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6629759408545977279">De: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Sua organização desativou o modo de navegação anônima</translation>
+<translation id="6637478299472506933">Falha no download</translation>
 <translation id="6638511529934826365">Dar zoom no texto…</translation>
 <translation id="6640268266988685324">Abrir guia</translation>
 <translation id="6641465290890659327">Compartilhe uma cópia da sua senha</translation>
@@ -1582,6 +1588,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7102005569666697658">Fazendo o download… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Configurações → Formas de pagamento</translation>
 <translation id="7108338896283013870">Ocultar</translation>
+<translation id="7127922377013221748">Ocultar Barra de Ferramentas Google</translation>
 <translation id="7128693485119315539">Sua organização talvez precise ver e gerenciar dados de navegação vinculados à sua conta gerenciada, como histórico de navegação e senhas.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">A câmera não está disponível</translation>

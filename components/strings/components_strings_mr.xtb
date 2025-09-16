@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC आणि हवामान नियंत्रण</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2742128390261873684">होम ऑटोमेशन</translation>
-<translation id="2742870351467570537">निवडलेले आयटम काढून टाका</translation>
 <translation id="2743512410823092182">डीजे स्रोत आणि उपकरणे</translation>
 <translation id="2743934314332613923">ड्रायव्हरच्या परवान्यासंबंधित माहिती अपडेट करायची आहे का?</translation>
 <translation id="2759299890026163685">पुन्हा प्रयत्न करण्यापूर्वी तुमच्याकडे स्थिर इंटरनेट कनेक्शन असल्याची खात्री करा</translation>
@@ -1779,6 +1778,7 @@
 <translation id="3941630233824954464">अनिवार्य री-ऑथेंटिकेशन सुरू करा</translation>
 <translation id="3942048175062210325">तुमच्या फाइल पुन्हा उघडण्याचा प्रयत्न करून पहा</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> प्रकारची ऑथेंटिकेशन डिव्हाइस आणि त्यांना अ‍ॅक्सेस करता येणारी स्मार्ट कार्ड यांना नियंत्रित करा</translation>
 <translation id="3946209740501886391">नेहमी या साइटवर विचारा</translation>
 <translation id="3948588869002647271">हे अ‍ॅप्लिकेशन उपलब्ध नाही किंवा बिघाड झालेले आहे</translation>
 <translation id="3949297482798028668">तुमच्या अ‍ॅडमिनिस्ट्रेटरने हा आशय इथे पेस्ट करणे ब्लॉक केले आहे.</translation>
@@ -2676,7 +2676,6 @@
 <translation id="5423269318075950257">किमतीचा माग ठेवा</translation>
 <translation id="5425082381151187189">घर आणि त्यासंबंधित इंटिरीयर डेकोरेशन</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ला तुम्हाला सूचना पाठवायची आहे</translation>
-<translation id="5430298929874300616">बुकमार्क काढून टाका</translation>
 <translation id="5431318178759467895">रंग</translation>
 <translation id="5433756542371550806">कमांड लाइन व्हेरिएशन</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />सेव्ह करणार नाही<ph name="END_EMPHASIS" />:
@@ -2874,6 +2873,7 @@
 <translation id="5750869797196646528">हँड ट्रॅकिंग</translation>
 <translation id="5752327398324808817">एक किंवा दोन शब्द एंटर करा</translation>
 <translation id="5752519522101347518">बँक पडताळणी वेबसाइट लोड करत आहे</translation>
+<translation id="5753570386948603678">इतिहासामधून हटवा</translation>
 <translation id="5759751709240058861">तुमचा कॅमेरा वापरा आणि हलवा</translation>
 <translation id="5763042198335101085">वैध ईमेल ॲड्रेस एंटर करा</translation>
 <translation id="5764725887548570807">ओरिजिनचा फॉरमॅट चुकीचा आहे.</translation>
@@ -3090,7 +3090,6 @@
 <translation id="6124058285696691147">अटॅचमेंट डाउनलोड करा</translation>
 <translation id="6124432979022149706">Chrome एंटरप्राइझ कनेक्टर</translation>
 <translation id="6126565365696310362">एन्व्हलप चायनीज #२</translation>
-<translation id="6127379762771434464">आयटम काढला</translation>
 <translation id="6131824478727057281">स्थान</translation>
 <translation id="6133320744616005677">अनुमती देणे पुढे सुरू ठेवा</translation>
 <translation id="6133984428121856852">फाइल एक्स्टेंशन रिकामे आहे किंवा त्यामध्ये समस्या आहे.</translation>
@@ -3106,7 +3105,6 @@
 <translation id="6151417162996330722">सर्व्हर सर्टिफिकेटस वैधता कालावधी आहे जो खूप मोठा आहे.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> इंच (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">धावणे आणि चालणे</translation>
-<translation id="6157754950574419155">इतिहासामधून सर्व आयटम काढून टाका</translation>
 <translation id="6157877588268064908">शिपिंग पद्धती आणि आवश्यकता पाहण्यासाठी, एक पत्ता निवडा</translation>
 <translation id="6159554577634054750">कीट नियंत्रण</translation>
 <translation id="6159908896951210943">औपचारिक</translation>
@@ -3793,6 +3791,7 @@
 <translation id="7292031607255951991">मिळवणाऱ्याचे नाव</translation>
 <translation id="7298195798382681320">शिफारस केलेले</translation>
 <translation id="7299471494012161875">अटॅच केलेली उपकरणे दाखवा</translation>
+<translation id="7299721129597238157">बुकमार्क हटवा</translation>
 <translation id="7299769361777046949">Google Wallet मधील लॉयल्‍टी कार्ड व्यवस्थापित करा</translation>
 <translation id="7304030187361489308">उच्च</translation>
 <translation id="7304562222803846232">Google खाते ची गोपनीयता सेटिंग्ज व्यवस्थापित करा</translation>

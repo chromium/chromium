@@ -1072,7 +1072,6 @@
 <translation id="273785062888389088">HVAC နှင့် အပူချိန်ထိန်းချုပ်ခြင်း</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">အိမ်တွင်း အလိုအလျောက် ထိန်းချုပ်စနစ်</translation>
-<translation id="2742870351467570537">ရွေးချယ်ထားသည့် အရာများ ဖယ်ရှား</translation>
 <translation id="2743512410823092182">DJ ရင်းမြစ်နှင့် ကိရိယာ</translation>
 <translation id="2743934314332613923">ယာဉ်မောင်းလိုင်စင် အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="2759299890026163685">ထပ်မစမ်းမီ သင့်တွင် တည်ငြိမ်သော အင်တာနက်ချိတ်ဆက်မှုရှိကြောင်း သေချာပါစေ</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">မဖြစ်မနေ ပြန်လည် အထောက်အထားစိစစ်ခြင်း ဖွင့်ရန်</translation>
 <translation id="3942048175062210325">သင့်ဖိုင်များကို ထပ်မံဖွင့်ကြည့်ပါ</translation>
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> အမျိုးအစား၏ အထောက်အထားစိစစ်မှု စက်များနှင့် ၎င်းတို့တွင် သုံးနိုင်သော စမတ်ကတ်များကို ထိန်းချုပ်ပါ</translation>
 <translation id="3946209740501886391">ဤဆိုက်ပေါ်တွင် အမြဲမေးပါ</translation>
 <translation id="3948588869002647271">ဤအပလီကေးရှင်း ပျောက်နေသည် (သို့) ပျက်နေသည်</translation>
 <translation id="3949297482798028668">ဤနေရာတွင် ဤအကြောင်းအရာ ကူးထည့်ခြင်းကို သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်။</translation>
@@ -2678,7 +2678,6 @@
 <translation id="5423269318075950257">ဈေးနှုန်း စောင့်ကြည့်ခြင်း</translation>
 <translation id="5425082381151187189">အိမ်၊ အတွင်းပိုင်း အလှဆင်ခြင်း</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> သည် သင့်ထံသို့ အကြောင်းကြားချက်များ ပို့လိုသည်</translation>
-<translation id="5430298929874300616">စာညှပ် ဖယ်ရှားရန်</translation>
 <translation id="5431318178759467895">အရောင်</translation>
 <translation id="5433756542371550806">ကွန်မန်းလိုင်း မူကွဲများ</translation>
 <translation id="5434798570900738152">Chromium သည် အောက်ပါတို့ကို <ph name="BEGIN_EMPHASIS" />သိမ်းမည်မဟုတ်ပါ<ph name="END_EMPHASIS" />-
@@ -2876,6 +2875,7 @@
 <translation id="5750869797196646528">လက်ကို စောင့်ကြည့်ခြင်း</translation>
 <translation id="5752327398324808817">စာလုံးတစ်လုံး (သို့) နှစ်လုံး ထည့်ပါ</translation>
 <translation id="5752519522101347518">ဘဏ်စိစစ်ရေးဝဘ်ဆိုက်ကို ဖွင့်နေသည်</translation>
+<translation id="5753570386948603678">မှတ်တမ်းမှ ဖျက်ရန်</translation>
 <translation id="5759751709240058861">သင့်ကင်မရာ သုံးရန်နှင့် ရွှေ့ရန်</translation>
 <translation id="5763042198335101085">မှန်ကန်သော အီးမေးလ်လိပ်စာကို ထည့်ပါ</translation>
 <translation id="5764725887548570807">မမှန်ကန်သော မူရင်းဖော်မက်။</translation>
@@ -3092,7 +3092,6 @@
 <translation id="6124058285696691147">ပူးတွဲပါဖိုင်ကို ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="6124432979022149706">Chrome လုပ်ငန်းသုံး ချိတ်ဆက်သည့်ကိရိယာများ</translation>
 <translation id="6126565365696310362">Chinese #2 စာအိတ်</translation>
-<translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
 <translation id="6131824478727057281">တည်နေရာ</translation>
 <translation id="6133320744616005677">ဆက်၍ခွင့်ပြုရန်</translation>
 <translation id="6133984428121856852">ဖိုင်နောက်ဆက်တွဲ အလွတ်ဖြစ်နေသည် (သို့) ပုံစံပျက်နေသည်။</translation>
@@ -3106,7 +3105,6 @@
 <translation id="6151417162996330722">ဆာဗာ အသိအမှတ်ပြုလက်မှတ်တွင် ကာလလွန်စွာကြာမြင့်သော ခွင့်ပြုကာလ ရှိ၏။</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ပြေးခြင်း၊ လမ်းလျှောက်ခြင်း</translation>
-<translation id="6157754950574419155">မှတ်တမ်းမှ အားလုံးဖယ်ရှားရန်</translation>
 <translation id="6157877588268064908">ပစ္စည်းပို့ခြင်းနည်းလမ်းနှင့် သတ်မှတ်ချက်ချက်များကို ကြည့်ရန် လိပ်စာရွေးပါ</translation>
 <translation id="6159554577634054750">ဖျက်ပိုး နှိမ်နင်းခြင်း</translation>
 <translation id="6159908896951210943">ရုံးသုံး</translation>
@@ -3793,6 +3791,7 @@
 <translation id="7292031607255951991">လက်ခံရရှိသူ အမည်</translation>
 <translation id="7298195798382681320">အကြံပြုထား</translation>
 <translation id="7299471494012161875">ဖန်သားပြင်ဆက်စပ်ပစ္စည်းများ ချိတ်ဆက်ထားသည်</translation>
+<translation id="7299721129597238157">စာညှပ် ဖျက်ရန်</translation>
 <translation id="7299769361777046949">Google Wallet ၌ ဖောက်သည်ကတ်များ စီမံပါ</translation>
 <translation id="7304030187361489308">မြင့်သော</translation>
 <translation id="7304562222803846232">Google Account ကိုယ်ရေးအချက်အလက်လုံခြုံမှု ဆက်တင်များကို စီမံရန်</translation>

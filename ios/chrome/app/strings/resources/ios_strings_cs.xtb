@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Otevřete sekci Hesla</translation>
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1433478348197382180">Režim čtení</translation>
+<translation id="1435271730600332883">Otevřete Automatické vyplňování a hesla</translation>
 <translation id="1436671784520050284">Pokračovat v nastavování</translation>
 <translation id="143681031165817424">Adresa uložená pouze v tomto zařízení</translation>
 <translation id="1445276840641906250">Všechny vaše karty v jednom prohlížeči</translation>
@@ -833,6 +834,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4286718549648564014">Adresa byla přesunuta do vašeho účtu <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Označit jako přečtené</translation>
 <translation id="428768789042547925">Novinky</translation>
+<translation id="428858055663163046">Až budou vaše stažené soubory k dispozici, najdete je tady</translation>
 <translation id="429074084062258019">{count,plural, =1{Přidat kartu do skupiny}few{Přidat karty do skupiny}many{Přidat karty do skupiny}other{Přidat karty do skupiny}}</translation>
 <translation id="4302061870579014542">Nastavit pozici</translation>
 <translation id="4304713468139749426">Správce hesel</translation>
@@ -949,6 +951,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4749529195026091676">{count,plural, =1{Byla importována {count} karta}few{Byly importovány {count} karty}many{Bylo importováno {count} karty}other{Bylo importováno {count} karet}}</translation>
 <translation id="4751645464639803239">Nová anonymní karta</translation>
 <translation id="4752348350801431746">Vypnout oznámení bezpečnostní kontroly…</translation>
+<translation id="4759238208242260848">Stažené soubory</translation>
 <translation id="4764612367328936189">Vaše organizace umožňuje pouze přihlášení pomocí určitých účtů. Nepovolené účty jsou skryty. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Objevování a sledování</translation>
 <translation id="4769198578611055647">Pomáhá získat přístup k uloženým přístupovým klíčům na kterémkoli zařízení</translation>
@@ -1270,6 +1273,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5956112131836209882">Karta skupiny karet. <ph name="TAB_INDEX_IN_GROUP" /> z <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Vyhledat pomocí <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Odkaz na zvýraznění nelze vytvořit.</translation>
+<translation id="5968400720580217226">Režim AI</translation>
 <translation id="5971459446352190251">Vyhledávání QR kódů</translation>
 <translation id="5971872012779224351">{count,plural, =1{Byla smazána 1 záložka}few{Byly smazány {count} záložky}many{Bylo smazáno {count} záložky}other{Bylo smazáno {count} záložek}}</translation>
 <translation id="5972844218283131174">Zrušit výběr všech</translation>
@@ -1415,6 +1419,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6452534462676960500">Nová aktivita</translation>
 <translation id="6459411599807878608">Podrobnosti jsou skryty</translation>
 <translation id="646394917185284261">Soubory</translation>
+<translation id="6472069383518492189">Tady najdete své stažené soubory</translation>
 <translation id="6476253015009698798">Sledování ceny pro tuto stránku není k dispozici.</translation>
 <translation id="6476284679642588870">Správa platebních metod</translation>
 <translation id="6476800141292307438">Stránka se překládá do jazyka <ph name="LANGUAGE" />. Možnosti jsou k dispozici u dolního okraje obrazovky.</translation>
@@ -1460,6 +1465,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6627583120233659107">Upravit složku</translation>
 <translation id="6629759408545977279">Od: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Vaše organizace vypnula anonymní režim</translation>
+<translation id="6637478299472506933">Stažení se nezdařilo</translation>
 <translation id="6638511529934826365">Přiblížit text…</translation>
 <translation id="6640268266988685324">Otevřená karta</translation>
 <translation id="6641465290890659327">Sdílejte kopii svého hesla</translation>
@@ -1582,6 +1588,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7102005569666697658">Stahování… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Nabídka → Nastavení → Platební metody</translation>
 <translation id="7108338896283013870">Skrýt</translation>
+<translation id="7127922377013221748">Skrýt lištu</translation>
 <translation id="7128693485119315539">Vaše organizace může potřebovat vidět a spravovat údaje o prohlížení spojené s vaším spravovaným účtem, jako jsou historie prohlížení a hesla.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera je nedostupná</translation>

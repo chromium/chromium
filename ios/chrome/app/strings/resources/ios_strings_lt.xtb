@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Atidarykite „Slaptažodžiai“</translation>
 <translation id="1430915738399379752">Spausdinti</translation>
 <translation id="1433478348197382180">Skaitymo režimas</translation>
+<translation id="1435271730600332883">Atidarykite skiltį „Automatinis pildymas ir slaptažodžiai“</translation>
 <translation id="1436671784520050284">Tęsti sąranką</translation>
 <translation id="143681031165817424">Adresas išsaugotas tik šiame įrenginyje</translation>
 <translation id="1445276840641906250">Visi skirtukai vienoje naršyklėje</translation>
@@ -950,6 +951,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4749529195026091676">{count,plural, =1{Importuota {count} kortelė}one{Importuota {count} kortelė}few{Importuotos {count} kortelės}many{Importuota {count} kortelės}other{Importuota {count} kortelių}}</translation>
 <translation id="4751645464639803239">Naujas inkognito skirtukas</translation>
 <translation id="4752348350801431746">Išjunkite Saugos patikros pranešimus…</translation>
+<translation id="4759238208242260848">Atsisiuntimai</translation>
 <translation id="4764612367328936189">Organizacijoje leidžiama prisijungti tik naudojant tam tikras paskyras. Neleidžiamos paskyros yra paslėptos. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">„Discover“ ir stebėjimas</translation>
 <translation id="4769198578611055647">Padeda pasiekti išsaugotus prieigos raktus bet kuriame įrenginyje</translation>
@@ -1271,6 +1273,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5956112131836209882">Skirtukų grupės skirtukas. <ph name="TAB_INDEX_IN_GROUP" /> iš <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Ieškoti naudojant „<ph name="SEARCH_PROVIDER" />“</translation>
 <translation id="5963939892571022323">Nepavyko sukurti nuorodos į paryškintą tekstą.</translation>
+<translation id="5968400720580217226">DI režimas</translation>
 <translation id="5971459446352190251">QR kodo paieška</translation>
 <translation id="5971872012779224351">{count,plural, =1{Ištrinta 1 žymė}one{Ištrinta {count} žymė}few{Ištrintos {count} žymės}many{Ištrinta {count} žymės}other{Ištrinta {count} žymių}}</translation>
 <translation id="5972844218283131174">Panaikinti visus pasirinkimus</translation>
@@ -1462,6 +1465,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6627583120233659107">Redaguoti aplanką</translation>
 <translation id="6629759408545977279">Iš: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Jūsų organizacija išjungė inkognito režimą</translation>
+<translation id="6637478299472506933">Atsisiun. įv. klaida</translation>
 <translation id="6638511529934826365">Keisti teksto mastelį…</translation>
 <translation id="6640268266988685324">Atidarytas skirtukas</translation>
 <translation id="6641465290890659327">Slaptažodžio kopijos bendrinimas</translation>
@@ -1584,6 +1588,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7102005569666697658">Atsisiunčiama… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meniu → „Nustatymai“ → „Mokėjimo metodai“</translation>
 <translation id="7108338896283013870">Slėpti</translation>
+<translation id="7127922377013221748">Slėpti įrankių juostą</translation>
 <translation id="7128693485119315539">Organizacijai gali reikėti peržiūrėti ir tvarkyti su valdoma paskyra susijusius naršymo duomenis, pvz., naršymo istoriją ir slaptažodžius.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Fotoaparatas nepasiekiamas</translation>

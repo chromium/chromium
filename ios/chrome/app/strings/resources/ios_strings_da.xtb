@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Åbn Adgangskoder</translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1433478348197382180">Læsetilstand</translation>
+<translation id="1435271730600332883">Åbn Autofyld og adgangskoder</translation>
 <translation id="1436671784520050284">Fortsæt konfiguration</translation>
 <translation id="143681031165817424">Adressen er kun gemt på denne enhed</translation>
 <translation id="1445276840641906250">Alle dine faner i én browser</translation>
@@ -833,6 +834,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4286718549648564014">Adressen er flyttet til din konto: <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Markér som læst</translation>
 <translation id="428768789042547925">Nyheder</translation>
+<translation id="428858055663163046">Du kan tilgå dine downloadede filer her, når de er tilgængelige</translation>
 <translation id="429074084062258019">{count,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
 <translation id="4302061870579014542">Vælg placering</translation>
 <translation id="4304713468139749426">Adgangs­kode­admin­istrator</translation>
@@ -949,6 +951,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4749529195026091676">{count,plural, =1{{count} kort blev importeret}one{{count} kort blev importeret}other{{count} kort blev importeret}}</translation>
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4752348350801431746">Deaktiver notifikationer om Sikkerhedstjek…</translation>
+<translation id="4759238208242260848">Downloads</translation>
 <translation id="4764612367328936189">Din organisation tillader kun login med bestemte konti. Konti, der ikke tillades, skjules. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover og Følger</translation>
 <translation id="4769198578611055647">Hjælper dig med at tilgå gemte adgangsnøgler på enhver enhed</translation>
@@ -1270,6 +1273,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5956112131836209882">Fanen Fanegruppe. <ph name="TAB_INDEX_IN_GROUP" /> af <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Søg med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Der kan ikke oprettes et link til fremhævningen.</translation>
+<translation id="5968400720580217226">AI-tilstand</translation>
 <translation id="5971459446352190251">Søgning efter QR-kode</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bogmærke er slettet}one{{count} bogmærke er slettet}other{{count} bogmærker er slettet}}</translation>
 <translation id="5972844218283131174">Fravælg alle</translation>
@@ -1415,6 +1419,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6452534462676960500">Ny aktivitet</translation>
 <translation id="6459411599807878608">Oplysningerne er skjult</translation>
 <translation id="646394917185284261">Filer</translation>
+<translation id="6472069383518492189">Her finder du dine downloads</translation>
 <translation id="6476253015009698798">Prissporing er ikke tilgængelig for denne side.</translation>
 <translation id="6476284679642588870">Administrer betalingsmetoder</translation>
 <translation id="6476800141292307438">Siden oversættes til <ph name="LANGUAGE" />. Valgmulighederne findes nederst på skærmen.</translation>
@@ -1460,6 +1465,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6629759408545977279">Fra: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Din organisation har deaktiveret inkognitotilstand</translation>
+<translation id="6637478299472506933">Download mislykkedes</translation>
 <translation id="6638511529934826365">Zoom ind/ud på tekst…</translation>
 <translation id="6640268266988685324">Åben fane</translation>
 <translation id="6641465290890659327">Del en kopi af din adgangskode</translation>
@@ -1582,6 +1588,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7102005569666697658">Downloader… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Indstillinger → Betalingsmetoder</translation>
 <translation id="7108338896283013870">Skjul</translation>
+<translation id="7127922377013221748">Skjul værktøjslinje</translation>
 <translation id="7128693485119315539">Din organisation skal muligvis se og administrere browserdata, der er knyttet til din administrerede konto, f.eks. din browserhistorik og dine adgangskoder.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameraet er ikke tilgængeligt</translation>

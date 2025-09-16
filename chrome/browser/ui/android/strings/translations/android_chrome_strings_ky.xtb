@@ -3,6 +3,7 @@
 <translationbundle lang="ky">
 <translation id="1010283278930414892">Бул түзмөктө сакталган сырсөздөр жок</translation>
 <translation id="1011749477052068769">Бул жерге жылдыруу</translation>
+<translation id="1014083013111769343">Окуу режиминин параметрлери толук экранда ачылды</translation>
 <translation id="1014147525163127655">Бул түзмөктө <ph name="ORIGIN" /> үчүн киргизүүчү ачкычтар жок</translation>
 <translation id="1016498331642356377">Оозеки ыкчам издеңиз. Бул ыкчам баскычты түзөтүү үчүн коё бербей басып туруңуз.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> түзмөгүнө жөнөтүлүүдө...</translation>
@@ -207,6 +208,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="197288927597451399">Сактоо</translation>
 <translation id="1973912524893600642">Дайындарды сактоо</translation>
 <translation id="1974060860693918893">Өркүндөтүлгөн</translation>
+<translation id="1982274314082047220">Окуу режиминин параметрлерин ачуу үчүн өйдө сүрүңүз</translation>
 <translation id="1984087999855033707">телефон номери</translation>
 <translation id="1984417487208496350">Корголбойт (сунушталбайт)</translation>
 <translation id="1986685561493779662">Мындай аталыш мурунтан эле бар</translation>
@@ -428,6 +430,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2992473221983447149">Сүрөттөрдүн сүрөттөмөлөрү</translation>
 <translation id="2996291259634659425">Купуя сөз айкашын түзүү</translation>
 <translation id="2996809686854298943">URL талап кылынат</translation>
+<translation id="3024215143424744261">Окуу режиминин параметрлери жабылды</translation>
 <translation id="3026955690410463085">Шилтеме кошуу</translation>
 <translation id="3027644380269727216">Сайттагы аракеттериңиздин негизинде көрсөтүлөт. Бул параметр күйүк.</translation>
 <translation id="3027950907978057636">Кимден: <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="696447261358045621">Жашыруун режимден чыгуу</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Бөлүшүлгөн өтмөк топторундагы жаңы аракет менен <ph name="TABS_COUNT_ONE" /> өтмөктү көрүү}other{Бөлүшүлгөн өтмөк топторундагы жаңы аракет менен <ph name="TABS_COUNT_MANY" /> өтмөктү көрүү}}</translation>
+<translation id="6971555615916967190">Окуу режиминин параметрлери жарым экранда ачылды</translation>
 <translation id="6971862865055170158">Ырасталбасын</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, жаңы же жаңыртылган өтмөк</translation>
 <translation id="6976811588313110624">Жаңы ыкчам баскыч кошуу.</translation>

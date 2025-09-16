@@ -1067,7 +1067,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="273785062888389088">HVAC a Rheoli Hinsawdd</translation>
 <translation id="2740531572673183784">Iawn</translation>
 <translation id="2742128390261873684">Awtomatiaeth Cartref</translation>
-<translation id="2742870351467570537">Tynnu'r eitemau a ddewisir</translation>
 <translation id="2743512410823092182">Adnoddau ac Offer DJ</translation>
 <translation id="2743934314332613923">Diweddaru'r drwydded yrru?</translation>
 <translation id="2759299890026163685">Sicrhewch fod gennych gysylltiad rhyngrwyd sefydlog cyn rhoi cynnig arall arni</translation>
@@ -1780,6 +1779,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3941630233824954464">Galluogi ail-ddilysu gorfodol</translation>
 <translation id="3942048175062210325">Rhowch gynnig ar agor eich ffeiliau eto</translation>
 <translation id="3943857333388298514">Gludo</translation>
+<translation id="3945937463338223066">Rheoli dyfeisiau dilysu o fath <ph name="READERNAME" /> a chardiau clyfar sydd ar gael iddynt</translation>
 <translation id="3946209740501886391">Gofyn ar y wefan hon bob amser</translation>
 <translation id="3948588869002647271">Mae'r ap hwn ar goll neu wedi'i ddifrodi</translation>
 <translation id="3949297482798028668">Mae gludo'r cynnwys hwn yma wedi'i rwystro gan eich gweinyddwr.</translation>
@@ -2677,7 +2677,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5423269318075950257">Dilyn y Pris</translation>
 <translation id="5425082381151187189">Addurniadau Cartref a Mewnol</translation>
 <translation id="5426179911063097041">Mae <ph name="SITE" /> eisiau anfon hysbysiadau atoch</translation>
-<translation id="5430298929874300616">Tynnu'r nod tudalen</translation>
 <translation id="5431318178759467895">Lliw</translation>
 <translation id="5433756542371550806">Amrywiadau Llinell Orchymyn</translation>
 <translation id="5434798570900738152"><ph name="BEGIN_EMPHASIS" />Ni fydd<ph name="END_EMPHASIS" /> Chromium yn cadw:
@@ -2875,6 +2874,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5750869797196646528">Olrhain dwylo</translation>
 <translation id="5752327398324808817">Rhowch air neu ddau</translation>
 <translation id="5752519522101347518">Wrthi'n llwytho gwefan dilysu banc</translation>
+<translation id="5753570386948603678">Dileu o hanes</translation>
 <translation id="5759751709240058861">Defnyddio a symud eich camera</translation>
 <translation id="5763042198335101085">Rhowch gyfeiriad e-bost dilys</translation>
 <translation id="5764725887548570807">Fformat tarddiad annilys.</translation>
@@ -3091,7 +3091,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6124058285696691147">Lawrlwytho'r atodiad</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Amlen Chinese #2</translation>
-<translation id="6127379762771434464">Tynnwyd eitem</translation>
 <translation id="6131824478727057281">lleoliad</translation>
 <translation id="6133320744616005677">Parhau i ganiatáu</translation>
 <translation id="6133984428121856852">Mae'r estyniad ffeil yn wag neu wedi ei gamffurfio.</translation>
@@ -3106,7 +3105,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6151417162996330722">Mae gan dystysgrif y gweinydd gyfnod dilysrwydd sy'n rhy hir.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> o fodfeddi (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Rhedeg a Cherdded</translation>
-<translation id="6157754950574419155">Tynnu pob un o hanes</translation>
 <translation id="6157877588268064908">I weld dulliau anfon a gofynion, dewiswch gyfeiriad</translation>
 <translation id="6159554577634054750">Rheoli Plâu</translation>
 <translation id="6159908896951210943">Ffurfiol</translation>

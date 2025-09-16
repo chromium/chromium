@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Отворете Passwords</translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1433478348197382180">Режим на читање</translation>
+<translation id="1435271730600332883">Отворете AutoFill &amp; Passwords</translation>
 <translation id="1436671784520050284">Продолжи со поставувањето</translation>
 <translation id="143681031165817424">Адресата е зачувана само на овој уред</translation>
 <translation id="1445276840641906250">Сите ваши картички во еден прелистувач</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">Адресата е преместена во вашата сметка <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Означи како прочитано</translation>
 <translation id="428768789042547925">Што има ново</translation>
+<translation id="428858055663163046">Кога ќе бидат достапни, може да пристапувате до преземените датотеките тука</translation>
 <translation id="429074084062258019">{count,plural, =1{Додајте картичка во групата}one{Додајте картички во групата}other{Додајте картички во групата}}</translation>
 <translation id="4302061870579014542">Поставете положба</translation>
 <translation id="4304713468139749426">Управник со лозинки</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{Увезена е {count} картичка}one{Увезени се {count} картичка}other{Увезени се {count} картички}}</translation>
 <translation id="4751645464639803239">Нова инкогнито картичка</translation>
 <translation id="4752348350801431746">Исклучете ги известувањата за „Безбедносна проверка“…</translation>
+<translation id="4759238208242260848">Преземања</translation>
 <translation id="4764612367328936189">Вашата организација ви дозволува да се најавите само со одредени сметки. Сметките што не се дозволени се скриени. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Откриј и следи</translation>
 <translation id="4769198578611055647">Ви помага да пристапувате до зачуваните криптографски клучеви на секој уред</translation>
@@ -1270,6 +1273,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5956112131836209882">Картичка од група картички. <ph name="TAB_INDEX_IN_GROUP" /> од <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Пребарување со <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не може да се создаде линк до нагласената ставка.</translation>
+<translation id="5968400720580217226">AI-режим</translation>
 <translation id="5971459446352190251">Пребарување QR-кодови</translation>
 <translation id="5971872012779224351">{count,plural, =1{Избришан е 1 обележувач}one{Избришани се {count} обележувач}other{Избришани се {count} обележувачи}}</translation>
 <translation id="5972844218283131174">Поништи го изборот на сите</translation>
@@ -1415,6 +1419,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6452534462676960500">Нова активност</translation>
 <translation id="6459411599807878608">Деталите се скриени</translation>
 <translation id="646394917185284261">Датотеки</translation>
+<translation id="6472069383518492189">Вашите преземања ќе ги најдете тука</translation>
 <translation id="6476253015009698798">Следењето цени не е достапно за страницава.</translation>
 <translation id="6476284679642588870">Управувајте со начините на плаќање</translation>
 <translation id="6476800141292307438">Страницата се преведува на <ph name="LANGUAGE" />. Достапни се опции на дното на екранот.</translation>
@@ -1460,6 +1465,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6627583120233659107">Уредувај папка</translation>
 <translation id="6629759408545977279">Од: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Вашата организација го исклучи режимот „Инкогнито“</translation>
+<translation id="6637478299472506933">Преземањето не успеа</translation>
 <translation id="6638511529934826365">Зумирај текст…</translation>
 <translation id="6640268266988685324">Отворена картичка</translation>
 <translation id="6641465290890659327">Споделете копија од вашата лозинка</translation>

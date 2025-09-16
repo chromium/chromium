@@ -198,6 +198,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Shiko fotografitë dhe mediat e telefonit tënd</translation>
 <translation id="1129850422003387628">Menaxho aplikacionet</translation>
+<translation id="1130116586186908674">Krijo pamjen e ndarë</translation>
 <translation id="1130430615924359526">{0,plural, =1{Mbyll dritaren e fshehtë}other{Mbyll dritaret e fshehta (# dritare)}}</translation>
 <translation id="113050636487300043">Zgjidh një emër dhe temë ngjyre për të bërë dallimin mes profileve</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - pjesë e grupit <ph name="GROUP_NAME" /></translation>
@@ -471,6 +472,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1307431692088049276">Mos më pyet përsëri</translation>
 <translation id="130744661532298792">Për t'u siguruar që mund t'i përdorësh gjithmonë fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="1307559529304613120">Mos! Sistemi nuk arriti të ruante kodin afatgjatë të qasjes së API-së për këtë pajisje.</translation>
+<translation id="1311092170520822848">Ky sajt po kontrollon lexuesit e kartave inteligjente të lidhur me pajisjen tënde dhe me gjasë kartat inteligjente që disponohen për lexuesit</translation>
 <translation id="131112695174432497">Të dhënat që ndikojnë në personalizimin e reklamave do të fshihen</translation>
 <translation id="1311294419381837540">Po transmeton një skedë. Mund ta vendosësh në pauzë ose ta ndalosh transmetimin në çdo kohë.</translation>
 <translation id="131188242279372879">Zbulo mbrojtjen e përmirësuar për të marrë nivelin më të lartë të sigurisë të Chrome për shkarkimet</translation>
@@ -732,7 +734,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1500297251995790841">Pajisje e panjohur [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Mëso më shumë rreth aplikacioneve të pambështetura të Chrome</translation>
 <translation id="1501480321619201731">Fshi grupin</translation>
-<translation id="1503392482221435031">Dërgon automatikisht te Google statistikat e përdorimit. Mund t'i aktivizosh ose çaktivizosh raportet e ndërprerjeve aksidentale te cilësimet e pajisjes sate.</translation>
 <translation id="1503556098270577657">U identifikove në <ph name="USER_EMAIL" /> duke përdorur telefonin tënd Android</translation>
 <translation id="150411034776756821">Hiq <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Gozhdo pamjen e ndarë</translation>
@@ -2096,6 +2097,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2431027948063157455">"Asistenti i Google" nuk ishte në gjendje të ngarkohej, kontrollo lidhjen e rrjetit provo sërish.</translation>
 <translation id="243179355394256322">Organizata jote e kufizon regjistrimin e pajisjes vetëm për përdoruesit e autorizuar. Ky përdorues nuk është i autorizuar për të regjistruar pajisje. Sigurohu që përdoruesi të ketë privilegjin e administratorit "Regjistro harduerin e Google Meet" në seksionin "Përdoruesit" të panelit të administratorit.</translation>
 <translation id="243275146591958220">Anulo shkarkimin</translation>
+<translation id="2433237965825924228">Aplikacionet e izoluara të uebit kontrollojnë pajisjet e vërtetimit dhe kartat inteligjente të qasshme për to. Kartat inteligjente zakonisht përfshijnë identifikues që përdoren për të të vërtetuar.</translation>
 <translation id="2433452467737464329">Shto një parametër pyetjeje në URL për të rifreskuar automatikisht faqen: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Pamja</translation>
 <translation id="2433836460518180625">Shkyç vetëm pajisjen</translation>
@@ -3017,7 +3019,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3048589239114571785">Luaj (k)</translation>
 <translation id="3048742847101793553">Organizata jote e bllokoi këtë skedar sepse skanimi dështoi.</translation>
 <translation id="3048917188684939573">Regjistri i transmetimit dhe i pajisjes</translation>
-<translation id="3049525403650329038">Ndaj përmbajtjen e faqes me Gemini për të marrë përgjigje më të përshtatshme. Të dhënat e tua nuk përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="3051250416341590778">Madhësia e ekranit</translation>
 <translation id="3053013834507634016">Përdorimi i çelësit të certifikatës</translation>
 <translation id="3053273573829329829">Aktivizo kodin PIN të përdoruesit</translation>
@@ -3510,6 +3511,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3429174588714165399">Krijo një shkurtore për te kjo faqe</translation>
 <translation id="3429271624041785769">Gjuhët e përmbajtjes së uebit</translation>
 <translation id="3429275422858276529">Shënoje këtë faqe për ta gjetur me lehtësi më vonë</translation>
+<translation id="343084100869297747">Aplikacionet e izoluara të uebit ndjekin automatikisht këtë cilësim</translation>
 <translation id="3431530007831146102">Përdor lëvizjet e kokës për të kontrolluar kursorin e miut</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> nemorie e liruar</translation>
 <translation id="3432762828853624962">Punëtorët e përbashkët</translation>
@@ -7905,7 +7907,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6525767484449074555">Kliko tek “Instalo”</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6527574156657772563">Nuk ofrohen pajisje. Shto "Llogarinë tënde të Google" në telefonin tënd për ta lidhur atë me këtë <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Historiku i Chrome</translation>
 <translation id="6530030995840538405">Imazhi i gjeneruar <ph name="INDEX" /> nga "<ph name="SUBJECT" />"</translation>
 <translation id="6530186581263215931">Këto cilësime janë të detyruara nga administratori</translation>
 <translation id="6530267432324197764">Profili menaxhohet nga <ph name="MANAGER" /></translation>
@@ -8874,6 +8875,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7201535955609308429">Prit ndërkohë që verifikimi është në progres</translation>
 <translation id="7202337678781136582">Skano kodin QR me telefonin tënd Android</translation>
 <translation id="7203150201908454328">I zgjeruar</translation>
+<translation id="7206252555702853828">Lexuesit e kartave inteligjente po kontrollohen</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Dil nga faqja}other{Dil nga faqet}}</translation>
 <translation id="7207457272187520234">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Aktualisht kjo pajisje po dërgon automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky cilësim zbatohet nga zotëruesi. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google".</translation>
 <translation id="7207631048330366454">Kërko për aplikacione</translation>
@@ -11635,6 +11637,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9081543426177426948">Sajtet që viziton nuk ruhen në modalitetin "e fshehtë"</translation>
 <translation id="9082750838489080452">Aplikacioni: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Hape si dritare</translation>
+<translation id="9084383457260170045">Aplikacionet e izoluara të uebit mund të kërkojnë që të kontrollojnë lexuesit e kartave inteligjente</translation>
 <translation id="9085256200913095638">Dupliko skedën e zgjedhur</translation>
 <translation id="9085446486797400519">Qasja te kamera</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> nuk është zgjedhur. Shtyp "Kërko" plus "Hapësirë" për ta zgjedhur.</translation>
@@ -11834,6 +11837,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Për ta menaxhuar atë, hap "Shtesat"}other{Për t'i menaxhuar ato, hap "Shtesat"}}</translation>
 <translation id="924818813611903184">Menaxho gjuhët te cilësimet e ChromeOS</translation>
 <translation id="925575170771547168">Kjo do të fshijë <ph name="TOTAL_USAGE" /> të dhëna të ruajtura nga sajtet</translation>
+<translation id="927864230077808465">Aplikacionet e izoluara të uebit nuk mund të kontrollojnë lexuesit e kartave inteligjente</translation>
 <translation id="930268624053534560">Stampimet kohore të detajuara</translation>
 <translation id="930551443325541578">Përsërit tastet dhe shenjat e theksimit</translation>
 <translation id="930893132043726269">Aktualisht në roaming</translation>

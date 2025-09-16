@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">سیستم گرمایش، تهویه مطبوع، و کنترل هوا</translation>
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2742128390261873684">خودکارسازی خانه</translation>
-<translation id="2742870351467570537">حذف موارد انتخابی</translation>
 <translation id="2743512410823092182">منابع و تجهیزات دی‌جِی</translation>
 <translation id="2743934314332613923">گواهینامه رانندگی به‌روز شود؟</translation>
 <translation id="2759299890026163685">پیش‌از امتحان مجدد، مطمئن شوید اتصال اینترنت پایداری دارید</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">فعال‌سازی اصالت‌سنجی مجدد اجباری</translation>
 <translation id="3942048175062210325">فایل‌ها را دوباره باز کنید</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
+<translation id="3945937463338223066">دستگاه‌های اصالت‌سنجی نوع <ph name="READERNAME" /> و کارت‌های هوشمند دردسترس آن‌ها را کنترل کند</translation>
 <translation id="3946209740501886391">در این سایت، همیشه سؤال شود</translation>
 <translation id="3948588869002647271">این برنامه وجود ندارد یا آسیب دیده است</translation>
 <translation id="3949297482798028668">سرپرستتان جای‌گذاری این محتوا در اینجا را مسدود کرده است.</translation>
@@ -2677,7 +2677,6 @@
 <translation id="5423269318075950257">پیگیری قیمت</translation>
 <translation id="5425082381151187189">دکوراسیون داخلی و خانه</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> می‌خواهد برایتان اعلان  ارسال کند</translation>
-<translation id="5430298929874300616">حذف نشانک</translation>
 <translation id="5431318178759467895">رنگ</translation>
 <translation id="5433756542371550806">گونه‌های خط فرمان</translation>
 <translation id="5434798570900738152">‏Chromium <ph name="BEGIN_EMPHASIS" />این‌ها را ذخیره نخواهد کرد<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@
 <translation id="5750869797196646528">ردیابی دست</translation>
 <translation id="5752327398324808817">یک یا دو کلمه وارد کنید</translation>
 <translation id="5752519522101347518">درحال بار کردن وب‌سایت درستی‌سنجی بانک</translation>
+<translation id="5753570386948603678">حذف از سابقه</translation>
 <translation id="5759751709240058861">استفاده از دوربین و حرکت دادن آن</translation>
 <translation id="5763042198335101085">نشانی ایمیل معتبری وارد کنید</translation>
 <translation id="5764725887548570807">قالب مبدأ نامعتبر است.</translation>
@@ -3091,7 +3091,6 @@
 <translation id="6124058285696691147">بارگیری پیوست</translation>
 <translation id="6124432979022149706">‏رابط‌های Chrome Enterprise</translation>
 <translation id="6126565365696310362">پاکت چینی شماره ۲</translation>
-<translation id="6127379762771434464">مورد برداشته شد</translation>
 <translation id="6131824478727057281">مکان</translation>
 <translation id="6133320744616005677">دسترسی ادامه یابد</translation>
 <translation id="6133984428121856852">پسوند فایل خالی یا در قالب نادرست است.</translation>
@@ -3106,7 +3105,6 @@
 <translation id="6151417162996330722">دوره اعتبار گواهینامه سرور بسیار طولانی است.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> اینچ (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">دویدن و پیاده‌روی</translation>
-<translation id="6157754950574419155">حذف کردن همه از سابقه</translation>
 <translation id="6157877588268064908">برای دیدن روش‌های ارسال و شرایط موردنیاز، یک نشانی انتخاب کنید</translation>
 <translation id="6159554577634054750">کنترل آفات</translation>
 <translation id="6159908896951210943">رسمی</translation>
@@ -3793,6 +3791,7 @@
 <translation id="7292031607255951991">نام گیرنده</translation>
 <translation id="7298195798382681320">توصیه می‌شود</translation>
 <translation id="7299471494012161875">لوازم جانبی نمایشگر متصل‌شده</translation>
+<translation id="7299721129597238157">حذف نشانک</translation>
 <translation id="7299769361777046949">‏کارت‌های وفاداری را در «کیف پول Google» مدیریت کنید</translation>
 <translation id="7304030187361489308">بالا</translation>
 <translation id="7304562222803846232">‏مدیریت تنظیمات حریم خصوصی «حساب Google»</translation>

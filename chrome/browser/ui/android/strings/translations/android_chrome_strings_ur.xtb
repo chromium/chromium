@@ -3,6 +3,7 @@
 <translationbundle lang="ur">
 <translation id="1010283278930414892">اس آلہ پر کوئی محفوظ کردہ پاس ورڈ نہیں ہے</translation>
 <translation id="1011749477052068769">یہاں منتقل کریں</translation>
+<translation id="1014083013111769343">ریڈنگ موڈ کی ترجیحات پوری اسکرین پر کھلی ہیں</translation>
 <translation id="1014147525163127655">اس آلے پر <ph name="ORIGIN" /> کے لیے کوئی پاس کیز نہیں ہیں</translation>
 <translation id="1016498331642356377">فوری طور پر اپنی آواز سے تلاش کریں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> پر بھیجا جا رہا ہے…</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">رکھیں</translation>
 <translation id="1973912524893600642">ڈیٹا باقی رکھیں</translation>
 <translation id="1974060860693918893">جدید ترین</translation>
+<translation id="1982274314082047220">ریڈنگ موڈ، ترجیحات کے لیے اوپر سوائپ کریں</translation>
 <translation id="1984087999855033707">فون نمبر</translation>
 <translation id="1984417487208496350">کوئی تحفظ نہیں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="1986685561493779662">نام پہلے سے موجود ہے</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">تصویر کی تفصیلات</translation>
 <translation id="2996291259634659425">پاس فریز بنائیں</translation>
 <translation id="2996809686854298943">‏URL درکار ہے</translation>
+<translation id="3024215143424744261">ریڈنگ موڈ کی ترجیحات بند کر دی گئیں</translation>
 <translation id="3026955690410463085">لنک شامل کریں</translation>
 <translation id="3027644380269727216">سائٹ پر آپ کی سرگرمی کی بنیاد پر۔ یہ ترتیب آن ہے۔</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> سے</translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">پوشیدگی وضع ترک کریں</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{اشتراک کردہ ٹیب گروپس میں نئی سرگرمی کے ساتھ <ph name="TABS_COUNT_ONE" /> ٹیب دیکھیں}other{اشتراک کردہ ٹیب گروپس میں نئی سرگرمی کے ساتھ <ph name="TABS_COUNT_MANY" /> ٹیبز دیکھیں}}</translation>
+<translation id="6971555615916967190">ریڈنگ موڈ کی ترجیحات نصف اسکرین پر کھلی ہیں</translation>
 <translation id="6971862865055170158">منظوری نہ دیں</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />، نیا یا اپ ڈیٹ کردہ ٹیب</translation>
 <translation id="6976811588313110624">نیا شارٹ کٹ شامل کریں۔</translation>

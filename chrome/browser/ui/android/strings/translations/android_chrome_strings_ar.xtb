@@ -3,6 +3,7 @@
 <translationbundle lang="ar">
 <translation id="1010283278930414892">ما مِن كلمات مرور محفوظة على هذا الجهاز</translation>
 <translation id="1011749477052068769">النقل إلى هنا</translation>
+<translation id="1014083013111769343">تم فتح الإعدادات المفضّلة لـ "وضع القراءة" بطول الشاشة</translation>
 <translation id="1014147525163127655">ما مِن مفاتيح مرور محفوظة على هذا الجهاز لـ "<ph name="ORIGIN" />".</translation>
 <translation id="1016498331642356377">يتيح لك هذا الزر إجراء بحث صوتي بسرعة. ولتعديل هذا الاختصار، يُرجى النَّقر مع الاستمرار.</translation>
 <translation id="1028699632127661925">جارٍ الإرسال إلى <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">حفظه</translation>
 <translation id="1973912524893600642">الاحتفاظ بالبيانات</translation>
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
+<translation id="1982274314082047220">يمكنك التمرير سريعًا للأعلى في "وضع القراءة" للاطّلاع على الإعدادات المفضّلة</translation>
 <translation id="1984087999855033707">رقم الهاتف</translation>
 <translation id="1984417487208496350">بلا حماية (غير مُستحسَن)</translation>
 <translation id="1986685561493779662">الاسم موجود من قبل</translation>
@@ -429,6 +431,7 @@
 <translation id="2992473221983447149">أوصاف الصور</translation>
 <translation id="2996291259634659425">إنشاء عبارة المرور</translation>
 <translation id="2996809686854298943">‏عنوان URL المطلوب</translation>
+<translation id="3024215143424744261">تم إغلاق الإعدادات المفضّلة لـ "وضع القراءة"</translation>
 <translation id="3026955690410463085">تضمين الرابط</translation>
 <translation id="3027644380269727216">تستند الإعلانات المقترَحة من مواقع إلكترونية إلى نشاطك على موقع إلكتروني. هذا الإعداد مفعَّل.</translation>
 <translation id="3027950907978057636">من "<ph name="APP_LABEL" />"</translation>
@@ -1312,6 +1315,7 @@
 <translation id="696447261358045621">مغادرة "وضع التصفُّح المتخفي"</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{الاطّلاع على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب المشتركة}zero{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامة تبويب تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب المشتركة}two{الاطّلاع على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) مع نشاط جديد في مجموعات علامات التبويب المشتركة}few{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامات تبويب مع نشاط جديد في مجموعات علامات التبويب المشتركة}many{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامة تبويب تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب المشتركة}other{الاطّلاع على <ph name="TABS_COUNT_MANY" /> علامة تبويب مع نشاط جديد في مجموعات علامات التبويب المشتركة}}</translation>
+<translation id="6971555615916967190">تم فتح الإعدادات المفضّلة لـ "وضع القراءة" في نصف الشاشة</translation>
 <translation id="6971862865055170158">عدم الموافقة</translation>
 <translation id="6976223255612495095">‫"<ph name="TAB_TITLE" />": علامة تبويب جديدة أو تمّ تعديلها</translation>
 <translation id="6976811588313110624">إضافة اختصار جديد.</translation>

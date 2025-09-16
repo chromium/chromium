@@ -1067,7 +1067,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="273785062888389088">HVAC y climatización</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2742128390261873684">Automatización del hogar</translation>
-<translation id="2742870351467570537">Eliminar elementos seleccionados</translation>
 <translation id="2743512410823092182">Recursos y equipos para DJ</translation>
 <translation id="2743934314332613923">¿Quieres actualizar la licencia de conducir?</translation>
 <translation id="2759299890026163685">Asegúrate de tener una conexión a Internet estable antes de volver a intentarlo</translation>
@@ -1781,6 +1780,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3941630233824954464">Habilitar la reautenticación obligatoria</translation>
 <translation id="3942048175062210325">Intenta volver a abrir tus archivos</translation>
 <translation id="3943857333388298514">Pegar</translation>
+<translation id="3945937463338223066">Controla los dispositivos de autenticación de tipo <ph name="READERNAME" /> y las tarjetas inteligentes a las que tienen acceso</translation>
 <translation id="3946209740501886391">Preguntar siempre en este sitio</translation>
 <translation id="3948588869002647271">Esta aplicación está dañada o no está instalada</translation>
 <translation id="3949297482798028668">Tu administrador no permite pegar este contenido aquí.</translation>
@@ -2678,7 +2678,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5423269318075950257">Seguimiento de precios</translation>
 <translation id="5425082381151187189">Hogar y decoración de interiores</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quiere enviarte notificaciones</translation>
-<translation id="5430298929874300616">Eliminar marcador</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="5433756542371550806">Variaciones en la línea de comandos</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
@@ -2876,6 +2875,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5750869797196646528">Seguimiento de manos</translation>
 <translation id="5752327398324808817">Ingresa una o dos palabras</translation>
 <translation id="5752519522101347518">Cargando el sitio web de verificación bancaria</translation>
+<translation id="5753570386948603678">Borrar del historial</translation>
 <translation id="5759751709240058861">Usar y mover la cámara</translation>
 <translation id="5763042198335101085">Escribe una dirección de correo electrónico válida</translation>
 <translation id="5764725887548570807">El formato de origen no es válido.</translation>
@@ -3092,7 +3092,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6124058285696691147">Descargar el archivo adjunto</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
 <translation id="6126565365696310362">Sobre chino n.º 2</translation>
-<translation id="6127379762771434464">Se eliminó el elemento</translation>
 <translation id="6131824478727057281">ubicación</translation>
 <translation id="6133320744616005677">Seguir permitiendo</translation>
 <translation id="6133984428121856852">La extensión del archivo está vacía o es incorrecta.</translation>
@@ -3107,7 +3106,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6151417162996330722">El certificado de servidor tiene un período de validez demasiado extenso.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> pulgadas (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Correr y caminar</translation>
-<translation id="6157754950574419155">Quitar todo del historial</translation>
 <translation id="6157877588268064908">Para ver los requisitos y métodos de envío, selecciona una dirección</translation>
 <translation id="6159554577634054750">Control de plagas</translation>
 <translation id="6159908896951210943">Formal</translation>
@@ -3794,6 +3792,7 @@ Detalles adicionales:
 <translation id="7292031607255951991">Nombre del destinatario</translation>
 <translation id="7298195798382681320">Recomendado</translation>
 <translation id="7299471494012161875">Periféricos de pantallas conectados</translation>
+<translation id="7299721129597238157">Eliminar marcador</translation>
 <translation id="7299769361777046949">Administrar las tarjetas de lealtad en la Billetera de Google</translation>
 <translation id="7304030187361489308">Alto</translation>
 <translation id="7304562222803846232">Administrar configuración de privacidad de la Cuenta de Google</translation>

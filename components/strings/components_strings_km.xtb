@@ -1070,7 +1070,6 @@
 <translation id="273785062888389088">ការគ្រប់គ្រង​អាកាសធាតុ និង HVAC</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2742128390261873684">ប្រព័ន្ធស្វ័យប្រវត្តិក្នុងផ្ទះ</translation>
-<translation id="2742870351467570537">ដកធាតុដែលបានជ្រើសរើសចេញ</translation>
 <translation id="2743512410823092182">ធនធាន និង​បរិក្ខារ​ឌីជេ</translation>
 <translation id="2743934314332613923">ធ្វើបច្ចុប្បន្នភាព​បណ្ណ​បើកបរ​ឬ?</translation>
 <translation id="2759299890026163685">ត្រូវប្រាកដថា អ្នកមាន​ការតភ្ជាប់​អ៊ីនធឺណិត​ដែលមាន​ស្ថិរភាព មុនពេល​ព្យាយាម​ម្ដងទៀត</translation>
@@ -1783,6 +1782,7 @@
 <translation id="3941630233824954464">បើក​ការផ្ទៀងផ្ទាត់​ឡើងវិញ​ដែលចាំបាច់</translation>
 <translation id="3942048175062210325">សាកល្បងបើក​ឯកសារ​របស់អ្នក​ម្ដងទៀត</translation>
 <translation id="3943857333388298514">បិទភ្ជាប់</translation>
+<translation id="3945937463338223066">គ្រប់គ្រង​ឧបករណ៍​ផ្ទៀងផ្ទាត់​ប្រភេទ <ph name="READERNAME" /> និងកាត​ឆ្លាតវៃដែល​ឧបករណ៍ទាំងនេះ​អាចចូល​ប្រើបាន</translation>
 <translation id="3946209740501886391">សួរជានិច្ចនៅលើគេហទំព័រនេះ</translation>
 <translation id="3948588869002647271">បាត់កម្មវិធីនេះ ឬ​កម្មវិធីនេះខូច</translation>
 <translation id="3949297482798028668">ការដាក់ខ្លឹមសារនេះចូល​នៅទីនេះ​ត្រូវបានទប់ស្កាត់​ដោយអ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
@@ -2681,7 +2681,6 @@
 <translation id="5423269318075950257">តាម​ដាន​តម្លៃ</translation>
 <translation id="5425082381151187189">ការតុបតែង​ផ្ទះ និង​ផ្នែក​ខាងក្នុង</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ចង់​ផ្ញើ​ការជូន​ដំណឹងទៅអ្នក</translation>
-<translation id="5430298929874300616">ដកចំណាំចេញ</translation>
 <translation id="5431318178759467895">ពណ៌</translation>
 <translation id="5433756542371550806">កំណែប្រែនៃឃ្លាបញ្ជា</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />នឹងមិន​រក្សាទុក<ph name="END_EMPHASIS" />៖
@@ -2879,6 +2878,7 @@
 <translation id="5750869797196646528">ការតាមដានដៃ</translation>
 <translation id="5752327398324808817">បញ្ចូល​មួយ ឬ​ពីរពាក្យ</translation>
 <translation id="5752519522101347518">កំពុងផ្ទុកគេហទំព័រផ្ទៀងផ្ទាត់ធនាគារ</translation>
+<translation id="5753570386948603678">លុប​ពីប្រវត្តិ</translation>
 <translation id="5759751709240058861">ប្រើ និងផ្លាស់ទីកាមេរ៉ារបស់អ្នក</translation>
 <translation id="5763042198335101085">បញ្ចូលអាសយដ្ឋានអ៊ីមែលដែលត្រឹមត្រូវ</translation>
 <translation id="5764725887548570807">ទម្រង់​ដើម​មិនត្រឹមត្រូវ​ទេ។</translation>
@@ -3095,7 +3095,6 @@
 <translation id="6124058285696691147">ទាញ​យកឯកសារ​ភ្ជាប់</translation>
 <translation id="6124432979022149706">កម្មវិធីភ្ជាប់ Chrome Enterprise</translation>
 <translation id="6126565365696310362">ស្រោមសំបុត្រចិន #2</translation>
-<translation id="6127379762771434464">ធាតុត្រូវបានយកចេញ</translation>
 <translation id="6131824478727057281">ទីតាំង</translation>
 <translation id="6133320744616005677">បន្តការអនុញ្ញាត</translation>
 <translation id="6133984428121856852">កន្ទុយឯកសារ​ទទេ ឬ​មាន​ទម្រង់​មិន​ត្រឹមត្រូវ។</translation>
@@ -3110,7 +3109,6 @@
 <translation id="6151417162996330722">វិញ្ញាបនបត្រម៉ាស៊ីនមេមានសុពលភាពយូរពេក។</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ការរត់ និងការដើរ</translation>
-<translation id="6157754950574419155">លុបទាំងអស់​ចេញពីប្រវត្តិ</translation>
 <translation id="6157877588268064908">ដើម្បីមើលមធ្យោបាយ និងលក្ខខណ្ឌតម្រូវនៃការដឹកជញ្ជូនតាមប្រៃសណីយ៍ សូមជ្រើសរើសអាសយដ្ឋាន</translation>
 <translation id="6159554577634054750">ការគ្រប់គ្រង​សត្វល្អិត​ចង្រៃ</translation>
 <translation id="6159908896951210943">ផ្លូវការ</translation>
@@ -3796,6 +3794,7 @@
 <translation id="7292031607255951991">ឈ្មោះ​អ្នក​ទទួល</translation>
 <translation id="7298195798382681320">បានណែនាំ</translation>
 <translation id="7299471494012161875">ឧបករណ៍បង្ហាញខាងក្រៅដែលបានភ្ជាប់</translation>
+<translation id="7299721129597238157">លុបចំណាំ</translation>
 <translation id="7299769361777046949">គ្រប់គ្រង​កាតសមាជិក​នៅក្នុង Google Wallet</translation>
 <translation id="7304030187361489308">ខ្ពស់</translation>
 <translation id="7304562222803846232">គ្រប់គ្រង​ការកំណត់​ឯកជនភាព​គណនី Google</translation>

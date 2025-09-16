@@ -171,6 +171,7 @@
 <translation id="3068187312562070417">Outros perfis do Chromium</translation>
 <translation id="3068515742935458733">Ajudar a melhorar o Chromium ao enviar relatórios de falhas e <ph name="UMA_LINK" /> à Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Uma ou mais extensões do Chromium estavam a aceder a 1 dispositivo USB}=1{Uma ou mais extensões do Chromium estão a aceder a 1 dispositivo USB}other{Uma ou mais extensões do Chromium estão a aceder a # dispositivos USB}}</translation>
+<translation id="3095811995836568724">Histórico do Chromium</translation>
 <translation id="3101560983689755071">O seu histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chromium elimina automaticamente os seus interesses todos os meses. Os interesses podem ser atualizados, a menos que os remova.</translation>
 <translation id="3103660991484857065">Houve uma falha no programa de instalação ao descompactar o arquivo. Descarregue novamente o Chromium.</translation>
 <translation id="310459126943037700">Falha ao terminar as tarefas.</translation>

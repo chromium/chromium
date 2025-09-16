@@ -1066,7 +1066,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="273785062888389088">Iqlim texnikasi</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Uyni avtomatlashtirish</translation>
-<translation id="2742870351467570537">Tanlangan elementlarni o‘chirish</translation>
 <translation id="2743512410823092182">DJ resurslari va jihozlari</translation>
 <translation id="2743934314332613923">Haydovchilik guvohnomasi yangilansinmi?</translation>
 <translation id="2759299890026163685">Internet aloqasi barqarorligini tekshirib, qaytadan urining</translation>
@@ -1775,6 +1774,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3941630233824954464">Majburiy qayta autentifikatsiyani yoqish</translation>
 <translation id="3942048175062210325">Fayllarni qaytadan oching</translation>
 <translation id="3943857333388298514">Joylash</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> turidagi autentifikatsiya qurilmalari hamda ularga ulangan smart kartalarga ruxsat berish</translation>
 <translation id="3946209740501886391">Bu saytda har doim so‘ralsin</translation>
 <translation id="3948588869002647271">Bu ilova yoʻq yoki buzilgan</translation>
 <translation id="3949297482798028668">Administrator mazkur kontentni bu yerga joylashni bloklagan.</translation>
@@ -2672,7 +2672,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5423269318075950257">Narxni kuzatish</translation>
 <translation id="5425082381151187189">Uy va ichki bezak</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> sayti bildirishnoma yuborishga ruxsat so‘ramoqda.</translation>
-<translation id="5430298929874300616">Xatcho‘pni o‘chirish</translation>
 <translation id="5431318178759467895">Rang</translation>
 <translation id="5433756542371550806">Buyruqlar qatori variantlari</translation>
 <translation id="5434798570900738152">Chromium quyidagi maʼlumotlarni <ph name="BEGIN_EMPHASIS" />saqlamaydi<ph name="END_EMPHASIS" />:
@@ -2870,6 +2869,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5750869797196646528">Qoʻllar holatini kuzatish</translation>
 <translation id="5752327398324808817">Biror narsa yozing</translation>
 <translation id="5752519522101347518">Bank tekshiruvi sayti yuklanmoqda</translation>
+<translation id="5753570386948603678">Tarixdan oʻchirib tashlash</translation>
 <translation id="5759751709240058861">Kameradan foydalanish va siljitish</translation>
 <translation id="5763042198335101085">Email manzilini xatosiz kiriting</translation>
 <translation id="5764725887548570807">Asl format xato.</translation>
@@ -3086,7 +3086,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6124058285696691147">Biriktirmani yuklab olish</translation>
 <translation id="6124432979022149706">Chrome korporativ konnektorlari</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
-<translation id="6127379762771434464">Havola olib tashlandi</translation>
 <translation id="6131824478727057281">joylashuv</translation>
 <translation id="6133320744616005677">Ruxsat davom etilsin</translation>
 <translation id="6133984428121856852">Fayl kengaytmasi boʻsh yoki xato.</translation>
@@ -3100,7 +3099,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6151417162996330722">Server taqdim qilgan sertifikat yaroqlilik muddati juda uzoq.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> duym (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Yugurish va piyoda yurish</translation>
-<translation id="6157754950574419155">Barchasini tarixdan olib tashlash</translation>
 <translation id="6157877588268064908">Yetkazib berish usuli va talablari bilan tanishish uchun manzilni tanlang</translation>
 <translation id="6159554577634054750">Zararkunandalarga qarshi kurash</translation>
 <translation id="6159908896951210943">Rasmiy</translation>
@@ -3786,6 +3784,7 @@ Batafsil axborot:
 <translation id="7292031607255951991">Oluvchining ismi</translation>
 <translation id="7298195798382681320">Tavsiya etiladi</translation>
 <translation id="7299471494012161875">Ulangan tashqi qurilmalarni chiqarish</translation>
+<translation id="7299721129597238157">Xatcho‘pni o‘chirish</translation>
 <translation id="7299769361777046949">Sodiq mijoz kartalarini Google Wallet orqali boshqarish</translation>
 <translation id="7304030187361489308">Baland</translation>
 <translation id="7304562222803846232">Google hisobi maxfiylik sozlamalarini boshqarish</translation>
@@ -3997,6 +3996,7 @@ Batafsil axborot:
 <translation id="7613889955535752492">Muddati: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali parollaringizni boshqarish uchun avval Tab, keyin esa Enter tugmasini bosing</translation>
 <translation id="7615932826417658001">ID karta kiritish</translation>
+<translation id="7616390733770379387">Variantlar tasodifiy tartibda.</translation>
 <translation id="7616645509853975347">Brauzeringizda administrator tomonidan Chrome korporativ konnektorlari yoqilgan. Bu konnektorlar ayrim axborotlaringizdan foydalana oladi.</translation>
 <translation id="7617825962482469577">Envelope C7/C6</translation>
 <translation id="7618270539713451657">Jangovar yakkakurash</translation>
@@ -4820,6 +4820,7 @@ Batafsil axborot:
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> mahalliy tarmoqdagi istalgan qurilmani topish va unga ulanish uchun ruxsat olmoqchi</translation>
 <translation id="9046864189129893978">Mikrofonlar (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">Birlamchi tizim interntedan qidirish imkonini beradi. Sozlamalarda oʻzgartirish mumkin.</translation>
 <translation id="9048035366624198823">Amallarni (<ph name="ACTION_LIST" />) bajarish uchun <ph name="POLICY_NAME" /> siyosati uchun <ph name="POLICY_VALUE" /> qiymatini belgilang.</translation>
 <translation id="9048662076076074925">24 x 36 in</translation>
 <translation id="9049981332609050619">Siz <ph name="DOMAIN" /> domenini ochmoqchi bo‘ldingiz, lekin server taqdim qilgan sertifikat haqiqiy emas.</translation>

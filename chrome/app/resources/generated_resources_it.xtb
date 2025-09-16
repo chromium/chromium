@@ -472,6 +472,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1307431692088049276">Non ripetere più la domanda</translation>
 <translation id="130744661532298792">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo Account Google</translation>
 <translation id="1307559529304613120">Spiacenti, il sistema non è riuscito a memorizzare il token di accesso all'API a lungo termine per questo dispositivo.</translation>
+<translation id="1311092170520822848">Questo sito sta controllando i lettori di smart card collegati al tuo dispositivo e alle smart card potenzialmente disponibili</translation>
 <translation id="131112695174432497">I dati che influiscono sulla personalizzazione degli annunci vengono eliminati</translation>
 <translation id="1311294419381837540">Stai trasmettendo una scheda. Puoi mettere in pausa o interrompere la trasmissione in qualsiasi momento.</translation>
 <translation id="131188242279372879">Scopri la Protezione avanzata per ottenere il massimo livello di sicurezza di Chrome per i download</translation>
@@ -733,7 +734,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1500297251995790841">Dispositivo sconosciuto [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Scopri di più sulle app di Chrome non supportate</translation>
 <translation id="1501480321619201731">Elimina gruppo</translation>
-<translation id="1503392482221435031">Invia automaticamente statistiche sull'utilizzo a Google. Puoi attivare o disattivare i report sugli arresti anomali nelle impostazioni del dispositivo.</translation>
 <translation id="1503556098270577657">Hai eseguito l'accesso a <ph name="USER_EMAIL" /> usando il tuo smartphone Android</translation>
 <translation id="150411034776756821">Rimuovi <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Fissa visualizzazione divisa</translation>
@@ -2099,6 +2099,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2431027948063157455">Impossibile caricare l'Assistente Google, controlla la connessione di rete e riprova.</translation>
 <translation id="243179355394256322">La tua organizzazione ha limitato la registrazione dei dispositivi ai soli utenti autorizzati. Questo utente non è autorizzato a registrare i dispositivi. Assicurati che l'utente disponga del privilegio di amministratore per Registrazione dell'hardware Google Meet nella sezione Utenti della Console di amministrazione.</translation>
 <translation id="243275146591958220">Annulla download</translation>
+<translation id="2433237965825924228">Le app web isolate controllano i dispositivi di autenticazione e le smart card a cui possono accedere. Le smart card in genere contengono identificatori utilizzati per autenticarti.</translation>
 <translation id="2433452467737464329">Aggiungi un parametro di ricerca nell'URL per aggiornare automaticamente la pagina: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aspetto</translation>
 <translation id="2433836460518180625">Sblocca solo il dispositivo</translation>
@@ -3020,7 +3021,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3048589239114571785">Riproduci (k)</translation>
 <translation id="3048742847101793553">La tua organizzazione ha bloccato questo file perché l'analisi non è riuscita.</translation>
 <translation id="3048917188684939573">Log del dispositivo e della trasmissione</translation>
-<translation id="3049525403650329038">Condividi i contenuti della pagina con Gemini per ricevere risposte più pertinenti. I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="3051250416341590778">Dimensioni display</translation>
 <translation id="3053013834507634016">Uso della chiave del certificato</translation>
 <translation id="3053273573829329829">Attiva PIN utente</translation>
@@ -3515,6 +3515,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3429174588714165399">Crea una scorciatoia per questa pagina</translation>
 <translation id="3429271624041785769">Lingue contenuti web</translation>
 <translation id="3429275422858276529">Aggiungi questa pagina ai preferiti per trovarla facilmente in seguito</translation>
+<translation id="343084100869297747">Le app web isolate seguono automaticamente questa impostazione</translation>
 <translation id="3431530007831146102">Usa i movimenti della testa per controllare il cursore del mouse</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> di spazio liberato</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -7908,7 +7909,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6525767484449074555">Fai clic su "Installa"</translation>
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="6527574156657772563">Nessun dispositivo disponibile. Aggiungi il tuo Account Google allo smartphone per collegarlo a <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Cronologia di Chrome</translation>
 <translation id="6530030995840538405">Immagine generata <ph name="INDEX" /> di <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Queste impostazioni sono applicate dall'amministratore</translation>
 <translation id="6530267432324197764">Profilo gestito da <ph name="MANAGER" /></translation>
@@ -8878,6 +8878,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7201535955609308429">Attendi mentre è in corso la verifica</translation>
 <translation id="7202337678781136582">Scansiona il codice QR con il tuo smartphone Android</translation>
 <translation id="7203150201908454328">Espanso</translation>
+<translation id="7206252555702853828">I tuoi lettori di smart card sono controllati</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Esci dalla pagina}other{Esci dalle pagine}}</translation>
 <translation id="7207457272187520234">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
 <translation id="7207631048330366454">Cerca nelle app</translation>
@@ -11640,6 +11641,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9081543426177426948">I siti che visiti non vengono salvati in modalità di navigazione in incognito</translation>
 <translation id="9082750838489080452">Applicazione: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Apri in una finestra</translation>
+<translation id="9084383457260170045">Le app web isolate possono chiedere di controllare i lettori di smart card</translation>
 <translation id="9085256200913095638">Duplica scheda selezionata</translation>
 <translation id="9085446486797400519">Accesso alla fotocamera</translation>
 <translation id="9085776959277692427">Lingua <ph name="LANGUAGE" /> non selezionata. Premi il tasto per la ricerca e la barra spaziatrice per selezionarla.</translation>
@@ -11839,6 +11841,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Per gestirla, apri le Estensioni}other{Per gestirle, apri le Estensioni}}</translation>
 <translation id="924818813611903184">Gestisci le lingue nelle impostazioni di ChromeOS</translation>
 <translation id="925575170771547168">Questa operazione comporterà l'eliminazione di <ph name="TOTAL_USAGE" /> di dati memorizzati dai siti</translation>
+<translation id="927864230077808465">Le app web isolate non possono controllare i lettori di smart card</translation>
 <translation id="930268624053534560">Timestamp dettagliati</translation>
 <translation id="930551443325541578">Ripeti tasti e accenti</translation>
 <translation id="930893132043726269">Roaming attualmente attivo</translation>

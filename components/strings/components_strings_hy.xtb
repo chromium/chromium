@@ -1071,7 +1071,6 @@
 <translation id="273785062888389088">Օդորակիչներ և կլիմատ-կոնտրոլ</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2742128390261873684">Տան ավտոմատացում</translation>
-<translation id="2742870351467570537">Հեռացնել ընտրված կետերը</translation>
 <translation id="2743512410823092182">Դիջեյական սարքավորումներ</translation>
 <translation id="2743934314332613923">Թարմացնե՞լ վարորդական վկայականը</translation>
 <translation id="2759299890026163685">Նախքան նորից փորձելը, համոզվեք, որ ունեք կայուն ինտերնետ կապ</translation>
@@ -1788,6 +1787,7 @@
 <translation id="3941630233824954464">Միացրեք պարտադիր վերաիսկորոշումը</translation>
 <translation id="3942048175062210325">Փորձեք նորից բացել ֆայլերը</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
+<translation id="3945937463338223066">Կառավարել իսկորոշման <ph name="READERNAME" /> տեսակի սարքերը և դրանց միացած խելացի քարտերը</translation>
 <translation id="3946209740501886391">Միշտ հարցնել այս կայքում</translation>
 <translation id="3948588869002647271">Այս հավելվածը չկա կամ վնասված է</translation>
 <translation id="3949297482798028668">Բովանդակության տեղադրումն այստեղ արգելափակված է ձեր ադմինիստրատորի կողմից։</translation>
@@ -2686,7 +2686,6 @@
 <translation id="5423269318075950257">Հետևեք գներին</translation>
 <translation id="5425082381151187189">Տան կահավորում և ներքին հարդարանք</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> կայքն ուզում է ձեզ ծանուցումներ ուղարկել</translation>
-<translation id="5430298929874300616">Հեռացնել էջանիշը</translation>
 <translation id="5431318178759467895">Գունավոր</translation>
 <translation id="5433756542371550806">Հրամանատողի տարատեսակներ</translation>
 <translation id="5434798570900738152">Chromium-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
@@ -2884,6 +2883,7 @@
 <translation id="5750869797196646528">Ձեռքերի շարժումների հետագծում</translation>
 <translation id="5752327398324808817">Մուտքագրեք մեկ կամ երկու բառ</translation>
 <translation id="5752519522101347518">Բեռնվում է բանկի հաստատման կայքը</translation>
+<translation id="5753570386948603678">Ջնջել պատմությունից</translation>
 <translation id="5759751709240058861">Օգտագործել և տեղաշարժել ձեր տեսախցիկը</translation>
 <translation id="5763042198335101085">Մուտքագրեք վավեր էլ․ հասցե</translation>
 <translation id="5764725887548570807">Աղբյուրի սխալ ձևաչափ։</translation>
@@ -3100,7 +3100,6 @@
 <translation id="6124058285696691147">Ներբեռնել առդիրը</translation>
 <translation id="6124432979022149706">Chrome Enterprise-ի միակցիչներ</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
-<translation id="6127379762771434464">Տարրը հեռացվեց</translation>
 <translation id="6131824478727057281">տեղադրություն</translation>
 <translation id="6133320744616005677">Թույլատրել</translation>
 <translation id="6133984428121856852">Ֆայլի ընդլայնումը նշված չէ կամ սխալ ձևաչափով է։</translation>
@@ -3115,7 +3114,6 @@
 <translation id="6151417162996330722">Սերվերի վկայականը չափազանց երկար վավերականության ժամկետ ունի:</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> դյմ (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Վազք և քայլք</translation>
-<translation id="6157754950574419155">Հեռացնել ամբողջը պատմությունից</translation>
 <translation id="6157877588268064908">Ուղարկման եղանակներն ու պայմանները տեսնելու համար ընտրեք հասցե</translation>
 <translation id="6159554577634054750">Պայքար վնասատուների դեմ</translation>
 <translation id="6159908896951210943">Պաշտոնական</translation>
@@ -3801,6 +3799,7 @@
 <translation id="7292031607255951991">Ստացողի անունը</translation>
 <translation id="7298195798382681320">Հանձնարարելի</translation>
 <translation id="7299471494012161875">Ցույց տալ կցված արտաքին սարքերը</translation>
+<translation id="7299721129597238157">Ջնջել էջանիշը</translation>
 <translation id="7299769361777046949">Կառավարել մշտական հաճախորդի քարտերը Google Wallet-ում</translation>
 <translation id="7304030187361489308">Բարձր</translation>
 <translation id="7304562222803846232">Կառավարել Google հաշվի գաղտնիության կարգավորումները</translation>
@@ -4012,6 +4011,7 @@
 <translation id="7613889955535752492">Գործողության ժամկետը՝ <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում գաղտնաբառերը դիտելու և կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="7615932826417658001">Ավելացրեք նույնականացման քարտ</translation>
+<translation id="7616390733770379387">Սրանք ցուցադրվում են պատահական հերթականությամբ։</translation>
 <translation id="7616645509853975347">Ձեր ադմինիստրատորը միացրել է Chrome Enterprise Connectors-ը ձեր դիտարկիչում։ Այս միակցիչներին հասանելի են ձեզ պատկանող որոշ տվյալներ։</translation>
 <translation id="7617825962482469577">Envelope C7/C6</translation>
 <translation id="7618270539713451657">Մարտարվեստ</translation>
@@ -4835,6 +4835,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> կայքը հայցում է լոկալ ցանցում սարքեր փնտրելու և դրանց միանալու թույլտվություն</translation>
 <translation id="9046864189129893978">Խոսափողներ (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">Ձեր կանխադրված որոնողական համակարգը թույլ է տալիս որոնել համացանցում։ Այն կարող եք կարգավորումներում փոխել։</translation>
 <translation id="9048035366624198823">Այս գործողությունները պահանջում են, որ <ph name="POLICY_NAME" /> կանոնի համար սահմանվի <ph name="POLICY_VALUE" /> արժեքը՝ <ph name="ACTION_LIST" />։</translation>
 <translation id="9048662076076074925">24 x 36 դյույմ</translation>
 <translation id="9049981332609050619">Դուք փորձում էիք մտնել <ph name="DOMAIN" />, սակայն սերվերը սխալ վկայագիր ներկայացրեց:</translation>

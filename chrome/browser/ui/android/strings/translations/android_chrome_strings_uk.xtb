@@ -3,6 +3,7 @@
 <translationbundle lang="uk">
 <translation id="1010283278930414892">На цьому пристрої немає збережених паролів</translation>
 <translation id="1011749477052068769">Перемістити сюди</translation>
+<translation id="1014083013111769343">Параметри режиму читання відкрито на всю висоту</translation>
 <translation id="1014147525163127655">На цьому пристрої немає ключів доступу для веб-сайту <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Швидко шукайте за допомогою голосу. Щоб змінити функцію цієї кнопки, натисніть і втримуйте її.</translation>
 <translation id="1028699632127661925">Надсилання на пристрій "<ph name="DEVICE_NAME" />"…</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Зберегти</translation>
 <translation id="1973912524893600642">Зберігати дані</translation>
 <translation id="1974060860693918893">Розширені</translation>
+<translation id="1982274314082047220">Проведіть пальцем угору, щоб відкрити параметри режиму читання</translation>
 <translation id="1984087999855033707">номер телефону</translation>
 <translation id="1984417487208496350">Захист вимкнено (не рекомендовано)</translation>
 <translation id="1986685561493779662">Ця назва вже існує</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">Описи зображень</translation>
 <translation id="2996291259634659425">Створити парольну фразу</translation>
 <translation id="2996809686854298943">Потрібна URL-адреса</translation>
+<translation id="3024215143424744261">Параметри режиму читання закрито</translation>
 <translation id="3026955690410463085">Додати посилання</translation>
 <translation id="3027644380269727216">На основі ваших дій на сайті. Це налаштування ввімкнено.</translation>
 <translation id="3027950907978057636">З додатка <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">Вимкнути режим анонімного перегляду</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Переглянути <ph name="TABS_COUNT_ONE" /> вкладку з новими діями в спільних групах}one{Переглянути <ph name="TABS_COUNT_MANY" /> вкладку з новими діями в спільних групах}few{Переглянути <ph name="TABS_COUNT_MANY" /> вкладки з новими діями в спільних групах}many{Переглянути <ph name="TABS_COUNT_MANY" /> вкладок із новими діями в спільних групах}other{Переглянути <ph name="TABS_COUNT_MANY" /> вкладки з новими діями в спільних групах}}</translation>
+<translation id="6971555615916967190">Параметри режиму читання відкрито на половину висоти</translation>
 <translation id="6971862865055170158">Не схвалювати</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" /> (нова або оновлена вкладка)</translation>
 <translation id="6976811588313110624">Додати нову комбінацію клавіш.</translation>

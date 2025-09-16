@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Ανοίξτε τους Κωδικούς πρόσβασης</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1433478348197382180">Λειτουργία ανάγνωσης</translation>
+<translation id="1435271730600332883">Άνοιγμα της ενότητας Αυτόματη συμπλήρωση και κωδικοί πρόσβασης</translation>
 <translation id="1436671784520050284">Συνέχιση ρύθμισης</translation>
 <translation id="143681031165817424">Η διεύθυνση αποθηκεύτηκε μόνο σε αυτή τη συσκευή</translation>
 <translation id="1445276840641906250">Όλες οι καρτέλες σας σε ένα πρόγραμμα περιήγησης</translation>
@@ -950,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{Έγινε εισαγωγή {count} κάρτας}other{Έγινε εισαγωγή {count} καρτών}}</translation>
 <translation id="4751645464639803239">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="4752348350801431746">Απενεργοποίηση ειδοποιήσεων Ελέγχου ασφαλείας…</translation>
+<translation id="4759238208242260848">Λήψεις</translation>
 <translation id="4764612367328936189">Ο οργανισμός σας επιτρέπει να συνδέεστε μόνο με ορισμένους λογαριασμούς. Γίνεται απόκρυψη των λογαριασμών που δεν επιτρέπονται. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover και παρακολούθηση</translation>
 <translation id="4769198578611055647">Σας βοηθά να έχετε πρόσβαση σε αποθηκευμένα κλειδιά πρόσβασης σε οποιαδήποτε συσκευή</translation>
@@ -1271,6 +1273,7 @@
 <translation id="5956112131836209882">Καρτέλα ομάδας καρτελών. <ph name="TAB_INDEX_IN_GROUP" /> από <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Αναζήτηση με <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Δεν είναι δυνατή η δημιουργία συνδέσμου προς την επισήμανση.</translation>
+<translation id="5968400720580217226">Λειτουργία AI</translation>
 <translation id="5971459446352190251">Αναζήτηση κωδικού QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 σελιδοδείκτης διαγράφηκε}other{{count} σελιδοδείκτες διαγράφηκαν}}</translation>
 <translation id="5972844218283131174">Αποεπιλογή όλων</translation>
@@ -1463,6 +1466,7 @@
 <translation id="6627583120233659107">Επεξεργασία φακέλου</translation>
 <translation id="6629759408545977279">Από: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Ο οργανισμός σας απενεργοποίησε την κατάσταση ανώνυμης περιήγησης</translation>
+<translation id="6637478299472506933">Αποτυχία λήψης</translation>
 <translation id="6638511529934826365">Εστίαση στο κείμενο…</translation>
 <translation id="6640268266988685324">Άνοιγμα καρτέλας</translation>
 <translation id="6641465290890659327">Κοινοποίηση αντιγράφου του κωδικού πρόσβασής σας</translation>
@@ -1585,6 +1589,7 @@
 <translation id="7102005569666697658">Λήψη… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Μενού → Ρυθμίσεις → Τρόποι πληρωμής</translation>
 <translation id="7108338896283013870">Απόκρυψη</translation>
+<translation id="7127922377013221748">Απόκρυψη της γραμμής εργαλείων</translation>
 <translation id="7128693485119315539">Ο οργανισμός σας μπορεί να χρειάζεται να βλέπει και να διαχειρίζεται δεδομένα περιήγησης που συνδέονται με τον διαχειριζόμενο λογαριασμό σας, όπως το ιστορικό περιήγησης και τους κωδικούς πρόσβασης.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Η κάμερα δεν είναι διαθέσιμη</translation>

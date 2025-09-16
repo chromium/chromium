@@ -834,6 +834,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4286718549648564014">Adresa je premeštena na nalog <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Označi kao pročitano</translation>
 <translation id="428768789042547925">Šta je novo</translation>
+<translation id="428858055663163046">Ovde možete da pristupite preuzetim fajlovima kada budu dostupni</translation>
 <translation id="429074084062258019">{count,plural, =1{Dodaj karticu u grupu}one{Dodaj kartice u grupu}few{Dodaj kartice u grupu}other{Dodaj kartice u grupu}}</translation>
 <translation id="4302061870579014542">Podesi poziciju</translation>
 <translation id="4304713468139749426">Menadžer lozinki</translation>
@@ -950,6 +951,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4749529195026091676">{count,plural, =1{Uvezena je {count} kartica}one{Uvezena je {count} kartica}few{Uvezene su {count} kartice}other{Uvezeno je {count} kartica}}</translation>
 <translation id="4751645464639803239">Nova kartica bez arhiviranja</translation>
 <translation id="4752348350801431746">Isključi obaveštenja Provere bezbednosti…</translation>
+<translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4764612367328936189">Organizacija vam dozvoljava da se prijavite samo pomoću određenih naloga. Nalozi koji nisu dozvoljeni su skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Otkrivanje i praćenje</translation>
 <translation id="4769198578611055647">Pomaže vam da pristupate sačuvanim pristupnim ključevima na bilo kom uređaju</translation>
@@ -1271,6 +1273,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5956112131836209882">Kartica grupe kartica. <ph name="TAB_INDEX_IN_GROUP" /> od <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Pretražite pomoću: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">A link to the highlight can not be created (Pravljenje linka do istaknutog teksta nije uspelo).</translation>
+<translation id="5968400720580217226">Režim veštačke inteligencije</translation>
 <translation id="5971459446352190251">Pretraga QR kodova</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 obeleživač je izbrisan}one{{count} obeleživač je izbrisan}few{{count} obeleživača su izbrisana}other{{count} obeleživača je izbrisano}}</translation>
 <translation id="5972844218283131174">Opozovi sve</translation>
@@ -1416,6 +1419,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6452534462676960500">Nova aktivnost</translation>
 <translation id="6459411599807878608">Detalji su skriveni</translation>
 <translation id="646394917185284261">Fajlovi</translation>
+<translation id="6472069383518492189">Ovde ćete pronaći preuzimanja</translation>
 <translation id="6476253015009698798">Praćenje cena nije dostupno za ovu stranicu.</translation>
 <translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
 <translation id="6476800141292307438">Stranica se prevodi na: <ph name="LANGUAGE" />. Opcije su dostupne u dnu ekrana.</translation>
@@ -1461,6 +1465,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6627583120233659107">Izmeni folder</translation>
 <translation id="6629759408545977279">Od: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Organizacija je isključila režim bez arhiviranja</translation>
+<translation id="6637478299472506933">Preuzimanje nije uspelo</translation>
 <translation id="6638511529934826365">Zumiraj tekst…</translation>
 <translation id="6640268266988685324">Otvorena kartica</translation>
 <translation id="6641465290890659327">Delite kopiju lozinke</translation>
@@ -1583,6 +1588,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> se preuzima…</translation>
 <translation id="7104701424653979232">Meni → Podešavanja → Načini plaćanja</translation>
 <translation id="7108338896283013870">Sakrij</translation>
+<translation id="7127922377013221748">Sakrij traku s alatkama</translation>
 <translation id="7128693485119315539">Organizacija može da ima potrebu da vidi podatke pregledanja povezane sa vašim upravljanim nalogom, poput istorije pregledanja i lozinki, kao i da upravlja njima.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera je nedostupna</translation>

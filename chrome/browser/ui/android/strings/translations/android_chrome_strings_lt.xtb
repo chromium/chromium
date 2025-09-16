@@ -3,6 +3,7 @@
 <translationbundle lang="lt">
 <translation id="1010283278930414892">Šiame įrenginyje nėra išsaugotų slaptažodžių</translation>
 <translation id="1011749477052068769">Perkelti čia</translation>
+<translation id="1014083013111769343">Teksto perskaitymo režimo nuostatos atidarytos per visą aukštį</translation>
 <translation id="1014147525163127655">Šiame įrenginyje nėra jokių slaptažodžių, skirtų <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Sparčiai ieškokite balsu. Jei norite redaguoti šį spartųjį klavišą, palieskite ir palaikykite.</translation>
 <translation id="1028699632127661925">Siunčiama į „<ph name="DEVICE_NAME" />“...</translation>
@@ -207,6 +208,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="197288927597451399">Palikti</translation>
 <translation id="1973912524893600642">Palikti duomenis</translation>
 <translation id="1974060860693918893">Išplėstiniai</translation>
+<translation id="1982274314082047220">Teksto perskaitymo režimu perbraukite aukštyn, kad peržiūrėtumėte nuostatas</translation>
 <translation id="1984087999855033707">telefono numeris</translation>
 <translation id="1984417487208496350">Apsaugos nėra (nerekomenduojama)</translation>
 <translation id="1986685561493779662">Toks pavadinimas jau yra</translation>
@@ -428,6 +430,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2992473221983447149">Vaizdų aprašai</translation>
 <translation id="2996291259634659425">Kurkite slaptafrazę</translation>
 <translation id="2996809686854298943">Reikalingas URL</translation>
+<translation id="3024215143424744261">Teksto perskaitymo režimo nuostatos uždarytos</translation>
 <translation id="3026955690410463085">Įtraukti nuorodą</translation>
 <translation id="3027644380269727216">Pagrįsta jūsų veikla svetainėje. Šis nustatymas įjungtas.</translation>
 <translation id="3027950907978057636">Iš „<ph name="APP_LABEL" />“</translation>
@@ -706,6 +709,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4380055775103003110">Jei ši problema išlieka, galite išbandyti kitus būdus, kaip tęsti veiklą <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Atliekant paiešką naudojama „Sogou“</translation>
 <translation id="4387647248986092471">Kurti automobilio profilio užraktą</translation>
+<translation id="4387817230000841154">Atidaryti atsisiuntimų puslapį</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Skirtukai ir grupės, kurie nebuvo naudojami vieną dieną ar ilgiau}one{Skirtukai ir grupės, kurie nebuvo naudojami # dieną ar ilgiau}few{Skirtukai ir grupės, kurie nebuvo naudojami # dienas ar ilgiau}many{Skirtukai ir grupės, kurie nebuvo naudojami # dienos ar ilgiau}other{Skirtukai ir grupės, kurie nebuvo naudojami # dienų ar ilgiau}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – atsisiunčiama…</translation>
 <translation id="4404568932422911380">Nėra jokių žymių</translation>
@@ -1311,6 +1315,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="696447261358045621">Išjungti inkognito režimą</translation>
 <translation id="6965382102122355670">Gerai</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Peržiūrėkite <ph name="TABS_COUNT_ONE" /> skirtuką su nauja veikla bendrinamose skirtukų grupėse}one{Peržiūrėkite <ph name="TABS_COUNT_MANY" /> skirtuką su nauja veikla bendrinamose skirtukų grupėse}few{Peržiūrėkite <ph name="TABS_COUNT_MANY" /> skirtukus su nauja veikla bendrinamose skirtukų grupėse}many{Peržiūrėkite <ph name="TABS_COUNT_MANY" /> skirtuko su nauja veikla bendrinamose skirtukų grupėse}other{Peržiūrėkite <ph name="TABS_COUNT_MANY" /> skirtukų su nauja veikla bendrinamose skirtukų grupėse}}</translation>
+<translation id="6971555615916967190">Teksto perskaitymo režimo nuostatos atidarytos iki pusės aukščio</translation>
 <translation id="6971862865055170158">Nepatvirtinti</translation>
 <translation id="6976223255612495095">„<ph name="TAB_TITLE" />“, naujas arba atnaujintas skirtukas</translation>
 <translation id="6976811588313110624">Pridėkite naują spartųjį klavišą.</translation>

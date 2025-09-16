@@ -15,6 +15,9 @@
 <translation id="1131805035311359397">Untuk menyemak sama ada kata laluan anda selamat daripada pelanggaran data dan isu keselamatan lain, <ph name="BEGIN_LINK" />log masuk ke Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Klik menu Chromium</translation>
 <translation id="1157985233335035034">Bahasa baru-baru ini</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> telah menambahkan sambungan yang boleh mengubah cara Chromium berfungsi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Pemasangan gagal kerana versi Windows anda tidak disokong.</translation>
 <translation id="1185134272377778587">Mengenai Chromium</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
@@ -171,6 +174,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3068187312562070417">Profil Chromium lain</translation>
 <translation id="3068515742935458733">Bantu jadikan Chromium lebih baik dengan menghantar laporan ranap dan <ph name="UMA_LINK" /> kepada Google.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 peranti USB telah diakses oleh satu atau beberapa sambungan Chromium}=1{1 peranti USB sedang diakses oleh satu atau beberapa sambungan Chromium}other{# peranti USB sedang diakses oleh satu atau beberapa sambungan Chromium}}</translation>
+<translation id="3095811995836568724">Sejarah Chromium</translation>
 <translation id="3101560983689755071">Sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chromium memadamkan minat anda secara automatik secara bergilir setiap bulan. Minat akan dimuat semula melainkan anda mengalih keluar minat anda.</translation>
 <translation id="3103660991484857065">Pemasang gagal untuk menyahmampat arkib. Sila muat turun Chromium sekali lagi.</translation>
 <translation id="310459126943037700">Gagal menamatkan tugasan.</translation>

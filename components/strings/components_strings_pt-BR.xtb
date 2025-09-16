@@ -1067,7 +1067,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="273785062888389088">Controle de climatização e HVAC (aquecimento, ventilação e ar-condicionado)</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Automação residencial</translation>
-<translation id="2742870351467570537">Remover itens selecionados</translation>
 <translation id="2743512410823092182">Equipamento e recursos para DJs</translation>
 <translation id="2743934314332613923">Atualizar carteira de habilitação?</translation>
 <translation id="2759299890026163685">Verifique se você tem uma conexão de Internet estável antes de tentar de novo</translation>
@@ -1780,6 +1779,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3941630233824954464">Ativar a reautenticação obrigatória</translation>
 <translation id="3942048175062210325">Tente abrir seus arquivos de novo</translation>
 <translation id="3943857333388298514">Colar</translation>
+<translation id="3945937463338223066">Controlar os dispositivos de autenticação do tipo <ph name="READERNAME" /> e os cartões inteligentes acessíveis a eles</translation>
 <translation id="3946209740501886391">Sempre perguntar neste site</translation>
 <translation id="3948588869002647271">O app está ausente ou danificado</translation>
 <translation id="3949297482798028668">Seu administrador bloqueou a opção de colar conteúdo aqui.</translation>
@@ -2677,7 +2677,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5423269318075950257">Monitorar preço</translation>
 <translation id="5425082381151187189">Decoração de casas e interiores</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações</translation>
-<translation id="5430298929874300616">Remover favorito</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5433756542371550806">Variações de linha de comando</translation>
 <translation id="5434798570900738152">O Chromium <ph name="BEGIN_EMPHASIS" />não vai salvar<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5750869797196646528">Rastreamento de mãos</translation>
 <translation id="5752327398324808817">Insira 1 ou 2 palavras</translation>
 <translation id="5752519522101347518">Carregando o site de verificação bancária</translation>
+<translation id="5753570386948603678">Excluir do histórico</translation>
 <translation id="5759751709240058861">Usar e mover sua câmera</translation>
 <translation id="5763042198335101085">Informe um endereço de e-mail válido.</translation>
 <translation id="5764725887548570807">Formato de origem inválido.</translation>
@@ -3091,7 +3091,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6124058285696691147">Baixar o anexo</translation>
 <translation id="6124432979022149706">Conectores do Chrome Enterprise</translation>
 <translation id="6126565365696310362">Envelope chinês 2</translation>
-<translation id="6127379762771434464">Item removido</translation>
 <translation id="6131824478727057281">local</translation>
 <translation id="6133320744616005677">Continuar permitindo</translation>
 <translation id="6133984428121856852">A extensão de arquivo está vazia ou incorreta.</translation>
@@ -3106,7 +3105,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6151417162996330722">O certificado do servidor tem um período de validade excessivamente longo.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> pol. (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Corrida e caminhada</translation>
-<translation id="6157754950574419155">Remover todos do histórico</translation>
 <translation id="6157877588268064908">Para acessar métodos e requisitos de envio, selecione um endereço</translation>
 <translation id="6159554577634054750">Controle de pragas</translation>
 <translation id="6159908896951210943">Formal</translation>
@@ -3793,6 +3791,7 @@ Mais detalhes:
 <translation id="7292031607255951991">Nome do destinatário</translation>
 <translation id="7298195798382681320">Recomendada</translation>
 <translation id="7299471494012161875">Periféricos de tela conectados</translation>
+<translation id="7299721129597238157">Excluir favorito</translation>
 <translation id="7299769361777046949">Gerenciar cartões fidelidade na Carteira do Google</translation>
 <translation id="7304030187361489308">Alto</translation>
 <translation id="7304562222803846232">Gerenciar configurações de privacidade da Conta do Google</translation>

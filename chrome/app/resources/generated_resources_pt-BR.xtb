@@ -198,6 +198,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Ver os arquivos de mídia e fotos do smartphone</translation>
 <translation id="1129850422003387628">Gerenciar apps</translation>
+<translation id="1130116586186908674">Criar visualização dividida</translation>
 <translation id="1130430615924359526">{0,plural, =1{Fechar a navegação anônima}one{Fechar a navegação anônima (# janela)}other{Fechar a navegação anônima (# janelas)}}</translation>
 <translation id="113050636487300043">Escolha um nome e um tema de cores para diferenciar os perfis</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: parte do grupo <ph name="GROUP_NAME" /></translation>
@@ -472,6 +473,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1307431692088049276">Não perguntar novamente</translation>
 <translation id="130744661532298792">Para garantir que você sempre possa usar as senhas na sua Conta do Google, confirme sua identidade</translation>
 <translation id="1307559529304613120">Ops. O sistema encontrou uma falha ao armazenar um token de acesso de longo prazo à API para este dispositivo.</translation>
+<translation id="1311092170520822848">Este site está controlando os leitores de cartão inteligente conectados ao seu dispositivo e, possivelmente, os cartões disponíveis a eles</translation>
 <translation id="131112695174432497">Os dados que afetam a personalização de anúncios são excluídos</translation>
 <translation id="1311294419381837540">Você está transmitindo uma guia. É possível pausar ou interromper a transmissão a qualquer momento.</translation>
 <translation id="131188242279372879">Conheça a proteção reforçada e tenha o nível mais alto de segurança para downloads do Chrome</translation>
@@ -734,7 +736,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1500297251995790841">Dispositivo desconhecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Saiba mais sobre os apps do Chrome sem suporte</translation>
 <translation id="1501480321619201731">Excluir grupo</translation>
-<translation id="1503392482221435031">Envia automaticamente estatísticas de uso ao Google. É possível ativar ou desativar os relatórios de erros nas configurações do dispositivo.</translation>
 <translation id="1503556098270577657">Você fez login na conta <ph name="USER_EMAIL" /> usando o smartphone Android</translation>
 <translation id="150411034776756821">Remover <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Fixar a visualização dividida</translation>
@@ -2112,6 +2113,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2431027948063157455">Não foi possível carregar o Google Assistente. Verifique sua conexão de rede e tente novamente.</translation>
 <translation id="243179355394256322">Sua organização limita o registro de dispositivos apenas a usuários autorizados. Este usuário não tem autorização para registrar dispositivos. Confira se ele tem o privilégio de administrador "Registrar hardware do Google Meet" na seção "Usuários" do Admin Console.</translation>
 <translation id="243275146591958220">Cancelar download</translation>
+<translation id="2433237965825924228">Os apps isolados da Web controlam os dispositivos de autenticação e os cartões inteligentes acessíveis a eles. Em geral, os cartões inteligentes contêm identificadores usados para autenticar seu acesso.</translation>
 <translation id="2433452467737464329">Adicione um parâmetro de consulta ao URL para atualizar automaticamente a página: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aparência</translation>
 <translation id="2433836460518180625">Desbloquear somente dispositivo</translation>
@@ -3032,7 +3034,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3048589239114571785">Iniciar (k)</translation>
 <translation id="3048742847101793553">Sua organização bloqueou esse arquivo porque a verificação falhou.</translation>
 <translation id="3048917188684939573">Registros de dispositivos e transmissão</translation>
-<translation id="3049525403650329038">Compartilhe o conteúdo da página com o Gemini para receber respostas mais relevantes. Seus dados não são usados para aprimorar os modelos de IA generativa.</translation>
 <translation id="3051250416341590778">Tamanho da tela</translation>
 <translation id="3053013834507634016">Uso da chave de certificado</translation>
 <translation id="3053273573829329829">Ativar o PIN do usuário</translation>
@@ -3528,6 +3529,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3429174588714165399">Criar um atalho para esta página</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo da Web</translation>
 <translation id="3429275422858276529">Adicionar esta página aos favoritos para encontrá-la mais facilmente depois</translation>
+<translation id="343084100869297747">Os apps isolados da Web seguem essa configuração automaticamente</translation>
 <translation id="3431530007831146102">Use os movimentos da cabeça para controlar o cursor do mouse</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> liberados</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -7926,7 +7928,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6525767484449074555">Clique em "Instalar"</translation>
 <translation id="6527303717912515753">Compartilhar</translation>
 <translation id="6527574156657772563">Nenhum dispositivo disponível. Adicione sua Conta do Google ao smartphone para conectá-lo ao <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Histórico do Chrome</translation>
 <translation id="6530030995840538405">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada</translation>
 <translation id="6530186581263215931">Estas configurações são aplicadas pelo administrador</translation>
 <translation id="6530267432324197764">Perfil gerenciado por <ph name="MANAGER" /></translation>
@@ -8118,7 +8119,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6657240842932274095">Permitir que serviços do sistema usem sua localização?</translation>
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659213950629089752">Esta página foi ampliada pela extensão "<ph name="NAME" />"</translation>
-<translation id="6659594942844771486">Guia</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: gravação da câmera</translation>
 <translation id="6660301751798595791">Seleção de voz</translation>
 <translation id="6660819301598582123">Jane quer LP, fax, CD, giz, TV e bom whisky.</translation>
@@ -8898,6 +8899,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7201535955609308429">Aguarde enquanto a verificação está em andamento</translation>
 <translation id="7202337678781136582">Leia o QR code com o smartphone Android</translation>
 <translation id="7203150201908454328">Expandido</translation>
+<translation id="7206252555702853828">Seus leitores de cartão inteligente estão sendo controlados</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Sair da página}one{Sair da página}other{Sair das páginas}}</translation>
 <translation id="7207457272187520234">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Essa configuração é aplicada pelo proprietário, Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google.</translation>
 <translation id="7207631048330366454">Pesquisar apps</translation>
@@ -11661,6 +11663,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9081543426177426948">Os sites que você acessa não são salvos no modo de navegação anônima</translation>
 <translation id="9082750838489080452">Aplicativo: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Abrir como janela</translation>
+<translation id="9084383457260170045">Os apps isolados da Web podem pedir para controlar leitores de cartão inteligente</translation>
 <translation id="9085256200913095638">Duplicar a guia selecionada</translation>
 <translation id="9085446486797400519">Acesso à câmera</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> não selecionado. Pressione "Pesquisar" junto à barra de espaço para selecionar.</translation>
@@ -11860,6 +11863,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para gerenciar, abra "Extensões"}one{Para gerenciar, abra "Extensões"}other{Para gerenciar, abra "Extensões"}}</translation>
 <translation id="924818813611903184">Gerenciar idiomas nas configurações do ChromeOS</translation>
 <translation id="925575170771547168">Essa ação vai excluir <ph name="TOTAL_USAGE" /> de dados armazenados por sites</translation>
+<translation id="927864230077808465">Os apps isolados da Web não podem controlar leitores de cartão inteligente</translation>
 <translation id="930268624053534560">Timestamps detalhados</translation>
 <translation id="930551443325541578">Repetir teclas e acentos</translation>
 <translation id="930893132043726269">Está em roaming no momento</translation>

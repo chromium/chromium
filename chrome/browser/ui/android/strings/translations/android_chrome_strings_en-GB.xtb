@@ -3,6 +3,7 @@
 <translationbundle lang="en-GB">
 <translation id="1010283278930414892">No saved passwords on this device</translation>
 <translation id="1011749477052068769">Move here</translation>
+<translation id="1014083013111769343">Reading mode preferences opened at full height</translation>
 <translation id="1014147525163127655">There aren't any passkeys for <ph name="ORIGIN" /> on this device</translation>
 <translation id="1016498331642356377">Quickly search with your voice. To edit this shortcut, touch and hold.</translation>
 <translation id="1028699632127661925">Sending to <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">Keep Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
+<translation id="1982274314082047220">Reading mode swipe up for preferences</translation>
 <translation id="1984087999855033707">phone number</translation>
 <translation id="1984417487208496350">No protection (not recommended)</translation>
 <translation id="1986685561493779662">Name already exists</translation>
@@ -428,6 +430,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2992473221983447149">Image descriptions</translation>
 <translation id="2996291259634659425">Create passphrase</translation>
 <translation id="2996809686854298943">URL required</translation>
+<translation id="3024215143424744261">Reading mode preferences closed</translation>
 <translation id="3026955690410463085">Include link</translation>
 <translation id="3027644380269727216">Based on your activity on a site. This setting is on.</translation>
 <translation id="3027950907978057636">From <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="696447261358045621">Leave Incognito mode</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{See <ph name="TABS_COUNT_ONE" /> tab with new activity in shared tab groups}other{See <ph name="TABS_COUNT_MANY" /> tabs with new activity in shared tab groups}}</translation>
+<translation id="6971555615916967190">Reading mode preferences opened at half height</translation>
 <translation id="6971862865055170158">Don’t approve</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, new or updated tab</translation>
 <translation id="6976811588313110624">Add new shortcut.</translation>

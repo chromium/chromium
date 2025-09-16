@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1010283278930414892">此设备上没有任何保存的密码</translation>
 <translation id="1011749477052068769">移至这里</translation>
+<translation id="1014083013111769343">已打开阅读模式偏好设置，并以最大高度显示</translation>
 <translation id="1014147525163127655">在此设备上未发现 <ph name="ORIGIN" /> 的任何通行密钥</translation>
 <translation id="1016498331642356377">使用语音快速搜索。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="1028699632127661925">正在发送到<ph name="DEVICE_NAME" />…</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">保留</translation>
 <translation id="1973912524893600642">保留数据</translation>
 <translation id="1974060860693918893">高级</translation>
+<translation id="1982274314082047220">在阅读模式下向上滑动即可查看偏好设置</translation>
 <translation id="1984087999855033707">电话号码</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1986685561493779662">名称已存在</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">图片说明</translation>
 <translation id="2996291259634659425">创建密码</translation>
 <translation id="2996809686854298943">必须提供网址</translation>
+<translation id="3024215143424744261">已关闭阅读模式偏好设置</translation>
 <translation id="3026955690410463085">包括链接</translation>
 <translation id="3027644380269727216">根据您在网站上的活动推测得出。此设置已开启。</translation>
 <translation id="3027950907978057636">来自<ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">退出无痕模式</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{查看在共享标签页分组中有新活动的 <ph name="TABS_COUNT_ONE" /> 个标签页}other{查看在共享标签页分组中有新活动的 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
+<translation id="6971555615916967190">已打开阅读模式偏好设置，并以一半高度显示</translation>
 <translation id="6971862865055170158">禁止</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />，新标签页或更新后的标签页</translation>
 <translation id="6976811588313110624">添加新快捷键。</translation>

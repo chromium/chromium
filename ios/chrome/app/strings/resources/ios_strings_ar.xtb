@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">يُرجى فتح "كلمات المرور"</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1433478348197382180">وضع القراءة</translation>
+<translation id="1435271730600332883">يُرجى فتح "الملء التلقائي وكلمات المرور"</translation>
 <translation id="1436671784520050284">متابعة الإعداد</translation>
 <translation id="143681031165817424">تم حفظ العنوان على هذا الجهاز فقط.</translation>
 <translation id="1445276840641906250">جميع علامات التبويب في متصفِّح واحد</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">تم نقل العنوان إلى حسابك <ph name="USER_EMAIL" />.</translation>
 <translation id="4287172530684295552">وضع علامة "مقروءة"</translation>
 <translation id="428768789042547925">الميزات الجديدة</translation>
+<translation id="428858055663163046">يمكنك من هنا الوصول إلى الملفات عند اكتمال تنزيلها</translation>
 <translation id="429074084062258019">{count,plural, =1{إضافة علامة التبويب إلى المجموعة}zero{إضافة علامات التبويب إلى المجموعة}two{إضافة علامتَي التبويب إلى المجموعة}few{إضافة علامات التبويب إلى المجموعة}many{إضافة علامات التبويب إلى المجموعة}other{إضافة علامات التبويب إلى المجموعة}}</translation>
 <translation id="4302061870579014542">ضبط الموضع</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{تم استيراد بطاقة واحدة ({count})}zero{تم استيراد {count} بطاقة}two{تم استيراد بطاقتَين ({count})}few{تم استيراد {count} بطاقات}many{تم استيراد {count} بطاقة}other{تم استيراد {count} بطاقة}}</translation>
 <translation id="4751645464639803239">علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="4752348350801431746">إيقاف إشعارات ميزة "التحقّق من الأمان"…</translation>
+<translation id="4759238208242260848">عمليات التنزيل</translation>
 <translation id="4764612367328936189">تُتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">ميزتا "اقتراحات" و"محتوى تتابعه"</translation>
 <translation id="4769198578611055647">يساعدك رقم التعريف الشخصي في الوصول إلى مفاتيح المرور المحفوظة على أي جهاز</translation>
@@ -1268,6 +1271,7 @@
 <translation id="5956112131836209882">علامة التبويب <ph name="TAB_INDEX_IN_GROUP" /> في مجموعة علامات التبويب التي تضم <ph name="NUMBER_OF_TABS_IN_GROUP" /></translation>
 <translation id="595769230373966252">البحث باستخدام "<ph name="SEARCH_PROVIDER" />"</translation>
 <translation id="5963939892571022323">يتعذَّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
+<translation id="5968400720580217226">‏وضع AI</translation>
 <translation id="5971459446352190251">البحث عن رمز الاستجابة السريعة</translation>
 <translation id="5971872012779224351">{count,plural, =1{تم حذف إشارة مرجعية واحدة.}zero{تم حذف {count} إشارة مرجعية.}two{تم حذف إشارتَين مرجعيتَين ({count}).}few{تم حذف {count} إشارات مرجعية.}many{تم حذف {count} إشارة مرجعية.}other{تم حذف {count} إشارة مرجعية.}}</translation>
 <translation id="5972844218283131174">إلغاء اختيار الكل</translation>
@@ -1413,6 +1417,7 @@
 <translation id="6452534462676960500">نشاط جديد</translation>
 <translation id="6459411599807878608">تم إخفاء التفاصيل.</translation>
 <translation id="646394917185284261">‏الملفات (Files)</translation>
+<translation id="6472069383518492189">ستظهر الملفات التي تم تنزيلها هنا</translation>
 <translation id="6476253015009698798">ميزة تتبُّع السعر غير متاحة لهذه الصفحة.</translation>
 <translation id="6476284679642588870">إدارة طرق الدفع</translation>
 <translation id="6476800141292307438">ترجمة صفحة إلى <ph name="LANGUAGE" />. وتتوفّر الخيارات بالقرب من أسفل الشاشة.</translation>
@@ -1458,6 +1463,7 @@
 <translation id="6627583120233659107">تعديل مجلد</translation>
 <translation id="6629759408545977279">من: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">أوقفت مؤسستك "وضع التصفُّح المتخفي".</translation>
+<translation id="6637478299472506933">إخفاق التنزيل</translation>
 <translation id="6638511529934826365">تصغير/تكبير النص…</translation>
 <translation id="6640268266988685324">فتح علامة التبويب</translation>
 <translation id="6641465290890659327">يمكنك مشاركة نسخة من كلمة مرورك</translation>
@@ -1580,6 +1586,7 @@
 <translation id="7102005569666697658">جارٍ تنزيل… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">"القائمة" ← "الإعدادات" ← "طُرق الدفع"</translation>
 <translation id="7108338896283013870">إخفاء</translation>
+<translation id="7127922377013221748">إخفاء شريط الأدوات</translation>
 <translation id="7128693485119315539">قد تحتاج مؤسستك إلى الاطّلاع على بيانات التصفّح المرتبطة بحسابك المُدار وإدارتها، مثل سجلّ التصفُّح وكلمات المرور.</translation>
 <translation id="713215255510512027">‫<ph name="FILENAME" />‏ (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">الكاميرا غير متاحة</translation>

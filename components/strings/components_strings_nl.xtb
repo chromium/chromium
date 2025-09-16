@@ -1067,7 +1067,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="273785062888389088">HVAC en klimaatbeheersing</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Automatisering in huis</translation>
-<translation id="2742870351467570537">Geselecteerde items verwijderen</translation>
 <translation id="2743512410823092182">DJ-benodigdheden en -apparatuur</translation>
 <translation id="2743934314332613923">Rijbewijs updaten?</translation>
 <translation id="2759299890026163685">Zorg dat je een stabiele internetverbinding hebt voordat je het opnieuw probeert</translation>
@@ -2672,7 +2671,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5423269318075950257">Prijs volgen</translation>
 <translation id="5425082381151187189">Huisinrichting en interieurdesign</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wil meldingen sturen</translation>
-<translation id="5430298929874300616">Bookmark verwijderen</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5433756542371550806">Opdrachtregelvarianten</translation>
 <translation id="5434798570900738152">De volgende gegevens worden <ph name="BEGIN_EMPHASIS" />niet opgeslagen<ph name="END_EMPHASIS" /> in Chromium:
@@ -2870,6 +2868,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5750869797196646528">Handen volgen</translation>
 <translation id="5752327398324808817">Voer 1 of 2 woorden in</translation>
 <translation id="5752519522101347518">Website voor bankverificatie laden</translation>
+<translation id="5753570386948603678">Verwijderen uit geschiedenis</translation>
 <translation id="5759751709240058861">De camera gebruiken en bewegen</translation>
 <translation id="5763042198335101085">Geef een geldig e-mailadres op</translation>
 <translation id="5764725887548570807">Ongeldige oorsprongindeling.</translation>
@@ -3086,7 +3085,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6124058285696691147">De bijlage downloaden</translation>
 <translation id="6124432979022149706">Chrome Enterprise-connectors</translation>
 <translation id="6126565365696310362">Envelop Chinees #2</translation>
-<translation id="6127379762771434464">Item verwijderd</translation>
 <translation id="6131824478727057281">locatie</translation>
 <translation id="6133320744616005677">Blijven toestaan</translation>
 <translation id="6133984428121856852">De bestandsextensie is leeg of heeft een onjuiste notatie.</translation>
@@ -3100,7 +3098,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6151417162996330722">Het servercertificaat heeft een te lange geldigheidsperiode.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> inch (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Hardlopen en wandelen</translation>
-<translation id="6157754950574419155">Alles uit geschiedenis verwijderen</translation>
 <translation id="6157877588268064908">Selecteer een adres om verzendmethoden en vereisten te bekijken</translation>
 <translation id="6159554577634054750">Ongediertebestrijding</translation>
 <translation id="6159908896951210943">Formeel</translation>
@@ -3787,6 +3784,7 @@ Aanvullende informatie:
 <translation id="7292031607255951991">Naam van ontvanger</translation>
 <translation id="7298195798382681320">Aanbevolen</translation>
 <translation id="7299471494012161875">Aangesloten randapparatuur</translation>
+<translation id="7299721129597238157">Bookmark verwijderen</translation>
 <translation id="7299769361777046949">Klantenkaarten beheren in Google Wallet</translation>
 <translation id="7304030187361489308">Hoog</translation>
 <translation id="7304562222803846232">Beheer de privacyinstellingen van je Google-account</translation>

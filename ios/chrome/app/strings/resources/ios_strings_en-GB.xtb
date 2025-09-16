@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Open Passwords</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1433478348197382180">Reading mode</translation>
+<translation id="1435271730600332883">Open AutoFill &amp; Passwords</translation>
 <translation id="1436671784520050284">Continue setup</translation>
 <translation id="143681031165817424">Address saved only on this device</translation>
 <translation id="1445276840641906250">All your tabs in one browser</translation>
@@ -833,6 +834,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4286718549648564014">Address moved to your account <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Mark read</translation>
 <translation id="428768789042547925">What's new</translation>
+<translation id="428858055663163046">You can access your downloaded files here when available</translation>
 <translation id="429074084062258019">{count,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
 <translation id="4302061870579014542">Set position</translation>
 <translation id="4304713468139749426">Password Manager</translation>
@@ -949,6 +951,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4749529195026091676">{count,plural, =1{Imported {count} card}other{Imported {count} cards}}</translation>
 <translation id="4751645464639803239">New Incognito tab</translation>
 <translation id="4752348350801431746">Turn off Safety Check notifications…</translation>
+<translation id="4759238208242260848">Downloads</translation>
 <translation id="4764612367328936189">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover and following</translation>
 <translation id="4769198578611055647">Helps you access saved passkeys on any device</translation>
@@ -1270,6 +1273,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5956112131836209882">Tab group tab. <ph name="TAB_INDEX_IN_GROUP" /> of <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Search with <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">A link to the highlight cannot be created.</translation>
+<translation id="5968400720580217226">AI Mode</translation>
 <translation id="5971459446352190251">QR code search</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bookmark deleted}other{{count} bookmarks deleted}}</translation>
 <translation id="5972844218283131174">Deselect all</translation>
@@ -1415,6 +1419,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6452534462676960500">New activity</translation>
 <translation id="6459411599807878608">Details hidden</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">You'll find your downloads here</translation>
 <translation id="6476253015009698798">Price tracking isn't available for this page.</translation>
 <translation id="6476284679642588870">Manage payment methods</translation>
 <translation id="6476800141292307438">Translating the page to <ph name="LANGUAGE" />. Options available near bottom of the screen.</translation>
@@ -1460,6 +1465,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6629759408545977279">From: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Your organisation turned off Incognito mode</translation>
+<translation id="6637478299472506933">Download Failed</translation>
 <translation id="6638511529934826365">Zoom text…</translation>
 <translation id="6640268266988685324">Open tab</translation>
 <translation id="6641465290890659327">Share a copy of your password</translation>
@@ -1582,6 +1588,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Settings → Payment methods</translation>
 <translation id="7108338896283013870">Hide</translation>
+<translation id="7127922377013221748">Hide Toolbar</translation>
 <translation id="7128693485119315539">Your organisation may need to see and manage browsing data tied to your managed account, such as your browsing history and passwords.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Camera is unavailable</translation>

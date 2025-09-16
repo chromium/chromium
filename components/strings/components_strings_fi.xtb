@@ -1067,7 +1067,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="273785062888389088">LVI- ja ilmastointilaitteet</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Kodin automaatio</translation>
-<translation id="2742870351467570537">Poista valitut kohteet</translation>
 <translation id="2743512410823092182">DJ-palvelut ja -välineet</translation>
 <translation id="2743934314332613923">Päivitetäänkö ajokortti?</translation>
 <translation id="2759299890026163685">Varmista, että sinulla on vakaa internetyhteys, ennen kuin yrität uudelleen</translation>
@@ -1781,6 +1780,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3941630233824954464">Ota pakollinen uudelleentodennus käyttöön</translation>
 <translation id="3942048175062210325">Yritä avata tiedostot uudelleen</translation>
 <translation id="3943857333388298514">Liitä</translation>
+<translation id="3945937463338223066">Hallitse todennuslaitteita, joiden tyyppi on <ph name="READERNAME" />, ja älykortteja, joihin niillä on pääsy</translation>
 <translation id="3946209740501886391">Kysy aina tällä sivustolla</translation>
 <translation id="3948588869002647271">Sovellus puuttuu tai on vahingoittunut</translation>
 <translation id="3949297482798028668">Järjestelmänvalvoja on estänyt tämän sisällön liittämisen tähän.</translation>
@@ -2678,7 +2678,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5423269318075950257">Hintaseuranta</translation>
 <translation id="5425082381151187189">Kodinsisustus ja sisustussuunnittelu</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> haluaa lähettää sinulle ilmoituksia</translation>
-<translation id="5430298929874300616">Poista kirjanmerkki</translation>
 <translation id="5431318178759467895">Väri</translation>
 <translation id="5433756542371550806">Komentorivin muunnelmat</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ei tallenna<ph name="END_EMPHASIS" /> näitä tietoja:
@@ -2876,6 +2875,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5750869797196646528">Käsien seuranta</translation>
 <translation id="5752327398324808817">Lisää sana tai kaksi</translation>
 <translation id="5752519522101347518">Ladataan pankin vahvistussivustoa</translation>
+<translation id="5753570386948603678">Poista historiasta</translation>
 <translation id="5759751709240058861">käyttää ja liikuttaa kameraasi</translation>
 <translation id="5763042198335101085">Anna voimassa oleva sähköpostiosoite.</translation>
 <translation id="5764725887548570807">Virheellinen alkuperän muoto.</translation>
@@ -3092,7 +3092,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6124058285696691147">Lataa liite</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Kirjekuori kiinalainen #2</translation>
-<translation id="6127379762771434464">Kohde poistettu</translation>
 <translation id="6131824478727057281">sijainti</translation>
 <translation id="6133320744616005677">Salli jatkossakin</translation>
 <translation id="6133984428121856852">Tiedostotunniste on tyhjä tai väärässä muodossa.</translation>
@@ -3107,7 +3106,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6151417162996330722">Palvelimen varmenteen voimassaoloaika on liian pitkä.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Juokseminen ja kävely</translation>
-<translation id="6157754950574419155">Poista kaikki historiasta</translation>
 <translation id="6157877588268064908">Valitse osoite, niin näet toimitustavat ja vaatimukset.</translation>
 <translation id="6159554577634054750">Tuhohyönteisten torjunta</translation>
 <translation id="6159908896951210943">Muodollinen</translation>
@@ -3794,6 +3792,7 @@ Lisätietoja:
 <translation id="7292031607255951991">Vastaanottajan nimi</translation>
 <translation id="7298195798382681320">Suositus</translation>
 <translation id="7299471494012161875">Display-lisälaitteet liitetty</translation>
+<translation id="7299721129597238157">Poista kirjanmerkki</translation>
 <translation id="7299769361777046949">Hallinnoi kanta-asiakaskortteja Google Walletissa</translation>
 <translation id="7304030187361489308">Korkea</translation>
 <translation id="7304562222803846232">Tarkista Google-tilin yksityisyysasetukset</translation>

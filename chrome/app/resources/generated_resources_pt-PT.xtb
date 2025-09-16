@@ -734,7 +734,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1500297251995790841">Dispositivo desconhecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Saber mais acerca das Apps do Chrome não suportadas</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
-<translation id="1503392482221435031">Envia automaticamente estatísticas de utilização para a Google. Pode ativar ou desativar os relatórios de falhas nas definições do seu dispositivo.</translation>
 <translation id="1503556098270577657">Iniciou sessão no endereço de email <ph name="USER_EMAIL" /> com o seu telemóvel Android</translation>
 <translation id="150411034776756821">Remover <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Fixar vista dividida</translation>
@@ -3023,7 +3022,6 @@ Quer pará-lo?</translation>
 <translation id="3048589239114571785">Ouvir (k)</translation>
 <translation id="3048742847101793553">A sua organização bloqueou este ficheiro porque a análise falhou.</translation>
 <translation id="3048917188684939573">Registos de transmissão e do dispositivo</translation>
-<translation id="3049525403650329038">Partilhe o conteúdo da página com o Gemini para receber respostas mais relevantes. Os seus dados não são usados para melhorar os modelos de IA generativa.</translation>
 <translation id="3051250416341590778">Tamanho do ecrã</translation>
 <translation id="3053013834507634016">Utilização de chave de certificado</translation>
 <translation id="3053273573829329829">Ativar o PIN do utilizador</translation>
@@ -7917,7 +7915,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6525767484449074555">Clique em "Instalar"</translation>
 <translation id="6527303717912515753">Partilhar</translation>
 <translation id="6527574156657772563">Nenhum dispositivo disponível. Adicione a sua Conta Google ao telemóvel para o associar a este <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Histórico do Chrome</translation>
 <translation id="6530030995840538405">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada</translation>
 <translation id="6530186581263215931">Estas definições são aplicadas pelo seu administrador</translation>
 <translation id="6530267432324197764">Perfil gerido por <ph name="MANAGER" /></translation>

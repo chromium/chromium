@@ -736,7 +736,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1500297251995790841">Nepoznat uređaj [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Saznajte više o nepodržanim Chrome aplikacijama</translation>
 <translation id="1501480321619201731">Izbriši grupu</translation>
-<translation id="1503392482221435031">Automatski šalje statistiku korišćenja Google-u. Možete da uključite ili isključite izveštaje o otkazivanju u podešavanjima uređaja.</translation>
 <translation id="1503556098270577657">Prijavili ste se na <ph name="USER_EMAIL" /> pomoću Android telefona</translation>
 <translation id="150411034776756821">Ukloni <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Zakači podeljeni prikaz</translation>
@@ -3020,7 +3019,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3048589239114571785">Pusti (k)</translation>
 <translation id="3048742847101793553">Organizacija je blokirala ovaj fajl jer skeniranje nije uspelo.</translation>
 <translation id="3048917188684939573">Evidencije prebacivanja i uređaja</translation>
-<translation id="3049525403650329038">Delite sadržaj stranice sa Gemini-jem da biste dobijali relevantnije odgovore. Podaci se ne koriste za poboljšavanje modela generativne veštačke inteligencije.</translation>
 <translation id="3051250416341590778">Veličina prikaza</translation>
 <translation id="3053013834507634016">Upotreba ključa sertifikata</translation>
 <translation id="3053273573829329829">Omogući PIN korisnika</translation>
@@ -7912,7 +7910,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6525767484449074555">Kliknite na Instaliraj</translation>
 <translation id="6527303717912515753">Deli</translation>
 <translation id="6527574156657772563">Nema dostupnih uređaja. Dodajte Google nalog na telefon da biste ga povezali sa ovim uređajem <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Istorija Chrome-a</translation>
 <translation id="6530030995840538405">Generisana je <ph name="INDEX" />. slika od <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Administrator primenjuje ova podešavanja</translation>
 <translation id="6530267432324197764">Profilom upravlja <ph name="MANAGER" /></translation>

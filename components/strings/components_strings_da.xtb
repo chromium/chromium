@@ -1067,7 +1067,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="273785062888389088">HVAC og klimaanlæg</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Automatisering i hjemmet</translation>
-<translation id="2742870351467570537">Fjern valgte elementer</translation>
 <translation id="2743512410823092182">DJ-udstyr</translation>
 <translation id="2743934314332613923">Vil du opdatere kørekortet?</translation>
 <translation id="2759299890026163685">Sørg for, at du har en stabil internetforbindelse, før du prøver igen</translation>
@@ -1780,6 +1779,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3941630233824954464">Aktivér obligatorisk fornyet godkendelse</translation>
 <translation id="3942048175062210325">Prøv at åbne dine filer igen</translation>
 <translation id="3943857333388298514">Indsæt</translation>
+<translation id="3945937463338223066">Styr godkendelsesenheder af typen <ph name="READERNAME" /> og de chipkort, de har adgang til</translation>
 <translation id="3946209740501886391">Spørg altid på dette website</translation>
 <translation id="3948588869002647271">Appen mangler eller er beskadiget</translation>
 <translation id="3949297482798028668">Din administrator har blokeret for indsættelse af dette indhold her.</translation>
@@ -2677,7 +2677,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5423269318075950257">Hold øje med prisudviklingen</translation>
 <translation id="5425082381151187189">Boligindretning</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil gerne sende notifikationer til dig</translation>
-<translation id="5430298929874300616">Fjern bogmærke</translation>
 <translation id="5431318178759467895">Farve</translation>
 <translation id="5433756542371550806">Variationer i kommandolinjer</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />gemmer ikke<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5750869797196646528">Registrering af håndbevægelser</translation>
 <translation id="5752327398324808817">Angiv et eller to ord</translation>
 <translation id="5752519522101347518">Indlæser websitet til bankverificering</translation>
+<translation id="5753570386948603678">Slet fra historik</translation>
 <translation id="5759751709240058861">Brug eller flyt dit kamera</translation>
 <translation id="5763042198335101085">Angiv en gyldig mailadresse</translation>
 <translation id="5764725887548570807">Ugyldigt oprindelsesformat.</translation>
@@ -3091,7 +3091,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6124058285696691147">Download den vedhæftede fil</translation>
 <translation id="6124432979022149706">Chrome Enterprise-connectorer</translation>
 <translation id="6126565365696310362">Konvolut Kinesisk nr. 2</translation>
-<translation id="6127379762771434464">Elementet blev fjernet</translation>
 <translation id="6131824478727057281">placering</translation>
 <translation id="6133320744616005677">Tillad fortsat</translation>
 <translation id="6133984428121856852">Filtypen er tom eller ugyldig.</translation>
@@ -3106,7 +3105,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6151417162996330722">Servercertifikatet har en gyldighedsperiode, der er for lang.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tommer (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Løb og gåture</translation>
-<translation id="6157754950574419155">Fjern alt fra historikken</translation>
 <translation id="6157877588268064908">Vælg en adresse for at se forsendelsesmetoder og -krav</translation>
 <translation id="6159554577634054750">Skadedyrskontrol</translation>
 <translation id="6159908896951210943">Formel</translation>
@@ -3793,6 +3791,7 @@ Yderligere oplysninger:
 <translation id="7292031607255951991">Modtagernavn</translation>
 <translation id="7298195798382681320">Anbefalet</translation>
 <translation id="7299471494012161875">Tilknyttet skærmtilbehør</translation>
+<translation id="7299721129597238157">Slet bogmærke</translation>
 <translation id="7299769361777046949">Administrer loyalitetskort i Google Wallet</translation>
 <translation id="7304030187361489308">Højt</translation>
 <translation id="7304562222803846232">Administrer privatlivsindstillingerne for din Google-konto</translation>

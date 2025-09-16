@@ -951,6 +951,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4749529195026091676">{count,plural, =1{{count} kad diimport}other{{count} kad diimport}}</translation>
 <translation id="4751645464639803239">Tab Inkognito Baharu</translation>
 <translation id="4752348350801431746">Matikan pemberitahuan Semakan Keselamatan…</translation>
+<translation id="4759238208242260848">Muat turun</translation>
 <translation id="4764612367328936189">Organisasi anda membenarkan anda log masuk dengan akaun tertentu sahaja. Akaun yang tidak dibenarkan disembunyikan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover &amp; Mengikuti</translation>
 <translation id="4769198578611055647">Membantu anda mengakses kunci laluan yang disimpan pada mana-mana peranti</translation>
@@ -1272,6 +1273,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5956112131836209882">Tab kumpulan tab. <ph name="TAB_INDEX_IN_GROUP" /> daripada <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Cari dengan <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Pautan kepada serlahan tidak dapat dibuat.</translation>
+<translation id="5968400720580217226">Mod AI</translation>
 <translation id="5971459446352190251">Carian Kod QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 penanda halaman dipadamkan}other{{count} penanda halaman dipadamkan}}</translation>
 <translation id="5972844218283131174">Nyahpilih semua</translation>
@@ -1463,6 +1465,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6629759408545977279">Daripada: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Organisasi anda telah mematikan mod Inkognito</translation>
+<translation id="6637478299472506933">Muat Turun Gagal</translation>
 <translation id="6638511529934826365">Zum Teks…</translation>
 <translation id="6640268266988685324">Buka Tab</translation>
 <translation id="6641465290890659327">Kongsi salinan kata laluan anda</translation>

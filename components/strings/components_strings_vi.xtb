@@ -1067,7 +1067,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="273785062888389088">Hệ thống sưởi, thông gió, điều hoà và điều khiển nhiệt độ</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Nhà tự động</translation>
-<translation id="2742870351467570537">Xóa các mục đã chọn</translation>
 <translation id="2743512410823092182">Thiết bị và tài nguyên DJ</translation>
 <translation id="2743934314332613923">Cập nhật thông tin giấy phép lái xe?</translation>
 <translation id="2759299890026163685">Đảm bảo bạn có kết nối Internet ổn định rồi mới thử lại</translation>
@@ -2678,7 +2677,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5423269318075950257">Theo dõi giá</translation>
 <translation id="5425082381151187189">Trang trí nhà và nội thất</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> muốn gửi thông báo cho bạn</translation>
-<translation id="5430298929874300616">Xóa dấu trang</translation>
 <translation id="5431318178759467895">Màu</translation>
 <translation id="5433756542371550806">Các biến thể của dòng lệnh</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />sẽ không lưu<ph name="END_EMPHASIS" />:
@@ -2876,6 +2874,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5750869797196646528">Theo dõi cử chỉ tay</translation>
 <translation id="5752327398324808817">Nhập một hoặc hai từ</translation>
 <translation id="5752519522101347518">Đang tải trang web xác minh của ngân hàng</translation>
+<translation id="5753570386948603678">Xoá khỏi nhật ký</translation>
 <translation id="5759751709240058861">Sử dụng và di chuyển máy ảnh</translation>
 <translation id="5763042198335101085">Nhập địa chỉ email hợp lệ</translation>
 <translation id="5764725887548570807">Định dạng nguồn gốc không hợp lệ.</translation>
@@ -3092,7 +3091,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6124058285696691147">Tải tệp đính kèm xuống</translation>
 <translation id="6124432979022149706">Trình kết nối của Chrome Enterprise</translation>
 <translation id="6126565365696310362">Phong bì kiểu Trung số 2</translation>
-<translation id="6127379762771434464">Đã xóa mục</translation>
 <translation id="6131824478727057281">vị trí</translation>
 <translation id="6133320744616005677">Tiếp tục cho phép</translation>
 <translation id="6133984428121856852">Đuôi tệp đang trống hoặc không hợp lệ.</translation>
@@ -3107,7 +3105,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6151417162996330722">Chứng chỉ máy chủ có thời gian hiệu lực quá dài.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> inch (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Chạy bộ và đi bộ</translation>
-<translation id="6157754950574419155">Xóa tất cả khỏi nhật ký</translation>
 <translation id="6157877588268064908">Để xem các yêu cầu và phương thức giao hàng, hãy chọn một địa chỉ</translation>
 <translation id="6159554577634054750">Kiểm soát vật gây hại</translation>
 <translation id="6159908896951210943">Trang trọng</translation>
@@ -3794,6 +3791,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7292031607255951991">Tên người nhận</translation>
 <translation id="7298195798382681320">Được đề xuất</translation>
 <translation id="7299471494012161875">Màn hình ngoại vi được kết nối</translation>
+<translation id="7299721129597238157">Xóa dấu trang</translation>
 <translation id="7299769361777046949">Quản lý thẻ khách hàng thân thiết trong Google Wallet</translation>
 <translation id="7304030187361489308">Cao</translation>
 <translation id="7304562222803846232">Quản lý chế độ cài đặt quyền riêng tư của Tài khoản Google</translation>

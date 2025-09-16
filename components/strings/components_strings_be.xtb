@@ -1068,7 +1068,6 @@
 <translation id="273785062888389088">Сістэмы ацяплення, вентыляцыі і кандыцыяніравання паветра і клімат-кантроль</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Аўтаматызацыя дома</translation>
-<translation id="2742870351467570537">Выдаліць выбраныя элементы</translation>
 <translation id="2743512410823092182">Рэсурсы і абсталяванне для дыджэяў</translation>
 <translation id="2743934314332613923">Змяніць даныя вадзіцельскага пасведчання?</translation>
 <translation id="2759299890026163685">Забяспечце стабільнае падключэнне да інтэрнэту і паўтарыце спробу</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">Уключыць абавязковую паўторную аўтэнтыфікацыю</translation>
 <translation id="3942048175062210325">Паспрабуйце адкрыць файлы яшчэ раз</translation>
 <translation id="3943857333388298514">Уставіць</translation>
+<translation id="3945937463338223066">Кіраваць прыладамі аўтэнтыфікацыі тыпу "<ph name="READERNAME" />" і разумнымі карткамі, якія выкарыстоўваюцца з імі</translation>
 <translation id="3946209740501886391">Заўсёды пытацца на гэтым сайце</translation>
 <translation id="3948588869002647271">Праграма адсутнічае або пашкоджана</translation>
 <translation id="3949297482798028668">Адміністратар заблакіраваў магчымасць устаўляць гэта змесціва сюды.</translation>
@@ -2676,7 +2676,6 @@
 <translation id="5423269318075950257">Адсочванне цэн</translation>
 <translation id="5425082381151187189">Афармленне дома і дэкор інтэр’ера</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> запытвае дазвол адпраўляць вам апавяшчэнні</translation>
-<translation id="5430298929874300616">Выдаліць закладку</translation>
 <translation id="5431318178759467895">Колер</translation>
 <translation id="5433756542371550806">Мадыфікацыі каманднага радка</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" />:
@@ -2874,6 +2873,7 @@
 <translation id="5750869797196646528">Адсочванне рухаў рук</translation>
 <translation id="5752327398324808817">Увядзіце адно ці два словы</translation>
 <translation id="5752519522101347518">Загружаецца сайт банка для правядзення спраўджання</translation>
+<translation id="5753570386948603678">Выдаліць з гісторыі</translation>
 <translation id="5759751709240058861">Выкарыстоўваць і перамяшчаць вашу камеру.</translation>
 <translation id="5763042198335101085">Увядзіце сапраўдны адрас электроннай пошты</translation>
 <translation id="5764725887548570807">Няправільны фармат крыніцы.</translation>
@@ -3090,7 +3090,6 @@
 <translation id="6124058285696691147">Спампаваць далучэнне</translation>
 <translation id="6124432979022149706">Злучальнікі Chrome Enterprise</translation>
 <translation id="6126565365696310362">Канверт Chinese № 2</translation>
-<translation id="6127379762771434464">Элемент выдалены</translation>
 <translation id="6131824478727057281">месца</translation>
 <translation id="6133320744616005677">Пакінуць дазвол</translation>
 <translation id="6133984428121856852">Пашырэнне файла не ўказана або мае няправільны фармат.</translation>
@@ -3105,7 +3104,6 @@
 <translation id="6151417162996330722">Сертыфікат сервера мае занадта доўгі тэрмін дзеяння.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (у цалях) (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Бег і хадзьба</translation>
-<translation id="6157754950574419155">Выдаліць усе даныя з гісторыі</translation>
 <translation id="6157877588268064908">Выберыце адрас, каб убачыць спосабы дастаўкі і патрабаванні для дастаўкі</translation>
 <translation id="6159554577634054750">Барацьба са шкоднікамі</translation>
 <translation id="6159908896951210943">Фармальны</translation>

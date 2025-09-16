@@ -1067,7 +1067,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="273785062888389088">Grijanje, ventilacija, klimatizacija i upravljanje klimom</translation>
 <translation id="2740531572673183784">U redu</translation>
 <translation id="2742128390261873684">Automatizacija doma</translation>
-<translation id="2742870351467570537">Ukloni odabrane stavke</translation>
 <translation id="2743512410823092182">DJ-evi i oprema za DJ-eve</translation>
 <translation id="2743934314332613923">Želite li ažurirati vozačku dozvolu?</translation>
 <translation id="2759299890026163685">Prije no što pokušate ponovo, provjerite imate li stabilnu internetsku vezu</translation>
@@ -1779,6 +1778,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3941630233824954464">Omogući obaveznu ponovnu autentifikaciju</translation>
 <translation id="3942048175062210325">Pokušajte ponovno otvoriti datoteke</translation>
 <translation id="3943857333388298514">Zalijepi</translation>
+<translation id="3945937463338223066">upravljati uređajima za autentifikaciju vrste <ph name="READERNAME" /> i pametnim karticama kojima ti uređaji mogu pristupiti</translation>
 <translation id="3946209740501886391">Uvijek pitaj na ovoj web-lokaciji</translation>
 <translation id="3948588869002647271">Aplikacija nedostaje ili je oštećena</translation>
 <translation id="3949297482798028668">Administrator je blokirao lijepljenje ovog sadržaja ovdje.</translation>
@@ -2676,7 +2676,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5423269318075950257">Praćenje cijene</translation>
 <translation id="5425082381151187189">Dom i unutarnje uređenje</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> želi vam slati obavijesti</translation>
-<translation id="5430298929874300616">Ukloni oznaku</translation>
 <translation id="5431318178759467895">Boja</translation>
 <translation id="5433756542371550806">Varijacije naredbenog retka</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />neće spremati<ph name="END_EMPHASIS" />:
@@ -2874,6 +2873,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5750869797196646528">Praćenje pokreta ruku</translation>
 <translation id="5752327398324808817">Unesite riječ-dvije</translation>
 <translation id="5752519522101347518">Učitavanje web-lokacije banke za potvrdu</translation>
+<translation id="5753570386948603678">Izbrišite iz povijesti</translation>
 <translation id="5759751709240058861">koristiti i pomicati vašu kameru</translation>
 <translation id="5763042198335101085">Unesite važeću e-adresu</translation>
 <translation id="5764725887548570807">Nevažeći format izvora.</translation>
@@ -3090,7 +3090,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6124058285696691147">Preuzimanje privitka</translation>
 <translation id="6124432979022149706">Priključci za Chrome za poduzeća</translation>
 <translation id="6126565365696310362">Kineska omotnica br. 2</translation>
-<translation id="6127379762771434464">Stavka je uklonjena</translation>
 <translation id="6131824478727057281">lokacija</translation>
 <translation id="6133320744616005677">Nastavi dopuštati</translation>
 <translation id="6133984428121856852">Datotečni nastavak je prazan ili pogrešan.</translation>
@@ -3105,7 +3104,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6151417162996330722">Certifikat poslužitelja ima predugo razdoblje valjanosti.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Trčanje i hodanje</translation>
-<translation id="6157754950574419155">Ukloni sve iz povijesti</translation>
 <translation id="6157877588268064908">Odaberite adresu za prikaz načina dostave i zahtjeva za dostavu</translation>
 <translation id="6159554577634054750">Suzbijanje štetočina</translation>
 <translation id="6159908896951210943">Formalno</translation>
@@ -3792,6 +3790,7 @@ Dodatne pojedinosti:
 <translation id="7292031607255951991">Ime primatelja</translation>
 <translation id="7298195798382681320">Preporučeno</translation>
 <translation id="7299471494012161875">Priključeni periferni uređaji za zaslon</translation>
+<translation id="7299721129597238157">Izbriši oznaku</translation>
 <translation id="7299769361777046949">Upravljajte karticama vjernosti u Google Walletu</translation>
 <translation id="7304030187361489308">Visoka</translation>
 <translation id="7304562222803846232">Upravljajte postavkama privatnosti Google računa</translation>

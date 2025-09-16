@@ -1067,7 +1067,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="273785062888389088">Ogrzewanie, wentylacja i klimatyzacja oraz nawilżanie powietrza</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Automatyka domowa</translation>
-<translation id="2742870351467570537">Usuń wybrane elementy</translation>
 <translation id="2743512410823092182">Zasoby i sprzęt dla DJ-ów</translation>
 <translation id="2743934314332613923">Zaktualizować prawo jazdy?</translation>
 <translation id="2759299890026163685">Zanim spróbujesz ponownie, upewnij się, że masz stabilne połączenie z internetem</translation>
@@ -2678,7 +2677,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5423269318075950257">Śledź cenę</translation>
 <translation id="5425082381151187189">Dekoracja domu i wystrój wnętrz</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> chce wysyłać Ci powiadomienia</translation>
-<translation id="5430298929874300616">Usuń zakładkę</translation>
 <translation id="5431318178759467895">Kolor</translation>
 <translation id="5433756542371550806">Odmiany w wierszu poleceń</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nie zapisuje<ph name="END_EMPHASIS" />:
@@ -2876,6 +2874,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5750869797196646528">Śledzenie rąk</translation>
 <translation id="5752327398324808817">Wpisz słowo lub dwa</translation>
 <translation id="5752519522101347518">Wczytuję stronę weryfikacji banku</translation>
+<translation id="5753570386948603678">Usuń z historii</translation>
 <translation id="5759751709240058861">Używanie kamery i poruszanie nią</translation>
 <translation id="5763042198335101085">Wpisz prawidłowy adres e-mail</translation>
 <translation id="5764725887548570807">Nieprawidłowy format źródła.</translation>
@@ -3092,7 +3091,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6124058285696691147">Pobierz załącznik</translation>
 <translation id="6124432979022149706">Oprogramowanie sprzęgające Chrome Enterprise</translation>
 <translation id="6126565365696310362">Koperta chińska nr 2</translation>
-<translation id="6127379762771434464">Element został usunięty</translation>
 <translation id="6131824478727057281">lokalizacja</translation>
 <translation id="6133320744616005677">Nadal zezwalaj</translation>
 <translation id="6133984428121856852">Rozszerzenie pliku jest puste lub ma nieprawidłowy format.</translation>
@@ -3107,7 +3105,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6151417162996330722">Certyfikat serwera ma za długi okres ważności.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (w calach) (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Bieganie i chodzenie</translation>
-<translation id="6157754950574419155">Usuń wszystkie z historii</translation>
 <translation id="6157877588268064908">Aby zobaczyć metody wysyłki oraz wymagania, wybierz adres</translation>
 <translation id="6159554577634054750">Zwalczanie szkodników</translation>
 <translation id="6159908896951210943">Formalny</translation>
@@ -3794,6 +3791,7 @@ Dodatkowe informacje:
 <translation id="7292031607255951991">Nazwa odbiorcy</translation>
 <translation id="7298195798382681320">Zalecana</translation>
 <translation id="7299471494012161875">Pokaż podłączone urządzenia peryferyjne</translation>
+<translation id="7299721129597238157">Usuń zakładkę</translation>
 <translation id="7299769361777046949">Zarządzaj kartami lojalnościowymi w Portfelu Google</translation>
 <translation id="7304030187361489308">Wysoki</translation>
 <translation id="7304562222803846232">Zarządzaj ustawieniami prywatności konta Google</translation>

@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Opnaðu aðgangsorð</translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1433478348197382180">Lesstilling</translation>
+<translation id="1435271730600332883">Opna sjálfvirka útfyllingu og aðgangsorð</translation>
 <translation id="1436671784520050284">Halda uppsetningu áfram</translation>
 <translation id="143681031165817424">Heimilisfang er aðeins vistað á þessu tæki</translation>
 <translation id="1445276840641906250">Allir fliparnir þínir í einum vafra</translation>
@@ -833,6 +834,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4286718549648564014">Heimilisfang var fært yfir á reikninginn <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Merkja sem lesið</translation>
 <translation id="428768789042547925">Nýjungar</translation>
+<translation id="428858055663163046">Þú getur nálgast sóttar skrár hér þegar þær verða tiltækar</translation>
 <translation id="429074084062258019">{count,plural, =1{Bæta flipa við hóp}one{Bæta flipum við hóp}other{Bæta flipum við hóp}}</translation>
 <translation id="4302061870579014542">Stilla stöðu</translation>
 <translation id="4304713468139749426">Aðgangsorðastjórnun</translation>
@@ -949,6 +951,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4749529195026091676">{count,plural, =1{Flutti inn {count} kort}one{Flutti inn {count} kort}other{Flutti inn {count} kort}}</translation>
 <translation id="4751645464639803239">Nýr huliðsflipi</translation>
 <translation id="4752348350801431746">Slökkva á tilkynningum öryggisathugunar…</translation>
+<translation id="4759238208242260848">Niðurhal</translation>
 <translation id="4764612367328936189">Fyrirtækið þitt leyfir þér eingöngu að skrá þig inn með tilteknum reikningum. Bannaðir reikningar eru faldir. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Tillögur og fylgir</translation>
 <translation id="4769198578611055647">Auðveldar þér aðgang að vistuðum aðgangslyklum í öllum tækjum</translation>
@@ -1270,6 +1273,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5956112131836209882">Flipi flipahóps. <ph name="TAB_INDEX_IN_GROUP" /> af <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Leita með <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Ekki er hægt að búa til tengil í merkta textann.</translation>
+<translation id="5968400720580217226">Gervigreindarstilling</translation>
 <translation id="5971459446352190251">QR-kóðaleit</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bókamerki eytt}one{{count} bókamerki eytt}other{{count} bókamerkjum eytt}}</translation>
 <translation id="5972844218283131174">Afvelja allt</translation>
@@ -1415,6 +1419,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6452534462676960500">Ný virkni</translation>
 <translation id="6459411599807878608">Upplýsingar faldar</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">Þú finnur niðurhal hér</translation>
 <translation id="6476253015009698798">Verðvöktun er ekki í boði á þessari síðu.</translation>
 <translation id="6476284679642588870">Stjórna greiðslumátum</translation>
 <translation id="6476800141292307438">Þýðir síðuna á <ph name="LANGUAGE" />. Valkostir eru í boði neðarlega á skjánum.</translation>
@@ -1460,6 +1465,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6627583120233659107">Breyta möppu</translation>
 <translation id="6629759408545977279">Af: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Fyrirtækið þitt slökkti á huliðsstillingu</translation>
+<translation id="6637478299472506933">Niðurhal mistókst</translation>
 <translation id="6638511529934826365">Stækka/minnka texta…</translation>
 <translation id="6640268266988685324">Opna flipa</translation>
 <translation id="6641465290890659327">Deildu afriti af aðgangsorðinu þínu</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ko">
 <translation id="1010283278930414892">이 기기에 저장된 비밀번호 없음</translation>
 <translation id="1011749477052068769">여기로 이동</translation>
+<translation id="1014083013111769343">읽기 모드 환경설정이 전체 높이로 열림</translation>
 <translation id="1014147525163127655">이 기기에 <ph name="ORIGIN" />의 패스키가 없습니다</translation>
 <translation id="1016498331642356377">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />에 보내는 중...</translation>
@@ -207,6 +208,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="197288927597451399">계속</translation>
 <translation id="1973912524893600642">데이터 보관</translation>
 <translation id="1974060860693918893">고급</translation>
+<translation id="1982274314082047220">읽기 모드를 위로 스와이프하여 환경설정 확인</translation>
 <translation id="1984087999855033707">전화번호</translation>
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="1986685561493779662">이미 사용 중인 이름입니다.</translation>
@@ -428,6 +430,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2992473221983447149">이미지 설명</translation>
 <translation id="2996291259634659425">암호 만들기</translation>
 <translation id="2996809686854298943">URL이 필요합니다.</translation>
+<translation id="3024215143424744261">읽기 모드 환경설정 닫힘</translation>
 <translation id="3026955690410463085">링크 포함</translation>
 <translation id="3027644380269727216">사이트 내 활동을 기반으로 추천됩니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="3027950907978057636">출처: <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="696447261358045621">시크릿 모드 종료</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{공유 탭 그룹에서 새로운 활동이 있는 탭 <ph name="TABS_COUNT_ONE" />개 보기}other{공유 탭 그룹에서 새로운 활동이 있는 탭 <ph name="TABS_COUNT_MANY" />개 보기}}</translation>
+<translation id="6971555615916967190">읽기 모드 환경설정이 절반 높이로 열림</translation>
 <translation id="6971862865055170158">승인 안함</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, 새 탭 또는 업데이트된 탭</translation>
 <translation id="6976811588313110624">새 바로가기를 추가하세요.</translation>

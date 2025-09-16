@@ -208,7 +208,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Ai siti web visitati
           <ph name="LIST_ITEM" />Al tuo datore di lavoro o alla tua scuola
-          <ph name="LIST_ITEM" />Al tuo provider di servizi Internet
+          <ph name="LIST_ITEM" />Al tuo provider di servizi internet
         <ph name="END_LIST" /></translation>
 <translation id="1335042910556016570">Monitora questo articolo</translation>
 <translation id="1337692097987160377">Condividi questa scheda</translation>
@@ -1067,7 +1067,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="273785062888389088">Climatizzazione, ventilazione e condizionamento dell'aria</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Domotica</translation>
-<translation id="2742870351467570537">Rimuovi gli elementi selezionati</translation>
 <translation id="2743512410823092182">Risorse e apparecchiature per DJ</translation>
 <translation id="2743934314332613923">Aggiornare la patente di guida?</translation>
 <translation id="2759299890026163685">Assicurati di avere una connessione a internet stabile prima di riprovare</translation>
@@ -1777,6 +1776,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3941630233824954464">Abilita riautenticazione obbligatoria</translation>
 <translation id="3942048175062210325">Prova a riaprire i file</translation>
 <translation id="3943857333388298514">Incolla</translation>
+<translation id="3945937463338223066">Controlla i dispositivi di autenticazione di tipo <ph name="READERNAME" /> e le smart card a cui possono accedere</translation>
 <translation id="3946209740501886391">Chiedi sempre su questo sito</translation>
 <translation id="3948588869002647271">Questa applicazione è mancante o danneggiata</translation>
 <translation id="3949297482798028668">L'amministratore ha bloccato la possibilità di incollare qui questi contenuti.</translation>
@@ -2063,7 +2063,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4363222835916186793">Gli avvisi per questo prodotto sono stati disattivati</translation>
 <translation id="4366943895537458493">Lastra</translation>
 <translation id="4369179505195332608">Modifica patente di guida</translation>
-<translation id="437040971055499437">Si è verificato un evento di sicurezza</translation>
+<translation id="437040971055499437">Si verifica un evento di sicurezza</translation>
 <translation id="4371591986692297148">Non attivo</translation>
 <translation id="4372948949327679948">È previsto il valore <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Porte e finestre</translation>
@@ -2674,7 +2674,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5423269318075950257">Monitora prezzo</translation>
 <translation id="5425082381151187189">Arredamento e decorazione di interni</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vuole inviarti notifiche</translation>
-<translation id="5430298929874300616">Rimuovi preferito</translation>
 <translation id="5431318178759467895">A colori</translation>
 <translation id="5433756542371550806">Varianti nella riga di comando</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />non salverà quanto segue<ph name="END_EMPHASIS" />:
@@ -2685,7 +2684,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Ordine inverso a faccia in su</translation>
 <translation id="5447235695608032700">Consenti a <ph name="SITE" /> di utilizzare le informazioni salvate su di te</translation>
-<translation id="5451331376824595378">Quando Chrome segnala eventi di sicurezza, i relativi dati pertinenti vengono inviati al tuo amministratore. Questi dati possono includere URL delle pagine visitate in Chrome o da cui hai copiato dei dati, metadati, nomi dei file, indirizzi IP, arresti anomali del browser o delle schede e il nome utente che usi per accedere alle applicazioni basate sul web, al tuo dispositivo e a Chrome.</translation>
+<translation id="5451331376824595378">Quando Chrome segnala eventi di sicurezza, i relativi dati pertinenti vengono inviati al tuo amministratore. Questi dati possono includere URL delle pagine visitate in Chrome o da cui hai copiato dei dati, metadati o nomi dei file, indirizzi IP, arresti anomali del browser o delle schede e il nome utente che usi per accedere alle applicazioni basate sul web, al tuo dispositivo e a Chrome.</translation>
 <translation id="5452270690849572955">Impossibile trovare la pagina <ph name="HOST_NAME" /></translation>
 <translation id="5452923259299906094">Paga con e-wallet e Pix</translation>
 <translation id="5455374756549232013">Timestamp della policy errato</translation>
@@ -2872,6 +2871,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5750869797196646528">Tracciamento delle mani</translation>
 <translation id="5752327398324808817">Inserisci una o due parole</translation>
 <translation id="5752519522101347518">Caricamento sito web di verifica della banca in corso…</translation>
+<translation id="5753570386948603678">Elimina dalla cronologia</translation>
 <translation id="5759751709240058861">Usare e spostare la videocamera</translation>
 <translation id="5763042198335101085">Inserisci un indirizzo email valido</translation>
 <translation id="5764725887548570807">Formato di origine non valido.</translation>
@@ -3086,9 +3086,8 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="612178891608320683">Cucina vegana</translation>
 <translation id="6122181661879998141">parte anteriore della carta</translation>
 <translation id="6124058285696691147">Scarica l'allegato</translation>
-<translation id="6124432979022149706">Connettori di Chrome Enterprise</translation>
+<translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Busta Chinese #2</translation>
-<translation id="6127379762771434464">Elemento rimosso</translation>
 <translation id="6131824478727057281">posizione</translation>
 <translation id="6133320744616005677">Continua a consentire</translation>
 <translation id="6133984428121856852">L'estensione del file è vuota o errata.</translation>
@@ -3102,7 +3101,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6151417162996330722">Il certificato del server ha un periodo di validità troppo lungo.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Corsa e camminata</translation>
-<translation id="6157754950574419155">Rimuovi tutto dalla cronologia</translation>
 <translation id="6157877588268064908">Seleziona un indirizzo per conoscere i requisiti e i metodi di spedizione</translation>
 <translation id="6159554577634054750">Disinfestazione</translation>
 <translation id="6159908896951210943">Formale</translation>
@@ -3789,6 +3787,7 @@ Ulteriori dettagli:
 <translation id="7292031607255951991">Nome destinatario</translation>
 <translation id="7298195798382681320">Consigliate</translation>
 <translation id="7299471494012161875">Periferiche display collegate</translation>
+<translation id="7299721129597238157">Elimina preferito</translation>
 <translation id="7299769361777046949">Gestisci le carte fedeltà in Google Wallet</translation>
 <translation id="7304030187361489308">Alto</translation>
 <translation id="7304562222803846232">Gestisci le impostazioni sulla privacy del tuo Account Google</translation>
@@ -3956,7 +3955,7 @@ Ulteriori dettagli:
 <translation id="7546409722674205727">Avvio dell'app <ph name="APP_NAME" /> in corso…</translation>
 <translation id="7548892272833184391">Correggere gli errori di connessione</translation>
 <translation id="7549584377607005141">Questa pagina web richiede dati che hai inserito in precedenza per poter essere visualizzata correttamente. Puoi inviare di nuovo i dati, ma in questo caso ripeterai l'azione precedentemente eseguita nella pagina.</translation>
-<translation id="7550637293666041147">Nome utente del dispositivo e nome utente di Chrome</translation>
+<translation id="7550637293666041147">Il nome utente del dispositivo e il nome utente di Chrome</translation>
 <translation id="7552846755917812628">Prova i seguenti suggerimenti:</translation>
 <translation id="7554242657529665960">Dal tuo amministratore: "<ph name="ADMIN_MESSAGE" />"</translation>
 <translation id="7554475479213504905">Ricarica e mostra comunque</translation>

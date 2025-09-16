@@ -15,6 +15,9 @@
 <translation id="1131805035311359397">‏כדי לבדוק אם הסיסמאות שלכם מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />היכנסו ל-Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">‏לחיצה על תפריט Chromium</translation>
 <translation id="1157985233335035034">שפות אחרונות</translation>
+<translation id="1171831736360285680">‏התוסף התווסף על ידי <ph name="PARTNER_NAME" /> ויכול לשנות את אופן הפעולה של Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">‏ההתקנה נכשלה כי הגרסה של Windows לא נתמכת.</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1203500561924088507">תודה שהתקנת. עליך להפעיל מחדש את הדפדפן לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>

@@ -734,7 +734,6 @@
 <translation id="1500297251995790841">უცნობი მოწყობილობა [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">შეიტყვეთ მეტი Chrome-ის მხარდაუჭერელი აპების შესახებ</translation>
 <translation id="1501480321619201731">ჯგუფის წაშლა</translation>
-<translation id="1503392482221435031">ავტომატურად გზავნის გამოყენების სტატისტიკას Google-ში. ავარიულად გათიშვის ანგარიშების ჩართვა ან გამორთვა შეგიძლიათ მოწყობილობის პარამეტრებიდან.</translation>
 <translation id="1503556098270577657">თქვენ შეხვედით <ph name="USER_EMAIL" />-ში Android ტელეფონის გამოყენებით</translation>
 <translation id="150411034776756821"><ph name="SITE" />-ის ამოშლა</translation>
 <translation id="1504253885059472207">გაყოფილი ხედის ჩამაგრება</translation>
@@ -3022,7 +3021,6 @@
 <translation id="3048589239114571785">დაკვრა (k)</translation>
 <translation id="3048742847101793553">თქვენმა ორგანიზაციამ დაბლოკა ეს ფაილი, რადგან სკანირება ვერ მოხერხდა.</translation>
 <translation id="3048917188684939573">ტრანსლირებისა და მოწყობილობათა ჟურნალები</translation>
-<translation id="3049525403650329038">გაუზიარეთ გვერდის კონტენტი Gemini-ს, რომ მიიღოთ უფრო შესაბამისი პასუხები. თქვენი მონაცემები არ გამოიყენება გენერაციული ხელოვნური ინტელექტის მოდელების გასაუმჯობესებლად.</translation>
 <translation id="3051250416341590778">ჩვენების ზომა</translation>
 <translation id="3053013834507634016">სერტიფიკატის გასაღების გამოყენება</translation>
 <translation id="3053273573829329829">მომხმარებლების PIN-კოდის ჩართვა</translation>
@@ -7915,7 +7913,6 @@
 <translation id="6525767484449074555">დააწკაპუნეთ „ინსტალაციაზე“</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
 <translation id="6527574156657772563">ხელმისაწვდომი მოწყობილობები არ არის. დაამატეთ თქვენი Google ანგარიში თქვენს ტელეფონს, ის ამ <ph name="DEVICE_TYPE" />-ს რომ დააკავშიროთ. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Chrome ისტორია</translation>
 <translation id="6530030995840538405">გენერირებულია სურათი <ph name="INDEX" /> თემაზე „<ph name="SUBJECT" />“.</translation>
 <translation id="6530186581263215931">ეს პარამეტრები იძულებით არის გააქტიურებული თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="6530267432324197764">პროფილს მართავს <ph name="MANAGER" /></translation>

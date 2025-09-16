@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Avaa Salasanat</translation>
 <translation id="1430915738399379752">Tulosta</translation>
 <translation id="1433478348197382180">Lukutila</translation>
+<translation id="1435271730600332883">Avaa automaattinen täyttö ja salasanat</translation>
 <translation id="1436671784520050284">Jatka määritystä</translation>
 <translation id="143681031165817424">Osoite on tallennettu vain tälle laitteelle</translation>
 <translation id="1445276840641906250">Kaikki välilehdet yhdessä selaimessa</translation>
@@ -833,6 +834,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4286718549648564014">Osoite siirretty tilille <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Merkitse luetuksi</translation>
 <translation id="428768789042547925">Uutta</translation>
+<translation id="428858055663163046">Pääset ladattuihin tiedostoihin täältä, kun ne ovat saatavilla</translation>
 <translation id="429074084062258019">{count,plural, =1{Lisää välilehti ryhmään}other{Lisää välilehtiä ryhmään}}</translation>
 <translation id="4302061870579014542">Aseta sijainti</translation>
 <translation id="4304713468139749426">Salasanojen ylläpito</translation>
@@ -949,6 +951,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} kortti tuotu}other{{count} korttia tuotu}}</translation>
 <translation id="4751645464639803239">Uusi incognito-välilehti</translation>
 <translation id="4752348350801431746">Laita turvatarkistusilmoitukset pois päältä…</translation>
+<translation id="4759238208242260848">Lataukset</translation>
 <translation id="4764612367328936189">Organisaatiosi sallii sinun kirjautua sisään vain tietyillä tileillä. Kielletyt tilit on piilotettu. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover ja seuraaminen</translation>
 <translation id="4769198578611055647">Auttaa sinua käyttämään tallennettuja avainkoodeja kaikilla laitteilla</translation>
@@ -1270,6 +1273,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5956112131836209882">Välilehtiryhmän välilehti. <ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Hae tällä: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Korostukseen ei voi luoda linkkiä.</translation>
+<translation id="5968400720580217226">Tekoälytila</translation>
 <translation id="5971459446352190251">QR-koodihaku</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 kirjanmerkki poistettu}other{{count} kirjanmerkkiä poistettu}}</translation>
 <translation id="5972844218283131174">Poista valinta kaikista</translation>
@@ -1415,6 +1419,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6452534462676960500">Uusi toiminta</translation>
 <translation id="6459411599807878608">Tiedot piilotettu</translation>
 <translation id="646394917185284261">Tiedostot</translation>
+<translation id="6472069383518492189">Löydät lataukset täältä</translation>
 <translation id="6476253015009698798">Hintaseuranta ei ole käytettävissä tällä sivulla.</translation>
 <translation id="6476284679642588870">Ylläpidä maksutapoja</translation>
 <translation id="6476800141292307438">Käännetään sivua kielelle <ph name="LANGUAGE" />. Vaihtoehdot näkyvät näytön alareunan lähellä.</translation>
@@ -1460,6 +1465,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6627583120233659107">Muokkaa kansiota</translation>
 <translation id="6629759408545977279">Lähde: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Organisaatiosi on laittanut incognito-tilan pois päältä</translation>
+<translation id="6637478299472506933">Lataus epäonnistui</translation>
 <translation id="6638511529934826365">Zoomaa tekstiä…</translation>
 <translation id="6640268266988685324">Avaa välilehti</translation>
 <translation id="6641465290890659327">Jaa kopio salasanasta</translation>
@@ -1582,6 +1588,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7102005569666697658">Ladataan… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Valikko → Asetukset → Maksutavat</translation>
 <translation id="7108338896283013870">Piilota</translation>
+<translation id="7127922377013221748">Piilota työkalupalkki</translation>
 <translation id="7128693485119315539">Voi olla, että organisaatiosi täytyy nähdä ja hallinnoida hallinnoituun tiliisi liittyvää selausdataa, kuten selaushistoriaa ja salasanoja.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera ei ole käytettävissä</translation>

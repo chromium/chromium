@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Нууц үгийг нээнэ үү</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1433478348197382180">Уншлагын горим</translation>
+<translation id="1435271730600332883">Автоматаар бөглөх хэсэг, нууц үгийг нээх</translation>
 <translation id="1436671784520050284">Тохируулгыг үргэлжлүүлэх</translation>
 <translation id="143681031165817424">Хаягийг зөвхөн энэ төхөөрөмжид хадгалдаг</translation>
 <translation id="1445276840641906250">Таны бүх таб нэг хөтчид</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">Хаягийг таны <ph name="USER_EMAIL" /> бүртгэл рүү зөөсөн</translation>
 <translation id="4287172530684295552">Уншсан гэж тэмдэглэх</translation>
 <translation id="428768789042547925">Шинэ юм юу байна</translation>
+<translation id="428858055663163046">Та татаж авсан файл байгаа үед эндээс хандах боломжтой</translation>
 <translation id="429074084062258019">{count,plural, =1{Табыг бүлэгт нэмэх}other{Табуудыг бүлэгт нэмэх}}</translation>
 <translation id="4302061870579014542">Байрлал тохируулах</translation>
 <translation id="4304713468139749426">Нууц үгний менежер</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{{count} картыг импортолсон}other{{count} картыг импортолсон}}</translation>
 <translation id="4751645464639803239">Нууцлалын шинэ таб</translation>
 <translation id="4752348350801431746">Аюулгүй байдлын шалгалтын мэдэгдлийг унтраах…</translation>
+<translation id="4759238208242260848">Таталтууд:</translation>
 <translation id="4764612367328936189">Танай байгууллага таныг зөвхөн тодорхой бүртгэлүүдэд нэвтрэхийг зөвшөөрнө. Зөвшөөрөөгүй бүртгэлүүдийг нуусан. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover &amp; Following</translation>
 <translation id="4769198578611055647">Танд дурын төхөөрөмж дээр хадгалсан нэвтрэх түлхүүрт хандахад тусалдаг</translation>
@@ -1270,6 +1273,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5956112131836209882">Табын бүлгийн таб. <ph name="NUMBER_OF_TABS_IN_GROUP" />-н <ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" />-р хайх</translation>
 <translation id="5963939892571022323">Тодруулсан текстийн холбоосыг үүсгэх боломжгүй.</translation>
+<translation id="5968400720580217226">ХОУ-ы горим</translation>
 <translation id="5971459446352190251">QR кодоор хайх</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 хавчуургыг устгасан}other{{count} хавчуургыг устгасан}}</translation>
 <translation id="5972844218283131174">Бүх сонголтыг цуцлах</translation>
@@ -1415,6 +1419,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6452534462676960500">Шинэ үйл ажиллагаа</translation>
 <translation id="6459411599807878608">Дэлгэрэнгүй мэдээллийг нуусан</translation>
 <translation id="646394917185284261">Файлс</translation>
+<translation id="6472069383518492189">Та татаж авсан файлаа эндээс олно</translation>
 <translation id="6476253015009698798">Энэ хуудсанд үнэ хянах боломжгүй байна.</translation>
 <translation id="6476284679642588870">Төлбөрийн хэрэгсэл удирдах</translation>
 <translation id="6476800141292307438">Хуудсыг <ph name="LANGUAGE" /> руу орчуулж байна. Дэлгэцийн доод хэсгийн ойролцоо сонголт хийх боломжтой.</translation>
@@ -1460,6 +1465,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6627583120233659107">Хавтас засах</translation>
 <translation id="6629759408545977279">Дараахаас: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Танай байгууллага Нууцлалын горимыг унтраасан</translation>
+<translation id="6637478299472506933">Татаж авах ажиллагаа амжилтгүй боллоо.</translation>
 <translation id="6638511529934826365">Текстийг томруулах…</translation>
 <translation id="6640268266988685324">Нээлттэй таб</translation>
 <translation id="6641465290890659327">Нууц үгнийхээ хуулбарыг хуваалцах</translation>

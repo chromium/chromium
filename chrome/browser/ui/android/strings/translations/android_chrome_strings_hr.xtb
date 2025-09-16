@@ -3,6 +3,7 @@
 <translationbundle lang="hr">
 <translation id="1010283278930414892">Na ovom uređaju nema spremljenih zaporki</translation>
 <translation id="1011749477052068769">Premjesti ovdje</translation>
+<translation id="1014083013111769343">Postavke čitačkog načina otvorene su u punoj visini</translation>
 <translation id="1014147525163127655">Na ovom uređaju nema nijednog pristupnog ključa za aplikaciju <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Brzo pretražujte glasovno. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="1028699632127661925">Šalje se uređaju <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="197288927597451399">Zadrži</translation>
 <translation id="1973912524893600642">Zadrži podatke</translation>
 <translation id="1974060860693918893">Napredno</translation>
+<translation id="1982274314082047220">Prijeđite prstom prema gore da biste otvorili postavke čitačkog načina</translation>
 <translation id="1984087999855033707">telefonski broj</translation>
 <translation id="1984417487208496350">Bez zaštite (ne preporučuje se)</translation>
 <translation id="1986685561493779662">Naziv već postoji</translation>
@@ -428,6 +430,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2992473221983447149">Opisi slika</translation>
 <translation id="2996291259634659425">Stvaranje zaporke</translation>
 <translation id="2996809686854298943">Potreban URL</translation>
+<translation id="3024215143424744261">Postavke čitačkog načina su zatvorene</translation>
 <translation id="3026955690410463085">Uključi vezu</translation>
 <translation id="3027644380269727216">Na temelju vaše aktivnosti na web-lokaciji. Postavka je uključena.</translation>
 <translation id="3027950907978057636">Izvor: <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="696447261358045621">Napusti anonimni način</translation>
 <translation id="6965382102122355670">U redu</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Pogledajte <ph name="TABS_COUNT_ONE" /> standardnu karticu s novom aktivnošću u dijeljenim grupama kartica}one{Pogledajte <ph name="TABS_COUNT_MANY" /> standardnu karticu s novom aktivnošću u dijeljenim grupama kartica}few{Pogledajte <ph name="TABS_COUNT_MANY" /> standardne kartice s novom aktivnošću u dijeljenim grupama kartica}other{Pogledajte <ph name="TABS_COUNT_MANY" /> standardnih kartica s novom aktivnošću u dijeljenim grupama kartica}}</translation>
+<translation id="6971555615916967190">Postavke čitačkog načina otvorene su na pola visine</translation>
 <translation id="6971862865055170158">Nemoj odobriti</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, nova ili ažurirana kartica</translation>
 <translation id="6976811588313110624">Dodajte novi prečac.</translation>

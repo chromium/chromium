@@ -3,6 +3,7 @@
 <translationbundle lang="sl">
 <translation id="1010283278930414892">V tej napravi ni shranjenih gesel</translation>
 <translation id="1011749477052068769">Premik sem</translation>
+<translation id="1014083013111769343">Nastavitve načina za branje so odprte pri polni višini</translation>
 <translation id="1014147525163127655">V tej napravi ni ključev za dostop za aplikacijo <ph name="ORIGIN" />.</translation>
 <translation id="1016498331642356377">Hitro iščite z glasom. Če želite urediti to bližnjico, pridržite.</translation>
 <translation id="1028699632127661925">Pošiljanje v napravo <ph name="DEVICE_NAME" /> ...</translation>
@@ -207,6 +208,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="197288927597451399">Obdrži</translation>
 <translation id="1973912524893600642">Ohrani podatke</translation>
 <translation id="1974060860693918893">Dodatno</translation>
+<translation id="1982274314082047220">Način za branje – povlecite navzgor za nastavitve</translation>
 <translation id="1984087999855033707">telefonska številka</translation>
 <translation id="1984417487208496350">Brez zaščite (ni priporočljivo)</translation>
 <translation id="1986685561493779662">Ime že obstaja</translation>
@@ -428,6 +430,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2992473221983447149">Opisi slik</translation>
 <translation id="2996291259634659425">Ustvarjanje gesla</translation>
 <translation id="2996809686854298943">URL je obvezen</translation>
+<translation id="3024215143424744261">Nastavitve načina za branje so zaprte</translation>
 <translation id="3026955690410463085">Vključi povezavo</translation>
 <translation id="3027644380269727216">Na podlagi vaše dejavnosti na spletnem mestu. Ta nastavitev je vklopljena.</translation>
 <translation id="3027950907978057636">Iz aplikacije <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="696447261358045621">Izklop anonimnega načina</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ogled <ph name="TABS_COUNT_ONE" /> zavihka z novo dejavnostjo v deljenih skupinah zavihkov}one{Ogled <ph name="TABS_COUNT_MANY" /> zavihka z novo dejavnostjo v deljenih skupinah zavihkov}two{Ogled <ph name="TABS_COUNT_MANY" /> zavihkov z novo dejavnostjo v deljenih skupinah zavihkov}few{Ogled <ph name="TABS_COUNT_MANY" /> zavihkov z novo dejavnostjo v deljenih skupinah zavihkov}other{Ogled <ph name="TABS_COUNT_MANY" /> zavihkov z novo dejavnostjo v deljenih skupinah zavihkov}}</translation>
+<translation id="6971555615916967190">Nastavitve načina za branje so odprte pri polovični višini</translation>
 <translation id="6971862865055170158">Ne odobri</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, novi ali posodobljeni zavihek</translation>
 <translation id="6976811588313110624">Dodaj novo bližnjico.</translation>

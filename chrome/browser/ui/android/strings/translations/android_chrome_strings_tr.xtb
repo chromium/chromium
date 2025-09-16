@@ -3,6 +3,7 @@
 <translationbundle lang="tr">
 <translation id="1010283278930414892">Bu cihazda kayıtlı şifre yok</translation>
 <translation id="1011749477052068769">Buraya taşı</translation>
+<translation id="1014083013111769343">Okuma Modu tercihleri tam ekranda açıldı</translation>
 <translation id="1014147525163127655">Bu cihazda <ph name="ORIGIN" /> için geçiş anahtarı yok</translation>
 <translation id="1016498331642356377">Hızlıca sesinizle arama yapın. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> cihazına gönderiliyor...</translation>
@@ -207,6 +208,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="197288927597451399">Sakla</translation>
 <translation id="1973912524893600642">Verileri Koru</translation>
 <translation id="1974060860693918893">Gelişmiş</translation>
+<translation id="1982274314082047220">Okuma Modu'nda tercihleri görmek için yukarı kaydırın</translation>
 <translation id="1984087999855033707">telefon numarası</translation>
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
 <translation id="1986685561493779662">Ad zaten var</translation>
@@ -428,6 +430,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2992473221983447149">Resim açıklamaları</translation>
 <translation id="2996291259634659425">Parola oluşturun</translation>
 <translation id="2996809686854298943">URL gerekli</translation>
+<translation id="3024215143424744261">Okuma Modu tercihleri kapatıldı</translation>
 <translation id="3026955690410463085">Bağlantı ekleniyor</translation>
 <translation id="3027644380269727216">Bir sitedeki etkinliğinize dayalı. Bu ayar açık.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> uygulamasından</translation>
@@ -1138,7 +1141,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6312687380483398334">Web uygulamaları (sessiz)</translation>
 <translation id="6315386555979018699">Sil ve devam et</translation>
 <translation id="6316139424528454185">Android sürümü desteklenmiyor</translation>
-<translation id="6324916366299863871">Kısayolu düzenleyin</translation>
+<translation id="6324916366299863871">Kısayolu düzenle</translation>
 <translation id="6324977638108296054">Seçili metne bağlantı oluşturulamıyor</translation>
 <translation id="6333140779060797560">Paylaşım yöntemi: <ph name="APPLICATION" /></translation>
 <translation id="6335454563754888572"><ph name="PAGE_URL" /> adresindeki sayfaya işaret eden URL'yi düzenleyin.</translation>
@@ -1311,6 +1314,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="696447261358045621">Gizli moddan çık</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Paylaşılan sekme gruplarında yeni etkinlik içeren <ph name="TABS_COUNT_ONE" /> sekmeyi göster}other{Paylaşılan sekme gruplarında yeni etkinlik içeren <ph name="TABS_COUNT_MANY" /> sekmeyi göster}}</translation>
+<translation id="6971555615916967190">Okuma Modu tercihleri ekranın yarısına kadar açıldı</translation>
 <translation id="6971862865055170158">Onaylama</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, Yeni veya güncellenmiş sekme</translation>
 <translation id="6976811588313110624">Yeni kısayol ekleyin.</translation>

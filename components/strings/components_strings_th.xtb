@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">ระบบปรับอากาศ (HVAC) และการควบคุมสภาพอากาศ</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2742128390261873684">ระบบอัตโนมัติในบ้าน</translation>
-<translation id="2742870351467570537">นำรายการที่เลือกออก </translation>
 <translation id="2743512410823092182">เครื่องมือและอุปกรณ์สำหรับดีเจ</translation>
 <translation id="2743934314332613923">อัปเดตใบขับขี่ไหม</translation>
 <translation id="2759299890026163685">ตรวจสอบว่าคุณมีการเชื่อมต่ออินเทอร์เน็ตที่เสถียรก่อนลองอีกครั้ง</translation>
@@ -2677,7 +2676,6 @@
 <translation id="5423269318075950257">ติดตามราคา</translation>
 <translation id="5425082381151187189">การจัดบ้านและตกแต่งภายใน</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ต้องการส่งการแจ้งเตือนให้คุณ</translation>
-<translation id="5430298929874300616">นำบุ๊กมาร์กออก</translation>
 <translation id="5431318178759467895">สี</translation>
 <translation id="5433756542371550806">บรรทัดคำสั่งรูปแบบต่างๆ</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />จะไม่บันทึก<ph name="END_EMPHASIS" />ข้อมูลต่อไปนี้
@@ -2875,6 +2873,7 @@
 <translation id="5750869797196646528">การติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="5752327398324808817">ป้อน 1-2 คำ</translation>
 <translation id="5752519522101347518">กำลังโหลดเว็บไซต์การยืนยันธนาคาร</translation>
+<translation id="5753570386948603678">ลบจากประวัติ</translation>
 <translation id="5759751709240058861">ใช้และเคลื่อนย้ายกล้องของคุณ</translation>
 <translation id="5763042198335101085">ป้อนที่อยู่อีเมลที่ถูกต้อง</translation>
 <translation id="5764725887548570807">รูปแบบต้นทางไม่ถูกต้อง</translation>
@@ -3091,7 +3090,6 @@
 <translation id="6124058285696691147">ดาวน์โหลดไฟล์แนบ</translation>
 <translation id="6124432979022149706">เครื่องมือเชื่อมต่อ Chrome Enterprise</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
-<translation id="6127379762771434464">นำรายการออกแล้ว</translation>
 <translation id="6131824478727057281">ตำแหน่ง</translation>
 <translation id="6133320744616005677">อนุญาตต่อไป</translation>
 <translation id="6133984428121856852">นามสกุลไฟล์ว่างเปล่าหรือมีรูปแบบไม่ถูกต้อง</translation>
@@ -3106,7 +3104,6 @@
 <translation id="6151417162996330722">ใบรับรองเซิร์ฟเวอร์มีระยะเวลาที่สามารถใช้ได้นานเกินไป</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> นิ้ว (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">วิ่งและเดิน</translation>
-<translation id="6157754950574419155">นำทั้งหมดออกจากประวัติการเข้าชม</translation>
 <translation id="6157877588268064908">หากต้องการดูวิธีการจัดส่งสินค้าและข้อกำหนด โปรดเลือกที่อยู่</translation>
 <translation id="6159554577634054750">ผลิตภัณฑ์กำจัดแมลง</translation>
 <translation id="6159908896951210943">ทางการ</translation>
@@ -3793,6 +3790,7 @@
 <translation id="7292031607255951991">ชื่อผู้รับ</translation>
 <translation id="7298195798382681320">แนะนำ</translation>
 <translation id="7299471494012161875">อุปกรณ์ต่อพ่วงจอแสดงผลที่ต่อเชื่อมอยู่</translation>
+<translation id="7299721129597238157">นำออกบุ๊กมาร์ก</translation>
 <translation id="7299769361777046949">จัดการบัตรสะสมคะแนนใน Google Wallet</translation>
 <translation id="7304030187361489308">สูง</translation>
 <translation id="7304562222803846232">จัดการการตั้งค่าความเป็นส่วนตัวของบัญชี Google</translation>

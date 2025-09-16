@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Отворете Passwords</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1433478348197382180">Режим на четене</translation>
+<translation id="1435271730600332883">Отваряне на „Автоматично попълване и пароли“</translation>
 <translation id="1436671784520050284">Продължаване с настройването</translation>
 <translation id="143681031165817424">Адресът е запазен само на това устройство</translation>
 <translation id="1445276840641906250">Един браузър за всичките ви раздели</translation>
@@ -950,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{Импортирана е {count} карта}other{Импортирани са {count} карти}}</translation>
 <translation id="4751645464639803239">Нов раздел в режим „инкогнито“</translation>
 <translation id="4752348350801431746">Изключване на известията от функцията „Проверка на безопасността“…</translation>
+<translation id="4759238208242260848">Изтегляния</translation>
 <translation id="4764612367328936189">Организацията ви разрешава да влизате само с определени профили. Неразрешените профили са скрити. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover и следване</translation>
 <translation id="4769198578611055647">Ключът за достъп ви помага да осъществявате достъп до запазените от вас ключове на всяко устройство</translation>
@@ -1271,6 +1273,7 @@
 <translation id="5956112131836209882">Група раздели – раздел <ph name="TAB_INDEX_IN_GROUP" /> от <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Търсене с(ъс) <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не може да се създаде връзка към откроения текст.</translation>
+<translation id="5968400720580217226">Режим с AI</translation>
 <translation id="5971459446352190251">Търсене по QR код</translation>
 <translation id="5971872012779224351">{count,plural, =1{Изтрихте 1 отметка}other{Изтрихте {count} отметки}}</translation>
 <translation id="5972844218283131174">Премахване на избора от всички</translation>
@@ -1462,6 +1465,7 @@
 <translation id="6627583120233659107">Редактиране на папката</translation>
 <translation id="6629759408545977279">От: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Организацията ви е изключила режима „инкогнито“</translation>
+<translation id="6637478299472506933">Неуспешно изтегляне</translation>
 <translation id="6638511529934826365">Промяна на мащаба на текста…</translation>
 <translation id="6640268266988685324">Отворен раздел</translation>
 <translation id="6641465290890659327">Споделяне на копие на паролата ви</translation>
@@ -1584,6 +1588,7 @@
 <translation id="7102005569666697658">Изтегля се… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Настройки → Начини на плащане</translation>
 <translation id="7108338896283013870">Скриване</translation>
+<translation id="7127922377013221748">Скриване на лентата с инструменти</translation>
 <translation id="7128693485119315539">Може да е необходимо организацията ви да вижда и управлява данните за сърфиране, свързани с управлявания ви профил, като например историята на сърфиране и паролите ви.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Няма достъп до камерата</translation>

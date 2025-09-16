@@ -3,6 +3,7 @@
 <translationbundle lang="mk">
 <translation id="1010283278930414892">Нема зачувани лозинки на уредов</translation>
 <translation id="1011749477052068769">Премести тука</translation>
+<translation id="1014083013111769343">Поставките за „Режим за читање“ се отворени на целосна висина</translation>
 <translation id="1014147525163127655">Нема криптографски клучеви за <ph name="ORIGIN" /> на уредов</translation>
 <translation id="1016498331642356377">Брзо пребарајте со гласот. За да ја измените сликава од екранот, допрете и задржете.</translation>
 <translation id="1028699632127661925">Се испраќа до <ph name="DEVICE_NAME" />…</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Чувај</translation>
 <translation id="1973912524893600642">Задржи ги податоците</translation>
 <translation id="1974060860693918893">Напредни</translation>
+<translation id="1982274314082047220">Режим за читање – повлечете нагоре за поставки</translation>
 <translation id="1984087999855033707">телефонски број</translation>
 <translation id="1984417487208496350">Без заштита (не се препорачува)</translation>
 <translation id="1986685561493779662">Името веќе постои</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">Описи на слики</translation>
 <translation id="2996291259634659425">Создајте лозинка</translation>
 <translation id="2996809686854298943">Потребен е URL</translation>
+<translation id="3024215143424744261">Поставките за „Режим за читање“ се затворени</translation>
 <translation id="3026955690410463085">Вклучи линк</translation>
 <translation id="3027644380269727216">Според вашата активност на сајт. Оваа поставка е вклучена.</translation>
 <translation id="3027950907978057636">Од <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">Излезете од режимот „Инкогнито“</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Погледнете <ph name="TABS_COUNT_ONE" /> картичка со нова активност во споделените групи картички}one{Погледнете <ph name="TABS_COUNT_MANY" /> картичка со нова активност во споделените групи картички}other{Погледнете <ph name="TABS_COUNT_MANY" /> картички со нова активност во споделените групи картички}}</translation>
+<translation id="6971555615916967190">Поставките за „Режим за читање“ се отворени на половина висина</translation>
 <translation id="6971862865055170158">Не одобрувај</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, нова или ажурирана картичка</translation>
 <translation id="6976811588313110624">Додајте нова кратенка.</translation>

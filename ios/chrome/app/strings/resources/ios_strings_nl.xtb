@@ -951,6 +951,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4749529195026091676">{count,plural, =1{{count} kaart geïmporteerd}other{{count} kaarten geïmporteerd}}</translation>
 <translation id="4751645464639803239">Nieuw incognitotabblad</translation>
 <translation id="4752348350801431746">Meldingen van Veiligheidscheck uitzetten…</translation>
+<translation id="4759238208242260848">Downloads</translation>
 <translation id="4764612367328936189">Je organisatie vereist dat je alleen met bepaalde accounts inlogt. Niet-toegestane accounts zijn verborgen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover en volgen</translation>
 <translation id="4769198578611055647">Hiermee kun je op elk apparaat toegang krijgen tot opgeslagen toegangssleutels</translation>
@@ -1272,6 +1273,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5956112131836209882">Tabblad in tabbladgroep. <ph name="TAB_INDEX_IN_GROUP" /> van <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Zoeken met <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Er kan geen link naar de markering worden gemaakt.</translation>
+<translation id="5968400720580217226">AI-modus</translation>
 <translation id="5971459446352190251">Zoeken naar QR-code</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bookmark verwijderd}other{{count} bookmarks verwijderd}}</translation>
 <translation id="5972844218283131174">Alles deselecteren</translation>
@@ -1463,6 +1465,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6627583120233659107">Map bewerken</translation>
 <translation id="6629759408545977279">Van: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Je organisatie heeft de incognitomodus uitgezet</translation>
+<translation id="6637478299472506933">Download is mislukt</translation>
 <translation id="6638511529934826365">Tekst zoomen…</translation>
 <translation id="6640268266988685324">Geopend tabblad</translation>
 <translation id="6641465290890659327">Een kopie van je wachtwoord delen</translation>
@@ -1585,6 +1588,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7102005569666697658">Downloaden… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Instellingen → Betaalmethoden</translation>
 <translation id="7108338896283013870">Verbergen</translation>
+<translation id="7127922377013221748">Werkbalk verbergen</translation>
 <translation id="7128693485119315539">Je organisatie moet misschien browsegegevens kunnen bekijken en beheren die aan je beheerde account zijn gekoppeld, zoals je browsegeschiedenis en wachtwoorden.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Camera is niet beschikbaar</translation>

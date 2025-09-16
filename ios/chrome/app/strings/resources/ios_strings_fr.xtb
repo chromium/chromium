@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Ouvrez Mots de passe</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1433478348197382180">Mode Lecture</translation>
+<translation id="1435271730600332883">Ouvrez "Remplissage automatique et mots de passe"</translation>
 <translation id="1436671784520050284">Poursuivre la configuration</translation>
 <translation id="143681031165817424">Adresse enregistrée uniquement sur cet appareil</translation>
 <translation id="1445276840641906250">Tous vos onglets dans un seul navigateur</translation>
@@ -833,6 +834,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4286718549648564014">Adresse transférée vers votre compte <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marquer comme lu</translation>
 <translation id="428768789042547925">Nouveautés</translation>
+<translation id="428858055663163046">Vous pourrez accéder à vos fichiers téléchargés ici lorsqu'ils seront disponibles</translation>
 <translation id="429074084062258019">{count,plural, =1{Ajouter l'onglet à un groupe}one{Ajouter l'onglet à un groupe}other{Ajouter les onglets à un groupe}}</translation>
 <translation id="4302061870579014542">Définir la position</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
@@ -949,6 +951,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4749529195026091676">{count,plural, =1{{count} carte importée}one{{count} carte importée}other{{count} cartes importées}}</translation>
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
 <translation id="4752348350801431746">Désactiver les notifications du contrôle de sécurité…</translation>
+<translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4764612367328936189">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover et Suivi</translation>
 <translation id="4769198578611055647">Vous permet d'accéder à vos clés d'accès enregistrées sur n'importe quel appareil</translation>
@@ -1270,6 +1273,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5956112131836209882">Onglet dans le groupe d'onglets. <ph name="TAB_INDEX_IN_GROUP" /> sur <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Rechercher avec <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Impossible de créer un lien vers le texte en surbrillance.</translation>
+<translation id="5968400720580217226">Mode IA</translation>
 <translation id="5971459446352190251">Rechercher via un QR code</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 favori supprimé}one{{count} favori supprimé}other{{count} favoris supprimés}}</translation>
 <translation id="5972844218283131174">Tout désélectionner</translation>
@@ -1415,6 +1419,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6452534462676960500">Nouvelle activité</translation>
 <translation id="6459411599807878608">Informations masquées</translation>
 <translation id="646394917185284261">Fichiers</translation>
+<translation id="6472069383518492189">Vos téléchargements s'afficheront ici</translation>
 <translation id="6476253015009698798">Le suivi des prix n'est pas disponible pour cette page.</translation>
 <translation id="6476284679642588870">Gérer les modes de paiement</translation>
 <translation id="6476800141292307438">Traduction de la page en <ph name="LANGUAGE" />. Options disponibles au bas de l'écran.</translation>
@@ -1460,6 +1465,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6627583120233659107">Modifier le dossier</translation>
 <translation id="6629759408545977279">Source : <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Votre organisation a désactivé le mode navigation privée</translation>
+<translation id="6637478299472506933">Échec téléchargement</translation>
 <translation id="6638511529934826365">Agrandir le texte…</translation>
 <translation id="6640268266988685324">Onglet ouvert</translation>
 <translation id="6641465290890659327">Partager une copie de votre mot de passe</translation>
@@ -1582,6 +1588,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7102005569666697658">Téléchargement… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Réglages → Modes de paiement</translation>
 <translation id="7108338896283013870">Masquer</translation>
+<translation id="7127922377013221748">Masquer la barre d'outils</translation>
 <translation id="7128693485119315539">Votre organisation peut avoir besoin de voir et gérer les données de navigation liées à votre compte géré, comme votre historique de navigation et vos mots de passe.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Appareil photo non disponible</translation>

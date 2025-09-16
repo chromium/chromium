@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Բացել գաղտնաբառերը</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1433478348197382180">Ընթերցման ռեժիմ</translation>
+<translation id="1435271730600332883">Բացեք ինքնալրացումը և գաղտնաբառերը</translation>
 <translation id="1436671784520050284">Շարունակել կարգավորումը</translation>
 <translation id="143681031165817424">Հասցեն պահված է միայն այս սարքում</translation>
 <translation id="1445276840641906250">Ձեր բոլոր ներդիրները՝ մեկ դիտարկիչում</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">Հասցեն փոխանցվեց ձեր <ph name="USER_EMAIL" /> հաշիվ</translation>
 <translation id="4287172530684295552">Նշել որպես կարդացված</translation>
 <translation id="428768789042547925">Ինչ նոր բան կա</translation>
+<translation id="428858055663163046">Այստեղ կարող եք տեսնել ձեր ներբեռնած ֆայլերը, երբ դրանք հասանելի լինեն</translation>
 <translation id="429074084062258019">{count,plural, =1{Ավելացնել ներդիր խմբում}one{Ավելացնել ներդիր խմբում}other{Ավելացնել ներդիրներ խմբում}}</translation>
 <translation id="4302061870579014542">Ընտրել դիրքը</translation>
 <translation id="4304713468139749426">Գաղտնաբառերի կառավարիչ</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{Ներմուծվել է {count} քարտ}one{Ներմուծվել է {count} քարտ}other{Ներմուծվել է {count} քարտ}}</translation>
 <translation id="4751645464639803239">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="4752348350801431746">Անջատել անվտանգության ստուգման ծանուցումները…</translation>
+<translation id="4759238208242260848">Ներբեռնումներ</translation>
 <translation id="4764612367328936189">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։ Հաշիվները, որոնց մուտքն արգելված է, կթաքցվեն։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover և բաժանորդագրություններ</translation>
 <translation id="4769198578611055647">Սրա օգնությամբ կարող եք օգտագործել պահված մուտքի բանալիները ցանկացած սարքում</translation>
@@ -1270,6 +1273,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5956112131836209882">Ներդիրների խմբի ներդիր։ Ներդիր <ph name="TAB_INDEX_IN_GROUP" />՝ <ph name="NUMBER_OF_TABS_IN_GROUP" />-ից։</translation>
 <translation id="595769230373966252">Որոնել <ph name="SEARCH_PROVIDER" />-ում</translation>
 <translation id="5963939892571022323">Չհաջողվեց ստեղծել ընդգծված տեքստի հղումը։</translation>
+<translation id="5968400720580217226">ԱԲ ռեժիմ</translation>
 <translation id="5971459446352190251">Սկանավորել QR կոդը</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 էջանիշ ջնջվեց}one{{count} էջանիշ ջնջվեց}other{{count} էջանիշ ջնջվեց}}</translation>
 <translation id="5972844218283131174">Ապընտրել բոլորը</translation>
@@ -1415,6 +1419,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6452534462676960500">Նոր գործողություն</translation>
 <translation id="6459411599807878608">Մանրամասները թաքցվեցին</translation>
 <translation id="646394917185284261">Ֆայլեր</translation>
+<translation id="6472069383518492189">Ձեր ներբեռնումները կտեսնեք այստեղ</translation>
 <translation id="6476253015009698798">Գների հետագծումը հասանելի չէ այս էջի համար։</translation>
 <translation id="6476284679642588870">Կառավարել վճարման եղանակները</translation>
 <translation id="6476800141292307438">Էջը թարգմանվում է <ph name="LANGUAGE" />: Կարգավորումները էկրանի ներքևի հատվածում են:</translation>
@@ -1460,6 +1465,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6627583120233659107">Փոփոխել պանակը</translation>
 <translation id="6629759408545977279">Աղբյուրը՝ <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Ձեր կազմակերպությունն անջատել է ինկոգնիտո ռեժիմը</translation>
+<translation id="6637478299472506933">Ներբեռնումը չհաջողվեց</translation>
 <translation id="6638511529934826365">Մեծացնել տեքստը…</translation>
 <translation id="6640268266988685324">Բացել ներդիր</translation>
 <translation id="6641465290890659327">Տրամադրեք ձեր գաղտնաբառի պատճենը</translation>

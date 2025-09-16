@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Deschide Parole</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1433478348197382180">Modul de lectură</translation>
+<translation id="1435271730600332883">Deschide Completare automată și parole</translation>
 <translation id="1436671784520050284">Continuă configurarea</translation>
 <translation id="143681031165817424">Adresa a fost salvată numai pe acest dispozitiv</translation>
 <translation id="1445276840641906250">Toate filele într-un singur browser</translation>
@@ -833,6 +834,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4286718549648564014">Adresa a fost mutată în contul <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marchează drept citit</translation>
 <translation id="428768789042547925">Noutăți</translation>
+<translation id="428858055663163046">Poți să accesezi aici fișierele descărcate, atunci când sunt disponibile</translation>
 <translation id="429074084062258019">{count,plural, =1{Adaugă fila într-un grup}few{Adaugă filele într-un grup}other{Adaugă filele într-un grup}}</translation>
 <translation id="4302061870579014542">Setează poziția</translation>
 <translation id="4304713468139749426">Manager de parole</translation>
@@ -949,6 +951,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4749529195026091676">{count,plural, =1{{count} card importat}few{{count} carduri importate}other{{count} de carduri importate}}</translation>
 <translation id="4751645464639803239">Filă incognito nouă</translation>
 <translation id="4752348350801431746">Dezactivează Notificările pentru Verificarea de siguranță…</translation>
+<translation id="4759238208242260848">Descărcări</translation>
 <translation id="4764612367328936189">Organizația îți permite să te conectezi doar cu anumite conturi. Conturile nepermise sunt ascunse. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Descoperă și urmărește</translation>
 <translation id="4769198578611055647">Te ajută să accesezi cheile de acces salvate pe orice dispozitiv</translation>
@@ -1270,6 +1273,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5956112131836209882">Fila Grup de file. <ph name="TAB_INDEX_IN_GROUP" /> din <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Caută cu <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Nu se poate crea un link spre evidențiere.</translation>
+<translation id="5968400720580217226">Modul AI</translation>
 <translation id="5971459446352190251">Căutare coduri QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{Un marcaj șters}few{{count} marcaje șterse}other{{count} de marcaje șterse}}</translation>
 <translation id="5972844218283131174">Deselectează tot</translation>
@@ -1415,6 +1419,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6452534462676960500">Activitate nouă</translation>
 <translation id="6459411599807878608">Detaliile au fost ascunse</translation>
 <translation id="646394917185284261">Fișiere</translation>
+<translation id="6472069383518492189">Aici vei vedea descărcările</translation>
 <translation id="6476253015009698798">Urmărirea prețurilor nu este disponibilă pentru această pagină.</translation>
 <translation id="6476284679642588870">Gestionează metodele de plată</translation>
 <translation id="6476800141292307438">Se traduce această pagină în <ph name="LANGUAGE" />. Sunt disponibile opțiuni în partea de jos a ecranului.</translation>
@@ -1460,6 +1465,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6627583120233659107">Editați dosarul</translation>
 <translation id="6629759408545977279">De la: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Organizația ta a dezactivat modul incognito</translation>
+<translation id="6637478299472506933">Descărc. nu a reușit</translation>
 <translation id="6638511529934826365">Fă zoom pe text…</translation>
 <translation id="6640268266988685324">Filă deschisă</translation>
 <translation id="6641465290890659327">Trimite o copie a parolei</translation>
@@ -1582,6 +1588,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7102005569666697658">Se descarcă… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meniu → Setări → Metode de plată</translation>
 <translation id="7108338896283013870">Ascunde</translation>
+<translation id="7127922377013221748">Ascundeți bara de instrumente</translation>
 <translation id="7128693485119315539">Organizația ta poate avea nevoie să vadă și să gestioneze datele de navigare asociate contului tău gestionat, cum ar fi istoricul de navigare și parolele.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Camera foto nu este disponibilă</translation>

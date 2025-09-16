@@ -3,6 +3,7 @@
 <translationbundle lang="fi">
 <translation id="1010283278930414892">Ei tallennettuja salasanoja tällä laitteella</translation>
 <translation id="1011749477052068769">Siirrä tähän</translation>
+<translation id="1014083013111769343">Lukutilan asetukset kokonaan avattuna</translation>
 <translation id="1014147525163127655">Tällä laitteella ei ole <ph name="ORIGIN" />-avainkoodeja</translation>
 <translation id="1016498331642356377">Hae nopeasti äänikomennoilla. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
 <translation id="1028699632127661925">Lähetetään: <ph name="DEVICE_NAME" /></translation>
@@ -207,6 +208,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="197288927597451399">Säilytä</translation>
 <translation id="1973912524893600642">Säilytä data</translation>
 <translation id="1974060860693918893">Lisäasetukset</translation>
+<translation id="1982274314082047220">Lukutila: pyyhkäise ylös, niin näet asetukset</translation>
 <translation id="1984087999855033707">puhelinnumero</translation>
 <translation id="1984417487208496350">Ei suojausta (ei suositella)</translation>
 <translation id="1986685561493779662">Nimi on jo käytössä</translation>
@@ -428,6 +430,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2992473221983447149">Kuvien kuvaukset</translation>
 <translation id="2996291259634659425">Luo tunnuslause</translation>
 <translation id="2996809686854298943">URL-osoite vaaditaan</translation>
+<translation id="3024215143424744261">Lukutilan asetukset suljettu</translation>
 <translation id="3026955690410463085">Sisällytä linkki</translation>
 <translation id="3027644380269727216">Perustuu toimintaasi sivustolla. Tämä asetus on päällä.</translation>
 <translation id="3027950907978057636">Lähde: <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="696447261358045621">Poistu incognito-tilasta</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Näytä <ph name="TABS_COUNT_ONE" /> välilehti, jolla on uutta toimintaa jaetuissa välilehtiryhmissä}other{Näytä <ph name="TABS_COUNT_MANY" /> välilehteä, joilla on uutta toimintaa jaetuissa välilehtiryhmissä}}</translation>
+<translation id="6971555615916967190">Lukutilan asetukset puoliksi avattuna</translation>
 <translation id="6971862865055170158">Älä hyväksy</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, uusi tai päivitetty välilehti</translation>
 <translation id="6976811588313110624">Lisää uusi pikakuvake.</translation>

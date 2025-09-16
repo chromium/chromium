@@ -282,7 +282,7 @@
 <translation id="4205939740494406371">Chrome no pot comprovar les teves contrasenyes. Torna-ho a provar al cap de 24 hores o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">S'està cancel·lant...</translation>
 <translation id="4224210481850767180">S'ha cancel·lat la instal·lació.</translation>
-<translation id="4230631012078055975">Obtén més avantatges tenint la sessió iniciada a Chrome</translation>
+<translation id="4230631012078055975">Inicia la sessió a Chrome per treure'n més profit</translation>
 <translation id="4242034826641750751">Chrome necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4251615635259297716">Voleu enllaçar les vostres dades de Chrome amb aquest compte?</translation>
@@ -470,6 +470,7 @@
 <translation id="6506909944137591434">Chrome necessita permís d'accés a la càmera per poder crear un mapa en 3D del teu entorn</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Per poder utilitzar la ubicació, dona accés a Chrome des de la <ph name="BEGIN_LINK" />configuració del sistema<ph name="END_LINK" /></translation>
+<translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6532945796722480006">Obre Gemini a Chrome Canary</translation>
 <translation id="6585124893636629274">Tanca Gemini a Chrome</translation>
 <translation id="659498884637196217">Al gestor de contrasenyes de Google en aquest dispositiu</translation>

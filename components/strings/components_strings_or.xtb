@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC ଓ ଜଳବାୟୁ ନିୟନ୍ତ୍ରଣ</translation>
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
 <translation id="2742128390261873684">ହୋମ ଅଟୋମେସନ</translation>
-<translation id="2742870351467570537">ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ଗୁଡ଼ିକୁ କାଢ଼ନ୍ତୁ</translation>
 <translation id="2743512410823092182">DJ ରିସୋର୍ସ ଏବଂ ଇକ୍ୟୁପମେଣ୍ଟ</translation>
 <translation id="2743934314332613923">ଡ୍ରାଇଭିଂ ଲାଇସେନ୍ସକୁ ଅପଡେଟ କରିବେ?</translation>
 <translation id="2759299890026163685">ପୁଣି ଚେଷ୍ଟା କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ପାଖରେ ସ୍ଥିର ଇଣ୍ଟର୍ନେଟ କନେକ୍ସନ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -1777,6 +1776,7 @@
 <translation id="3941630233824954464">ବାଧ୍ୟତାମୂଳକ ପୁଣି-ପ୍ରମାଣୀକରଣକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3942048175062210325">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି ଖୋଲିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> ପ୍ରକାରର ପ୍ରମାଣୀକରଣ ଡିଭାଇସ ଏବଂ ସେଗୁଡ଼ିକରେ ଆକ୍ସେସ କରାଯାଇପାରୁଥିବା ସ୍ମାର୍ଟ କାର୍ଡଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="3946209740501886391">ସର୍ବଦା ଏହି ସାଇଟ୍‌ରେ ପଚାରନ୍ତୁ</translation>
 <translation id="3948588869002647271">ଏହି ଆପ୍ଲିକେସନ ଉପଲବ୍ଧ ନାହିଁ କିମ୍ବା ନଷ୍ଟ ହୋଇଯାଇଛି</translation>
 <translation id="3949297482798028668">ଏଠାରେ ଏହି ବିଷୟବସ୍ତୁ ପେଷ୍ଟ କରିବାକୁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି।</translation>
@@ -2674,7 +2674,6 @@
 <translation id="5423269318075950257">ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="5425082381151187189">ଘର ଏବଂ ଇଣ୍ଟେରିଅର ସାଜସଜ୍ଜା</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ଆପଣଙ୍କୁ ବିଜ୍ଞପ୍ତି ପଠାଇବାକୁ ଚାହୁଁଛି</translation>
-<translation id="5430298929874300616">ବୁକମାର୍କ୍ କାଢ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="5431318178759467895">ରଙ୍ଗ</translation>
 <translation id="5433756542371550806">କମାଣ୍ଡ-ଲାଇନ ଭେରିଏସନ</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ଏସବୁକୁ ସେଭ କରିବ ନାହିଁ<ph name="END_EMPHASIS" />:
@@ -2872,6 +2871,7 @@
 <translation id="5750869797196646528">ହେଣ୍ଡ ଟ୍ରାକିଂ</translation>
 <translation id="5752327398324808817">ଗୋଟିଏ କିମ୍ବା ଦୁଇଟି ଶବ୍ଦ ଲେଖନ୍ତୁ</translation>
 <translation id="5752519522101347518">ବେଙ୍କ ଯାଞ୍ଚକରଣ ୱେବସାଇଟ ଲୋଡ ହେଉଛି</translation>
+<translation id="5753570386948603678">ଇତିହାସରୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="5759751709240058861">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର ଓ ମୁଭ୍ କରିବାକୁ</translation>
 <translation id="5763042198335101085">ଏକ ବୈଧ ଇମେଲ୍ ଠିକଣା ଲେଖନ୍ତୁ</translation>
 <translation id="5764725887548570807">ଅବୈଧ ମୂଳ ଫର୍ମାଟ।</translation>
@@ -3088,7 +3088,6 @@
 <translation id="6124058285696691147">ଆଟାଚମେଣ୍ଟ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="6124432979022149706">Chrome ଏଣ୍ଟରପ୍ରାଇଜ୍ କନେକ୍ଟରଗୁଡ଼ିକ</translation>
 <translation id="6126565365696310362">ଏନଭେଲପ ଚାଇନିଜ #2</translation>
-<translation id="6127379762771434464">ଆଇଟମକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="6131824478727057281">ଲୋକେସନ୍</translation>
 <translation id="6133320744616005677">ଅନୁମତି ଦେବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6133984428121856852">ଫାଇଲ ଏକ୍ସଟେନସନ ଖାଲି ଅଛି କିମ୍ବା ତ୍ରୁଟିପୂର୍ଣ୍ଣ ଅଟେ।</translation>
@@ -3102,7 +3101,6 @@
 <translation id="6151417162996330722">ସର୍ଭର ସାର୍ଟିଫିକେଟ୍‌ର ବୈଧତା ଅବଧି ବହୁତ ଲମ୍ବା ଅଟେ।</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ଇଞ୍ଚ (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ରନିଂ ଏବଂ ୱାକିଂ</translation>
-<translation id="6157754950574419155">ଇତିହାସରୁ ସବୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="6157877588268064908">ସିପିଂ ପଦ୍ଧତି ଏବଂ ଆବଶ୍ୟକତାଗୁଡ଼ିକ ଦେଖିବାକୁ, ଗୋଟିଏ ଠିକଣା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6159554577634054750">ପେଷ୍ଟ କଣ୍ଟ୍ରୋଲ</translation>
 <translation id="6159908896951210943">ଫର୍ମାଲ</translation>

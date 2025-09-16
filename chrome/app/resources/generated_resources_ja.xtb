@@ -734,7 +734,6 @@
 <translation id="1500297251995790841">不明なデバイス [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">サポートされていない Chrome アプリの詳細</translation>
 <translation id="1501480321619201731">グループを削除</translation>
-<translation id="1503392482221435031">使用統計情報を Google に自動送信します。障害レポートは、デバイスの設定でオンまたはオフにできます。</translation>
 <translation id="1503556098270577657">Android スマートフォンを使用して <ph name="USER_EMAIL" /> にログインしました</translation>
 <translation id="150411034776756821"><ph name="SITE" /> を削除</translation>
 <translation id="1504253885059472207">分割表示を固定</translation>
@@ -3016,7 +3015,6 @@
 <translation id="3048589239114571785">再生（K）</translation>
 <translation id="3048742847101793553">このファイルはスキャンに失敗したため、組織でブロックされました。</translation>
 <translation id="3048917188684939573">キャストとデバイスのログ</translation>
-<translation id="3049525403650329038">より関連性の高い回答を得るには、ページ コンテンツを Gemini と共有してください。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。</translation>
 <translation id="3051250416341590778">表示サイズ</translation>
 <translation id="3053013834507634016">証明書キーの用途</translation>
 <translation id="3053273573829329829">ユーザー PIN を有効にする</translation>
@@ -7899,7 +7897,6 @@
 <translation id="6525767484449074555">[インストール] をクリックします</translation>
 <translation id="6527303717912515753">共有</translation>
 <translation id="6527574156657772563">使用可能なデバイスがありません。この <ph name="DEVICE_TYPE" /> にスマートフォンを接続するには、スマートフォンに Google アカウントを追加してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Chrome 履歴</translation>
 <translation id="6530030995840538405">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">管理者が行った設定です</translation>
 <translation id="6530267432324197764">プロフィールは <ph name="MANAGER" /> によって管理されています</translation>

@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">‏HVAC اور کلائمیٹ کنٹرول</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2742128390261873684">ہوم آٹومیشن</translation>
-<translation id="2742870351467570537">منتخب کردہ آئٹمز ہٹائیں</translation>
 <translation id="2743512410823092182">‏DJ کے وسائل اور ساز و سامان</translation>
 <translation id="2743934314332613923">ڈرائیونگ لائسنس کی معلومات اپ ڈیٹ کریں؟</translation>
 <translation id="2759299890026163685">دوبارہ کوشش کرنے سے پہلے یہ یقینی بنائیں کہ آپ کا انٹرنیٹ کنکشن مستحکم ہے</translation>
@@ -1781,6 +1780,7 @@
 <translation id="3941630233824954464">لازمی دوبارہ تصدیق کو فعال کریں</translation>
 <translation id="3942048175062210325">اپنی فائلز کو دوبارہ کھولنے کی کوشش کریں</translation>
 <translation id="3943857333388298514">پیسٹ کریں</translation>
+<translation id="3945937463338223066">‫<ph name="READERNAME" /> قسم کے توثیق کرنے والے آلات اور اسمارٹ کارڈز کو کنٹرول کریں کو ان تک قابل رسائی ہیں</translation>
 <translation id="3946209740501886391">اس سائٹ پر ہمیشہ پوچھیں</translation>
 <translation id="3948588869002647271">یہ ایپلیکیشن غائب یا خراب ہے</translation>
 <translation id="3949297482798028668">اس مواد کو یہاں پیسٹ کرنا آپ کے منتظم نے مسدود کر دیا ہے۔</translation>
@@ -2678,7 +2678,6 @@
 <translation id="5423269318075950257">قیمت ٹریک کریں</translation>
 <translation id="5425082381151187189">گھر اور داخلی سجاوٹ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> آپ کو اطلاعات بھیجنا چاہتی ہے</translation>
-<translation id="5430298929874300616">بُک مارک کو ہٹائیں</translation>
 <translation id="5431318178759467895">رنگ</translation>
 <translation id="5433756542371550806">کمانڈ لائن کے تغیرات</translation>
 <translation id="5434798570900738152">‏Chromium درج ذیل معلومات کو <ph name="BEGIN_EMPHASIS" />محفوظ نہیں کرے گا<ph name="END_EMPHASIS" />:
@@ -2876,6 +2875,7 @@
 <translation id="5750869797196646528">ہاتھ کی ٹریکنگ</translation>
 <translation id="5752327398324808817">ایک یا دو لفظ درج کریں</translation>
 <translation id="5752519522101347518">بینک کی توثیق کی ویب سائٹ لوڈ ہو رہی ہے</translation>
+<translation id="5753570386948603678">سرگزشت سے حذف کریں</translation>
 <translation id="5759751709240058861">اپنا کیمرا استعمال کریں اور منتقل کریں</translation>
 <translation id="5763042198335101085">ایک درست ای میل پتہ درج کریں</translation>
 <translation id="5764725887548570807">اصل فارمیٹ غلط ہے۔</translation>
@@ -3092,7 +3092,6 @@
 <translation id="6124058285696691147">منسلکہ ڈاؤن لوڈ کریں</translation>
 <translation id="6124432979022149706">‏Chrome Enterprise کنیکٹرز</translation>
 <translation id="6126565365696310362">‏Chinese #2 لفافہ</translation>
-<translation id="6127379762771434464">آئٹم ہٹا دیا گیا</translation>
 <translation id="6131824478727057281">مقام</translation>
 <translation id="6133320744616005677">اجازت دینا جاری رکھیں</translation>
 <translation id="6133984428121856852">فائل ایکسٹینشن خالی یا خراب ہے۔</translation>
@@ -3108,7 +3107,6 @@
 <translation id="6151417162996330722">سرور سرٹیفیکیٹ کی درستگی کی مدت کافی طویل ہے۔</translation>
 <translation id="6153243098246946146">‏(<ph name="ORIENTATION" />) میں ‎<ph name="WIDTH" /> × <ph name="HEIGHT" />‎</translation>
 <translation id="615506061184576470">دوڑنا اور چہل قدمی</translation>
-<translation id="6157754950574419155">سرگزشت سے سب کو ہٹائیں</translation>
 <translation id="6157877588268064908">ترسیل کے طریقے اور ضروریات دیکھنے کیلئے، ایک پتہ منتخب کریں</translation>
 <translation id="6159554577634054750">کیڑوں پر قابو پانا</translation>
 <translation id="6159908896951210943">رسمی</translation>
@@ -3794,6 +3792,7 @@
 <translation id="7292031607255951991">وصول کنندہ کا نام</translation>
 <translation id="7298195798382681320">تجویز کردہ</translation>
 <translation id="7299471494012161875">ڈسپلے پیریفیرلز منسلک ہیں</translation>
+<translation id="7299721129597238157">بُک مارک حذف کریں</translation>
 <translation id="7299769361777046949">‏‫Google والٹ میں لائلٹی کارڈز کا نظم کریں</translation>
 <translation id="7304030187361489308">زیادہ</translation>
 <translation id="7304562222803846232">‏Google اکاؤنٹ کی رازداری کا نظم کریں</translation>

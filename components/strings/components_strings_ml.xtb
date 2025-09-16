@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC-യും കാലാവസ്ഥാ നിയന്ത്രണവും</translation>
 <translation id="2740531572673183784">ശരി</translation>
 <translation id="2742128390261873684">ഹോം ഓട്ടോമേഷൻ</translation>
-<translation id="2742870351467570537">തിരഞ്ഞെടുത്ത ഇനങ്ങള്‍‌ നീക്കംചെയ്യുക</translation>
 <translation id="2743512410823092182">DJ റിസോഴ്‌സുകളും ഉപകരണവും</translation>
 <translation id="2743934314332613923">ഡ്രൈവിംഗ് ലൈസൻസ് അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="2759299890026163685">വീണ്ടും ശ്രമിക്കുന്നതിന് മുമ്പ് നിങ്ങൾക്ക് സ്ഥിരതയുള്ള ഒരു ഇന്റർനെറ്റ് കണക്ഷനുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
@@ -1779,6 +1778,7 @@
 <translation id="3941630233824954464">നിർബന്ധിതമായുള്ള വീണ്ടും പരിശോധിച്ചുറപ്പിക്കൽ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3942048175062210325">നിങ്ങളുടെ ഫയലുകൾ തുറക്കാൻ വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="3943857333388298514">ഒട്ടിക്കുക</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> തരത്തിലുള്ള പരിശോധിച്ചുറപ്പിക്കൽ ഉപകരണങ്ങളും അവയ്ക്ക് ആക്‌സസ് ചെയ്യാവുന്ന സ്‌മാർട്ട് കാർഡുകളും നിയന്ത്രിക്കുക</translation>
 <translation id="3946209740501886391">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും ചോദിക്കുക</translation>
 <translation id="3948588869002647271">ഈ ആപ്പ് കാണുന്നില്ല അല്ലെങ്കിൽ തകരാറുണ്ട്</translation>
 <translation id="3949297482798028668">ഈ ഉള്ളടക്കം ഇവിടെ ഒട്ടിക്കുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു.</translation>
@@ -2676,7 +2676,6 @@
 <translation id="5423269318075950257">നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="5425082381151187189">വീട്, ഇന്റീരിയർ ഡെക്കറേഷൻ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്‌ക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
-<translation id="5430298929874300616">ബുക്ക്‌മാർക്ക് നീക്കംചെയ്യുക</translation>
 <translation id="5431318178759467895">വര്‍ണ്ണം</translation>
 <translation id="5433756542371550806">കമാൻഡ്-ലൈൻ വ്യതിയാനങ്ങൾ</translation>
 <translation id="5434798570900738152">Chromium ഇനിപ്പറയുന്നവ <ph name="BEGIN_EMPHASIS" />സംരക്ഷിക്കില്ല<ph name="END_EMPHASIS" />:
@@ -2874,6 +2873,7 @@
 <translation id="5750869797196646528">കൈകൾ ട്രാക്ക് ചെയ്യൽ</translation>
 <translation id="5752327398324808817">ഒന്നോ രണ്ടോ വാക്കുകൾ നൽകുക</translation>
 <translation id="5752519522101347518">ബാങ്ക് പരിശോധിച്ചുറപ്പിക്കൽ വെബ്സൈറ്റ് ലോഡ് ചെയ്യുന്നു</translation>
+<translation id="5753570386948603678">ചരിത്രത്തിൽ നിന്ന് ഇല്ലാതാക്കുക</translation>
 <translation id="5759751709240058861">ക്യാമറ ഉപയോഗിക്കുകയും ചലിപ്പിക്കുകയും ചെയ്യുക</translation>
 <translation id="5763042198335101085">ശരിയായ ഇമെയിൽ വിലാസം നൽകുക</translation>
 <translation id="5764725887548570807">ഒറിജിൻ ഫോർമാറ്റ് അസാധുവാണ്.</translation>
@@ -3090,7 +3090,6 @@
 <translation id="6124058285696691147">അറ്റാച്ച്മെന്റ് ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="6124432979022149706">Chrome എന്റർപ്രൈസ് കണക്റ്ററുകൾ</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
-<translation id="6127379762771434464">ഇനം നീക്കംചെയ്‌തു</translation>
 <translation id="6131824478727057281">ലൊക്കേഷന്‍</translation>
 <translation id="6133320744616005677">അനുവദിക്കുന്നത് തുടരുക</translation>
 <translation id="6133984428121856852">ഫയൽ എക്സ്റ്റൻഷൻ ശൂന്യമോ കേടായതോ ആണ്.</translation>
@@ -3105,7 +3104,6 @@
 <translation id="6151417162996330722">സെർവർ സർട്ടിഫിക്കറ്റിന് ദൈർഘ്യമേറിയ ഒരു കാലയളവ് ഉണ്ട്.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ഇഞ്ച് (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ഓട്ടവും നടത്തവും</translation>
-<translation id="6157754950574419155">ചരിത്രത്തിലെ എല്ലാ ഇനങ്ങളും നീക്കം ചെയ്യുക</translation>
 <translation id="6157877588268064908">ഷിപ്പിംഗ് രീതികളും ആവശ്യകതകളും കാണാൻ ഒരു വിലാസം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6159554577634054750">കീട നിയന്ത്രണം</translation>
 <translation id="6159908896951210943">ഔദ്യോഗികം</translation>
@@ -3792,6 +3790,7 @@
 <translation id="7292031607255951991">സ്വീകർത്താവിന്റെ പേര്</translation>
 <translation id="7298195798382681320">ശുപാർശചെയ്യുന്നത്</translation>
 <translation id="7299471494012161875">അറ്റാച്ച് ചെയ്ത ഡിസ്പ്ലേ പെരിഫറലുകൾ</translation>
+<translation id="7299721129597238157">ബുക്ക്‌മാര്‍‌ക്ക് ഇല്ലാതാക്കുക</translation>
 <translation id="7299769361777046949">Google Wallet-ൽ ലോയൽറ്റി കാർഡുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="7304030187361489308">ഉയർന്നത്</translation>
 <translation id="7304562222803846232">Google Account സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>

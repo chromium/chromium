@@ -1067,7 +1067,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="273785062888389088">Lugreëling en klimaatbeheer</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Huisoutomatisering</translation>
-<translation id="2742870351467570537">Verwyder geselekteerde items</translation>
 <translation id="2743512410823092182">Platejoggie-hulpbronne en -toerusting</translation>
 <translation id="2743934314332613923">Dateer rybewys op?</translation>
 <translation id="2759299890026163685">Maak seker dat jy ’n stabiele internetverbinding het voordat jy weer probeer</translation>
@@ -1780,6 +1779,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3941630233824954464">Aktiveer verpligte herstawing</translation>
 <translation id="3942048175062210325">Probeer jou lêers weer oopmaak</translation>
 <translation id="3943857333388298514">Plak</translation>
+<translation id="3945937463338223066">Stawingtoestelle van die tipe <ph name="READERNAME" /> en slimkaarte wat vir hulle toeganklik is, beheer</translation>
 <translation id="3946209740501886391">Vra altyd op hierdie werf</translation>
 <translation id="3948588869002647271">Hierdie app ontbreek of is beskadig</translation>
 <translation id="3949297482798028668">Die opsie om hierdie inhoud hier te plak, word deur jou administrateur geblokkeer</translation>
@@ -2677,7 +2677,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5423269318075950257">Spoor prys na</translation>
 <translation id="5425082381151187189">Huis en binnenshuise dekor</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wil vir jou kennisgewings stuur</translation>
-<translation id="5430298929874300616">Verwyder boekmerk</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5433756542371550806">Bevellynvariasies</translation>
 <translation id="5434798570900738152">Chromium sal die volgende<ph name="BEGIN_EMPHASIS" /> nie stoor nie<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5750869797196646528">Handnasporing</translation>
 <translation id="5752327398324808817">Voer ’n woord of twee in</translation>
 <translation id="5752519522101347518">Webwerf vir bankverifikasie word gelaai</translation>
+<translation id="5753570386948603678">Vee uit in geskiedenis</translation>
 <translation id="5759751709240058861">Gebruik en beweeg jou kamera</translation>
 <translation id="5763042198335101085">Voer 'n geldige e-posadres in</translation>
 <translation id="5764725887548570807">Ongeldige oorsprongformaat.</translation>
@@ -3091,7 +3091,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6124058285696691147">Laai die aanhegsel af</translation>
 <translation id="6124432979022149706">Chrome Enterprise-verbinders</translation>
 <translation id="6126565365696310362">Koevert Chinees #2</translation>
-<translation id="6127379762771434464">Item is verwyder</translation>
 <translation id="6131824478727057281">ligging</translation>
 <translation id="6133320744616005677">Gaan voort om toe te laat</translation>
 <translation id="6133984428121856852">Lêeruitbreidings is leeg of misvorm.</translation>
@@ -3106,7 +3105,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6151417162996330722">Die bedienersertifikaat het 'n geldigheidtydperk wat te lank is.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> duim (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Hardloop en stap</translation>
-<translation id="6157754950574419155">Verwyder alles uit geskeidenis</translation>
 <translation id="6157877588268064908">Kies 'n adres om versendingmetodes en -vereistes te sien</translation>
 <translation id="6159554577634054750">Plaagbeheer</translation>
 <translation id="6159908896951210943">Formeel</translation>
@@ -3792,6 +3790,7 @@ Bykomende besonderhede:
 <translation id="7292031607255951991">Ontvanger se naam</translation>
 <translation id="7298195798382681320">Aanbevole</translation>
 <translation id="7299471494012161875">Wys randtoestelle wat aangeheg is</translation>
+<translation id="7299721129597238157">Vee boekmerk uit</translation>
 <translation id="7299769361777046949">Bestuur lojaliteitskaarte in Google Wallet</translation>
 <translation id="7304030187361489308">Hoog</translation>
 <translation id="7304562222803846232">Bestuur Google-rekening se privaatheidsinstellings</translation>

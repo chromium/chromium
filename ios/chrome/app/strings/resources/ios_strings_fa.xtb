@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">باز کردن «گذرواژه‌ها»</translation>
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1433478348197382180">حالت خواندن</translation>
+<translation id="1435271730600332883">‏باز کردن Autofill &amp; Password (تکمیل خودکار و گذرواژه‌ها)</translation>
 <translation id="1436671784520050284">ادامه راه‌اندازی</translation>
 <translation id="143681031165817424">نشانی فقط در این دستگاه ذخیره می‌شود</translation>
 <translation id="1445276840641906250">همه برگه‌های شما در یک مرورگر</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">نشانی به حساب <ph name="USER_EMAIL" /> شما منتقل شد</translation>
 <translation id="4287172530684295552">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="428768789042547925">ویژگی‌های جدید</translation>
+<translation id="428858055663163046">هرزمان فایل‌های بارگیری‌شده‌تان دردسترس بود، می‌توانید اینجا به آن‌ها دسترسی پیدا کنید</translation>
 <translation id="429074084062258019">{count,plural, =1{افزودن برگه به گروه}one{افزودن برگه به گروه}other{افزودن برگه‌ها به گروه}}</translation>
 <translation id="4302061870579014542">تنظیم کردن موقعیت</translation>
 <translation id="4304713468139749426">مدیر گذرواژه</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{‫{count} کارت وارد شد}one{‫{count} کارت وارد شد}other{‫{count} کارت وارد شد}}</translation>
 <translation id="4751645464639803239">زبانه ناشناس جدید</translation>
 <translation id="4752348350801431746">خاموش کردن اعلان‌های «بررسی ایمنی»…</translation>
+<translation id="4759238208242260848">بارگیری‌ها</translation>
 <translation id="4764612367328936189">سازمانتان فقط ورود به سیستم با حساب‌های خاصی را مجاز کرده است. حساب‌هایی که مجاز نیستند پنهان می‌شوند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">کاوش و دنبال کردن</translation>
 <translation id="4769198578611055647">به شما کمک می‌کند به گذرکلیدهای ذخیره‌شده‌تان در هر دستگاهی دسترسی پیدا کنید</translation>
@@ -1270,6 +1273,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5956112131836209882">برگه گروه برگه. ‫<ph name="TAB_INDEX_IN_GROUP" /> از <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">جستجو با <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">نمی‌توان پیوندی به مورد برجسته ایجاد کرد.</translation>
+<translation id="5968400720580217226">حالت هوش مصنوعی</translation>
 <translation id="5971459446352190251">جستجوی رمزینه پاسخ‌سریع</translation>
 <translation id="5971872012779224351">{count,plural, =1{یک نشانک حذف شد}one{{count} نشانک حذف شد}other{{count} نشانک حذف شد}}</translation>
 <translation id="5972844218283131174">لغوانتخاب همه</translation>
@@ -1415,6 +1419,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6452534462676960500">فعالیت جدید</translation>
 <translation id="6459411599807878608">جزئیات پنهان شدند</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">بارگیری‌هایتان را اینجا خواهید دید</translation>
 <translation id="6476253015009698798">پیگیری قیمت برای این صفحه دردسترس نیست.</translation>
 <translation id="6476284679642588870">مدیریت روش‌های پرداخت</translation>
 <translation id="6476800141292307438">ترجمه صفحه به <ph name="LANGUAGE" />. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
@@ -1460,6 +1465,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6627583120233659107">ویرایش پوشه</translation>
 <translation id="6629759408545977279">از: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">سازمانتان «حالت ناشناس» را خاموش کرده است</translation>
+<translation id="6637478299472506933">بارگیری نشد</translation>
 <translation id="6638511529934826365">بزرگ‌نمایی نوشتار…</translation>
 <translation id="6640268266988685324">برگه باز</translation>
 <translation id="6641465290890659327">هم‌رسانی نسخه‌ای از گذرواژه</translation>
@@ -1582,6 +1588,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7102005569666697658">درحال بارگیری… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">منو ← تنظیمات ← روش‌های پرداخت</translation>
 <translation id="7108338896283013870">عدم نمایش</translation>
+<translation id="7127922377013221748">عدم نمایش نوارابزار</translation>
 <translation id="7128693485119315539">شاید لازم باشد سازمانتان داده‌های مرور مربوط به حساب مدیریت‌شده شما، مثل سابقه مرور و گذرواژه‌هایتان را ببیند و مدیریت کند.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">دوربین غیرقابل‌ دسترسی است</translation>

@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC ಮತ್ತು ಹವಾಮಾನ ನಿಯಂತ್ರಣ</translation>
 <translation id="2740531572673183784">ಸರಿ</translation>
 <translation id="2742128390261873684">ಮನೆಯ ಯಾಂತ್ರೀಕರಣ</translation>
-<translation id="2742870351467570537">ಆಯ್ಕೆಮಾಡಿದ ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2743512410823092182">ಡಿಜೆ ಸಂಪನ್ಮೂಲಗಳು ಮತ್ತು ಉಪಕರಣ</translation>
 <translation id="2743934314332613923">ಡ್ರೈವಿಂಗ್ ಲೈಸೆನ್ಸ್ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಬೇಕೆ?</translation>
 <translation id="2759299890026163685">ಪುನಃ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು ನೀವು ಸ್ಥಿರವಾದ ಇಂಟರ್‌ನೆಟ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಹೊಂದಿದ್ದೀರಿ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
@@ -2675,7 +2674,6 @@
 <translation id="5423269318075950257">ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="5425082381151187189">ಮನೆ ಮತ್ತು ಒಳಾಂಗಣ ಅಲಂಕಾರ</translation>
 <translation id="5426179911063097041">ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು <ph name="SITE" /> ಬಯಸುತ್ತದೆ</translation>
-<translation id="5430298929874300616">ಬುಕ್‌ಮಾರ್ಕ್‌ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="5431318178759467895">ಬಣ್ಣ</translation>
 <translation id="5433756542371550806">ಕಮಾಂಡ್‌-ಲೈನ್‌ ವೇರಿಯೇಶನ್‌</translation>
 <translation id="5434798570900738152">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chromium <ph name="BEGIN_EMPHASIS" />ಸೇವ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
@@ -2873,6 +2871,7 @@
 <translation id="5750869797196646528">ಹ್ಯಾಂಡ್‌ ಟ್ರ್ಯಾಕಿಂಗ್‌</translation>
 <translation id="5752327398324808817">ಒಂದು ಅಥವಾ ಎರಡು ಪದಗಳನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="5752519522101347518">ಬ್ಯಾಂಕ್‌ ದೃಢೀಕರಣದ ವೆಬ್‌ಸೈಟ್‌ ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
+<translation id="5753570386948603678">ಇತಿಹಾಸದಲ್ಲಿರುವುದನ್ನು ಅಳಿಸಿ</translation>
 <translation id="5759751709240058861">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿ ಮತ್ತು ಸರಿಸಿ</translation>
 <translation id="5763042198335101085">ಮಾನ್ಯವಾದ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="5764725887548570807">ಅಮಾನ್ಯ ಮೂಲ ಫಾರ್ಮ್ಯಾಟ್.</translation>
@@ -3089,7 +3088,6 @@
 <translation id="6124058285696691147">ಲಗತ್ತನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6124432979022149706">Chrome ಎಂಟರ್‌ಪ್ರೈಸ್ ಕನೆಕ್ಟರ್‌ಗಳು</translation>
 <translation id="6126565365696310362">ಎನ್ವಲಪ್ ಚೈನೀಸ್ #2</translation>
-<translation id="6127379762771434464">ಐಟಂ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="6131824478727057281">ಸ್ಥಳ</translation>
 <translation id="6133320744616005677">ಅನುಮತಿಯನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="6133984428121856852">ಫೈಲ್ ವಿಸ್ತರಣೆಯು ಖಾಲಿಯಾಗಿದೆ ಅಥವಾ ಸರಿಯಾಗಿ ರೂಪಿಸಲಾಗಿಲ್ಲ.</translation>
@@ -3103,7 +3101,6 @@
 <translation id="6151417162996330722">ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರವು ತುಂಬಾ ಉದ್ದವಾದ ವಾಯಿದೆ ಅವಧಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ಇಂಚು (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ರನ್ನಿಂಗ್ ಮತ್ತು ವಾಕಿಂಗ್</translation>
-<translation id="6157754950574419155">ಇತಿಹಾಸದಿಂದ ಎಲ್ಲವನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6157877588268064908">ಶಿಪ್ಪಿಂಗ್ ವಿಧಾನಗಳು ಹಾಗೂ ಆವಶ್ಯಕತೆಗಳನ್ನು ನೋಡಲು, ಒಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6159554577634054750">ಕೀಟ ನಿಯಂತ್ರಣ</translation>
 <translation id="6159908896951210943">ಔಪಚಾರಿಕ</translation>
@@ -3791,6 +3788,7 @@
 <translation id="7292031607255951991">ಸ್ವೀಕೃತದಾರರ ಹೆಸರು</translation>
 <translation id="7298195798382681320">ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7299471494012161875">ಡಿಸ್‌ಪ್ಲೇ ಪರಿಕರಗಳನ್ನು ಲಗತ್ತಿಸಲಾಗಿದೆ</translation>
+<translation id="7299721129597238157">ಬುಕ್‌ಮಾರ್ಕ್ ಅಳಿಸಿ</translation>
 <translation id="7299769361777046949">Google Wallet ನಲ್ಲಿ ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7304030187361489308">ಅಧಿಕ</translation>
 <translation id="7304562222803846232">Google ಖಾತೆಯ ಗೌಪ್ಯತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="or">
 <translation id="1010283278930414892">ଏହି ଡିଭାଇସରେ କୌଣସି ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡ ନାହିଁ</translation>
 <translation id="1011749477052068769">ଏଠାକୁ ମୁଭ କରନ୍ତୁ</translation>
+<translation id="1014083013111769343">ରିଡିଂ ମୋଡର ପସନ୍ଦଗୁଡ଼ିକୁ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="1014147525163127655">ଏହି ଡିଭାଇସରେ <ph name="ORIGIN" /> ପାଇଁ କୌଣସି ପାସକୀ ନାହିଁ</translation>
 <translation id="1016498331642356377">ଆପଣଙ୍କ ଭଏସ୍ ମାଧ୍ୟମରେ ଶୀଘ୍ର ସନ୍ଧାନ କରନ୍ତୁ। ଏହି ସର୍ଟକଟକୁ ଏଡିଟ୍ କରିବା ପାଇଁ, ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ।</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />କୁ ପଠାଉଛି...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">ଡାଟା ରଖନ୍ତୁ</translation>
 <translation id="1974060860693918893">ବିକଶିତ</translation>
+<translation id="1982274314082047220">ପସନ୍ଦଗୁଡ଼ିକ ପାଇଁ ରିଡିଂ ମୋଡକୁ ଉପରକୁ ସ୍ୱାଇପ କରନ୍ତୁ</translation>
 <translation id="1984087999855033707">ଫୋନ ନମ୍ବର</translation>
 <translation id="1984417487208496350">କୌଣସି ସୁରକ୍ଷା ନାହିଁ (ସୁପାରିଶ କରାଯାଇ ନାହିଁ)</translation>
 <translation id="1986685561493779662">ନାମ ପୂର୍ବରୁ ଅଛି</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">ଛବିର ବର୍ଣ୍ଣନା</translation>
 <translation id="2996291259634659425">ପାସ୍‌ଫ୍ରେଜ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2996809686854298943">URL ଆବଶ୍ୟକ</translation>
+<translation id="3024215143424744261">ରିଡିଂ ମୋଡର ପସନ୍ଦଗୁଡ଼ିକୁ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="3026955690410463085">ଲିଙ୍କ୍ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="3027644380269727216">କୌଣସି ସାଇଟରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଆଧାରରେ। ଏହି ସେଟିଂ ଚାଲୁ ଅଛି।</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" />ରୁ</translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">ଇନକଗ୍ନିଟୋ ମୋଡରୁ ବାହାରିଯାଆନ୍ତୁ</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ସହିତ <ph name="TABS_COUNT_ONE" /> ଟାବ ଦେଖନ୍ତୁ}other{ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ସହିତ <ph name="TABS_COUNT_MANY" /> ଟାବ ଦେଖନ୍ତୁ}}</translation>
+<translation id="6971555615916967190">ରିଡିଂ ମୋଡର ପସନ୍ଦଗୁଡ଼ିକୁ ଅଧା ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="6971862865055170158">ଅନୁମୋଦନ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, ନୂଆ କିମ୍ବା ଅପଡେଟ କରାଯାଇଥିବା ଟାବ</translation>
 <translation id="6976811588313110624">ନୂଆ ସର୍ଟକଟ ଯୋଗ କରନ୍ତୁ।</translation>

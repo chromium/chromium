@@ -1067,7 +1067,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="273785062888389088">HVAC og klimakontroll</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Hjemmeautomatisering</translation>
-<translation id="2742870351467570537">Fjern valgte elementer</translation>
 <translation id="2743512410823092182">DJ-tjenester og -utstyr</translation>
 <translation id="2743934314332613923">Vil du oppdatere førerkortet?</translation>
 <translation id="2759299890026163685">Sørg for at du har stabil internettilkobling før du prøver på nytt</translation>
@@ -1780,6 +1779,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3941630233824954464">Slå på obligatorisk gjenautentisering</translation>
 <translation id="3942048175062210325">Prøv å åpne filene på nytt</translation>
 <translation id="3943857333388298514">Lim inn</translation>
+<translation id="3945937463338223066">Kontroller autentiseringsenheter av typen <ph name="READERNAME" /> og smartkortene som er tilgjengelige for dem</translation>
 <translation id="3946209740501886391">Spør alltid på dette nettstedet</translation>
 <translation id="3948588869002647271">Denne appen mangler eller er skadet</translation>
 <translation id="3949297482798028668">Administratoren din har blokkert innliming av dette innholdet her.</translation>
@@ -2677,7 +2677,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5423269318075950257">Spor prisen</translation>
 <translation id="5425082381151187189">Hjemme- og interiørdekor</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil sende deg varsler</translation>
-<translation id="5430298929874300616">Fjern bokmerke</translation>
 <translation id="5431318178759467895">Farge</translation>
 <translation id="5433756542371550806">Variasjoner i kommandolinjen</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />lagrer ikke<ph name="END_EMPHASIS" />
@@ -2875,6 +2874,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5750869797196646528">Håndsporing</translation>
 <translation id="5752327398324808817">Skriv inn et ord eller to</translation>
 <translation id="5752519522101347518">Laster inn nettstedet for bankbekreftelse</translation>
+<translation id="5753570386948603678">Slett fra loggen</translation>
 <translation id="5759751709240058861">bruke og bevege kameraet ditt</translation>
 <translation id="5763042198335101085">Angi en gyldig e-postadresse</translation>
 <translation id="5764725887548570807">Ugyldig opphavsformat.</translation>
@@ -3091,7 +3091,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6124058285696691147">Last ned vedlegget</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Kinesisk konvolutt nr. 2</translation>
-<translation id="6127379762771434464">Elementet er fjernet</translation>
 <translation id="6131824478727057281">sted</translation>
 <translation id="6133320744616005677">Fortsett å tillate</translation>
 <translation id="6133984428121856852">Filetternavnet er tomt eller feilformatert.</translation>
@@ -3106,7 +3105,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6151417162996330722">Tjenersertifikatet har en gyldighetsperiode som er for lang.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tommer (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Løping og turgåing</translation>
-<translation id="6157754950574419155">Fjern alt fra loggen</translation>
 <translation id="6157877588268064908">For å se fraktmetoder og -krav, velg en adresse</translation>
 <translation id="6159554577634054750">Skadedyrkontroll</translation>
 <translation id="6159908896951210943">Formell</translation>
@@ -3792,6 +3790,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7292031607255951991">Mottakerens navn</translation>
 <translation id="7298195798382681320">Anbefalt</translation>
 <translation id="7299471494012161875">Eksterne skjermer er tilkoblet</translation>
+<translation id="7299721129597238157">Slett bokmerket</translation>
 <translation id="7299769361777046949">Administrer stamkundekort i Google Wallet</translation>
 <translation id="7304030187361489308">Høyt</translation>
 <translation id="7304562222803846232">Administrer personverninnstillingene for Google-kontoen</translation>

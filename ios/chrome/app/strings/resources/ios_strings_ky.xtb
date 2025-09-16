@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Сырсөздөрдү ачыңыз</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1433478348197382180">Окуу режими</translation>
+<translation id="1435271730600332883">"Автотолтуруу жана сырсөздөр" бөлүмүн ачуу</translation>
 <translation id="1436671784520050284">Жөндөөнү улантуу</translation>
 <translation id="143681031165817424">Дарек ушул түзмөккө гана сакталды</translation>
 <translation id="1445276840641906250">Бардык өтмөктөр бир серепчиде</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">Дарек <ph name="USER_EMAIL" /> аккаунтуңузга жылдырылды</translation>
 <translation id="4287172530684295552">Окулду деп белгилөө</translation>
 <translation id="428768789042547925">Эмне жаңылык</translation>
+<translation id="428858055663163046">Жеткиликтүү болгондо файлдарыңызды бул жерден көрө аласыз</translation>
 <translation id="429074084062258019">{count,plural, =1{Өтмөктү топто кошуу}other{Өтмөктөрдү топто кошуу}}</translation>
 <translation id="4302061870579014542">Тандоо</translation>
 <translation id="4304713468139749426">Сырсөздөрдү башкаргыч</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{{count} карта өткөрүлүп алынды}other{{count} карта өткөрүлүп алынды}}</translation>
 <translation id="4751645464639803239">Жаңы жашыруун өтмөк</translation>
 <translation id="4752348350801431746">Коопсуздукту текшерүү функциясынын билдирмелерин өчүрүү…</translation>
+<translation id="4759238208242260848">Жүктөлүп алынгандар</translation>
 <translation id="4764612367328936189">Уюмуңуз белгилүү бир аккаунттар менен гана кирүүгө уруксат берет. Тыюу салынган аккаунттар жашырылды. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Сунуштар жана жазылуу</translation>
 <translation id="4769198578611055647">Сакталган киргизүүчү ачкычтарды бардык түзмөктөрдө колдонууга мүмкүндүк берет</translation>
@@ -1270,6 +1273,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5956112131836209882">Өтмөктөр тобу өтмөгү. <ph name="NUMBER_OF_TABS_IN_GROUP" /> ичинен <ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> менен издөө</translation>
 <translation id="5963939892571022323">Бөлүнүп көрсөтүлгөн нерсеге шилтеме түзүлгөн жок.</translation>
+<translation id="5968400720580217226">ЖИ режими</translation>
 <translation id="5971459446352190251">QR кодду издөө</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 кыстарма өчүрүлдү}other{{count} кыстарма өчүрүлдү}}</translation>
 <translation id="5972844218283131174">Баарын тандоодон чыгаруу</translation>
@@ -1415,6 +1419,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6452534462676960500">Жаңы аракет</translation>
 <translation id="6459411599807878608">Чоо-жайы жашырылды</translation>
 <translation id="646394917185284261">Файлдар</translation>
+<translation id="6472069383518492189">Жүктөлүп алынган файлдар ушул жерде болот</translation>
 <translation id="6476253015009698798">Бул баракта бааларга көз салуу мүмкүн эмес.</translation>
 <translation id="6476284679642588870">Төлөм ыкмаларын башкаруу</translation>
 <translation id="6476800141292307438">Барак <ph name="LANGUAGE" /> тилине которулууда. Параметрлер экрандын төмөн жагында жеткиликтүү.</translation>
@@ -1460,6 +1465,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6627583120233659107">Куржунду түзөтүү</translation>
 <translation id="6629759408545977279">Кимден: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Уюмуңуз жашыруун режимди өчүрүп койду</translation>
+<translation id="6637478299472506933">Жүктөлүп алынбай калды</translation>
 <translation id="6638511529934826365">Текстти чоңойтуп/кичирейтүү…</translation>
 <translation id="6640268266988685324">Ачык өтмөк</translation>
 <translation id="6641465290890659327">Сырсөзүңүздүн көчүрмөсүн бөлүшүңүз</translation>

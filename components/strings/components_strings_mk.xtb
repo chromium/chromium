@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC и контрола на климата</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2742128390261873684">Автоматизација на домот</translation>
-<translation id="2742870351467570537">Отстрани избрани ставки</translation>
 <translation id="2743512410823092182">Ресурси и опрема за диџеи</translation>
 <translation id="2743934314332613923">Да се ажурира возачката дозвола?</translation>
 <translation id="2759299890026163685">Пред да се обидете повторно, погрижете се да имате стабилна интернет-врска</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">Овозможете задолжителна повторна автентикација</translation>
 <translation id="3942048175062210325">Обидете се да ги отворите датотеките повторно</translation>
 <translation id="3943857333388298514">Залепи</translation>
+<translation id="3945937463338223066">контролира уредите за автентикација од типот <ph name="READERNAME" /> и паметните картички што им се пристапни</translation>
 <translation id="3946209740501886391">Прашувај секогаш на овој сајт</translation>
 <translation id="3948588869002647271">Апликацијава недостасува или е оштетена</translation>
 <translation id="3949297482798028668">Администраторот блокирал лепење на содржиниве тука.</translation>
@@ -2677,7 +2677,6 @@
 <translation id="5423269318075950257">Следи ја цената</translation>
 <translation id="5425082381151187189">Декорирање дом и ентериер</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> сака да ви испраќа известувања</translation>
-<translation id="5430298929874300616">Отстрани обележувач</translation>
 <translation id="5431318178759467895">Боја</translation>
 <translation id="5433756542371550806">Варијации на линијата за наредби</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />нема да ги зачувува следниве работи<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@
 <translation id="5750869797196646528">Следење раце</translation>
 <translation id="5752327398324808817">Внесете еден или два збора</translation>
 <translation id="5752519522101347518">Се вчитува веб-сајтот за потврда на банката</translation>
+<translation id="5753570386948603678">Избриши од историјата</translation>
 <translation id="5759751709240058861">да ја користи и движи камерата</translation>
 <translation id="5763042198335101085">Внесете важечка адреса на е-пошта</translation>
 <translation id="5764725887548570807">Неважечки формат на потекло.</translation>
@@ -3091,7 +3091,6 @@
 <translation id="6124058285696691147">Преземете го прилогот</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Плик Chinese #2</translation>
-<translation id="6127379762771434464">Ставката е отстранета</translation>
 <translation id="6131824478727057281">локација</translation>
 <translation id="6133320744616005677">Продолжи да дозволуваш</translation>
 <translation id="6133984428121856852">Наставката на датотека е празна или неправилно формирана.</translation>
@@ -3106,7 +3105,6 @@
 <translation id="6151417162996330722">Сертификатот на серверот има период на важност што е премногу долг.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Трчање и одење</translation>
-<translation id="6157754950574419155">Отстрани ги сите од историјата</translation>
 <translation id="6157877588268064908">За да ги видите методите и условите за испорака, изберете адреса</translation>
 <translation id="6159554577634054750">Контрола на штетници</translation>
 <translation id="6159908896951210943">Формално</translation>
@@ -3792,6 +3790,7 @@
 <translation id="7292031607255951991">Име на примач</translation>
 <translation id="7298195798382681320">Препорачано</translation>
 <translation id="7299471494012161875">Прикажи ги прикачените периферни уреди</translation>
+<translation id="7299721129597238157">Избриши го обележувачот</translation>
 <translation id="7299769361777046949">Управувајте со картичките за лојалност во Google Wallet</translation>
 <translation id="7304030187361489308">Висок</translation>
 <translation id="7304562222803846232">Управувајте со поставките за приватност на вашата сметка на Google</translation>

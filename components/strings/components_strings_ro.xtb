@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC și controlul climei</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Automatizarea casei</translation>
-<translation id="2742870351467570537">Elimină elementele selectate</translation>
 <translation id="2743512410823092182">Resurse și echipamente pentru DJ</translation>
 <translation id="2743934314332613923">Actualizezi permisul de conducere?</translation>
 <translation id="2759299890026163685">Asigură-te că ai o conexiune stabilă la internet înainte de a încerca din nou</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">Activează reautentificarea obligatorie</translation>
 <translation id="3942048175062210325">Încearcă să deschizi din nou fișierele</translation>
 <translation id="3943857333388298514">Inserează</translation>
+<translation id="3945937463338223066">Controlează dispozitivele de autentificare de tip <ph name="READERNAME" /> și cardurile inteligente accesibile pentru acestea</translation>
 <translation id="3946209740501886391">Întreabă întotdeauna pe acest site</translation>
 <translation id="3948588869002647271">Aplicația lipsește sau este deteriorată</translation>
 <translation id="3949297482798028668">Inserarea acestui conținut aici a fost blocată de administrator.</translation>
@@ -2677,7 +2677,6 @@
 <translation id="5423269318075950257">Urmărește prețul</translation>
 <translation id="5425082381151187189">Casă și decorațiuni interioare</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dorește să îți trimită notificări</translation>
-<translation id="5430298929874300616">Elimină marcajul</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="5433756542371550806">Variații ale liniilor de comandă</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nu va salva<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@
 <translation id="5750869797196646528">Urmărirea mâinilor</translation>
 <translation id="5752327398324808817">Introdu un cuvânt sau două</translation>
 <translation id="5752519522101347518">Se încarcă site-ul de verificare bancară</translation>
+<translation id="5753570386948603678">Șterge din istoric</translation>
 <translation id="5759751709240058861">Mișcă și folosește camera</translation>
 <translation id="5763042198335101085">Introdu o adresă de e-mail validă</translation>
 <translation id="5764725887548570807">Format de origine nevalid.</translation>
@@ -3091,7 +3091,6 @@
 <translation id="6124058285696691147">Descarcă atașamentul</translation>
 <translation id="6124432979022149706">Conectori Chrome Enterprise</translation>
 <translation id="6126565365696310362">Plic chinezesc 2</translation>
-<translation id="6127379762771434464">Elementul a fost eliminat</translation>
 <translation id="6131824478727057281">locație</translation>
 <translation id="6133320744616005677">Permite în continuare</translation>
 <translation id="6133984428121856852">Extensia de fișier este goală sau incorectă.</translation>
@@ -3106,7 +3105,6 @@
 <translation id="6151417162996330722">Certificatul de server are o perioadă de validitate prea lungă.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Alergare și mers</translation>
-<translation id="6157754950574419155">Șterge tot istoricul</translation>
 <translation id="6157877588268064908">Pentru a vedea metodele de expediere și cerințele, selectează o adresă</translation>
 <translation id="6159554577634054750">Combaterea dăunătorilor</translation>
 <translation id="6159908896951210943">Formal</translation>
@@ -3793,6 +3791,7 @@ Detalii suplimentare:
 <translation id="7292031607255951991">Numele destinatarului</translation>
 <translation id="7298195798382681320">Recomandat</translation>
 <translation id="7299471494012161875">dispozitivele periferice de afișare conectate;</translation>
+<translation id="7299721129597238157">Ștergeți marcajul</translation>
 <translation id="7299769361777046949">Gestionează cardurile de fidelitate în Portofel Google</translation>
 <translation id="7304030187361489308">Înaltă</translation>
 <translation id="7304562222803846232">Gestionează setările de confidențialitate ale Contului Google</translation>

@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Otvorite Zaporke</translation>
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1433478348197382180">Način čitanja</translation>
+<translation id="1435271730600332883">Otvorite automatsko popunjavanje i zaporke</translation>
 <translation id="1436671784520050284">Nastavi s postavljanjem</translation>
 <translation id="143681031165817424">Adresa je spremljena samo na ovom uređaju</translation>
 <translation id="1445276840641906250">Sve vaše kartice u jednom pregledniku</translation>
@@ -833,6 +834,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4286718549648564014">Adresa je premještena na vaš račun <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Označi kao pročitano</translation>
 <translation id="428768789042547925">Što je novo</translation>
+<translation id="428858055663163046">Ovdje možete pristupiti preuzetim datotekama kad budu dostupne</translation>
 <translation id="429074084062258019">{count,plural, =1{Dodaj karticu grupi}one{Dodaj kartice grupi}few{Dodaj kartice grupi}other{Dodaj kartice grupi}}</translation>
 <translation id="4302061870579014542">Postavi položaj</translation>
 <translation id="4304713468139749426">Upravitelj zaporki</translation>
@@ -949,6 +951,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4749529195026091676">{count,plural, =1{Uvezena je {count} kartica}one{Uvezena je {count} kartica}few{Uvezene su {count} kartice}other{Uvezeno je {count} kartica}}</translation>
 <translation id="4751645464639803239">Nova anonimna kartica</translation>
 <translation id="4752348350801431746">Isključite obavijesti sigurnosne provjere…</translation>
+<translation id="4759238208242260848">Preuzimanje</translation>
 <translation id="4764612367328936189">Vaša organizacija dopušta da se prijavite samo putem određenih računa. Nedopušteni su računi skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Preporuke i praćenje</translation>
 <translation id="4769198578611055647">Pomaže vam da pristupite spremljenim pristupnim ključevima na bilo kojem uređaju</translation>
@@ -1270,6 +1273,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5956112131836209882">Kartica grupe kartica. <ph name="TAB_INDEX_IN_GROUP" /> od <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Pretraživanje pomoću usluge <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Izrada veze na istaknuti tekst nije uspjela.</translation>
+<translation id="5968400720580217226">AI način</translation>
 <translation id="5971459446352190251">Pretraživanje QR kodova</translation>
 <translation id="5971872012779224351">{count,plural, =1{Izbrisana je jedna oznaka}one{Izbrisana je {count} oznaka}few{Izbrisane su {count} oznake}other{Izbrisano je {count} oznaka}}</translation>
 <translation id="5972844218283131174">Poništi odabir za sve</translation>
@@ -1415,6 +1419,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6452534462676960500">Nova aktivnost</translation>
 <translation id="6459411599807878608">Pojedinosti su skrivene</translation>
 <translation id="646394917185284261">Datoteke</translation>
+<translation id="6472069383518492189">Preuzimanja ćete pronaći ovdje</translation>
 <translation id="6476253015009698798">Praćenje cijena nije dostupno za ovu web-stranicu.</translation>
 <translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
 <translation id="6476800141292307438">Stranica se prevodi na <ph name="LANGUAGE" />. Opcije su dostupne pri dnu zaslona.</translation>
@@ -1460,6 +1465,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6627583120233659107">Uredi mapu</translation>
 <translation id="6629759408545977279">Izvor: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Vaša organizacija isključila je anonimni način</translation>
+<translation id="6637478299472506933">Preuzimanje nije uspjelo</translation>
 <translation id="6638511529934826365">Zumiraj tekst…</translation>
 <translation id="6640268266988685324">Otvorite karticu</translation>
 <translation id="6641465290890659327">Dijeljenje kopije zaporke</translation>
@@ -1582,6 +1588,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7102005569666697658">Preuzimanje… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Izbornik → Postavke → Načini plaćanja</translation>
 <translation id="7108338896283013870">Sakrij preglednik</translation>
+<translation id="7127922377013221748">Sakrij alatnu traku</translation>
 <translation id="7128693485119315539">Vaša organizacija možda treba vidjeti podatke o pregledavanju povezane s vašim upravljanim računom, kao što su povijest pregledavanja i zaporke, te upravljati njima.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Fotoaparat nije dostupan</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="sk">
 <translation id="1010283278930414892">V tomto zariadení nie sú uložené žiadne heslá</translation>
 <translation id="1011749477052068769">Presunúť sem</translation>
+<translation id="1014083013111769343">Režim čítania: predvoľby sú otvorené na celú výšku</translation>
 <translation id="1014147525163127655">V tomto zariadení nie sú žiadne prístupové kľúče pre aplikáciu <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Skratka na rýchle vyhľadávanie hlasom. Ak ju chcete upraviť, pridržte ju.</translation>
 <translation id="1028699632127661925">Odosiela sa do zariadenia <ph name="DEVICE_NAME" />…</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Uložiť</translation>
 <translation id="1973912524893600642">Ponechať údaje</translation>
 <translation id="1974060860693918893">Rozšírené</translation>
+<translation id="1982274314082047220">Režim čítania: potiahnutím nahor zobrazíte predvoľby</translation>
 <translation id="1984087999855033707">telefónne číslo</translation>
 <translation id="1984417487208496350">Bez ochrany (neodporúča sa)</translation>
 <translation id="1986685561493779662">Názov už existuje</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">Popisy obrázkov</translation>
 <translation id="2996291259634659425">Vytvorenie prístupovej frázy</translation>
 <translation id="2996809686854298943">Vyžaduje sa webová adresa</translation>
+<translation id="3024215143424744261">Režim čítania: predvoľby sú zavreté</translation>
 <translation id="3026955690410463085">Zahŕňať odkaz</translation>
 <translation id="3027644380269727216">Založené na vašej aktivite na webe. Toto nastavenie je zapnuté.</translation>
 <translation id="3027950907978057636">Z aplikácie <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="696447261358045621">Ukončiť režim inkognito</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Zobraziť <ph name="TABS_COUNT_ONE" /> kartu s novou aktivitou v zdieľaných skupinách kariet}few{Zobraziť <ph name="TABS_COUNT_MANY" /> karty s novou aktivitou v zdieľaných skupinách kariet}many{See <ph name="TABS_COUNT_MANY" /> tabs with new activity in shared tab groups}other{Zobraziť <ph name="TABS_COUNT_MANY" /> kariet s novou aktivitou v zdieľaných skupinách kariet}}</translation>
+<translation id="6971555615916967190">Režim čítania: predvoľby sú otvorené na polovičnú výšku</translation>
 <translation id="6971862865055170158">Neschváliť</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, nová alebo aktualizovaná karta</translation>
 <translation id="6976811588313110624">Pridajte novú skratku.</translation>

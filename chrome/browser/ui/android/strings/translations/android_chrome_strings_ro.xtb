@@ -3,6 +3,7 @@
 <translationbundle lang="ro">
 <translation id="1010283278930414892">Nu există parole salvate pe acest dispozitiv</translation>
 <translation id="1011749477052068769">Mută aici</translation>
+<translation id="1014083013111769343">Preferințele pentru modul de lectură s-au deschis la înălțimea completă</translation>
 <translation id="1014147525163127655">Nu există chei de acces pentru <ph name="ORIGIN" /> pe acest dispozitiv</translation>
 <translation id="1016498331642356377">Caută rapid cu ajutorul vocii. Pentru a edita comanda rapidă, atinge-o lung.</translation>
 <translation id="1028699632127661925">Se trimite la <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="197288927597451399">Păstrează</translation>
 <translation id="1973912524893600642">Păstrează datele</translation>
 <translation id="1974060860693918893">Avansate</translation>
+<translation id="1982274314082047220">Glisează în sus în modul de lectură pentru preferințe</translation>
 <translation id="1984087999855033707">număr de telefon</translation>
 <translation id="1984417487208496350">Fără protecție (nu este recomandat)</translation>
 <translation id="1986685561493779662">Numele există deja</translation>
@@ -428,6 +430,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2992473221983447149">Descrierile imaginilor</translation>
 <translation id="2996291259634659425">Creează o expresie de acces</translation>
 <translation id="2996809686854298943">Adresă URL obligatorie</translation>
+<translation id="3024215143424744261">Preferințele pentru modul de lectură au fost închise</translation>
 <translation id="3026955690410463085">Include linkul</translation>
 <translation id="3027644380269727216">Pe baza activității tale pe un site. Setarea este activată.</translation>
 <translation id="3027950907978057636">Din <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="696447261358045621">Ieși din modul incognito</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Vezi <ph name="TABS_COUNT_ONE" /> filă cu activitate nouă în grupurile de file folosite în comun}few{Vezi <ph name="TABS_COUNT_MANY" /> file cu activitate nouă în grupurile de file folosite în comun}other{Vezi <ph name="TABS_COUNT_MANY" /> de file cu activitate nouă în grupurile de file folosite în comun}}</translation>
+<translation id="6971555615916967190">Preferințele pentru modul de lectură s-au deschis la jumătate din înălțime</translation>
 <translation id="6971862865055170158">Nu aproba</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, filă nouă sau actualizată</translation>
 <translation id="6976811588313110624">Adaugă o comandă rapidă nouă.</translation>

@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Åpne Passord</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1433478348197382180">Lesemodus</translation>
+<translation id="1435271730600332883">Åpne Autofyll og passord</translation>
 <translation id="1436671784520050284">Fortsett konfigureringen</translation>
 <translation id="143681031165817424">Adressen er kun lagret på denne enheten</translation>
 <translation id="1445276840641906250">Alle fanene dine i én nettleser</translation>
@@ -833,6 +834,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4286718549648564014">Adressen er flyttet til kontoen din: <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Merk som lest</translation>
 <translation id="428768789042547925">Hva er nytt?</translation>
+<translation id="428858055663163046">Du finner de nedlastede filene dine her når de er tilgjengelige</translation>
 <translation id="429074084062258019">{count,plural, =1{Legg fanen til i en gruppe}other{Legg fanene til i en gruppe}}</translation>
 <translation id="4302061870579014542">Velg posisjon</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
@@ -949,6 +951,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4749529195026091676">{count,plural, =1{Importerte {count} kort}other{Importerte {count} kort}}</translation>
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4752348350801431746">Slå av varsler fra sikkerhetssjekk…</translation>
+<translation id="4759238208242260848">Nedlastinger</translation>
 <translation id="4764612367328936189">Organisasjonen din lar deg kun logge på med visse kontoer. Kontoer som ikke tillates, er skjult. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover og følger</translation>
 <translation id="4769198578611055647">Hjelper deg med å få tilgang til lagrede passnøkler på alle enheter</translation>
@@ -1270,6 +1273,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5956112131836209882">Fanegruppe-fanen. <ph name="TAB_INDEX_IN_GROUP" /> av <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Søk med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Kan ikke opprette noen link til den markerte teksten.</translation>
+<translation id="5968400720580217226">AI-modus</translation>
 <translation id="5971459446352190251">QR-kodesøk</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bokmerke er slettet}other{{count} bokmerker er slettet}}</translation>
 <translation id="5972844218283131174">Velg bort alle</translation>
@@ -1415,6 +1419,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6452534462676960500">Ny aktivitet</translation>
 <translation id="6459411599807878608">Detaljene er skjult</translation>
 <translation id="646394917185284261">Filer</translation>
+<translation id="6472069383518492189">Du finner nedlastingene dine her</translation>
 <translation id="6476253015009698798">Prissporing er ikke tilgjengelig for denne siden.</translation>
 <translation id="6476284679642588870">Administrer betalingsmåter</translation>
 <translation id="6476800141292307438">Oversetter siden til <ph name="LANGUAGE" />. Du finner alternativer på nedre del av skjermen.</translation>
@@ -1460,6 +1465,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6629759408545977279">Fra: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Organisasjonen din har slått av inkognitomodus</translation>
+<translation id="6637478299472506933">Nedlastingen mislyktes</translation>
 <translation id="6638511529934826365">Forstørr tekst</translation>
 <translation id="6640268266988685324">Åpne fane</translation>
 <translation id="6641465290890659327">Del en kopi av passordet ditt</translation>
@@ -1582,6 +1588,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7102005569666697658">Laster ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meny → Innstillinger → Betalingsmåter</translation>
 <translation id="7108338896283013870">Skjul</translation>
+<translation id="7127922377013221748">Skjul verktøylinjen</translation>
 <translation id="7128693485119315539">Organisasjonen din kan ha behov for å se og administrere nettlesingsdata knyttet til den administrerte kontoen din, for eksempel nettleserloggen og passordene dine.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameraet er utilgjengelig</translation>

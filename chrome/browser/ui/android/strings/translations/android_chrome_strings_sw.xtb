@@ -3,6 +3,7 @@
 <translationbundle lang="sw">
 <translation id="1010283278930414892">Hujahifadhi manenosiri kwenye kifaa hiki</translation>
 <translation id="1011749477052068769">Hamishia hapa</translation>
+<translation id="1014083013111769343">Umefungua mapendeleo ya hali ya kusoma katika skrini nzima</translation>
 <translation id="1014147525163127655">Hakuna funguo za siri zozote za <ph name="ORIGIN" /> kwenye kifaa hiki</translation>
 <translation id="1016498331642356377">Tafuta kwa haraka ukitumia sauti yako. Ili ubadilishe njia hii ya mkato, gusa na ushikilie.</translation>
 <translation id="1028699632127661925">Unatuma kwenye <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="197288927597451399">Weka</translation>
 <translation id="1973912524893600642">Hifadhi data</translation>
 <translation id="1974060860693918893">Mipangilio ya kina</translation>
+<translation id="1982274314082047220">Hali ya kusoma, telezesha kidole juu ili upate mapendeleo</translation>
 <translation id="1984087999855033707">namba ya simu</translation>
 <translation id="1984417487208496350">Hamna ulinzi (haipendekezwi)</translation>
 <translation id="1986685561493779662">Jina tayari lipo</translation>
@@ -428,6 +430,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2992473221983447149">Maelezo ya picha</translation>
 <translation id="2996291259634659425">Unda kauli ya siri</translation>
 <translation id="2996809686854298943">URL inahitajika</translation>
+<translation id="3024215143424744261">Umefunga mapendeleo ya hali ya kusoma</translation>
 <translation id="3026955690410463085">Jumuisha kiungo</translation>
 <translation id="3027644380269727216">Kulingana na shughuli zako kwenye tovuti. Mipangilio hii imewashwa.</translation>
 <translation id="3027950907978057636">Kutoka <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="696447261358045621">Funga hali fiche</translation>
 <translation id="6965382102122355670">Sawa</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Angalia kichupo <ph name="TABS_COUNT_ONE" /> kilicho na shughuli mpya katika vikundi vya vichupo vya pamoja}other{Angalia vichupo <ph name="TABS_COUNT_MANY" /> vilivyo na shughuli mpya katika vikundi vya vichupo vya pamoja}}</translation>
+<translation id="6971555615916967190">Umefungua mapendeleo ya hali ya kusoma katika skrini nusu</translation>
 <translation id="6971862865055170158">Usiidhinishe</translation>
 <translation id="6976223255612495095">Kichupo Kipya au Kilichosasishwa, <ph name="TAB_TITLE" /></translation>
 <translation id="6976811588313110624">Weka njia mpya ya mkato.</translation>

@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">የይለፍ ቃሎችን ይክፈቱ</translation>
 <translation id="1430915738399379752">አትም</translation>
 <translation id="1433478348197382180">የንባብ ሁነታ</translation>
+<translation id="1435271730600332883">ራስ-ሙላ እና የይለፍ ቃላትን ይክፈቱ</translation>
 <translation id="1436671784520050284">ማዋቀር ቀጥል</translation>
 <translation id="143681031165817424">አድራሻ የተቀመጠው በዚህ መሣሪያ ላይ ብቻ ነው</translation>
 <translation id="1445276840641906250">ሁሉም ትሮችዎ በአንድ አሳሽ ውስጥ</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">አድራሻው ወደ እርስዎ <ph name="USER_EMAIL" /> መለያ ተንቀሳቅሷል</translation>
 <translation id="4287172530684295552">ተነቧል አመልክት</translation>
 <translation id="428768789042547925">ምን አዲስ ነገር አለ</translation>
+<translation id="428858055663163046">በሚገኝ ጊዜ የወረዱ ፋይሎችዎን እዚህ መድረስ ይችላሉ</translation>
 <translation id="429074084062258019">{count,plural, =1{ትርን ወደ ቡድን ያክሉ}one{ትርን ወደ ቡድን ያክሉ}other{ትሮችን ወደ ቡድን ያክሉ}}</translation>
 <translation id="4302061870579014542">አቀማመጥ አቀናብር</translation>
 <translation id="4304713468139749426">የይለፍ ቃል አስተዳዳሪ</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{{count} ካርድ መቷል}one{{count} ካርድ መቷል}other{{count} ካርዶች መተዋል}}</translation>
 <translation id="4751645464639803239">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="4752348350801431746">የደህንነት ፍተሻ ማሳወቂያዎችን አጥፋ…</translation>
+<translation id="4759238208242260848">የወረዱ</translation>
 <translation id="4764612367328936189">በተወሰኑ መለያዎች አማካኝነት ብቻ እንዲገቡ ድርጅትዎ ይፈቅድልዎታል። ያልተፈቀዱ መለያዎች ተደብቀዋል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">ምርምር እና በመከተል ላይ</translation>
 <translation id="4769198578611055647">በማንኛውም መሣሪያ ላይ የተቀመጡ ማናቸውንም የይለፍ ቁልፎች ለመድረስ ያግዝዎታል</translation>
@@ -1270,6 +1273,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5956112131836209882">የትር ቡድን ትር። <ph name="TAB_INDEX_IN_GROUP" /> ከ<ph name="NUMBER_OF_TABS_IN_GROUP" />።</translation>
 <translation id="595769230373966252">በ<ph name="SEARCH_PROVIDER" /> ፈልግ</translation>
 <translation id="5963939892571022323">ወደ ድምቀቱ የሚወስድ አገናኝ ሊፈጠር አይችልም።</translation>
+<translation id="5968400720580217226">የሰው ሠራሽ አስተውሎት ሁነታ</translation>
 <translation id="5971459446352190251">የQR ኮድ ፍለጋ</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 ዕልባት ተሰርዟል}one{{count} ዕልባት ተሰርዘዋል}other{{count} ዕልባቶች ተሰርዘዋል}}</translation>
 <translation id="5972844218283131174">ሁሉንም አትምረጥ</translation>
@@ -1415,6 +1419,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6452534462676960500">አዲስ እንቅስቃሴ</translation>
 <translation id="6459411599807878608">ዝርዝሮች ተደብቀዋል</translation>
 <translation id="646394917185284261">ፋይሎች</translation>
+<translation id="6472069383518492189">ውርዶችዎን እዚህ ማግኘት ይችላሉ</translation>
 <translation id="6476253015009698798">የዋጋ ክትትል ለዚህ ገፅ አይገኝም።</translation>
 <translation id="6476284679642588870">የመክፈያ ዘዴዎችን ያቀናብሩ</translation>
 <translation id="6476800141292307438">ገጹን ወደ <ph name="LANGUAGE" /> በመተርጎም ላይ። አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ።</translation>
@@ -1460,6 +1465,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6627583120233659107">አቃፊ አርትዕ</translation>
 <translation id="6629759408545977279">ከ፦ <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">የእርስዎ ድርጅት ማንነት የማያሳውቅ ሁነታን አጥፍቷል</translation>
+<translation id="6637478299472506933">ማውረድ አልተሳካም</translation>
 <translation id="6638511529934826365">ጽሑፍን አጉላ…</translation>
 <translation id="6640268266988685324">ትር ክፈት</translation>
 <translation id="6641465290890659327">የይለፍ ቃልዎን ቅጂ ያጋሩ</translation>

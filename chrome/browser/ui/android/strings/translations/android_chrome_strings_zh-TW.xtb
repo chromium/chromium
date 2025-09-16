@@ -3,6 +3,7 @@
 <translationbundle lang="zh-TW">
 <translation id="1010283278930414892">這部裝置上沒有儲存任何密碼</translation>
 <translation id="1011749477052068769">移至這裡</translation>
+<translation id="1014083013111769343">閱讀模式偏好設定已完整開啟</translation>
 <translation id="1014147525163127655">這部裝置上沒有 <ph name="ORIGIN" /> 的任何密碼金鑰</translation>
 <translation id="1016498331642356377">快速透過語音進行搜尋。按住這裡即可編輯這個捷徑。</translation>
 <translation id="1028699632127661925">正在傳送到「<ph name="DEVICE_NAME" />」...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">保留</translation>
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階</translation>
+<translation id="1982274314082047220">在閱讀模式下，向上滑動即可查看偏好設定</translation>
 <translation id="1984087999855033707">電話號碼</translation>
 <translation id="1984417487208496350">無防護 (不建議)</translation>
 <translation id="1986685561493779662">這個名稱已有人使用</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">圖片說明</translation>
 <translation id="2996291259634659425">建立通關密語</translation>
 <translation id="2996809686854298943">必須要有網址</translation>
+<translation id="3024215143424744261">閱讀模式偏好設定已關閉</translation>
 <translation id="3026955690410463085">加入連結</translation>
 <translation id="3027644380269727216">以你的網站活動做為依據。這項設定已開啟。</translation>
 <translation id="3027950907978057636">來自「<ph name="APP_LABEL" />」</translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">退出無痕模式</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{查看在共用分頁群組中有新活動的 <ph name="TABS_COUNT_ONE" /> 個分頁}other{查看在共用分頁群組中有新活動的 <ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="6971555615916967190">閱讀模式偏好設定已開啟在畫面下半部</translation>
 <translation id="6971862865055170158">拒絕</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />，新分頁或已更新的分頁</translation>
 <translation id="6976811588313110624">新增捷徑。</translation>

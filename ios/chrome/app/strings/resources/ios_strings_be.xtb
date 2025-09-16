@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Адкрыйце раздзел пароляў</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1433478348197382180">Рэжым чытання</translation>
+<translation id="1435271730600332883">Адкрыйце налады аўтазапаўнення і пароляў</translation>
 <translation id="1436671784520050284">Працягнуць наладку</translation>
 <translation id="143681031165817424">Адрас захоўваецца толькі на гэтай прыладзе</translation>
 <translation id="1445276840641906250">Усе вашы ўкладкі ў адным браўзеры</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">Адрас перамешчаны ва ўліковы запіс <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Пазначыць як прачытанае</translation>
 <translation id="428768789042547925">Што новага</translation>
+<translation id="428858055663163046">Тут можна атрымаць доступ да спампаваных файлаў</translation>
 <translation id="429074084062258019">{count,plural, =1{Дадаць укладку ў групу}one{Дадаць укладкі ў групу}few{Дадаць укладкі ў групу}many{Дадаць укладкі ў групу}other{Дадаць укладкі ў групу}}</translation>
 <translation id="4302061870579014542">Наладзіць размяшчэнне</translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{Імпартавана {count} картка}one{Імпартавана {count} картка}few{Імпартаваны {count} карткі}many{Імпартаваны {count} картак}other{Імпартаваны {count} карткі}}</translation>
 <translation id="4751645464639803239">Новая ўкладка інкогніта</translation>
 <translation id="4752348350801431746">Выключыць апавяшчэнні праверкі бяспекі…</translation>
+<translation id="4759238208242260848">Спампоўкі</translation>
 <translation id="4764612367328936189">Палітыка вашай арганізацыі дазваляе ўваходзіць у сістэмы, выкарыстоўваючы толькі пэўныя ўліковыя запісы. Уліковыя запісы, выкарыстоўваць якія не дазволена, не паказваюцца. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Рэкамендацыі і падпіскі</translation>
 <translation id="4769198578611055647">Дае магчымасць выкарыстоўваць захаваныя ключы доступу на любой прыладзе</translation>
@@ -1270,6 +1273,7 @@
 <translation id="5956112131836209882">Укладка з групы ўкладак. <ph name="TAB_INDEX_IN_GROUP" /> з <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Пошук праз сэрвіс "<ph name="SEARCH_PROVIDER" />"</translation>
 <translation id="5963939892571022323">Не ўдалося стварыць спасылку на вылучаны тэкст.</translation>
+<translation id="5968400720580217226">Рэжым AI</translation>
 <translation id="5971459446352190251">Пошук па QR-кодзе</translation>
 <translation id="5971872012779224351">{count,plural, =1{Выдалена 1 закладка}one{Выдалена {count} закладка}few{Выдалена {count} закладкі}many{Выдалена {count} закладак}other{Выдалена {count} закладак}}</translation>
 <translation id="5972844218283131174">Скасаваць выбар усіх укладак</translation>
@@ -1415,6 +1419,7 @@
 <translation id="6452534462676960500">Новае дзеянне</translation>
 <translation id="6459411599807878608">Падрабязныя звесткі схаваны</translation>
 <translation id="646394917185284261">Файлы</translation>
+<translation id="6472069383518492189">Тут з’явяцца вашы спампоўкі</translation>
 <translation id="6476253015009698798">Адсочванне цэн на гэтай старонцы недаступнае.</translation>
 <translation id="6476284679642588870">Наладзіць спосабы аплаты</translation>
 <translation id="6476800141292307438">Старонка перакладаецца на мову "<ph name="LANGUAGE" />". Параметры знаходзяцца ў ніжняй частцы экрана.</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="es">
 <translation id="1010283278930414892">No hay contraseñas guardadas en este dispositivo</translation>
 <translation id="1011749477052068769">Mover aquí</translation>
+<translation id="1014083013111769343">Preferencias del modo Lectura abiertas a altura completa</translation>
 <translation id="1014147525163127655">No hay claves de acceso para <ph name="ORIGIN" /> en este dispositivo</translation>
 <translation id="1016498331642356377">Busca rápidamente con la voz. Para editar este acceso directo, mantenlo pulsado.</translation>
 <translation id="1028699632127661925">Enviando a <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="197288927597451399">Descargar</translation>
 <translation id="1973912524893600642">Conservar datos</translation>
 <translation id="1974060860693918893">Avanzado</translation>
+<translation id="1982274314082047220">Desliza hacia arriba en el modo Lectura para ver las preferencias</translation>
 <translation id="1984087999855033707">número de teléfono</translation>
 <translation id="1984417487208496350">Sin protección (no recomendado)</translation>
 <translation id="1986685561493779662">El nombre ya existe</translation>
@@ -428,6 +430,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2992473221983447149">Descripciones de imágenes</translation>
 <translation id="2996291259634659425">Crear frase de contraseña</translation>
 <translation id="2996809686854298943">URL necesaria</translation>
+<translation id="3024215143424744261">Preferencias del modo Lectura cerradas</translation>
 <translation id="3026955690410463085">Incluir enlace</translation>
 <translation id="3027644380269727216">Se basa en tu actividad en un sitio. Esta opción está activada.</translation>
 <translation id="3027950907978057636">De <ph name="APP_LABEL" /></translation>
@@ -1075,7 +1078,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y tu actividad aquí</translation>
 <translation id="6071995715087444295">Para comprobar si hay contraseñas vulneradas, inicia sesión en tu cuenta de Google</translation>
-<translation id="6078323886959318429">Acceso directo</translation>
+<translation id="6078323886959318429">Añadir acceso directo</translation>
 <translation id="6085886413119427067">Determina cómo conectarse a sitios web mediante una conexión segura</translation>
 <translation id="6087286598828478206">¿Bloquear y salir del grupo?</translation>
 <translation id="60923314841986378">Quedan <ph name="HOURS" /> horas</translation>
@@ -1311,6 +1314,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="696447261358045621">Salir del modo Incógnito</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestaña con actividad nueva en grupos de pestañas compartidos}other{Ver <ph name="TABS_COUNT_MANY" /> pestañas con actividad nueva en grupos de pestañas compartidos}}</translation>
+<translation id="6971555615916967190">Preferencias del modo Lectura abiertas a media altura</translation>
 <translation id="6971862865055170158">No aprobar</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, pestaña nueva o actualizada</translation>
 <translation id="6976811588313110624">Añadir nuevo acceso directo.</translation>

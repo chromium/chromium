@@ -3,6 +3,7 @@
 <translationbundle lang="es-419">
 <translation id="1010283278930414892">No hay contraseñas guardadas en este dispositivo</translation>
 <translation id="1011749477052068769">Mover aquí</translation>
+<translation id="1014083013111769343">Las preferencias del Modo de lectura están totalmente abiertas</translation>
 <translation id="1014147525163127655">No hay ninguna llave de acceso para <ph name="ORIGIN" /> en este dispositivo</translation>
 <translation id="1016498331642356377">Haz una búsqueda rápida con la voz. Para editar este atajo, mantenlo presionado.</translation>
 <translation id="1028699632127661925">Enviando a <ph name="DEVICE_NAME" />…</translation>
@@ -207,6 +208,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="197288927597451399">Conservar</translation>
 <translation id="1973912524893600642">Conservar los datos</translation>
 <translation id="1974060860693918893">Opciones avanzadas</translation>
+<translation id="1982274314082047220">Modo de lectura: desliza hacia arriba para ver las preferencias</translation>
 <translation id="1984087999855033707">número de teléfono</translation>
 <translation id="1984417487208496350">Sin protección (opción no recomendada)</translation>
 <translation id="1986685561493779662">El nombre ya existe</translation>
@@ -428,6 +430,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2992473221983447149">Descripciones de imágenes</translation>
 <translation id="2996291259634659425">Crear frase de contraseña</translation>
 <translation id="2996809686854298943">URL obligatoria</translation>
+<translation id="3024215143424744261">Se cerraron las preferencias del Modo de lectura</translation>
 <translation id="3026955690410463085">Incluir vínculo</translation>
 <translation id="3027644380269727216">Según tu actividad en un sitio. Este parámetro de configuración está activado.</translation>
 <translation id="3027950907978057636">De <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="696447261358045621">Salir del modo Incógnito</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestaña con actividad nueva en los grupos de pestañas compartidos}other{Ver <ph name="TABS_COUNT_MANY" /> pestañas con actividad nueva en los grupos de pestañas compartidos}}</translation>
+<translation id="6971555615916967190">Las preferencias del Modo de lectura están abiertas a media altura</translation>
 <translation id="6971862865055170158">No aprobar</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, pestaña nueva o actualizada</translation>
 <translation id="6976811588313110624">Agregar una nueva combinación de teclas.</translation>

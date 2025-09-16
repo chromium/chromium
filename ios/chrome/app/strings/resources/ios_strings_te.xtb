@@ -834,6 +834,7 @@
 <translation id="4286718549648564014">అడ్రస్ మీ ఖాతా <ph name="USER_EMAIL" />‌కు తరలించబడింది</translation>
 <translation id="4287172530684295552">చదవబడినట్లుగా మార్క్ చేయండి</translation>
 <translation id="428768789042547925">కొత్తగా ఏం ఉన్నాయి</translation>
+<translation id="428858055663163046">మీరు డౌన్‌లోడ్ చేసుకున్న ఫైళ్లను అందుబాటులో ఉన్నప్పుడు ఇక్కడ యాక్సెస్ చేయవచ్చు</translation>
 <translation id="429074084062258019">{count,plural, =1{ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి}other{ట్యాబ్‌లను గ్రూప్‌నకు జోడించండి}}</translation>
 <translation id="4302061870579014542">పొజిషన్‌ను సెట్ చేయండి</translation>
 <translation id="4304713468139749426">పాస్‌వర్డ్ మేనేజర్</translation>
@@ -950,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{{count} కార్డ్ దిగుమతి అయ్యింది}other{{count} కార్డ్‌లు దిగుమతి అయ్యాయి}}</translation>
 <translation id="4751645464639803239">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="4752348350801431746">సేఫ్టీ చెక్ నోటిఫికేషన్‌లను ఆఫ్ చేయండి…</translation>
+<translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
 <translation id="4764612367328936189">మీ సంస్థ మిమ్మల్ని కొన్ని ఖాతాలతో మాత్రమే సైన్ ఇన్ చేయడానికి అనుమతిస్తుంది. అనుమతించబడని ఖాతాలు దాచబడతాయి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover &amp; ఫాలో అవుతున్నవి</translation>
 <translation id="4769198578611055647">ఏ పరికరంలోనైనా సేవ్ చేసిన పాస్-కీలను యాక్సెస్ చేయడంలో మీకు సహాయపడుతుంది</translation>
@@ -1271,6 +1273,7 @@
 <translation id="5956112131836209882">ట్యాబ్ గ్రూప్ ట్యాబ్. <ph name="NUMBER_OF_TABS_IN_GROUP" />లో <ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" />తో సెర్చ్ చేస్తోంది</translation>
 <translation id="5963939892571022323">హైలైట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధ్యం కాదు.</translation>
+<translation id="5968400720580217226">AI మోడ్</translation>
 <translation id="5971459446352190251">QR కోడ్ సెర్చ్</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 బుక్‌మార్క్ తొలగించబడింది}other{{count} బుక్‌మార్క్‌లు తొలగించబడ్డాయి}}</translation>
 <translation id="5972844218283131174">అన్నింటి ఎంపికను తొలగించండి</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6452534462676960500">కొత్త యాక్టివిటీ</translation>
 <translation id="6459411599807878608">వివరాలు దాచబడ్డాయి</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">మీ డౌన్‌లోడ్‌లు మీకు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="6476253015009698798">ఈ పేజీకి ధర ట్రాకింగ్ అందుబాటులో లేదు.</translation>
 <translation id="6476284679642588870">పేమెంట్ ఆప్షన్‌లను నిర్వహించండి</translation>
 <translation id="6476800141292307438">పేజీని <ph name="LANGUAGE" />లోకి అనువదిస్తోంది. స్క్రీన్ దిగువ భాగానికి దగ్గర్లో ఎంపికలు అందుబాటులో ఉంటాయి.</translation>
@@ -1461,6 +1465,7 @@
 <translation id="6627583120233659107">ఫోల్డర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6629759408545977279">దీని నుండి: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">మీ సంస్థ అజ్ఞాత మోడ్‌ను ఆఫ్ చేసింది</translation>
+<translation id="6637478299472506933">డౌన్‌లోడ్ చేయడం విఫలమైంది</translation>
 <translation id="6638511529934826365">వచనాన్ని జూమ్ చేయి…</translation>
 <translation id="6640268266988685324">తెరిచి ఉన్న ట్యాబ్</translation>
 <translation id="6641465290890659327">మీ పాస్‌వర్డ్ కాపీని షేర్ చేయండి</translation>
@@ -1583,6 +1588,7 @@
 <translation id="7102005569666697658">డౌన్‌లోడ్ చేస్తోంది… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">మెనూ → సెట్టింగ్‌లు → పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="7108338896283013870">దాచిపెట్టు</translation>
+<translation id="7127922377013221748">ఉపకరణపట్టీని దాచిపెట్టు</translation>
 <translation id="7128693485119315539">మీ బ్రౌజింగ్ హిస్టరీ, పాస్‌వర్డ్‌ల వంటి మీ మేనేజ్ చేయబడే ఖాతాతో ముడిపడి ఉన్న బ్రౌజింగ్ డేటాను మీ సంస్థ చూడవలసి రావచ్చు, మేనేజ్ చేయవలసి రావచ్చు.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">కెమెరా అందుబాటులో లేదు</translation>

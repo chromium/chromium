@@ -198,6 +198,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1129348283834595293">Ciberpunk</translation>
 <translation id="1129420403709586868">Accede ao contido multimedia e ás fotos do teu teléfono</translation>
 <translation id="1129850422003387628">Xestionar aplicacións</translation>
+<translation id="1130116586186908674">Crear vista dividida</translation>
 <translation id="1130430615924359526">{0,plural, =1{Pechar modo de incógnito}other{Pechar modo de incógnito (# ventás)}}</translation>
 <translation id="113050636487300043">Para diferenciar entre os distintos perfís, escolle un nome e un tema de cor</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> (forma parte do grupo <ph name="GROUP_NAME" />)</translation>
@@ -471,6 +472,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1307431692088049276">Non preguntarme de novo</translation>
 <translation id="130744661532298792">Para poder usar sempre os contrasinais na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="1307559529304613120">O sistema non puido almacenar o token de acceso á API de longo prazo para este dispositivo.</translation>
+<translation id="1311092170520822848">Este sitio está controlando os lectores de tarxetas intelixentes conectados ao teu dispositivo e, posiblemente, as tarxetas dispoñibles para eles</translation>
 <translation id="131112695174432497">Elimínanse os datos que repercuten na personalización de anuncios</translation>
 <translation id="1311294419381837540">Estás emitindo unha pestana. Podes pór en pausa ou deter a emisión cando queiras.</translation>
 <translation id="131188242279372879">Descubre a protección mellorada para dispor do máximo nivel de seguranza de Chrome nas descargas</translation>
@@ -732,7 +734,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1500297251995790841">Dispositivo descoñecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Máis información sobre as aplicacións de Chrome non compatibles</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
-<translation id="1503392482221435031">Envía automaticamente estatísticas de uso a Google. Podes activar e desactivar os informes de fallos na configuración di dispositivo.</translation>
 <translation id="1503556098270577657">Iniciaches sesión en <ph name="USER_EMAIL" /> co teu teléfono Android</translation>
 <translation id="150411034776756821">Eliminar <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Fixar vista dividida</translation>
@@ -2097,6 +2098,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2431027948063157455">Non se puido cargar o Asistente de Google. Comproba a conexión de rede e volve tentalo.</translation>
 <translation id="243179355394256322">A túa organización só lles permite inscribir dispositivos aos usuarios autorizados. Este usuario non está autorizado para inscribir dispositivos. Comproba que o usuario teña o privilexio de administrador Inscribir hardware de Google Meet, na sección da consola de administración Usuarios.</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
+<translation id="2433237965825924228">As aplicacións web illadas controlan os dispositivos de autenticación e as tarxetas intelixentes ás que poden acceder. As tarxetas intelixentes normalmente conteñen identificadores que se utilizan para autenticarte.</translation>
 <translation id="2433452467737464329">Engade un parámetro de consulta no URL para actualizar a páxina automaticamente: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aparencia</translation>
 <translation id="2433836460518180625">Desbloquear só o dispositivo</translation>
@@ -3018,7 +3020,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3048589239114571785">Reproducir (K)</translation>
 <translation id="3048742847101793553">A túa organización bloqueou este ficheiro porque se produciu un erro durante a análise.</translation>
 <translation id="3048917188684939573">Rexistros de emisión e do dispositivo</translation>
-<translation id="3049525403650329038">Comparte o contido da páxina con Gemini para obter resultados máis relevantes. Os teus datos non se usan para mellorar os modelos de IA xenerativa.</translation>
 <translation id="3051250416341590778">Tamaño da pantalla</translation>
 <translation id="3053013834507634016">Uso da clave de certificado</translation>
 <translation id="3053273573829329829">Activar PIN de usuario</translation>
@@ -3513,6 +3514,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3429174588714165399">Crear un atallo a esta páxina</translation>
 <translation id="3429271624041785769">Idiomas de contido web</translation>
 <translation id="3429275422858276529">Engade esta páxina aos marcadores para atopala facilmente máis tarde</translation>
+<translation id="343084100869297747">As aplicacións web illadas seguirán automaticamente esta opción de configuración</translation>
 <translation id="3431530007831146102">Usar movementos da cabeza para controlar o cursor do rato</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> de espazo liberado</translation>
 <translation id="3432762828853624962">Traballadores compartidos</translation>
@@ -7910,7 +7912,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6525767484449074555">Fai clic en Instalar</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6527574156657772563">Non hai ningún dispositivo dispoñible. Engade a túa Conta de Google ao teléfono para conectalo a este dispositivo (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6530030995840538405">Imaxe xerada <ph name="INDEX" /> de <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">O teu administrador aplica estas opcións de configuración</translation>
 <translation id="6530267432324197764">Perfil xestionado por <ph name="MANAGER" /></translation>
@@ -8879,6 +8880,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7201535955609308429">Espera mentres se leva a cabo a verificación</translation>
 <translation id="7202337678781136582">Escanea o código QR co teu teléfono Android</translation>
 <translation id="7203150201908454328">Ampliado</translation>
+<translation id="7206252555702853828">Estanse controlando os teus lectores de tarxetas intelixentes</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Páxina de saída}other{Páxinas de saída}}</translation>
 <translation id="7207457272187520234">Enviar datos de uso e diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta opción de configuración contrólaa o propietario. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
 <translation id="7207631048330366454">Buscar aplicacións</translation>
@@ -11640,6 +11642,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9081543426177426948">Os sitios que visitas non se gardan no modo de incógnito</translation>
 <translation id="9082750838489080452">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Abrir como ventá</translation>
+<translation id="9084383457260170045">As aplicacións web illadas poderán pedir permiso para controlar os lectores de tarxetas intelixentes</translation>
 <translation id="9085256200913095638">Duplicar pestana seleccionada</translation>
 <translation id="9085446486797400519">Acceso á cámara</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> (non seleccionado). Preme Buscar e Espazo para seleccionalo.</translation>
@@ -11839,6 +11842,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para xestionala, abre Extensións}other{Para xestionalas, abre Extensións}}</translation>
 <translation id="924818813611903184">Xestionar idiomas na configuración de Chrome OS</translation>
 <translation id="925575170771547168">Esta acción eliminará <ph name="TOTAL_USAGE" /> de datos almacenados polos sitios</translation>
+<translation id="927864230077808465">As aplicacións web illadas non poden controlar os lectores de tarxetas intelixentes</translation>
 <translation id="930268624053534560">Marcas de tempo detalladas</translation>
 <translation id="930551443325541578">Repetición de teclas e acentos</translation>
 <translation id="930893132043726269">Nestes momentos, estase usando a itinerancia</translation>

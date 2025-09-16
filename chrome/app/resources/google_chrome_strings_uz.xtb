@@ -446,6 +446,9 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6180522807229584611">Bu varaq ortiqcha resurs sarflayapti. Unumdorlikni kuchaytirish uchun Chrome varaqni nofaol qilishiga ruxsat bering.</translation>
 <translation id="6182736845697986886">Yangilanish serveridagi ichki xato sababli oʻrnatilmadi.</translation>
 <translation id="6192058120268468905">Chromedagi hisobingiz</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> Chrome ishlashini oʻzgartirishi mumkin kengaytmani oʻrnatdi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Google Chrome mDNS trafigiga ruxsat berishiga oid kiruvchi qoida.</translation>
 <translation id="624230925347970731">Chrome tez orada yopiladi.</translation>
 <translation id="6247557882553405851">Google Parollar menejeri</translation>
@@ -474,6 +477,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6506909944137591434">Chrome atrofingiz 3D xxaritasini yaratishi uchun kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Joylashuvdan foydalanish uchun <ph name="BEGIN_LINK" />tizim sozlamalari<ph name="END_LINK" /> orqali Chromega ruxsat bering</translation>
+<translation id="652948702951888897">Chrome tarixi</translation>
 <translation id="6532945796722480006">Chrome Canary ichida Gemini ochish</translation>
 <translation id="6585124893636629274">Chrome ichida Gemini oynasini yopish</translation>
 <translation id="659498884637196217">Bu qurilmadagi Google Parollar menejerida</translation>

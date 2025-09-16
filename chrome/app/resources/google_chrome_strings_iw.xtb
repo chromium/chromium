@@ -442,6 +442,9 @@
 <translation id="6180522807229584611">‏בכרטיסייה הזו נעשה שימוש במשאבים נוספים. כדי לשפר את הביצועים, כדאי לאפשר ל-Chrome להשבית אותה.</translation>
 <translation id="6182736845697986886">ההתקנה נכשלה עקב שגיאה פנימית בשרת העדכון.</translation>
 <translation id="6192058120268468905">‏החשבון שלך ב-Chrome</translation>
+<translation id="6220551899604141979">‏התוסף התווסף על ידי <ph name="PARTNER_NAME" /> ויכול לשנות את אופן הפעולה של Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">‏כלל נכנס עבור Google Chrome על מנת לאפשר תנועת mDNS.</translation>
 <translation id="624230925347970731">‏Chrome ייסגר בקרוב</translation>
 <translation id="6247557882553405851">‏מנהל הסיסמאות של Google</translation>
@@ -470,6 +473,7 @@
 <translation id="6506909944137591434">‏כדי ליצור מפה תלת-ממדית של הסביבה שלך, נדרשת הרשאת גישה למצלמה ב-Chrome</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת פיתוח</translation>
 <translation id="6520670145826811516">‏כדי להשתמש בשירותי המיקום, צריך להיכנס אל <ph name="BEGIN_LINK" />הגדרות המערכת<ph name="END_LINK" /> ולתת ל-Chrome גישה</translation>
+<translation id="652948702951888897">‏היסטוריה של Chrome</translation>
 <translation id="6532945796722480006">‏פתיחת Gemini ב-Chrome Canary</translation>
 <translation id="6585124893636629274">‏סגירת Gemini ב-Chrome</translation>
 <translation id="659498884637196217">‏שמורה במנהל הסיסמאות של Google במכשיר הזה</translation>

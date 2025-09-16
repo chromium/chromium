@@ -3,6 +3,7 @@
 <translationbundle lang="mr">
 <translation id="1010283278930414892">सेव्ह केलेले कोणतेही पासवर्ड या डिव्हाइसवर नाहीत</translation>
 <translation id="1011749477052068769">येथे हलवा</translation>
+<translation id="1014083013111769343">वाचन मोड प्राधान्ये पूर्ण उंचीवर उघडली आहेत</translation>
 <translation id="1014147525163127655">या डिव्हाइसवर <ph name="ORIGIN" /> साठी कोणत्याही पासकी नाहीत</translation>
 <translation id="1016498331642356377">तुमचा आवाज वापरून झटपट शोधा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ला पाठवत आहे…</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">ठेवा</translation>
 <translation id="1973912524893600642">स्टोअर करायचा असलेला डेटा</translation>
 <translation id="1974060860693918893">प्रगत</translation>
+<translation id="1982274314082047220">वाचन मोड प्राधान्यांसाठी वर स्‍वाइप करा</translation>
 <translation id="1984087999855033707">फोन नंबर</translation>
 <translation id="1984417487208496350">संरक्षण नाही (शिफारस केली जात नाही)</translation>
 <translation id="1986685561493779662">नाव आधीपासून अस्तित्वात आहे</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">इमेजची वर्णने</translation>
 <translation id="2996291259634659425">सांकेतिक पासफ्रेझ तयार करा</translation>
 <translation id="2996809686854298943">URL आवश्यक आहे</translation>
+<translation id="3024215143424744261">वाचन मोड प्राधान्ये बंद केली आहेत</translation>
 <translation id="3026955690410463085">लिंकचा समावेश करा</translation>
 <translation id="3027644380269727216">साइटवरील तुमच्या अ‍ॅक्टिव्हिटीवर आधारित. हे सेटिंग सुरू आहे.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> वरून</translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">गुप्त मोडमधून बाहेर पडा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेला <ph name="TABS_COUNT_ONE" /> टॅब पहा}other{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेले <ph name="TABS_COUNT_MANY" /> टॅब पहा}}</translation>
+<translation id="6971555615916967190">वाचन मोड प्राधान्ये अर्ध्या उंचीवर उघडली आहेत</translation>
 <translation id="6971862865055170158">मंजुरी देऊ नका</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, नवीन किंवा अपडेट केलेला टॅब</translation>
 <translation id="6976811588313110624">नवीन शॉर्टकट जोडा.</translation>

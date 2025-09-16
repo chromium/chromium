@@ -735,7 +735,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1500297251995790841">Peranti tidak diketahui [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Ketahui lebih lanjut tentang Apl Chrome yang tidak disokong</translation>
 <translation id="1501480321619201731">Padamkan kumpulan</translation>
-<translation id="1503392482221435031">Menghantar statistik penggunaan kepada Google secara automatik. Anda boleh menghidupkan atau mematikan laporan ranap sistem dalam tetapan peranti anda.</translation>
 <translation id="1503556098270577657">Anda telah log masuk ke <ph name="USER_EMAIL" /> menggunakan telefon Android anda</translation>
 <translation id="150411034776756821">Alih keluar <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Sematkan paparan pisah</translation>
@@ -2190,6 +2189,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2471469610750100598">Hitam (lalai)</translation>
 <translation id="2471506181342525583">Akses lokasi.dibenarkan</translation>
 <translation id="2471632709106952369">Jadual perbandingan</translation>
+<translation id="2472855537207709205">Kumpulkan Semua Tab yang Tidak Dikumpulkan</translation>
 <translation id="2473195200299095979">Terjemahkan halaman ini</translation>
 <translation id="2475982808118771221">Ralat berlaku</translation>
 <translation id="2476435723907345463">Akses kunci laluan dialih keluar</translation>
@@ -2805,6 +2805,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2900247416110050639">Google Docs, Sheets dan Slides memerlukan fail untuk disimpan dalam Google Drive. Fail tempatan akan dialihkan dan fail daripada lokasi lain akan disalin. Fail anda boleh ditemukan dalam folder Google Drive pada apl Files.</translation>
 <translation id="290105521672621980">Fail menggunakan ciri tidak disokong</translation>
 <translation id="2901348420151309559">Foto dan apl terkini</translation>
+<translation id="2901431118738474110">Kunci laluan ini tidak berfungsi lagi. Kunci laluan ini telah dipadamkan daripada <ph name="RPID" /> dan akan dipadamkan daripada laman web ini tidak lama lagi. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;About passkeys&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> tidak dapat berkomunikasi dengan pencetak ini. Pastikan pencetak dipalamkan dan cuba lagi.</translation>
 <translation id="2902265136119311513">Semak imbas sebagai Tetamu</translation>
 <translation id="2902312830803030883">Lagi tindakan</translation>
@@ -3035,7 +3036,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3048589239114571785">Main (k)</translation>
 <translation id="3048742847101793553">Organisasi anda menyekat fail ini kerana imbasan gagal.</translation>
 <translation id="3048917188684939573">Log Hantar dan Peranti</translation>
-<translation id="3049525403650329038">Kongsi kandungan halaman dengan Gemini untuk mendapatkan jawapan yang lebih berkaitan. Data anda tidak digunakan untuk meningkatkan model AI generatif.</translation>
 <translation id="3051250416341590778">Saiz paparan</translation>
 <translation id="3053013834507634016">Penggunaan Penting Sijil</translation>
 <translation id="3053273573829329829">Dayakan PIN pengguna</translation>
@@ -7928,7 +7928,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6525767484449074555">Klik “Pasang”</translation>
 <translation id="6527303717912515753">Kongsi</translation>
 <translation id="6527574156657772563">Tiada peranti yang tersedia. Tambahkan Google Account anda pada telefon anda untuk menyambungkan akaun tersebut pada <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Sejarah Chrome</translation>
 <translation id="6530030995840538405">Imej <ph name="INDEX" /> daripada <ph name="SUBJECT" /> yang dijana</translation>
 <translation id="6530186581263215931">Tetapan ini dikuatkuasakan oleh pentadbir anda</translation>
 <translation id="6530267432324197764">Profil diurus oleh <ph name="MANAGER" /></translation>
@@ -11534,10 +11533,12 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8993945059918628059">Sentuh penderia cap jari dengan jari anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="899403249577094719">URL Tapak Sijil Netscape</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Sambungan ini disimpan dalam Google Account anda tetapi sebarang data yang disimpan pada peranti ini sahaja boleh dipadamkan}other{Sambungan ini disimpan dalam Google Account anda tetapi sebarang data yang disimpan pada peranti ini sahaja boleh dipadamkan}}</translation>
+<translation id="8997659961727384862">Kumpulkan semua tab yang tidak dikumpulkan</translation>
 <translation id="8999027165951679951">Tab tidak aktif: <ph name="MEMORY_SAVINGS" /> dikosongkan</translation>
 <translation id="8999560016882908256">Ralat sintaks seksyen: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Pergerakan pada skrin dikurangkan</translation>
 <translation id="9000185763019430629">Sentuh penderia cap jari di sebelah kanan <ph name="DEVICE_TYPE" /> anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
+<translation id="900267527532832868">Kunci laluan ini tidak berfungsi lagi. Kunci laluan ini akan dipadamkan daripada <ph name="GOOGLE_PASSWORD_MANAGER" /> tidak lama lagi.</translation>
 <translation id="9003031149571024583">Masukkan digit <ph name="NUM_DIGIT" /> daripada PIN 6 digit. Gunakan kekunci undur ruang atau padam untuk mengalih keluar digit terakhir.</translation>
 <translation id="9003185744423389627">Sambungan ke Pelayan Pengurusan Peranti gagal dengan status '<ph name="STATUS_TEXT" />' pada <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Imbas profil eSIM tersedia secara automatik?</translation>

@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC και κλιματισμός</translation>
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2742128390261873684">Οικιακός αυτοματισμός</translation>
-<translation id="2742870351467570537">Κατάργηση επιλεγμένων στοιχείων</translation>
 <translation id="2743512410823092182">Πόροι και εξοπλισμός DJ</translation>
 <translation id="2743934314332613923">Ενημέρωση πληροφοριών διπλώματος οδήγησης;</translation>
 <translation id="2759299890026163685">Βεβαιωθείτε ότι έχετε σταθερή σύνδεση στο διαδίκτυο, προτού δοκιμάσετε ξανά</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">Ενεργοποίηση υποχρεωτικού επανελέγχου ταυτότητας</translation>
 <translation id="3942048175062210325">Δοκιμάστε να ανοίξετε ξανά τα αρχεία σας</translation>
 <translation id="3943857333388298514">Επικόλληση</translation>
+<translation id="3945937463338223066">Έλεγχος των συσκευών ελέγχου ταυτότητας τύπου <ph name="READERNAME" /> και των έξυπνων καρτών στις οποίες έχουν πρόσβαση</translation>
 <translation id="3946209740501886391">Να γίνεται πάντα ερώτηση σε αυτόν τον ιστότοπο</translation>
 <translation id="3948588869002647271">Η συγκεκριμένη εφαρμογή λείπει ή έχει καταστραφεί</translation>
 <translation id="3949297482798028668">Η επικόλληση αυτού του περιεχομένου εδώ έχει αποκλειστεί από τον διαχειριστή σας.</translation>
@@ -2679,7 +2679,6 @@
 <translation id="5423269318075950257">Παρακολούθηση τιμής</translation>
 <translation id="5425082381151187189">Διακόσμηση σπιτιού και εσωτερικών χώρων</translation>
 <translation id="5426179911063097041">Η διεύθυνση <ph name="SITE" /> θέλει να σας στείλει ειδοποιήσεις</translation>
-<translation id="5430298929874300616">Κατάργηση σελιδοδείκτη</translation>
 <translation id="5431318178759467895">Χρώμα</translation>
 <translation id="5433756542371550806">Παραλλαγές γραμμής εντολών</translation>
 <translation id="5434798570900738152">Το Chromium <ph name="BEGIN_EMPHASIS" />δεν θα αποθηκεύει<ph name="END_EMPHASIS" />:
@@ -2877,6 +2876,7 @@
 <translation id="5750869797196646528">Παρακολούθηση κινήσεων των χεριών</translation>
 <translation id="5752327398324808817">Εισαγάγετε μία ή δύο λέξεις</translation>
 <translation id="5752519522101347518">Φόρτωση ιστοτόπου επαλήθευσης τράπεζας</translation>
+<translation id="5753570386948603678">Διαγραφή από το ιστορικό</translation>
 <translation id="5759751709240058861">Χρήση και μετακίνηση της κάμεράς σας</translation>
 <translation id="5763042198335101085">Εισαγάγετε μια έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="5764725887548570807">Μη έγκυρη μορφή προέλευσης.</translation>
@@ -3093,7 +3093,6 @@
 <translation id="6124058285696691147">Λήψη του συνημμένου</translation>
 <translation id="6124432979022149706">Εφαρμογές σύνδεσης Chrome για επιχειρήσεις</translation>
 <translation id="6126565365696310362">Κινεζικός φάκελος #2</translation>
-<translation id="6127379762771434464">Το στοιχείο καταργήθηκε</translation>
 <translation id="6131824478727057281">τοποθεσία</translation>
 <translation id="6133320744616005677">Να συνεχίσει να επιτρέπεται</translation>
 <translation id="6133984428121856852">Η επέκταση αρχείου είναι κενή ή έχει λανθασμένη μορφή.</translation>
@@ -3108,7 +3107,6 @@
 <translation id="6151417162996330722">Το πιστοποιητικό του διακομιστή έχει πολύ μεγάλη περίοδο εγκυρότητας.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> επί <ph name="HEIGHT" /> ίντσες (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Τρέξιμο και περπάτημα</translation>
-<translation id="6157754950574419155">Κατάργηση όλων από το ιστορικό</translation>
 <translation id="6157877588268064908">Για να δείτε τρόπους και απαιτήσεις αποστολής, επιλέξτε μια διεύθυνση</translation>
 <translation id="6159554577634054750">Καταπολέμηση επιβλαβών οργανισμών</translation>
 <translation id="6159908896951210943">Επίσημο</translation>
@@ -3796,6 +3794,7 @@
 <translation id="7292031607255951991">Όνομα παραλήπτη</translation>
 <translation id="7298195798382681320">Προτεινόμενες</translation>
 <translation id="7299471494012161875">Συνδεδεμένα περιφερειακά οθόνης</translation>
+<translation id="7299721129597238157">Διαγραφή σελιδοδείκτη</translation>
 <translation id="7299769361777046949">Διαχείριση καρτών επιβράβευσης αφοσιωμένων πελατών στο Πορτοφόλι Google</translation>
 <translation id="7304030187361489308">Υψηλός</translation>
 <translation id="7304562222803846232">Διαχείριση ρυθμίσεων απορρήτου Λογαριασμού Google</translation>

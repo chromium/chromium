@@ -198,6 +198,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1129348283834595293">Kuberpunk</translation>
 <translation id="1129420403709586868">Bekyk jou foon se foto's en media</translation>
 <translation id="1129850422003387628">Bestuur programme</translation>
+<translation id="1130116586186908674">Skep verdeelde aansig</translation>
 <translation id="1130430615924359526">{0,plural, =1{Maak Incognito toe}other{Maak Incognito (# vensters) toe}}</translation>
 <translation id="113050636487300043">Kies 'n naam en kleurtema om tussen profiele te onderskei</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – deel van groep <ph name="GROUP_NAME" /></translation>
@@ -471,6 +472,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1307431692088049276">Moet my nie weer vra nie</translation>
 <translation id="130744661532298792">Verifieer dis jy om seker te maak dat jy altyd die wagwoorde in jou Google-rekening kan gebruik</translation>
 <translation id="1307559529304613120">Oeps! Die stelsel kon nie die langtermyn-API-toegangtoken vir hierdie toestel stoor nie.</translation>
+<translation id="1311092170520822848">Hierdie werf beheer slimkaartlesers wat aan jou toestel gekoppel is en moontlike slimkaarte wat aan hulle beskikbaar is</translation>
 <translation id="131112695174432497">Data wat advertensiepersonalisering raak, word uitgevee</translation>
 <translation id="1311294419381837540">Jy saai tans ’n oortjie uit. Jy kan die uitsending enige tyd onderbreek of staak.</translation>
 <translation id="131188242279372879">Ontdek verbeterde beskerming om Chrome se hoogste sekuriteitvlak vir aflaaie te kry</translation>
@@ -733,7 +735,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1500297251995790841">Onbekende toestel [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Kom meer te wete oor ongesteunde Chrome-programme</translation>
 <translation id="1501480321619201731">Vee groep uit</translation>
-<translation id="1503392482221435031">Stuur outomaties gebruikstatistieke aan Google. Jy kan ook omvalverslae aan of af skakel in jou toestel se instellings.</translation>
 <translation id="1503556098270577657">Jy het met jou Android-foon by <ph name="USER_EMAIL" /> aangemeld</translation>
 <translation id="150411034776756821">Verwyder <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Speld verdeelde aansig vas</translation>
@@ -2111,6 +2112,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2431027948063157455">Google Assistent kon nie laai nie. Gaan asseblief jou netwerkverbinding na en probeer weer.</translation>
 <translation id="243179355394256322">Jou organisasie beperk toestelinskrywing tot gemagtigde gebruikers. Hierdie gebruiker is nie gemagtig om toestelle in te skryf nie. Maak in die Gebruikers-afdeling van die Adminkonsole seker dat die gebruiker die "Skryf Google Vergader-hardeware in"-administrateursvoorreg het.</translation>
 <translation id="243275146591958220">Kanselleer aflaai</translation>
+<translation id="2433237965825924228">Geïsoleerde webapps beheer stawingtoestelle en slimkaarte wat vir hulle toeganklik is. Slimkaarte bevat gewoonlik identifiseerders wat gebruik word om jou te staaf.</translation>
 <translation id="2433452467737464329">Voeg 'n navraagparameter in URL by om die blad outomaties te herlaai: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Voorkoms</translation>
 <translation id="2433836460518180625">Ontsluit net toestel</translation>
@@ -3032,7 +3034,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3048589239114571785">Speel (k)</translation>
 <translation id="3048742847101793553">Jou organisasie het hierdie lêer geblokkeer omdat die skandering misluk het.</translation>
 <translation id="3048917188684939573">Uitsaai- en toestelloglêers</translation>
-<translation id="3049525403650329038">Deel bladsyinhoud met Gemini om meer relevante antwoorde te kry. Jou data word nie gebruik om generatiewe KI-modelle te verbeter nie.</translation>
 <translation id="3051250416341590778">Skermgrootte</translation>
 <translation id="3053013834507634016">Sertifikaatsleutelgebruik</translation>
 <translation id="3053273573829329829">Aktiveer gebruiker-PIN</translation>
@@ -3527,6 +3528,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3429174588714165399">Skep ’n kortpad na hierdie bladsy</translation>
 <translation id="3429271624041785769">Webinhoudtale</translation>
 <translation id="3429275422858276529">Boekmerk hierdie bladsy om dit later maklik te kry</translation>
+<translation id="343084100869297747">Geïsoleerde webapps volg outomaties hierdie instelling</translation>
 <translation id="3431530007831146102">Gebruik kopbewegings om die muisskermpyltjie te beheer</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> is beskikbaar gemaak</translation>
 <translation id="3432762828853624962">Gedeelde werkers</translation>
@@ -7925,7 +7927,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6525767484449074555">Klik “Installeer”</translation>
 <translation id="6527303717912515753">Deel</translation>
 <translation id="6527574156657772563">Geen beskikbare toestelle nie Voeg jou Google-rekening by jou foon om dit aan hierdie <ph name="DEVICE_TYPE" /> te koppel. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Chrome-geskiedenis</translation>
 <translation id="6530030995840538405">Gegenereerde prent <ph name="INDEX" /> van <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Hierdie instellings word deur jou administrateur afgedwing</translation>
 <translation id="6530267432324197764">Profiel bestuur deur <ph name="MANAGER" /></translation>
@@ -8894,6 +8895,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7201535955609308429">Wag asseblief terwyl verifikasie aan die gang is</translation>
 <translation id="7202337678781136582">Skandeer die QR-kode met jou Android-foon</translation>
 <translation id="7203150201908454328">Uitgevou</translation>
+<translation id="7206252555702853828">Jou slimkaartlesers word beheer</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Verlaat bladsy}other{Verlaat bladsye}}</translation>
 <translation id="7207457272187520234">Stuur gebruik- en diagnostiese data. Hierdie toestel stuur tans diagnostiese, toestel- en programgebruikdata outomaties na Google toe. Dit sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. Hierdie instelling word deur die eienaar toegepas. As jou bykomende Web- en App-aktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word.</translation>
 <translation id="7207631048330366454">Deursoek programme</translation>
@@ -11655,6 +11657,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9081543426177426948">Werwe wat jy besoek word nie in Incognito gestoor nie</translation>
 <translation id="9082750838489080452">App: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Maak as venster oop</translation>
+<translation id="9084383457260170045">Geïsoleerde webapps kan vra om slimkaartlesers te beheer</translation>
 <translation id="9085256200913095638">Dupliseer geselekteerde oortjie</translation>
 <translation id="9085446486797400519">Kameratoegang</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> is nie gekies nie. Druk Search plus spasie om te kies.</translation>
@@ -11854,6 +11857,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Maak Uitbreidings oop om dit te bestuur}other{Maak Uitbreidings oop om hulle te bestuur}}</translation>
 <translation id="924818813611903184">Bestuur tale in Chrome-bedryfstelselinstellings</translation>
 <translation id="925575170771547168">Dit sal <ph name="TOTAL_USAGE" /> se data uitvee wat deur werwe geberg is</translation>
+<translation id="927864230077808465">Geïsoleerde webapps kan nie slimkaartlesers beheer nie</translation>
 <translation id="930268624053534560">Gedetailleerde tydstempels</translation>
 <translation id="930551443325541578">Herhaal sleutels en aksentmerke</translation>
 <translation id="930893132043726269">Swerf tans</translation>

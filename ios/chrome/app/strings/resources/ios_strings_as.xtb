@@ -834,6 +834,7 @@
 <translation id="4286718549648564014">আপোনাৰ একাউণ্ট <ph name="USER_EMAIL" />লৈ ঠিকনা স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="4287172530684295552">পঢ়া হিচাপে চিহ্নিত কৰক</translation>
 <translation id="428768789042547925">নতুন কি আছে</translation>
+<translation id="428858055663163046">আপুনি ইয়াত আপোনাৰ ডাউনল’ড কৰা ফাইলসমূহ উপলব্ধ হ’লে এক্সেছ কৰিব পাৰে</translation>
 <translation id="429074084062258019">{count,plural, =1{গোটত টেব যোগ দিয়ক}one{গোটত টেবসমূহ যোগ দিয়ক}other{গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="4302061870579014542">স্থান ছেট কৰক</translation>
 <translation id="4304713468139749426">পাছৱৰ্ড পৰিচালক</translation>
@@ -950,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{{count} খন কাৰ্ড আমদানি কৰা হৈছে}one{{count} খন কাৰ্ড আমদানি কৰা হৈছে}other{{count} খন কাৰ্ড আমদানি কৰা হৈছে}}</translation>
 <translation id="4751645464639803239">নতুন ইনকগনিট’ টেব</translation>
 <translation id="4752348350801431746">সুৰক্ষা পৰীক্ষা সম্পৰ্কীয় জাননী অফ কৰক…</translation>
+<translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
 <translation id="4764612367328936189">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক কেৱল কিছুমান নিৰ্দিষ্ট একাউণ্টৰ জৰিয়তেহে ছাইন ইন কৰিবলৈ দিয়ে। অনুমতি নথকা একাউণ্টসমূহ লুকুৱাই ৰখা হয়। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover আৰু ফ’ল’ কৰি থকা হৈছে</translation>
 <translation id="4769198578611055647">আপোনাক যিকোনো ডিভাইচত ছেভ কৰি থোৱা পাছকীসমূহ এক্সেছ কৰাত সহায় কৰে</translation>
@@ -1271,6 +1273,7 @@
 <translation id="5956112131836209882">টেবৰ গোটৰ টেব। <ph name="NUMBER_OF_TABS_IN_GROUP" /> টাৰ ভিতৰত <ph name="TAB_INDEX_IN_GROUP" /> নম্বৰটো।</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" />ৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="5963939892571022323">হাইলাইটৰ লিংক এটা সৃষ্টি কৰিব নোৱাৰি।</translation>
+<translation id="5968400720580217226">AI ম’ড</translation>
 <translation id="5971459446352190251">কিউআৰ ক’ড স্কেন কৰি সন্ধান কৰক</translation>
 <translation id="5971872012779224351">{count,plural, =1{১ টা বুকমাৰ্ক মচা হ’ল}one{{count} টা বুকমাৰ্ক মচা হ’ল}other{{count} টা বুকমাৰ্ক মচা হ’ল}}</translation>
 <translation id="5972844218283131174">আটাইবোৰ বাছনিৰ পৰা আঁতৰাওক</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6452534462676960500">নতুন কাৰ্যকলাপ</translation>
 <translation id="6459411599807878608">সবিশেষ লুকুওৱা হৈছে</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">আপুনি ইয়াত ডাউনল’ড কৰা ফাইলসমূহ বিচাৰি পাব</translation>
 <translation id="6476253015009698798">এই পৃষ্ঠাখনৰ বাবে মূল্য ট্ৰেক কৰাৰ সুবিধাটো উপলব্ধ নহয়।</translation>
 <translation id="6476284679642588870">পৰিশোধ পদ্ধতিসমূহ পৰিচালনা কৰক</translation>
 <translation id="6476800141292307438">এই পৃষ্ঠাটো <ph name="LANGUAGE" />লৈ অনুবাদ কৰি থকা হৈছে। বিকল্পসমূহ স্ক্রীণখনৰ একেবাৰে তলৰ কাষত আছে।</translation>

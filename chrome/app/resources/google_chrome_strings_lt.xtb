@@ -450,6 +450,9 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6180522807229584611">Šiam skirtukui naudojami papildomi šaltiniai. Kad padidintumėte našumą, leiskite „Chrome“ jį padaryti neaktyvų.</translation>
 <translation id="6182736845697986886">Įdiegti nepavyko dėl vidinės atnaujinimo serverio klaidos.</translation>
 <translation id="6192058120268468905">Jūsų paskyra naršyklėje „Chrome“</translation>
+<translation id="6220551899604141979">„<ph name="PARTNER_NAME" />“ pridėjo plėtinį, kuris gali pakeisti, kaip veikia „Chrome“.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">„Google Chrome“ skirta taisyklė, pagal kurią leidžiamas mDNS srautas.</translation>
 <translation id="624230925347970731">„Chrome“ netrukus bus uždaryta</translation>
 <translation id="6247557882553405851">„Google“ slaptažodžių tvarkytuvė</translation>
@@ -478,6 +481,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6506909944137591434">„Chrome“ reikalingas fotoaparato leidimas, kad būtų galima sukurti trimatį aplinkos žemėlapį</translation>
 <translation id="6515495397637126556">„<ph name="PAGE_TITLE" />“ – „Google Chrome Dev“</translation>
 <translation id="6520670145826811516">Kad būtų galima naudoti jūsų vietovės informaciją, suteikite „Chrome“ prieigą <ph name="BEGIN_LINK" />sistemos nustatymuose<ph name="END_LINK" /></translation>
+<translation id="652948702951888897">„Chrome“ istorija</translation>
 <translation id="6532945796722480006">Atidaryti „Gemini“ naršyklėje „Chrome Canary“</translation>
 <translation id="6585124893636629274">Uždaryti „Gemini“ naršyklėje „Chrome“</translation>
 <translation id="659498884637196217">„Google“ slaptažodžių tvarkytuvė šiame įrenginyje</translation>

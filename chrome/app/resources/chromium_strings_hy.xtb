@@ -17,6 +17,9 @@
 <translation id="1131805035311359397">Որպեսզի պաշտպանեք ձեր գաղտնաբառերը տվյալների արտահոսքից և խուսափեք անվտանգության հետ կապված այլ խնդիրներից, <ph name="BEGIN_LINK" />մտեք հաշիվ Chromium դիտարկիչում<ph name="END_LINK" />։</translation>
 <translation id="1153368717515616349">Սեղմեք Chromium-ի ընտրացանկը</translation>
 <translation id="1157985233335035034">Վերջերս ընտրված լեզուներ</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" />-ն ավելացրել է ընդլայնում, որը կարող է ազդել Chromium-ի աշխատանքի վրա։
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Տեղադրումը ձախողվեց, քանի որ Windows-ի ձեր տարբերակը չի աջակցվում։</translation>
 <translation id="1185134272377778587">Chromium-ի մասին</translation>
 <translation id="1203500561924088507">Շնորհակալություն տեղադրելու համար։ Նախքան <ph name="BUNDLE_NAME" />-ն օգտագործելը դուք պետք է վերագործարկեք ձեր դիտարկիչը։</translation>

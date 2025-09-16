@@ -1067,7 +1067,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="273785062888389088">Isıtma, Havalandırma, Soğutma ve İklimlendirme Kontrolü</translation>
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2742128390261873684">Ev Otomasyonu</translation>
-<translation id="2742870351467570537">Seçilen öğeleri sil</translation>
 <translation id="2743512410823092182">DJ Kaynakları ve Donanımı</translation>
 <translation id="2743934314332613923">Sürücü belgesi güncellensin mi?</translation>
 <translation id="2759299890026163685">Tekrar denemeden önce internet bağlantınızın kesintisiz olduğundan emin olun</translation>
@@ -1780,6 +1779,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3941630233824954464">Zorunlu yeniden kimlik doğrulamayı etkinleştir</translation>
 <translation id="3942048175062210325">Dosyalarınızı tekrar açmayı deneyin</translation>
 <translation id="3943857333388298514">Yapıştır</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> türündeki kimlik doğrulama cihazlarını ve bu cihazların erişebildiği akıllı kartları kontrol etme</translation>
 <translation id="3946209740501886391">Bu sitede her zaman sor</translation>
 <translation id="3948588869002647271">Bu uygulama eksik veya bozuk</translation>
 <translation id="3949297482798028668">Bu içeriği buraya yapıştırma işlevi, yöneticiniz tarafından engellendi.</translation>
@@ -2677,7 +2677,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5423269318075950257">Fiyatı Takip Et</translation>
 <translation id="5425082381151187189">Ev Dekorasyonu ve İç Dekorasyon</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> size bildirim göndermek istiyor</translation>
-<translation id="5430298929874300616">Yer işaretini kaldır</translation>
 <translation id="5431318178759467895">Renk</translation>
 <translation id="5433756542371550806">Komut satırı varyasyonları</translation>
 <translation id="5434798570900738152">Chromium aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5750869797196646528">El takibi</translation>
 <translation id="5752327398324808817">Bir veya iki kelime girin</translation>
 <translation id="5752519522101347518">Banka doğrulama web sitesi yükleniyor</translation>
+<translation id="5753570386948603678">Geçmişten sil</translation>
 <translation id="5759751709240058861">Kameranızı kullanma ve hareket ettirme</translation>
 <translation id="5763042198335101085">Geçerli bir e-posta adresi girin</translation>
 <translation id="5764725887548570807">Geçersiz kaynak biçimi.</translation>
@@ -3091,7 +3091,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6124058285696691147">Eklentiyi indir</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Zarf Chinese #2</translation>
-<translation id="6127379762771434464">Öğe kaldırıldı</translation>
 <translation id="6131824478727057281">konum</translation>
 <translation id="6133320744616005677">İzin vermeye devam et</translation>
 <translation id="6133984428121856852">Dosya uzantısı boş veya bozuk.</translation>
@@ -3106,7 +3105,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6151417162996330722">Sunucu sertifikasının geçerlilik dönemi çok uzun.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> inç (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Koşu ve Yürüyüş</translation>
-<translation id="6157754950574419155">Tümünü geçmişten kaldır</translation>
 <translation id="6157877588268064908">Gönderim yöntemlerini ve gereksinimlerini görmek için bir adres seçin</translation>
 <translation id="6159554577634054750">Böcek İlaçlama</translation>
 <translation id="6159908896951210943">Resmi</translation>
@@ -3793,6 +3791,7 @@ Ek ayrıntılar:
 <translation id="7292031607255951991">Alıcı adı</translation>
 <translation id="7298195798382681320">Önerilenler</translation>
 <translation id="7299471494012161875">Bağlı ekran çevre birimleri</translation>
+<translation id="7299721129597238157">Yer işaretini sil</translation>
 <translation id="7299769361777046949">Google Cüzdan'da bağlılık kartlarını yönetin</translation>
 <translation id="7304030187361489308">İnce</translation>
 <translation id="7304562222803846232">Google Hesabı gizlilik ayarlarını yönet</translation>

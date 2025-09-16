@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">חימום, אוורור ומיזוג אוויר ובקרת אקלים</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2742128390261873684">אוטומציה של הבית</translation>
-<translation id="2742870351467570537">הסרת הפריטים שנבחרו</translation>
 <translation id="2743512410823092182">משאבים וציוד לתקלוט</translation>
 <translation id="2743934314332613923">לעדכן את רישיון הנהיגה?</translation>
 <translation id="2759299890026163685">לפני שמנסים שוב, צריך לוודא שיש חיבור יציב לאינטרנט</translation>
@@ -2677,7 +2676,6 @@ Del</translation>
 <translation id="5423269318075950257">מעקב אחר המחיר</translation>
 <translation id="5425082381151187189">עיצוב הבית ועיצוב פנים</translation>
 <translation id="5426179911063097041">‫<ph name="SITE" /> רוצה לשלוח לך הודעות</translation>
-<translation id="5430298929874300616">הסרת סימנייה</translation>
 <translation id="5431318178759467895">צבע</translation>
 <translation id="5433756542371550806">וריאציות של שורת פקודה</translation>
 <translation id="5434798570900738152">‏<ph name="BEGIN_EMPHASIS" />לא יישמרו<ph name="END_EMPHASIS" /> ב-Chromium הנתונים הבאים:
@@ -2876,6 +2874,7 @@ Del</translation>
 <translation id="5750869797196646528">מעקב אחר תנועות הידיים</translation>
 <translation id="5752327398324808817">צריך להזין מילה או שתיים</translation>
 <translation id="5752519522101347518">האתר לאימות הבנק בטעינה</translation>
+<translation id="5753570386948603678">מחיקה מההיסטוריה</translation>
 <translation id="5759751709240058861">להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="5763042198335101085">עליך להזין כתובת אימייל חוקית</translation>
 <translation id="5764725887548570807">פורמט המקור לא תקין.</translation>
@@ -3092,7 +3091,6 @@ Del</translation>
 <translation id="6124058285696691147">הורדת הקובץ המצורף</translation>
 <translation id="6124432979022149706">‏מחברים של Chrome Enterprise</translation>
 <translation id="6126565365696310362">מעטפה – סינית 2</translation>
-<translation id="6127379762771434464">הפריט הוסר</translation>
 <translation id="6131824478727057281">מיקום</translation>
 <translation id="6133320744616005677">המשך מתן ההרשאה</translation>
 <translation id="6133984428121856852">סיומת הקובץ ריקה או לא תקינה.</translation>
@@ -3107,7 +3105,6 @@ Del</translation>
 <translation id="6151417162996330722">תקופת התוקף של אישור השרת ארוכה מדי.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> אינץ' (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ריצה והליכה</translation>
-<translation id="6157754950574419155">הסרת כל הפריטים מההיסטוריה</translation>
 <translation id="6157877588268064908">צריך לבחור כתובת כדי לראות שיטות משלוח ודרישות</translation>
 <translation id="6159554577634054750">הדברת מזיקים</translation>
 <translation id="6159908896951210943">רשמי</translation>
@@ -3794,6 +3791,7 @@ Del</translation>
 <translation id="7292031607255951991">שם הנמען</translation>
 <translation id="7298195798382681320">מומלצים</translation>
 <translation id="7299471494012161875">ציוד היקפי מחובר של תצוגה</translation>
+<translation id="7299721129597238157">מחק סימניה</translation>
 <translation id="7299769361777046949">‏ניהול כרטיסי מועדון לקוחות ב-Google Wallet</translation>
 <translation id="7304030187361489308">גבוה</translation>
 <translation id="7304562222803846232">‏ניהול הגדרות הפרטיות בחשבון Google</translation>
@@ -4005,6 +4003,7 @@ Del</translation>
 <translation id="7613889955535752492">תפוגה: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628">‏<ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי להציג ולנהל סיסמאות בהגדרות Chrome</translation>
 <translation id="7615932826417658001">הוספת תעודה מזהה</translation>
+<translation id="7616390733770379387">מנועי החיפוש מוצגים בסדר אקראי.</translation>
 <translation id="7616645509853975347">‏מנהל המערכת הפעיל את Chrome Enterprise Connectors בדפדפן שלך. למחברים האלה יש גישה אל חלק מהנתונים שלך.</translation>
 <translation id="7617825962482469577">‏מעטפה – C7/C6</translation>
 <translation id="7618270539713451657">אומנויות לחימה</translation>
@@ -4828,6 +4827,7 @@ Del</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618">‫<ph name="URL" /> רוצה לחפש מכשירים ברשת המקומית ולהתחבר אליהם</translation>
 <translation id="9046864189129893978">מיקרופונים (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">מנוע החיפוש שמוגדר כברירת מחדל מאפשר לך לחפש באינטרנט. אפשר לשנות את זה בהגדרות.</translation>
 <translation id="9048035366624198823">כדי שהפעולות האלה יתבצעו, צריך להגדיר את המדיניות <ph name="POLICY_NAME" /> לערך <ph name="POLICY_VALUE" />:‏ <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">‏24x36 אינץ'</translation>
 <translation id="9049981332609050619">ניסית להגיע ל-<ph name="DOMAIN" />, אבל השרת הציג אישור לא חוקי.</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="hu">
 <translation id="1010283278930414892">Nincsenek mentett jelszavak ezen az eszközön</translation>
 <translation id="1011749477052068769">Áthelyezés ide</translation>
+<translation id="1014083013111769343">Olvasási mód beállításai teljes magasságban megnyitva</translation>
 <translation id="1014147525163127655">Nincsenek a következőhöz társított azonosítókulcsok az eszközön: <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Gyorsan végezhet hangalapú keresést. A gyorsparancs szerkesztéséhez tartsa lenyomva.</translation>
 <translation id="1028699632127661925">Küldés a következő eszközre: <ph name="DEVICE_NAME" />…</translation>
@@ -207,6 +208,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="197288927597451399">Megőrzés</translation>
 <translation id="1973912524893600642">Adatok megőrzése</translation>
 <translation id="1974060860693918893">Speciális</translation>
+<translation id="1982274314082047220">Olvasási mód: csúsztasson felfelé a beállításokhoz</translation>
 <translation id="1984087999855033707">telefonszám</translation>
 <translation id="1984417487208496350">Nincs védelem (nem javasolt)</translation>
 <translation id="1986685561493779662">Már van ilyen név</translation>
@@ -428,6 +430,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2992473221983447149">Képleírások</translation>
 <translation id="2996291259634659425">Összetett jelszó létrehozása</translation>
 <translation id="2996809686854298943">URL szükséges</translation>
+<translation id="3024215143424744261">Olvasási mód beállításai bezárva</translation>
 <translation id="3026955690410463085">Link hozzáadása</translation>
 <translation id="3027644380269727216">A webhelyen végzett tevékenységei alapján. Ez a beállítás be van kapcsolva.</translation>
 <translation id="3027950907978057636">Innen: <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="696447261358045621">Kilépés az inkognitó módból</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> új tevékenységgel rendelkező lap megtekintése a megosztott lapcsoportokban}other{<ph name="TABS_COUNT_MANY" /> új tevékenységgel rendelkező lap megtekintése a megosztott lapcsoportokban}}</translation>
+<translation id="6971555615916967190">Az Olvasási mód beállításai félmagasságban megnyitva</translation>
 <translation id="6971862865055170158">Elutasítás</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, új vagy frissített lap</translation>
 <translation id="6976811588313110624">Új billentyűparancs hozzáadása.</translation>

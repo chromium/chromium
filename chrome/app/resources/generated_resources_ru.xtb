@@ -737,7 +737,6 @@
 <translation id="1500297251995790841">Неизвестное устройство [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Подробнее о неподдерживаемых приложениях Chrome</translation>
 <translation id="1501480321619201731">Удалить группу</translation>
-<translation id="1503392482221435031">Автоматически отправлять статистику использования в Google. Отправку отчетов о сбоях можно включить или отключить в настройках устройства.</translation>
 <translation id="1503556098270577657">Вы вошли в аккаунт <ph name="USER_EMAIL" /> с помощью телефона Android.</translation>
 <translation id="150411034776756821">Удалить <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Закрепить режим Split View</translation>
@@ -2672,7 +2671,7 @@
 <translation id="2805760958323556153">Для правила ExtensionInstallForcelist указано недопустимое значение. Обратитесь к администратору.</translation>
 <translation id="2805770823691782631">Дополнительные сведения</translation>
 <translation id="2806372837663997957">Устройство, с которым вы хотели поделиться файлом, не приняло его.</translation>
-<translation id="2806891468525657116">Ярлык уже добавлен</translation>
+<translation id="2806891468525657116">Ярлык уже добавлен.</translation>
 <translation id="2807517655263062534">Скачанные файлы появятся здесь</translation>
 <translation id="2808985063107661499">Назначение жестов "<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />" и "<ph name="CONFLICTING_GESTURE_TWO" />" может совпадать. Советуем выбрать другой жест.</translation>
 <translation id="2809346626032021864">Книги</translation>
@@ -3024,7 +3023,6 @@
 <translation id="3048589239114571785">Воспроизвести (K)</translation>
 <translation id="3048742847101793553">Ваша организация заблокировала этот файл, поскольку его не удалось проверить.</translation>
 <translation id="3048917188684939573">Журналы трансляций и устройств</translation>
-<translation id="3049525403650329038">Чтобы получать более подходящие ответы, предоставьте Gemini доступ к содержимому страниц. Эти данные не используются для улучшения моделей генеративного ИИ.</translation>
 <translation id="3051250416341590778">Масштаб изображения на дисплее</translation>
 <translation id="3053013834507634016">Использование ключа сертификата</translation>
 <translation id="3053273573829329829">Включить PIN-код пользователя</translation>
@@ -7916,7 +7914,6 @@
 <translation id="6525767484449074555">Нажмите "Установить"</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="6527574156657772563">Нет устройств. Чтобы подключить телефон к <ph name="DEVICE_TYPE" />, добавьте на мобильное устройство свой аккаунт Google. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">История Chrome</translation>
 <translation id="6530030995840538405">Сгенерированное изображение: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />.</translation>
 <translation id="6530186581263215931">Эти настройки определяются администратором</translation>
 <translation id="6530267432324197764">Профилем управляет <ph name="MANAGER" /></translation>

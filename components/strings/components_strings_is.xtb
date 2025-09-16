@@ -1067,7 +1067,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="273785062888389088">Hitastillar og loftræsting</translation>
 <translation id="2740531572673183784">Í lagi</translation>
 <translation id="2742128390261873684">Sjálfvirkni á heimilinu</translation>
-<translation id="2742870351467570537">Fjarlægja valin atriði</translation>
 <translation id="2743512410823092182">Vörur og búnaður fyrir plötusnúða</translation>
 <translation id="2743934314332613923">Uppfæra ökuskírteini?</translation>
 <translation id="2759299890026163685">Gakktu úr skugga um að þú sért með stöðuga nettengingu áður en þú reynir aftur</translation>
@@ -1780,6 +1779,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3941630233824954464">Virkja áskilda endurauðkenningu</translation>
 <translation id="3942048175062210325">Prófaðu að opna skrárnar þínar aftur</translation>
 <translation id="3943857333388298514">Líma</translation>
+<translation id="3945937463338223066">Stjórnaðu auðkenningartækjum af gerðinni <ph name="READERNAME" /> og snjallkortum sem þau hafa aðgang að</translation>
 <translation id="3946209740501886391">Alltaf spyrja á þessu vefsvæði</translation>
 <translation id="3948588869002647271">Þetta forrit vantar eða er skemmt</translation>
 <translation id="3949297482798028668">Kerfisstjóri hefur lokað á að þetta efni sé límt hér.</translation>
@@ -2677,7 +2677,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5423269318075950257">Vakta verð</translation>
 <translation id="5425082381151187189">Heimilis- og innanhússhönnun</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vill senda þér tilkynningar</translation>
-<translation id="5430298929874300616">Fjarlægja bókamerki</translation>
 <translation id="5431318178759467895">Í lit</translation>
 <translation id="5433756542371550806">Tilbrigði fyrir skipanalínu</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />vistar ekki<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5750869797196646528">Rakning handahreyfinga</translation>
 <translation id="5752327398324808817">Sláðu inn eitt eða tvö orð</translation>
 <translation id="5752519522101347518">Hleður vefsvæði um staðfestingu bankaupplýsinga</translation>
+<translation id="5753570386948603678">Eyða úr ferli</translation>
 <translation id="5759751709240058861">Nota og hreyfa myndavélina</translation>
 <translation id="5763042198335101085">Sláðu inn gilt netfang</translation>
 <translation id="5764725887548570807">Ógilt snið upprunastaðar.</translation>
@@ -3091,7 +3091,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6124058285696691147">Sækja viðhengið</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Umslag: kínverskt #2</translation>
-<translation id="6127379762771434464">Atriði fjarlægt</translation>
 <translation id="6131824478727057281">staðsetning</translation>
 <translation id="6133320744616005677">Halda áfram að heimila</translation>
 <translation id="6133984428121856852">Skráarending er auð eða gölluð.</translation>
@@ -3106,7 +3105,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6151417162996330722">Gildistími þjónsvottorðsins er of langur.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> to. (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Hlaup og ganga</translation>
-<translation id="6157754950574419155">Fjarlægja allt úr ferli</translation>
 <translation id="6157877588268064908">Veldu heimilisfang til að sjá sendingarmáta og kröfur</translation>
 <translation id="6159554577634054750">Meindýravarnir</translation>
 <translation id="6159908896951210943">Formlegt</translation>
@@ -3792,6 +3790,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7292031607255951991">Nafn viðtakanda</translation>
 <translation id="7298195798382681320">Ráðlagt</translation>
 <translation id="7299471494012161875">Jaðartæki sem eru tengd við skjá</translation>
+<translation id="7299721129597238157">Eyða bókamerki</translation>
 <translation id="7299769361777046949">Stjórna tryggðarkortum í Google-veski</translation>
 <translation id="7304030187361489308">Mikil</translation>
 <translation id="7304562222803846232">Stjórna persónuverndarstillingum Google reikningsins</translation>

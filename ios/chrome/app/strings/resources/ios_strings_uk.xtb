@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Відкрийте додаток Паролі.</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1433478348197382180">Режим читання</translation>
+<translation id="1435271730600332883">Відкрийте розділ "Автозаповнення й паролі".</translation>
 <translation id="1436671784520050284">Продовжити налаштування</translation>
 <translation id="143681031165817424">Адресу збережено лише на цьому пристрої</translation>
 <translation id="1445276840641906250">Усі ваші вкладки в одному вебпереглядачі</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">Адресу перенесено в обліковий запис <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Позначити як прочитане</translation>
 <translation id="428768789042547925">Що нового</translation>
+<translation id="428858055663163046">Ви зможете переглядати завантажені файли, коли вони з’являться</translation>
 <translation id="429074084062258019">{count,plural, =1{Додати вкладку в групу}one{Додати вкладки в групу}few{Додати вкладки в групу}many{Додати вкладки в групу}other{Додати вкладки в групу}}</translation>
 <translation id="4302061870579014542">Вибрати</translation>
 <translation id="4304713468139749426">Менеджер паролів</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{Імпортовано {count} картку}one{Імпортовано {count} картку}few{Імпортовано {count} картки}many{Імпортовано {count} карток}other{Імпортовано {count} картки}}</translation>
 <translation id="4751645464639803239">Нова анонімна вкладка</translation>
 <translation id="4752348350801431746">Вимкнути сповіщення про перевірку безпеки…</translation>
+<translation id="4759238208242260848">Завантаження</translation>
 <translation id="4764612367328936189">Ваша організація дозволяє входити лише в певні облікові записи. Недозволені облікові записи приховано. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Рекомендації та підписки</translation>
 <translation id="4769198578611055647">Дає змогу користуватися збереженими ключами доступу на будь-якому пристрої</translation>
@@ -1270,6 +1273,7 @@
 <translation id="5956112131836209882">Група вкладок "Вкладка". <ph name="TAB_INDEX_IN_GROUP" /> з <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Пошук через сервіс <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не вдається створити посилання на виділений текст.</translation>
+<translation id="5968400720580217226">Режим ШІ</translation>
 <translation id="5971459446352190251">Шукати за QR-кодом</translation>
 <translation id="5971872012779224351">{count,plural, =1{Видалено 1 закладку}one{Видалено {count} закладку}few{Видалено {count} закладки}many{Видалено {count} закладок}other{Видалено {count} закладки}}</translation>
 <translation id="5972844218283131174">Не вибирати нічого</translation>
@@ -1415,6 +1419,7 @@
 <translation id="6452534462676960500">Нова дія</translation>
 <translation id="6459411599807878608">Деталі приховано</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">Тут відображатимуться ваші завантаження</translation>
 <translation id="6476253015009698798">Відстеження цін недоступне для цієї сторінки.</translation>
 <translation id="6476284679642588870">Керувати способами оплати</translation>
 <translation id="6476800141292307438">Сторінка перекладається такою мовою: <ph name="LANGUAGE" />. Параметри розташовано внизу екрана.</translation>
@@ -1460,6 +1465,7 @@
 <translation id="6627583120233659107">Редагувати папку</translation>
 <translation id="6629759408545977279">Джерело: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Адміністратор вашої організації вимкнув режим анонімного перегляду</translation>
+<translation id="6637478299472506933">Помилка завантаження</translation>
 <translation id="6638511529934826365">Масштабувати текст…</translation>
 <translation id="6640268266988685324">Відкрита вкладка</translation>
 <translation id="6641465290890659327">Поділіться копією свого пароля</translation>
@@ -1582,6 +1588,7 @@
 <translation id="7102005569666697658">Завантаження файлу… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Налаштування → Способи оплати</translation>
 <translation id="7108338896283013870">Сховати</translation>
+<translation id="7127922377013221748">Сховати панель інструментів</translation>
 <translation id="7128693485119315539">Адміністратор організації зможе бачити дані вебперегляду (зокрема історію і паролі) у вашому керованому обліковому записі й керувати ними.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>

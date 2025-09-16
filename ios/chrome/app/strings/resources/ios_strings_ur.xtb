@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">پاس ورڈز کھولیں</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1433478348197382180">Reading Mode</translation>
+<translation id="1435271730600332883">آٹو فل اور پاس ورڈز کھولیں</translation>
 <translation id="1436671784520050284">سیٹ اپ جاری رکھیں</translation>
 <translation id="143681031165817424">پتہ صرف اس آلہ پر محفوظ ہے</translation>
 <translation id="1445276840641906250">ایک ہی براؤزر میں آپ کے سبھی ٹیبز</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">پتہ آپ کے اکاؤنٹ <ph name="USER_EMAIL" /> میں منتقل کر دیا گیا</translation>
 <translation id="4287172530684295552">پڑھی ہوئی کا نشان لگائیں</translation>
 <translation id="428768789042547925">نیا کیا ہے</translation>
+<translation id="428858055663163046">دستیاب ہونے پر آپ اپنی ڈاؤن لوڈ کردہ فائلز تک یہاں رسائی حاصل کر سکتے ہیں</translation>
 <translation id="429074084062258019">{count,plural, =1{گروپ میں ٹیب شامل کریں}other{گروپ میں ٹیبز شامل کریں}}</translation>
 <translation id="4302061870579014542">پوزیشن سیٹ کریں</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{‫{count} کارڈ کو درآمد کیا گیا}other{‫{count} کارڈز کو درآمد کیا گیا}}</translation>
 <translation id="4751645464639803239">نیا پوشیدگی ٹیب</translation>
 <translation id="4752348350801431746">سیفٹی چیک کی اطلاعات آف کریں…</translation>
+<translation id="4759238208242260848">ڈاؤن لوڈز</translation>
 <translation id="4764612367328936189">آپ کی تنظیم آپ کو صرف مخصوص اکاؤنٹس کے ساتھ سائن ان کرنے کی اجازت دیتی ہے۔ جن اکاؤنٹس کی اجازت نہیں ہے وہ پوشیدہ ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">‏Discover اور پیروی کرنا</translation>
 <translation id="4769198578611055647">کسی بھی آلے پر محفوظ کردہ پاس کیز تک رسائی حاصل کرنے میں آپ کی مدد کرتا ہے</translation>
@@ -1270,6 +1273,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5956112131836209882">ٹیب گروپ کا ٹیب۔ <ph name="NUMBER_OF_TABS_IN_GROUP" /> میں سے <ph name="TAB_INDEX_IN_GROUP" />۔</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> کے ساتھ تلاش کریں</translation>
 <translation id="5963939892571022323">نمایاں کرنے کا لنک تخلیق نہیں کیا جا سکا۔</translation>
+<translation id="5968400720580217226">‏‫AI وضع</translation>
 <translation id="5971459446352190251">‏‫QR کوڈ کی تلاش</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 بُک مارک حذف کیا گیا}other{{count} بُک مارکس حذف کئے گئے}}</translation>
 <translation id="5972844218283131174">سبھی کو غیر منتخب کریں</translation>
@@ -1415,6 +1419,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6452534462676960500">نئی سرگرمی</translation>
 <translation id="6459411599807878608">تفصیلات پوشیدہ ہیں</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">آپ کو اپنے ڈاؤن لوڈز یہاں ملیں گے</translation>
 <translation id="6476253015009698798">اس صفحے کے لیے قیمت کو ٹریک کرنے کی سہولت دستیاب نہیں ہے۔</translation>
 <translation id="6476284679642588870">ادائیگی کے طریقوں کا نظم کریں</translation>
 <translation id="6476800141292307438">صفحہ کا <ph name="LANGUAGE" /> میں ترجمہ کیا جا رہا ہے۔ اسکرین کے نچلے حصے کے قریب اختیارات دستیاب ہیں۔</translation>
@@ -1460,6 +1465,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6627583120233659107">فولڈر میں ترمیم کریں</translation>
 <translation id="6629759408545977279">منجانب: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">آپ کی تنظیم نے پوشیدگی وضع آف کر دی ہے</translation>
+<translation id="6637478299472506933">ڈاؤن لوڈ ناکام ہوگیا</translation>
 <translation id="6638511529934826365">ٹیکسٹ کو زوم کریں…</translation>
 <translation id="6640268266988685324">ٹیب کھولیں</translation>
 <translation id="6641465290890659327">اپنے پاس ورڈ کی ایک کاپی کا اشتراک کریں</translation>

@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">暖通空調和氣候控制</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2742128390261873684">自動化家居</translation>
-<translation id="2742870351467570537">移除選取的項目</translation>
 <translation id="2743512410823092182">DJ 資源和器材</translation>
 <translation id="2743934314332613923">要更新駕駛執照嗎？</translation>
 <translation id="2759299890026163685">請確保互聯網連線穩定，然後再試一次</translation>
@@ -1779,6 +1778,7 @@
 <translation id="3941630233824954464">啟用強制重新驗證</translation>
 <translation id="3942048175062210325">嘗試再次開啟檔案</translation>
 <translation id="3943857333388298514">貼上</translation>
+<translation id="3945937463338223066">控制「<ph name="READERNAME" />」類型的驗證裝置及可存取的智能卡</translation>
 <translation id="3946209740501886391">在此網站上一律詢問</translation>
 <translation id="3948588869002647271">此應用程式遺失或已毀損</translation>
 <translation id="3949297482798028668">管理員已禁止在此貼上這項內容。</translation>
@@ -2676,7 +2676,6 @@
 <translation id="5423269318075950257">追蹤價格</translation>
 <translation id="5425082381151187189">家居和室內設計</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給您</translation>
-<translation id="5430298929874300616">移除書籤</translation>
 <translation id="5431318178759467895">顏色</translation>
 <translation id="5433756542371550806">指令列變化版本</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />以下資料：
@@ -2874,6 +2873,7 @@
 <translation id="5750869797196646528">手部追蹤</translation>
 <translation id="5752327398324808817">輸入一至兩個字</translation>
 <translation id="5752519522101347518">載入緊銀行驗證網站</translation>
+<translation id="5753570386948603678">從記錄中刪除</translation>
 <translation id="5759751709240058861">使用和移動相機</translation>
 <translation id="5763042198335101085">請輸入有效的電郵地址</translation>
 <translation id="5764725887548570807">來源格式無效。</translation>
@@ -3090,7 +3090,6 @@
 <translation id="6124058285696691147">下載附件</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Chinese #2 信封</translation>
-<translation id="6127379762771434464">項目已移除</translation>
 <translation id="6131824478727057281">位置</translation>
 <translation id="6133320744616005677">允許繼續存取</translation>
 <translation id="6133984428121856852">副檔名空白或格式錯誤。</translation>
@@ -3105,7 +3104,6 @@
 <translation id="6151417162996330722">這個伺服器憑證的有效期過長。</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 吋 (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">跑步和步行</translation>
-<translation id="6157754950574419155">從記錄中移除全部項目</translation>
 <translation id="6157877588268064908">如要查看運送方式和要求，請選取一個地址</translation>
 <translation id="6159554577634054750">蟲害控制</translation>
 <translation id="6159908896951210943">正式</translation>
@@ -3792,6 +3790,7 @@
 <translation id="7292031607255951991">收件者名稱</translation>
 <translation id="7298195798382681320">建議</translation>
 <translation id="7299471494012161875">顯示已連接的周邊裝置</translation>
+<translation id="7299721129597238157">刪除書籤</translation>
 <translation id="7299769361777046949">管理「Google 錢包」入面嘅會員卡</translation>
 <translation id="7304030187361489308">高</translation>
 <translation id="7304562222803846232">管理 Google 帳戶私隱設定</translation>

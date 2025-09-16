@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Abre Contraseñas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1433478348197382180">Modo Lectura</translation>
+<translation id="1435271730600332883">Abrir Autorrelleno y contraseñas</translation>
 <translation id="1436671784520050284">Continuar con la configuración</translation>
 <translation id="143681031165817424">Dirección guardada solo en este dispositivo</translation>
 <translation id="1445276840641906250">Todas tus pestañas en un solo navegador</translation>
@@ -170,7 +171,7 @@
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
 <translation id="1651260071709244114">apps</translation>
-<translation id="1652051421944182562">Activar notificaciones de Comprobación de tu estado…</translation>
+<translation id="1652051421944182562">Activar notificaciones de Comprobación de seguridad…</translation>
 <translation id="1652333207707886577">Personalizar el menú</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Tiempo restante: {TIME} segundos}=1{Tiempo restante: {TIME} segundo}other{Tiempo restante: {TIME} segundos}}</translation>
 <translation id="1654232554734641711">Acceso a micrófono permitido</translation>
@@ -833,6 +834,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4286718549648564014">Dirección movida a tu cuenta <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marcar como leídas</translation>
 <translation id="428768789042547925">Novedades</translation>
+<translation id="428858055663163046">Podrás acceder a tus archivos descargados aquí cuando estén disponibles</translation>
 <translation id="429074084062258019">{count,plural, =1{Añadir pestaña al grupo}other{Añadir pestañas al grupo}}</translation>
 <translation id="4302061870579014542">Establecer posición</translation>
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
@@ -949,6 +951,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4749529195026091676">{count,plural, =1{{count} tarjeta importada}other{{count} tarjetas importadas}}</translation>
 <translation id="4751645464639803239">Nueva pestaña de Incógnito</translation>
 <translation id="4752348350801431746">Desactiva las notificaciones de Comprobación de tu estado…</translation>
+<translation id="4759238208242260848">Descargas</translation>
 <translation id="4764612367328936189">Tu organización solo te permite iniciar sesión con determinadas cuentas. Las cuentas no permitidas están ocultas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover y Siguiendo</translation>
 <translation id="4769198578611055647">Te ayuda a acceder a las llaves de acceso guardadas en cualquier dispositivo</translation>
@@ -1270,6 +1273,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5956112131836209882">Pestaña del grupo de pestañas. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Buscar con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">No se puede crear un enlace al texto destacado.</translation>
+<translation id="5968400720580217226">Modo IA</translation>
 <translation id="5971459446352190251">Búsqueda mediante códigos QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
 <translation id="5972844218283131174">Desmarcar todo</translation>
@@ -1415,6 +1419,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6452534462676960500">Actividad nueva</translation>
 <translation id="6459411599807878608">Se han ocultado los detalles</translation>
 <translation id="646394917185284261">Archivos</translation>
+<translation id="6472069383518492189">Aquí se mostrarán tus descargas</translation>
 <translation id="6476253015009698798">El seguimiento de precios no está disponible para esta página.</translation>
 <translation id="6476284679642588870">Gestionar métodos de pago</translation>
 <translation id="6476800141292307438">La página se está traduciendo al <ph name="LANGUAGE" />. Encontrarás opciones disponibles cerca de la parte inferior de la pantalla.</translation>
@@ -1460,6 +1465,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6627583120233659107">Editar carpeta</translation>
 <translation id="6629759408545977279">De: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Tu organización ha desactivado el modo Incógnito</translation>
+<translation id="6637478299472506933">Error de descarga</translation>
 <translation id="6638511529934826365">Ampliar texto…</translation>
 <translation id="6640268266988685324">Pestaña abierta</translation>
 <translation id="6641465290890659327">Comparte una copia de tu contraseña</translation>
@@ -1582,6 +1588,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7102005569666697658">Descargando… (<ph name="FILE_SIZE" />)</translation>
 <translation id="7104701424653979232">Menú → Configuración → Métodos de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
+<translation id="7127922377013221748">Ocultar barra de herramientas</translation>
 <translation id="7128693485119315539">Es posible que tu organización necesite ver y gestionar los datos de navegación asociados a tu cuenta gestionada, como el historial de navegación y las contraseñas.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>

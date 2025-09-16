@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC və iqlimə nəzarət</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Məişət Avtomatlaşdırması</translation>
-<translation id="2742870351467570537">Seçilmiş elementləri silin</translation>
 <translation id="2743512410823092182">DJ resurs və avadanlığı</translation>
 <translation id="2743934314332613923">Sürücülük vəsiqəsi güncəllənsin?</translation>
 <translation id="2759299890026163685">Yenidən cəhd etməzdən əvvəl sabit internet bağlantısı olduğundan əmin olun</translation>
@@ -1776,6 +1775,7 @@
 <translation id="3941630233824954464">Məcburi təkrar identifikasiyanı aktivləşdirin</translation>
 <translation id="3942048175062210325">Faylları yenidən açın</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> tipli autentifikasiya cihazlarını və onlara əlçatan olan smart kartları idarə edin</translation>
 <translation id="3946209740501886391">Həmişə bu saytda sual verin</translation>
 <translation id="3948588869002647271">Bu tətbiq çatışmır, yaxud zədələnib</translation>
 <translation id="3949297482798028668">Administrator bu kontentin bura əlavə edilməsini bloklayıb.</translation>
@@ -2673,7 +2673,6 @@
 <translation id="5423269318075950257">Qiyməti izləyin</translation>
 <translation id="5425082381151187189">Ev və İnteryer Dekoru</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> Sizə bildiriş göndərmək istəyir</translation>
-<translation id="5430298929874300616">Əlfəcini silin</translation>
 <translation id="5431318178759467895">Rəng</translation>
 <translation id="5433756542371550806">Əmr sətri variasiyaları</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
@@ -2871,6 +2870,7 @@
 <translation id="5750869797196646528">Əlin izlənilməsi</translation>
 <translation id="5752327398324808817">Bir və ya iki söz daxil edin</translation>
 <translation id="5752519522101347518">Bank doğrulama veb-saytı yüklənir</translation>
+<translation id="5753570386948603678">Tarixçədən silin</translation>
 <translation id="5759751709240058861">Kameranızın istifadəsi və hərəkət etdirilməsi</translation>
 <translation id="5763042198335101085">Düzgün e-poçt ünvanı daxil edin</translation>
 <translation id="5764725887548570807">Yanlış mənşə formatı.</translation>
@@ -3087,7 +3087,6 @@
 <translation id="6124058285696691147">Qoşmanı endirin</translation>
 <translation id="6124432979022149706">Chrome Enterprise Birləşdiriciləri</translation>
 <translation id="6126565365696310362">Zərf Çin #2</translation>
-<translation id="6127379762771434464">Element silindi</translation>
 <translation id="6131824478727057281">məkan</translation>
 <translation id="6133320744616005677">İcazəni davam etdirin</translation>
 <translation id="6133984428121856852">Fayl artırması boşdur və ya səhvdir.</translation>
@@ -3102,7 +3101,6 @@
 <translation id="6151417162996330722">Server sertifikatı çox uzun olan doğrulama müddətinə malikdir.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> düym (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Qaçış və Yerimə</translation>
-<translation id="6157754950574419155">Tarixçədən hamısını silin</translation>
 <translation id="6157877588268064908">Göndərmə üsulları və tələblərinə baxın, ünvan seçin</translation>
 <translation id="6159554577634054750">Ziyanvericilərə nəzarət</translation>
 <translation id="6159908896951210943">Rəsmi</translation>
@@ -3788,6 +3786,7 @@
 <translation id="7292031607255951991">Alıcının adı</translation>
 <translation id="7298195798382681320">Tövsiyə olunur</translation>
 <translation id="7299471494012161875">Displeyin yan elementləri əlavə olunub</translation>
+<translation id="7299721129597238157">Əlfəcini silin</translation>
 <translation id="7299769361777046949">Loyallıq kartlarını Google Pulqabıda idarə edin</translation>
 <translation id="7304030187361489308">Yüksək</translation>
 <translation id="7304562222803846232">Google Hesabının məxfilik ayarlarını idarə edin</translation>

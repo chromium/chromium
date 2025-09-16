@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">പാസ്‌വേഡുകൾ തുറക്കുക</translation>
 <translation id="1430915738399379752">പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="1433478348197382180">റീഡിംഗ് മോഡ്</translation>
+<translation id="1435271730600332883">'സ്വയമേവ പൂരിപ്പിക്കലും പാസ്‌വേഡുകളും' തുറക്കുക</translation>
 <translation id="1436671784520050284">സജ്ജീകരിക്കുന്നത് തുടരുക</translation>
 <translation id="143681031165817424">ഈ ഉപകരണത്തിൽ മാത്രമേ വിലാസം സംരക്ഷിച്ചിട്ടുള്ളൂ</translation>
 <translation id="1445276840641906250">നിങ്ങളുടെ എല്ലാ ടാബുകളും ഒരു ബ്രൗസറിൽ</translation>
@@ -950,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{{count} കാർഡ് ഇമ്പോർട്ട് ചെയ്തു}other{{count} കാർഡുകൾ ഇമ്പോർട്ട് ചെയ്തു}}</translation>
 <translation id="4751645464639803239">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="4752348350801431746">സുരക്ഷാ പരിശോധനാ അറിയിപ്പുകൾ ഓഫാക്കുക…</translation>
+<translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
 <translation id="4764612367328936189">ചില അക്കൗണ്ടുകൾ ഉപയോഗിച്ച് മാത്രമേ സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കൂ. അനുവദനീയമല്ലാത്ത അക്കൗണ്ടുകൾ മറച്ചിരിക്കുന്നു. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover, പിന്തുടരുന്നവ</translation>
 <translation id="4769198578611055647">സംരക്ഷിച്ച പാസ്‌കീകൾ ഏതൊരു ഉപകരണത്തിലും ആക്‌സസ് ചെയ്യാൻ സഹായിക്കുന്നു</translation>
@@ -1271,6 +1273,7 @@
 <translation id="5956112131836209882">ടാബ് ഗ്രൂപ്പ് ടാബ്. <ph name="NUMBER_OF_TABS_IN_GROUP" />-ൽ <ph name="TAB_INDEX_IN_GROUP" />-ാമത്തേത്.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="5963939892571022323">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല.</translation>
+<translation id="5968400720580217226">AI മോഡ്</translation>
 <translation id="5971459446352190251">QR കോഡ് തിരയൽ</translation>
 <translation id="5971872012779224351">{count,plural, =1{ഒരു ബുക്ക്‌മാർക്ക് ഇല്ലാതാക്കി}other{{count} ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കി}}</translation>
 <translation id="5972844218283131174">തിരഞ്ഞെടുത്തത് എല്ലാം മാറ്റുക</translation>
@@ -1462,6 +1465,7 @@
 <translation id="6627583120233659107">ഫോൾഡർ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6629759408545977279">ഉറവിടം: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">നിങ്ങളുടെ സ്ഥാപനം അദൃശ്യ മോഡ് ഓഫാക്കി</translation>
+<translation id="6637478299472506933">ഡൗൺലോഡ് പരാജയപ്പെട്ടു</translation>
 <translation id="6638511529934826365">ടെക്‌സ്‌റ്റ് സൂം ചെയ്യുക…</translation>
 <translation id="6640268266988685324">തുറന്നിരിക്കുന്ന ടാബ്</translation>
 <translation id="6641465290890659327">നിങ്ങളുടെ പാസ്‌വേഡിന്റെ പകർപ്പ് പങ്കിടുക</translation>
@@ -1584,6 +1588,7 @@
 <translation id="7102005569666697658">ഡൗൺലോഡ് ചെയ്യുന്നു… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">മെനു → ക്രമീകരണം → പേയ്മെന്റ് രീതികൾ</translation>
 <translation id="7108338896283013870">മറയ്ക്കുക</translation>
+<translation id="7127922377013221748">ഉപകരണബാര്‍‌ മറയ്‌ക്കുക</translation>
 <translation id="7128693485119315539">ബ്രൗസിംഗ് ചരിത്രവും പാസ്‌വേഡുകളും പോലെ, നിങ്ങളുടെ മാനേജ് ചെയ്യപ്പെടുന്ന അക്കൗണ്ടുമായി ബന്ധിപ്പിച്ചിരിക്കുന്ന ബ്രൗസിംഗ് ഡാറ്റ നിങ്ങളുടെ സ്ഥാപനത്തിന് കാണുകയും മാനേജ് ചെയ്യുകയും വേണ്ടി വന്നേക്കാം.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ക്യാമറ ലഭ്യമല്ല</translation>

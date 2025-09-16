@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC жана климатты көзөмөлдөө</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Үйдү автоматташтыруу</translation>
-<translation id="2742870351467570537">Тандалган нерселерди алып салуу</translation>
 <translation id="2743512410823092182">DJ ресурстары жана жабдуулары</translation>
 <translation id="2743934314332613923">Айдоочунун күбөлүгү жаңыртылсынбы?</translation>
 <translation id="2759299890026163685">Интернет байланышы туруктуу экенин текшерип, кайталап көрүңүз</translation>
@@ -1779,6 +1778,7 @@
 <translation id="3941630233824954464">Милдеттүү түрдө кайра аныктыгын текшерүүнү иштетүү</translation>
 <translation id="3942048175062210325">Файлдарыңызды кайра ачып көрүңүз</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> түрүндөгү аутентификация түзмөктөрүн жана алар колдонгон акылдуу карталарды көзөмөлдөө</translation>
 <translation id="3946209740501886391">Бул сайтта ар дайым суралсын</translation>
 <translation id="3948588869002647271">Бул колдонмо жок же бузулган</translation>
 <translation id="3949297482798028668">Мазмунду бул жерге чаптоо администраторуңуз тарабынан бөгөттөлгөн.</translation>
@@ -2676,7 +2676,6 @@
 <translation id="5423269318075950257">Баага көз салуу</translation>
 <translation id="5425082381151187189">Үй жана интерьер</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> сизге билдирмелерди жөнөткөнү жатат</translation>
-<translation id="5430298929874300616">Кыстарманы алып салуу</translation>
 <translation id="5431318178759467895">Түс</translation>
 <translation id="5433756542371550806">Буйрук сабынын варианттары</translation>
 <translation id="5434798570900738152">Chromium төмөнкү маалыматты <ph name="BEGIN_EMPHASIS" />сактабайт<ph name="END_EMPHASIS" />:
@@ -2874,6 +2873,7 @@
 <translation id="5750869797196646528">Колдорго көз салуу</translation>
 <translation id="5752327398324808817">Бир же эки сөздү киргизиңиз</translation>
 <translation id="5752519522101347518">Банкты ырастоочу вебсайт жүктөлүүдө</translation>
+<translation id="5753570386948603678">Таржымалдан өчүрүү</translation>
 <translation id="5759751709240058861">Камераңызды колдонуп, жылдыруу</translation>
 <translation id="5763042198335101085">Жарактуу электрондук почта дарегин киргизиңиз</translation>
 <translation id="5764725887548570807">Түпнуска формат жараксыз.</translation>
@@ -3090,7 +3090,6 @@
 <translation id="6124058285696691147">Тиркемени жүктөп алуу</translation>
 <translation id="6124432979022149706">Chrome Enterprise туташтыргычтары</translation>
 <translation id="6126565365696310362">Конверт Кытайча #2</translation>
-<translation id="6127379762771434464">Нерсе өчүрүлдү</translation>
 <translation id="6131824478727057281">жайгашкан жер</translation>
 <translation id="6133320744616005677">Колдоно берүүгө уруксат берүү</translation>
 <translation id="6133984428121856852">Файлдын кеңейтүүсү бош же туура эмес түзүлгөн.</translation>
@@ -3105,7 +3104,6 @@
 <translation id="6151417162996330722">Сервер уруксаттамасынын жарактуу мөөнөтү өтө узун.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Чуркоо жана жөө басуу</translation>
-<translation id="6157754950574419155">Баарын таржымалдан өчүрүү</translation>
 <translation id="6157877588268064908">Жөнөтүү ыкмаларын жана талаптарын көрүү үчүн дарегин тандаңыз</translation>
 <translation id="6159554577634054750">Курт-кумурскалардан арылтуу кызматы</translation>
 <translation id="6159908896951210943">Формалдуу</translation>
@@ -3791,6 +3789,7 @@
 <translation id="7292031607255951991">Алуучунун аты</translation>
 <translation id="7298195798382681320">Сунушталат</translation>
 <translation id="7299471494012161875">Дисплейдин тиркелген перифериялык түзүлүштөрү</translation>
+<translation id="7299721129597238157">Кыстарманы жок кылуу</translation>
 <translation id="7299769361777046949">Туруктуу кардардын карталарын Google Капчыкта тескөө</translation>
 <translation id="7304030187361489308">Бийик</translation>
 <translation id="7304562222803846232">Google аккаунтунун купуялык параметрлерин башкаруу</translation>

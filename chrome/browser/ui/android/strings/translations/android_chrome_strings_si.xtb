@@ -3,6 +3,7 @@
 <translationbundle lang="si">
 <translation id="1010283278930414892">මෙම උපාංගයෙහි සුරැකි මුරපද නොමැත</translation>
 <translation id="1011749477052068769">මෙහි ගෙන එන්න</translation>
+<translation id="1014083013111769343">කියවීමේ මාදිලියේ මනාපයන් සම්පූර්ණ උසින් විවෘත කර ඇත</translation>
 <translation id="1014147525163127655">මෙම උපාංගය මත <ph name="ORIGIN" /> සඳහා මුරයතුරු කිසිවක් නොමැත</translation>
 <translation id="1016498331642356377">ඔබගේ කටහඬ සමගින් ඉක්මනින් සොයන්න. මෙම කෙටිමඟ සංස්කරණය කිරීමට, ස්පර්ශ කර අල්ලාගෙන සිටින්න.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> වෙත යවනු ලැබේ...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">තබාගන්න</translation>
 <translation id="1973912524893600642">දත්ත තබා ගන්න</translation>
 <translation id="1974060860693918893">උසස් කළ</translation>
+<translation id="1982274314082047220">කියවීමේ මාදිලිය මනාපයන් සඳහා ඉහළට ස්වයිප් කරන්න</translation>
 <translation id="1984087999855033707">දුරකථන අංකය</translation>
 <translation id="1984417487208496350">ආරක්‍ෂාවක් නැත (නිර්දේශ නොකෙරේ)</translation>
 <translation id="1986685561493779662">නම දැනටමත් පවතී</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">රූප විස්තර</translation>
 <translation id="2996291259634659425">මුර-වැකිකඩ සාදන්න</translation>
 <translation id="2996809686854298943">URL අවශ්‍යය</translation>
+<translation id="3024215143424744261">කියවීමේ මාදිලියේ මනාප වසා ඇත</translation>
 <translation id="3026955690410463085">සබැඳිය ඇතුළත් කරන්න</translation>
 <translation id="3027644380269727216">අඩවියක ඔබේ ක්‍රියාකාරකම් මත පදනම්ව. මෙම සැකසීම ක්‍රියාත්මකයි.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> සිට</translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">අප්‍රසිද්ධ ප්‍රකාරය හැර යන්න</translation>
 <translation id="6965382102122355670">හරි</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{බෙදා ගත් පටිති සමූහවල නව ක්‍රියාකාරකම් සහිත <ph name="TABS_COUNT_ONE" /> පටිත්තක් බලන්න}one{බෙදා ගත් පටිති සමූහවල නව ක්‍රියාකාරකම් සහිත පටිති <ph name="TABS_COUNT_MANY" />ක් බලන්න}other{බෙදා ගත් පටිති සමූහවල නව ක්‍රියාකාරකම් සහිත පටිති <ph name="TABS_COUNT_MANY" />ක් බලන්න}}</translation>
+<translation id="6971555615916967190">කියවීමේ මාදිලියේ මනාපයන් අඩ උසින් විවෘත කර ඇත</translation>
 <translation id="6971862865055170158">අනුමත නොකරන්න</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, නව හෝ යාවත්කාලීන පටිත්ත</translation>
 <translation id="6976811588313110624">නව කෙටිමඟක් එක් කරන්න.</translation>

@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">開啟「密碼」</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1433478348197382180">閱讀模式</translation>
+<translation id="1435271730600332883">開啟「自動填入和密碼」</translation>
 <translation id="1436671784520050284">繼續設定</translation>
 <translation id="143681031165817424">地址淨係會儲存喺呢部裝置度</translation>
 <translation id="1445276840641906250">集中在同一個瀏覽器使用所有分頁</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">地址已移至你的帳戶 <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">標示為已讀</translation>
 <translation id="428768789042547925">最新資訊</translation>
+<translation id="428858055663163046">你可在此存取已下載的檔案 (如有)</translation>
 <translation id="429074084062258019">{count,plural, =1{在群組中加入分頁}other{在群組中加入分頁}}</translation>
 <translation id="4302061870579014542">設定位置</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{已匯入 {count} 張卡}other{已匯入 {count} 張卡}}</translation>
 <translation id="4751645464639803239">新無痕式分頁</translation>
 <translation id="4752348350801431746">關閉「安全檢查」通知…</translation>
+<translation id="4759238208242260848">下載</translation>
 <translation id="4764612367328936189">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">探索和追蹤</translation>
 <translation id="4769198578611055647">讓你在任何裝置上存取所儲存的密鑰</translation>
@@ -1270,6 +1273,7 @@
 <translation id="5956112131836209882">分頁群組分頁。第 <ph name="TAB_INDEX_IN_GROUP" /> 個分頁，總共有 <ph name="NUMBER_OF_TABS_IN_GROUP" /> 個。</translation>
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 搜尋</translation>
 <translation id="5963939892571022323">無法建立突顯文字的連結。</translation>
+<translation id="5968400720580217226">AI 模式</translation>
 <translation id="5971459446352190251">QR 碼搜尋</translation>
 <translation id="5971872012779224351">{count,plural, =1{已刪除 1 個書籤}other{已刪除 {count} 個書籤}}</translation>
 <translation id="5972844218283131174">全部取消選取</translation>
@@ -1415,6 +1419,7 @@
 <translation id="6452534462676960500">新活動</translation>
 <translation id="6459411599807878608">隱藏咗詳細資料</translation>
 <translation id="646394917185284261">檔案</translation>
+<translation id="6472069383518492189">下載項目會在這裡顯示</translation>
 <translation id="6476253015009698798">無法追蹤此頁面上的價格。</translation>
 <translation id="6476284679642588870">管理付款方法</translation>
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項喺喺接近畫面底部附近。</translation>
@@ -1460,6 +1465,7 @@
 <translation id="6627583120233659107">編輯資料夾</translation>
 <translation id="6629759408545977279">來源：<ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">您的機構已關閉無痕模式</translation>
+<translation id="6637478299472506933">下載失敗</translation>
 <translation id="6638511529934826365">縮放文字…</translation>
 <translation id="6640268266988685324">開啟分頁</translation>
 <translation id="6641465290890659327">分享密碼副本</translation>
@@ -1582,6 +1588,7 @@
 <translation id="7102005569666697658">正在下載…<ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">選單 → 設定 → 付款方法</translation>
 <translation id="7108338896283013870">隱藏</translation>
+<translation id="7127922377013221748">隱藏工具列</translation>
 <translation id="7128693485119315539">機構可能要查看和管理與受管帳戶關聯的瀏覽資料 (例如瀏覽記錄和密碼)。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">無法使用相機</translation>

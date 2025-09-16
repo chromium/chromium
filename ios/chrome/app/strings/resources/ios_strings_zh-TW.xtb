@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">開啟「密碼」</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1433478348197382180">閱讀模式</translation>
+<translation id="1435271730600332883">開啟「自動填入和密碼」</translation>
 <translation id="1436671784520050284">繼續設定</translation>
 <translation id="143681031165817424">地址只會儲存在這部裝置上</translation>
 <translation id="1445276840641906250">在同一個瀏覽器集中使用所有分頁</translation>
@@ -833,6 +834,7 @@
 <translation id="4286718549648564014">地址已移至你的帳戶 <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">標示為已讀取</translation>
 <translation id="428768789042547925">新功能</translation>
+<translation id="428858055663163046">下載檔案後，你可以在這裡存取</translation>
 <translation id="429074084062258019">{count,plural, =1{將分頁加入群組}other{將分頁加入群組}}</translation>
 <translation id="4302061870579014542">設定位置</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
@@ -949,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{已匯入 {count} 張卡片}other{已匯入 {count} 張卡片}}</translation>
 <translation id="4751645464639803239">新無痕分頁</translation>
 <translation id="4752348350801431746">關閉安全檢查通知…</translation>
+<translation id="4759238208242260848">下載</translation>
 <translation id="4764612367328936189">貴機構規定你只能使用特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">探索和追蹤</translation>
 <translation id="4769198578611055647">協助你在所有裝置上存取已儲存的密碼金鑰</translation>
@@ -1270,6 +1273,7 @@
 <translation id="5956112131836209882">分頁群組分頁。第 <ph name="TAB_INDEX_IN_GROUP" /> 個，共 <ph name="NUMBER_OF_TABS_IN_GROUP" /> 個。</translation>
 <translation id="595769230373966252">使用「<ph name="SEARCH_PROVIDER" />」搜尋</translation>
 <translation id="5963939892571022323">無法建立醒目顯示文字的連結。</translation>
+<translation id="5968400720580217226">AI 模式</translation>
 <translation id="5971459446352190251">QR code 搜尋</translation>
 <translation id="5971872012779224351">{count,plural, =1{已刪除 1 個書籤}other{已刪除 {count} 個書籤}}</translation>
 <translation id="5972844218283131174">全部取消選取</translation>
@@ -1415,6 +1419,7 @@
 <translation id="6452534462676960500">新活動</translation>
 <translation id="6459411599807878608">已隱藏詳細資料</translation>
 <translation id="646394917185284261">檔案</translation>
+<translation id="6472069383518492189">這裡會顯示下載的檔案</translation>
 <translation id="6476253015009698798">價格追蹤功能不支援這個網頁。</translation>
 <translation id="6476284679642588870">管理付款方式</translation>
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項位於靠近畫面底部的位置。</translation>
@@ -1460,6 +1465,7 @@
 <translation id="6627583120233659107">編輯資料夾</translation>
 <translation id="6629759408545977279">來源：<ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">貴機構已關閉無痕模式</translation>
+<translation id="6637478299472506933">下載失敗</translation>
 <translation id="6638511529934826365">縮放文字…</translation>
 <translation id="6640268266988685324">開啟分頁</translation>
 <translation id="6641465290890659327">分享密碼副本</translation>
@@ -1582,6 +1588,7 @@
 <translation id="7102005569666697658">下載中… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">「選單」→「設定」→「付款方式」</translation>
 <translation id="7108338896283013870">隱藏</translation>
+<translation id="7127922377013221748">隱藏工具列</translation>
 <translation id="7128693485119315539">貴機構可能需要查看及管理與代管帳戶相關聯的瀏覽資料，例如瀏覽記錄和密碼。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
@@ -1883,7 +1890,7 @@
 <translation id="826614135184049678">你已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕觸下方的「繼續」。</translation>
 <translation id="8273982424131314219">資訊即將填入到「<ph name="URL" />」</translation>
 <translation id="8275068909952022340">更多…</translation>
-<translation id="8277328362018795342">分享頁面內容，提供更符合需求的答案</translation>
+<translation id="8277328362018795342">允許系統分享頁面內容，以提供更符合需求的答案</translation>
 <translation id="8278488584187265939">自訂首頁</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">略過</translation>

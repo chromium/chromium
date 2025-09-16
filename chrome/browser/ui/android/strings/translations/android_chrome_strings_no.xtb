@@ -3,6 +3,7 @@
 <translationbundle lang="no">
 <translation id="1010283278930414892">Ingen lagrede passord på denne enheten</translation>
 <translation id="1011749477052068769">Flytt hit</translation>
+<translation id="1014083013111769343">Innstillingene for lesemodus er åpnet i full høyde</translation>
 <translation id="1014147525163127655">Det finnes ingen passnøkler for <ph name="ORIGIN" /> på denne enheten</translation>
 <translation id="1016498331642356377">Søk raskt med stemmen din. Trykk og hold for å redigere denne snarveien.</translation>
 <translation id="1028699632127661925">Sender til <ph name="DEVICE_NAME" /> …</translation>
@@ -207,6 +208,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="197288927597451399">Behold</translation>
 <translation id="1973912524893600642">Behold dataene</translation>
 <translation id="1974060860693918893">Avanserte</translation>
+<translation id="1982274314082047220">Lesemodus – sveip opp for å se innstillingene</translation>
 <translation id="1984087999855033707">telefonnummer</translation>
 <translation id="1984417487208496350">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="1986685561493779662">Navnet finnes allerede</translation>
@@ -428,6 +430,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2992473221983447149">Bildebeskrivelser</translation>
 <translation id="2996291259634659425">Opprett en passordfrase</translation>
 <translation id="2996809686854298943">Nettadresse kreves</translation>
+<translation id="3024215143424744261">Innstillingene for lesemodus er lukket</translation>
 <translation id="3026955690410463085">Inkluder link</translation>
 <translation id="3027644380269727216">Basert på aktiviteten din på et nettsted. Denne innstillingen er på.</translation>
 <translation id="3027950907978057636">Fra <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="696447261358045621">Avslutt Inkognitomodus</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Se <ph name="TABS_COUNT_ONE" /> fane med ny aktivitet i delte fanegrupper}other{Se <ph name="TABS_COUNT_MANY" /> faner med ny aktivitet i delte fanegrupper}}</translation>
+<translation id="6971555615916967190">Innstillingene for lesemodus er åpnet i halv høyde</translation>
 <translation id="6971862865055170158">Ikke godkjenn</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" /> – ny eller oppdatert fane</translation>
 <translation id="6976811588313110624">Legg til en ny snarvei.</translation>

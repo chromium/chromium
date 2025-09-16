@@ -827,6 +827,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2348509731468399833">Acompanhamento de preço parado.</translation>
 <translation id="2349957959687031096">Botão Abrir separador de navegação anónima; ative para abrir um novo separador de navegação anónima para navegar em privado</translation>
 <translation id="2350796302381711542">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links <ph name="PROTOCOL" />, em vez de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
+<translation id="2351718832234620840">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" /> porque está a usar um certificado de segurança que não é considerado fidedigno pelo Chromium nem pela configuração do sistema para a encriptação do tráfego Web. Isto pode ser o resultado de uma configuração incorreta ou de um atacante que intercetou a sua ligação.</translation>
 <translation id="2353297238722298836">Câmara e microfone permitidos</translation>
 <translation id="2354001756790975382">Outros marcadores</translation>
 <translation id="2355395290879513365">Os atacantes podem ver as imagens que está a visualizar neste site e enganá-lo ao modificá-las.</translation>
@@ -971,6 +972,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2573170131138724450">Televisões</translation>
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2580031090587209073">Opções de partilha</translation>
+<translation id="258027838577899739">Eliminar tudo do histórico</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> adicionou um separador</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2587841377698384444">ID da API de diretório:</translation>
@@ -995,6 +997,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2625385379895617796">O seu relógio está adiantado</translation>
 <translation id="262745152991669301">Pode solicitar a ligação a dispositivos USB</translation>
 <translation id="2627847595568876492">A extrair texto do PDF…</translation>
+<translation id="2628025184666666186">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" /> porque está a usar um certificado de segurança que não é considerado fidedigno pelo Chrome nem pela configuração do sistema para a encriptação do tráfego Web. Isto pode ser o resultado de uma configuração incorreta ou de um atacante que intercetou a sua ligação.</translation>
 <translation id="2628224721443278970">Iniciar sessão no Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Escreva @ para pesquisar em <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1067,7 +1070,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="273785062888389088">Sistemas de climatização e AVAC</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Domótica</translation>
-<translation id="2742870351467570537">Remover itens seleccionados</translation>
 <translation id="2743512410823092182">Recursos e equipamentos para DJs</translation>
 <translation id="2743934314332613923">Atualizar a carta de condução?</translation>
 <translation id="2759299890026163685">Certifique-se de que tem uma ligação à Internet estável antes de tentar novamente</translation>
@@ -1879,6 +1881,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4099048595830172239">A política do administrador não recomenda a partilha do seu ecrã com a app <ph name="APPLICATION_TITLE" /> quando está visível conteúdo confidencial:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para personalizar os tipos de letra e os respetivos tamanhos no Chrome</translation>
 <translation id="4101413244023615925">Texto e gráficos</translation>
+<translation id="4101917550061398111">Eliminar itens selecionados</translation>
 <translation id="4102567721634170493">Notícias locais</translation>
 <translation id="4103249731201008433">Número de série do dispositivo é inválido</translation>
 <translation id="4103592298805904008">Cartão (parede única)</translation>
@@ -2678,7 +2681,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5423269318075950257">Monitorize o preço</translation>
 <translation id="5425082381151187189">Decoração interior e do lar</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar-lhe notificações.</translation>
-<translation id="5430298929874300616">Remover marcador</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5433756542371550806">Variações da linha de comandos</translation>
 <translation id="5434798570900738152">O Chromium <ph name="BEGIN_EMPHASIS" />não irá guardar<ph name="END_EMPHASIS" />:
@@ -2876,6 +2878,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5750869797196646528">Monitorização das mãos</translation>
 <translation id="5752327398324808817">Introduza uma ou duas palavras</translation>
 <translation id="5752519522101347518">A carregar o Website de validação bancária</translation>
+<translation id="5753570386948603678">Eliminar do histórico</translation>
 <translation id="5759751709240058861">Usar e mover a sua câmara</translation>
 <translation id="5763042198335101085">Introduza um endereço de email válido</translation>
 <translation id="5764725887548570807">Formato de origem inválido.</translation>
@@ -3092,7 +3095,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6124058285696691147">Transferir anexo</translation>
 <translation id="6124432979022149706">Conetores do Chrome Enterprise</translation>
 <translation id="6126565365696310362">Envelope Chinese n.º 2</translation>
-<translation id="6127379762771434464">Item removido</translation>
 <translation id="6131824478727057281">localização</translation>
 <translation id="6133320744616005677">Continuar a permitir</translation>
 <translation id="6133984428121856852">A extensão do ficheiro está vazia ou tem um formato incorreto.</translation>
@@ -3107,7 +3109,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6151417162996330722">O certificado do servidor tem um período de validade demasiado longo.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> pol. (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Corrida e caminhada</translation>
-<translation id="6157754950574419155">Remover tudo do histórico</translation>
 <translation id="6157877588268064908">Para ver os métodos de envio e os requisitos, selecione um endereço</translation>
 <translation id="6159554577634054750">Controlo de pragas</translation>
 <translation id="6159908896951210943">Formal</translation>
@@ -3794,6 +3795,7 @@ Detalhes adicionais:
 <translation id="7292031607255951991">Nome do destinatário</translation>
 <translation id="7298195798382681320">Recomendado</translation>
 <translation id="7299471494012161875">Periféricos de ecrã ligados</translation>
+<translation id="7299721129597238157">Eliminar marcador</translation>
 <translation id="7299769361777046949">Faça a gestão dos cartões de fidelidade na Carteira do Google</translation>
 <translation id="7304030187361489308">Alta</translation>
 <translation id="7304562222803846232">Gerir definições de privacidade da Conta Google</translation>
@@ -3897,6 +3899,7 @@ Detalhes adicionais:
 <translation id="7450577240311017924">Botão Gerir sincronização; ative para gerir as informações que sincroniza nas definições do Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /> sobre este problema.</translation>
 <translation id="745208957946308667">Jogo Dino, prima a barra de espaço para jogar</translation>
+<translation id="7453849010505253492">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" /> porque está a usar um certificado de segurança que não é considerado fidedigno pelo Chrome nem pela configuração do sistema para a encriptação do tráfego Web. Isto pode ser o resultado de uma configuração incorreta ou de um atacante que intercetou a sua ligação. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Veja o certificado<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Conta na nuvem</translation>
 <translation id="7455133967321480974">Usar predefinição global (Bloquear)</translation>
 <translation id="7455452752247248289">Tecnologia empresarial</translation>
@@ -4229,6 +4232,7 @@ Detalhes adicionais:
 <translation id="7992044431894087211">A partilha de ecrã com a aplicação <ph name="APPLICATION_TITLE" /> foi retomada.</translation>
 <translation id="7995512525968007366">Não especificado</translation>
 <translation id="7997855386298213183">separadores partilhados</translation>
+<translation id="8001912761979890298">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" /> porque está a usar um certificado de segurança que não é considerado fidedigno pelo Chromium nem pela configuração do sistema para a encriptação do tráfego Web. Isto pode ser o resultado de uma configuração incorreta ou de um atacante que intercetou a sua ligação. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Veja o certificado<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Experimente fechar outros separadores ou programas para libertar memória.</translation>
 <translation id="8002230960325005199">Veja sites relacionados num novo separador</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
@@ -4570,6 +4574,7 @@ Detalhes adicionais:
 <translation id="8564466070529550495">O cartão virtual não está disponível neste momento. Tente mais tarde.</translation>
 <translation id="8564985650692024650">O Chromium recomenda a reposição da palavra-passe da <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se a tiver reutilizado noutros sites.</translation>
 <translation id="8570895683659698018">Passatempos e lazer</translation>
+<translation id="8574570240981266561">Item eliminado</translation>
 <translation id="8574841453995331336">Frigoríficos e arcas congeladoras</translation>
 <translation id="8577192028579836704">Preço habitual de todas as opções: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Cartão virtual não disponível</translation>

@@ -1067,7 +1067,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="273785062888389088">Heizungs-, Lüftungs- und Klimasysteme</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Heimautomatisierung</translation>
-<translation id="2742870351467570537">Ausgewählte Einträge entfernen</translation>
 <translation id="2743512410823092182">Ressourcen und Ausrüstung für DJs</translation>
 <translation id="2743934314332613923">Führerschein aktualisieren?</translation>
 <translation id="2759299890026163685">Versuche es noch einmal, wenn du eine stabile Internetverbindung hast</translation>
@@ -1778,6 +1777,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3941630233824954464">Obligatorische erneute Authentifizierung aktivieren</translation>
 <translation id="3942048175062210325">Versuche noch einmal, deine Dateien zu öffnen</translation>
 <translation id="3943857333388298514">Einfügen</translation>
+<translation id="3945937463338223066">Geräte zur Authentifizierung des Typs „<ph name="READERNAME" />“ und Smartcards, die für sie zugänglich sind, steuern</translation>
 <translation id="3946209740501886391">Auf dieser Website immer fragen</translation>
 <translation id="3948588869002647271">Diese App fehlt oder ist beschädigt</translation>
 <translation id="3949297482798028668">Das Einfügen dieser Inhalte an dieser Stelle wird von deinem Administrator blockiert.</translation>
@@ -2675,7 +2675,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5423269318075950257">Preis beobachten</translation>
 <translation id="5425082381151187189">Wohnungsdekoration und Inneneinrichtung</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> möchte dir Benachrichtigungen senden</translation>
-<translation id="5430298929874300616">Lesezeichen löschen</translation>
 <translation id="5431318178759467895">Farbe</translation>
 <translation id="5433756542371550806">Befehlszeilen-Varianten</translation>
 <translation id="5434798570900738152">Chromium speichert folgende Daten <ph name="BEGIN_EMPHASIS" />nicht<ph name="END_EMPHASIS" />:
@@ -2873,6 +2872,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5750869797196646528">Handtracking</translation>
 <translation id="5752327398324808817">Ein oder zwei Wörter eingeben</translation>
 <translation id="5752519522101347518">Website zur Bankbestätigung wird geladen</translation>
+<translation id="5753570386948603678">Aus Verlauf löschen</translation>
 <translation id="5759751709240058861">Kamera verwenden und bewegen</translation>
 <translation id="5763042198335101085">Gib eine gültige E-Mail-Adresse ein</translation>
 <translation id="5764725887548570807">Ungültiges Quellenformat.</translation>
@@ -3089,7 +3089,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6124058285696691147">Anhang herunterladen</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Umschlag Chinesisch Nr. 2</translation>
-<translation id="6127379762771434464">Eintrag entfernt</translation>
 <translation id="6131824478727057281">Standort</translation>
 <translation id="6133320744616005677">Weiter gewähren</translation>
 <translation id="6133984428121856852">Die Dateiendung ist leer oder fehlerhaft.</translation>
@@ -3104,7 +3103,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6151417162996330722">Die Gültigkeitsdauer des Serverzertifikats ist zu lang.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Lauf- und Gehsport</translation>
-<translation id="6157754950574419155">Alle aus Verlauf entfernen</translation>
 <translation id="6157877588268064908">Wähle eine Adresse aus, um Versandoptionen und -anforderungen zu sehen</translation>
 <translation id="6159554577634054750">Schädlingsbekämpfung</translation>
 <translation id="6159908896951210943">Formell</translation>
@@ -3791,6 +3789,7 @@ Weitere Details:
 <translation id="7292031607255951991">Name des Empfängers</translation>
 <translation id="7298195798382681320">Empfohlen</translation>
 <translation id="7299471494012161875">Angeschlossene Anzeigegeräte</translation>
+<translation id="7299721129597238157">Lesezeichen löschen</translation>
 <translation id="7299769361777046949">Kundenkarten in Google Wallet verwalten</translation>
 <translation id="7304030187361489308">Hoch</translation>
 <translation id="7304562222803846232">Datenschutzeinstellungen des Google-Kontos verwalten</translation>

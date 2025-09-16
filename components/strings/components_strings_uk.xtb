@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">ОВК й клімат-контроль</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Автоматизація дому</translation>
-<translation id="2742870351467570537">Видалити вибрані елементи</translation>
 <translation id="2743512410823092182">Ресурси й обладнання для ді-джеїв</translation>
 <translation id="2743934314332613923">Оновити дані посвідчення водія?</translation>
 <translation id="2759299890026163685">Перш ніж повторити спробу, переконайтеся, що інтернет-з’єднання стабільне</translation>
@@ -1780,6 +1779,7 @@
 <translation id="3941630233824954464">Увімкнути обов’язкову повторну автентифікацію</translation>
 <translation id="3942048175062210325">Спробуйте повторно відкрити файли</translation>
 <translation id="3943857333388298514">Вставити</translation>
+<translation id="3945937463338223066">керувати пристроями для автентифікації, такими як <ph name="READERNAME" />, і розумними картками, які вони можуть зчитувати</translation>
 <translation id="3946209740501886391">Завжди запитувати на цьому сайті</translation>
 <translation id="3948588869002647271">Цей додаток відсутній або пошкоджений</translation>
 <translation id="3949297482798028668">Адміністратор заблокував можливість вставляти сюди цей контент.</translation>
@@ -2677,7 +2677,6 @@
 <translation id="5423269318075950257">Відстежувати ціну</translation>
 <translation id="5425082381151187189">Домашній декор і декор інтер’єру</translation>
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
-<translation id="5430298929874300616">Видалити закладку</translation>
 <translation id="5431318178759467895">Колір</translation>
 <translation id="5433756542371550806">Варіанти командного рядка</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@
 <translation id="5750869797196646528">Відстеження рук</translation>
 <translation id="5752327398324808817">Введіть принаймні одне слово</translation>
 <translation id="5752519522101347518">Завантаження вебсайту банківського підтвердження</translation>
+<translation id="5753570386948603678">Видалити з історії</translation>
 <translation id="5759751709240058861">Використовувати й переміщувати камеру</translation>
 <translation id="5763042198335101085">Введіть дійсну електронну адресу</translation>
 <translation id="5764725887548570807">Недійсний формат джерела.</translation>
@@ -3091,7 +3091,6 @@
 <translation id="6124058285696691147">Завантажити вкладений файл</translation>
 <translation id="6124432979022149706">Конектори Chrome Enterprise</translation>
 <translation id="6126565365696310362">Конверт Chinese № 2</translation>
-<translation id="6127379762771434464">Веб-сайт видалено</translation>
 <translation id="6131824478727057281">місце</translation>
 <translation id="6133320744616005677">Продовжити дозвіл</translation>
 <translation id="6133984428121856852">Розширення файлу порожнє або має неправильний формат.</translation>
@@ -3106,7 +3105,6 @@
 <translation id="6151417162996330722">Сертифікат сервера має задовгий термін дії.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм. (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Біг і ходьба</translation>
-<translation id="6157754950574419155">Видалити всю історію</translation>
 <translation id="6157877588268064908">Укажіть адресу, щоб переглянути способи відправлення та вимоги.</translation>
 <translation id="6159554577634054750">Боротьба зі шкідниками</translation>
 <translation id="6159908896951210943">Формальний</translation>
@@ -3793,6 +3791,7 @@
 <translation id="7292031607255951991">Ім'я отримувача</translation>
 <translation id="7298195798382681320">Рекомендоване</translation>
 <translation id="7299471494012161875">Підключено периферійні екрани</translation>
+<translation id="7299721129597238157">Видалити закладку</translation>
 <translation id="7299769361777046949">Керувати картками постійного покупця в Google Гаманці</translation>
 <translation id="7304030187361489308">Високий</translation>
 <translation id="7304562222803846232">Керувати налаштуваннями конфіденційності облікового запису Google</translation>

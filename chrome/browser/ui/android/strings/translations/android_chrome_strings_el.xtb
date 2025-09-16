@@ -3,6 +3,7 @@
 <translationbundle lang="el">
 <translation id="1010283278930414892">Δεν υπάρχουν αποθηκευμένοι κωδικοί πρόσβασης σε αυτή τη συσκευή</translation>
 <translation id="1011749477052068769">Μετακίνηση εδώ</translation>
+<translation id="1014083013111769343">Οι προτιμήσεις της λειτουργίας ανάγνωσης είναι ανοιχτές σε πλήρες ύψος</translation>
 <translation id="1014147525163127655">Δεν υπάρχουν κλειδιά πρόσβασης για τον ιστότοπο <ph name="ORIGIN" /> σε αυτή τη συσκευή</translation>
 <translation id="1016498331642356377">Κάντε γρήγορη αναζήτηση με φωνητικές εντολές. Για να επεξεργαστείτε αυτήν τη συντόμευση, αγγίξτε παρατεταμένα.</translation>
 <translation id="1028699632127661925">Αποστολή στη συσκευή <ph name="DEVICE_NAME" />…</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Διατήρηση</translation>
 <translation id="1973912524893600642">Διατήρηση δεδομένων</translation>
 <translation id="1974060860693918893">Σύνθετες</translation>
+<translation id="1982274314082047220">Σύρετε προς τα επάνω στη λειτουργία ανάγνωσης για την εμφάνιση των προτιμήσεων</translation>
 <translation id="1984087999855033707">αριθμός τηλεφώνου</translation>
 <translation id="1984417487208496350">Χωρίς προστασία (δεν συνιστάται)</translation>
 <translation id="1986685561493779662">Το όνομα υπάρχει ήδη</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">Περιγραφές εικόνας</translation>
 <translation id="2996291259634659425">Δημιουργία φράσης πρόσβασης</translation>
 <translation id="2996809686854298943">Απαιτείται διεύθυνση URL</translation>
+<translation id="3024215143424744261">Οι προτιμήσεις της λειτουργίας ανάγνωσης έκλεισαν</translation>
 <translation id="3026955690410463085">Συμπερίληψη συνδέσμου</translation>
 <translation id="3027644380269727216">Βάσει της δραστηριότητάς σας σε έναν ιστότοπο. Αυτή η ρύθμιση είναι ενεργοποιημένη.</translation>
 <translation id="3027950907978057636">Από <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">Έξοδος από την κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Προβολή <ph name="TABS_COUNT_ONE" /> καρτέλας με νέα δραστηριότητα σε κοινόχρηστες ομάδες καρτελών}other{Προβολή <ph name="TABS_COUNT_MANY" /> καρτελών με νέα δραστηριότητα σε κοινόχρηστες ομάδες καρτελών}}</translation>
+<translation id="6971555615916967190">Οι προτιμήσεις της λειτουργίας ανάγνωσης είναι ανοιχτές στο μισό ύψος</translation>
 <translation id="6971862865055170158">Δεν εγκρίνεται</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, Νέα ή ενημερωμένη καρτέλα</translation>
 <translation id="6976811588313110624">Προσθέστε νέα συντόμευση.</translation>

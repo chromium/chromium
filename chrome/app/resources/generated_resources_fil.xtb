@@ -198,6 +198,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Tingnan ang mga larawan at media ng iyong telepono</translation>
 <translation id="1129850422003387628">Pamahalaan ang mga app</translation>
+<translation id="1130116586186908674">Gumawa ng split view</translation>
 <translation id="1130430615924359526">{0,plural, =1{Isara ang Incognito}one{Isara ang Incognito (# window)}other{Isara ang Incognito (# na window)}}</translation>
 <translation id="113050636487300043">Pumili ng pangalan at tema ng kulay para matukoy ang pagkakaiba ng mga profile</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Bahagi ng grupong <ph name="GROUP_NAME" /></translation>
@@ -472,6 +473,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1307431692088049276">Huwag akong tanungin ulit</translation>
 <translation id="130744661532298792">Para matiyak na magagamit mo ang mga password sa iyong Google Account anumang oras, i-verify na ikaw ito</translation>
 <translation id="1307559529304613120">Oops!  Nabigo ang system na i-imbak ang pangmatagalang token sa pag-access sa API para sa device na ito.</translation>
+<translation id="1311092170520822848">Kinokontrol ng site na ito ang mga smart card reader na nakakonekta sa iyong device at mga smart card na posibleng available sa mga ito</translation>
 <translation id="131112695174432497">Dine-delete ang data na nakakaapekto sa pag-personalize ng ad</translation>
 <translation id="1311294419381837540">Nagka-cast ka ng tab. Puwede mong i-pause o ihinto ang pag-cast sa anumang oras.</translation>
 <translation id="131188242279372879">Alamin ang pinaigting na proteksyon para makuha ang pinakamataas na level ng seguridad ng Chrome para sa mga pag-download</translation>
@@ -734,7 +736,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1500297251995790841">Hindi kilalang device [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Matuto pa tungkol sa mga hindi sinusuportahang Chrome app</translation>
 <translation id="1501480321619201731">I-delete ang pangkat</translation>
-<translation id="1503392482221435031">Awtomatikong nagpapadala ng mga istatistika sa paggamit sa Google. Puwede mong i-on o i-off ang mga ulat ng pag-crash sa mga setting ng iyong device.</translation>
 <translation id="1503556098270577657">Nag-sign in ka sa <ph name="USER_EMAIL" /> gamit ang iyong Android phone</translation>
 <translation id="150411034776756821">Alisin ang <ph name="SITE" /></translation>
 <translation id="1504253885059472207">I-pin ang split view</translation>
@@ -2112,6 +2113,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2431027948063157455">Hindi na-load ang Google Assistant, pakitingnan ang iyong koneksyon sa network at subukan ulit.</translation>
 <translation id="243179355394256322">Nililimitahan lang ng iyong organisasyon ang pag-enroll ng device sa mga pinapahintulutang user. Hindi pinapahintulutan ang user na ito na mag-enroll ng mga device. Pakitiyak na may pribilehiyong pang-administrator na "I-enroll ang hardware ng Google Meet" ang user sa seksyong Mga User ng Admin console.</translation>
 <translation id="243275146591958220">Kanselahin ang pag-download</translation>
+<translation id="2433237965825924228">Kinokontrol ng mga naka-isolate na web app ang mga device sa pag-authenticate at mga smart card na naa-access ng mga ito. Karaniwang naglalaman ang mga smart card ng mga identifier na ginagamit para i-authenticate ka.</translation>
 <translation id="2433452467737464329">Magdagdag ng query param sa URL upang i-auto-refresh ang pahina: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Hitsura</translation>
 <translation id="2433836460518180625">I-unlock lang ang device</translation>
@@ -3033,7 +3035,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3048589239114571785">I-play (k)</translation>
 <translation id="3048742847101793553">Na-block ng iyong organisasyon ang file na ito dahil hindi ito na-scan.</translation>
 <translation id="3048917188684939573">Mga Log ng Cast at Device</translation>
-<translation id="3049525403650329038">I-share ang content ng page sa Gemini para makakuha ng mga mas nauugnay na sagot. Hindi ginagamit ang iyong data para pahusayin ang mga generative AI model.</translation>
 <translation id="3051250416341590778">Laki ng display</translation>
 <translation id="3053013834507634016">Paggamit ng Certificate Key </translation>
 <translation id="3053273573829329829">I-enable ang pin ng user</translation>
@@ -3528,6 +3529,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3429174588714165399">Gumawa ng shortcut sa page na ito</translation>
 <translation id="3429271624041785769">Mga wika ng content sa web</translation>
 <translation id="3429275422858276529">I-bookmark ang page na ito upang madali itong mahanap sa ibang pagkakaton</translation>
+<translation id="343084100869297747">Awtomatikong susundin ng mga naka-isolate na web app ang setting na ito</translation>
 <translation id="3431530007831146102">Gumamit ng mga paggalaw ng ulo para kontrolin ang cursor ng mouse</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> ang nabakante</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -7925,7 +7927,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6525767484449074555">I-click ang “I-install”</translation>
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6527574156657772563">Walang available na device. Idagdag ang iyong Google Account sa telepono mo para ikonekta ito sa <ph name="DEVICE_TYPE" /> na ito. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">History sa Chrome</translation>
 <translation id="6530030995840538405">Nabuong larawan <ph name="INDEX" /> sa <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Ipinapatupad ng iyong administrator ang mga setting na ito</translation>
 <translation id="6530267432324197764">Pinapamahalaan ng <ph name="MANAGER" /> ang profile</translation>
@@ -8897,6 +8898,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7201535955609308429">Maghintay habang isinasagawa ang pag-verify</translation>
 <translation id="7202337678781136582">I-scan ang QR code gamit ang iyong Android phone</translation>
 <translation id="7203150201908454328">Pinalawak</translation>
+<translation id="7206252555702853828">Kinokontrol ang iyong mga smart card reader</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Umalis sa Page}one{Umalis sa Mga Page}other{Umalis sa Mga Page}}</translation>
 <translation id="7207457272187520234">Magpadala ng data ng paggamit at diagnostic. Sa kasalukuyan, ang device na ito ay awtomatikong nagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang setting na ito. Kung naka-on ang iyong karagdagang setting ng Aktibidad sa Web at App, posibleng ma-save ang data na ito sa Google Account mo.</translation>
 <translation id="7207631048330366454">Maghanap ng mga app</translation>
@@ -11662,6 +11664,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9081543426177426948">Hindi nase-save sa Incognito ang mga site na binibisita mo</translation>
 <translation id="9082750838489080452">Application: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Buksan bilang Window</translation>
+<translation id="9084383457260170045">Puwedeng hilingin ng mga naka-isolate na web app na kontrolin ang mga smart card reader</translation>
 <translation id="9085256200913095638">I-duplicate ang Napiling Tab</translation>
 <translation id="9085446486797400519">Access sa camera</translation>
 <translation id="9085776959277692427">Hindi napili ang <ph name="LANGUAGE" />. Pindutin ang Search at Space para piliin.</translation>
@@ -11861,6 +11864,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para pamahalaan ito, buksan ang Mga Extension}one{Para pamahalaan ang mga ito, buksan ang Mga Extension}other{Para pamahalaan ang mga ito, buksan ang Mga Extension}}</translation>
 <translation id="924818813611903184">Pamahalaan ang mga wika sa mga setting ng ChromeOS</translation>
 <translation id="925575170771547168">Ide-delete nito ang <ph name="TOTAL_USAGE" /> na data na na-store ng mga site</translation>
+<translation id="927864230077808465">Hindi makokontrol ng mga naka-isolate na web app ang mga smart card reader</translation>
 <translation id="930268624053534560">Mga Detalyadong Timestamp</translation>
 <translation id="930551443325541578">Mga umuulit na key at accent mark</translation>
 <translation id="930893132043726269">Kasalukuyang nagro-roam</translation>

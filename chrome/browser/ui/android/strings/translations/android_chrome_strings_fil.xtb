@@ -3,6 +3,7 @@
 <translationbundle lang="fil">
 <translation id="1010283278930414892">Walang naka-save na password sa device na ito</translation>
 <translation id="1011749477052068769">Ilipat dito</translation>
+<translation id="1014083013111769343">Binuksan nang buo ang mga preference sa Reading mode</translation>
 <translation id="1014147525163127655">Walang anumang passkey para sa <ph name="ORIGIN" /> sa device na ito</translation>
 <translation id="1016498331642356377">Mabilis na maghanap gamit ang iyong boses. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
 <translation id="1028699632127661925">Ipinapadala sa <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="197288927597451399">Panatilihin</translation>
 <translation id="1973912524893600642">Panatilihin ang Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
+<translation id="1982274314082047220">Mag-swipe pataas para sa mga preference sa Reading mode</translation>
 <translation id="1984087999855033707">numero ng telepono</translation>
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
 <translation id="1986685561493779662">May ganito nang pangalan</translation>
@@ -428,6 +430,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2992473221983447149">Mga paglalarawan ng larawan</translation>
 <translation id="2996291259634659425">Gumawa ng passphrase</translation>
 <translation id="2996809686854298943">Kinakailangan ang URL</translation>
+<translation id="3024215143424744261">Nakasara ang mga preference sa Reading mode</translation>
 <translation id="3026955690410463085">Kasama ang link</translation>
 <translation id="3027644380269727216">Batay sa iyong aktibidad sa isang site. Naka-on ang setting na ito.</translation>
 <translation id="3027950907978057636">Mula sa <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="696447261358045621">Umalis sa Incognito mode?</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Tingnan ang <ph name="TABS_COUNT_ONE" /> tab na may bagong aktibidad sa mga naka-share na grupo ng tab}one{Tingnan ang <ph name="TABS_COUNT_MANY" /> tab na may bagong aktibidad sa mga naka-share na grupo ng tab}other{Tingnan ang <ph name="TABS_COUNT_MANY" /> na tab na may bagong aktibidad sa mga naka-share na grupo ng tab}}</translation>
+<translation id="6971555615916967190">Binuksan nang kalahati ang mga preference sa Reading mode</translation>
 <translation id="6971862865055170158">Huwag aprubahan</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, Bago o Na-update na Tab</translation>
 <translation id="6976811588313110624">Magdagdag ng bagong shortcut.</translation>

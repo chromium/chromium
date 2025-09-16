@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">打开“密码”</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1433478348197382180">阅读模式</translation>
+<translation id="1435271730600332883">打开“自动填充与密码”</translation>
 <translation id="1436671784520050284">继续设置</translation>
 <translation id="143681031165817424">地址仅保存在此设备上</translation>
 <translation id="1445276840641906250">在一个浏览器中管理所有标签页</translation>
@@ -950,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{已导入 {count} 张卡}other{已导入 {count} 张卡}}</translation>
 <translation id="4751645464639803239">打开新的无痕式标签页</translation>
 <translation id="4752348350801431746">关闭安全检查通知…</translation>
+<translation id="4759238208242260848">下载内容</translation>
 <translation id="4764612367328936189">贵单位要求您只能使用特定账号登录。不允许使用的账号会处于隐藏状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">探索与关注</translation>
 <translation id="4769198578611055647">有助于您在任意设备上访问已保存的通行密钥</translation>
@@ -1271,6 +1273,7 @@
 <translation id="5956112131836209882">标签页分组标签页。第 <ph name="NUMBER_OF_TABS_IN_GROUP" /> 个，共 <ph name="TAB_INDEX_IN_GROUP" /> 个。</translation>
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>
 <translation id="5963939892571022323">无法创建指向突出显示的内容的链接。</translation>
+<translation id="5968400720580217226">AI 模式</translation>
 <translation id="5971459446352190251">二维码搜索</translation>
 <translation id="5971872012779224351">{count,plural, =1{已删除 1 个书签}other{已删除 {count} 个书签}}</translation>
 <translation id="5972844218283131174">取消全选</translation>
@@ -1462,6 +1465,7 @@
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6629759408545977279">下载触发者：<ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">贵单位关闭了无痕模式</translation>
+<translation id="6637478299472506933">下载失败</translation>
 <translation id="6638511529934826365">缩放文字…</translation>
 <translation id="6640268266988685324">已打开的标签页</translation>
 <translation id="6641465290890659327">分享您的密码</translation>
@@ -1584,6 +1588,7 @@
 <translation id="7102005569666697658">正在下载…<ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">菜单 → 设置 → 支付方式</translation>
 <translation id="7108338896283013870">隐藏</translation>
+<translation id="7127922377013221748">隐藏工具栏</translation>
 <translation id="7128693485119315539">您的组织可能需要查看和管理与您的受管理账号相关联的浏览数据，例如您的浏览记录和密码。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">无法使用相机</translation>
@@ -1885,7 +1890,7 @@
 <translation id="826614135184049678">您在 iPad 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="8273982424131314219">信息即将填写到 <ph name="URL" /></translation>
 <translation id="8275068909952022340">更多…</translation>
-<translation id="8277328362018795342">系统会分享网页内容，提供更切合需求的答案</translation>
+<translation id="8277328362018795342">系统会分享网页内容，提供更切合需求的回答</translation>
 <translation id="8278488584187265939">自定义首页</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>

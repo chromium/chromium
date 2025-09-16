@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Abre Passwords (Contrasinais)</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1433478348197382180">Modo de lectura</translation>
+<translation id="1435271730600332883">Abre a opción de AutoFill &amp; Passwords (Autocompletar e contrasinais)</translation>
 <translation id="1436671784520050284">Continuar coa configuración</translation>
 <translation id="143681031165817424">O enderezo gardouse só neste dispositivo</translation>
 <translation id="1445276840641906250">Todas as túas pestanas nun navegador</translation>
@@ -833,6 +834,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4286718549648564014">O enderezo moveuse á túa conta <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marcar como sen ler</translation>
 <translation id="428768789042547925">Novidades</translation>
+<translation id="428858055663163046">Accede aos ficheiros descargados aquí cando estean dispoñibles</translation>
 <translation id="429074084062258019">{count,plural, =1{Engadir pestana ao grupo}other{Engadir pestanas ao grupo}}</translation>
 <translation id="4302061870579014542">Definir posición</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
@@ -949,6 +951,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4749529195026091676">{count,plural, =1{{count} tarxeta importada}other{{count} tarxetas importadas}}</translation>
 <translation id="4751645464639803239">Nova pestana do modo de incógnito</translation>
 <translation id="4752348350801431746">Desactivar notificacións de Comprobación de seguranza…</translation>
+<translation id="4759238208242260848">Descargas</translation>
 <translation id="4764612367328936189">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover e Seguindo</translation>
 <translation id="4769198578611055647">Axúdache a acceder ás claves de acceso gardadas en calquera dispositivo</translation>
@@ -1270,6 +1273,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5956112131836209882">Pestana do grupo de pestanas. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Buscar resultados con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Non se puido crear unha ligazón ao texto destacado.</translation>
+<translation id="5968400720580217226">Modo IA</translation>
 <translation id="5971459446352190251">Busca de códigos QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{Eliminouse 1 marcador}other{Elimináronse {count} marcadores}}</translation>
 <translation id="5972844218283131174">Anular toda a selección</translation>
@@ -1415,6 +1419,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6452534462676960500">Actividade nova</translation>
 <translation id="6459411599807878608">Detalles ocultados</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">Aquí atoparás as túas descargas</translation>
 <translation id="6476253015009698798">O seguimento de prezos non está dispoñible para esta páxina.</translation>
 <translation id="6476284679642588870">Xestionar métodos de pago</translation>
 <translation id="6476800141292307438">Traducindo a páxina ao <ph name="LANGUAGE" />. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
@@ -1460,6 +1465,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6627583120233659107">Editar cartafol</translation>
 <translation id="6629759408545977279">Desde: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">A túa organización desactivou o modo de incógnito</translation>
+<translation id="6637478299472506933">Erro ao descargar</translation>
 <translation id="6638511529934826365">Aplicar zoom ao texto…</translation>
 <translation id="6640268266988685324">Pestana aberta</translation>
 <translation id="6641465290890659327">Comparte unha copia do teu contrasinal</translation>

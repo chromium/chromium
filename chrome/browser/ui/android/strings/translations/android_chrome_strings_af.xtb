@@ -3,6 +3,7 @@
 <translationbundle lang="af">
 <translation id="1010283278930414892">Geen gestoorde wagwoorde op hierdie toestel nie</translation>
 <translation id="1011749477052068769">Skuif hierheen</translation>
+<translation id="1014083013111769343">Leesmodusvoorkeure is teen volle hoogte oopgemaak</translation>
 <translation id="1014147525163127655">Daar is geen wagwoordsleutels vir <ph name="ORIGIN" /> op hierdie toestel nie</translation>
 <translation id="1016498331642356377">Soek vinnig met jou stem. Raak en hou om hierdie kortpad te wysig.</translation>
 <translation id="1028699632127661925">Stuur tans na <ph name="DEVICE_NAME" /> toe …</translation>
@@ -207,6 +208,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="197288927597451399">Behou</translation>
 <translation id="1973912524893600642">Hou data</translation>
 <translation id="1974060860693918893">Gevorderd</translation>
+<translation id="1982274314082047220">Swiep op vir leesmodusvoorkeure</translation>
 <translation id="1984087999855033707">foonnommer</translation>
 <translation id="1984417487208496350">Geen beskerming nie (nie aanbeveel nie)</translation>
 <translation id="1986685561493779662">Naam bestaan reeds</translation>
@@ -428,6 +430,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2992473221983447149">Prentbeskrywings</translation>
 <translation id="2996291259634659425">Skep wagfrase</translation>
 <translation id="2996809686854298943">URL vereis</translation>
+<translation id="3024215143424744261">Leesmodusvoorkeure is toegemaak</translation>
 <translation id="3026955690410463085">Sluit skakel in</translation>
 <translation id="3027644380269727216">Gegrond op jou aktiwiteit op ’n werf. Hierdie instelling is aan.</translation>
 <translation id="3027950907978057636">Vanaf <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="696447261358045621">Verlaat Incognitomodus</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Sien <ph name="TABS_COUNT_ONE" /> oortjie met nuwe aktiwiteit in gedeelde oortjiegroepe}other{Sien <ph name="TABS_COUNT_MANY" /> oortjies met nuwe aktiwiteit in gedeelde oortjiegroepe}}</translation>
+<translation id="6971555615916967190">Leesmodusvoorkeure is teen halwe hoogte oopgemaak</translation>
 <translation id="6971862865055170158">Moenie goedkeur nie</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, nuwe of opgedateerde oortjie</translation>
 <translation id="6976811588313110624">Voeg nuwe kortpad by.</translation>

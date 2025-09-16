@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Vula Amaphasiwedi</translation>
 <translation id="1430915738399379752">Phrinta</translation>
 <translation id="1433478348197382180">Imodi Yokufunda</translation>
+<translation id="1435271730600332883">Vula Ukugcwalisa Okuzenzakalelayo Namaphasiwedi</translation>
 <translation id="1436671784520050284">Qhubeka nokusetha</translation>
 <translation id="143681031165817424">Ikheli lilondolozwe kuphela kule divayisi</translation>
 <translation id="1445276840641906250">Wonke amathebhu akho kubhrawuza eyodwa</translation>
@@ -833,6 +834,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4286718549648564014">Ikheli lihanjiswe ku-akhawunti yakho ye-<ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Maka njengokufundiwe</translation>
 <translation id="428768789042547925">Yini okusha</translation>
+<translation id="428858055663163046">Ungafinyelela amafayela akho adawunilodiwe lapha uma etholakala</translation>
 <translation id="429074084062258019">{count,plural, =1{Engeza Ithebhu Eqenjini}one{Engeza Amathebhu Eqenjini}other{Engeza Amathebhu Eqenjini}}</translation>
 <translation id="4302061870579014542">Setha isikhundla</translation>
 <translation id="4304713468139749426">Isiphathi sephasiwedi</translation>
@@ -949,6 +951,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4749529195026091676">{count,plural, =1{Ikhadi elingu-{count} elingenisiwe}one{Amakhadi angu-{count} angenisiwe}other{Amakhadi angu-{count} angenisiwe}}</translation>
 <translation id="4751645464639803239">Ithebhu entsha ye-incognito</translation>
 <translation id="4752348350801431746">Vala izaziso Zokuhlolwa Kokuphepha…</translation>
+<translation id="4759238208242260848">Ukulanda</translation>
 <translation id="4764612367328936189">Inhlangano yakho ikuvumela ukube ungene ngemvume ngama-akhawunti athile kuphela. Ama-akhawunti angavunyelwe ayafihlwa. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Vumbulula Nokulandela</translation>
 <translation id="4769198578611055647">Kukusiza ufinyelele okhiye bokudlula abalondoloziwe kunoma iyiphi idivayisi</translation>
@@ -1270,6 +1273,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5956112131836209882">Ithebhu yeqembu lethebhu. I-<ph name="TAB_INDEX_IN_GROUP" /> kokungu-<ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Sesha nge-<ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Isixhumanisi sokokugqamisa asikwazi ukudalwa.</translation>
+<translation id="5968400720580217226">Imodi ye-AI</translation>
 <translation id="5971459446352190251">Usesho lwekhodi ye-QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{Ibhukhimakhi e-1 isuliwe}one{Amabhukhimakhi angu-{count} asusiwe}other{Amabhukhimakhi angu-{count} asusiwe}}</translation>
 <translation id="5972844218283131174">Susa ukukhetha konke</translation>
@@ -1415,6 +1419,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6452534462676960500">Umsebenzi omusha</translation>
 <translation id="6459411599807878608">Imininingwane ifihliwe</translation>
 <translation id="646394917185284261">Amafayela</translation>
+<translation id="6472069383518492189">Uzothola okudawunilodiwe kwakho lapha</translation>
 <translation id="6476253015009698798">Ukulandelela izintengo akutholakali kuleli sayithi.</translation>
 <translation id="6476284679642588870">Phatha izindlela zenkokhelo</translation>
 <translation id="6476800141292307438">Ukuhumushela ikhasi kusi-<ph name="LANGUAGE" />. Izinketho ziyatholakala eduzane naphansi kwesikrini.</translation>
@@ -1460,6 +1465,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6627583120233659107">Hlela ifolda</translation>
 <translation id="6629759408545977279">Kusuka: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Inhlangano yakho ivale Imodi ye-incognito</translation>
+<translation id="6637478299472506933">Ukulanda kuhlulekile</translation>
 <translation id="6638511529934826365">Sondeza umbhalo…</translation>
 <translation id="6640268266988685324">Vula Ithebhu</translation>
 <translation id="6641465290890659327">Yabelana ngekhophi yephasiwedi yakho</translation>

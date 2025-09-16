@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC &amp; காலநிலைக் கட்டுப்பாடு</translation>
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2742128390261873684">வீட்டைத் தன்னியக்கமாக்குதல்</translation>
-<translation id="2742870351467570537">தேர்ந்தெடுத்த உருப்படிகளை அகற்றுக</translation>
 <translation id="2743512410823092182">DJவிற்குத் தேவையான பொருட்கள் &amp; உபகரணங்கள்</translation>
 <translation id="2743934314332613923">ஓட்டுநர் உரிமத் தகவலை மாற்றவா?</translation>
 <translation id="2759299890026163685">மீண்டும் முயலும் முன்பு உங்களிடம் நிலையான இணைய இணைப்பு இருப்பதை உறுதிசெய்துகொள்ளவும்</translation>
@@ -2674,7 +2673,6 @@
 <translation id="5423269318075950257">விலையைக் கண்காணித்தல்</translation>
 <translation id="5425082381151187189">வீடு மற்றும் உட்புற அலங்காரம்</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> உங்களுக்கு அறிவிப்புகளை அனுப்ப விரும்புகிறது</translation>
-<translation id="5430298929874300616">புத்தகக்குறியை அகற்று</translation>
 <translation id="5431318178759467895">வண்ணம்</translation>
 <translation id="5433756542371550806">கட்டளை வரிக்கான மாற்று வடிவங்கள்</translation>
 <translation id="5434798570900738152">பின்வரும் தகவல்களை Chromium <ph name="BEGIN_EMPHASIS" />சேமிக்காது<ph name="END_EMPHASIS" />:
@@ -2872,6 +2870,7 @@
 <translation id="5750869797196646528">கை அசைவை டிராக் செய்தல்</translation>
 <translation id="5752327398324808817">ஒன்று அல்லது இரண்டு வார்த்தைகளை டைப் செய்யுங்கள்</translation>
 <translation id="5752519522101347518">பேங்க் சரிபார்ப்பு இணையதளத்தைக் காட்டுகிறது</translation>
+<translation id="5753570386948603678">இதுவரை பதிவிறக்கியவற்றில் இருந்து நீக்கு</translation>
 <translation id="5759751709240058861">உங்கள் கேமராவைப் பயன்படுத்துவது &amp; நகர்த்துவது</translation>
 <translation id="5763042198335101085">சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்</translation>
 <translation id="5764725887548570807">ஆரிஜின் வடிவம் தவறு.</translation>
@@ -3088,7 +3087,6 @@
 <translation id="6124058285696691147">இணைப்பைப் பதிவிறக்கும்</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">என்வெலப் சைனீஸ் #2</translation>
-<translation id="6127379762771434464">உருப்படி அகற்றப்பட்டது</translation>
 <translation id="6131824478727057281">இருப்பிடம்</translation>
 <translation id="6133320744616005677">தொடர்ந்து அனுமதி</translation>
 <translation id="6133984428121856852">ஃபைல் நீட்டிப்பு காலியாக உள்ளது/தவறானது.</translation>
@@ -3102,7 +3100,6 @@
 <translation id="6151417162996330722">சேவை சான்றிதழ் நீண்ட செல்லுபடிக் காலத்தைக் கொண்டுள்ளது.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> அங்குலம் (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ஓட்டம் மற்றும் நடைப்பயிற்சி</translation>
-<translation id="6157754950574419155">பதிவில் இருந்து அனைத்தையும் நீக்கு</translation>
 <translation id="6157877588268064908">ஷிப்பிங் முறைகளையும் தேவைகளையும் பார்க்க, முகவரியைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6159554577634054750">பூச்சிக் கட்டுப்பாடு</translation>
 <translation id="6159908896951210943">அலுவல் மொழியாக்கு</translation>
@@ -3789,6 +3786,7 @@
 <translation id="7292031607255951991">பெறுநரின் பெயர்</translation>
 <translation id="7298195798382681320">பரிந்துரைத்தவை</translation>
 <translation id="7299471494012161875">இணைக்கப்பட்டுள்ள வெளிப்புற டிஸ்ப்ளே சாதனங்கள்</translation>
+<translation id="7299721129597238157">புக்மார்க்கை நீக்கு</translation>
 <translation id="7299769361777046949">Google Walletடில் லாயல்டி கார்டுகளை நிர்வகிக்கலாம்</translation>
 <translation id="7304030187361489308">அதிகமானது</translation>
 <translation id="7304562222803846232">Google கணக்கின் தனியுரிமை அமைப்புகளை நிர்வகியுங்கள்</translation>
@@ -4000,6 +3998,7 @@
 <translation id="7613889955535752492">காலாவதியாவது: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அமைப்புகளில் உங்கள் கடவுச்சொற்களைப் பார்க்கவும் நிர்வகிக்கவும் Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="7615932826417658001">அடையாள அட்டையைச் சேர்த்தல்</translation>
+<translation id="7616390733770379387">இவை ரேண்டம் வரிசையில் காட்டப்படுகின்றன.</translation>
 <translation id="7616645509853975347">உங்கள் உலாவியில் Chrome Enterprise Connectorsஸை நிர்வாகி இயக்கியுள்ளார். இந்தக் கனெக்டர்களால் உங்களின் தரவு சிலவற்றை அணுக முடியும்.</translation>
 <translation id="7617825962482469577">என்வெலப் C7/C6</translation>
 <translation id="7618270539713451657">தற்காப்புக் கலைகள்</translation>
@@ -4823,6 +4822,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618">உங்கள் லோக்கல் நெட்வொர்க்கில் உள்ள எந்தவொரு சாதனத்தையும் தேடி அதனுடன் இணைக்க <ph name="URL" /> விரும்புகிறது</translation>
 <translation id="9046864189129893978">மைக்ரோஃபோன்கள் (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">உங்கள் வழக்கமான பிரவுசர் மூலம் இணையத்தில் தேடலாம். அமைப்புகளில் இதை மாற்றலாம்.</translation>
 <translation id="9048035366624198823">இந்தச் செயல்களைச் செய்ய <ph name="POLICY_NAME" /> கொள்கை <ph name="POLICY_VALUE" /> என அமைக்கப்பட வேண்டும்: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 இன்ச்</translation>
 <translation id="9049981332609050619">நீங்கள் <ph name="DOMAIN" /> ஐ அடைய முயற்சி செய்தீர்கள், ஆனால் சேவையகம் ஒரு செல்லாத சான்றிதழை வழங்கியது.</translation>

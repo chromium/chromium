@@ -1067,7 +1067,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="273785062888389088">Apsildes, ventilācijas un gaisa kondicionēšanas sistēmas un klimata kontrole</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2742128390261873684">Mājas ierīču automatizācija</translation>
-<translation id="2742870351467570537">Noņemt atlasītos vienumus</translation>
 <translation id="2743512410823092182">Dīdžeju resursi un aprīkojums</translation>
 <translation id="2743934314332613923">Vai atjaunināt autovadītāja apliecības informāciju?</translation>
 <translation id="2759299890026163685">Pirms mēģināt vēlreiz, pārbaudiet, vai ir izveidots stabils interneta savienojums</translation>
@@ -1779,6 +1778,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3941630233824954464">Iespējot obligātu atkārtotu autentifikāciju</translation>
 <translation id="3942048175062210325">Mēģiniet vēlreiz atvērt savus failus.</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
+<translation id="3945937463338223066">Kontrolēt autentifikācijas ierīces ar veidu <ph name="READERNAME" /> un tām pieejamās viedkartes</translation>
 <translation id="3946209740501886391">Vienmēr jautāt šajā vietnē</translation>
 <translation id="3948588869002647271">Trūkst šīs lietojumprogrammas, vai tā ir bojāta.</translation>
 <translation id="3949297482798028668">Jūsu administrators ir bloķējis šī satura ielīmēšanu šeit.</translation>
@@ -2675,7 +2675,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5423269318075950257">Cenas izsekošana</translation>
 <translation id="5425082381151187189">Mājokļa un interjera dizains</translation>
 <translation id="5426179911063097041">No vietnes <ph name="SITE" /> tiek mēģināts nosūtīt paziņojumus.</translation>
-<translation id="5430298929874300616">Noņemt grāmatzīmi</translation>
 <translation id="5431318178759467895">Krāsās</translation>
 <translation id="5433756542371550806">Komandrindu varianti</translation>
 <translation id="5434798570900738152">Pārlūkā Chromium <ph name="BEGIN_EMPHASIS" />netiks saglabāta<ph name="END_EMPHASIS" />:
@@ -2873,6 +2872,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5750869797196646528">Roku kustību izsekošana</translation>
 <translation id="5752327398324808817">Ievadiet vienu vai divus vārdus</translation>
 <translation id="5752519522101347518">Notiek bankas verifikācijas vietnes ielāde…</translation>
+<translation id="5753570386948603678">Dzēst no vēstures</translation>
 <translation id="5759751709240058861">jūsu kameras izmantošana un kustināšana</translation>
 <translation id="5763042198335101085">Ievadiet derīgu e-pasta adresi</translation>
 <translation id="5764725887548570807">Nederīgs avota formāts.</translation>
@@ -3089,7 +3089,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6124058285696691147">Lejupielādēt pielikumu</translation>
 <translation id="6124432979022149706">Chrome Enterprise savienotāji</translation>
 <translation id="6126565365696310362">Ķīniešu aploksne 2</translation>
-<translation id="6127379762771434464">Vienums ir noņemts</translation>
 <translation id="6131824478727057281">atrašanās vieta</translation>
 <translation id="6133320744616005677">Atļaut arī turpmāk</translation>
 <translation id="6133984428121856852">Faila paplašinājums ir tukšs vai nepareizi veidots.</translation>
@@ -3104,7 +3103,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6151417162996330722">Šī servera sertifikāta derīguma periods ir pārāk ilgs.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> collas (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Skriešana un iešana</translation>
-<translation id="6157754950574419155">Noņemt no vēstures visu</translation>
 <translation id="6157877588268064908">Lai skatītu nosūtīšanas veidus un prasības, atlasiet adresi.</translation>
 <translation id="6159554577634054750">Kaitēkļu apkarošana</translation>
 <translation id="6159908896951210943">Formāls</translation>
@@ -3791,6 +3789,7 @@ Papildu informācija:
 <translation id="7292031607255951991">Saņēmēja vārds</translation>
 <translation id="7298195798382681320">Ieteicams</translation>
 <translation id="7299471494012161875">Pievienotās perifērās attēlojuma ierīces</translation>
+<translation id="7299721129597238157">Dzēst grāmatzīmi</translation>
 <translation id="7299769361777046949">Pārvaldiet lojalitātes kartes lietotnē Google maks</translation>
 <translation id="7304030187361489308">Augsts</translation>
 <translation id="7304562222803846232">Pārvaldīt Google konta konfidencialitātes iestatījumus</translation>

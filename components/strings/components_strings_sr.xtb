@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">Системи за грејање, вентилацију и климатизацију</translation>
 <translation id="2740531572673183784">Потврди</translation>
 <translation id="2742128390261873684">Аутоматизација дома</translation>
-<translation id="2742870351467570537">Уклони изабране ставке</translation>
 <translation id="2743512410823092182">Апарати и опрема за ди-џејеве</translation>
 <translation id="2743934314332613923">Желите да ажурирате возачку дозволу?</translation>
 <translation id="2759299890026163685">Уверите се да имате стабилну интернет везу пре него што пробате поново</translation>
@@ -2678,7 +2677,6 @@
 <translation id="5423269318075950257">Пратите цену</translation>
 <translation id="5425082381151187189">Декорација куће и ентеријера</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> жели да вам шаље обавештења</translation>
-<translation id="5430298929874300616">Уклоните обележивач</translation>
 <translation id="5431318178759467895">У боји</translation>
 <translation id="5433756542371550806">Варијације командне линије</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />не чува<ph name="END_EMPHASIS" />:
@@ -2876,6 +2874,7 @@
 <translation id="5750869797196646528">Праћење руку</translation>
 <translation id="5752327398324808817">Унесите реч или две</translation>
 <translation id="5752519522101347518">Учитава се веб-сајт за верификацију банке</translation>
+<translation id="5753570386948603678">Избриши из историје</translation>
 <translation id="5759751709240058861">користи и помера камеру</translation>
 <translation id="5763042198335101085">Унесите важећу имејл адресу</translation>
 <translation id="5764725887548570807">Неважећи формат порекла.</translation>
@@ -3092,7 +3091,6 @@
 <translation id="6124058285696691147">Преузми прилог</translation>
 <translation id="6124432979022149706">Прикључци за Chrome за предузећа</translation>
 <translation id="6126565365696310362">Кинеска коверта бр. 2</translation>
-<translation id="6127379762771434464">Уклонили сте ставку</translation>
 <translation id="6131824478727057281">локација</translation>
 <translation id="6133320744616005677">Не опозивај дозволу</translation>
 <translation id="6133984428121856852">Екстензија фајла је празна или је у погрешном формату.</translation>
@@ -3106,7 +3104,6 @@
 <translation id="6151417162996330722">Сертификат сервера има предугачак период важења.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" />×<ph name="HEIGHT" /> инча (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Трчање и ходање</translation>
-<translation id="6157754950574419155">Уклони све из историје</translation>
 <translation id="6157877588268064908">Да бисте видели начине и захтеве за слање, изаберите адресу</translation>
 <translation id="6159554577634054750">Дезинсекција и дератизација</translation>
 <translation id="6159908896951210943">Формално</translation>
@@ -3793,6 +3790,7 @@
 <translation id="7292031607255951991">Име примаоца</translation>
 <translation id="7298195798382681320">Препоручено</translation>
 <translation id="7299471494012161875">Прикључени периферни уређаји на екрану</translation>
+<translation id="7299721129597238157">Брисање обележивача</translation>
 <translation id="7299769361777046949">Управљајте картицама лојалности у Google новчанику</translation>
 <translation id="7304030187361489308">Висок</translation>
 <translation id="7304562222803846232">Управљајте подешавањима приватности Google налога</translation>

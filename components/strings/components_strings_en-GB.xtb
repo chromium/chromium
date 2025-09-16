@@ -1067,7 +1067,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="273785062888389088">HVAC and Climate Control</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Home automation</translation>
-<translation id="2742870351467570537">Remove selected items</translation>
 <translation id="2743512410823092182">DJ Resources and Equipment</translation>
 <translation id="2743934314332613923">Update driving licence?</translation>
 <translation id="2759299890026163685">Make sure that you have a stable Internet connection before trying again</translation>
@@ -1780,6 +1779,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3941630233824954464">Enable mandatory re-authentication</translation>
 <translation id="3942048175062210325">Try opening your files again</translation>
 <translation id="3943857333388298514">Paste</translation>
+<translation id="3945937463338223066">Control authentication devices of type <ph name="READERNAME" /> and smart cards accessible to them</translation>
 <translation id="3946209740501886391">Always ask on this site</translation>
 <translation id="3948588869002647271">This application is missing or damaged</translation>
 <translation id="3949297482798028668">Pasting this content here is blocked by your administrator.</translation>
@@ -2677,7 +2677,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5423269318075950257">Track price</translation>
 <translation id="5425082381151187189">Home and interior decor</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
-<translation id="5430298929874300616">Remove bookmark</translation>
 <translation id="5431318178759467895">Colour</translation>
 <translation id="5433756542371550806">Command-line variations</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />won’t save<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5750869797196646528">Hand tracking</translation>
 <translation id="5752327398324808817">Enter a word or two</translation>
 <translation id="5752519522101347518">Loading bank verification website</translation>
+<translation id="5753570386948603678">Delete from history</translation>
 <translation id="5759751709240058861">Use and move your camera</translation>
 <translation id="5763042198335101085">Enter a valid email address</translation>
 <translation id="5764725887548570807">Invalid origin format.</translation>
@@ -3091,7 +3091,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6124058285696691147">Download the attachment</translation>
 <translation id="6124432979022149706">Chrome Enterprise connectors</translation>
 <translation id="6126565365696310362">Envelope Chinese no.2</translation>
-<translation id="6127379762771434464">Item removed</translation>
 <translation id="6131824478727057281">location</translation>
 <translation id="6133320744616005677">Continue allowing</translation>
 <translation id="6133984428121856852">File extension is empty or malformed.</translation>
@@ -3106,7 +3105,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6151417162996330722">The server certificate has a validity period that is too long.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Running and walking</translation>
-<translation id="6157754950574419155">Remove all from history</translation>
 <translation id="6157877588268064908">To see delivery methods and requirements, select an address</translation>
 <translation id="6159554577634054750">Pest Control</translation>
 <translation id="6159908896951210943">Formal</translation>
@@ -3793,6 +3791,7 @@ Additional details:
 <translation id="7292031607255951991">Recipient name</translation>
 <translation id="7298195798382681320">Recommended</translation>
 <translation id="7299471494012161875">Display peripherals attached</translation>
+<translation id="7299721129597238157">Delete bookmark</translation>
 <translation id="7299769361777046949">Manage loyalty cards in Google Wallet</translation>
 <translation id="7304030187361489308">High</translation>
 <translation id="7304562222803846232">Manage Google Account privacy settings</translation>

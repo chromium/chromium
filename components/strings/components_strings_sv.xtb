@@ -1067,7 +1067,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="273785062888389088">Luftkonditionering och klimatkontroll</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Hemautomatisering</translation>
-<translation id="2742870351467570537">Ta bort valda objekt</translation>
 <translation id="2743512410823092182">Resurser och utrustning för diskjockeyer</translation>
 <translation id="2743934314332613923">Vill du uppdatera körkortet?</translation>
 <translation id="2759299890026163685">Kontrollera att du har en stabil internetanslutning innan du försöker igen</translation>
@@ -1780,6 +1779,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3941630233824954464">Aktivera obligatorisk omautentisering</translation>
 <translation id="3942048175062210325">Testa att öppna filerna igen</translation>
 <translation id="3943857333388298514">Klistra in</translation>
+<translation id="3945937463338223066">Styra autentiseringsenheter av typen <ph name="READERNAME" /> och tillhörande smartkort för dem</translation>
 <translation id="3946209740501886391">Fråga alltid på den här webbplatsen</translation>
 <translation id="3948588869002647271">Appen saknas eller är skadad</translation>
 <translation id="3949297482798028668">Möjligheten att klistra in innehållet här blockeras av administratören.</translation>
@@ -2677,7 +2677,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5423269318075950257">Bevaka pris</translation>
 <translation id="5425082381151187189">Heminredning</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vill skicka aviseringar</translation>
-<translation id="5430298929874300616">Ta bort bokmärke</translation>
 <translation id="5431318178759467895">Färg</translation>
 <translation id="5433756542371550806">Varianter på kommandoraden</translation>
 <translation id="5434798570900738152">Följande sparas <ph name="BEGIN_EMPHASIS" />inte<ph name="END_EMPHASIS" /> i Chromium:
@@ -2875,6 +2874,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5750869797196646528">Handspårning</translation>
 <translation id="5752327398324808817">Ange ett eller två ord</translation>
 <translation id="5752519522101347518">Läser in webbplats för bankverifiering</translation>
+<translation id="5753570386948603678">Radera från historiken</translation>
 <translation id="5759751709240058861">Använda och röra din kamera</translation>
 <translation id="5763042198335101085">Ange en giltig e-postadress</translation>
 <translation id="5764725887548570807">Ogiltigt ursprungsformat.</translation>
@@ -3091,7 +3091,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6124058285696691147">Ladda ned bilagan</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Kinesiskt nr 2-kuvert</translation>
-<translation id="6127379762771434464">Objektet har tagits bort</translation>
 <translation id="6131824478727057281">plats</translation>
 <translation id="6133320744616005677">Fortsätt bevilja behörigheten</translation>
 <translation id="6133984428121856852">Filnamnstillägg saknas eller har fel format.</translation>
@@ -3106,7 +3105,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6151417162996330722">Servercertifikatet har för lång giltighetstid.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tum (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Löpning och gång</translation>
-<translation id="6157754950574419155">Ta bort alla från historiken</translation>
 <translation id="6157877588268064908">Välj en adress för att visa fraktalternativ och krav</translation>
 <translation id="6159554577634054750">Skadedjursbekämpning</translation>
 <translation id="6159908896951210943">Formell</translation>
@@ -3793,6 +3791,7 @@ Mer information.
 <translation id="7292031607255951991">Mottagarens namn</translation>
 <translation id="7298195798382681320">Rekommenderas</translation>
 <translation id="7299471494012161875">Visa bifogad kringutrustning</translation>
+<translation id="7299721129597238157">Ta bort bokmärke</translation>
 <translation id="7299769361777046949">Hantera stamkundskort i Google Wallet</translation>
 <translation id="7304030187361489308">Hög</translation>
 <translation id="7304562222803846232">Hantera Google-kontots integritetsinställningar</translation>

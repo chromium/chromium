@@ -198,6 +198,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Ver las fotos y el contenido multimedia del teléfono</translation>
 <translation id="1129850422003387628">Administrar apps</translation>
+<translation id="1130116586186908674">Crear vista dividida</translation>
 <translation id="1130430615924359526">{0,plural, =1{Cerrar el modo Incógnito}other{Cerrar el modo Incógnito (# ventanas)}}</translation>
 <translation id="113050636487300043">Elige un nombre y un tema de color para diferenciar los perfiles.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: Parte del grupo <ph name="GROUP_NAME" /></translation>
@@ -471,6 +472,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1307431692088049276">No volver a preguntarme</translation>
 <translation id="130744661532298792">Para asegurarte de que siempre puedas usar las contraseñas en tu Cuenta de Google, verifica tu identidad</translation>
 <translation id="1307559529304613120">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
+<translation id="1311092170520822848">Este sitio controla los lectores de tarjetas inteligentes conectados a tu dispositivo y, posiblemente, las tarjetas inteligentes disponibles para ellos</translation>
 <translation id="131112695174432497">Se borran los datos que afectan la personalización de anuncios</translation>
 <translation id="1311294419381837540">Estás transmitiendo una pestaña. Puedes pausar o detener la transmisión en cualquier momento.</translation>
 <translation id="131188242279372879">Descubre la protección mejorada para obtener el nivel más alto de seguridad de Chrome para las descargas</translation>
@@ -732,7 +734,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1500297251995790841">Dispositivo desconocido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Más información sobre las Apps de Chrome no compatibles</translation>
 <translation id="1501480321619201731">Borrar grupo</translation>
-<translation id="1503392482221435031">Envía automáticamente estadísticas de uso a Google. Puedes activar o desactivar los informes de fallas en la configuración del dispositivo.</translation>
 <translation id="1503556098270577657">Accediste a <ph name="USER_EMAIL" /> con tu teléfono Android</translation>
 <translation id="150411034776756821">Quitar <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Fijar vista dividida</translation>
@@ -2095,6 +2096,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2431027948063157455">No se pudo cargar el Asistente de Google. Comprueba tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="243179355394256322">Tu organización permite inscribir dispositivos solo a usuarios autorizados. Este usuario no está autorizado a inscribir dispositivos. Asegúrate de que el usuario tenga el privilegio de administrador "Inscribir el hardware de Google Meet" en la sección Usuarios de la Consola del administrador.</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
+<translation id="2433237965825924228">Las apps web aisladas controlan los dispositivos de autenticación y las tarjetas inteligentes a los que tienen acceso. Por lo general, las tarjetas inteligentes contienen identificadores que se usan para autenticarte.</translation>
 <translation id="2433452467737464329">Agrega un parámetro de consulta en la URL para actualizar la página de forma automática: chrome://network/?refresh=&lt;sec&gt;.</translation>
 <translation id="2433507940547922241">Diseño</translation>
 <translation id="2433836460518180625">Desbloquear solo el dispositivo</translation>
@@ -3016,7 +3018,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3048589239114571785">Reproducir (k)</translation>
 <translation id="3048742847101793553">Tu organización bloqueó este archivo porque falló el análisis.</translation>
 <translation id="3048917188684939573">Registros de dispositivo y transmisión</translation>
-<translation id="3049525403650329038">Comparte el contenido de la página con Gemini para obtener respuestas más pertinentes. Tus datos no se usarán para mejorar modelos de IA generativa.</translation>
 <translation id="3051250416341590778">Tamaño de visualización</translation>
 <translation id="3053013834507634016">Uso de la clave del certificado</translation>
 <translation id="3053273573829329829">Habilitar el PIN de usuario</translation>
@@ -3511,6 +3512,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3429174588714165399">Crea un acceso directo a esta página</translation>
 <translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Agrega esta página a favoritos para encontrarla fácilmente más tarde</translation>
+<translation id="343084100869297747">Las apps web aisladas siguen automáticamente esta configuración</translation>
 <translation id="3431530007831146102">Usar movimientos de la cabeza para controlar el cursor del mouse</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> liberados</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -7908,7 +7910,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6525767484449074555">Haz clic en "Instalar"</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6527574156657772563">No hay dispositivos disponibles. Agrega tu Cuenta de Google al teléfono para conectarlo al dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6530030995840538405">Imagen generada <ph name="INDEX" /> de <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Tu administrador gestiona estas opciones de configuración.</translation>
 <translation id="6530267432324197764">Perfil administrado por <ph name="MANAGER" /></translation>
@@ -8098,7 +8099,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6657240842932274095">¿Quieres permitir que los servicios del sistema usen tu ubicación?</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6659213950629089752">La extensión "<ph name="NAME" />" hizo zoom en esta página</translation>
-<translation id="6659594942844771486">Pestaña</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - La cámara está grabando</translation>
 <translation id="6660301751798595791">Selección de voz</translation>
 <translation id="6660819301598582123">El veloz murciélago hindú comía feliz cardillo y kiwi.</translation>
@@ -8878,6 +8879,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7201535955609308429">Espera mientras la verificación está en curso</translation>
 <translation id="7202337678781136582">Escanea el código QR con tu teléfono Android</translation>
 <translation id="7203150201908454328">Expandido</translation>
+<translation id="7206252555702853828">Se están controlando tus lectores de tarjetas inteligentes</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Salir de la página}other{Salir de las páginas}}</translation>
 <translation id="7207457272187520234">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta configuración. Si habilitaste la Actividad web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google.</translation>
 <translation id="7207631048330366454">Buscar apps</translation>
@@ -11640,6 +11642,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9081543426177426948">Los sitios que visitas no se guardan en el modo Incógnito</translation>
 <translation id="9082750838489080452">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Abrir como ventana</translation>
+<translation id="9084383457260170045">Las apps web aisladas pueden solicitar permiso para controlar lectores de tarjetas inteligentes</translation>
 <translation id="9085256200913095638">Duplicar la pestaña seleccionada</translation>
 <translation id="9085446486797400519">Acceso a cámara</translation>
 <translation id="9085776959277692427">No se seleccionó <ph name="LANGUAGE" />. Presiona la tecla de búsqueda+barra espaciadora para seleccionar el idioma.</translation>
@@ -11839,6 +11842,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Para administrarla, abre Extensiones}other{Para administrarlas, abre Extensiones}}</translation>
 <translation id="924818813611903184">Administra los idiomas en la configuración de ChromeOS</translation>
 <translation id="925575170771547168">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por todos los sitios</translation>
+<translation id="927864230077808465">Las apps web aisladas no pueden controlar lectores de tarjetas inteligentes</translation>
 <translation id="930268624053534560">Marcas de tiempo detalladas</translation>
 <translation id="930551443325541578">Repetición de teclas y tildes</translation>
 <translation id="930893132043726269">Hay roaming disponible</translation>

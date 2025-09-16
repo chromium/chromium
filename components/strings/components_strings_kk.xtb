@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC және ауаны автоматты баптау жүйесі</translation>
 <translation id="2740531572673183784">Жарайды</translation>
 <translation id="2742128390261873684">Үй құрылғыларын автоматтандыру</translation>
-<translation id="2742870351467570537">Таңдалған элементтерді жою</translation>
 <translation id="2743512410823092182">Диджей ресурстары мен жабдығы</translation>
 <translation id="2743934314332613923">Жүргізуші куәлігін жаңарту керек пе?</translation>
 <translation id="2759299890026163685">Әрекетті қайталамас бұрын, интернет байланысының тұрақты екеніне көз жеткізіңіз.</translation>
@@ -1779,6 +1778,7 @@
 <translation id="3941630233824954464">Міндетті қайта аутентификациялауды қосу</translation>
 <translation id="3942048175062210325">Файлдарды қайта ашып көріңіз</translation>
 <translation id="3943857333388298514">Қою</translation>
+<translation id="3945937463338223066"><ph name="READERNAME" /> түріндегі аутентификация құрылғылары мен олар кіре алатын смарт карталарды басқарыңыз.</translation>
 <translation id="3946209740501886391">Осы сайтта әрқашан сұралсын</translation>
 <translation id="3948588869002647271">Бұл қолданба жоқ немесе зақымдалған</translation>
 <translation id="3949297482798028668">Бұл контентті осы жерге қоюды әкімші блоктады.</translation>
@@ -2676,7 +2676,6 @@
 <translation id="5423269318075950257">Бағаны бақылау</translation>
 <translation id="5425082381151187189">Үй және интерьер декорациясы</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> хабарландыру жіберуге рұқсат сұрады</translation>
-<translation id="5430298929874300616">Бетбелгіні жою</translation>
 <translation id="5431318178759467895">Түс</translation>
 <translation id="5433756542371550806">Пәрмендер жолының вариациялары</translation>
 <translation id="5434798570900738152">Chromium келесі ақпаратты <ph name="BEGIN_EMPHASIS" />сақтамайды<ph name="END_EMPHASIS" />:
@@ -2874,6 +2873,7 @@
 <translation id="5750869797196646528">Қолды бақылау</translation>
 <translation id="5752327398324808817">Бір немесе екі сөз енгізіңіз.</translation>
 <translation id="5752519522101347518">Банктің растау веб-сайты жүктеліп жатыр</translation>
+<translation id="5753570386948603678">Тарихтан жою</translation>
 <translation id="5759751709240058861">Камераны пайдалану және жылжыту</translation>
 <translation id="5763042198335101085">Дұрыс электрондық пошта мекенжайын енгізіңіз</translation>
 <translation id="5764725887548570807">Дереккөз форматы жарамсыз.</translation>
@@ -3090,7 +3090,6 @@
 <translation id="6124058285696691147">Тіркемені жүктеп алу</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Chinese #2 хатқалтасы</translation>
-<translation id="6127379762771434464">Элемент жойылған</translation>
 <translation id="6131824478727057281">орын</translation>
 <translation id="6133320744616005677">Рұқсатты қалдыру</translation>
 <translation id="6133984428121856852">Файл кеңейтімі бос немесе оның форматы қате.</translation>
@@ -3105,7 +3104,6 @@
 <translation id="6151417162996330722">Сервер сертификатының жарамдылық мерзімі тым ұзақ.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Жүгіру және жүру</translation>
-<translation id="6157754950574419155">Барлығын тарихтан өшіру</translation>
 <translation id="6157877588268064908">Жөнелту әдістері мен талаптарын көру үшін мекенжайды таңдаңыз</translation>
 <translation id="6159554577634054750">Зиянкестермен күрес жүргізу</translation>
 <translation id="6159908896951210943">Ресми</translation>
@@ -3791,6 +3789,7 @@
 <translation id="7292031607255951991">Алушының аты-жөні</translation>
 <translation id="7298195798382681320">Ұсынылған</translation>
 <translation id="7299471494012161875">Дисплей перифериялық құрылғыларының жалғанғаны;</translation>
+<translation id="7299721129597238157">Бетбелгіні жою</translation>
 <translation id="7299769361777046949">Google Wallet-тегі тұрақты клиент карталарын басқару</translation>
 <translation id="7304030187361489308">Жоғары</translation>
 <translation id="7304562222803846232">Google аккаунтының құпиялық параметрлерін басқару</translation>

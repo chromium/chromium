@@ -834,6 +834,7 @@
 <translation id="4286718549648564014">Адрес перемещен в ваш аккаунт <ph name="USER_EMAIL" />.</translation>
 <translation id="4287172530684295552">Отметить как прочитанное</translation>
 <translation id="428768789042547925">Что нового</translation>
+<translation id="428858055663163046">Когда вы скачаете какой-нибудь файл, он появится в этом разделе.</translation>
 <translation id="429074084062258019">{count,plural, =1{Добавить вкладку в группу}one{Добавить вкладки в группу}few{Добавить вкладки в группу}many{Добавить вкладки в группу}other{Добавить вкладки в группу}}</translation>
 <translation id="4302061870579014542">Выбрать</translation>
 <translation id="4304713468139749426">Менеджер паролей</translation>
@@ -950,6 +951,7 @@
 <translation id="4749529195026091676">{count,plural, =1{Импортирована {count} карта.}one{Импортирована {count} карта.}few{Импортированы {count} карты.}many{Импортированы {count} карт.}other{Импортировано {count} карты.}}</translation>
 <translation id="4751645464639803239">Новая вкладка инкогнито</translation>
 <translation id="4752348350801431746">Отключить уведомления проверки безопасности…</translation>
+<translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4764612367328936189">Согласно правилам, установленным организацией, выполнить вход можно только с одобренным аккаунтом. Запрещенные аккаунты скрываются. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Рекомендации и подписки</translation>
 <translation id="4769198578611055647">Позволяет использовать сохраненные ключи доступа на любом устройстве.</translation>
@@ -1271,6 +1273,7 @@
 <translation id="5956112131836209882">Вкладка с группами вкладок. <ph name="TAB_INDEX_IN_GROUP" /> из <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Поиск в <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не удалось создать ссылку на выделенный текст.</translation>
+<translation id="5968400720580217226">Режим ИИ</translation>
 <translation id="5971459446352190251">Поиск по QR-коду</translation>
 <translation id="5971872012779224351">{count,plural, =1{Удалена 1 закладка.}one{Удалена {count} закладка.}few{Удалено {count} закладки.}many{Удалено {count} закладок.}other{Удалено {count} закладки.}}</translation>
 <translation id="5972844218283131174">Отменить выбор</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6452534462676960500">Новые действия</translation>
 <translation id="6459411599807878608">Сведения скрыты</translation>
 <translation id="646394917185284261">Файлы</translation>
+<translation id="6472069383518492189">Здесь будут показаны ваши скачанные файлы</translation>
 <translation id="6476253015009698798">Отслеживание цен недоступно для этой страницы.</translation>
 <translation id="6476284679642588870">Настроить способы оплаты</translation>
 <translation id="6476800141292307438">Перевод страницы на <ph name="LANGUAGE" />. Параметры указаны в нижней части экрана.</translation>
@@ -1461,6 +1465,7 @@
 <translation id="6627583120233659107">Изменить папку</translation>
 <translation id="6629759408545977279">Откуда: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">В вашей организации режим инкогнито отключен.</translation>
+<translation id="6637478299472506933">Ошибка при скачивании</translation>
 <translation id="6638511529934826365">Изменить масштаб текста</translation>
 <translation id="6640268266988685324">Открытая вкладка</translation>
 <translation id="6641465290890659327">Поделитесь паролем</translation>
@@ -1583,6 +1588,7 @@
 <translation id="7102005569666697658">Скачивание… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Настройки → Способы оплаты</translation>
 <translation id="7108338896283013870">Скрыть</translation>
+<translation id="7127922377013221748">Скрыть панель инструментов</translation>
 <translation id="7128693485119315539">Ваша организация может просматривать данные о работе в браузере, привязанные к управляемому аккаунту (например, историю браузера и пароли), а также управлять ими.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>

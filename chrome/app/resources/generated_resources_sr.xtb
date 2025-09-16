@@ -736,7 +736,6 @@
 <translation id="1500297251995790841">Непознат уређај [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Сазнајте више о неподржаним Chrome апликацијама</translation>
 <translation id="1501480321619201731">Избриши групу</translation>
-<translation id="1503392482221435031">Аутоматски шаље статистику коришћења Google-у. Можете да укључите или искључите извештаје о отказивању у подешавањима уређаја.</translation>
 <translation id="1503556098270577657">Пријавили сте се на <ph name="USER_EMAIL" /> помоћу Android телефона</translation>
 <translation id="150411034776756821">Уклони <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Закачи подељени приказ</translation>
@@ -3020,7 +3019,6 @@
 <translation id="3048589239114571785">Пусти (k)</translation>
 <translation id="3048742847101793553">Организација је блокирала овај фајл јер скенирање није успело.</translation>
 <translation id="3048917188684939573">Евиденције пребацивања и уређаја</translation>
-<translation id="3049525403650329038">Делите садржај странице са Gemini-јем да бисте добијали релевантније одговоре. Подаци се не користе за побољшавање модела генеративне вештачке интелигенције.</translation>
 <translation id="3051250416341590778">Величина приказа</translation>
 <translation id="3053013834507634016">Употреба кључа сертификата</translation>
 <translation id="3053273573829329829">Омогући PIN корисника</translation>
@@ -7912,7 +7910,6 @@
 <translation id="6525767484449074555">Кликните на Инсталирај</translation>
 <translation id="6527303717912515753">Дели</translation>
 <translation id="6527574156657772563">Нема доступних уређаја. Додајте Google налог на телефон да бисте га повезали са овим уређајем <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
-<translation id="652948702951888897">Историја Chrome-а</translation>
 <translation id="6530030995840538405">Генерисана је <ph name="INDEX" />. слика од <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Администратор примењује ова подешавања</translation>
 <translation id="6530267432324197764">Профилом управља <ph name="MANAGER" /></translation>

@@ -1067,7 +1067,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="273785062888389088">Sistem HVAC dhe kontroll klime</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2742128390261873684">Automatizimi i shtëpisë</translation>
-<translation id="2742870351467570537">Hiq artikujt e zgjedhur</translation>
 <translation id="2743512410823092182">Burime dhe pajisje për DJ</translation>
 <translation id="2743934314332613923">Të përditësohet leja e drejtimit?</translation>
 <translation id="2759299890026163685">Sigurohu që të kesh një lidhje të qëndrueshme interneti para se të provosh përsëri</translation>
@@ -1780,6 +1779,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3941630233824954464">Aktivizo rivërtetimin e detyrueshëm</translation>
 <translation id="3942048175062210325">Provo t'i hapësh përsëri skedarët e tu</translation>
 <translation id="3943857333388298514">Ngjite</translation>
+<translation id="3945937463338223066">Kontrollo pajisjet e vërtetimit të llojit <ph name="READERNAME" /> dhe kartat inteligjente të qasshme për to</translation>
 <translation id="3946209740501886391">Gjithmonë pyet në këtë faqe</translation>
 <translation id="3948588869002647271">Ky aplikacion mungon ose është i dëmtuar</translation>
 <translation id="3949297482798028668">Ngjitja e kësaj përmbajtjeje këtu është bllokuar nga administratori yt.</translation>
@@ -2677,7 +2677,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5423269318075950257">Monitoro çmimin</translation>
 <translation id="5425082381151187189">Shtëpia dhe dekori i brendshëm</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dëshiron të të dërgojë njoftime</translation>
-<translation id="5430298929874300616">Hiqe faqeshënuesin</translation>
 <translation id="5431318178759467895">Ngjyra</translation>
 <translation id="5433756542371550806">Variantet e rreshtit të komandës</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" />:
@@ -2875,6 +2874,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5750869797196646528">Gjurmimi i duarve</translation>
 <translation id="5752327398324808817">Fut një ose dy fjalë</translation>
 <translation id="5752519522101347518">Po ngarkohet uebsajti i verifikimit të bankës</translation>
+<translation id="5753570386948603678">Fshije nga historiku</translation>
 <translation id="5759751709240058861">Të përdorë dhe të lëvizë kamerën tënde</translation>
 <translation id="5763042198335101085">Fut një adresë të vlefshme email-i</translation>
 <translation id="5764725887548570807">Format i pavlefshëm i origjinës.</translation>
@@ -3091,7 +3091,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6124058285696691147">Shkarko bashkëngjitjen</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Zarf kinez nr. 2</translation>
-<translation id="6127379762771434464">Artikulli u hoq</translation>
 <translation id="6131824478727057281">vendndodhja</translation>
 <translation id="6133320744616005677">Vazhdo lejimin</translation>
 <translation id="6133984428121856852">Shtesa e skedarit është bosh ose e keqformuar.</translation>
@@ -3105,7 +3104,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6151417162996330722">Certifikata e serverit ka një periudhë vlefshmërie që është tepër e gjatë.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> inç (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Vrapim dhe ecje</translation>
-<translation id="6157754950574419155">Hiqi të gjitha nga historiku</translation>
 <translation id="6157877588268064908">Për të parë mënyrat dhe kërkesat e dërgimit, zgjidh një adresë</translation>
 <translation id="6159554577634054750">Kontroll për parazitë</translation>
 <translation id="6159908896951210943">Formal</translation>
@@ -3791,6 +3789,7 @@ Detaje shtesë:
 <translation id="7292031607255951991">Emri i marrësit</translation>
 <translation id="7298195798382681320">I rekomanduar</translation>
 <translation id="7299471494012161875">Shfaq pajisjet periferike të lidhura</translation>
+<translation id="7299721129597238157">Fshi faqeshënuesin</translation>
 <translation id="7299769361777046949">Menaxho kartat e besnikërisë te "Portofoli i Google"</translation>
 <translation id="7304030187361489308">I lartë</translation>
 <translation id="7304562222803846232">Menaxho cilësimet e privatësisë të "Llogarisë së Google"</translation>

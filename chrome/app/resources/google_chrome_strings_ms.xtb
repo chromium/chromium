@@ -442,6 +442,9 @@
 <translation id="6180522807229584611">Tab ini menggunakan sumber tambahan. Untuk meningkatkan prestasi anda, benarkan Chrome menjadikan tab tersebut tidak aktif.</translation>
 <translation id="6182736845697986886">Pemasangan gagal akibat ralat dalaman pelayan kemaskinian.</translation>
 <translation id="6192058120268468905">Akaun Anda dalam Chrome</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> telah menambahkan sambungan yang boleh mengubah cara Chrome berfungsi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Peraturan masuk bagi Google Chrome untuk membenarkan trafik mDNS.</translation>
 <translation id="624230925347970731">Chrome akan ditutup sebentar lagi</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -470,6 +473,7 @@
 <translation id="6506909944137591434">Chrome memerlukan kebenaran kamera untuk membuat peta 3D bagi persekitaran anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Untuk menggunakan lokasi anda, berikan akses kepada Chrome dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>
+<translation id="652948702951888897">Sejarah Chrome</translation>
 <translation id="6532945796722480006">Buka Gemini dalam Chrome Canary</translation>
 <translation id="6585124893636629274">Tutup Gemini dalam Chrome</translation>
 <translation id="659498884637196217">Dalam Pengurus Kata Laluan Google pada peranti ini</translation>

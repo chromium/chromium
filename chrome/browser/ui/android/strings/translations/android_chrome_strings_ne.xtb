@@ -3,6 +3,7 @@
 <translationbundle lang="ne">
 <translation id="1010283278930414892">यो डिभाइसमा कुनै पनि पासवर्ड सेभ गरिएको छैन</translation>
 <translation id="1011749477052068769">सारेर यहाँ ल्याउनुहोस्</translation>
+<translation id="1014083013111769343">रिडिङ मोडसम्बन्धी प्राथमिकताहरू पूरै स्क्रिनमा खोलिएका छन्</translation>
 <translation id="1014147525163127655">यो डिभाइसमा <ph name="ORIGIN" /> को कुनै पनि पासकी छैन</translation>
 <translation id="1016498331642356377">आफ्नो आवाज प्रयोग गरी छिटोछरितो रूपमा खोज्नुहोस्। यो सर्टकट सम्पादन गर्न टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> लाई पठाउँदै...</translation>
@@ -207,6 +208,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="197288927597451399">राख्नुहोस्</translation>
 <translation id="1973912524893600642">डेटा राख्नुहोस्</translation>
 <translation id="1974060860693918893">उन्नत</translation>
+<translation id="1982274314082047220">रिडिङ मोडमा प्राथमिकताहरू हेर्न माथितिर स्वाइप गर्नुहोस्</translation>
 <translation id="1984087999855033707">फोन नम्बर</translation>
 <translation id="1984417487208496350">सुरक्षारहित मोड (सिफारिस गरिँदैन)</translation>
 <translation id="1986685561493779662">नाम पहिलेदेखि नै विद्यमान छ</translation>
@@ -428,6 +430,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2992473221983447149">फोटोका वर्णन</translation>
 <translation id="2996291259634659425">पासफ्रेज सिर्जना गर्नुहोस्</translation>
 <translation id="2996809686854298943">URL आवश्यक छ</translation>
+<translation id="3024215143424744261">रिडिङ मोडसम्बन्धी प्राथमिकताहरू बन्द गरिएका छन्</translation>
 <translation id="3026955690410463085">लिंक समावेश गर्नुहोस्</translation>
 <translation id="3027644380269727216">तपाईंले कुनै साइटमा गरेका गतिविधिका आधारमा। यो सेटिङ अन छ।</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> को ब्राउजिङ हिस्ट्री</translation>
@@ -1310,6 +1313,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="696447261358045621">इन्कोग्निटो मोडबाट बाहिरिनुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_ONE" /> ट्याब हेर्नुहोस्}other{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब हेर्नुहोस्}}</translation>
+<translation id="6971555615916967190">रिडिङ मोडसम्बन्धी प्राथमिकताहरू आधा स्क्रिनमा खोलिएका छन्</translation>
 <translation id="6971862865055170158">अनुमोदन नगर्नुहोस्</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, नयाँ वा परिवर्तन गरिएको ट्याब</translation>
 <translation id="6976811588313110624">नयाँ सर्टकट हाल्नुहोस्।</translation>

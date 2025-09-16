@@ -1067,7 +1067,6 @@
 <translation id="273785062888389088">HVAC სისტემები და კლიმატკონტროლი</translation>
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2742128390261873684">სახლის ავტომატიზაცია</translation>
-<translation id="2742870351467570537">არჩეული ელემენტების წაშლა</translation>
 <translation id="2743512410823092182">დიჯეების რესურსები და აღჭურვილობა</translation>
 <translation id="2743934314332613923">განვაახლოთ მართვის მოწმობა?</translation>
 <translation id="2759299890026163685">სანამ ხელახლა ცდით, შეამოწმეთ, რომ ინტერნეტ-კავშირი სტაბილურია</translation>
@@ -2678,7 +2677,6 @@
 <translation id="5423269318075950257">ფასისთვის თვალის მიდევნება</translation>
 <translation id="5425082381151187189">სახლისა და ინტერიერის გაფორმება</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ითხოვს თქვენთვის შეტყობინებების გამოგზავნას</translation>
-<translation id="5430298929874300616">სანიშნის ამოშლა</translation>
 <translation id="5431318178759467895">ფერი</translation>
 <translation id="5433756542371550806">ბრძანებათა სტრიქონის ვარიანტები</translation>
 <translation id="5434798570900738152">Chromium-ის მიერ <ph name="BEGIN_EMPHASIS" />არ შეინახება<ph name="END_EMPHASIS" />:
@@ -2876,6 +2874,7 @@
 <translation id="5750869797196646528">ხელების მოძრაობაზე თვალის დევნება</translation>
 <translation id="5752327398324808817">შეიყვანეთ ერთი-ორი სიტყვა</translation>
 <translation id="5752519522101347518">იტვირთება ბანკის დადასტურების ვებსაიტი</translation>
+<translation id="5753570386948603678">ისტორიიდან წაშლა</translation>
 <translation id="5759751709240058861">კამერის გამოყენება და გადაადგილება</translation>
 <translation id="5763042198335101085">შეიყვანეთ ელფოსტის სწორი მისამართი</translation>
 <translation id="5764725887548570807">წყაროს ფორმატი არასწორია.</translation>
@@ -3092,7 +3091,6 @@
 <translation id="6124058285696691147">დანართის ჩამოტვირთვა</translation>
 <translation id="6124432979022149706">Chrome Enterprise მაერთებლები</translation>
 <translation id="6126565365696310362">კონვერტი Chinese 2</translation>
-<translation id="6127379762771434464">ერთეული ამოიშალა</translation>
 <translation id="6131824478727057281">მდებარეობა</translation>
 <translation id="6133320744616005677">დაშვების გაგრძელება</translation>
 <translation id="6133984428121856852">ფაილის გაფართოება ცარიელი ან არასწორად ფორმირებულია.</translation>
@@ -3107,7 +3105,6 @@
 <translation id="6151417162996330722">სერვერის სერთიფიკატს აქვს მოქმედების პერიოდი, რომელიც ძალიან ხანგრძლივია.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> დუიმი (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">სირბილი და ფეხით სიარული</translation>
-<translation id="6157754950574419155">ყველას ამოშლა ისტორიიდან</translation>
 <translation id="6157877588268064908">გაგზავნის მეთოდებისა და მოთხოვნების სანახავად აირჩიეთ მისამართი</translation>
 <translation id="6159554577634054750">მავნებლებთან ბრძოლა</translation>
 <translation id="6159908896951210943">ფორმალური</translation>
@@ -3793,6 +3790,7 @@
 <translation id="7292031607255951991">მიმღების სახელი</translation>
 <translation id="7298195798382681320">რეკომენდირებულია</translation>
 <translation id="7299471494012161875">მიერთებული პერიფერიული მოწყობილობების ჩვენება</translation>
+<translation id="7299721129597238157">სანიშნის წაშლა</translation>
 <translation id="7299769361777046949">ერთგული კლიენტის ბარათების მართვა Google საფულეში</translation>
 <translation id="7304030187361489308">მაღალი</translation>
 <translation id="7304562222803846232">Google ანგარიშის კონფიდენციალურობის პარამეტრების მართვა</translation>

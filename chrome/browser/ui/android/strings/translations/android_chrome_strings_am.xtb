@@ -3,6 +3,7 @@
 <translationbundle lang="am">
 <translation id="1010283278930414892">በዚህ መሣሪያ ላይ ምንም የተጠመጡ የይለፍ ቃላት የሉም</translation>
 <translation id="1011749477052068769">ወደዚህ አንቀሳቅስ</translation>
+<translation id="1014083013111769343">የንባብ ሁነታ ምርጫዎች በሙሉ ቁመት ተከፍተዋል</translation>
 <translation id="1014147525163127655">በዚህ መሣሪያ ላይ ለ<ph name="ORIGIN" /> ምንም የይለፍ ቁልፎች የሉም</translation>
 <translation id="1016498331642356377">በድምጽዎ በፍጥነት ይፈልጉ። ይህን አቋራጭ ለማርትዕ ነክተው ይያዙ።</translation>
 <translation id="1028699632127661925">ወደ <ph name="DEVICE_NAME" /> በመላክ ላይ...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">አስቀምጥ</translation>
 <translation id="1973912524893600642">ውሂብን አቆይ</translation>
 <translation id="1974060860693918893">የላቀ</translation>
+<translation id="1982274314082047220">ለምርጫዎች የንባብ ሁነታ ወደላይ ማንሸራተት</translation>
 <translation id="1984087999855033707">ስልክ ቁጥር</translation>
 <translation id="1984417487208496350">ምንም ጥበቃ የለም (አይመከርም)</translation>
 <translation id="1986685561493779662">ስሙ አስቀድሞ አለ</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">የምስል መግለጫዎች</translation>
 <translation id="2996291259634659425">የይለፍ ሐረግ ይፍጠሩ</translation>
 <translation id="2996809686854298943">ዩአርኤል ያስፈልጋል</translation>
+<translation id="3024215143424744261">የንባብ ሁነታ ምርጫዎች ተዘግተዋል</translation>
 <translation id="3026955690410463085">አገናኝ ያካትቱ</translation>
 <translation id="3027644380269727216">በአንድ ጣቢያ ላይ ባለዎት እንቅስቃሴ ላይ የተመሠረተ። ይህ ቅንብር በርቷል።</translation>
 <translation id="3027950907978057636">ከ<ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">ከማንነት የማያሳውቅ ሁነታ ይውጡ</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያለው <ph name="TABS_COUNT_ONE" /> ትር አሳይ}one{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያለው <ph name="TABS_COUNT_MANY" /> ትር አሳይ}other{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያላቸው <ph name="TABS_COUNT_MANY" /> ትሮች አሳይ}}</translation>
+<translation id="6971555615916967190">የንባብ ሁነታ ምርጫዎች በግማሽ ቁመት ተከፍተዋል</translation>
 <translation id="6971862865055170158">አታጽድቅ</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />፣ አዲስ ወይም የተዘመነ ትር</translation>
 <translation id="6976811588313110624">አዲስ አቋራጭ ያክሉ።</translation>

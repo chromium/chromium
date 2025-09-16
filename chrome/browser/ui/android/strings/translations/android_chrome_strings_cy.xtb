@@ -3,6 +3,7 @@
 <translationbundle lang="cy">
 <translation id="1010283278930414892">Dim cyfrineiriau wedi'u cadw ar y ddyfais hon</translation>
 <translation id="1011749477052068769">Symud yma</translation>
+<translation id="1014083013111769343">Dewisiadau'r modd darllen wedi'u hagor ar uchder llawn</translation>
 <translation id="1014147525163127655">Does dim codau pas ar gyfer <ph name="ORIGIN" /> ar y ddyfais hon</translation>
 <translation id="1016498331642356377">Chwilio yn gyflym â'ch llais. I olygu'r llwybr byr hwn, cyffwrddwch a daliwch.</translation>
 <translation id="1028699632127661925">Wthi'n anfon i <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="197288927597451399">Cadw</translation>
 <translation id="1973912524893600642">Cadw Data</translation>
 <translation id="1974060860693918893">Uwch</translation>
+<translation id="1982274314082047220">Modd darllen sweipio i fyny am ddewisiadau</translation>
 <translation id="1984087999855033707">rhif ffôn</translation>
 <translation id="1984417487208496350">Dim diogelwch (ni argymhellir)</translation>
 <translation id="1986685561493779662">Mae'r enw eisoes yn bodoli</translation>
@@ -428,6 +430,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2992473221983447149">Disgrifiadau lluniau</translation>
 <translation id="2996291259634659425">Crëwch gyfrinymadrodd</translation>
 <translation id="2996809686854298943">Angen URL</translation>
+<translation id="3024215143424744261">Modd darllen dewisiadau wedi cau</translation>
 <translation id="3026955690410463085">Cynnwys y ddolen</translation>
 <translation id="3027644380269727216">Yn seiliedig ar eich gweithgarwch ar wefan. Mae'r gosodiad hwn wedi'i droi ymlaen.</translation>
 <translation id="3027950907978057636">O <ph name="APP_LABEL" /></translation>
@@ -1312,6 +1315,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="696447261358045621">Gadael y modd Anhysbys</translation>
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Gweler <ph name="TABS_COUNT_ONE" /> tab gyda gweithgarwch newydd mewn grwpiau tabiau a rennir}zero{Gweler <ph name="TABS_COUNT_MANY" /> tabiau gyda gweithgarwch newydd mewn grwpiau tabiau a rennir}two{Gweler <ph name="TABS_COUNT_MANY" /> dab gyda gweithgarwch newydd mewn grwpiau tabiau a rennir}few{Gweler <ph name="TABS_COUNT_MANY" /> thab gyda gweithgarwch newydd mewn grwpiau tabiau a rennir}many{Gweler <ph name="TABS_COUNT_MANY" /> thab gyda gweithgarwch newydd mewn grwpiau tabiau a rennir}other{Gweler <ph name="TABS_COUNT_MANY" /> tab gyda gweithgarwch newydd mewn grwpiau tabiau a rennir}}</translation>
+<translation id="6971555615916967190">Dewisiadau'r modd darllen wedi'u hagor ar hanner uchder</translation>
 <translation id="6971862865055170158">Peidio â chymeradwyo</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, Tab Newydd neu Wedi'i Ddiweddaru</translation>
 <translation id="6976811588313110624">Ychwanegu llwybr byr newydd.</translation>

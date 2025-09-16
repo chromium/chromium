@@ -1067,7 +1067,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="273785062888389088">Légkondicionálás és klímák</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Otthonautomatizálás</translation>
-<translation id="2742870351467570537">A kijelölt elemek eltávolítása</translation>
 <translation id="2743512410823092182">Források és felszerelések DJ-k számára</translation>
 <translation id="2743934314332613923">Frissíti a vezetői engedélyt?</translation>
 <translation id="2759299890026163685">Az újrapróbálkozás előtt győződjön meg arról, hogy stabil az internetkapcsolata</translation>
@@ -1778,6 +1777,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3941630233824954464">Kötelező újbóli hitelesítés engedélyezése</translation>
 <translation id="3942048175062210325">Próbálja meg újra megnyitni a fájlokat</translation>
 <translation id="3943857333388298514">Beillesztés</translation>
+<translation id="3945937463338223066">A(z) <ph name="READERNAME" /> típusú hitelesítési eszközök és a velük hozzáférhető intelligens kártyák vezérlése</translation>
 <translation id="3946209740501886391">Mindig kérdezze meg ezen a webhelyen</translation>
 <translation id="3948588869002647271">Az alkalmazás hiányzik vagy sérült</translation>
 <translation id="3949297482798028668">A rendszergazda letiltotta ennek a tartalomnak az ide való beillesztését.</translation>
@@ -2674,7 +2674,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5423269318075950257">Ár nyomon követése</translation>
 <translation id="5425082381151187189">Lakberendezés és belső dekoráció</translation>
 <translation id="5426179911063097041">A(z) <ph name="SITE" /> értesítéseket szeretne küldeni Önnek</translation>
-<translation id="5430298929874300616">Könyvjelző törlése</translation>
 <translation id="5431318178759467895">Színes</translation>
 <translation id="5433756542371550806">Parancssorváltozatok</translation>
 <translation id="5434798570900738152">A Chromium <ph name="BEGIN_EMPHASIS" />nem menti<ph name="END_EMPHASIS" /> a következőket:
@@ -2872,6 +2871,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5750869797196646528">Kézmozgás követése</translation>
 <translation id="5752327398324808817">Írjon be egy-két szót</translation>
 <translation id="5752519522101347518">Bank hitelesítő webhelyének betöltése…</translation>
+<translation id="5753570386948603678">Törlés az előzmények közül</translation>
 <translation id="5759751709240058861">A kamera használata és mozgatása</translation>
 <translation id="5763042198335101085">Érvényes e-mail-címet adjon meg</translation>
 <translation id="5764725887548570807">Érvénytelen eredetformátum.</translation>
@@ -3088,7 +3088,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6124058285696691147">A melléklet letöltése</translation>
 <translation id="6124432979022149706">Chrome Enterprise csatlakozási szoftverek</translation>
 <translation id="6126565365696310362">2. kínai boríték</translation>
-<translation id="6127379762771434464">Elem eltávolítva</translation>
 <translation id="6131824478727057281">helyszín</translation>
 <translation id="6133320744616005677">Engedélyezés folytatása</translation>
 <translation id="6133984428121856852">A fájlkiterjesztés üres vagy hibás formátumú.</translation>
@@ -3103,7 +3102,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6151417162996330722">A szervertanúsítvány érvényességi ideje túl hosszú.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> ×<ph name="HEIGHT" /> hüvelyk (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Futás és gyaloglás</translation>
-<translation id="6157754950574419155">Az összes eltávolítása az előzményekből</translation>
 <translation id="6157877588268064908">A szállítási módok és követelmények megtekintéséhez válassza ki a címet</translation>
 <translation id="6159554577634054750">Rovarirtás</translation>
 <translation id="6159908896951210943">Hivatalos</translation>
@@ -3790,6 +3788,7 @@ További részletek:
 <translation id="7292031607255951991">Címzett neve</translation>
 <translation id="7298195798382681320">Ajánlott</translation>
 <translation id="7299471494012161875">Csatlakoztatott vizuális perifériák</translation>
+<translation id="7299721129597238157">Könyvjelző törlése</translation>
 <translation id="7299769361777046949">Kezelje hűségkártyáit a Google Walletben</translation>
 <translation id="7304030187361489308">Magas</translation>
 <translation id="7304562222803846232">A Google-fiók adatvédelmi beállításainak kezelése</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ml">
 <translation id="1010283278930414892">ഈ ഉപകരണത്തിൽ സംരക്ഷിച്ച പാസ്‌വേഡുകളൊന്നുമില്ല</translation>
 <translation id="1011749477052068769">ഇവിടേക്ക് നീക്കുക</translation>
+<translation id="1014083013111769343">റീഡിംഗ് മോഡ്, മുൻഗണനകൾ മുഴുവനായും തുറന്നു</translation>
 <translation id="1014147525163127655">ഈ ഉപകരണത്തിൽ <ph name="ORIGIN" /> എന്നതിനുള്ള പാസ്‌കീകളൊന്നുമില്ല</translation>
 <translation id="1016498331642356377">നിങ്ങളുടെ ശബ്ദം ഉപയോഗിച്ച് വേഗത്തിൽ തിരയുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് അയ‌യ്‌ക്കുന്നു...</translation>
@@ -207,6 +208,7 @@
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">ഡാറ്റ നിലനിർത്തുക</translation>
 <translation id="1974060860693918893">വിപുലമായത്</translation>
+<translation id="1982274314082047220">മുൻഗണനകൾക്ക്, റീഡിംഗ് മോഡിൽ മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="1984087999855033707">ഫോൺ നമ്പർ</translation>
 <translation id="1984417487208496350">പരിരക്ഷയില്ല (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="1986685561493779662">പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
@@ -428,6 +430,7 @@
 <translation id="2992473221983447149">ചിത്രത്തിന്റെ വിവരണങ്ങൾ</translation>
 <translation id="2996291259634659425">പാസ്‌ഫ്രെയ്‌സ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="2996809686854298943">URL ആവശ്യമാണ്</translation>
+<translation id="3024215143424744261">റീഡിംഗ് മോഡ്, മുൻഗണനകൾ അവസാനിപ്പിച്ചു</translation>
 <translation id="3026955690410463085">ലിങ്ക് ഉൾപ്പെടുത്തുക</translation>
 <translation id="3027644380269727216">സൈറ്റിലെ നിങ്ങളുടെ ആക്റ്റിവിറ്റിയെ അടിസ്ഥാനമാക്കി. ഈ ക്രമീകരണം ഓണാണ്.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> എന്നതിൽ നിന്ന്</translation>
@@ -1311,6 +1314,7 @@
 <translation id="696447261358045621">അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ പുതിയ ആക്റ്റിവിറ്റിയുള്ള <ph name="TABS_COUNT_ONE" /> ടാബ് കാണുക}other{പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ പുതിയ ആക്റ്റിവിറ്റിയുള്ള <ph name="TABS_COUNT_MANY" /> ടാബുകൾ കാണുക}}</translation>
+<translation id="6971555615916967190">റീഡിംഗ് മോഡ്, മുൻഗണനകൾ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="6971862865055170158">അംഗീകരിക്കരുത്</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, പുതിയതോ അപ്‌ഡേറ്റ് ചെയ്‌തതോ ആയ ടാബ്</translation>
 <translation id="6976811588313110624">പുതിയ കുറുക്കുവഴി ചേർക്കുക.</translation>

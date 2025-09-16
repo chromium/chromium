@@ -3,6 +3,7 @@
 <translationbundle lang="ca">
 <translation id="1010283278930414892">No hi ha cap contrasenya desada en aquest dispositiu</translation>
 <translation id="1011749477052068769">Mou aquí</translation>
+<translation id="1014083013111769343">Preferències del mode de lectura obertes a alçada completa</translation>
 <translation id="1014147525163127655">No hi ha cap clau d'accés per a <ph name="ORIGIN" /> en aquest dispositiu</translation>
 <translation id="1016498331642356377">Cerca ràpidament amb la veu. Mantingues premuda aquesta drecera per editar-la.</translation>
 <translation id="1028699632127661925">S'està enviant a <ph name="DEVICE_NAME" />...</translation>
@@ -207,6 +208,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="197288927597451399">Conserva</translation>
 <translation id="1973912524893600642">Conserva les dades</translation>
 <translation id="1974060860693918893">Configuració avançada</translation>
+<translation id="1982274314082047220">Llisca cap amunt al mode de lectura per veure les preferències</translation>
 <translation id="1984087999855033707">número de telèfon</translation>
 <translation id="1984417487208496350">Sense protecció (opció no recomanada)</translation>
 <translation id="1986685561493779662">El nom ja existeix</translation>
@@ -428,6 +430,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2992473221983447149">Descripcions d'imatges</translation>
 <translation id="2996291259634659425">Creeu una frase de contrasenya</translation>
 <translation id="2996809686854298943">Es necessita un URL</translation>
+<translation id="3024215143424744261">Preferències del mode de lectura tancades</translation>
 <translation id="3026955690410463085">Inclou l'enllaç</translation>
 <translation id="3027644380269727216">Segons la teva activitat en un lloc web. Aquesta opció de configuració està activada.</translation>
 <translation id="3027950907978057636">De <ph name="APP_LABEL" /></translation>
@@ -1311,6 +1314,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="696447261358045621">Surt del mode d'incògnit</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Consulta <ph name="TABS_COUNT_ONE" /> pestanya amb activitat nova en grups de pestanyes compartits}other{Consulta <ph name="TABS_COUNT_MANY" /> pestanyes amb activitat nova en grups de pestanyes compartits}}</translation>
+<translation id="6971555615916967190">Preferències del mode de lectura obertes a mitja alçada</translation>
 <translation id="6971862865055170158">No aprovis</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, pestanya nova o actualitzada</translation>
 <translation id="6976811588313110624">Afegeix una drecera nova.</translation>

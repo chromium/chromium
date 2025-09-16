@@ -5,7 +5,7 @@
 <translation id="1063300264396686489">Abrir automáticamente grupos de pestañas de otros dispositivos</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de las pestañas no se han usado recientemente. ¿Quieres cerrarlas?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creado hace <ph name="NUM_YEARS_ONE" /> año}other{Creado hace <ph name="NUM_YEARS_MANY" /> años}}</translation>
-<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Las pestañas y los grupos inactivos se cerrarán al cabo de 1 mes}other{Las pestañas y los grupos inactivos se cerrarán al cabo de <ph name="MONTH_COUNT_MANY" /> meses}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Las pestañas y los grupos inactivos se cerrarán al cabo de 1 mes.}other{Las pestañas y los grupos inactivos se cerrarán al cabo de <ph name="MONTH_COUNT_MANY" /> meses.}}</translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Abrir <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT2" /> pestaña}other{Abrir <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT2" /> pestañas}}</translation>
 <translation id="1273910660700874265">Opciones del grupo de pestañas <ph name="TITLE_OF_GROUP" /></translation>

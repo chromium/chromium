@@ -15,6 +15,9 @@
 <translation id="1131805035311359397">Kui soovite kontrollida, kas teie paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chromiumi sisse<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Klõpsake Chromiumi menüül</translation>
 <translation id="1157985233335035034">Hiljutised keeled</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> lisas laienduse, mis võib muuta Chromiumi tööpõhimõtteid.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Installimine ebaõnnestus, kuna teie Windowsi versiooni ei toetata.</translation>
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>

@@ -114,6 +114,7 @@
 <translation id="1429187656584513419">Fungua Manenosiri</translation>
 <translation id="1430915738399379752">Chapisha</translation>
 <translation id="1433478348197382180">Hali ya Kusoma</translation>
+<translation id="1435271730600332883">Fungua kipengele cha Kujaza Kiotomatiki na Manenosiri</translation>
 <translation id="1436671784520050284">Endelea kuweka mipangilio</translation>
 <translation id="143681031165817424">Anwani imehifadhiwa kwenye kifaa hiki</translation>
 <translation id="1445276840641906250">Vichupo vyako vyote katika kivinjari kimoja</translation>
@@ -833,6 +834,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4286718549648564014">Anwani imehamishiwa kwenye akaunti yako ya <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Weka alama kuwa umesoma</translation>
 <translation id="428768789042547925">Mambo mapya</translation>
+<translation id="428858055663163046">Unaweza kufikia faili ulizopakua hapa zinapopatikana</translation>
 <translation id="429074084062258019">{count,plural, =1{Weka Kichupo kwenye Kikundi}other{Weka Vichupo kwenye Kikundi}}</translation>
 <translation id="4302061870579014542">Weka nafasi</translation>
 <translation id="4304713468139749426">Kidhibiti cha Manenosiri</translation>
@@ -949,6 +951,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4749529195026091676">{count,plural, =1{Imepakia kadi {count}}other{Imepakia kadi {count}}}</translation>
 <translation id="4751645464639803239">Kichupo Fiche Kipya</translation>
 <translation id="4752348350801431746">Zima arifa za kipengele cha Ukaguzi wa Usalama…</translation>
+<translation id="4759238208242260848">Vipakuliwa</translation>
 <translation id="4764612367328936189">Shirika lako hukuruhusu kuingia kwa kutumia baadhi ya akaunti tu. Akaunti zisizoruhusiwa zimefichwa. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Gundua na Unazofuatilia</translation>
 <translation id="4769198578611055647">Hukusaidia kufikia funguo za siri zilizohifadhiwa kwenye kifaa chochote</translation>
@@ -1270,6 +1273,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5956112131836209882">Kichupo cha kikundi cha vichupo. <ph name="TAB_INDEX_IN_GROUP" /> kati ya <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Tafuta ukitumia <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Imeshindwa kuweka kiungo cha maandishi yaliyoangaziwa.</translation>
+<translation id="5968400720580217226">Matumizi ya AI</translation>
 <translation id="5971459446352190251">Tafuta msimbo wa QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{Alamisho 1 imefutwa}other{Alamisho {count} zimefutwa}}</translation>
 <translation id="5972844218283131174">Acha kuchagua zote</translation>
@@ -1415,6 +1419,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6452534462676960500">Shughuli mpya</translation>
 <translation id="6459411599807878608">Maelezo yamefichwa</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6472069383518492189">Utapata faili ulizopakua hapa</translation>
 <translation id="6476253015009698798">Ufuatiliaji bei haupatikani katika ukurasa huu.</translation>
 <translation id="6476284679642588870">Dhibiti njia za kulipa</translation>
 <translation id="6476800141292307438">Inatafsiri ukurasa katika <ph name="LANGUAGE" />. Chaguo zinapatikana karibu na sehemu ya chini ya skrini.</translation>
@@ -1460,6 +1465,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6627583120233659107">Badilisha folda</translation>
 <translation id="6629759408545977279">Kutoka: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Shirika lako limezima Hali fiche</translation>
+<translation id="6637478299472506933">Upakuaji Umeshindwa</translation>
 <translation id="6638511529934826365">Kuza Maandishi…</translation>
 <translation id="6640268266988685324">Fungua Kichupo</translation>
 <translation id="6641465290890659327">Tuma nakala ya nenosiri lako</translation>
