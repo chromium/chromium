@@ -25,9 +25,15 @@ class BrowsingDataLifetimePolicyHandler
                            PrefValueMap* prefs) override;
 
  private:
-  // Caches sync types required when the policy is checked, to
-  // avoid recomputing when it is applied or prepared for display.
+  const char* pref_path_;
+
+  // Caches sync types required when the policy is checked, to avoid recomputing
+  // when it is applied.
   syncer::UserSelectableTypeSet forced_disabled_sync_types_;
+
+  // Caches policy `data_types` that are not supported on the current platform,
+  // to avoid recomputing when it is applied.
+  base::flat_set<std::string> unsupported_types_;
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_LIFETIME_POLICY_HANDLER_H_

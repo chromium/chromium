@@ -1306,6 +1306,9 @@ Additional details:
   <message name="IDS_POLICY_BROWSING_DATA_DEPENDENCY_APPLIED_INFO" desc="The text displayed in the status column when a browsing data policy is applied for types for which sync will be automatically disabled.">
     This policy automatically disables syncing across devices for: <ph name="ACTION_LIST">$1<ex>passwords, autofill</ex></ph>.
   </message>
+  <message name="IDS_POLICY_BROWSING_DATA_PLATFORM_UNSUPPORTED" desc="Warning message displayed on chrome://policy page when policies controlling browser data duration include data types that are not supported on the current platform.">
+    This policy specifies data types that are not supported on your current platform: <ph name="TYPE_LIST">$1<ex>hosted_app_data, download_history</ex></ph>.
+  </message>
   <message name="IDS_POLICY_NOT_SUPPORTED_AS_USER_POLICY_ON_IOS" desc="The text displayed in the status column when a policy is not supported as a user policy on ios.">
     This policy is not yet supported as a user policy on iOS.
   </message>

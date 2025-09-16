@@ -190,3 +190,63 @@ TEST(BrowsingDataLifetimePolicyHandler,
   EXPECT_FALSE(enabled);
 #endif
 }
+
+// Validates that a warning for unsupported data_types is shown, and they are
+// filtered out from the policy value, only on Android.
+TEST(BrowsingDataLifetimePolicyHandler,
+     BrowsingDataLifetimeUnsupportedDataTypes) {
+  policy::PolicyMap policy_map;
+  policy::PolicyErrorMap errors;
+
+  base::Value::Dict browsing_data_types_first_dict =
+      base::Value::Dict()
+          .Set("data_types", base::Value::List()
+                                 .Append("hosted_app_data")
+                                 .Append("download_history")
+                                 .Append("cached_images_and_files"))
+          .Set("time_to_live_in_hours", 1);
+
+  base::Value browsing_data_unsupported_types_value = base::Value(
+      base::Value::List().Append(std::move(browsing_data_types_first_dict)));
+
+  policy_map.Set(
+      policy::key::kBrowsingDataLifetime, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+      base::Value(std::move(browsing_data_unsupported_types_value)), nullptr);
+
+  BrowsingDataLifetimePolicyHandler browsing_data_lifetime_handler(
+      policy::key::kBrowsingDataLifetime,
+      browsing_data::prefs::kBrowsingDataLifetime,
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  browsing_data_lifetime_handler.CheckPolicySettings(policy_map, &errors);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(
+      errors.GetErrorMessages(policy::key::kBrowsingDataLifetime,
+                              policy::PolicyMap::MessageType::kWarning),
+      l10n_util::GetStringFUTF16(IDS_POLICY_BROWSING_DATA_PLATFORM_UNSUPPORTED,
+                                 u"download_history, hosted_app_data"));
+#else
+  EXPECT_TRUE(errors.empty());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  PrefValueMap prefs;
+  browsing_data_lifetime_handler.ApplyPolicySettings(policy_map, &prefs);
+
+  base::Value expected_value(base::Value::Type::LIST);
+  expected_value.GetList().Append(
+      base::Value::Dict()
+          .Set("data_types",
+               base::Value::List()
+#if !BUILDFLAG(IS_ANDROID)
+               .Append("hosted_app_data")
+               .Append("download_history")
+#endif  // !BUILDFLAG(IS_ANDROID)
+               .Append("cached_images_and_files"))
+          .Set("time_to_live_in_hours", 1));
+
+  base::Value* applied_value = nullptr;
+  ASSERT_TRUE(prefs.GetValue(browsing_data::prefs::kBrowsingDataLifetime,
+                             &applied_value));
+  EXPECT_EQ(expected_value, *applied_value);
+}
