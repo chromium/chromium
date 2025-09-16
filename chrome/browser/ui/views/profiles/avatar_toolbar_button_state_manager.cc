@@ -104,11 +104,11 @@ std::optional<base::TimeDelta> g_show_name_duration_for_testing;
 constexpr base::TimeDelta kShowSigninPendingTextDelay = base::Minutes(50);
 std::optional<base::TimeDelta> g_show_signin_pending_text_delay_for_testing;
 
-constexpr base::TimeDelta kHistorySyncOptinDuration = base::Seconds(60);
+constexpr base::TimeDelta kHistorySyncOptinDuration = base::Seconds(20);
 std::optional<base::TimeDelta> g_history_sync_optin_duration_for_testing;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-constexpr base::TimeDelta kOnSigninDuration = base::Seconds(30);
+constexpr base::TimeDelta kOnSigninDuration = base::Seconds(20);
 std::optional<base::TimeDelta> g_on_signin_duration_for_testing;
 
 ProfileAttributesStorage& GetProfileAttributesStorage() {
