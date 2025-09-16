@@ -76,7 +76,7 @@ class MultiContentsDropTargetView : public views::View,
   void SetDragDelegate(DragDelegate* drag_delegate);
 
   void Show(DropSide side, DropTargetState state, DragType drag_type);
-  void Hide();
+  void Hide(bool suppress_animation_ = false);
 
   bool IsClosing() const;
 
@@ -141,6 +141,9 @@ class MultiContentsDropTargetView : public views::View,
   // The width at the time the animation started.
   // This is relevant for transitioning from a nudge state to a full state.
   std::optional<int> animate_expand_starting_width_ = std::nullopt;
+  // Flag to used by base::AutoReset to suppress animation for hide request
+  // to avoid content reflows during the split view creation.
+  bool should_suppress_animation_ = false;
 
   raw_ptr<views::View> inner_container_ = nullptr;
   raw_ptr<views::FlexLayout> inner_container_layout_ = nullptr;
