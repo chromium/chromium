@@ -441,9 +441,8 @@ TEST_F(GcpUsingChromeTest, DISABLED_VerifySuccessOutput) {
 
   std::string output_from_chrome = RunChromeAndExtractOutput();
 
-  std::string expected_result;
-  base::JSONWriter::Write(test_data_storage_.expected_full_result(),
-                          &expected_result);
+  std::string expected_result =
+      base::WriteJson(test_data_storage_.expected_full_result()).value_or("");
 
   EXPECT_EQ(output_from_chrome, expected_result);
   EXPECT_TRUE(signin_token_response_.response_given_);

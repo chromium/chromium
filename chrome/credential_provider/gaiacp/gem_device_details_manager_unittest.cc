@@ -72,8 +72,8 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
 
   auto expected_response_value = base::Value::Dict().Set(
       "deviceResourceId", base::WideToUTF8(device_resource_id));
-  std::string expected_response;
-  base::JSONWriter::Write(expected_response_value, &expected_response);
+  std::string expected_response =
+      base::WriteJson(expected_response_value).value_or("");
 
   GURL upload_device_details_url =
       GemDeviceDetailsManager::Get()->GetGemServiceUploadDeviceDetailsUrl();

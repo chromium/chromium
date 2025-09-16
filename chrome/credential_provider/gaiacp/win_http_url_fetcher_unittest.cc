@@ -46,8 +46,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   auto expected_result = base::Value::Dict()
                              .Set("response-str-key", "response-str-value")
                              .Set("response-int-key", 4321);
-  std::string expected_response;
-  base::JSONWriter::Write(expected_result, &expected_response);
+  std::string expected_response = base::WriteJson(expected_result).value_or("");
 
   std::string response;
   if (invalid_response) {
@@ -143,8 +142,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   auto expected_result = base::Value::Dict()
                              .Set("response-str-key", "response-str-value")
                              .Set("response-int-key", 4321);
-  std::string expected_response;
-  base::JSONWriter::Write(expected_result, &expected_response);
+  std::string expected_response = base::WriteJson(expected_result).value_or("");
 
   fake_http_url_fetcher_factory()->SetFakeResponse(
       test_url, FakeWinHttpUrlFetcher::Headers(), expected_response);

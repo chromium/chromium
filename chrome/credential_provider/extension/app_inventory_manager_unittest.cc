@@ -151,8 +151,8 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
 
   auto expected_response_value = base::Value::Dict().Set(
       "deviceResourceId", base::WideToUTF8(device_resource_id));
-  std::string expected_response;
-  base::JSONWriter::Write(expected_response_value, &expected_response);
+  std::string expected_response =
+      base::WriteJson(expected_response_value).value_or("");
 
   fake_http_url_fetcher_factory()->SetCollectRequestData(true);
   // Set upload device details server response.
