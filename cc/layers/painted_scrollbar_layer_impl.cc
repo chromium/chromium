@@ -132,8 +132,6 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
       visible_thumb_quad_rect, internal_contents_scale_);
 
   if (thumb_color_.has_value()) {
-    gfx::MaskFilterInfo rounded_corners_mask =
-        draw_properties().mask_filter_info;
     // Web tests draw the thumb as a square to avoid issues that come with the
     // differences in calculation of anti-aliasing and rounding in different
     // platforms.

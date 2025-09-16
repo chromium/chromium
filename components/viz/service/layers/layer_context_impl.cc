@@ -73,6 +73,7 @@ cc::LayerTreeSettings GetDisplayTreeSettings(
   settings.display_tree_draw_mode_is_gpu = remote_settings->draw_mode_is_gpu;
   settings.enable_edge_anti_aliasing =
       remote_settings->enable_edge_anti_aliasing;
+  settings.enable_fluent_scrollbar = remote_settings->enable_fluent_scrollbar;
   return settings;
 }
 

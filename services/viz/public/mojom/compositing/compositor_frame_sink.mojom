@@ -17,7 +17,11 @@ import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
 
 struct LayerContextSettings {
   bool draw_mode_is_gpu;
+
+  // The following fields are part of LayerTreeSettings.
+  // See cc/trees/layer_tree_settings.h for each field's usage.
   bool enable_edge_anti_aliasing;
+  bool enable_fluent_scrollbar;
 };
 
 struct CompositorFrameSinkParams {

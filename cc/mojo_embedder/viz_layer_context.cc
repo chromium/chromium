@@ -1240,6 +1240,8 @@ VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
   settings->draw_mode_is_gpu = host_impl.GetDrawMode() == DRAW_MODE_HARDWARE;
   settings->enable_edge_anti_aliasing =
       host_impl.settings().enable_edge_anti_aliasing;
+  settings->enable_fluent_scrollbar =
+      host_impl.settings().enable_fluent_scrollbar;
   frame_sink.BindLayerContext(std::move(context), std::move(settings));
 }
 
