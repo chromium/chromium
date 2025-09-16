@@ -328,11 +328,6 @@ void LocationIconView::UpdateIcon() {
 }
 
 void LocationIconView::UpdateBackground() {
-  if (!GetWidget()) {
-    // TODO(crbug.com/423994344): This is mitigation. Remove this check once the
-    // bug is fixed at the root cause.
-    return;
-  }
   CHECK(GetColorProvider());
   const std::u16string& display_text = GetText();
   const bool is_text_dangerous =

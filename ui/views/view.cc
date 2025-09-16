@@ -3176,6 +3176,11 @@ void View::DoRemoveChildView(View* view,
   }
 
   view->parent_ = nullptr;
+  // Make sure the sub-tree of this view detaches from widget the same moment
+  // they're removed from previous view hierarchy.
+  if (is_removed_from_widget) {
+    view->SetWidget(nullptr);
+  }
 
   if (delete_removed_view && !view->owned_by_client_) {
     view_to_be_deleted.reset(view);
@@ -3216,7 +3221,6 @@ void View::PropagateRemoveNotifications(View* old_parent,
   if (is_removed_from_widget) {
     RemovedFromWidget();
     observers_.Notify(&ViewObserver::OnViewRemovedFromWidget, this);
-    widget_ = nullptr;
   }
 }
 
