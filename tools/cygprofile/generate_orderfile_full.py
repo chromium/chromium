@@ -179,9 +179,10 @@ class ClankCompiler:
     self._chrome_target, self.chrome_browser_name = (
         _GetChromeTargetAndBrowserName(options.arch))
 
-    self._libchrome_target = orderfile_shared.GetLibchromeTarget(options.arch)
+    self._libchrome_target = orderfile_shared.GetLibchromeTarget(
+        options.arch, options.profile_webview)
     self.lib_chrome_so = orderfile_shared.GetLibchromeSoPath(
-        out_dir, options.arch)
+        out_dir, options.arch, options.profile_webview)
 
   def _GenerateGnArgs(self, instrumented):
     # Set the "Release Official" flavor, the parts affecting performance.

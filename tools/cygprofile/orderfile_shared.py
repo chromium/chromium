@@ -69,14 +69,16 @@ def CollectProfiles(profiler: android_profile_tool.AndroidProfileTool,
                                              out_dir_str)
 
 
-def GetLibchromeSoPath(out_dir, arch):
+def GetLibchromeSoPath(out_dir, arch, profile_webview=False):
   """Returns the path to the unstripped libmonochrome.so."""
-  libchrome_target = GetLibchromeTarget(arch)
+  libchrome_target = GetLibchromeTarget(arch, profile_webview)
   return str(out_dir / f'lib.unstripped/{libchrome_target}.so')
 
 
-def GetLibchromeTarget(arch):
+def GetLibchromeTarget(arch, profile_webview=False):
   """Returns the libmonochrome target name."""
+  if profile_webview:
+    return 'libwebviewchromium'
   target = 'libmonochrome'
   if '64' in arch:
     # Trichrome has a _64 suffix for arm64 and x64 builds.

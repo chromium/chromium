@@ -85,7 +85,8 @@ def GenerateOrderfile(options, device):
       verbosity=options.verbosity)
 
   lib_chrome_so = orderfile_shared.GetLibchromeSoPath(options.out_dir,
-                                                      options.arch)
+                                                      options.arch,
+                                                      options.profile_webview)
   try:
     if options.profile_webview:
       if options.arch == 'arm64':
