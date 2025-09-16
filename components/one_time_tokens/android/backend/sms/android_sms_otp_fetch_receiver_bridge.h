@@ -13,10 +13,12 @@
 #include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_receiver_bridge_interface.h"
 #include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h"
 
+namespace one_time_tokens {
+
 // A bridge to communicate Java OTP fetcher replies back to the native code.
 // Lives on the UI thread.
 class AndroidSmsOtpFetchReceiverBridge
-    : public AndroidSmsOtpFetchReceiverBridgeInterface {
+    : public one_time_tokens::AndroidSmsOtpFetchReceiverBridgeInterface {
  public:
   // Factory function for creating the bridge.
   static std::unique_ptr<AndroidSmsOtpFetchReceiverBridgeInterface> Create();
@@ -55,5 +57,7 @@ class AndroidSmsOtpFetchReceiverBridge
   SEQUENCE_CHECKER(main_sequence_checker_);
   base::WeakPtrFactory<AndroidSmsOtpFetchReceiverBridge> weak_factory_{this};
 };
+
+}  // namespace one_time_tokens
 
 #endif  // COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_FETCH_RECEIVER_BRIDGE_H_

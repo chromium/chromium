@@ -13,11 +13,9 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-namespace {
+namespace one_time_tokens {
 
-using one_time_tokens::OneTimeToken;
-using one_time_tokens::OneTimeTokenType;
-using one_time_tokens::OtpFetchReply;
+namespace {
 using testing::AllOf;
 using testing::Eq;
 using testing::Field;
@@ -260,3 +258,4 @@ TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchFails) {
   EXPECT_EQ(actual_result.otp_value, std::nullopt);
   EXPECT_FALSE(actual_result.request_complete);
 }
+}  // namespace one_time_tokens

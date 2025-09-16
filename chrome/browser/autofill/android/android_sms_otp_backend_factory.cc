@@ -8,6 +8,8 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "content/public/browser/browser_context.h"
 
+using ::one_time_tokens::AndroidSmsOtpBackend;
+
 AndroidSmsOtpBackendFactory::AndroidSmsOtpBackendFactory()
     : ProfileKeyedServiceFactory(
           "AndroidSmsOtpBackendFactory",

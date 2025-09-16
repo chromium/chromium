@@ -9,8 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h"
 
-// Forward declaration
-enum class SmsOtpRetrievalApiErrorCode;
+namespace one_time_tokens {
 
 // Interface for `AndroidSmsOtpFetchReceiverBridge`.
 class AndroidSmsOtpFetchReceiverBridgeInterface {
@@ -38,5 +37,7 @@ class AndroidSmsOtpFetchReceiverBridgeInterface {
   // Sets the consumer to be notified when an OTP fetching request finishes.
   virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;
 };
+
+}  // namespace one_time_tokens
 
 #endif  // COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_FETCH_RECEIVER_BRIDGE_INTERFACE_H_

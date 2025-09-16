@@ -16,7 +16,7 @@
 class AndroidSmsOtpBackendFactory : public ProfileKeyedServiceFactory {
  public:
   static AndroidSmsOtpBackendFactory* GetInstance();
-  static AndroidSmsOtpBackend* GetForProfile(Profile* profile);
+  static one_time_tokens::AndroidSmsOtpBackend* GetForProfile(Profile* profile);
 
   AndroidSmsOtpBackendFactory(const AndroidSmsOtpBackendFactory&) = delete;
   AndroidSmsOtpBackendFactory& operator=(const AndroidSmsOtpBackendFactory&) =

@@ -12,6 +12,8 @@
 #include "base/threading/thread_checker.h"
 #include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_dispatcher_bridge_interface.h"
 
+namespace one_time_tokens {
+
 // A bridge to send OTP fetch requests to Java. Lives on the background thread.
 class AndroidSmsOtpFetchDispatcherBridge
     : public AndroidSmsOtpFetchDispatcherBridgeInterface {
@@ -38,5 +40,7 @@ class AndroidSmsOtpFetchDispatcherBridge
   // a `SEQUENCE_CHECKER` is not sufficient here.
   THREAD_CHECKER(thread_checker_);
 };
+
+}  // namespace one_time_tokens
 
 #endif  // COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_FETCH_DISPATCHER_BRIDGE_H_
