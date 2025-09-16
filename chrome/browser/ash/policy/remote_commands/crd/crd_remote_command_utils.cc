@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -115,6 +116,12 @@ void CloseMojomConnection(
 }
 
 }  // namespace
+
+const std::string GetCrdCrashKeyValue(CrdSessionType crd_session_type,
+                                      UserSessionType session_type) {
+  return base::StrCat({CrdSessionTypeToString(crd_session_type), "-",
+                       UserSessionTypeToString(session_type)});
+}
 
 base::TimeDelta GetDeviceIdleTime() {
   base::TimeTicks last_activity =

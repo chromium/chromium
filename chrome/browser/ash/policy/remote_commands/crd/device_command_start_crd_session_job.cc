@@ -34,6 +34,7 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -185,6 +186,16 @@ bool IsKioskSession(UserSessionType session_type) {
          session_type == UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION;
 }
 
+std::unique_ptr<crash_reporter::ScopedCrashKeyString> CreateCrdCrashKey(
+    CrdSessionType crd_session_type,
+    UserSessionType user_session_type) {
+  static crash_reporter::CrashKeyString<72> enterprise_crd_crash_key(
+      kCrdCrashKeyName);
+  return std::make_unique<crash_reporter::ScopedCrashKeyString>(
+      &enterprise_crd_crash_key,
+      GetCrdCrashKeyValue(crd_session_type, user_session_type));
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -271,6 +282,9 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
     FinishWithNotIdleError();
     return;
   }
+
+  crd_crash_key_ =
+      CreateCrdCrashKey(GetCrdSessionType(), GetCurrentUserSessionType());
 
   // First perform managed network check,
   CheckManagedNetworkASync(

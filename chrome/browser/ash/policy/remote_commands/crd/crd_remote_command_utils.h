@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/shared_crd_session.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
@@ -25,6 +26,13 @@ using ::enterprise_management::UserSessionType;
 
 // The type of the CRD session.
 using ::enterprise_management::CrdSessionType;
+
+static const char kCrdCrashKeyName[] = "crd-enterprise";
+
+// Returns a crash key-value string identifying the current CRD session and user
+// session types.
+const std::string GetCrdCrashKeyValue(CrdSessionType crd_session_type,
+                                      UserSessionType session_type);
 
 // Returns the time since the last user activity on this device.
 // Returns `TimeDelta::Max()` if there was no user activity since the last

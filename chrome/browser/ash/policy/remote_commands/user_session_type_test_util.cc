@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy::test {
@@ -81,6 +82,34 @@ const char* SessionTypeToString(TestSessionType session_type) {
   }
 
 #undef CASE
+}
+
+enterprise_management::UserSessionType SessionTypeToUserSessionType(
+    TestSessionType session_type) {
+  switch (session_type) {
+    case TestSessionType::kManuallyLaunchedWebKioskSession:
+      return enterprise_management::UserSessionType::
+          MANUALLY_LAUNCHED_KIOSK_SESSION;
+    case TestSessionType::kManuallyLaunchedKioskSession:
+      return enterprise_management::UserSessionType::
+          MANUALLY_LAUNCHED_KIOSK_SESSION;
+    case TestSessionType::kAutoLaunchedWebKioskSession:
+      return enterprise_management::UserSessionType::
+          AUTO_LAUNCHED_KIOSK_SESSION;
+    case TestSessionType::kAutoLaunchedKioskSession:
+      return enterprise_management::UserSessionType::
+          AUTO_LAUNCHED_KIOSK_SESSION;
+    case TestSessionType::kManagedGuestSession:
+      return enterprise_management::UserSessionType::MANAGED_GUEST_SESSION;
+    case TestSessionType::kGuestSession:
+      return enterprise_management::UserSessionType::GUEST_SESSION;
+    case TestSessionType::kAffiliatedUserSession:
+      return enterprise_management::UserSessionType::AFFILIATED_USER_SESSION;
+    case TestSessionType::kUnaffiliatedUserSession:
+      return enterprise_management::UserSessionType::UNAFFILIATED_USER_SESSION;
+    case TestSessionType::kNoSession:
+      return enterprise_management::UserSessionType::NO_SESSION;
+  }
 }
 
 void StartSessionOfType(TestSessionType session_type,

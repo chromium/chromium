@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace policy {
@@ -68,6 +69,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool ShouldAutoAcceptSession(bool is_in_managed_environment) const;
 
   Delegate::ErrorCallback GetErrorCallback();
+
+  std::unique_ptr<crash_reporter::ScopedCrashKeyString> crd_crash_key_;
 
   // The callback that will be called when the access code was successfully
   // obtained or when this command failed.

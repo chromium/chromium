@@ -40,6 +40,7 @@
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -115,6 +116,16 @@ template <typename T>
 void DeleteSoon(std::unique_ptr<T> value) {
   base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                              std::move(value));
+}
+
+crash_reporter::ScopedCrashKeyString CreateCrdCrashKey(
+    CrdSessionType crd_session_type,
+    UserSessionType user_session_type) {
+  static crash_reporter::CrashKeyString<72> enterprise_crd_crash_key(
+      kCrdCrashKeyName);
+  return crash_reporter::ScopedCrashKeyString(
+      &enterprise_crd_crash_key,
+      GetCrdCrashKeyValue(crd_session_type, user_session_type));
 }
 
 // Default implementation of the `RemotingService`, which will contact the real
@@ -406,7 +417,10 @@ class CrdAdminSessionController::SessionLauncher {
 
 class CrdAdminSessionController::CrdHostSession {
  public:
-  CrdHostSession() = default;
+  CrdHostSession(CrdSessionType crd_session_type,
+                 UserSessionType user_session_type)
+      : crd_crash_key_(CreateCrdCrashKey(crd_session_type, user_session_type)) {
+  }
   CrdHostSession(const CrdHostSession&) = delete;
   CrdHostSession& operator=(const CrdHostSession&) = delete;
   ~CrdHostSession() = default;
@@ -451,6 +465,7 @@ class CrdAdminSessionController::CrdHostSession {
     observer_proxy_.Bind(std::move(std::move(parameters.host_observer)));
   }
 
+  crash_reporter::ScopedCrashKeyString crd_crash_key_;
   SupportHostObserverProxy observer_proxy_;
   std::unique_ptr<SessionLauncher> launcher_;
   bool is_curtained_ = false;
@@ -723,7 +738,8 @@ void CrdAdminSessionController::TryToReconnect(
     base::OnceClosure done_callback) {
   CHECK(!HasActiveSession());
 
-  active_session_ = CreateCrdHostSession();
+  active_session_ = CreateCrdHostSession(CrdSessionType::REMOTE_ACCESS_SESSION,
+                                         UserSessionType::NO_SESSION);
   active_session_->AddOwnedObserver(
       std::make_unique<HostLaunchObserver>(std::move(done_callback)));
 
@@ -741,7 +757,11 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
 
   CRD_VLOG(3) << "Starting CRD host session";
 
-  active_session_ = CreateCrdHostSession();
+  active_session_ =
+      CreateCrdHostSession(parameters.curtain_local_user_session
+                               ? CrdSessionType::REMOTE_ACCESS_SESSION
+                               : CrdSessionType::REMOTE_SUPPORT_SESSION,
+                           GetCurrentUserSessionType());
 
   active_session_->AddOwnedObserver(std::make_unique<AccessCodeObserver>(
       std::move(success_callback), std::move(error_callback)));
@@ -755,8 +775,11 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
 }
 
 std::unique_ptr<CrdAdminSessionController::CrdHostSession>
-CrdAdminSessionController::CreateCrdHostSession() {
-  auto result = std::make_unique<CrdHostSession>();
+CrdAdminSessionController::CreateCrdHostSession(
+    CrdSessionType crd_session_type,
+    UserSessionType user_session_type) {
+  auto result =
+      std::make_unique<CrdHostSession>(crd_session_type, user_session_type);
 
   result->AddOwnedObserver(std::make_unique<IdleHostTtlChecker>(base::BindOnce(
       &CrdAdminSessionController::TerminateSession, base::Unretained(this))));

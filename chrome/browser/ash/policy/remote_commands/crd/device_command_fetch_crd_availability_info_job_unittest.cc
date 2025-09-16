@@ -341,26 +341,7 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
 
   Result result = CreateAndRunJob();
 
-  UserSessionType expected = [&]() {
-    switch (session_type) {
-      case TestSessionType::kManuallyLaunchedWebKioskSession:
-      case TestSessionType::kManuallyLaunchedKioskSession:
-        return UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION;
-      case TestSessionType::kAutoLaunchedWebKioskSession:
-      case TestSessionType::kAutoLaunchedKioskSession:
-        return UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION;
-      case TestSessionType::kManagedGuestSession:
-        return UserSessionType::MANAGED_GUEST_SESSION;
-      case TestSessionType::kGuestSession:
-        return UserSessionType::GUEST_SESSION;
-      case TestSessionType::kAffiliatedUserSession:
-        return UserSessionType::AFFILIATED_USER_SESSION;
-      case TestSessionType::kUnaffiliatedUserSession:
-        return UserSessionType::UNAFFILIATED_USER_SESSION;
-      case TestSessionType::kNoSession:
-        return UserSessionType::NO_SESSION;
-    }
-  }();
+  UserSessionType expected = test::SessionTypeToUserSessionType(session_type);
 
   EXPECT_THAT(ParseJsonDict(result.payload),
               DictionaryHasValue("userSessionType",

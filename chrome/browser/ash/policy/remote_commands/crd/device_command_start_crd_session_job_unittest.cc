@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -96,6 +97,17 @@ const char* SessionTypeToUmaString(TestSessionType session_type) {
     case TestSessionType::kNoSession:
       return "NoUserSession";
   }
+}
+
+bool IsCrdCrashKeySet(CrdSessionType crd_session_type,
+                      UserSessionType user_session_type) {
+  return crash_reporter::GetCrashKeyValue(kCrdCrashKeyName) ==
+         base::StrCat({CrdSessionTypeToString(crd_session_type), "-",
+                       UserSessionTypeToString(user_session_type)});
+}
+
+bool HasCrdCrashKey() {
+  return crash_reporter::GetCrashKeyValue(kCrdCrashKeyName) != "";
 }
 
 // Macro expecting success. We are using a macro because a function would
@@ -468,6 +480,44 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
   } else {
     EXPECT_ERROR(result,
                  StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
+  }
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
+       TestAddCrashKeysForRemoteSupportSessions) {
+  TestSessionType user_session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(user_session_type)));
+
+  StartSessionOfType(user_session_type);
+
+  DeviceCommandStartCrdSessionJob job{CreateJob()};
+  InitializeJob(job);
+  RunJob(job);
+
+  bool is_supported = [&]() {
+    switch (user_session_type) {
+      case TestSessionType::kManuallyLaunchedWebKioskSession:
+      case TestSessionType::kManuallyLaunchedKioskSession:
+      case TestSessionType::kAutoLaunchedWebKioskSession:
+      case TestSessionType::kAutoLaunchedKioskSession:
+      case TestSessionType::kManagedGuestSession:
+      case TestSessionType::kAffiliatedUserSession:
+      case TestSessionType::kNoSession:
+        return true;
+
+      case TestSessionType::kGuestSession:
+      case TestSessionType::kUnaffiliatedUserSession:
+        return false;
+    }
+  }();
+
+  if (is_supported) {
+    EXPECT_TRUE(IsCrdCrashKeySet(
+        CrdSessionType::REMOTE_SUPPORT_SESSION,
+        test::SessionTypeToUserSessionType(user_session_type)));
+  } else {
+    EXPECT_FALSE(HasCrdCrashKey());
   }
 }
 
@@ -1080,6 +1130,28 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   } else {
     EXPECT_ERROR(result,
                  StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
+  }
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
+       ShouldSetCrashKeyForRemoteAccessSession) {
+  TestSessionType user_session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(user_session_type)));
+  StartSessionOfType(user_session_type);
+  AddActiveManagedNetwork();
+
+  DeviceCommandStartCrdSessionJob job{CreateJob()};
+  InitializeJob(job, Payload().Set("crdSessionType",
+                                   CrdSessionType::REMOTE_ACCESS_SESSION));
+  RunJob(job);
+
+  if (SupportsRemoteAccess(user_session_type)) {
+    EXPECT_TRUE(IsCrdCrashKeySet(
+        CrdSessionType::REMOTE_ACCESS_SESSION,
+        test::SessionTypeToUserSessionType(user_session_type)));
+  } else {
+    EXPECT_FALSE(HasCrdCrashKey());
   }
 }
 
