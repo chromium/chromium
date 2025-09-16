@@ -122,8 +122,6 @@
 
 namespace {
 
-using PreviewParametersForHats =
-    permissions::PermissionHatsTriggerHelper::PreviewParametersForHats;
 using permissions::PermissionPromptDisposition;
 using permissions::PermissionPromptDispositionReason;
 using permissions::PermissionRequest;
@@ -393,8 +391,7 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
     ContentSetting initial_permission_status,
-    base::OnceCallback<void()> hats_shown_callback,
-    std::optional<PreviewParametersForHats> preview_parameters) {
+    base::OnceCallback<void()> hats_shown_callback) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::optional<GURL> recorded_gurl =
@@ -413,8 +410,7 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
           prompt_display_duration,
           permissions::PermissionHatsTriggerHelper::
               GetOneTimePromptsDecidedBucket(profile->GetPrefs()),
-          recorded_gurl, pepc_prompt_position, initial_permission_status,
-          preview_parameters);
+          recorded_gurl, pepc_prompt_position, initial_permission_status);
 
   if (!permissions::PermissionHatsTriggerHelper::
           ArePromptTriggerCriteriaSatisfied(prompt_parameters)) {
@@ -493,8 +489,6 @@ void ChromePermissionsClient::OnPromptResolved(
   permissions::RequestType request_type = request->request_type();
   const GURL& origin = request->requesting_origin();
   PermissionRequestGestureType gesture_type = request->GetGestureType();
-  std::optional<PreviewParametersForHats> preview_parameters =
-      request->get_preview_parameters();
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -553,8 +547,7 @@ void ChromePermissionsClient::OnPromptResolved(
       prompt_disposition, prompt_disposition_reason, gesture_type,
       std::make_optional(prompt_display_duration), /*is_post_prompt=*/true,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL(),
-      pepc_prompt_position, initial_permission_status, base::DoNothing(),
-      preview_parameters);
+      pepc_prompt_position, initial_permission_status, base::DoNothing());
 }
 
 std::optional<bool>

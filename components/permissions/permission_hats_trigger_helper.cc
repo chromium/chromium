@@ -23,7 +23,6 @@
 #include "components/messages/android/message_enums.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/pref_names.h"
 #include "components/permissions/request_type.h"
@@ -51,19 +50,11 @@ bool StringMatchesFilter(const std::string& string, const std::string& filter) {
              });
 }
 
-// Returns a string containing an integer representation of
-// the passed in time delta (in milliseconds), rounded to the nearest 100
-// milliseconds.
-std::string TimeDeltaMillisecondsToStringRounded(const base::TimeDelta& input) {
-  return base::ToString(
-      input.RoundToMultiple(base::Milliseconds(100)).InMilliseconds());
-}
-
 std::map<std::string, std::pair<std::string, std::string>>
 GetKeyToValueFilterPairMap(
     PermissionHatsTriggerHelper::PromptParametersForHats prompt_parameters) {
   // configuration key -> {current value for key, configured filter for key}
-  std::map<std::string, std::pair<std::string, std::string>> result = {
+  return {
       {kPermissionsPromptSurveyPromptDispositionKey,
        {PermissionUmaUtil::GetPromptDispositionString(
             prompt_parameters.prompt_disposition),
@@ -110,40 +101,6 @@ GetKeyToValueFilterPairMap(
             prompt_parameters.initial_permission_status),
         feature_params::kPermissionPromptSurveyInitialPermissionStatusFilter
             .Get()}}};
-
-  if (prompt_parameters.preview_parameters) {
-    const PermissionHatsTriggerHelper::PreviewParametersForHats& params =
-        *prompt_parameters.preview_parameters;
-    const std::map<std::string, std::pair<std::string, std::string>> extras = {
-        {kPermissionPromptSurveyPreviewVisibleKey,
-         {params.was_visible ? kTrueStr : kFalseStr, ""}},
-        {kPermissionPromptSurveyPreviewDropdownInteractedKey,
-         {params.dropdown_was_interacted ? kTrueStr : kFalseStr, ""}},
-        {kPermissionPromptSurveyPreviewWasCombinedKey,
-         {params.was_prompt_combined ? kTrueStr : kFalseStr, ""}},
-        {kPermissionPromptSurveyPreviewTimeToDecisionKey,
-         {TimeDeltaMillisecondsToStringRounded(params.time_to_decision), ""}},
-        {kPermissionPromptSurveyPreviewTimeToVisibleKey,
-         {TimeDeltaMillisecondsToStringRounded(params.time_to_visible), ""}},
-    };
-    result.insert(extras.begin(), extras.end());
-  } else {
-    // We have not received preview parameters but we still need to populate the
-    // map since we promised that this PSD will be sent. This could happen e.g.
-    // when previews are disabled, or HaTS is being displayed for a permission
-    // that does not populate the previews-specific parameters. Just send empty
-    // strings for everything.
-    const std::map<std::string, std::pair<std::string, std::string>> extras = {
-        {kPermissionPromptSurveyPreviewVisibleKey, {"", ""}},
-        {kPermissionPromptSurveyPreviewDropdownInteractedKey, {"", ""}},
-        {kPermissionPromptSurveyPreviewWasCombinedKey, {"", ""}},
-        {kPermissionPromptSurveyPreviewTimeToDecisionKey, {"", ""}},
-        {kPermissionPromptSurveyPreviewTimeToVisibleKey, {"", ""}},
-    };
-    result.insert(extras.begin(), extras.end());
-  }
-
-  return result;
 }
 
 // Typos in the gcl configuration cannot be verified and may be missed by
@@ -221,9 +178,7 @@ PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
     std::optional<GURL> gurl,
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
-    ContentSetting initial_permission_status,
-    std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
-        preview_parameters)
+    ContentSetting initial_permission_status)
     : request_type(request_type),
       action(action),
       prompt_disposition(prompt_disposition),
@@ -235,8 +190,7 @@ PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
       one_time_prompts_decided_bucket(one_time_prompts_decided_bucket),
       url(gurl.has_value() ? gurl->spec() : ""),
       pepc_prompt_position(pepc_prompt_position),
-      initial_permission_status(initial_permission_status),
-      preview_parameters(std::move(preview_parameters)) {}
+      initial_permission_status(initial_permission_status) {}
 
 PermissionHatsTriggerHelper::SurveyParametersForHats::SurveyParametersForHats(
     double trigger_probability,
@@ -253,46 +207,6 @@ PermissionHatsTriggerHelper::SurveyParametersForHats::
 
 PermissionHatsTriggerHelper::SurveyParametersForHats::SurveyParametersForHats(
     const SurveyParametersForHats& other) = default;
-
-PermissionHatsTriggerHelper::PreviewParametersForHats::
-    PreviewParametersForHats() = default;
-
-PermissionHatsTriggerHelper::PreviewParametersForHats::PreviewParametersForHats(
-    bool was_visible,
-    bool dropdown_was_interacted,
-    bool was_prompt_combined,
-    base::TimeDelta time_to_decision,
-    base::TimeDelta time_to_visible)
-    : was_visible(was_visible),
-      dropdown_was_interacted(dropdown_was_interacted),
-      was_prompt_combined(was_prompt_combined),
-      time_to_decision(time_to_decision),
-      time_to_visible(time_to_visible) {}
-
-PermissionHatsTriggerHelper::PreviewParametersForHats::PreviewParametersForHats(
-    const PreviewParametersForHats& other) = default;
-PermissionHatsTriggerHelper::PreviewParametersForHats&
-PermissionHatsTriggerHelper::PreviewParametersForHats::operator=(
-    const PreviewParametersForHats& other) = default;
-
-void PermissionHatsTriggerHelper::PreviewParametersForHats::MergeParameters(
-    const PreviewParametersForHats& other) {
-  was_visible = other.was_visible ? true : was_visible;
-  dropdown_was_interacted =
-      other.dropdown_was_interacted ? true : dropdown_was_interacted;
-  was_prompt_combined = other.was_prompt_combined ? true : was_prompt_combined;
-  time_to_decision = std::max(time_to_decision, other.time_to_decision);
-  time_to_visible = std::max(time_to_visible, other.time_to_visible);
-}
-
-std::string PermissionHatsTriggerHelper::PreviewParametersForHats::ToString()
-    const {
-  return base::StringPrintf(
-      "PreviewParameters { .was_visible=%d, .dropdown_was_interacted=%d, "
-      "was_prompt_combined=%d, time_to_decision=%s, time_to_visible=%s }",
-      was_visible, dropdown_was_interacted, was_prompt_combined,
-      base::ToString(time_to_decision), base::ToString(time_to_visible));
-}
 
 PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
     const PromptParametersForHats& other) = default;
@@ -314,9 +228,6 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
     PromptParametersForHats prompt_parameters) {
   static const char* const kProductSpecificBitsFields[] = {
       kPermissionsPromptSurveyHadGestureKey,
-      kPermissionPromptSurveyPreviewVisibleKey,
-      kPermissionPromptSurveyPreviewDropdownInteractedKey,
-      kPermissionPromptSurveyPreviewWasCombinedKey,
   };
   static const char* const kProductSpecificStringFields[] = {
       kPermissionsPromptSurveyPromptDispositionKey,
@@ -329,8 +240,6 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
       kPermissionPromptSurveyPepcPromptPositionKey,
       kPermissionPromptSurveyInitialPermissionStatusKey,
       kPermissionPromptSurveyUrlKey,
-      kPermissionPromptSurveyPreviewTimeToDecisionKey,
-      kPermissionPromptSurveyPreviewTimeToVisibleKey,
   };
 
   auto key_to_value_filter_pair = GetKeyToValueFilterPairMap(prompt_parameters);

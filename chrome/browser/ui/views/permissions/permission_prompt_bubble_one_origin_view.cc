@@ -291,7 +291,7 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
 
   media_previews_.emplace(browser(), this, index,
                           requested_audio_capture_device_ids,
-                          requested_video_capture_device_ids, delegate());
+                          requested_video_capture_device_ids);
 #endif
 }
 

@@ -46,8 +46,7 @@ class PermissionPromptPreviewsCoordinatorTest : public TestWithBrowserView {
       std::vector<std::string> requested_video_capture_device_ids) {
     coordinator_.emplace(browser(), &parent_view_, /*index=*/0,
                          requested_audio_capture_device_ids,
-                         requested_video_capture_device_ids,
-                         /*delegate=*/nullptr);
+                         requested_video_capture_device_ids);
   }
 
   void TearDown() override {

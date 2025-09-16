@@ -1065,8 +1065,7 @@ void PermissionRequestManager::ShowPrompt() {
         GetRequestInitialStatus(requests_[0].get()),
         hats_shown_callback_.has_value()
             ? std::move(hats_shown_callback_.value())
-            : base::DoNothing(),
-        /*preview_parameters=*/std::nullopt);
+            : base::DoNothing());
 
     hats_shown_callback_.reset();
   }

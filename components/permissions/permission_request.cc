@@ -490,16 +490,6 @@ std::u16string PermissionRequest::GetPermissionNameTextFragment() const {
   return l10n_util::GetStringUTF16(message_id);
 }
 
-std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
-PermissionRequest::get_preview_parameters() const {
-  return preview_parameters_;
-}
-
-void PermissionRequest::set_preview_parameters(
-    PermissionHatsTriggerHelper::PreviewParametersForHats preview_parmeters) {
-  preview_parameters_ = std::move(preview_parmeters);
-}
-
 void PermissionRequest::SetEmbeddedPermissionElementInitiatedForTesting(
     bool embedded_permission_element_initiated) {
   if (embedded_permission_element_initiated) {
