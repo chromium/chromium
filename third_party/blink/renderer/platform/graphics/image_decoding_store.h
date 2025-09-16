@@ -324,7 +324,7 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   size_t heap_memory_usage_in_bytes_ GUARDED_BY(lock_);
 
   // A listener to global memory pressure events.
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::AsyncMemoryPressureListener memory_pressure_listener_;
 
   // Also protects:
   // - the CacheEntry in |decoder_cache_map_|.
