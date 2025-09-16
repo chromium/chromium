@@ -222,11 +222,6 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
 // Tests that the Add Language page allows filtering languages and adding them
 // to the list of accept languages.
 - (void)testAddLanguage {
-  // TODO(crbug.com/437268290): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Go to the Language Settings page.
