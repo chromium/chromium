@@ -244,6 +244,8 @@ const char kClassroomProfileEmailOauth2Scope[] =
     "https://www.googleapis.com/auth/classroom.profile.emails";
 const char kClassroomProfilePhotoUrlScope[] =
     "https://www.googleapis.com/auth/classroom.profile.photos";
+const char kClassroomCourseWorkMaterialsOAuthScope[] =
+    "https://www.googleapis.com/auth/classroom.courseworkmaterials";
 
 // OAuth2 scopes for Optimization Guide.
 const char kOptimizationGuideServiceGetHintsOAuth2Scope[] =
