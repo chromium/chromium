@@ -81,9 +81,12 @@ class AAudioStreamWrapper {
   SEQUENCE_CHECKER(sequence_checker_);
 
   void EmitSetDeviceIdResultToHistogram(bool success);
+  void LogFramesPerBurstChangesToUma();
 
   const AudioParameters params_;
   const android::AudioDevice requested_device_;
+
+  int32_t frames_per_burst_on_open_;
 
   // Whether this class is using an input or an output stream.
   StreamType stream_type_;

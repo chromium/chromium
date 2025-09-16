@@ -562,6 +562,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Media.Audio.Android.AAudioFramesPerBurst.{Direction}{AudioLatencyTag}"
+    units="frames" expires_after="2026-01-18">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The frames per burst of an AAudio {Direction} stream retrieved by
+    `AAudioStream_getFramesPerBurst()` and {AudioLatencyTag}. Logged when an
+    AAudio stream is opened.
+  </summary>
+  <token key="Direction" variants="AudioDirection"/>
+  <token key="AudioLatencyTag" variants="AudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="Media.Audio.Android.AAudioFramesPerBurstChanged.{Direction}{AudioLatencyTag}"
+    enum="Boolean" expires_after="2026-01-18">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether the value returned by `AAudioStream_getFramesPerBurst()` changed
+    bewtween when an {Direction} stream was opened and when it was closed.
+    Logged when an AAudio stream is closed.
+  </summary>
+  <token key="Direction" variants="AudioDirection"/>
+  <token key="AudioLatencyTag" variants="AudioLatencyTag"/>
+</histogram>
+
+<histogram
     name="Media.Audio.Android.AAudioFramesPerDataCallback.{Direction}{AudioLatencyTag}"
     units="frames" expires_after="2026-01-18">
   <owner>kawasin@google.com</owner>
