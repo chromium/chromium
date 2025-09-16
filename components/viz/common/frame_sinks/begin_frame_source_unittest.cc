@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -943,52 +944,7 @@ TEST_F(ExternalBeginFrameSourceTest, GetMissedBeginFrameArgs) {
   source_->RemoveObserver(obs_.get());
 }
 
-// Tests that an observer which returns true from IsRoot is notified after
-// observers which return false.
-TEST_F(ExternalBeginFrameSourceTest, RootsNotifiedLast) {
-  using ::testing::InSequence;
 
-  NiceMock<MockBeginFrameObserver> obs1, obs2;
-  source_->AddObserver(&obs1);
-  source_->AddObserver(&obs2);
-
-  {
-    BeginFrameArgs args = CreateBeginFrameArgsForTesting(
-        BEGINFRAME_FROM_HERE, 0, 1, 10000, 10100, 100);
-    // Set obs1 to root, obs2 to child.
-    EXPECT_CALL(obs1, IsRoot()).WillRepeatedly(::testing::Return(true));
-    EXPECT_CALL(obs2, IsRoot()).WillRepeatedly(::testing::Return(false));
-    {
-      // Ensure that OnBeginFrame delivers the calls in the right order.
-      InSequence s;
-      EXPECT_CALL(obs2, OnBeginFrame(args))
-          .WillOnce(::testing::SaveArg<0>(&(obs2.last_begin_frame_args)));
-      EXPECT_CALL(obs1, OnBeginFrame(args))
-          .WillOnce(::testing::SaveArg<0>(&(obs1.last_begin_frame_args)));
-      source_->OnBeginFrame(args);
-    }
-  }
-
-  {
-    BeginFrameArgs args = CreateBeginFrameArgsForTesting(
-        BEGINFRAME_FROM_HERE, 0, 2, 10001, 10101, 100);
-    // Set obs2 to root, obs1 to child.
-    EXPECT_CALL(obs1, IsRoot()).WillRepeatedly(::testing::Return(false));
-    EXPECT_CALL(obs2, IsRoot()).WillRepeatedly(::testing::Return(true));
-    {
-      // Ensure that OnBeginFrame delivers the calls in the right order.
-      InSequence s;
-      EXPECT_CALL(obs1, OnBeginFrame(args))
-          .WillOnce(::testing::SaveArg<0>(&(obs1.last_begin_frame_args)));
-      EXPECT_CALL(obs2, OnBeginFrame(args))
-          .WillOnce(::testing::SaveArg<0>(&(obs2.last_begin_frame_args)));
-      source_->OnBeginFrame(args);
-    }
-  }
-
-  source_->RemoveObserver(&obs1);
-  source_->RemoveObserver(&obs2);
-}
 
 }  // namespace
 }  // namespace viz

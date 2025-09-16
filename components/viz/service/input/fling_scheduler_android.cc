@@ -108,8 +108,4 @@ bool FlingSchedulerAndroid::OnBeginFrameDerivedImpl(
   return true;
 }
 
-bool FlingSchedulerAndroid::IsRoot() const {
-  return false;
-}
-
 }  // namespace viz

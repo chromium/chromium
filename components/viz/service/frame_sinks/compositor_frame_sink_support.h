@@ -310,7 +310,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   const BeginFrameArgs& LastUsedBeginFrameArgs() const override;
   void OnBeginFrameSourcePausedChanged(bool paused) override;
   bool WantsAnimateOnlyBeginFrames() const override;
-  bool IsRoot() const override;
 
   void UpdateNeedsBeginFramesInternal();
   void StartObservingBeginFrameSource();

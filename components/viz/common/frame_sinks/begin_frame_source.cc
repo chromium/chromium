@@ -68,11 +68,6 @@ bool CheckBeginFrameContinuity(BeginFrameObserver* observer,
 }
 }  // namespace
 
-// BeginFrameObserver -----------------------------------------------------
-bool BeginFrameObserver::IsRoot() const {
-  return false;
-}
-
 // BeginFrameObserverBase -------------------------------------------------
 BeginFrameObserverBase::BeginFrameObserverBase() = default;
 
@@ -584,20 +579,7 @@ void ExternalBeginFrameSource::OnBeginFrame(const BeginFrameArgs& args) {
   base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers(
       observers_);
 
-  // Process non-root observers.
-  // TODO(ericrk): Remove root/non-root handling once a better workaround
-  // exists. https://crbug.com/947717
   for (BeginFrameObserver* obs : observers) {
-    if (obs->IsRoot())
-      continue;
-    if (!CheckBeginFrameContinuity(obs, args))
-      continue;
-    FilterAndIssueBeginFrame(obs, args);
-  }
-  // Process root observers.
-  for (BeginFrameObserver* obs : observers) {
-    if (!obs->IsRoot())
-      continue;
     if (!CheckBeginFrameContinuity(obs, args))
       continue;
     FilterAndIssueBeginFrame(obs, args);

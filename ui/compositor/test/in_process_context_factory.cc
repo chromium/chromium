@@ -78,7 +78,6 @@ class StandaloneBeginFrameObserver : public viz::BeginFrameObserverBase {
     return true;
   }
   void OnBeginFrameSourcePausedChanged(bool paused) override {}
-  bool IsRoot() const override { return true; }
 
   void SetBeginFrameSource(viz::BeginFrameSource* begin_frame_source) {
     TearDownObservation();

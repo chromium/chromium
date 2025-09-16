@@ -631,10 +631,6 @@ void CompositorFrameSinkSupport::UpdateThreadIdsPostVerification(
   }
 }
 
-bool CompositorFrameSinkSupport::IsRoot() const {
-  return is_root_;
-}
-
 void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",

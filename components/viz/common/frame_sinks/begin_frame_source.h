@@ -76,13 +76,6 @@ class VIZ_COMMON_EXPORT BeginFrameObserver {
 
   // Whether the observer also wants to receive animate_only BeginFrames.
   virtual bool WantsAnimateOnlyBeginFrames() const = 0;
-
-  // Indicates whether this observer is the root frame sink. This helps in
-  // a workaround for input jank, allowing us to deliver BeginFrames to the
-  // root last, avoiding a race.
-  // TODO(ericrk): Remove this once we have a longer-term fix.
-  // https://crbug.com/947717
-  virtual bool IsRoot() const;
 };
 
 // Simple base class which implements a BeginFrameObserver which checks the

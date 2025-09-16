@@ -100,7 +100,6 @@ class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
   }
 
   void OnBeginFrameSourcePausedChanged(bool paused) override {}
-  bool IsRoot() const override { return true; }
 
  private:
   void StopObserving() {
