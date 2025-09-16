@@ -60,6 +60,8 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
@@ -773,10 +775,12 @@ class StartupBrowserCreatorChromeAppShortcutTest
     EXPECT_EQ(expected_url,
               other_tab_strip->GetWebContentsAt(0)->GetVisibleURL());
 
-    std::set<Browser*> initial_browsers;
-    for (Browser* initial_browser : *BrowserList::GetInstance()) {
-      initial_browsers.insert(initial_browser);
-    }
+    std::set<BrowserWindowInterface*> initial_browsers;
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&](BrowserWindowInterface* initial_browser) {
+          initial_browsers.insert(initial_browser);
+          return true;  // Continue iterating.
+        });
 
     content::TestNavigationObserver same_tab_observer(
         other_tab_strip->GetActiveWebContents(), 1,
@@ -796,7 +800,8 @@ class StartupBrowserCreatorChromeAppShortcutTest
 
     // To ensure that no launch happens, run the run loop until idle.
     base::RunLoop().RunUntilIdle();
-    Browser* app_browser = ui_test_utils::GetBrowserNotInSet(initial_browsers);
+    BrowserWindowInterface* const app_browser =
+        ui_test_utils::GetBrowserNotInSet(initial_browsers);
     EXPECT_EQ(app_browser, nullptr);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
