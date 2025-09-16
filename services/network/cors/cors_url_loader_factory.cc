@@ -773,6 +773,16 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
         // SOP enforced by ORB.
         break;
     }
+
+    // Only the browser process is allowed to initiate FedCM requests.
+    if (request.destination ==
+        network::mojom::RequestDestination::kWebIdentity) {
+      mojo::ReportBadMessage(
+          "CorsURLLoaderFactory: attempt to use forbidden destination from "
+          "renderer");
+      DumpWithoutCrashingIfPrefetch(request, FROM_HERE);
+      return false;
+    }
   }
 
   // Depending on the type of request, compare either `request_initiator` or
