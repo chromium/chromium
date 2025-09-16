@@ -3868,14 +3868,20 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
       });
 
   if (add_to_selection) {
-    const ui::ListSelectionModel old_selection_model = selection_model();
+    TabStripSelectionChange selection(GetActiveTab(), selection_model());
 
+    tabs::TabInterface* active_tab = GetActiveTab();
     for (auto split_tab : tabs_with_indices) {
       selection_model_->AddIndexToSelection(split_tab.second);
+      if (IsTabBlocked(split_tab.second)) {
+        active_tab = split_tab.first;
+        selection_model_->set_active(split_tab.second);
+      }
     }
 
-    TabStripSelectionChange selection(GetActiveTab(), old_selection_model);
     selection.new_model = selection_model();
+    selection.new_tab = active_tab;
+    selection.new_contents = active_tab->GetContents();
     TabStripModelChange change;
     OnChange(change, selection);
   }
@@ -3967,6 +3973,11 @@ void TabStripModel::UpdateTabInSplitImpl(tabs::TabInterface* split_tab,
         split_tab->GetGroup();
     const bool initial_split_pinned = split_tab->IsPinned();
     const int split_index = GetIndexOfTab(split_tab);
+
+    // The `split_tab` will be replaced in the split so notify observers that it
+    // will be moving to the background.
+    static_cast<tabs::TabModel*>(split_tab)->WillEnterBackground(
+        base::PassKey<TabStripModel>());
 
     // Move the split index first so the group is not possibly destroyed at the
     // update index. This can happen when the update index is the only member of
