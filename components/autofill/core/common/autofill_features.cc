@@ -814,6 +814,11 @@ BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace test {
 
+// If enabled, forces the deduplication pipeline to run on every startup,
+// bypassing the 'once per milestone' limit.
+BASE_FEATURE(kAutofillSkipDeduplicationRequirements,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Testing tool that collects metrics during a run of the captured site tests
 // and dumps the collected metrics into a specified output directory.
 // For each test, a file named {test-name}.txt is created. It contains all the

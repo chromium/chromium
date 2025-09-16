@@ -260,9 +260,12 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   are_cleanups_pending_ = false;
 
   int chrome_version_major = version_info::GetMajorVersionNumberAsInt();
-  // Ensure that deduplication is only run one per milestone.
+  // Ensure that deduplication is only run once per milestone, unless it is
+  // explicitly always enabled.
   if (pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
-      chrome_version_major) {
+          chrome_version_major ||
+      base::FeatureList::IsEnabled(
+          features::test::kAutofillSkipDeduplicationRequirements)) {
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
                               chrome_version_major);
     // Since the milestone changed the extra deduplication can be run again.
