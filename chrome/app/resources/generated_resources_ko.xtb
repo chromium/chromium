@@ -200,6 +200,7 @@
 <translation id="1129348283834595293">사이버펑크</translation>
 <translation id="1129420403709586868">휴대전화의 사진과 미디어를 봅니다.</translation>
 <translation id="1129850422003387628">앱 관리</translation>
+<translation id="1130116586186908674">분할 뷰 만들기</translation>
 <translation id="1130430615924359526">{0,plural, =1{시크릿 모드 닫기}other{시크릿 모드(창 #개) 닫기}}</translation>
 <translation id="113050636487300043">이름과 색상 테마를 선택하여 프로필을 구분하세요.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> 그룹에 속함</translation>
@@ -429,6 +430,7 @@
 <translation id="1277020343994096713">현재 PIN과 다른 PIN을 새로 만들어 주세요.</translation>
 <translation id="1277597051786235230">새 탭에서 <ph name="SEARCH_ENGINE" />에 “<ph name="SEARCH_TERMS" />” 검색(&amp;S)</translation>
 <translation id="127849925363482083">탭 고정을 닫으려면 <ph name="SHORTCUT_TEXT" /> 키를 다시 누르세요.</translation>
+<translation id="1278542245784398460">이 탭을 마우스 오른쪽 버튼으로 클릭하고 '새 분할 뷰에 탭 추가'를 선택하세요.</translation>
 <translation id="1278859221870828664">Google Play 앱 및 서비스 검토</translation>
 <translation id="1279024913354609713">허용 안함</translation>
 <translation id="127946606521051357">근처 기기가 공유 시도 중</translation>
@@ -4851,6 +4853,7 @@
 <translation id="4310139701823742692">파일 형식이 잘못되었습니다. PPD 파일을 확인하고 다시 시도하세요.</translation>
 <translation id="4310496734563057511">이 기기를 다른 사용자와 공유하는 경우, Windows Hello를 사용 설정하면 저장된 비밀번호를 사용할 때마다 본인 인증이 완료됩니다.</translation>
 <translation id="431076611119798497">세부정보(&amp;D)</translation>
+<translation id="431127643228811252">분할 뷰로 더 간편하게 멀티태스킹하기</translation>
 <translation id="4311284648179069796">읽고 변경할 수 없음</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{Google 계정 1개}other{Google 계정 <ph name="EXTRA_ACCOUNTS" />개}}</translation>
 <translation id="4312866146174492540">차단(기본값)</translation>
@@ -8529,6 +8532,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6931690462168617033">클릭 강도</translation>
 <translation id="6933321725007230600">동기화 켜는 중(&amp;S)…</translation>
 <translation id="693459579445775904">디스크 공간 절약을 위해 음성 파일은 사용자 간에 공유됩니다.</translation>
+<translation id="6934597021412437058">이제 분할 뷰를 사용하여 비교, 멀티태스킹 등을 할 수 있습니다.</translation>
 <translation id="6935031746833428401">기기 관리 자세히 알아보기</translation>
 <translation id="6935286146439255109">용지함 없음</translation>
 <translation id="6938386202199793006">저장된 프린터가 1대 있습니다.</translation>
@@ -9631,6 +9635,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7705276765467986571">북마크 모델을 로드하지 못했습니다.</translation>
 <translation id="7705334495398865155">다른 사람이 이 기기를 추적하지 못하도록 하드웨어 ID(BSSID)를 무작위로 선택합니다.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">동일한 탭에서 페이지를 나란히 배치하여 옵션 등을 쉽게 비교할 수 있습니다.</translation>
 <translation id="7707108266051544351">움직임 감지 센서 사용이 차단된 사이트입니다.</translation>
 <translation id="7707922173985738739">모바일 데이터 사용</translation>
 <translation id="770831926727930011">로컬 데이터는 이전 비밀번호로 보호됩니다. 로컬 데이터를 복구하려면 이전 비밀번호를 입력하세요</translation>

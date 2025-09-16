@@ -200,6 +200,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Shiko fotografitë dhe mediat e telefonit tënd</translation>
 <translation id="1129850422003387628">Menaxho aplikacionet</translation>
+<translation id="1130116586186908674">Krijo pamjen e ndarë</translation>
 <translation id="1130430615924359526">{0,plural, =1{Mbyll dritaren e fshehtë}other{Mbyll dritaret e fshehta (# dritare)}}</translation>
 <translation id="113050636487300043">Zgjidh një emër dhe temë ngjyre për të bërë dallimin mes profileve</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - pjesë e grupit <ph name="GROUP_NAME" /></translation>
@@ -429,6 +430,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1277020343994096713">Krijo një kod të ri PIN që është i ndryshëm nga kodi yt aktual PIN</translation>
 <translation id="1277597051786235230">&amp;Kërko në <ph name="SEARCH_ENGINE" /> për “<ph name="SEARCH_TERMS" />” në një skedë të re</translation>
 <translation id="127849925363482083">Shtyp përsëri <ph name="SHORTCUT_TEXT" /> për të mbyllur skedën e gozhduar</translation>
+<translation id="1278542245784398460">Kliko me butonin djathtas në këtë skedë dhe zgjidh “Shto skedën te pamja e re e ndarë”</translation>
 <translation id="1278859221870828664">Shqyrto aplikacionet dhe shërbimet e Google Play</translation>
 <translation id="1279024913354609713">Mos lejo</translation>
 <translation id="127946606521051357">Pajisja në afërsi po ndan</translation>
@@ -4834,6 +4836,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4310139701823742692">Skedari është në formatin e gabuar. Kontrollo skedarin PPD dhe provo përsëri.</translation>
 <translation id="4310496734563057511">Nëse e ndan këtë pajisje me të tjerët, mund të aktivizosh Windows Hello për të verifikuar që je ti sa herë që përdor një fjalëkalim të ruajtur</translation>
 <translation id="431076611119798497">&amp;Detajet</translation>
+<translation id="431127643228811252">Pamja e ndarë e bën më të lehtë kryerjen e shumë detyrave</translation>
 <translation id="4311284648179069796">Nuk lejohet të lexojë dhe të ndryshojë</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 "Llogari e Google"}other{<ph name="EXTRA_ACCOUNTS" /> "Llogari të Google"}}</translation>
 <translation id="4312866146174492540">Blloko (parazgjedhja)</translation>
@@ -8509,6 +8512,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6931690462168617033">Fortësia e klikimit</translation>
 <translation id="6933321725007230600">Aktivizo &amp;sinkronizimin...</translation>
 <translation id="693459579445775904">Skedarët e zërit ndahen mes përdoruesve për të kursyer hapësirën e diskut</translation>
+<translation id="6934597021412437058">Tani mund të përdorësh pamjen e ndarë për të krahasuar, për të kryer shumë detyra dhe më shumë</translation>
 <translation id="6935031746833428401">Mëso më shumë për menaxhimin e pajisjes</translation>
 <translation id="6935286146439255109">Mungon një tabaka letre</translation>
 <translation id="6938386202199793006">Ke 1 printer të ruajtur.</translation>
@@ -9611,6 +9615,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="7705276765467986571">Nuk mund të ngarkohej modeli i faqeshënuesve.</translation>
 <translation id="7705334495398865155">Zgjidh rastësisht ID-në e harduerit (BSSID) për të parandaluar që të tjerët të mos e gjurmojnë këtë pajisje.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Vendosi faqet përkrah në të njëjtën skedë që të mund të krahasosh me lehtësi opsionet dhe më shumë</translation>
 <translation id="7707108266051544351">Kësaj faqeje i është bllokuar përdorimi i sensorëve të lëvizjes.</translation>
 <translation id="7707922173985738739">Përdor të dhënat celulare</translation>
 <translation id="770831926727930011">Të dhënat e tua lokale janë të mbrojtura nga fjalëkalimi yt i vjetër. Fut fjalëkalimin e vjetër për të rikuperuar të dhënat lokale.</translation>

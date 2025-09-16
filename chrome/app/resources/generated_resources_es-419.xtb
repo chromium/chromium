@@ -200,6 +200,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Ver las fotos y el contenido multimedia del teléfono</translation>
 <translation id="1129850422003387628">Administrar apps</translation>
+<translation id="1130116586186908674">Crear vista dividida</translation>
 <translation id="1130430615924359526">{0,plural, =1{Cerrar el modo Incógnito}other{Cerrar el modo Incógnito (# ventanas)}}</translation>
 <translation id="113050636487300043">Elige un nombre y un tema de color para diferenciar los perfiles.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: Parte del grupo <ph name="GROUP_NAME" /></translation>
@@ -429,6 +430,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1277020343994096713">Crea un nuevo PIN diferente al actual.</translation>
 <translation id="1277597051786235230">&amp;Buscar "<ph name="SEARCH_TERMS" />" en una nueva pestaña de <ph name="SEARCH_ENGINE" /></translation>
 <translation id="127849925363482083">Presiona <ph name="SHORTCUT_TEXT" /> nuevamente para cerrar la pestaña fija</translation>
+<translation id="1278542245784398460">Haz clic con el botón derecho en esta pestaña y selecciona “Agregar pestaña a la nueva vista dividida”</translation>
 <translation id="1278859221870828664">Revisa las apps y los servicios que se ofrecen a través de Google Play</translation>
 <translation id="1279024913354609713">No permitir</translation>
 <translation id="127946606521051357">Un dispositivo cercano intenta compartir contenido</translation>
@@ -4835,6 +4837,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4310139701823742692">El archivo no tiene el formato correcto. Verifica el archivo PPD y vuelve a intentarlo.</translation>
 <translation id="4310496734563057511">Si compartes este dispositivo con otras personas, puedes activar Windows Hello para verificar tu identidad cada vez que uses una contraseña guardada</translation>
 <translation id="431076611119798497">&amp;Detalles</translation>
+<translation id="431127643228811252">La vista dividida facilita la realización de varias tareas a la vez</translation>
 <translation id="4311284648179069796">No puede leer ni modificar</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Cuenta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Cuentas de Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
@@ -8095,7 +8098,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6657240842932274095">¿Quieres permitir que los servicios del sistema usen tu ubicación?</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6659213950629089752">La extensión "<ph name="NAME" />" hizo zoom en esta página</translation>
-<translation id="6659594942844771486">Pestaña</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - La cámara está grabando</translation>
 <translation id="6660301751798595791">Selección de voz</translation>
 <translation id="6660819301598582123">El veloz murciélago hindú comía feliz cardillo y kiwi.</translation>
@@ -8512,6 +8515,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6931690462168617033">Fuerza del clic</translation>
 <translation id="6933321725007230600">Activar la &amp;sincronización…</translation>
 <translation id="693459579445775904">Los archivos de voz se comparten entre los usuarios para ahorrar espacio en el disco</translation>
+<translation id="6934597021412437058">Ahora puedes usar la vista dividida para comparar, realizar varias tareas a la vez y mucho más</translation>
 <translation id="6935031746833428401">Obtén más información sobre la Administración de dispositivos</translation>
 <translation id="6935286146439255109">Falta la bandeja de papel</translation>
 <translation id="6938386202199793006">Tienes 1 impresora guardada.</translation>
@@ -9615,6 +9619,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="7705276765467986571">No se pudo cargar el modelo de favoritos.</translation>
 <translation id="7705334495398865155">Selecciona el ID de tu hardware (BSSID) de forma aleatoria para evitar que otras personas hagan un seguimiento de este dispositivo.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Coloca páginas una al lado de la otra en la misma pestaña para que puedas comparar opciones con facilidad y mucho más</translation>
 <translation id="7707108266051544351">Este sitio no tiene permiso para usar los sensores de movimiento.</translation>
 <translation id="7707922173985738739">Usa los datos móviles.</translation>
 <translation id="770831926727930011">Los datos locales están protegidos por tu contraseña anterior. Ingresa tu contraseña anterior para recuperar los datos locales.</translation>

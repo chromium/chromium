@@ -200,6 +200,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Afficher les photos et contenus multimédias de votre téléphone</translation>
 <translation id="1129850422003387628">Gérer les applications</translation>
+<translation id="1130116586186908674">Créer une vue fractionnée</translation>
 <translation id="1130430615924359526">{0,plural, =1{Fermer la navigation privée}one{Fermer la navigation privée (# fenêtre)}other{Fermer la navigation privée (# fenêtres)}}</translation>
 <translation id="113050636487300043">Choisissez un nom et une couleur de thème pour différencier les profils</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Fait partie du groupe <ph name="GROUP_NAME" /></translation>
@@ -430,6 +431,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1277020343994096713">Créez un code différent de l'actuel</translation>
 <translation id="1277597051786235230">&amp;Rechercher "<ph name="SEARCH_TERMS" />" dans un nouvel onglet <ph name="SEARCH_ENGINE" /></translation>
 <translation id="127849925363482083">Appuyez de nouveau sur <ph name="SHORTCUT_TEXT" /> pour fermer l'onglet épinglé</translation>
+<translation id="1278542245784398460">Effectuez un clic droit sur cet onglet et sélectionnez "Ajouter l'onglet à une nouvelle vue fractionnée"</translation>
 <translation id="1278859221870828664">Examiner les applis et services Google Play</translation>
 <translation id="1279024913354609713">Ne pas autoriser</translation>
 <translation id="127946606521051357">Un appareil à proximité essaie de partager un contenu</translation>
@@ -4837,6 +4839,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4310139701823742692">Le format du fichier n'est pas valide. Vérifiez le fichier PPD, puis réessayez.</translation>
 <translation id="4310496734563057511">Si vous partagez cet appareil, vous pouvez activer Windows Hello pour confirmer votre identité chaque fois que vous utilisez un mot de passe enregistré</translation>
 <translation id="431076611119798497">&amp;Détails</translation>
+<translation id="431127643228811252">La vue fractionnée facilite le travail multitâche</translation>
 <translation id="4311284648179069796">Non autorisée à lire et modifier</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 compte Google}one{<ph name="EXTRA_ACCOUNTS" /> compte Google}other{<ph name="EXTRA_ACCOUNTS" /> comptes Google}}</translation>
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>
@@ -8098,7 +8101,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6657240842932274095">Autoriser les services système à utiliser votre position ?</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659213950629089752">Zoom effectué par l'extension "<ph name="NAME" />" sur cette page</translation>
-<translation id="6659594942844771486">Onglet</translation>
+<translation id="6659594942844771486">Tabulation</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Enregistrement de la caméra</translation>
 <translation id="6660301751798595791">Sélection de la voix</translation>
 <translation id="6660819301598582123">Voici à quoi ressemblera votre texte.</translation>
@@ -8515,6 +8518,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6931690462168617033">Sensibilité du clic</translation>
 <translation id="6933321725007230600">Activer la &amp;synchronisation…</translation>
 <translation id="693459579445775904">Les fichiers de voix sont partagés entre les utilisateurs pour économiser de l'espace disque</translation>
+<translation id="6934597021412437058">Vous pouvez désormais utiliser la vue fractionnée pour comparer, effectuer plusieurs tâches à la fois, etc.</translation>
 <translation id="6935031746833428401">En savoir plus sur la gestion des appareils</translation>
 <translation id="6935286146439255109">Bac à papier manquant</translation>
 <translation id="6938386202199793006">Vous avez 1 imprimante enregistrée.</translation>
@@ -9618,6 +9622,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="7705276765467986571">Impossible de charger le modèle du favori.</translation>
 <translation id="7705334495398865155">Attribuez aléatoirement un ID (BSSID) au matériel pour empêcher d'autres personnes d'effectuer le suivi de cet appareil.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Placez des pages côte à côte dans le même onglet pour comparer facilement des options et bien plus</translation>
 <translation id="7707108266051544351">L'utilisation des capteurs de mouvement a été bloquée pour ce site.</translation>
 <translation id="7707922173985738739">Utilisera les données mobiles</translation>
 <translation id="770831926727930011">Vos données locales sont protégées par votre ancien mot de passe. Pour les récupérer, saisissez-le.</translation>

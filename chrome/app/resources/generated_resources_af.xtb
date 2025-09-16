@@ -200,6 +200,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1129348283834595293">Kuberpunk</translation>
 <translation id="1129420403709586868">Bekyk jou foon se foto's en media</translation>
 <translation id="1129850422003387628">Bestuur programme</translation>
+<translation id="1130116586186908674">Skep verdeelde aansig</translation>
 <translation id="1130430615924359526">{0,plural, =1{Maak Incognito toe}other{Maak Incognito (# vensters) toe}}</translation>
 <translation id="113050636487300043">Kies 'n naam en kleurtema om tussen profiele te onderskei</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – deel van groep <ph name="GROUP_NAME" /></translation>
@@ -429,6 +430,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1277020343994096713">Skep 'n nuwe PIN wat van jou huidige PIN verskil</translation>
 <translation id="1277597051786235230">&amp;Soek met <ph name="SEARCH_ENGINE" /> na “<ph name="SEARCH_TERMS" />” in nuwe oortjie</translation>
 <translation id="127849925363482083">Druk weer <ph name="SHORTCUT_TEXT" /> om die vasgespelde oortjie toe te maak</translation>
+<translation id="1278542245784398460">Regsklik hierdie oortjie en kies “Voeg oortjie by nuwe verdeelde aansig”</translation>
 <translation id="1278859221870828664">Gaan Google Play-programme en -dienste na</translation>
 <translation id="1279024913354609713">Moenie toelaat nie</translation>
 <translation id="127946606521051357">Toestel naby aan jou deel tans</translation>
@@ -4851,6 +4853,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4310139701823742692">Lêer is die verkeerde formaat. Gaan die PPD-lêer na en probeer weer.</translation>
 <translation id="4310496734563057511">As jy hierdie toestel met ander mense deel, kan jy Windows Hello aanskakel om te verifieer dis jy wanneer ook al jy ’n gestoorde wagwoord gebruik</translation>
 <translation id="431076611119798497">Besonderhede</translation>
+<translation id="431127643228811252">Verdeelde aansig maak dit makliker om veelvuldige take te verrig</translation>
 <translation id="4311284648179069796">Nie toegelaat om te lees en te verander nie</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-rekening}other{<ph name="EXTRA_ACCOUNTS" /> Google-rekeninge}}</translation>
 <translation id="4312866146174492540">Blokkeer (verstek)</translation>
@@ -8529,6 +8532,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6931690462168617033">Kliksensitiwiteit</translation>
 <translation id="6933321725007230600">Skakel &amp;sinkronisering aan …</translation>
 <translation id="693459579445775904">Voice-lêers word tussen gebruikers gedeel om skyfspasie te bespaar</translation>
+<translation id="6934597021412437058">Jy kan nou verdeelde aansig gebruik om te vergelyk, veelvuldige take te verrig en meer te doen</translation>
 <translation id="6935031746833428401">Kom meer te wete oor toestelbestuur</translation>
 <translation id="6935286146439255109">'n Papierlaai ontbreek</translation>
 <translation id="6938386202199793006">Jy het 1 gestoorde drukker.</translation>
@@ -9631,6 +9635,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="7705276765467986571">Kon nie boekmerkmodel laai nie.</translation>
 <translation id="7705334495398865155">Verewekansig jou hardeware se ID (BSSID) om te verhinder dat ander mense hierdie toestel naspoor.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Plaas bladsye langs mekaar in dieselfde oortjie sodat jy maklik opsies kan vergelyk en meer kan doen</translation>
 <translation id="7707108266051544351">Hierdie werf is geblokkeer om bewegingsensors te gebruik.</translation>
 <translation id="7707922173985738739">Gebruik mobiele data</translation>
 <translation id="770831926727930011">Jou plaaslike data word deur jou ou wagwoord beskerm. Voer jou ou wagwoord in om plaaslike data terug te stel.</translation>

@@ -200,6 +200,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1129348283834595293">Kyberpunk</translation>
 <translation id="1129420403709586868">Zobrazujte si fotky a médiá svojho telefónu</translation>
 <translation id="1129850422003387628">Spravovať aplikácie</translation>
+<translation id="1130116586186908674">Vytvoriť rozdelené zobrazenie</translation>
 <translation id="1130430615924359526">{0,plural, =1{Zavrieť okno inkognito}few{Zavrieť # okná inkognito}many{Close Incognito (# windows)}other{Zavrieť # okien inkognito}}</translation>
 <translation id="113050636487300043">Vyberte názov a farebný motív na rozlíšenie profilov</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – súčasť skupiny <ph name="GROUP_NAME" /></translation>
@@ -251,7 +252,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1164891049599601209">Zadané na klamlivom webe</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1166212789817575481">Zatvoriť karty vpravo</translation>
-<translation id="1166457390969131095">Používajte a ukladajte heslá a prístupové kľúče zo svojho účtu Google</translation>
+<translation id="1166457390969131095">Používať a ukladať heslá a prístupové kľúče z môjho účtu Google</translation>
 <translation id="1166583374608765787">Kontrola aktualizácie názvu</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> patrí na plochu <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Izolované webové aplikácie sa automaticky riadia týmto nastavením</translation>
@@ -431,6 +432,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1277020343994096713">Vytvorte si nový PIN, ktorý je odlišný od vášho súčasného</translation>
 <translation id="1277597051786235230">&amp;Hľadať <ph name="SEARCH_TERMS" /> na novej karte vo vyhľadávači <ph name="SEARCH_ENGINE" /></translation>
 <translation id="127849925363482083">Pripnutú kartu zavriete opätovným stlačením klávesov <ph name="SHORTCUT_TEXT" /></translation>
+<translation id="1278542245784398460">Kliknite pravým tlačidlom na túto kartu a vyberte Pridať kartu do nového rozdeleného zobrazenia</translation>
 <translation id="1278859221870828664">Kontrola aplikácií a hier služby Google Play</translation>
 <translation id="1279024913354609713">Nepovoliť</translation>
 <translation id="127946606521051357">Zariadenie v okolí chce zdieľať obsah</translation>
@@ -4840,6 +4842,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4310139701823742692">Súbor má nesprávny formát. Skontrolujte súbor PPD a skúste to znova.</translation>
 <translation id="4310496734563057511">Ak zdieľate toto zariadenie s inými a chcete aby, sa pri použití uloženého hesla overovala totožnosť, môžete zapnúť Windows Hello.</translation>
 <translation id="431076611119798497">&amp;Podrobnosti</translation>
+<translation id="431127643228811252">Rozdelené zobrazenie uľahčuje multitasking</translation>
 <translation id="4311284648179069796">Nemôže čítať ani meniť</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 účet Google}few{<ph name="EXTRA_ACCOUNTS" /> účty Google}many{<ph name="EXTRA_ACCOUNTS" /> Google Accounts}other{<ph name="EXTRA_ACCOUNTS" /> účtov Google}}</translation>
 <translation id="4312866146174492540">Blokovať (predvolené)</translation>
@@ -7489,7 +7492,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6216154119179790291">Posunúť na prvú kartu</translation>
 <translation id="6216239400972191926">Odmietnuté weby a aplikácie</translation>
 <translation id="6216601812881225442">Váš kontajner nepodporuje zmenu veľkosti. Ak chcete upraviť priestor, ktorý bol vopred pridelený systému Linux, vytvorte zálohu a potom ju obnovte do nového kontajnera.</translation>
-<translation id="6216696360484424239">Automatické prihlasovanie</translation>
+<translation id="6216696360484424239">Prihlasovať automaticky</translation>
 <translation id="6217806119082621377">Zdieľané priečinky sú k dispozícii vo virtuálnom počítači <ph name="SPECIFIC_NAME" /> na <ph name="BASE_DIR" />.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> je offline. Pripojte sa k internetu a skúste to znova.</translation>
 <translation id="6220413761270491930">Chyba pri načítaní rozšírenia</translation>
@@ -8519,6 +8522,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6931690462168617033">Sila kliknutia</translation>
 <translation id="6933321725007230600">Zapnúť synchronizáciu…</translation>
 <translation id="693459579445775904">Hlasové súbory sa zdieľajú medzi používateľmi, aby sa šetrilo miesto na disku.</translation>
+<translation id="6934597021412437058">Teraz môžete pomocou rozdeleného zobrazenia porovnávať alebo vykonávať multitasking či ďalšie akcie</translation>
 <translation id="6935031746833428401">Ďalšie informácie o správe zariadení</translation>
 <translation id="6935286146439255109">Chýba zásobník na papier</translation>
 <translation id="6938386202199793006">Máte jednu uloženú tlačiareň.</translation>
@@ -9621,6 +9625,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="7705276765467986571">Nepodarilo sa načítať model záložiek.</translation>
 <translation id="7705334495398865155">Randomizujte identifikátor hardvéru (BSSID), aby ostatní nemohli sledovať toto zariadenie.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Umiestnite stránky vedľa seba na rovnakú kartu, aby ste mohli jednoducho porovnávať možnosti a vykonávať ďalšie akcie</translation>
 <translation id="7707108266051544351">Tomuto webu bolo zablokované používanie senzorov pohybu.</translation>
 <translation id="7707922173985738739">Používať mobilné dáta</translation>
 <translation id="770831926727930011">Vaše miestne údaje sú chránené starým heslom. Ak ich chcete obnoviť, zadajte staré heslo.</translation>

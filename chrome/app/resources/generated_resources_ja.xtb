@@ -430,6 +430,7 @@
 <translation id="1277020343994096713">現在の PIN とは異なる新しい PIN を作成してください</translation>
 <translation id="1277597051786235230">新しいタブで「<ph name="SEARCH_TERMS" />」を <ph name="SEARCH_ENGINE" /> 検索(&amp;S)</translation>
 <translation id="127849925363482083">固定タブを閉じるには、もう一度 <ph name="SHORTCUT_TEXT" /> キーを押してください</translation>
+<translation id="1278542245784398460">このタブを右クリックして [新しい分割表示にタブを追加] を選択します</translation>
 <translation id="1278859221870828664">Google Play のアプリとサービスの確認</translation>
 <translation id="1279024913354609713">許可しない</translation>
 <translation id="127946606521051357">付近のデバイスが共有中です</translation>
@@ -4829,6 +4830,7 @@
 <translation id="4310139701823742692">ファイルの形式が正しくありません。PPD ファイルを確認してもう一度お試しください。</translation>
 <translation id="4310496734563057511">このデバイスを他のユーザーと共有している場合、Windows Hello を有効にすると、保存したパスワードを使用するたびに本人確認を行うことができます</translation>
 <translation id="431076611119798497">詳細(&amp;D)</translation>
+<translation id="431127643228811252">分割表示でマルチタスクを効率化</translation>
 <translation id="4311284648179069796">読み取りと変更を拒否しました</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 件の Google アカウント}other{<ph name="EXTRA_ACCOUNTS" /> 件の Google アカウント}}</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
@@ -8498,6 +8500,7 @@
 <translation id="6931690462168617033">クリックの感度</translation>
 <translation id="6933321725007230600">同期を有効にする(&amp;S)...</translation>
 <translation id="693459579445775904">ディスク容量を節約するため、音声ファイルはユーザー間で共有されます。</translation>
+<translation id="6934597021412437058">比較やマルチタスクに便利な分割表示を使用できるようになりました</translation>
 <translation id="6935031746833428401">デバイス管理の詳細</translation>
 <translation id="6935286146439255109">用紙トレイが見つかりません</translation>
 <translation id="6938386202199793006">保存済みのプリンタは 1 件です。</translation>
@@ -9601,6 +9604,7 @@
 <translation id="7705276765467986571">ブックマーク モデルを読み込むことができませんでした。</translation>
 <translation id="7705334495398865155">ハードウェアの ID（BSSID）をランダム化して、他のユーザーがこのデバイスを追跡できないようにします。</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">同じタブでページを並べて表示し、オプションなどを簡単に比較できます</translation>
 <translation id="7707108266051544351">このサイトではモーション センサーの使用がブロックされています。</translation>
 <translation id="7707922173985738739">モバイルデータを使用します</translation>
 <translation id="770831926727930011">ローカルデータは以前のパスワードで保護されています。以前のパスワードを入力するとローカルデータを復元できます。</translation>

@@ -200,6 +200,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">View your phone's photos and media</translation>
 <translation id="1129850422003387628">Manage apps</translation>
+<translation id="1130116586186908674">Create split view</translation>
 <translation id="1130430615924359526">{0,plural, =1{Close Incognito}other{Close Incognito (# windows)}}</translation>
 <translation id="113050636487300043">Choose a name and colour theme to differentiate between profiles</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Part of group <ph name="GROUP_NAME" /></translation>
@@ -429,6 +430,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1277020343994096713">Create a new PIN that's different from your current PIN</translation>
 <translation id="1277597051786235230">&amp;Search <ph name="SEARCH_ENGINE" /> for '<ph name="SEARCH_TERMS" />' in new tab</translation>
 <translation id="127849925363482083">Press <ph name="SHORTCUT_TEXT" /> again to close the pinned tab</translation>
+<translation id="1278542245784398460">Right-click on this tab and select 'Add tab to new split view'</translation>
 <translation id="1278859221870828664">Review Google Play apps and services</translation>
 <translation id="1279024913354609713">Don't allow</translation>
 <translation id="127946606521051357">Device nearby is sharing</translation>
@@ -3549,7 +3551,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3435896845095436175">Enable</translation>
 <translation id="3436118221454753036">Ask AI Mode</translation>
 <translation id="3437072258256045988">Manage your Gemini Apps activity</translation>
-<translation id="3437397693214267762">See your Outlook Calendar, and SharePoint and OneDrive files</translation>
+<translation id="3437397693214267762">See your Outlook calendar, and SharePoint and OneDrive files</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Always allow <ph name="HOST" /> to access your microphone</translation>
 <translation id="3439970425423980614">Opening PDF in Preview</translation>
@@ -4851,6 +4853,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4310139701823742692">File is in the wrong format. Check the PPD file and try again.</translation>
 <translation id="4310496734563057511">If you share this device with others, you can turn on Windows Hello to verify that it's you whenever you use a saved password</translation>
 <translation id="431076611119798497">&amp;Details</translation>
+<translation id="431127643228811252">Split view makes it easier to multitask</translation>
 <translation id="4311284648179069796">Not allowed to read and change</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Account}other{<ph name="EXTRA_ACCOUNTS" /> Google Accounts}}</translation>
 <translation id="4312866146174492540">Block (default)</translation>
@@ -8504,7 +8507,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6913051485529944333">You won't see Google Calendar on this page again</translation>
 <translation id="6914812290245989348">Don't see any warnings before going to insecure sites</translation>
 <translation id="6916590542764765824">Manage Extensions</translation>
-<translation id="6916676294509106572">Outlook Calendar hidden</translation>
+<translation id="6916676294509106572">Outlook calendar hidden</translation>
 <translation id="6917873303492266709">To share, join, and collaborate in tab groups, open settings and turn on Allow Chrome sign-in</translation>
 <translation id="6918677045355889289">Chrome OS update required</translation>
 <translation id="6918733588290914545">Quick setup with Android phone</translation>
@@ -8528,6 +8531,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6931690462168617033">Click strength</translation>
 <translation id="6933321725007230600">Turn on &amp;sync...</translation>
 <translation id="693459579445775904">Voice files are shared among users to save disk space</translation>
+<translation id="6934597021412437058">You can now use split view to compare, multitask and more</translation>
 <translation id="6935031746833428401">Learn more about device management</translation>
 <translation id="6935286146439255109">A paper tray is missing</translation>
 <translation id="6938386202199793006">You have 1 saved printer.</translation>
@@ -9631,6 +9635,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="7705276765467986571">Could not load bookmark model.</translation>
 <translation id="7705334495398865155">Randomise your hardware's ID (BSSID) to prevent others from tracking this device.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Put pages side by side in the same tab so that you can easily compare options and more</translation>
 <translation id="7707108266051544351">This site has been blocked from using motion sensors.</translation>
 <translation id="7707922173985738739">Use mobile data</translation>
 <translation id="770831926727930011">Your local data is protected by your old password. Enter your old password to recover local data.</translation>
@@ -10921,7 +10926,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="859246725979739260">This site has been blocked from accessing your location.</translation>
 <translation id="8593450223647418235">You won’t be able to open files in Microsoft 365 until setup is complete.</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> is blocked on your <ph name="DEVICE_TYPE" /></translation>
-<translation id="8594912907680633924">Open link in split view</translation>
+<translation id="8594912907680633924">Open Link in Split View</translation>
 <translation id="8596400097994526901">More actions for <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Customised Files</translation>
 <translation id="8597845839771543242">Property format:</translation>

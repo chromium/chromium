@@ -200,6 +200,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Ver os arquivos de mídia e fotos do smartphone</translation>
 <translation id="1129850422003387628">Gerenciar apps</translation>
+<translation id="1130116586186908674">Criar visualização dividida</translation>
 <translation id="1130430615924359526">{0,plural, =1{Fechar a navegação anônima}one{Fechar a navegação anônima (# janela)}other{Fechar a navegação anônima (# janelas)}}</translation>
 <translation id="113050636487300043">Escolha um nome e um tema de cores para diferenciar os perfis</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: parte do grupo <ph name="GROUP_NAME" /></translation>
@@ -430,6 +431,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1277020343994096713">Crie um PIN diferente do atual</translation>
 <translation id="1277597051786235230">&amp;Pesquisar “<ph name="SEARCH_TERMS" />” no <ph name="SEARCH_ENGINE" /> em uma nova guia</translation>
 <translation id="127849925363482083">Pressione <ph name="SHORTCUT_TEXT" /> novamente para fechar a guia fixada</translation>
+<translation id="1278542245784398460">Clique com o botão direito do mouse nesta guia e selecione "Adicionar guia à nova visualização dividida"</translation>
 <translation id="1278859221870828664">Revise os apps e serviços do Google Play</translation>
 <translation id="1279024913354609713">Não permitir</translation>
 <translation id="127946606521051357">Um dispositivo por perto está compartilhando</translation>
@@ -4852,6 +4854,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4310139701823742692">O arquivo está no formato errado. Verifique o arquivo PPD e tente novamente.</translation>
 <translation id="4310496734563057511">Se você compartilha este dispositivo com outras pessoas, pode ativar o Windows Hello para a verificação da sua identidade sempre que usar uma senha salva</translation>
 <translation id="431076611119798497">&amp;Detalhes</translation>
+<translation id="431127643228811252">Com a visualização dividida você realiza múltiplas tarefas com facilidade</translation>
 <translation id="4311284648179069796">Sem permissão para ler e mudar</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Conta do Google}one{<ph name="EXTRA_ACCOUNTS" /> Conta do Google}other{<ph name="EXTRA_ACCOUNTS" /> Contas do Google}}</translation>
 <translation id="4312866146174492540">Bloquear (padrão)</translation>
@@ -8115,7 +8118,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6657240842932274095">Permitir que serviços do sistema usem sua localização?</translation>
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659213950629089752">Esta página foi ampliada pela extensão "<ph name="NAME" />"</translation>
-<translation id="6659594942844771486">Guia</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: gravação da câmera</translation>
 <translation id="6660301751798595791">Seleção de voz</translation>
 <translation id="6660819301598582123">Jane quer LP, fax, CD, giz, TV e bom whisky.</translation>
@@ -8532,6 +8535,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6931690462168617033">Força do clique</translation>
 <translation id="6933321725007230600">Ativar &amp;sincronização…</translation>
 <translation id="693459579445775904">Os arquivos de voz são compartilhados entre os usuários para economizar espaço em disco</translation>
+<translation id="6934597021412437058">Agora você pode usar a tela dividida para comparar, realizar múltiplas tarefas e muito mais</translation>
 <translation id="6935031746833428401">Saiba mais sobre gerenciamento de dispositivos</translation>
 <translation id="6935286146439255109">A bandeja de papel não foi encontrada</translation>
 <translation id="6938386202199793006">Você tem 1 impressora salva.</translation>
@@ -9635,6 +9639,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="7705276765467986571">Não foi possível carregar o modelo do favorito.</translation>
 <translation id="7705334495398865155">Coloque o ID do seu hardware (BSSID) em ordem aleatória para evitar que outras pessoas rastreiem este dispositivo.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Coloque páginas lado a lado na mesma guia para comparar opções com facilidade e fazer muito mais</translation>
 <translation id="7707108266051544351">Este site foi impedido de usar os sensores de movimento.</translation>
 <translation id="7707922173985738739">Usar dados móveis</translation>
 <translation id="770831926727930011">Seus dados locais estão protegidos pela senha antiga. Digite essa senha para recuperá-los.</translation>

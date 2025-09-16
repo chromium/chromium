@@ -430,6 +430,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1277020343994096713">Crea un nuovo PIN che sia diverso da quello attuale</translation>
 <translation id="1277597051786235230">&amp;Cerca "<ph name="SEARCH_TERMS" />" su <ph name="SEARCH_ENGINE" /> in una nuova scheda</translation>
 <translation id="127849925363482083">Premi nuovamente <ph name="SHORTCUT_TEXT" /> per chiudere la scheda bloccata</translation>
+<translation id="1278542245784398460">Fai clic con il tasto destro del mouse su questa scheda e seleziona "Aggiungi scheda a nuova visualizzazione divisa"</translation>
 <translation id="1278859221870828664">Esamina le app e i servizi offerti da Google Play</translation>
 <translation id="1279024913354609713">Non consentire</translation>
 <translation id="127946606521051357">Dispositivo nelle vicinanze con condivisione attiva</translation>
@@ -4839,6 +4840,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4310139701823742692">Il formato del file è sbagliato. Controlla il file PPD e riprova.</translation>
 <translation id="4310496734563057511">Se condividi questo dispositivo con altre persone, puoi attivare Windows Hello per verificare la tua identità ogni volta che usi una password salvata</translation>
 <translation id="431076611119798497">&amp;Dettagli</translation>
+<translation id="431127643228811252">La visualizzazione divisa semplifica il multitasking</translation>
 <translation id="4311284648179069796">Lettura e modifica non consentite</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Account Google}other{<ph name="EXTRA_ACCOUNTS" /> Account Google}}</translation>
 <translation id="4312866146174492540">Blocca (predefinita)</translation>
@@ -8512,6 +8514,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6931690462168617033">Intensità clic</translation>
 <translation id="6933321725007230600">Attiva la &amp;sincronizzazione…</translation>
 <translation id="693459579445775904">I file vocali vengono condivisi tra gli utenti per risparmiare spazio su disco</translation>
+<translation id="6934597021412437058">Ora puoi usare la visualizzazione divisa per confrontare, svolgere più attività contemporaneamente e altro ancora</translation>
 <translation id="6935031746833428401">Scopri di più su Gestione dispositivi</translation>
 <translation id="6935286146439255109">Vassoio carta mancante</translation>
 <translation id="6938386202199793006">Hai una stampante salvata.</translation>
@@ -9615,6 +9618,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7705276765467986571">Impossibile caricare il modello Preferiti.</translation>
 <translation id="7705334495398865155">Seleziona casualmente l'ID hardware (BSSID) per impedire ad altre persone di tracciare questo dispositivo.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Affianca le pagine nella stessa scheda per confrontare facilmente le opzioni e altro ancora</translation>
 <translation id="7707108266051544351">A questo sito è stato impedito l'uso dei sensori di movimento.</translation>
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="770831926727930011">I dati locali sono protetti dalla password precedente. Inseriscila per recuperarli.</translation>

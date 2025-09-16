@@ -200,7 +200,7 @@
 <translation id="1129348283834595293">සයිබර්පන්ක්</translation>
 <translation id="1129420403709586868">ඔබගේ දුරකථනයේ ඡායාරූප සහ මාධ්‍ය බලන්න</translation>
 <translation id="1129850422003387628">යෙදුම් කළමනා කරන්න</translation>
-<translation id="1130116586186908674">බෙදීම් දසුනක් සාදන්න</translation>
+<translation id="1130116586186908674">බෙදීම් දසුනක් තනන්න</translation>
 <translation id="1130430615924359526">{0,plural, =1{අප්‍රසිද්ධ වසන්න}one{අප්‍රසිද්ධ වසන්න (කවුළු #)}other{අප්‍රසිද්ධ වසන්න (කවුළු #)}}</translation>
 <translation id="113050636487300043">පැතිකඩවල් අතර වෙනස දැක්වීමට නමක් සහ වර්ණ තේමාවක් තෝරන්න</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> කණ්ඩායමේ කොටසකි</translation>
@@ -431,6 +431,7 @@
 <translation id="1277020343994096713">ඔබගේ වර්තමාන PIN එකට වඩා වෙනස් නව PIN එකක් තනන්න</translation>
 <translation id="1277597051786235230">නව පටිත්ත තුළ <ph name="SEARCH_ENGINE" /> මගින් “<ph name="SEARCH_TERMS" />” සොයන්න</translation>
 <translation id="127849925363482083">ඇමිණූ පටිත්ත වැසීමට <ph name="SHORTCUT_TEXT" /> නැවත ඔබන්න</translation>
+<translation id="1278542245784398460">මෙම පටිත්ත මත දකුණු-ක්ලික් කර “නව බෙදීම් දර්ශනයට පටිත්ත එක් කරන්න” තෝරන්න</translation>
 <translation id="1278859221870828664">Google Play යෙදුම් සහ සේවා සමාලෝචනය කරන්න</translation>
 <translation id="1279024913354609713">අවසර නොදෙන්න</translation>
 <translation id="127946606521051357">අවට උපාංගය බෙදා ගනී</translation>
@@ -4840,6 +4841,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4310139701823742692">ගොනුව වැරදි ආකෘතියකි. PPD ගොනුව පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="4310496734563057511">ඔබ මෙම උපාංගය අන් අය සමග බෙදා ගන්නේ නම්, ඔබ සුරකින ලද මුරපදයක් භාවිතා කරන සෑම විටම ඒ ඔබ බව සත්‍යාපනය කිරීමට ඔබට Windows Hello ක්‍රියාත්මක කළ හැක.</translation>
 <translation id="431076611119798497">විස්තර (&amp;D)</translation>
+<translation id="431127643228811252">බෙදීම් දර්ශනය බහු කාර්යයන් පහසු කරයි</translation>
 <translation id="4311284648179069796">කියවීමට සහ වෙනස් කිරීමට ඉඩ නැත</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{Google ගිණුම් 1}one{Google ගිණුම් <ph name="EXTRA_ACCOUNTS" />}other{Google ගිණුම් <ph name="EXTRA_ACCOUNTS" />}}</translation>
 <translation id="4312866146174492540">අවහිර කරන්න (පෙරනිමි)</translation>
@@ -8100,7 +8102,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6657240842932274095">පද්ධති සේවාවලට ඔබේ ස්ථානය භාවිත කිරීමට ඉඩ දෙන්න ද?</translation>
 <translation id="6657585470893396449">මුරපදය</translation>
 <translation id="6659213950629089752">මෙම පිටුව "<ph name="NAME" />" දිගුව මගින් විශාලනය කර තිබුණි</translation>
-<translation id="6659594942844771486">ටැබ</translation>
+<translation id="6659594942844771486">පටිත්ත</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - කැමරා පටිගත කිරීම</translation>
 <translation id="6660301751798595791">හඬ තේරීම</translation>
 <translation id="6660819301598582123">කඩිසර දුඹුරු හිවලා කම්මැලි සුනඛයාට උඩින් පැන්නේය.</translation>
@@ -8517,6 +8519,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6931690462168617033">ප්‍රබලතාව ක්ලික් කරන්න</translation>
 <translation id="6933321725007230600">&amp;සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න...</translation>
 <translation id="693459579445775904">තැටි ඉඩ ඉතිරි කර ගැනීම සඳහා හඬ ගොනු පරිශීලකයන් අතර බෙදා ගනී</translation>
+<translation id="6934597021412437058">දැන් ඔබට සංසන්දනය කිරීමට, බහුකාර්ය කිරීමට, සහ තවත් දේ සඳහා බෙදීම් දසුන භාවිතා කළ හැක</translation>
 <translation id="6935031746833428401">උපාංග කළමනාකරණය ගැන තව දැන ගන්න</translation>
 <translation id="6935286146439255109">කඩදාසි තැටියක් මඟ හැරී ඇත</translation>
 <translation id="6938386202199793006">ඔබට 1 සුරැකි මුද්‍රකයක් ඇත.</translation>
@@ -9619,6 +9622,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7705276765467986571">පොත්සලකුණු අච්චුව පූර්ණය කළ නොහැකි විය.</translation>
 <translation id="7705334495398865155">අනෙක් අය මෙම උපාංගය හඹා යෑම වැළැක්වීමට ඔබේ දෘඨාංග ID (BSSID) සසම්භාවී කරන්න.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">ඔබට විකල්ප සහ තවත් දේ පහසුවෙන් සංසන්දනය කළ හැකි වන පරිදි එකම පටිත්තේ පිටු දෙපැත්තට තබන්න</translation>
 <translation id="7707108266051544351">මෙම වෙබ් අඩවිය චලන සංවේදක භාවිත කිරීමෙන් අවහිර කරනු ලැබ ඇත.</translation>
 <translation id="7707922173985738739">ජංගම දත්ත භාවිත කරන්න</translation>
 <translation id="770831926727930011">ඔබේ ස්ථානීය දත්ත ඔබේ පැරණි මුරපදය මගින් ආරක්ෂා කර ඇත. ස්ථානීය දත්ත ප්‍රතිසාධනය කිරීමට ඔබේ පැරණි මුරපදය ඇතුළු කරන්න.</translation>

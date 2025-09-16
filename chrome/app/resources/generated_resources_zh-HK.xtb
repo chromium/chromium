@@ -430,6 +430,7 @@
 <translation id="1277020343994096713">請建立與目前 PIN 不同的新 PIN</translation>
 <translation id="1277597051786235230">開啟新分頁並使用「<ph name="SEARCH_ENGINE" />」搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
 <translation id="127849925363482083">再按 <ph name="SHORTCUT_TEXT" /> 即可關閉固定分頁</translation>
+<translation id="1278542245784398460">在此分頁按一下右鍵，然後選取 [將分頁加入新的分割檢視畫面]</translation>
 <translation id="1278859221870828664">查看 Google Play 應用程式和服務</translation>
 <translation id="1279024913354609713">不允許</translation>
 <translation id="127946606521051357">附近的裝置正在分享</translation>
@@ -4846,6 +4847,7 @@
 <translation id="4310139701823742692">檔案格式錯誤。請檢查 PPD 檔案，然後再試一次。</translation>
 <translation id="4310496734563057511">如果您與其他人分享此裝置，可以開啟 Windows Hello，以便在使用已儲存的密碼時驗證身份</translation>
 <translation id="431076611119798497">詳情(&amp;D)</translation>
+<translation id="431127643228811252">分割檢視讓多工處理更輕鬆</translation>
 <translation id="4311284648179069796">不允許讀取並變更</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 個 Google 帳戶}other{<ph name="EXTRA_ACCOUNTS" /> 個 Google 帳戶}}</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
@@ -8518,6 +8520,7 @@
 <translation id="6931690462168617033">點擊力度</translation>
 <translation id="6933321725007230600">開啟同步功能(&amp;S)…</translation>
 <translation id="693459579445775904">為節省磁碟空間，語音檔案會由裝置的所有使用者共用</translation>
+<translation id="6934597021412437058">你現可利用分割檢視作比較、多工處理和執行其他操作</translation>
 <translation id="6935031746833428401">進一步了解裝置管理</translation>
 <translation id="6935286146439255109">找不到紙匣</translation>
 <translation id="6938386202199793006">你有 1 部儲存咗嘅打印機。</translation>
@@ -9618,6 +9621,7 @@
 <translation id="7705276765467986571">無法載入書籤模型。</translation>
 <translation id="7705334495398865155">隨機處理硬件 ID (BSSID)，避免其他人追蹤此裝置。</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">在同一分頁並排瀏覽頁面，方便比較不同選項和執行其他操作</translation>
 <translation id="7707108266051544351">系統已封鎖此網站使用動作感應器。</translation>
 <translation id="7707922173985738739">使用流動數據</translation>
 <translation id="770831926727930011">本機資料受舊密碼保護。請輸入舊密碼以復原本機資料。</translation>

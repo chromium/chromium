@@ -431,6 +431,7 @@
 <translation id="1277020343994096713">ऐसा नया पिन बनाएं जो आपके मौजूदा पिन से अलग हो</translation>
 <translation id="1277597051786235230">नए टैब में जाकर <ph name="SEARCH_ENGINE" /> पर “<ph name="SEARCH_TERMS" />” खोजें</translation>
 <translation id="127849925363482083">पिन किए गए टैब को बंद करने के लिए, <ph name="SHORTCUT_TEXT" /> को फिर से दबाएं</translation>
+<translation id="1278542245784398460">इस टैब पर राइट क्लिक करके, “नए स्प्लिट व्यू में देखने के लिए टैब जोड़ें” को चुनें</translation>
 <translation id="1278859221870828664">Google Play पर मिलने वाले ऐप्लिकेशन और सेवाओं की समीक्षा करें</translation>
 <translation id="1279024913354609713">अनुमति न दें</translation>
 <translation id="127946606521051357">आस-पास मौजूद कोई डिवाइस, डेटा शेयर कर रहा है</translation>
@@ -503,7 +504,7 @@
 <translation id="1328928545650070438">भौंहें नीचे करें</translation>
 <translation id="1329466763986822896">इस हॉटस्पॉट के लिए निजता सेटिंग को बेहतर करें</translation>
 <translation id="1331065030686329928">“<ph name="GROUP_NAME" />” टैब ग्रुप को मैनेज करें</translation>
-<translation id="1331977651797684645">यह खाता मेरा था.</translation>
+<translation id="1331977651797684645">यह खाता मेरा है.</translation>
 <translation id="1333489022424033687"><ph name="ORIGIN" /> पर मौजूद कुछ सुविधाएं तब तक काम नहीं करेंगी, जब तक आप उस डेटा को नहीं मिटाते जिसे दूसरी साइटों ने आपके डिवाइस पर सेव किया हुआ है</translation>
 <translation id="1333965224356556482">साइटों को आपकी जगह की जानकारी देखने की अनुमति न दें</translation>
 <translation id="1335282218035876586">अब से, आपके Chromebook को सुरक्षा और सॉफ़्टवेयर से जुड़े अपडेट नहीं मिलेंगे. बेहतर अनुभव पाने के लिए, अपना Chromebook अपग्रेड करें.</translation>
@@ -4852,6 +4853,7 @@
 <translation id="4310139701823742692">फ़ाइल का फ़ॉर्मैट गलत है. PPD फ़ाइल देखें और फिर से कोशिश करें.</translation>
 <translation id="4310496734563057511">अगर इस डिवाइस को अन्य लोग इस्तेमाल करते हैं, तो आपके पास Windows Hello चालू करने का विकल्प होता है, ताकि जब भी आप सेव किया गया पासवर्ड इस्तेमाल करें, तो यह आपकी पहचान की पुष्टि कर सके</translation>
 <translation id="431076611119798497">&amp;विवरण</translation>
+<translation id="431127643228811252">स्प्लिट व्यू की मदद से एक साथ कई काम करना आसान हो जाता है</translation>
 <translation id="4311284648179069796">पढ़ने और बदलाव करने की अनुमति नहीं है</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google खाता}one{<ph name="EXTRA_ACCOUNTS" /> Google खाता}other{<ph name="EXTRA_ACCOUNTS" /> Google खाते}}</translation>
 <translation id="4312866146174492540">ब्लॉक करें (डिफ़ॉल्ट)</translation>
@@ -8009,7 +8011,7 @@
 <translation id="6583328141350416497">डाउनलोड जारी रखें</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
 <translation id="6585584201072946561">वेब ब्राउज़र के लिए, टेक्स्ट का साइज़ और फ़ॉन्ट पसंद के मुताबिक बनाएं</translation>
-<translation id="6586099239452884121">अतिथि ब्राउज़िंग</translation>
+<translation id="6586099239452884121">मेहमान के तौर पर ब्राउज़िंग</translation>
 <translation id="6586213706115310390">"Ok Google" बोलकर अपनी Assistant को ऐक्सेस करें.</translation>
 <translation id="6586451623538375658">प्राथमिक माउस बटन स्वैप करें</translation>
 <translation id="6588043302623806746">सुरक्षित डीएनएस इस्तेमाल करें</translation>
@@ -8529,6 +8531,7 @@
 <translation id="6931690462168617033">क्लिक की क्षमता</translation>
 <translation id="6933321725007230600">सिंक को चालू करें...</translation>
 <translation id="693459579445775904">डिस्क में बचा स्टोरेज सेव करने के लिए, आवाज़ वाली फ़ाइलों को लोगों के साथ शेयर किया जाता है</translation>
+<translation id="6934597021412437058">अब स्प्लिट व्यू का इस्तेमाल करके कई काम किए जा सकते हैं. जैसे, तुलना करना, एक साथ कई काम करना वगैरह</translation>
 <translation id="6935031746833428401">डिवाइस मैनेजमेंट के बारे में ज़्यादा जानें</translation>
 <translation id="6935286146439255109">पेपर ट्रे नहीं है</translation>
 <translation id="6938386202199793006">आपके पास सेव किया गया एक प्रिंटर है.</translation>
@@ -9631,6 +9634,7 @@
 <translation id="7705276765467986571">बुकमार्क मॉडल लोड नहीं कर सका.</translation>
 <translation id="7705334495398865155">अपने हार्डवेयर आईडी (BSSID) को किसी भी क्रम में लगाएं, ताकि दूसरे लोग इस डिवाइस को ट्रैक न कर सकें.</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
+<translation id="7706742200777909964">अलग-अलग पेजों को एक ही टैब में अगल-बगल रखें और तुलना करने जैसे कामों में मदद पाएं</translation>
 <translation id="7707108266051544351">इस साइट को हलचल वाले सेंसर का इस्तेमाल करने से रोक दिया गया है.</translation>
 <translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
 <translation id="770831926727930011">आपके पुराने पासवर्ड का इस्तेमाल करके, लोकल डेटा को सुरक्षित रखा गया है. लोकल डेटा वापस पाने के लिए, अपना पुराना पासवर्ड डालें.</translation>
@@ -9944,7 +9948,7 @@
 <translation id="7925108652071887026">ऑटोफ़िल डेटा</translation>
 <translation id="792514962475806987">डॉक किया गया ज़ूम स्तर:</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> का इंतज़ार किया जा रहा है...</translation>
-<translation id="7926423016278357561">यह खाता मेरा नहीं था.</translation>
+<translation id="7926423016278357561">यह खाता मेरा नहीं है.</translation>
 <translation id="7926975587469166629">कार्ड का कोई दूसरा नाम</translation>
 <translation id="7928175190925744466">क्या आपने पहले ही यह पासवर्ड बदल दिया है?</translation>
 <translation id="7929468958996190828"><ph name="BEGIN_LINK" />अभी रीफ़्रेश करें<ph name="END_LINK" /> या मिलते-जुलते नए टैब खोलने के बाद, दोबारा कोशिश करें</translation>

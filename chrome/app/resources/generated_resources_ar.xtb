@@ -434,6 +434,7 @@
 <translation id="1277020343994096713">يجب إنشاء رقم تعريف شخصي جديد يختلف عن الرقم الحالي.</translation>
 <translation id="1277597051786235230">&amp;البحث في <ph name="SEARCH_ENGINE" /> عن "<ph name="SEARCH_TERMS" />" في علامة تبويب جديدة</translation>
 <translation id="127849925363482083">يُرجى الضغط على <ph name="SHORTCUT_TEXT" /> مرة أخرى لإغلاق علامة التبويب المثبَّتة</translation>
+<translation id="1278542245784398460">يمكنك النقر بزر الماوس الأيمن على علامة التبويب هذه واختيار "إضافة علامة التبويب إلى وضع تقسيم العرض الجديد"</translation>
 <translation id="1278859221870828664">‏مراجعة التطبيقات والخدمات في Google Play</translation>
 <translation id="1279024913354609713">عدم السماح</translation>
 <translation id="127946606521051357">هناك جهاز قريب يشارك محتوى</translation>
@@ -4843,6 +4844,7 @@
 <translation id="4310139701823742692">‏تنسيق الملف غير صحيح. يُرجى التحقّق من ملف PPD وإعادة المحاولة.</translation>
 <translation id="4310496734563057511">‏في حال مشاركة هذا الجهاز مع الآخرين، يمكنك تفعيل Windows Hello لإثبات هويتك عند استخدام كلمة مرور محفوظة</translation>
 <translation id="431076611119798497">&amp;التفاصيل</translation>
+<translation id="431127643228811252">ميزة "تقسيم العرض" تسهِّل تنفيذ مهام متعددة</translation>
 <translation id="4311284648179069796">إضافة غير مسموح لها بقراءة محتوى الموقع الإلكتروني وتغييره</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{‏حساب Google واحد}zero{‏<ph name="EXTRA_ACCOUNTS" /> حساب Google}two{‏حسابا Google (<ph name="EXTRA_ACCOUNTS" />)}few{‏<ph name="EXTRA_ACCOUNTS" /> حسابات Google}many{‏<ph name="EXTRA_ACCOUNTS" /> حساب Google}other{‏<ph name="EXTRA_ACCOUNTS" /> حساب Google}}</translation>
 <translation id="4312866146174492540">حظر (تلقائي)</translation>
@@ -8528,6 +8530,7 @@
 <translation id="6931690462168617033">قوة النقر</translation>
 <translation id="6933321725007230600">تفعيل &amp;المزامنة...</translation>
 <translation id="693459579445775904">تتم مشاركة ملفات الصوت بين المستخدمِين لتوفير مساحة على القرص</translation>
+<translation id="6934597021412437058">يمكنك الآن استخدام وضع "تقسيم العرض" للمقارنة وتنفيذ مهام متعددة وغير ذلك</translation>
 <translation id="6935031746833428401">مزيد من المعلومات حول إدارة الأجهزة</translation>
 <translation id="6935286146439255109">درج الورق غير متاح</translation>
 <translation id="6938386202199793006">لديك طابعة واحدة محفوظة.</translation>
@@ -9630,6 +9633,7 @@
 <translation id="7705276765467986571">تعذر تحميل نموذج الإشارة.</translation>
 <translation id="7705334495398865155">‏اختيار رقم تعريف عشوائي لهذا الجهاز (معرّف مجموعة الخدمات الأساسية (BSSID)) لمنع الآخرين من تتبُّعه</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">يمكنك وضع الصفحات جنبًا إلى جنب في علامة التبويب نفسها للتمكّن من مقارنة الخيارات وأداء مهام أخرى بسهولة</translation>
 <translation id="7707108266051544351">تم حظر الموقع الإلكتروني هذا من استخدام مستشعرات الحركة.</translation>
 <translation id="7707922173985738739">استخدام بيانات الجوّال</translation>
 <translation id="770831926727930011">البيانات المخزَّنة على جهازك محمية باستخدام كلمة المرور القديمة. يجب إدخال هذه الكلمة لاسترداد تلك البيانات.</translation>

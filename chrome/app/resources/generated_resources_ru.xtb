@@ -433,6 +433,7 @@
 <translation id="1277020343994096713">Создайте PIN-код, который отличается от текущего.</translation>
 <translation id="1277597051786235230">&amp;Искать "<ph name="SEARCH_TERMS" />" в <ph name="SEARCH_ENGINE" /> на новой вкладке</translation>
 <translation id="127849925363482083">Чтобы закрыть закрепленную вкладку, нажмите <ph name="SHORTCUT_TEXT" /> ещё раз.</translation>
+<translation id="1278542245784398460">Нажмите правой кнопкой мыши на эту вкладку и выберите "Добавить вкладку в режиме Split View".</translation>
 <translation id="1278859221870828664">Ознакомьтесь с условиями предоставления приложений и сервисов Google Play</translation>
 <translation id="1279024913354609713">Не разрешать</translation>
 <translation id="127946606521051357">Устройство поблизости делится контентом</translation>
@@ -2680,7 +2681,7 @@
 <translation id="2805760958323556153">Для правила ExtensionInstallForcelist указано недопустимое значение. Обратитесь к администратору.</translation>
 <translation id="2805770823691782631">Дополнительные сведения</translation>
 <translation id="2806372837663997957">Устройство, с которым вы хотели поделиться файлом, не приняло его.</translation>
-<translation id="2806891468525657116">Ярлык уже добавлен</translation>
+<translation id="2806891468525657116">Ярлык уже добавлен.</translation>
 <translation id="2807517655263062534">Скачанные файлы появятся здесь</translation>
 <translation id="2808985063107661499">Назначение жестов "<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />" и "<ph name="CONFLICTING_GESTURE_TWO" />" может совпадать. Советуем выбрать другой жест.</translation>
 <translation id="2809346626032021864">Книги</translation>
@@ -4841,6 +4842,7 @@
 <translation id="4310139701823742692">Неверный формат файла PPD. Исправьте проблему и повторите попытку.</translation>
 <translation id="4310496734563057511">Если устройством пользуется кто-то ещё, включите Windows Hello, чтобы только вы могли получать доступ к своим сохраненным паролям.</translation>
 <translation id="431076611119798497">&amp;Подробнее</translation>
+<translation id="431127643228811252">В режиме Split View проще выполнять несколько задач сразу</translation>
 <translation id="4311284648179069796">Чтение и изменение запрещены</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 аккаунт Google}one{<ph name="EXTRA_ACCOUNTS" /> аккаунт Google}few{<ph name="EXTRA_ACCOUNTS" /> аккаунта Google}many{<ph name="EXTRA_ACCOUNTS" /> аккаунтов Google}other{<ph name="EXTRA_ACCOUNTS" /> аккаунта Google}}</translation>
 <translation id="4312866146174492540">Блокировать (по умолчанию)</translation>
@@ -8523,6 +8525,7 @@
 <translation id="6931690462168617033">Сила нажатия</translation>
 <translation id="6933321725007230600">Включить &amp;синхронизацию</translation>
 <translation id="693459579445775904">Чтобы сэкономить место на диске, голосовые пакеты доступны всем пользователям.</translation>
+<translation id="6934597021412437058">Теперь в режиме Split View вы можете сравнивать две страницы, делать несколько дел сразу и решать другие задачи.</translation>
 <translation id="6935031746833428401">Подробнее об управлении устройствами</translation>
 <translation id="6935286146439255109">Отсутствует лоток для бумаги</translation>
 <translation id="6938386202199793006">У вас 1 сохраненный принтер.</translation>
@@ -9625,6 +9628,7 @@
 <translation id="7705276765467986571">Не удалось загрузить модель закладок.</translation>
 <translation id="7705334495398865155">Указать случайный идентификатор BSSID, чтобы другие пользователи не смогли отследить это устройство</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Откройте страницы рядом друг с другом на одной вкладке, чтобы сравнить их или выполнить другие задачи.</translation>
 <translation id="7707108266051544351">Этому сайту запрещено использовать датчики движения</translation>
 <translation id="7707922173985738739">Использовать мобильный Интернет</translation>
 <translation id="770831926727930011">Чтобы восстановить локальные данные, введите старый пароль.</translation>

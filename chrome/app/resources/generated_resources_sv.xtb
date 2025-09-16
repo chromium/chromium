@@ -200,6 +200,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Visa de senaste fotona och mediefilerna från telefonen</translation>
 <translation id="1129850422003387628">Hantera appar</translation>
+<translation id="1130116586186908674">Skapa delad vy</translation>
 <translation id="1130430615924359526">{0,plural, =1{Stäng inkognitofönstret}other{Stäng inkognitofönstren (# fönster)}}</translation>
 <translation id="113050636487300043">Välj ett namn och färgtema så att du ser skillnad på profilerna</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – ingår i gruppen <ph name="GROUP_NAME" /></translation>
@@ -429,6 +430,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1277020343994096713">Den nya pinkoden du skapar får inte vara samma som den gamla</translation>
 <translation id="1277597051786235230">&amp;Sök på <ph name="SEARCH_ENGINE" /> efter ”<ph name="SEARCH_TERMS" />” på en ny flik</translation>
 <translation id="127849925363482083">Tryck på <ph name="SHORTCUT_TEXT" /> igen för att stänga den fästa fliken</translation>
+<translation id="1278542245784398460">Högerklicka på den här fliken och välj Lägg till fliken i en ny delad vy</translation>
 <translation id="1278859221870828664">Granska appar och tjänster på Google Play</translation>
 <translation id="1279024913354609713">Tillåt inte</translation>
 <translation id="127946606521051357">En enhet i närheten delar filer</translation>
@@ -4851,6 +4853,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4310139701823742692">Filen har fel format. Kontrollera PPD-filen och försök igen.</translation>
 <translation id="4310496734563057511">Om du delar enheten med andra kan du aktivera Windows Hello för att verifiera din identitet när du använder ett sparat lösenord</translation>
 <translation id="431076611119798497">&amp;Info</translation>
+<translation id="431127643228811252">Med delad vy blir det enklare att göra flera saker samtidigt</translation>
 <translation id="4311284648179069796">Har inte tillåtelse att läsa och ändra</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-konto}other{<ph name="EXTRA_ACCOUNTS" /> Google-konton}}</translation>
 <translation id="4312866146174492540">Blockera (standard)</translation>
@@ -8528,6 +8531,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6931690462168617033">Klickkänslighet</translation>
 <translation id="6933321725007230600">Aktivera &amp;synkronisering …</translation>
 <translation id="693459579445775904">Språkfiler delas mellan användare för att spara diskutrymme</translation>
+<translation id="6934597021412437058">Nu kan du använda delad vy för att jämföra, göra flera saker samtidigt med mera</translation>
 <translation id="6935031746833428401">Läs mer om enhetshantering</translation>
 <translation id="6935286146439255109">Pappersfacket hittades inte</translation>
 <translation id="6938386202199793006">Du har 1 sparad skrivare.</translation>
@@ -9631,6 +9635,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="7705276765467986571">Det gick inte att läsa in bokmärkesmodellen.</translation>
 <translation id="7705334495398865155">Slumpgenerera hårdvaru-id:t (BSSID) för att förhindra att andra spårar den här enheten.</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7706742200777909964">Placera sidor bredvid varandra på samma flik så att du enkelt kan jämföra alternativ och annat</translation>
 <translation id="7707108266051544351">Den här webbplatsen har blockerats från att använda rörelsesensorerna.</translation>
 <translation id="7707922173985738739">Mobildata används</translation>
 <translation id="770831926727930011">Lokala uppgifter skyddas med ditt gamla lösenord. Ange ditt gamla lösenord för att återställa dem.</translation>
