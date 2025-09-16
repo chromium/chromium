@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,7 +22,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -148,16 +148,18 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
 blink::mojom::AuthenticatorStatus
 WebAuthRequestSecurityChecker::RemoteValidation::ValidateWellKnownJSON(
     const url::Origin& caller_origin,
-    const base::Value& value) {
+    const std::string_view json) {
   // This code processes a .well-known/webauthn JSON. See
   // https://github.com/w3c/webauthn/wiki/Explainer:-Related-origin-requests
 
-  if (!value.is_dict()) {
+  auto result = base::JSONReader::ReadDict(json, base::JSON_PARSE_RFC);
+
+  if (!result.has_value()) {
     return blink::mojom::AuthenticatorStatus::
         BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
   }
 
-  const base::Value::List* origins = value.GetDict().FindList("origins");
+  const base::Value::List* origins = result->FindList("origins");
   if (!origins) {
     return blink::mojom::AuthenticatorStatus::
         BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
@@ -233,19 +235,8 @@ void WebAuthRequestSecurityChecker::RemoteValidation::OnFetchComplete(
   }
 
   json_ = std::move(body);
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *json_, base::BindOnce(&RemoteValidation::OnDecodeComplete,
-                             weak_factory_.GetWeakPtr()));
-}
 
-void WebAuthRequestSecurityChecker::RemoteValidation::OnDecodeComplete(
-    base::expected<base::Value, std::string> maybe_value) {
-  blink::mojom::AuthenticatorStatus status =
-      blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
-  if (maybe_value.has_value()) {
-    status = ValidateWellKnownJSON(caller_origin_, maybe_value.value());
-  }
-  std::move(callback_).Run(status);
+  std::move(callback_).Run(ValidateWellKnownJSON(caller_origin_, *json_));
 }
 
 WebAuthRequestSecurityChecker::WebAuthRequestSecurityChecker(

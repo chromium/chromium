@@ -17,10 +17,6 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 #include "url/origin.h"
 
-namespace base {
-class Value;
-}
-
 namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
@@ -69,7 +65,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
     // intended to be called externally except for testing.
     [[nodiscard]] static blink::mojom::AuthenticatorStatus
     ValidateWellKnownJSON(const url::Origin& caller_origin,
-                          const base::Value& json);
+                          std::string_view json);
 
    private:
     RemoteValidation(
@@ -77,7 +73,6 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
         base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 
     void OnFetchComplete(std::unique_ptr<std::string> body);
-    void OnDecodeComplete(base::expected<base::Value, std::string> maybe_value);
 
     const url::Origin caller_origin_;
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback_;
