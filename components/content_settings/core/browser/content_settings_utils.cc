@@ -250,6 +250,15 @@ bool CanBeAutoRevokedAsUnusedPermission(ContentSettingsType type,
     if (!setting.has_value()) {
       return false;
     }
+
+    // Currently Safety Check does not store the actual value of a permission
+    // and restores all permissions as ALLOW.
+    // TODO(crbug.com/441689815): Store PermissionSettings in Safety Check and
+    // remove this check.
+    if (setting != PermissionSetting{CONTENT_SETTING_ALLOW}) {
+      return false;
+    }
+
     return permission_settings_info->delegate().IsAnyPermissionAllowed(
                setting.value()) &&
            CanTrackLastVisit(type);
