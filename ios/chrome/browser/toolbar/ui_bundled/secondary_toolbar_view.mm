@@ -183,6 +183,10 @@ UIView* SecondaryToolbarLocationBarContainerView(
 }
 
 - (void)updateConstraints {
+  if (IsDiamondPrototypeEnabled()) {
+    [super updateConstraints];
+    return;
+  }
   if (_expanded) {
     [NSLayoutConstraint deactivateConstraints:_contractedConstraints];
     [NSLayoutConstraint activateConstraints:_expandedConstraints];
