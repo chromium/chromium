@@ -14,6 +14,12 @@
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif
@@ -41,11 +47,13 @@ bool ChromeFaviconClient::IsNativeApplicationURL(const GURL& url) {
     return true;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (url.SchemeIs(chrome::kIsolatedAppScheme)) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
     return true;
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   return url.SchemeIs(content::kChromeUIScheme);
 }

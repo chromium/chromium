@@ -624,6 +624,9 @@ source_set("extensions") {
   ]
   defines = []
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
   if (is_android) {
     sources += [
       "api/chrome_extensions_api_client_android.cc",

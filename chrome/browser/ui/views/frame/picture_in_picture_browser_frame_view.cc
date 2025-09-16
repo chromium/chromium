@@ -26,11 +26,11 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_bounds_change_animation.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_tucker.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
@@ -577,7 +577,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   // important to elide.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (location_bar_model_->GetURL().SchemeIs(extensions::kExtensionScheme) ||
-      location_bar_model_->GetURL().SchemeIs(chrome::kIsolatedAppScheme)) {
+      location_bar_model_->GetURL().SchemeIs(webapps::kIsolatedAppScheme)) {
     elide_behavior = gfx::ELIDE_TAIL;
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

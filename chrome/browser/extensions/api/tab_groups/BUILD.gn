@@ -46,4 +46,8 @@ source_set("tab_groups") {
     "//extensions/common",
     "//ui/gfx/range",
   ]
+
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
 }

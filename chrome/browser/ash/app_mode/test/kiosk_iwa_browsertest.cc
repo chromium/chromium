@@ -9,9 +9,9 @@
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/host_port_pair.h"
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(KioskIwaTest, OriginHasUnlimitedStorage) {
   ASSERT_NE(storage_policy, nullptr);
 
   const url::Origin kExpectedOrigin = url::Origin::CreateFromNormalizedTuple(
-      chrome::kIsolatedAppScheme, kTestWebBundleId.id(), /*port=*/0);
+      webapps::kIsolatedAppScheme, kTestWebBundleId.id(), /*port=*/0);
   EXPECT_TRUE(storage_policy->IsStorageUnlimited(kExpectedOrigin.GetURL()));
 }
 

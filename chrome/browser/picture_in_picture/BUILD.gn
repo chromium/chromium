@@ -28,6 +28,9 @@ source_set("picture_in_picture") {
     "//url",
   ]
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    public_deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
   if (!is_android) {
     sources += [
       "auto_picture_in_picture_tab_strip_observer_helper.h",

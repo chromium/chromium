@@ -54,6 +54,10 @@ source_set("util") {
     "//components/security_state/core",
     "//extensions/common",
   ]
+
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
 }
 
 source_set("remote_probe_strategy") {

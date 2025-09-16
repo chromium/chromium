@@ -10,9 +10,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/url_constants.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/url_pattern_set.h"
@@ -28,7 +28,7 @@ namespace {
 bool IsWebContentsSecure(content::WebContents* contents) {
   // TODO(b/290909386): Remove this line once we reach a conclusion on
   // how we should perform security check on IWA.
-  if (contents->GetLastCommittedURL().SchemeIs(chrome::kIsolatedAppScheme)) {
+  if (contents->GetLastCommittedURL().SchemeIs(webapps::kIsolatedAppScheme)) {
     return true;
   }
   // Ensure the URL connection is secure (e.g. valid certificate).

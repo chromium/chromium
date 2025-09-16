@@ -1068,6 +1068,9 @@ source_set("web_applications_unit_tests") {
     ]
   }
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
   if (is_win || is_mac || is_linux) {
     deps += [ "//components/services/app_service" ]
   }

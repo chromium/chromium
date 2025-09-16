@@ -67,7 +67,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -117,6 +116,12 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
@@ -2006,6 +2011,8 @@ void SiteSettingsHandler::SendZoomLevels() {
 
   base::Value::List zoom_levels_exceptions;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   // Show any non-default Isolated Web App zoom levels at the top of the page.
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile_);
   if (web_app_provider) {
@@ -2019,7 +2026,7 @@ void SiteSettingsHandler::SendZoomLevels() {
       auto* host_zoom_map =
           content::HostZoomMap::GetForStoragePartition(iwa_storage_partition);
       double iwa_zoom = host_zoom_map->GetZoomLevelForHostAndScheme(
-          chrome::kIsolatedAppScheme, iwa_url_info.origin().host());
+          webapps::kIsolatedAppScheme, iwa_url_info.origin().host());
       if (iwa_zoom == host_zoom_map->GetDefaultZoomLevel()) {
         continue;
       }
@@ -2038,6 +2045,8 @@ void SiteSettingsHandler::SendZoomLevels() {
                     *b.GetDict().FindString(site_settings::kDisplayName);
                 return name_a < name_b;
               });
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
   }
 
   content::HostZoomMap* host_zoom_map =
@@ -2103,7 +2112,10 @@ void SiteSettingsHandler::HandleRemoveZoomLevel(const base::Value::List& args) {
   const std::string& host_or_spec = args[0].GetString();
 
   GURL url(host_or_spec);
-  if (url.is_valid() && url.scheme() == chrome::kIsolatedAppScheme) {
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (url.is_valid() && url.scheme() == webapps::kIsolatedAppScheme) {
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string> iwa_url_info =
         web_app::IsolatedWebAppUrlInfo::Create(url);
     if (!iwa_url_info.has_value()) {
@@ -2118,6 +2130,8 @@ void SiteSettingsHandler::HandleRemoveZoomLevel(const base::Value::List& args) {
     host_zoom_map->SetZoomLevelForHost(url.host(), default_level);
     return;
   }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   content::HostZoomMap* host_zoom_map =
       content::HostZoomMap::GetDefaultForBrowserContext(profile_);

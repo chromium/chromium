@@ -7,6 +7,7 @@ include_rules = [
   "+components/tabs/public",
   "+components/app_icon_loader",
   "+extensions/strings/grit/extensions_strings.h",
+  "+components/webapps/isolated_web_apps/scheme.h",
   "+services/network/public",
 
   # Fuzzer tests require ICU initialization.

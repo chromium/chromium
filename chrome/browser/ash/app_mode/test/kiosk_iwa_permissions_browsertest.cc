@@ -13,10 +13,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/key_pair.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -197,7 +197,7 @@ class KioskIwaPermissionsBaseTest : public MixinBasedInProcessBrowserTest {
 
  private:
   const url::Origin kExpectedOrigin =
-      url::Origin::CreateFromNormalizedTuple(chrome::kIsolatedAppScheme,
+      url::Origin::CreateFromNormalizedTuple(webapps::kIsolatedAppScheme,
                                              GetTestWebBundleId().id(),
                                              /*port=*/0);
 

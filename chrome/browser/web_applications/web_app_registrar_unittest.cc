@@ -50,10 +50,10 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/url_constants.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
@@ -955,7 +955,7 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
   constexpr char kExpectedIwaStoragePartitionDomain[] =
       "i1kr80qqyjuuVC4UFPN7ovBngVoA2HbXGtTXtmQn6/H4=";
-  GURL start_url(base::StrCat({chrome::kIsolatedAppScheme,
+  GURL start_url(base::StrCat({webapps::kIsolatedAppScheme,
                                url::kStandardSchemeSeparator, kIwaHostname}));
   auto isolated_web_app = test::CreateWebApp(start_url);
   const webapps::AppId app_id = isolated_web_app->app_id();
@@ -1014,7 +1014,7 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
   constexpr char kExpectedIwaStoragePartitionDomain[] =
       "i1kr80qqyjuuVC4UFPN7ovBngVoA2HbXGtTXtmQn6/H4=";
-  GURL start_url(base::StrCat({chrome::kIsolatedAppScheme,
+  GURL start_url(base::StrCat({webapps::kIsolatedAppScheme,
                                url::kStandardSchemeSeparator, kIwaHostname}));
   auto isolated_web_app = test::CreateWebApp(start_url);
   const webapps::AppId app_id = isolated_web_app->app_id();
@@ -1831,7 +1831,7 @@ class WebAppRegistrarDisplayModeTest
       constexpr char kIwaHostname[] =
           "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
       start_url =
-          GURL(base::StrCat({chrome::kIsolatedAppScheme,
+          GURL(base::StrCat({webapps::kIsolatedAppScheme,
                              url::kStandardSchemeSeparator, kIwaHostname}));
     }
     auto web_app = test::CreateWebApp(start_url);
@@ -2122,7 +2122,7 @@ TEST_P(WebAppRegistrarParameterizedTest, Filter_IsIsolatedApp) {
 
   constexpr char kIwaHostname[] =
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-  GURL app_url(base::StrCat({chrome::kIsolatedAppScheme,
+  GURL app_url(base::StrCat({webapps::kIsolatedAppScheme,
                              url::kStandardSchemeSeparator, kIwaHostname}));
   auto isolated_web_app = test::CreateWebApp(app_url);
   const webapps::AppId app_id = isolated_web_app->app_id();

@@ -36,11 +36,11 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
@@ -307,7 +307,7 @@ void PWAHandler::InstallFromUrl(const std::string& in_manifest_id,
   }
 
   // This is isolated web app.
-  if (manifest_id_url.SchemeIs(chrome::kIsolatedAppScheme)) {
+  if (manifest_id_url.SchemeIs(webapps::kIsolatedAppScheme)) {
     InstallWebBundleFromUrl(manifest_id_url, url, std::move(callback));
     return;
   }

@@ -14,9 +14,9 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -185,7 +185,7 @@ TEST_F(KioskIwaDataTest, CreateSuccessWithPinningDowngradeAndNoChannel) {
 
 TEST_F(KioskIwaDataTest, CreateSuccessWithAllValues) {
   const auto kExpectedOrigin = url::Origin::CreateFromNormalizedTuple(
-      chrome::kIsolatedAppScheme, kTestWebBundleId, 0);
+      webapps::kIsolatedAppScheme, kTestWebBundleId, 0);
   const auto kExpectedWebAppId =
       web_app::GenerateAppId("", kExpectedOrigin.GetURL());
   const std::string kExpectedDefaultName = "iwa.com/path/";

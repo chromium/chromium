@@ -210,6 +210,9 @@ static_library("devtools") {
     ]
   }
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
   if (is_android) {
     sources += [
       "chrome_devtools_session_android.cc",
@@ -268,6 +271,9 @@ static_library("devtools") {
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/views/controls/webview",
     ]
+    if (is_mac || is_win || is_linux || is_chromeos) {
+      deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+    }
     if (is_chromeos) {
       deps += [
         "//ash/constants",

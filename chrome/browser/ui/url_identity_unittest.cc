@@ -7,9 +7,9 @@
 #include <string_view>
 
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,7 +52,7 @@ const web_package::SignedWebBundleId kTestIsolatedWebAppId =
     web_app::test::GetDefaultEd25519WebBundleId();
 
 const std::string kTestIsolatedWebAppUrl =
-    base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+    base::StrCat({webapps::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                   kTestIsolatedWebAppId.id()});
 }  // namespace
 

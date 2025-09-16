@@ -43,4 +43,7 @@ source_set("favicon") {
   if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
 }

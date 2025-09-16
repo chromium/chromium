@@ -5441,6 +5441,9 @@ source_set("url_identity") {
     "//extensions/buildflags",
     "//url",
   ]
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
   if (enable_extensions) {
     deps += [
       "//chrome/browser/web_applications",
