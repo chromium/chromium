@@ -395,7 +395,7 @@ bool DemuxerManager::WouldTaintOrigin() const {
     // HLS content.
     return true;
   }
-  return data_source_info_ ? data_source_info_->WouldTaintOrigin() : false;
+  return data_source_info_ && data_source_info_->WouldTaintOrigin();
 }
 
 bool DemuxerManager::HasDataSource() const {
@@ -438,7 +438,7 @@ bool DemuxerManager::PassedDataSourceTimingAllowOriginCheck() const {
   // revealed via the MediaSource or WebMediaPlayer that's using MSE.
   // TODO(crbug.com/40057824): Ensure that this returns the correct value for
   // HLS media, based on the TAO checks performed on those resources.
-  return data_source_ ? data_source_->PassedTimingAllowOriginCheck() : true;
+  return !data_source_ || data_source_->PassedTimingAllowOriginCheck();
 }
 
 bool DemuxerManager::IsLiveContent() const {
@@ -489,7 +489,7 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
 std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>
 DemuxerManager::CreateHlsDemuxer() {
   bool would_taint_origin =
-      data_source_info_ ? data_source_info_->WouldTaintOrigin() : false;
+      data_source_info_ && data_source_info_->WouldTaintOrigin();
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
       client_->GetHlsDataSourceProvider(), media_task_runner_,
       BindPostTaskToCurrentDefault(base::BindRepeating(

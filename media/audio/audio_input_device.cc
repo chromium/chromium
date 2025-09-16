@@ -160,9 +160,8 @@ void AudioInputDevice::Stop() {
 
   if (enable_uma_) {
     if (detect_dead_stream_ == DeadStreamDetection::kEnabled) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Media.Audio.Capture.DetectedMissingCallbacks",
-          alive_checker_ ? alive_checker_->DetectedDead() : false);
+      UMA_HISTOGRAM_BOOLEAN("Media.Audio.Capture.DetectedMissingCallbacks",
+                            alive_checker_ && alive_checker_->DetectedDead());
     }
 
     UMA_HISTOGRAM_ENUMERATION("Media.Audio.Capture.StreamCallbackError2",
