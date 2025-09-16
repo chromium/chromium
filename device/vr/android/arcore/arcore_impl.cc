@@ -535,10 +535,6 @@ ArCoreImpl::~ArCoreImpl() {
   for (auto& create_anchor : create_anchor_requests_) {
     create_anchor.TakeCallback().Run(mojom::CreateAnchorResult::FAILURE, 0);
   }
-
-  for (auto& create_anchor : create_plane_attached_anchor_requests_) {
-    create_anchor.TakeCallback().Run(mojom::CreateAnchorResult::FAILURE, 0);
-  }
 }
 
 std::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
@@ -1770,35 +1766,19 @@ bool ArCoreImpl::RequestHitTest(
 void ArCoreImpl::CreateAnchor(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const device::Pose& native_origin_from_anchor,
+    std::optional<uint64_t> plane_id,
     CreateAnchorCallback callback) {
   DVLOG(2) << __func__ << ": native_origin_information.which()="
            << static_cast<uint32_t>(native_origin_information.which())
            << ", native_origin_from_anchor.position()="
            << native_origin_from_anchor.position().ToString()
            << ", native_origin_from_anchor.orientation()="
-           << native_origin_from_anchor.orientation().ToString();
+           << native_origin_from_anchor.orientation().ToString()
+           << ", plane_id=" << plane_id.value_or(0);
 
   create_anchor_requests_.emplace_back(native_origin_information,
                                        native_origin_from_anchor.ToTransform(),
-                                       std::move(callback));
-}
-
-void ArCoreImpl::CreatePlaneAttachedAnchor(
-    const mojom::XRNativeOriginInformation& native_origin_information,
-    const device::Pose& native_origin_from_anchor,
-    uint64_t plane_id,
-    CreateAnchorCallback callback) {
-  DVLOG(2) << __func__ << ": native_origin_information.which()="
-           << static_cast<uint32_t>(native_origin_information.which())
-           << ", plane_id=" << plane_id
-           << ", native_origin_from_anchor.position()="
-           << native_origin_from_anchor.position().ToString()
-           << ", native_origin_from_anchor.orientation()="
-           << native_origin_from_anchor.orientation().ToString();
-
-  create_plane_attached_anchor_requests_.emplace_back(
-      native_origin_information, native_origin_from_anchor.ToTransform(),
-      plane_id, std::move(callback));
+                                       plane_id, std::move(callback));
 }
 
 void ArCoreImpl::ProcessAnchorCreationRequests(
@@ -1808,53 +1788,16 @@ void ArCoreImpl::ProcessAnchorCreationRequests(
   // This is only called from ArCoreGl::ProcessFrame if the feature is enabled.
   DCHECK(anchor_manager_);
 
-  DVLOG(2) << __func__ << ": Processing free-floating anchor creation requests";
-  ProcessAnchorCreationRequestsHelper(
-      mojo_from_viewer, input_state, &create_anchor_requests_, frame_time,
-      [this](const CreateAnchorRequest& create_anchor_request,
-             const gfx::Point3F& position, const gfx::Quaternion& orientation) {
-        return anchor_manager_->CreateAnchor(
-            device::mojom::Pose(orientation, position));
-      });
-
-  // Plane detection and anchors are separate features, we can't assume that
-  // plane detection is enabled. If not, just skip this step.
-  if (!plane_manager_)
-    return;
-
-  DVLOG(2) << __func__
-           << ": Processing plane-attached anchor creation requests";
-  ProcessAnchorCreationRequestsHelper(
-      mojo_from_viewer, input_state, &create_plane_attached_anchor_requests_,
-      frame_time,
-      [this](const CreatePlaneAttachedAnchorRequest& create_anchor_request,
-             const gfx::Point3F& position, const gfx::Quaternion& orientation) {
-        PlaneId plane_id = PlaneId(create_anchor_request.GetPlaneId());
-        return anchor_manager_->CreateAnchor(
-            plane_manager_.get(), device::mojom::Pose(orientation, position),
-            plane_id);
-      });
-}
-
-template <typename T, typename FunctionType>
-void ArCoreImpl::ProcessAnchorCreationRequestsHelper(
-    const gfx::Transform& mojo_from_viewer,
-    const std::vector<mojom::XRInputSourceStatePtr>& input_state,
-    std::vector<T>* anchor_creation_requests,
-    const base::TimeTicks& frame_time,
-    FunctionType&& create_anchor_function) {
-  DCHECK(anchor_creation_requests);
-
-  DVLOG(3) << __func__ << ": pre-call anchor_creation_requests->size()="
-           << anchor_creation_requests->size();
+  DVLOG(3) << __func__ << ": pre-call create_anchor_requests_.size()="
+           << create_anchor_requests_.size();
 
   // If we are unable to create an anchor because position of the native origin
   // is unknown, keep deferring it. On the other hand, if the anchor creation
   // failed in ARCore SDK, notify blink - we are ensuring that anchor creation
   // requests are processed when ARCore is in correct state so any failures
   // coming from ARCore SDK are real failures we won't be able to recover from.
-  std::vector<T> postponed_requests;
-  for (auto& create_anchor : *anchor_creation_requests) {
+  std::vector<CreateAnchorRequest> postponed_requests;
+  for (auto& create_anchor : create_anchor_requests_) {
     auto anchor_creation_age = frame_time - create_anchor.GetRequestStartTime();
 
     if (anchor_creation_age > kOutdatedAnchorCreationRequestThreshold) {
@@ -1907,9 +1850,15 @@ void ArCoreImpl::ProcessAnchorCreationRequestsHelper(
       continue;
     }
 
-    std::optional<AnchorId> maybe_anchor_id = std::forward<FunctionType>(
-        create_anchor_function)(create_anchor, mojo_from_anchor->position(),
-                                mojo_from_anchor->orientation());
+    std::optional<AnchorId> maybe_anchor_id;
+    auto maybe_plane_id = create_anchor.GetPlaneId();
+    if (maybe_plane_id) {
+      PlaneId plane_id = PlaneId(*maybe_plane_id);
+      maybe_anchor_id = anchor_manager_->CreatePlaneAnchor(
+          plane_manager_.get(), plane_id, *mojo_from_anchor);
+    } else {
+      maybe_anchor_id = anchor_manager_->CreateAnchor(*mojo_from_anchor);
+    }
 
     if (!maybe_anchor_id) {
       // Fail the call now, failure to create anchor in ARCore SDK is unlikely
@@ -1930,9 +1879,9 @@ void ArCoreImpl::ProcessAnchorCreationRequestsHelper(
 
   // Return the postponed requests - all other requests should have their
   // status already reported to blink at this point:
-  anchor_creation_requests->swap(postponed_requests);
-  DVLOG(3) << __func__ << ": post-call anchor_creation_requests->size()="
-           << anchor_creation_requests->size();
+  create_anchor_requests_.swap(postponed_requests);
+  DVLOG(3) << __func__ << ": post-call create_anchor_requests_.size()="
+           << create_anchor_requests_.size();
 }
 
 void ArCoreImpl::DetachAnchor(uint64_t anchor_id) {
@@ -2052,42 +2001,6 @@ bool ArCoreImpl::IsOnGlThread() const {
 
 std::unique_ptr<ArCore> ArCoreImplFactory::Create() {
   return std::make_unique<ArCoreImpl>();
-}
-
-CreatePlaneAttachedAnchorRequest::CreatePlaneAttachedAnchorRequest(
-    const mojom::XRNativeOriginInformation& native_origin_information,
-    const gfx::Transform& native_origin_from_anchor,
-    uint64_t plane_id,
-    CreateAnchorCallback callback)
-    : native_origin_information_(native_origin_information.Clone()),
-      native_origin_from_anchor_(native_origin_from_anchor),
-      plane_id_(plane_id),
-      request_start_time_(base::TimeTicks::Now()),
-      callback_(std::move(callback)) {}
-CreatePlaneAttachedAnchorRequest::CreatePlaneAttachedAnchorRequest(
-    CreatePlaneAttachedAnchorRequest&& other) = default;
-CreatePlaneAttachedAnchorRequest::~CreatePlaneAttachedAnchorRequest() = default;
-
-const mojom::XRNativeOriginInformation&
-CreatePlaneAttachedAnchorRequest::GetNativeOriginInformation() const {
-  return *native_origin_information_;
-}
-
-uint64_t CreatePlaneAttachedAnchorRequest::GetPlaneId() const {
-  return plane_id_;
-}
-
-gfx::Transform CreatePlaneAttachedAnchorRequest::GetNativeOriginFromAnchor()
-    const {
-  return native_origin_from_anchor_;
-}
-
-base::TimeTicks CreatePlaneAttachedAnchorRequest::GetRequestStartTime() const {
-  return request_start_time_;
-}
-
-CreateAnchorCallback CreatePlaneAttachedAnchorRequest::TakeCallback() {
-  return std::move(callback_);
 }
 
 }  // namespace device

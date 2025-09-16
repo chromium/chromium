@@ -28,19 +28,19 @@ device::Pose GetPoseFromArPose(const ArSession* session, const ArPose* pose) {
                       orientation_and_position.first);
 }
 
-device::internal::ScopedArCoreObject<ArPose*> GetArPoseFromMojomPose(
+device::internal::ScopedArCoreObject<ArPose*> GetArPoseFromDevicePose(
     const ArSession* session,
-    const device::mojom::Pose& pose) {
+    const device::Pose& pose) {
   float pose_raw[7] = {};  // 7 = orientation(4) + position(3).
 
-  pose_raw[0] = pose.orientation.x();
-  pose_raw[1] = pose.orientation.y();
-  pose_raw[2] = pose.orientation.z();
-  pose_raw[3] = pose.orientation.w();
+  pose_raw[0] = pose.orientation().x();
+  pose_raw[1] = pose.orientation().y();
+  pose_raw[2] = pose.orientation().z();
+  pose_raw[3] = pose.orientation().w();
 
-  pose_raw[4] = pose.position.x();
-  pose_raw[5] = pose.position.y();
-  pose_raw[6] = pose.position.z();
+  pose_raw[4] = pose.position().x();
+  pose_raw[5] = pose.position().y();
+  pose_raw[6] = pose.position().z();
 
   device::internal::ScopedArCoreObject<ArPose*> result;
 
@@ -310,13 +310,13 @@ std::optional<gfx::Transform> ArCorePlaneManager::GetMojoFromPlane(
 device::internal::ScopedArCoreObject<ArAnchor*>
 ArCorePlaneManager::CreateAnchor(base::PassKey<ArCoreAnchorManager> pass_key,
                                  PlaneId id,
-                                 const device::mojom::Pose& pose) const {
+                                 const device::Pose& pose) const {
   auto it = plane_id_to_plane_info_.find(id);
   if (it == plane_id_to_plane_info_.end()) {
     return {};
   }
 
-  auto ar_pose = GetArPoseFromMojomPose(arcore_session_, pose);
+  auto ar_pose = GetArPoseFromDevicePose(arcore_session_, pose);
 
   device::internal::ScopedArCoreObject<ArAnchor*> ar_anchor;
   ArStatus status = ArTrackable_acquireNewAnchor(

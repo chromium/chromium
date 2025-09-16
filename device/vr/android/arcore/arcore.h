@@ -161,25 +161,19 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
       base::OnceCallback<void(device::mojom::CreateAnchorResult,
                               uint64_t anchor_id)>;
 
-  // Creates free-floating anchor. This call will be deferred and the actual
-  // call may be postponed until ARCore is in correct state and the pose of
-  // native origin is known. The anchor pose passed in
-  // |native_origin_from_anchor| is expressed relative to a native origin passed
-  // in |native_origin_information|. The native origin will only be used to
-  // determine most up-to-date pose (i.e. it will *not* be used to create
-  // anchors attached to planes even if the native origin information describes
-  // a plane).
+  // Creates an anchor. This call will be deferred and the actual call may be
+  // postponed until ARCore is in correct state and the pose of the native
+  // origin is known. The anchor pose passed in |native_origin_from_anchor| is
+  // expressed relative to a native origin passed in
+  // |native_origin_information|. The native origin will only be used to
+  // determine most up-to-date pose. An anchor will only be attached to a plane
+  // if the optional |plane_id| is set. This |plane_id| *could* be different
+  // from the plane in the |native_origin_information|, as they serve different
+  // purposes.
   virtual void CreateAnchor(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const device::Pose& native_origin_from_anchor,
-      CreateAnchorCallback callback) = 0;
-  // Creates plane-attached anchor. This call will be deferred and the actual
-  // call may be postponed until ARCore is in correct state and the pose of
-  // the plane is known.
-  virtual void CreatePlaneAttachedAnchor(
-      const mojom::XRNativeOriginInformation& native_origin_information,
-      const device::Pose& native_origin_from_anchor,
-      uint64_t plane_id,
+      std::optional<uint64_t> plane_id,
       CreateAnchorCallback callback) = 0;
 
   // Starts processing anchor creation requests created by calls to

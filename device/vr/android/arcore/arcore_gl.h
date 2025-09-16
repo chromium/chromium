@@ -180,12 +180,8 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   void CreateAnchor(
       mojom::XRNativeOriginInformationPtr native_origin_information,
       const device::Pose& native_origin_from_anchor,
+      std::optional<uint64_t> plane_id,
       CreateAnchorCallback callback) override;
-  void CreatePlaneAnchor(
-      mojom::XRNativeOriginInformationPtr native_origin_information,
-      const device::Pose& native_origin_from_anchor,
-      uint64_t plane_id,
-      CreatePlaneAnchorCallback callback) override;
 
   void DetachAnchor(uint64_t anchor_id) override;
 

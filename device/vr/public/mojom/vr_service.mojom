@@ -926,34 +926,25 @@ interface XREnvironmentIntegrationProvider {
   // ignored.
   UnsubscribeFromHitTest(uint64 subscription_id);
 
-  // Issues a request to create a free-floating anchor (not attached to any
-  // particular real world entity).
+  // Issues a request to create an anchor. This anchor is free-floating (not
+  // attached to any particular real world entity), unless |plane_id| is set.
   // |native_origin_information| specifies native origin relative to which the
   // anchor is supposed to be created. |native_origin_from_anchor| describes the
   // desired pose of the newly created anchor.
+  // If set, |plane_id| identifies which plane the anchor will be attached to.
+  // This allows specifying a "stationary" pose for the anchor separate from the
+  // notion of the plane who should ultimately be its parent, as the center
+  // point of a plane may shift from frame to frame.
   // |result| will contain status code of the request. |anchor_id| will be valid
   // only if the |result| is SUCCESS.
   CreateAnchor(
     XRNativeOriginInformation native_origin_information,
-    Pose native_origin_from_anchor)
+    Pose native_origin_from_anchor,
+    uint64? plane_id)
       => (CreateAnchorResult result, uint64 anchor_id);
   // TODO(crbug.com/40489779): Switch anchor_id to nullable integer once
   // that's available. This will allow us to remove CreateAnchorResult if we're
   // not interested in obtaining detailed error information from the device.
-
-  // Issues a request to create an anchor attached to a plane.
-  // |native_origin_information| specifies native origin relative to which the
-  // anchor is supposed to be created. |native_origin_from_anchor| describes the
-  // desired pose of the newly created anchor. |plane_id| identifies which plane
-  // the anchor will be attached to.
-  // |result| will contain status code of the request. |anchor_id| will be valid
-  // only if the |result| is SUCCESS.
-  CreatePlaneAnchor(
-    XRNativeOriginInformation native_origin_information,
-    Pose native_origin_from_anchor,
-    uint64 plane_id)
-      => (CreateAnchorResult result, uint64 anchor_id);
-  // TODO(crbug.com/40489779): Ditto - make anchor_id a nullable integer.
 
   // Detaches an existing anchor. The |anchor_id| must be a valid id of an
   // anchor created by one of the CreateAnchor calls, otherwise the call will be

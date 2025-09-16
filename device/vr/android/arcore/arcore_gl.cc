@@ -1387,28 +1387,14 @@ void ArCoreGl::UnsubscribeFromHitTest(uint64_t subscription_id) {
 void ArCoreGl::CreateAnchor(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const device::Pose& native_origin_from_anchor,
+    std::optional<uint64_t> plane_id,
     CreateAnchorCallback callback) {
   DVLOG(2) << __func__;
 
   DCHECK(native_origin_information);
 
   arcore_->CreateAnchor(*native_origin_information, native_origin_from_anchor,
-                        std::move(callback));
-}
-
-void ArCoreGl::CreatePlaneAnchor(
-    mojom::XRNativeOriginInformationPtr native_origin_information,
-    const device::Pose& native_origin_from_anchor,
-    uint64_t plane_id,
-    CreatePlaneAnchorCallback callback) {
-  DVLOG(2) << __func__ << ": plane_id=" << plane_id;
-
-  DCHECK(native_origin_information);
-  DCHECK(plane_id);
-
-  arcore_->CreatePlaneAttachedAnchor(*native_origin_information,
-                                     native_origin_from_anchor, plane_id,
-                                     std::move(callback));
+                        plane_id, std::move(callback));
 }
 
 void ArCoreGl::DetachAnchor(uint64_t anchor_id) {

@@ -20,6 +20,7 @@ namespace device {
 
 class ArCoreImpl;
 class ArCoreAnchorManager;
+class Pose;
 
 using PlaneId = base::IdTypeU64<class PlaneTag>;
 
@@ -29,9 +30,9 @@ std::pair<gfx::Quaternion, gfx::Point3F> GetPositionAndOrientationFromArPose(
 
 device::Pose GetPoseFromArPose(const ArSession* session, const ArPose* pose);
 
-device::internal::ScopedArCoreObject<ArPose*> GetArPoseFromMojomPose(
+device::internal::ScopedArCoreObject<ArPose*> GetArPoseFromDevicePose(
     const ArSession* session,
-    const device::mojom::Pose& pose);
+    const device::Pose& pose);
 
 class ArCorePlaneManager {
  public:
@@ -62,7 +63,7 @@ class ArCorePlaneManager {
   device::internal::ScopedArCoreObject<ArAnchor*> CreateAnchor(
       base::PassKey<ArCoreAnchorManager> pass_key,
       PlaneId id,
-      const device::mojom::Pose& pose) const;
+      const Pose& pose) const;
 
  private:
   struct PlaneInfo {

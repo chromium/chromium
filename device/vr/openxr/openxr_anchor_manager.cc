@@ -24,10 +24,11 @@ OpenXrAnchorManager::~OpenXrAnchorManager() {
 void OpenXrAnchorManager::AddCreateAnchorRequest(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const device::Pose& native_origin_from_anchor,
+    std::optional<uint64_t> plane_id,
     CreateAnchorCallback callback) {
   create_anchor_requests_.emplace_back(native_origin_information,
                                        native_origin_from_anchor.ToTransform(),
-                                       std::move(callback));
+                                       plane_id, std::move(callback));
 }
 
 device::mojom::XRAnchorsDataPtr OpenXrAnchorManager::ProcessAnchorsForFrame(
@@ -51,6 +52,7 @@ void OpenXrAnchorManager::ProcessCreateAnchorRequests(
     // We'll let the child classes determine how to handle that, whether that's
     // parsing an XrLocation out of it themselves to then call `CreateAnchor` or
     // if they have a way to directly attach it to the plane via the PlaneId.
+    // TODO(https://crbug.com/394772465): Fixup OpenXr PlaneId handling.
     if (request.GetNativeOriginInformation().which() ==
         mojom::XRNativeOriginInformation::Tag::kPlaneId) {
       anchor_id = CreatePlaneAnchor(

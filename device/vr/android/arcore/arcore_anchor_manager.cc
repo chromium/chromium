@@ -189,8 +189,8 @@ void ArCoreAnchorManager::Update(ArFrame* ar_frame) {
 }
 
 std::optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
-    const device::mojom::Pose& pose) {
-  auto ar_pose = GetArPoseFromMojomPose(arcore_session_, pose);
+    const device::Pose& pose) {
+  auto ar_pose = GetArPoseFromDevicePose(arcore_session_, pose);
 
   device::internal::ScopedArCoreObject<ArAnchor*> ar_anchor;
   ArStatus status = ArSession_acquireNewAnchor(
@@ -219,10 +219,10 @@ std::optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
   return result.id;
 }
 
-std::optional<AnchorId> ArCoreAnchorManager::CreateAnchor(
+std::optional<AnchorId> ArCoreAnchorManager::CreatePlaneAnchor(
     ArCorePlaneManager* plane_manager,
-    const device::mojom::Pose& pose,
-    PlaneId plane_id) {
+    PlaneId plane_id,
+    const device::Pose& pose) {
   DCHECK(plane_manager);
 
   DVLOG(2) << __func__ << ": plane_id=" << plane_id;

@@ -27,31 +27,6 @@ class ArCorePlaneManager;
 
 using AnchorId = base::IdTypeU64<class AnchorTag>;
 
-class CreatePlaneAttachedAnchorRequest {
- public:
-  uint64_t GetPlaneId() const;
-  const mojom::XRNativeOriginInformation& GetNativeOriginInformation() const;
-  gfx::Transform GetNativeOriginFromAnchor() const;
-  base::TimeTicks GetRequestStartTime() const;
-
-  CreateAnchorCallback TakeCallback();
-
-  CreatePlaneAttachedAnchorRequest(
-      const mojom::XRNativeOriginInformation& native_origin_information,
-      const gfx::Transform& native_origin_from_anchor,
-      uint64_t plane_id,
-      CreateAnchorCallback callback);
-  CreatePlaneAttachedAnchorRequest(CreatePlaneAttachedAnchorRequest&& other);
-  ~CreatePlaneAttachedAnchorRequest();
-
- private:
-  mojom::XRNativeOriginInformationPtr native_origin_information_;
-  const gfx::Transform native_origin_from_anchor_;
-  const uint64_t plane_id_;
-  const base::TimeTicks request_start_time_;
-
-  CreateAnchorCallback callback_;
-};
 
 // This class should be created and accessed entirely on a Gl thread.
 class ArCoreImpl : public ArCore {
@@ -119,11 +94,7 @@ class ArCoreImpl : public ArCore {
   void CreateAnchor(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const device::Pose& native_origin_from_anchor,
-      CreateAnchorCallback callback) override;
-  void CreatePlaneAttachedAnchor(
-      const mojom::XRNativeOriginInformation& native_origin_information,
-      const device::Pose& native_origin_from_anchor,
-      uint64_t plane_id,
+      std::optional<uint64_t> plane_id,
       CreateAnchorCallback callback) override;
 
   void ProcessAnchorCreationRequests(
@@ -194,8 +165,6 @@ class ArCoreImpl : public ArCore {
       hit_test_subscription_id_to_transient_hit_test_data_;
 
   std::vector<CreateAnchorRequest> create_anchor_requests_;
-  std::vector<CreatePlaneAttachedAnchorRequest>
-      create_plane_attached_anchor_requests_;
 
   // The time delta (relative to ARCore's depth data time base) of the last
   // retrieved depth API data. Used to ensure that we do not return same data to
@@ -259,22 +228,6 @@ class ArCoreImpl : public ArCore {
       const gfx::Transform& mojo_from_viewer,
       const std::vector<mojom::XRInputSourceStatePtr>& maybe_input_state);
 
-  // Processes deferred anchor creation requests.
-  // |mojo_from_viewer| - viewer pose in world space of the current frame.
-  // |input_state| - current input state.
-  // |anchor_creation_requests| - vector of deferred anchor creation requests
-  // that are supposed to be processed now; post-call, the vector will only
-  // contain the requests that have not been processed.
-  // |create_anchor_function| - function to call to actually create the anchor;
-  // it will receive the specific anchor creation request, along with position
-  // and orientation for the anchor, and must return std::optional<AnchorId>.
-  template <typename T, typename FunctionType>
-  void ProcessAnchorCreationRequestsHelper(
-      const gfx::Transform& mojo_from_viewer,
-      const std::vector<mojom::XRInputSourceStatePtr>& input_state,
-      std::vector<T>* anchor_creation_requests,
-      const base::TimeTicks& frame_time,
-      FunctionType&& create_anchor_function);
 
   // Helper, attempts to configure ArSession's camera for use. Note that this is
   // happening during initialization, before arcore_session_ is set.

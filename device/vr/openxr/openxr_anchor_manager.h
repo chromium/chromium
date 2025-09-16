@@ -34,6 +34,7 @@ class OpenXrAnchorManager {
   void AddCreateAnchorRequest(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const device::Pose& native_origin_from_anchor,
+      std::optional<uint64_t> plane_id,
       CreateAnchorCallback callback);
 
   device::mojom::XRAnchorsDataPtr ProcessAnchorsForFrame(

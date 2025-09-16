@@ -857,19 +857,11 @@ ScriptPromise<XRAnchor> XRSession::CreateAnchorHelper(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  if (maybe_plane_id) {
-    xr_->xrEnvironmentProviderRemote()->CreatePlaneAnchor(
-        native_origin_information->Clone(),
-        *maybe_native_origin_from_anchor_pose, *maybe_plane_id,
-        resolver->WrapCallbackInScriptScope(
-            BindOnce(&XRSession::OnCreateAnchorResult, WrapPersistent(this))));
-  } else {
-    xr_->xrEnvironmentProviderRemote()->CreateAnchor(
-        native_origin_information->Clone(),
-        *maybe_native_origin_from_anchor_pose,
-        resolver->WrapCallbackInScriptScope(
-            BindOnce(&XRSession::OnCreateAnchorResult, WrapPersistent(this))));
-  }
+  xr_->xrEnvironmentProviderRemote()->CreateAnchor(
+      native_origin_information->Clone(), *maybe_native_origin_from_anchor_pose,
+      maybe_plane_id,
+      resolver->WrapCallbackInScriptScope(
+          BindOnce(&XRSession::OnCreateAnchorResult, WrapPersistent(this))));
 
   create_anchor_promises_.insert(resolver);
 

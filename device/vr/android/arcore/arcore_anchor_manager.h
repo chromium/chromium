@@ -20,6 +20,7 @@
 namespace device {
 
 class ArCoreImpl;
+class Pose;
 
 using AnchorId = base::IdTypeU64<class AnchorTag>;
 
@@ -41,12 +42,12 @@ class ArCoreAnchorManager {
   std::optional<gfx::Transform> GetMojoFromAnchor(AnchorId id) const;
 
   // Creates Anchor object given a plane ID.
-  std::optional<AnchorId> CreateAnchor(ArCorePlaneManager* plane_manager,
-                                       const device::mojom::Pose& pose,
-                                       PlaneId plane_id);
+  std::optional<AnchorId> CreatePlaneAnchor(ArCorePlaneManager* plane_manager,
+                                            PlaneId plane_id,
+                                            const Pose& pose);
 
   // Creates free-floating Anchor.
-  std::optional<AnchorId> CreateAnchor(const device::mojom::Pose& pose);
+  std::optional<AnchorId> CreateAnchor(const Pose& pose);
 
   void DetachAnchor(AnchorId anchor_id);
 

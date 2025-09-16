@@ -344,18 +344,10 @@ mojom::XRDepthDataPtr FakeArCore::GetDepthData() {
   return nullptr;
 }
 
-void FakeArCore::CreatePlaneAttachedAnchor(
-    const mojom::XRNativeOriginInformation& native_origin_information,
-    const device::Pose& native_origin_from_anchor,
-    uint64_t plane_id,
-    CreateAnchorCallback callback) {
-  // TODO(crbug.com/41475117): Fix this when implementing tests.
-  std::move(callback).Run(mojom::CreateAnchorResult::FAILURE, 0);
-}
-
 void FakeArCore::CreateAnchor(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const device::Pose& native_origin_from_anchor,
+    std::optional<uint64_t> plane_id,
     CreateAnchorCallback callback) {
   std::move(callback).Run(mojom::CreateAnchorResult::FAILURE, 0);
 }

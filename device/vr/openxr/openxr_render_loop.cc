@@ -1026,6 +1026,7 @@ void OpenXrRenderLoop::UnsubscribeFromHitTest(uint64_t subscription_id) {
 void OpenXrRenderLoop::CreateAnchor(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const device::Pose& native_origin_from_anchor,
+    std::optional<uint64_t> plane_id,
     CreateAnchorCallback callback) {
   OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
   if (!anchor_manager) {
@@ -1033,17 +1034,8 @@ void OpenXrRenderLoop::CreateAnchor(
     return;
   }
   anchor_manager->AddCreateAnchorRequest(*native_origin_information,
-                                         native_origin_from_anchor,
+                                         native_origin_from_anchor, plane_id,
                                          std::move(callback));
-}
-
-void OpenXrRenderLoop::CreatePlaneAnchor(
-    mojom::XRNativeOriginInformationPtr native_origin_information,
-    const device::Pose& native_origin_from_anchor,
-    uint64_t plane_id,
-    CreatePlaneAnchorCallback callback) {
-  CreateAnchor(std::move(native_origin_information), native_origin_from_anchor,
-               std::move(callback));
 }
 
 void OpenXrRenderLoop::DetachAnchor(uint64_t anchor_id) {
