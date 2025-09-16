@@ -10,10 +10,6 @@ const char kProductSpecificationsName[] = "Product Specifications";
 const char kProductSpecificationsDescription[] =
     "Enable the Product Specifications feature.";
 
-const char kCompareConfirmationToastName[] = "Added to set confirmation toast";
-const char kCompareConfirmationToastDescription[] =
-    "Enable to show the added to set confirmation in a toast.";
-
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
 

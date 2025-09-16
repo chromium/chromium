@@ -61,9 +61,8 @@ class ProductSpecificationsPageActionControllerUnittest
       : prefs_(std::make_unique<TestingPrefServiceSimple>()) {}
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {commerce::kProductSpecifications},
-        {commerce::kCompareConfirmationToast});
+    scoped_feature_list_.InitWithFeatures({commerce::kProductSpecifications},
+                                          {});
     shopping_service_ = std::make_unique<MockShoppingService>();
     base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
     account_checker_ = std::make_unique<MockAccountChecker>();
@@ -352,8 +351,9 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_FALSE(controller_->IsInRecommendedSet());
 }
 
+// TODO(mdjones): Reenable if we restart the compare experiment.
 TEST_F(ProductSpecificationsPageActionControllerUnittest,
-       OnProductSpecificationsSetUpdated) {
+       DISABLED_OnProductSpecificationsSetUpdated) {
   // Set up ClusterManager to trigger page action.
   auto product_group = CreateProductGroup();
   mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
@@ -468,17 +468,10 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_FALSE(controller_->IsInRecommendedSet());
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ProductSpecificationsPageActionControllerUnittest,
-                         testing::Bool());
-
-TEST_P(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
+TEST_F(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
   base::test::ScopedFeatureList test_features;
   std::vector<base::test::FeatureRef> enabled_features = {
       commerce::kProductSpecifications};
-  if (GetParam()) {
-    enabled_features.push_back(commerce::kCompareConfirmationToast);
-  }
   test_features.InitWithFeatures(enabled_features, /*disabled_features*/ {});
 
   // Set up ClusterManager to trigger page action.
@@ -511,19 +504,7 @@ TEST_P(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
   controller_->OnIconClicked();
   ASSERT_TRUE(controller_->IsInRecommendedSet());
 
-  if (GetParam()) {
-    ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
-  } else {
-    // Second click would remove the product from the product specifications
-    // set.
-    ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
-    expected_urls = {UrlInfo(GURL(kTestUrl2), u"")};
-    EXPECT_CALL(*mock_product_specifications_service_,
-                SetUrls(product_group->uuid, expected_urls))
-        .Times(1);
-    controller_->OnIconClicked();
-    ASSERT_FALSE(controller_->IsInRecommendedSet());
-  }
+  ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
 }
 
 TEST_F(ProductSpecificationsPageActionControllerUnittest,

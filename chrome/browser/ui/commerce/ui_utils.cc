@@ -38,10 +38,6 @@ void ShowProductSpecsConfirmationToast(std::u16string set_name,
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(commerce::kCompareConfirmationToast)) {
-    return;
-  }
-
   ToastParams params(ToastId::kAddedToComparisonTable);
   params.body_string_replacement_params = {set_name};
   toast_controller->MaybeShowToast(std::move(params));

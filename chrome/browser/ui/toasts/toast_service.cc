@@ -111,8 +111,7 @@ void ToastService::RegisterToasts(
           .AddGlobalScoped()
           .Build());
 
-  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications) &&
-      base::FeatureList::IsEnabled(commerce::kCompareConfirmationToast)) {
+  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
     toast_registry_->RegisterToast(
         ToastId::kAddedToComparisonTable,
         ToastSpecification::Builder(omnibox::kProductSpecificationsAddedIcon,

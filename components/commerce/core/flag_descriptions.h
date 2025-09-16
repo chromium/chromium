@@ -12,9 +12,6 @@ namespace commerce::flag_descriptions {
 extern const char kProductSpecificationsName[];
 extern const char kProductSpecificationsDescription[];
 
-extern const char kCompareConfirmationToastName[];
-extern const char kCompareConfirmationToastDescription[];
-
 extern const char kShoppingListName[];
 extern const char kShoppingListDescription[];
 

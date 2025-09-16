@@ -167,8 +167,6 @@ BASE_FEATURE(kProductSpecifications, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCompareConfirmationToast, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kProductSpecificationsCache, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Discount on navigation

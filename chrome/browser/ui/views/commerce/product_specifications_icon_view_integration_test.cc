@@ -38,8 +38,7 @@ const char kUrlB[] = "about:blank";
 }  // namespace
 
 class ProductSpecificationsIconViewIntegrationTest
-    : public TestWithBrowserView,
-      public ::testing::WithParamInterface<bool> {
+    : public TestWithBrowserView {
  public:
   ProductSpecificationsIconViewIntegrationTest() {
     commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
@@ -53,12 +52,8 @@ class ProductSpecificationsIconViewIntegrationTest
   ~ProductSpecificationsIconViewIntegrationTest() override = default;
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        commerce::kProductSpecifications};
-    if (GetParam()) {
-      enabled_features.push_back(commerce::kCompareConfirmationToast);
-    }
-    test_features_.InitWithFeatures(enabled_features, /*disabled_features*/ {});
+    test_features_.InitWithFeatures({commerce::kProductSpecifications},
+                                    /*disabled_features*/ {});
     TestWithBrowserView::SetUp();
 
     account_checker_ = std::make_unique<commerce::MockAccountChecker>();
@@ -116,7 +111,7 @@ class ProductSpecificationsIconViewIntegrationTest
   ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
-TEST_P(ProductSpecificationsIconViewIntegrationTest, IconVisibility) {
+TEST_F(ProductSpecificationsIconViewIntegrationTest, IconVisibility) {
   ON_CALL(*GetTabHelper(), ShouldShowProductSpecificationsIconView)
       .WillByDefault(testing::Return(true));
 
@@ -130,7 +125,7 @@ TEST_P(ProductSpecificationsIconViewIntegrationTest, IconVisibility) {
   EXPECT_FALSE(icon_view->GetVisible());
 }
 
-TEST_P(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
+TEST_F(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
   ON_CALL(*GetTabHelper(), ShouldShowProductSpecificationsIconView)
       .WillByDefault(testing::Return(true));
 
@@ -138,41 +133,35 @@ TEST_P(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
   auto* icon_view = GetChip();
   EXPECT_TRUE(icon_view->GetVisible());
 
-  if (GetParam()) {
-    ON_CALL(*GetTabHelper(), GetComparisonSetName)
-        .WillByDefault(testing::Return(u"Set"));
+  ON_CALL(*GetTabHelper(), GetComparisonSetName)
+      .WillByDefault(testing::Return(u"Set"));
 
-    ToastController* toast_controller =
-        browser()->browser_window_features()->toast_controller();
-    EXPECT_FALSE(toast_controller->IsShowingToast());
-  }
+  ToastController* toast_controller =
+      browser()->browser_window_features()->toast_controller();
+  EXPECT_FALSE(toast_controller->IsShowingToast());
 
   EXPECT_CALL(*GetTabHelper(), OnProductSpecificationsIconClicked).Times(1);
   icon_view->ExecuteForTesting();
 
-  if (GetParam()) {
-    // Verify toast is showing.
-    ToastController* toast_controller =
-        browser()->browser_window_features()->toast_controller();
-    EXPECT_TRUE(toast_controller->IsShowingToast());
+  // Verify toast is showing.
+  EXPECT_TRUE(toast_controller->IsShowingToast());
 
-    GURL expected_comparison_table_url = GURL("example.com");
-    ON_CALL(*GetTabHelper(), GetComparisonTableURL)
-        .WillByDefault(testing::Return(expected_comparison_table_url));
+  GURL expected_comparison_table_url = GURL("example.com");
+  ON_CALL(*GetTabHelper(), GetComparisonTableURL)
+      .WillByDefault(testing::Return(expected_comparison_table_url));
 
-    // Simulate clicking the "Open" button in the toast.
-    GetTabHelper()->OnOpenComparePageClicked();
-    EXPECT_EQ(browser()
-                  ->browser_window_features()
-                  ->tab_strip_model()
-                  ->GetActiveTab()
-                  ->GetContents()
-                  ->GetLastCommittedURL(),
-              expected_comparison_table_url);
-  }
+  // Simulate clicking the "Open" button in the toast.
+  GetTabHelper()->OnOpenComparePageClicked();
+  EXPECT_EQ(browser()
+                ->browser_window_features()
+                ->tab_strip_model()
+                ->GetActiveTab()
+                ->GetContents()
+                ->GetLastCommittedURL(),
+            expected_comparison_table_url);
 }
 
-TEST_P(ProductSpecificationsIconViewIntegrationTest, TestVisualState) {
+TEST_F(ProductSpecificationsIconViewIntegrationTest, TestVisualState) {
   std::u16string added_title = u"Added to set";
   std::u16string add_title = u"Add to set";
 
@@ -200,7 +189,3 @@ TEST_P(ProductSpecificationsIconViewIntegrationTest, TestVisualState) {
   EXPECT_TRUE(icon_view->GetVisible());
   EXPECT_EQ(icon_view->GetText(), add_title);
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ProductSpecificationsIconViewIntegrationTest,
-                         testing::Bool());
