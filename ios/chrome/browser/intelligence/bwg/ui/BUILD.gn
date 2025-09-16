@@ -38,6 +38,27 @@ source_set("ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "gemini_egtest.mm" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/page_action_menu/utils",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 bundle_data("bwg_lottie_resources") {
   sources = [ "resources/FRE_Banner.json" ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
