@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
@@ -45,6 +46,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -80,19 +82,18 @@ class MockSigninUiDelegate : public SigninUiDelegateImplDice {
                bool is_sync_promo,
                bool user_already_signed_in),
               ());
+  MOCK_METHOD(void,
+              ShowHistorySyncOptinUI,
+              (Profile * profile, const CoreAccountId& account_id),
+              ());
 };
 
 }  // namespace
 
-class SigninUiUtilTest : public base::test::WithFeatureOverride,
-                         public SigninBrowserTestBase {
+class SigninUiUtilTestBase : public SigninBrowserTestBase {
  public:
-  SigninUiUtilTest()
-      : base::test::WithFeatureOverride(
-            switches::kBrowserSigninInSyncHeaderOnGaiaIntegration),
-        delegate_auto_reset_(SetSigninUiDelegateForTesting(&mock_delegate_)) {}
-
-  bool IsFixGaiaIntegrationEnabled() const { return IsParamFeatureEnabled(); }
+  SigninUiUtilTestBase()
+      : delegate_auto_reset_(SetSigninUiDelegateForTesting(&mock_delegate_)) {}
 
  protected:
   // Returns the identity manager.
@@ -111,17 +112,13 @@ class SigninUiUtilTest : public base::test::WithFeatureOverride,
                                  access_point_);
   }
 
-  void ExpectTurnSyncOn(signin_metrics::AccessPoint access_point,
-                        signin_metrics::PromoAction promo_action,
-                        const CoreAccountId& account_id,
-                        TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-                        bool is_sync_promo,
-                        bool user_already_signed_in) {
-    EXPECT_CALL(mock_delegate_,
-                ShowTurnSyncOnUI(browser()->profile(), access_point,
-                                 promo_action, account_id, signin_aborted_mode,
-                                 is_sync_promo, user_already_signed_in));
-  }
+  virtual void ExpectTurnSyncOn(
+      signin_metrics::AccessPoint access_point,
+      signin_metrics::PromoAction promo_action,
+      const CoreAccountId& account_id,
+      TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
+      bool is_sync_promo,
+      bool user_already_signed_in) = 0;
 
   void ExpectNoSigninStartedHistograms(
       const base::HistogramTester& histogram_tester) {
@@ -199,6 +196,86 @@ class SigninUiUtilTest : public base::test::WithFeatureOverride,
     }
   }
 
+  signin_metrics::AccessPoint access_point_ =
+      signin_metrics::AccessPoint::kBookmarkBubble;
+
+  testing::StrictMock<MockSigninUiDelegate> mock_delegate_;
+  base::AutoReset<SigninUiDelegate*> delegate_auto_reset_;
+};
+
+class SigninUiUtilTest : public SigninUiUtilTestBase,
+                         public base::test::WithFeatureOverride {
+ public:
+  SigninUiUtilTest()
+      : base::test::WithFeatureOverride(
+            switches::kBrowserSigninInSyncHeaderOnGaiaIntegration) {}
+
+  bool WithUpdatedGaiaIntegrationEnabled() const {
+    return IsParamFeatureEnabled();
+  }
+
+  void ExpectTurnSyncOn(signin_metrics::AccessPoint access_point,
+                        signin_metrics::PromoAction promo_action,
+                        const CoreAccountId& account_id,
+                        TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
+                        bool is_sync_promo,
+                        bool user_already_signed_in) override {
+    EXPECT_CALL(mock_delegate_,
+                ShowTurnSyncOnUI(browser()->profile(), access_point,
+                                 promo_action, account_id, signin_aborted_mode,
+                                 is_sync_promo, user_already_signed_in));
+  }
+};
+
+class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
+    : public SigninUiUtilTestBase,
+      public testing::WithParamInterface<std::tuple<
+          /*BrowserSigninInSyncHeaderOnGaiaIntegration=*/bool,
+          /*ReplaceSyncPromosWithSignInPromos=*/bool>> {
+ public:
+  SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (WithUpdatedGaiaIntegrationEnabled()) {
+      enabled_features.push_back(
+          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration);
+    } else {
+      disabled_features.push_back(
+          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration);
+    }
+    if (IsReplaceSyncPromosWithSignInPromosEnabled()) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    } else {
+      disabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool WithUpdatedGaiaIntegrationEnabled() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool IsReplaceSyncPromosWithSignInPromosEnabled() const {
+    return std::get<1>(GetParam());
+  }
+
+  void ExpectTurnSyncOn(signin_metrics::AccessPoint access_point,
+                        signin_metrics::PromoAction promo_action,
+                        const CoreAccountId& account_id,
+                        TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
+                        bool is_sync_promo,
+                        bool user_already_signed_in) override {
+    EXPECT_CALL(mock_delegate_,
+                ShowTurnSyncOnUI(browser()->profile(), access_point,
+                                 promo_action, account_id, signin_aborted_mode,
+                                 is_sync_promo, user_already_signed_in))
+        .Times(IsReplaceSyncPromosWithSignInPromosEnabled() ? 0 : 1);
+    EXPECT_CALL(mock_delegate_,
+                ShowHistorySyncOptinUI(browser()->profile(), account_id))
+        .Times(IsReplaceSyncPromosWithSignInPromosEnabled() ? 1 : 0);
+  }
+
+ protected:
   void TestEnableSyncPromoWithExistingWebOnlyAccount() {
     CoreAccountId account_id =
         GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -223,18 +300,21 @@ class SigninUiUtilTest : public base::test::WithFeatureOverride,
         GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   }
 
-  bool WithUpdatedGaiaIntegrationEnabled() { return GetParam(); }
-
-  signin_metrics::AccessPoint access_point_ =
-      signin_metrics::AccessPoint::kBookmarkBubble;
-
-  testing::StrictMock<MockSigninUiDelegate> mock_delegate_;
-  base::AutoReset<SigninUiDelegate*> delegate_auto_reset_;
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SigninUiUtilTest);
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, EnableSyncWithExistingAccount) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+    testing::Combine(
+        /*BrowserSigninInSyncHeaderOnGaiaIntegration=*/testing::Bool(),
+        /*ReplaceSyncPromosWithSignInPromos=*/testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+                       EnableSyncWithExistingAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -270,7 +350,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, EnableSyncWithExistingAccount) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+                       EnableSyncWithAccountThatNeedsReauth) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -320,7 +401,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+                       EnableSyncForNewAccountWithNoTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
@@ -345,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
             active_contents->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest,
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncForNewAccountWithNoTabWithExisting) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
@@ -368,7 +450,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest,
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+                       EnableSyncForNewAccountWithOneTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   ui_test_utils::NavigateToURLWithDisposition(
@@ -566,7 +649,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2), accounts[2].gaia);
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, MergeDiceSigninTab) {
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+                       MergeDiceSigninTab) {
   base::UserActionTester user_action_tester;
   EnableSync(CoreAccountInfo(), false);
   EXPECT_EQ(
@@ -632,7 +716,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, ShowReauthTab) {
       testing::StartsWith(GaiaUrls::GetInstance()->add_account_url().spec()));
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, ShowExtensionSigninPrompt) {
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+                       ShowExtensionSigninPrompt) {
   const GURL sync_url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
 
   Profile* profile = browser()->profile();
@@ -687,7 +772,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest,
   EXPECT_EQ(1, tab_strip->count());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, ShowSigninPromptFromPromo) {
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+                       ShowSigninPromptFromPromo) {
   Profile* profile = browser()->profile();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ShowSigninPromptFromPromo(profile, access_point_);
@@ -757,7 +843,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
             sign_in_tab->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, EnableSyncWithExistingWebOnlyAccount) {
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+                       EnableSyncWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -791,7 +878,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, EnableSyncWithExistingWebOnlyAccount) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest,
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncPromoWithExistingWebOnlyAccountAvatarBubble) {
   access_point_ = signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
 
@@ -799,7 +886,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest,
 }
 
 // Checks that sync is treated as a promo for kSettings.
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest,
+IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncPromoWithExistingWebOnlyAccountSettings) {
   access_point_ = signin_metrics::AccessPoint::kSettings;
 

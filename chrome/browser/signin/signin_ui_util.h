@@ -70,13 +70,18 @@ void SignInFromSingleAccountPromo(Profile* profile,
                                   const CoreAccountInfo& account,
                                   signin_metrics::AccessPoint access_point);
 
-// This function is used to enable sync for a given account:
+// This function is used to enable sync or the history sync for a given account:
+// Which screen is shown depends on the feature
+// `kReplaceSyncPromosWithSignInPromos`.
 // * This function does nothing if the user is already signed in to Chrome.
 // * If |account| is empty, then it presents the Chrome sign-in page.
 // * If token service has an invalid refresh token for account |account|,
 //   then it presents the Chrome sign-in page with |account.email| prefilled.
 // * If token service has a valid refresh token for |account|, then it
-//   enables sync for |account|.
+//   shows to the user the sync consent screen is
+//   `kReplaceSyncPromosWithSignInPromos` is disabled or the history sync optin
+//   screen if `kReplaceSyncPromosWithSignInPromos` is enabled.
+// TODO(crbug.com/418145883): Consider renaming this method.
 void EnableSyncFromSingleAccountPromo(Profile* profile,
                                       const CoreAccountInfo& account,
                                       signin_metrics::AccessPoint access_point);
@@ -88,6 +93,7 @@ void EnableSyncFromSingleAccountPromo(Profile* profile,
 //
 // |is_default_promo_account| is true if |account| corresponds to the default
 // account in the promo. It is ignored if |account| is empty.
+// TODO(crbug.com/418145883): Consider renaming this method.
 void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      const CoreAccountInfo& account,
                                      signin_metrics::AccessPoint access_point,

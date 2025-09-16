@@ -54,6 +54,11 @@ class SigninUiDelegate {
       bool is_sync_promo,
       bool user_already_signed_in);
 
+  // Displays a history sync opt-in dialog to the user for an account
+  // identified by `account_id`. Account must be a valid (have no auth error).
+  virtual void ShowHistorySyncOptinUI(Profile* profile,
+                                      const CoreAccountId& account_id);
+
  protected:
   static Browser* EnsureBrowser(Profile* profile);
 };

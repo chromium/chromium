@@ -331,11 +331,6 @@ void EnableSyncFromSingleAccountPromo(
     Profile* profile,
     const CoreAccountInfo& account,
     signin_metrics::AccessPoint access_point) {
-  // TODO(crbug.com/417950948): Delete this function when removing the Sync
-  // feature.
-  CHECK(!base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos));
-
   EnableSyncFromMultiAccountPromo(profile, account, access_point,
                                   /*is_default_promo_account=*/true);
 }
@@ -344,11 +339,6 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      const CoreAccountInfo& account,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account) {
-  // TODO(crbug.com/417950948): Delete this function when removing the Sync
-  // feature.
-  CHECK(!base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos));
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK_NE(signin_metrics::AccessPoint::kUnknown, access_point);
   DCHECK(!profile->IsOffTheRecord());
@@ -393,6 +383,21 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
     return;
   }
 
+  signin_metrics::LogSigninAccessPointStarted(access_point,
+                                              existing_account_promo_action);
+  signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account.account_id, signin::ConsentLevel::kSignin, access_point);
+    }
+
+    GetSigninUiDelegate()->ShowHistorySyncOptinUI(profile, account.account_id);
+    return;
+  }
+
   // In the UNO model, if the account was in the web-only signed in state,
   // turning on sync will sign the account in the profile and show the sync
   // confirmation dialog.
@@ -414,10 +419,6 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
               !is_sync_promo
           ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY
           : TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT;
-  signin_metrics::LogSigninAccessPointStarted(access_point,
-                                              existing_account_promo_action);
-  signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
-
   bool user_already_signed_in =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
       account.account_id;
