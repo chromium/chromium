@@ -10,6 +10,8 @@ source_set("vertical") {
     "tab_collection_node.h",
     "vertical_pinned_tab_container_view.cc",
     "vertical_pinned_tab_container_view.h",
+    "vertical_split_tab_view.cc",
+    "vertical_split_tab_view.h",
     "vertical_tab_strip_view.cc",
     "vertical_tab_strip_view.h",
     "vertical_tab_view.cc",

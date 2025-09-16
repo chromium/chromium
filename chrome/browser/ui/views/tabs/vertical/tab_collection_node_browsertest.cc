@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
@@ -428,7 +429,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
 
   const auto& split_node = unpinned_node->children()[2];
   EXPECT_EQ(split_node->GetType(), TabCollectionNode::Type::kSplitTab);
-  // TODO(crbug.com/442568605): Verify split tab view is created.
+  EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(
+      split_node->get_view_for_testing()));
   ASSERT_EQ(split_node->children().size(), 2u);
   EXPECT_EQ(split_node->children()[0]->GetType(),
             TabCollectionNode::Type::kTab);
