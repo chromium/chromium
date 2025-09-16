@@ -74,7 +74,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1617,7 +1616,7 @@ public class TabPersistentStore {
                 saveState();
             }
         } else {
-            LinkedList<TabRestoreDetails> details = new LinkedList<>();
+            ArrayList<TabRestoreDetails> details = new ArrayList<>();
             if (ChromeFeatureList.sBatchTabRestore.isEnabled()) {
                 int batchSize = ChromeFeatureList.sBatchTabRestoreBatchSize.getValue();
                 for (int i = 0; i < batchSize && !mTabsToRestore.isEmpty(); i++) {
@@ -1680,14 +1679,14 @@ public class TabPersistentStore {
      * details of that load. TODO(b/298058408) deprecate TabLoader
      */
     private class TabBatchLoader {
-        private final LinkedList<TabRestoreDetails> mBatchedTabsToRestore;
+        private final List<TabRestoreDetails> mBatchedTabsToRestore;
         private @Nullable LoadTabsTask mLoadTabsTask;
         private boolean mCancelled;
 
         /**
          * @param tabsToRestore details of {@link Tab}s which will be read from storage
          */
-        TabBatchLoader(LinkedList<TabRestoreDetails> tabsToRestore) {
+        TabBatchLoader(List<TabRestoreDetails> tabsToRestore) {
             mBatchedTabsToRestore = tabsToRestore;
         }
 

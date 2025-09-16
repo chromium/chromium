@@ -17,7 +17,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
  * An activity to measure the startup time of WebView in various scenarios.
@@ -55,7 +55,7 @@ public class StartupTimeActivity extends Activity {
 
     private static final String TARGET_KEY = "target";
 
-    private final LinkedList<Long> mEventQueue = new LinkedList<>();
+    private final ArrayList<Long> mEventQueue = new ArrayList<>();
 
     private boolean mFinished;
     // Keep track of the time that the last task was run.

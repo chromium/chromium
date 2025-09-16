@@ -11,7 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 
 /**
  * Manages back navigations between Panes.
@@ -27,7 +27,7 @@ import java.util.LinkedList;
 public class PaneBackStackHandler implements BackPressHandler {
     private final PaneManager mPaneManager;
     private final ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
-    private final LinkedList<Pane> mBackStack;
+    private final ArrayDeque<Pane> mBackStack;
     private final Callback<Pane> mOnPaneFocusedCallback;
     private @Nullable Pane mCurrentPane;
 
@@ -41,7 +41,7 @@ public class PaneBackStackHandler implements BackPressHandler {
         mHandleBackPressSupplier = new ObservableSupplierImpl<>();
         mHandleBackPressSupplier.set(false);
 
-        mBackStack = new LinkedList<>();
+        mBackStack = new ArrayDeque<>();
 
         mOnPaneFocusedCallback = this::onPaneFocused;
         paneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocusedCallback);

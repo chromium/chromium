@@ -39,7 +39,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.LoadingView;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for {@link AutofillSaveCardBottomSheetViewBinder}. */
@@ -218,7 +218,7 @@ public class AutofillSaveCardBottomSheetViewBinderTest {
         assertEquals(View.GONE, mView.mLegalMessage.getVisibility());
 
         final String messageText = "Legal message line";
-        LinkedList<LegalMessageLine> legalMessageLines = new LinkedList<>();
+        ArrayList<LegalMessageLine> legalMessageLines = new ArrayList<>();
         legalMessageLines.add(new LegalMessageLine(messageText));
         bind(
                 mModelBuilder.with(
@@ -230,7 +230,7 @@ public class AutofillSaveCardBottomSheetViewBinderTest {
 
         LegalMessageLine legalMessageLine = new LegalMessageLine(messageText);
         legalMessageLine.links.add(new Link(0, 5, "https://example.test"));
-        legalMessageLines = new LinkedList<>();
+        legalMessageLines = new ArrayList<>();
         legalMessageLines.add(legalMessageLine);
         bind(
                 mModelBuilder.with(

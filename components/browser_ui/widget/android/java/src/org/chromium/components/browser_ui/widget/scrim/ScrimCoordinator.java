@@ -23,8 +23,8 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -218,11 +218,11 @@ public class ScrimCoordinator {
         if (mView == null || mView.getParent() == null) {
             return Collections.singletonList(-1);
         } else {
-            LinkedList<Integer> list = new LinkedList<>();
+            ArrayList<Integer> list = new ArrayList<>();
             ViewGroup parent = (ViewGroup) mView.getParent();
             View child = mView;
             while (parent != null && child != root) {
-                list.addFirst(parent.indexOfChild(child));
+                list.add(parent.indexOfChild(child));
                 child = parent;
                 parent = (ViewGroup) parent.getParent();
             }
@@ -230,6 +230,7 @@ public class ScrimCoordinator {
             if (parent == null) {
                 return Collections.singletonList(-1);
             }
+            Collections.reverse(list);
             return list;
         }
     }

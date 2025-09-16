@@ -63,7 +63,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Optional;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetBridge}. */
@@ -129,9 +129,9 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     }
 
     private void requestShowContent(WebContents webContents) {
-        LinkedList<LegalMessageLine> googleLegalMessages = new LinkedList<>();
+        ArrayList<LegalMessageLine> googleLegalMessages = new ArrayList<>();
         googleLegalMessages.add(new LegalMessageLine("Google legal messages."));
-        LinkedList<LegalMessageLine> issuerLegalMessages = new LinkedList<>();
+        ArrayList<LegalMessageLine> issuerLegalMessages = new ArrayList<>();
         issuerLegalMessages.add(new LegalMessageLine("Issuer legal messages."));
 
         mBridge.requestShowContent(

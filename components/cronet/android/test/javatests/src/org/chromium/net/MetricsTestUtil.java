@@ -9,9 +9,10 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 import org.chromium.net.CronetTestRule.CronetImplementation;
 
+import java.util.ArrayDeque;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.Queue;
 import java.util.concurrent.Executor;
 
 /**
@@ -21,7 +22,7 @@ import java.util.concurrent.Executor;
 public class MetricsTestUtil {
     /** Executor which runs tasks only when told to with runAllTasks(). */
     public static class TestExecutor implements Executor {
-        private final LinkedList<Runnable> mTaskQueue = new LinkedList<>();
+        private final Queue<Runnable> mTaskQueue = new ArrayDeque<>();
 
         @Override
         public void execute(Runnable task) {

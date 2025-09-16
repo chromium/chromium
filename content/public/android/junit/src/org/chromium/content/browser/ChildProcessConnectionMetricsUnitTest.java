@@ -22,20 +22,20 @@ import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.TestChildProcessConnection;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /** Unit test for {@link ChildProcessConnectionMetrics}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
 public class ChildProcessConnectionMetricsUnitTest {
-    private LinkedList<ChildProcessConnection> mRanking;
+    private ArrayList<ChildProcessConnection> mRanking;
     private BindingManager mBindingManager;
     private ChildProcessConnectionMetrics mConnectionMetrics;
 
     @Before
     public void setUp() {
         LauncherThread.setCurrentThreadAsLauncherThread();
-        mRanking = new LinkedList<ChildProcessConnection>();
+        mRanking = new ArrayList<ChildProcessConnection>();
         mBindingManager =
                 new BindingManager(
                         RuntimeEnvironment.application,

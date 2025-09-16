@@ -36,7 +36,6 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -201,7 +200,7 @@ public class OmahaBaseTest {
     }
 
     private class MockOmahaBase extends OmahaBase {
-        private final LinkedList<MockConnection> mMockConnections = new LinkedList<>();
+        private final List<MockConnection> mMockConnections = new ArrayList<>();
 
         private final boolean mSendValidResponse;
         private final boolean mConnectionTimesOut;
@@ -235,7 +234,7 @@ public class OmahaBaseTest {
 
         /** Returns the last MockPingConection used to simulate communication with the server. */
         public MockConnection getLastConnection() {
-            return mMockConnections.getLast();
+            return mMockConnections.get(mMockConnections.size() - 1);
         }
 
         public boolean isSendInstallEvent() {
@@ -267,7 +266,7 @@ public class OmahaBaseTest {
                                 mSendInstallEvent,
                                 mConnectionTimesOut,
                                 mUpdateVersion);
-                mMockConnections.addLast(connection);
+                mMockConnections.add(connection);
             } catch (MalformedURLException e) {
                 Assert.fail("Caught a malformed URL exception: " + e);
             }

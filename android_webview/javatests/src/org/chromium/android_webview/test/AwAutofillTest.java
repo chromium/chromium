@@ -72,10 +72,11 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.io.ByteArrayInputStream;
 import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeoutException;
@@ -3557,8 +3558,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         final int maxCallsToWaitFor = 20;
         int numCallsToWaitFor = 0;
 
-        LinkedList<Integer> expectedEventsQueue =
-                new LinkedList<Integer>(Arrays.asList(expectedEvents));
+        Queue<Integer> expectedEventsQueue = new ArrayDeque<Integer>(Arrays.asList(expectedEvents));
 
         while (!expectedEventsQueue.isEmpty() && numCallsToWaitFor < maxCallsToWaitFor) {
             if (mEventQueue.isEmpty()) {

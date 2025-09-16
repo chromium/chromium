@@ -54,9 +54,9 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
@@ -396,14 +396,14 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
                 mModelBuilder.with(
                         property,
                         new LegalMessages(
-                                new LinkedList<>(),
+                                new ArrayList<>(),
                                 VirtualCardEnrollmentLinkType
                                         .VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
                                 /* linkOpener= */ this)));
         assertThat(String.valueOf(view.getText()), isEmptyString());
         assertThat(view.getVisibility(), equalTo(View.GONE));
 
-        LinkedList<LegalMessageLine> lines = new LinkedList<>();
+        ArrayList<LegalMessageLine> lines = new ArrayList<>();
         lines.add(new LegalMessageLine("Legal message line"));
         bind(
                 mModelBuilder.with(
@@ -418,7 +418,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
 
         LegalMessageLine line = new LegalMessageLine("Legal message line");
         line.links.add(new Link(0, 5, "https://example.test"));
-        lines = new LinkedList<>();
+        lines = new ArrayList<>();
         lines.add(line);
         bind(
                 mModelBuilder.with(

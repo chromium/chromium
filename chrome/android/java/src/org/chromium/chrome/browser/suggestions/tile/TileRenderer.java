@@ -47,8 +47,8 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.ViewUtils;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayDeque;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -107,13 +107,13 @@ public class TileRenderer {
 
     /** Simple multimap from SiteSuggestion to SuggestionsTileView. */
     private static class SuggestionsTileViewCache {
-        private final Map<SiteSuggestion, LinkedList<SuggestionsTileView>> mStorage =
+        private final Map<SiteSuggestion, ArrayDeque<SuggestionsTileView>> mStorage =
                 new HashMap<>();
 
         void put(SiteSuggestion key, SuggestionsTileView value) {
-            LinkedList<SuggestionsTileView> bucket = mStorage.get(key);
+            ArrayDeque<SuggestionsTileView> bucket = mStorage.get(key);
             if (bucket == null) {
-                bucket = new LinkedList<>();
+                bucket = new ArrayDeque<>();
                 mStorage.put(key, bucket);
             }
             bucket.addLast(value);
@@ -121,7 +121,7 @@ public class TileRenderer {
 
         @Nullable SuggestionsTileView remove(SiteSuggestion key) {
             SuggestionsTileView ret = null;
-            LinkedList<SuggestionsTileView> bucket = mStorage.get(key);
+            ArrayDeque<SuggestionsTileView> bucket = mStorage.get(key);
             if (bucket != null) {
                 ret = bucket.removeFirst(); // FIFO, for consistecy.
                 if (bucket.isEmpty()) {

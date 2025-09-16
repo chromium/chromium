@@ -10,19 +10,19 @@ import android.view.accessibility.AccessibilityEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
 /** Helper class for tracking accessibility actions and events for end-to-end tests. */
 @NullMarked
 public class AccessibilityActionAndEventTracker {
-    private final LinkedList<String> mEvents;
+    private final ArrayList<String> mEvents;
     private final boolean mShouldFilterTrivialEvents;
     private boolean mTestComplete;
     private @Nullable CountDownLatch mEventLatch;
 
     public AccessibilityActionAndEventTracker() {
-        mEvents = new LinkedList<String>();
+        mEvents = new ArrayList<String>();
         mTestComplete = false;
         mShouldFilterTrivialEvents = true;
     }
@@ -31,7 +31,7 @@ public class AccessibilityActionAndEventTracker {
         // TODO(crbug.com/414363686) this overloaded constructor should be removed after flakiness
         // of event test with trivial events included is solved. mShouldFilterTrivialEvents should
         // also be removed after fixing the flakiness.
-        mEvents = new LinkedList<String>();
+        mEvents = new ArrayList<String>();
         mTestComplete = false;
         mShouldFilterTrivialEvents = shouldFilterTrivialEvents;
     }
@@ -71,7 +71,7 @@ public class AccessibilityActionAndEventTracker {
     public String results() {
         StringBuilder results = new StringBuilder();
 
-        for (String event : new LinkedList<String>(mEvents)) {
+        for (String event : new ArrayList<String>(mEvents)) {
             if (event != null && !event.isEmpty()) {
                 results.append(event);
                 results.append('\n');

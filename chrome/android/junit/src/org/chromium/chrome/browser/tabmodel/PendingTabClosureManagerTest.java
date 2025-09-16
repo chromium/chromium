@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /** Unit tests for {@link PendingTabClosureManager}. */
@@ -41,13 +40,13 @@ public class PendingTabClosureManagerTest {
     private PendingTabClosureManager mPendingTabClosureManager;
 
     private static class FakeTabModel extends EmptyTabModel {
-        private LinkedList<Tab> mTabs = new LinkedList<>();
+        private List<Tab> mTabs = new ArrayList<>();
         private int mIndex = TabModel.INVALID_TAB_INDEX;
 
         public FakeTabModel() {}
 
         public void setTabs(Tab[] tabs) {
-            mTabs = new LinkedList<>(Arrays.asList(tabs));
+            mTabs = new ArrayList<>(Arrays.asList(tabs));
         }
 
         public void clear() {

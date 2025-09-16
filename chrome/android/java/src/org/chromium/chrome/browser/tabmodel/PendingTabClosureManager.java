@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -63,7 +62,7 @@ public class PendingTabClosureManager {
 
     /** Represents a set of tabs closed together. */
     static class TabClosureEvent {
-        private final LinkedList<Tab> mClosingTabs;
+        private final List<Tab> mClosingTabs;
         private final HashSet<Tab> mUnhandledTabs;
         private final @Nullable Runnable mUndoRunnable;
 
@@ -72,7 +71,7 @@ public class PendingTabClosureManager {
          * @param undoRunnable The runnable to run if the event was undone.
          */
         public TabClosureEvent(List<Tab> tabs, @Nullable Runnable undoRunnable) {
-            mClosingTabs = new LinkedList<>(tabs);
+            mClosingTabs = new ArrayList<>(tabs);
             mUnhandledTabs = new HashSet<>(mClosingTabs);
             mUndoRunnable = undoRunnable;
         }
@@ -103,7 +102,7 @@ public class PendingTabClosureManager {
         }
 
         /** Returns the list of tabs marked as closing in this event. */
-        public LinkedList<Tab> getList() {
+        public List<Tab> getList() {
             return mClosingTabs;
         }
 
@@ -239,7 +238,7 @@ public class PendingTabClosureManager {
     private final PendingTabClosureDelegate mDelegate;
 
     /** Representation of a set of tabs that were closed together. */
-    private final LinkedList<TabClosureEvent> mTabClosureEvents = new LinkedList<>();
+    private final ArrayList<TabClosureEvent> mTabClosureEvents = new ArrayList<>();
 
     /**
      * A {@link TabList} that represents the complete list of {@link Tab}s. This is so that
@@ -420,7 +419,7 @@ public class PendingTabClosureManager {
 
         if (mTabClosureEvents.isEmpty()) return false;
 
-        TabClosureEvent event = mTabClosureEvents.removeLast();
+        TabClosureEvent event = mTabClosureEvents.remove(mTabClosureEvents.size() - 1);
         for (Tab tab : event.getList()) {
             cancelClosureInternal(tab);
         }

@@ -77,7 +77,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -105,7 +104,7 @@ public class DataSharingTabManager {
     private final WindowAndroid mWindowAndroid;
     private final Resources mResources;
     private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
-    private final LinkedList<Runnable> mTasksToRunOnProfileAvailable = new LinkedList<>();
+    private final List<Runnable> mTasksToRunOnProfileAvailable = new ArrayList<>();
     private final BulkFaviconUtil mBulkFaviconUtil = new BulkFaviconUtil();
     private final CollaborationControllerDelegateFactory mCollaborationControllerDelegateFactory;
 
@@ -190,10 +189,10 @@ public class DataSharingTabManager {
         mDataSharingService = dataSharingService;
         mMessagingBackendService = messagingBackendService;
         mCollaborationService = collaborationService;
-        while (!mTasksToRunOnProfileAvailable.isEmpty()) {
-            Runnable task = mTasksToRunOnProfileAvailable.removeFirst();
+        for (Runnable task : mTasksToRunOnProfileAvailable) {
             task.run();
         }
+        mTasksToRunOnProfileAvailable.clear();
     }
 
     /** Cleans up any outstanding resources. */
@@ -245,7 +244,7 @@ public class DataSharingTabManager {
             return;
         }
 
-        mTasksToRunOnProfileAvailable.addLast(
+        mTasksToRunOnProfileAvailable.add(
                 () -> {
                     initiateJoinFlowWithProfile(dataSharingUrl, switchToTabSwitcherCallback);
                 });

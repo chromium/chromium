@@ -27,13 +27,14 @@ import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.url.Origin;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -492,9 +493,18 @@ public class WebsitePermissionsFetcher {
          * A queue used to store the sequence of tasks to run to fetch the website preferences. Each
          * task is run sequentially, and some of the tasks may run asynchronously.
          */
-        private static class TaskQueue extends LinkedList<Task> {
+        private static class TaskQueue {
+            private final Queue<Task> mTasks = new ArrayDeque<>();
+
+            void add(Task task) {
+                mTasks.add(task);
+            }
+
             void next() {
-                if (!isEmpty()) removeFirst().runAsync(this);
+                Task t = mTasks.poll();
+                if (t != null) {
+                    t.runAsync(this);
+                }
             }
         }
 

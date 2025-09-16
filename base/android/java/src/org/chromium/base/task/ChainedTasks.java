@@ -9,7 +9,7 @@ import android.util.Pair;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -27,7 +27,7 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @NullMarked
 public class ChainedTasks {
-    private final LinkedList<Pair<Integer, Runnable>> mTasks = new LinkedList<>();
+    private final ArrayDeque<Pair<Integer, Runnable>> mTasks = new ArrayDeque<>();
 
     @GuardedBy("mTasks")
     private boolean mFinalized;

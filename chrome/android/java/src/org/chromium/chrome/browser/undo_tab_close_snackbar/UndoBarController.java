@@ -20,10 +20,11 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.ui.util.TokenHolder;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.Queue;
 
 /**
  * A controller that listens to and visually represents cancelable tab closures. This is an abstract
@@ -37,7 +38,7 @@ public abstract class UndoBarController
     protected final TabModelSelector mTabModelSelector;
     protected final SnackbarManager.SnackbarManageable mSnackbarManageable;
     protected final Context mContext;
-    protected final LinkedList<TabClosureEvent> mEventQueue = new LinkedList<>();
+    protected final Queue<TabClosureEvent> mEventQueue = new ArrayDeque<>();
 
     protected static class TabClosureEvent {
         public final List<Tab> tabs = new ArrayList<>();
@@ -88,8 +89,7 @@ public abstract class UndoBarController
     }
 
     protected void dropFromQueue(List<Tab> tabs) {
-        ListIterator<TabClosureEvent> iterator = mEventQueue.listIterator();
-        while (iterator.hasNext()) {
+        for (Iterator<TabClosureEvent> iterator = mEventQueue.iterator(); iterator.hasNext(); ) {
             TabClosureEvent event = iterator.next();
             event.tabs.removeAll(tabs);
             if (event.tabs.isEmpty()) {
