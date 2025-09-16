@@ -127,11 +127,6 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         }
 
         @Override
-        public boolean prefsCanMakePayment() {
-            return mDelegate.prefsCanMakePayment();
-        }
-
-        @Override
         public void setCanMakePaymentEvenWithoutApps() {
             mDelegate.setCanMakePaymentEvenWithoutApps();
         }

@@ -24,10 +24,7 @@
 #include "components/payments/content/payment_app_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/web_payments_web_data_service.h"
-#include "components/payments/core/payment_prefs.h"
-#include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
-#include "components/user_prefs/user_prefs.h"
 #include "components/webauthn/android/internal_authenticator_android.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -288,18 +285,9 @@ bool PaymentAppServiceBridge::IsOffTheRecord() const {
 }
 
 bool PaymentAppServiceBridge::PrefsCanMakePayment() const {
-  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh) {
-    return false;
-  }
-
-  auto* context = rfh->GetBrowserContext();
-  if (!context) {
-    return false;
-  }
-
-  PrefService* prefs = user_prefs::UserPrefs::Get(context);
-  return prefs && prefs->GetBoolean(payments::kCanMakePaymentEnabled);
+  // TODO: crbug.com/427918761 - Implement this when adding the logic
+  // that requires it for Web Payment Handlers on Android.
+  return true;
 }
 
 base::WeakPtr<ContentPaymentRequestDelegate>

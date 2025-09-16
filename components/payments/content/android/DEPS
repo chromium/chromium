@@ -5,7 +5,6 @@ include_rules = [
 
   "+components/embedder_support/android",
   "+components/payments/content/android/jni_headers",
-  "+components/user_prefs",
   "+components/webdata_services",
   "+mojo/public/java",
   "+services/network/public/cpp",
