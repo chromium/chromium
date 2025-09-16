@@ -2166,6 +2166,7 @@
     "scripts": [
       {
         "module_name": "check_network_annotations",
+        "module_scheme": "single",
         "name": "check_network_annotations",
         "script": "check_network_annotations.py"
       },
@@ -2176,6 +2177,7 @@
       },
       {
         "module_name": "webkit_lint",
+        "module_scheme": "single",
         "name": "webkit_lint",
         "script": "blink_lint_expectations.py"
       }

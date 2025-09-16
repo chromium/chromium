@@ -515,26 +515,31 @@ targets.tests.gtest_test(
 targets.tests.script_test(
     name = "check_network_annotations",
     script = "check_network_annotations.py",
+    module_scheme = "single",
 )
 
 targets.tests.script_test(
     name = "check_static_initializers",
     script = "check_static_initializers.py",
+    module_scheme = "single",
 )
 
 targets.tests.script_test(
     name = "checkbins",
     script = "checkbins.py",
+    module_scheme = "single",
 )
 
 targets.tests.script_test(
     name = "checkdeps",
     script = "checkdeps.py",
+    module_scheme = "single",
 )
 
 targets.tests.script_test(
     name = "checkperms",
     script = "checkperms.py",
+    module_scheme = "single",
 )
 
 targets.tests.gtest_test(
@@ -2531,6 +2536,7 @@ targets.tests.script_test(
     precommit_args = [
         "--no-update-sheet",
     ],
+    module_scheme = "single",
 )
 
 targets.tests.isolated_script_test(
@@ -3280,6 +3286,7 @@ targets.tests.gpu_telemetry_test(
 targets.tests.script_test(
     name = "webkit_lint",
     script = "blink_lint_expectations.py",
+    module_scheme = "single",
 )
 
 targets.tests.isolated_script_test(

@@ -6,6 +6,7 @@
     "scripts": [
       {
         "module_name": "checkbins",
+        "module_scheme": "single",
         "name": "checkbins",
         "script": "checkbins.py"
       }

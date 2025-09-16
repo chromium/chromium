@@ -2258,21 +2258,25 @@
     "scripts": [
       {
         "module_name": "check_network_annotations",
+        "module_scheme": "single",
         "name": "check_network_annotations",
         "script": "check_network_annotations.py"
       },
       {
         "module_name": "check_static_initializers",
+        "module_scheme": "single",
         "name": "check_static_initializers",
         "script": "check_static_initializers.py"
       },
       {
         "module_name": "checkdeps",
+        "module_scheme": "single",
         "name": "checkdeps",
         "script": "checkdeps.py"
       },
       {
         "module_name": "checkperms",
+        "module_scheme": "single",
         "name": "checkperms",
         "script": "checkperms.py"
       },
@@ -2283,6 +2287,7 @@
       },
       {
         "module_name": "webkit_lint",
+        "module_scheme": "single",
         "name": "webkit_lint",
         "script": "blink_lint_expectations.py"
       }

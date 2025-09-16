@@ -9,6 +9,7 @@
           "--allow-coverage-initializer"
         ],
         "module_name": "check_static_initializers",
+        "module_scheme": "single",
         "name": "check_static_initializers",
         "script": "check_static_initializers.py"
       },
@@ -19,6 +20,7 @@
       },
       {
         "module_name": "webkit_lint",
+        "module_scheme": "single",
         "name": "webkit_lint",
         "script": "blink_lint_expectations.py"
       }

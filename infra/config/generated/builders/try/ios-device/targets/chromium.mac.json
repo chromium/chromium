@@ -59,6 +59,7 @@
           "--xctest"
         ],
         "module_name": "check_static_initializers",
+        "module_scheme": "single",
         "name": "check_static_initializers",
         "resultdb": {
           "enable": true,

@@ -3,6 +3,7 @@
     "scripts": [
       {
         "module_name": "test_traffic_annotation_auditor",
+        "module_scheme": "single",
         "name": "test_traffic_annotation_auditor",
         "precommit_args": [
           "--no-update-sheet"

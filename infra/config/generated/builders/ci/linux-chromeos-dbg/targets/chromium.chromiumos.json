@@ -1589,6 +1589,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//chrome/test:chrome_sizes",
+        "module_scheme": "single",
         "name": "chrome_sizes",
         "resultdb": {
           "enable": true,

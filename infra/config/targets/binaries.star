@@ -627,6 +627,7 @@ targets.binaries.generated_script(
             "--upload-skia-json",
         ],
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.script(
