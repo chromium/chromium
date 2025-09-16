@@ -2,7 +2,7 @@ Name: kotlinx-serialization-json
 Short Name: kotlinx-serialization-json-jvm
 URL: https://github.com/Kotlin/kotlinx.serialization
 Version: 1.7.2
-Update Mechanism: Manual
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

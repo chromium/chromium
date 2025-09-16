@@ -2,7 +2,7 @@
     {
         "name": "activity",
         "group": "androidx.activity",
-        "version": "1.12.0-alpha07"
+        "version": "1.12.0-alpha08"
     },
     {
         "name": "activity-compose",
@@ -482,12 +482,12 @@
     {
         "name": "emoji2",
         "group": "androidx.emoji2",
-        "version": "1.6.0-rc01"
+        "version": "1.6.0"
     },
     {
         "name": "emoji2-views-helper",
         "group": "androidx.emoji2",
-        "version": "1.6.0-rc01"
+        "version": "1.6.0"
     },
     {
         "name": "emoji",
@@ -532,12 +532,12 @@
     {
         "name": "graphics-shapes",
         "group": "androidx.graphics",
-        "version": "1.1.0-beta01"
+        "version": "1.1.0-rc01"
     },
     {
         "name": "graphics-shapes-android",
         "group": "androidx.graphics",
-        "version": "1.1.0-beta01"
+        "version": "1.1.0-rc01"
     },
     {
         "name": "gridlayout",
@@ -792,12 +792,12 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha07"
+        "version": "1.0.0-alpha08"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha07"
+        "version": "1.0.0-alpha08"
     },
     {
         "name": "navigationevent-compose",
@@ -897,22 +897,22 @@
     {
         "name": "room-common",
         "group": "androidx.room",
-        "version": "2.8.0-rc02"
+        "version": "2.8.0"
     },
     {
         "name": "room-common-jvm",
         "group": "androidx.room",
-        "version": "2.8.0-rc02"
+        "version": "2.8.0"
     },
     {
         "name": "room-runtime",
         "group": "androidx.room",
-        "version": "2.8.0-rc02"
+        "version": "2.8.0"
     },
     {
         "name": "room-runtime-android",
         "group": "androidx.room",
-        "version": "2.8.0-rc02"
+        "version": "2.8.0"
     },
     {
         "name": "savedstate",
@@ -947,22 +947,22 @@
     {
         "name": "sqlite",
         "group": "androidx.sqlite",
-        "version": "2.6.0-SNAPSHOT"
+        "version": "2.6.0"
     },
     {
         "name": "sqlite-android",
         "group": "androidx.sqlite",
-        "version": "2.6.0-SNAPSHOT"
+        "version": "2.6.0"
     },
     {
         "name": "sqlite-framework",
         "group": "androidx.sqlite",
-        "version": "2.6.0-SNAPSHOT"
+        "version": "2.6.0"
     },
     {
         "name": "sqlite-framework-android",
         "group": "androidx.sqlite",
-        "version": "2.6.0-SNAPSHOT"
+        "version": "2.6.0"
     },
     {
         "name": "startup-runtime",
@@ -1237,12 +1237,12 @@
     {
         "name": "play-services-base",
         "group": "com.google.android.gms",
-        "version": "18.7.2"
+        "version": "18.8.0"
     },
     {
         "name": "play-services-basement",
         "group": "com.google.android.gms",
-        "version": "18.7.1"
+        "version": "18.8.0"
     },
     {
         "name": "play-services-cast",
@@ -1312,7 +1312,7 @@
     {
         "name": "play-services-tasks",
         "group": "com.google.android.gms",
-        "version": "18.3.2"
+        "version": "18.4.0"
     },
     {
         "name": "play-services-vision",
@@ -1372,7 +1372,7 @@
     {
         "name": "gson",
         "group": "com.google.code.gson",
-        "version": "2.13.1"
+        "version": "2.13.2"
     },
     {
         "name": "error_prone_annotation",
@@ -1467,7 +1467,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.32.0"
+        "version": "4.32.1"
     },
     {
         "name": "protobuf-lite",
@@ -1642,12 +1642,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "3.50.0"
+        "version": "3.51.0"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "3.50.0"
+        "version": "3.51.0"
     },
     {
         "name": "animal-sniffer-annotations",
@@ -1722,7 +1722,7 @@
     {
         "name": "kotlinx-coroutines-android",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.8.1"
+        "version": "1.10.2"
     },
     {
         "name": "kotlinx-coroutines-bom",
@@ -1737,7 +1737,7 @@
     {
         "name": "kotlinx-coroutines-core-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.8.1"
+        "version": "1.10.2"
     },
     {
         "name": "kotlinx-coroutines-guava",
@@ -1752,12 +1752,12 @@
     {
         "name": "kotlinx-coroutines-test",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.8.1"
+        "version": "1.9.0"
     },
     {
         "name": "kotlinx-coroutines-test-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.8.1"
+        "version": "1.9.0"
     },
     {
         "name": "kotlinx-serialization-bom",
@@ -1771,6 +1771,16 @@
     },
     {
         "name": "kotlinx-serialization-core-jvm",
+        "group": "org.jetbrains.kotlinx",
+        "version": "1.7.2"
+    },
+    {
+        "name": "kotlinx-serialization-json",
+        "group": "org.jetbrains.kotlinx",
+        "version": "1.7.2"
+    },
+    {
+        "name": "kotlinx-serialization-json-jvm",
         "group": "org.jetbrains.kotlinx",
         "version": "1.7.2"
     },
