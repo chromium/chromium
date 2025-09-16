@@ -2908,6 +2908,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.LibraryLoader.Prefetch.ForkDuration"
+    units="microseconds" expires_after="2026-03-01">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Time taken to perform the fork() call in the library prefetcher when using
+    the PrefetchWithFork strategy. This measures the duration of the clone
+    syscall from the parent process, not the lifetime of the child process. The
+    whole parent process (not just the calling thread) can be blocked for this
+    duration, so this can represent a delay in startup.
+
+    This is emitted regardless of whether the fork/prefetch succeeds, though it
+    is extremely rare for the fork itself to fail (see the .Status histogram).
+
+    Emitted during native library prefetch (normally in renderer process init),
+    only for Android WebView and only when the LibraryPrefetcherMadvise feature
+    is disabled.
+  </summary>
+</histogram>
+
 <histogram name="Android.LibraryLoader.Prefetch.Madvise" enum="Boolean"
     expires_after="2026-03-01">
   <owner>ashleynewson@chromium.org</owner>

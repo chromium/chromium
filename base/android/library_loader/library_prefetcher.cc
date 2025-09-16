@@ -145,6 +145,7 @@ PrefetchStatus PrefetchWithMadvise(base::span<const Section> sections,
 
 PrefetchStatus PrefetchWithFork(base::span<const Section> sections) {
   TRACE_EVENT("startup", "LibraryPrefetcher::PrefetchWithFork");
+  base::TimeTicks fork_start_time = base::TimeTicks::Now();
   pid_t pid = fork();
   if (pid == 0) {
     // Android defines the background priority to this value since at least 2009
@@ -157,6 +158,10 @@ PrefetchStatus PrefetchWithFork(base::span<const Section> sections) {
     // _exit() doesn't call the atexit() handlers.
     _exit(EXIT_SUCCESS);
   } else {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Android.LibraryLoader.Prefetch.ForkDuration",
+        base::TimeTicks::Now() - fork_start_time, base::Microseconds(1),
+        base::Seconds(1), 50);
     if (pid < 0) {
       return PrefetchStatus::kForkFailed;
     }
