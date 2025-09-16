@@ -4817,6 +4817,21 @@ const FeatureEntry::FeatureVariation kAndroidTabHighlightingVariations[] = {
      std::size(kAndroidTabHighlightingForceCtrlClick), nullptr},
     {"Force Shift Click", kAndroidTabHighlightingForceShiftClick,
      std::size(kAndroidTabHighlightingForceShiftClick), nullptr}};
+
+const FeatureEntry::FeatureParam kAndroidTipsNotificationsTrustAndSafety[] = {
+    {"trust_and_safety", "true"}};
+const FeatureEntry::FeatureParam kAndroidTipsNotificationsEssential[] = {
+    {"essential", "true"}};
+const FeatureEntry::FeatureParam kAndroidTipsNotificationsNewFeatures[] = {
+    {"new_features", "true"}};
+
+const FeatureEntry::FeatureVariation kAndroidTipsNotificationsVariations[] = {
+    {" - Trust and Safety", kAndroidTipsNotificationsTrustAndSafety,
+     std::size(kAndroidTipsNotificationsTrustAndSafety), nullptr},
+    {" - Essential", kAndroidTipsNotificationsEssential,
+     std::size(kAndroidTipsNotificationsEssential), nullptr},
+    {" - New Features", kAndroidTipsNotificationsNewFeatures,
+     std::size(kAndroidTipsNotificationsNewFeatures), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -11024,7 +11039,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-tips-notifications",
      flag_descriptions::kAndroidTipsNotificationsName,
      flag_descriptions::kAndroidTipsNotificationsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidTipsNotifications)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidTipsNotifications,
+                                    kAndroidTipsNotificationsVariations,
+                                    "AndroidTipsNotificationsVariations")},
 
     {"history-pane-android", flag_descriptions::kHistoryPaneAndroidName,
      flag_descriptions::kHistoryPaneAndroidDescription, kOsAndroid,
