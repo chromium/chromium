@@ -273,7 +273,7 @@ function handleFileUpload(event) {
  * @param {Event} event
  */
 function handlePasteLogcatButtonClick(event) {
-  if (pasteLogcatButtonLabel.textContent.includes('Paste Logcat')) {
+  if (!pasteLogcatButtonLabel.textContent.includes('Finish Pasting')) {
     // Change the UI to allow the user to paste text.
     pasteLogcatButtonLabel.innerHTML =
       '<i class="material-icons">done</i> Finish Pasting';
@@ -283,7 +283,7 @@ function handlePasteLogcatButtonClick(event) {
   } else {
     // Finish the pasting process and change the UI back to normal.
     pasteLogcatButtonLabel.innerHTML =
-      '<i class="material-icons">content_paste</i> Paste Logcat';
+      '<i class="material-icons">content_paste</i> Paste';
     textDisplayArea.contentEditable = 'false';
     setUpElements(textDisplayArea.innerText.split('\n'));
     updateTextDisplayArea(false);
