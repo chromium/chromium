@@ -315,6 +315,7 @@
     "android-arm64-libfuzzer-hwasan": "ci/android-arm64-libfuzzer-hwasan/gn-args.json",
     "android-x64-libfuzzer-asan": "ci/android-x64-libfuzzer-asan/gn-args.json",
     "chromeos-x64-libfuzzer-asan-rel-tests": "ci/chromeos-x64-libfuzzer-asan-rel-tests/gn-args.json",
+    "linux-x64-centipede-asan-rel-tests": "ci/linux-x64-centipede-asan-rel-tests/gn-args.json",
     "linux-x64-libfuzzer-asan-dbg-tests": "ci/linux-x64-libfuzzer-asan-dbg-tests/gn-args.json",
     "linux-x64-libfuzzer-asan-rel-tests": "ci/linux-x64-libfuzzer-asan-rel-tests/gn-args.json",
     "linux-x64-libfuzzer-msan-rel-tests": "ci/linux-x64-libfuzzer-msan-rel-tests/gn-args.json",
