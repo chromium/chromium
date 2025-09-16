@@ -24,13 +24,16 @@ BookmarkBarSceneLayer::BookmarkBarSceneLayer(JNIEnv* env,
                                              const JavaParamRef<jobject>& jobj)
     : SceneLayer(env, jobj),
       container_(cc::slim::SolidColorLayer::Create()),
-      snapshot_(cc::slim::UIResourceLayer::Create()) {
+      snapshot_(cc::slim::UIResourceLayer::Create()),
+      hairline_(cc::slim::SolidColorLayer::Create()) {
   layer()->SetIsDrawable(true);
   container_->SetIsDrawable(true);
   snapshot_->SetIsDrawable(true);
+  hairline_->SetIsDrawable(true);
 
   container_->SetMasksToBounds(true);
   container_->AddChild(snapshot_);
+  container_->AddChild(hairline_);
 }
 
 BookmarkBarSceneLayer::~BookmarkBarSceneLayer() = default;
@@ -51,6 +54,54 @@ void BookmarkBarSceneLayer::SetContentTree(
   background_color_ = content_tree->GetBackgroundColor();
 }
 
+// The bookmark bar view is constructed in this way by Android widgets:
+//
+//         <--- a --->
+//         ========================================================
+//         |        |
+//         |        f
+//         |        |
+//         |     ==================================================
+//       ^ |     | |  <--- c --->
+//       | |--e--| d  [FavIcon] Bookmark Name   [FavIcon] Name2 ...
+//       | |     | |
+//       b |     ==================================================
+//       | |
+//         |-------------g-----------------------------------------
+//         ========================================================
+//
+// The view contains content, with width/height of (a,b), and a hairline footer
+// (g). Within the content, there is a snapshot that is tightly bound (to reduce
+// memory impact) around the icons, names, divider, etc of the bookmark bar;
+// this has a width/height of (c,d). Since this is tightly bound, we offset it
+// within the scene layer by (e,f) to account for padding. The hairline footer
+// must appear at the bottom, below the content, which has a height of (b), so
+// it needs to be offset by that amount.
+//
+// The |container_| must encompass all of this content, and so it has two
+// children, the |snapshot_| and the |hairline_|, which are a UIResourceLayer to
+// hold Bitmap data, and a SolidColorLayer respectively. Its height must include
+// both of these. (Not labeled above is that the |container_| is offset by a
+// height, which relates to the scrolled amount of the top controls).
+//
+// We refer to the |container_| as the "scene layer", and the tightly bound
+// Bitmap data as the "snapshot". Putting this all together, we have:
+//
+// |container_|, position relative to its parent (layer()):
+//      position = (0, scene_layer_offset_height)
+//      width = scene_layer_width = (a)
+//      height = scene_layer_height + hairline_height = (b + g)
+//
+// |snapshot_|, position relative to its parent (|container_|):
+//      position = (snapshot_offset_width, snapshot_offset_height) = (e, f)
+//      width/height = defined by the Bitmap resource = (c, d)
+//
+// |hairline_|, position relative to its parent (|container_|):
+//      position = (0, scene_layer_height) = (0, b)
+//      width = scene_layer_width = (a)
+//      height = hairline_height = (g)
+//
+// For any questions reach out to Bookmark Bar OWNERS.
 void BookmarkBarSceneLayer::UpdateBookmarkBarLayer(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jresource_manager,
@@ -61,6 +112,8 @@ void BookmarkBarSceneLayer::UpdateBookmarkBarLayer(
     jint scene_layer_height,
     jint snapshot_offset_width,
     jint snapshot_offset_height,
+    jint hairline_height,
+    jint hairline_background_color,
     const base::android::JavaParamRef<jobject>& joffset_tag) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
@@ -78,13 +131,19 @@ void BookmarkBarSceneLayer::UpdateBookmarkBarLayer(
   // information on each update.
   container_->SetBackgroundColor(
       SkColor4f::FromColor(scene_layer_background_color));
-  container_->SetBounds(gfx::Size(scene_layer_width, scene_layer_height));
+  container_->SetBounds(
+      gfx::Size(scene_layer_width, scene_layer_height + hairline_height));
   container_->SetPosition(gfx::PointF(0, scene_layer_offset_height));
 
   snapshot_->SetUIResourceId(resource->ui_resource()->id());
   snapshot_->SetBounds(resource->size());
   snapshot_->SetPosition(
       gfx::PointF(snapshot_offset_width, snapshot_offset_height));
+
+  hairline_->SetBackgroundColor(
+      SkColor4f::FromColor(hairline_background_color));
+  hairline_->SetBounds(gfx::Size(scene_layer_width, hairline_height));
+  hairline_->SetPosition(gfx::PointF(0, scene_layer_height));
 
   container_->SetOffsetTag(offset_tag);
 }

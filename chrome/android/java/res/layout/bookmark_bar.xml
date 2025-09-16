@@ -10,53 +10,68 @@ found in the LICENSE file.
     android:id="@+id/bookmark_bar_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/bookmark_bar_padding"
     android:gravity="center_vertical|end"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-  <!-- Note: This view should never have padding or margins to minimize snapshot memory cost. -->
-  <org.chromium.components.browser_ui.widget.ViewResourceFrameLayout
-      android:id="@+id/bookmark_bar_view_resource_frame_layout"
+  <FrameLayout
+      android:id="@+id/bookmark_bar_content_container"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+      android:layout_height="wrap_content"
+      android:padding="@dimen/bookmark_bar_padding">
 
-    <LinearLayout
+    <!-- Note: This view should never have padding or margins to minimize snapshot memory cost. -->
+    <org.chromium.components.browser_ui.widget.ViewResourceFrameLayout
+        android:id="@+id/bookmark_bar_view_resource_frame_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_height="wrap_content">
 
-      <androidx.recyclerview.widget.RecyclerView
-          android:id="@+id/bookmark_bar_items_container"
-          android:layout_width="0dp"
+      <LinearLayout
+          android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_weight="1" />
+          android:orientation="horizontal"
+          android:gravity="center_vertical">
 
-      <ImageButton
-          android:id="@+id/bookmark_bar_overflow_button"
-          android:layout_width="@dimen/bookmark_bar_overflow_button_size"
-          android:layout_height="@dimen/bookmark_bar_overflow_button_size"
-          android:layout_marginStart="@dimen/bookmark_bar_spacing"
-          android:background="?attr/selectableItemBackground"
-          android:contentDescription="@string/bookmark_bar_overflow_button_content_description"
-          android:scaleType="fitCenter"
-          android:src="@drawable/outline_chevron_right_24dp"
-          app:tint="@color/default_icon_color_tint_list" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/bookmark_bar_items_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-      <View
-          android:layout_width="@dimen/bookmark_bar_divider_width"
-          android:layout_height="@dimen/bookmark_bar_divider_height"
-          android:layout_marginHorizontal="@dimen/bookmark_bar_spacing"
-          android:background="@drawable/divider_line_bg" />
+        <ImageButton
+            android:id="@+id/bookmark_bar_overflow_button"
+            android:layout_width="@dimen/bookmark_bar_overflow_button_size"
+            android:layout_height="@dimen/bookmark_bar_overflow_button_size"
+            android:layout_marginStart="@dimen/bookmark_bar_spacing"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/bookmark_bar_overflow_button_content_description"
+            android:scaleType="fitCenter"
+            android:src="@drawable/outline_chevron_right_24dp"
+            app:tint="@color/default_icon_color_tint_list" />
 
-      <include
-          android:id="@+id/bookmark_bar_all_bookmarks_button"
-          layout="@layout/bookmark_bar_button"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content" />
+        <View
+            android:layout_width="@dimen/bookmark_bar_divider_width"
+            android:layout_height="@dimen/bookmark_bar_divider_height"
+            android:layout_marginHorizontal="@dimen/bookmark_bar_spacing"
+            android:background="@drawable/divider_line_bg" />
 
-    </LinearLayout>
+        <include
+            android:id="@+id/bookmark_bar_all_bookmarks_button"
+            layout="@layout/bookmark_bar_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-  </org.chromium.components.browser_ui.widget.ViewResourceFrameLayout>
+      </LinearLayout>
+
+    </org.chromium.components.browser_ui.widget.ViewResourceFrameLayout>
+
+  </FrameLayout>
+
+  <ImageView
+      android:id="@+id/bookmark_bar_hairline"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:importantForAccessibility="no"
+      android:scaleType="fitXY"
+      android:src="@drawable/toolbar_hairline" />
 
 </org.chromium.chrome.browser.bookmarks.bar.BookmarkBar>

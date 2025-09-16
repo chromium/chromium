@@ -36,6 +36,8 @@ class BookmarkBarSceneLayer : public SceneLayer {
       jint scene_layer_height,
       jint snapshot_offset_width,
       jint snapshot_offset_height,
+      jint hairline_height,
+      jint hairline_background_color,
       const base::android::JavaParamRef<jobject>& joffset_tag);
 
   void ShowBookmarkBar(JNIEnv* env);
@@ -59,6 +61,9 @@ class BookmarkBarSceneLayer : public SceneLayer {
   // the Android widgets, tightly bound to the minimum possible size of a
   // snapshot to capture all relevant content.
   scoped_refptr<cc::slim::UIResourceLayer> snapshot_;
+
+  // The solid color hairline at the bottom of the view.
+  scoped_refptr<cc::slim::SolidColorLayer> hairline_;
 };
 
 }  // namespace android

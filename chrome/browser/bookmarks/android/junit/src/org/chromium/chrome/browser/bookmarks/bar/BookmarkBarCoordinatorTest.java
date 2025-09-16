@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -113,6 +114,7 @@ public class BookmarkBarCoordinatorTest {
     private ImageButton mOverflowButton;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private BookmarkBar mView;
+    private FrameLayout mContentContainer;
 
     @Before
     public void setUp() {
@@ -156,7 +158,11 @@ public class BookmarkBarCoordinatorTest {
         activity.setContentView(contentView);
 
         final var viewStub = new ViewStub(activity, R.layout.bookmark_bar);
-        viewStub.setOnInflateListener((stub, view) -> mView = (BookmarkBar) view);
+        viewStub.setOnInflateListener(
+                (stub, view) -> {
+                    mView = (BookmarkBar) view;
+                    mContentContainer = mView.findViewById(R.id.bookmark_bar_content_container);
+                });
         contentView.addView(viewStub, new LayoutParams(MATCH_PARENT, WRAP_CONTENT));
 
         // NOTE: `viewStub` inflation occurs during coordinator construction.
@@ -265,6 +271,7 @@ public class BookmarkBarCoordinatorTest {
         final var rect = new Rect(1, 2, 3, 4);
         clearInvocations(mHeightChangeCallback);
         mView.layout(rect.left, rect.top, rect.right, rect.bottom);
+        mContentContainer.layout(rect.left, rect.top, rect.right, rect.bottom);
         assertEquals(
                 "Verify state after height-changing layout.",
                 rect.height(),
@@ -274,7 +281,7 @@ public class BookmarkBarCoordinatorTest {
         // Verify state after height-consistent layout.
         rect.top += 1;
         rect.bottom += 1;
-        mView.layout(rect.left, rect.top, rect.right, rect.bottom);
+        mContentContainer.layout(rect.left, rect.top, rect.right, rect.bottom);
         assertEquals(
                 "Verify state after height-consistent layout.",
                 rect.height(),

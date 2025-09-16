@@ -78,6 +78,8 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
                         model.get(BookmarkBarSceneLayerProperties.SCENE_LAYER_HEIGHT),
                         model.get(BookmarkBarSceneLayerProperties.SNAPSHOT_OFFSET_WIDTH),
                         model.get(BookmarkBarSceneLayerProperties.SNAPSHOT_OFFSET_HEIGHT),
+                        model.get(BookmarkBarSceneLayerProperties.HAIRLINE_HEIGHT),
+                        model.get(BookmarkBarSceneLayerProperties.HAIRLINE_BACKGROUND_COLOR),
                         model.get(BookmarkBarSceneLayerProperties.OFFSET_TAG));
     }
 
@@ -164,6 +166,8 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
                 int sceneLayerHeight,
                 int snapshotOffsetWidth,
                 int snapshotOffsetHeight,
+                int hairlineHeight,
+                int hairlineBackgroundColor,
                 @Nullable OffsetTag offsetTag);
 
         void hideBookmarkBar(long nativeBookmarkBarSceneLayer);

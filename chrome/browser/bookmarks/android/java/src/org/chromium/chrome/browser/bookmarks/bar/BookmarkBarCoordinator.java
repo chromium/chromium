@@ -10,12 +10,14 @@ import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocus;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
@@ -47,6 +49,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -67,10 +70,12 @@ public class BookmarkBarCoordinator
                 BrowserControlsStateProvider.Observer,
                 FullscreenManager.Observer {
 
+    private final Context mContext;
     private final SimpleRecyclerViewAdapter mItemsAdapter;
     private final BookmarkBarItemsLayoutManager mBookmarkBarItemsLayoutManager;
     private final BookmarkBarMediator mMediator;
     private final BookmarkBar mView;
+    private final FrameLayout mContentContainer;
     private final TopControlsStacker mTopControlsStacker;
     private final Callback<@Nullable Void> mHeightChangeCallback;
     private final Runnable mRequestUpdate;
@@ -127,6 +132,7 @@ public class BookmarkBarCoordinator
             TopControlsStacker topControlsStacker,
             ObservableSupplier<@Nullable Tab> currentTabSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider) {
+        mContext = activity;
         mRequestUpdate = requestUpdate;
         mResourceManager = resourceManager;
         mFullscreenManager = fullscreenManager;
@@ -139,8 +145,14 @@ public class BookmarkBarCoordinator
                     currentTabSupplier.get().getWebContents().isFullscreenForCurrentTab();
         }
 
+        // Inflate the Bookmark Bar. The bar is a ViewStub which contains a container to hold all
+        // the content of the Bookmark Bar, and a hairline footer.
         mView = (BookmarkBar) viewStub.inflate();
-        mViewResourceFrameLayout = mView.findViewById(R.id.bookmark_bar_view_resource_frame_layout);
+        mContentContainer = mView.findViewById(R.id.bookmark_bar_content_container);
+
+        // The content container contains the tightly-wrapper ViewResourceFrameLayout for snapshots.
+        mViewResourceFrameLayout =
+                mContentContainer.findViewById(R.id.bookmark_bar_view_resource_frame_layout);
         mViewResourceAdapter = mViewResourceFrameLayout.getResourceAdapter();
         registerResource();
 
@@ -148,7 +160,7 @@ public class BookmarkBarCoordinator
         mBookmarkBarSceneLayer.setVisibility(true);
 
         mHeightChangeCallback = heightChangeCallback;
-        mView.addOnLayoutChangeListener(this);
+        mContentContainer.addOnLayoutChangeListener(this);
         mShouldBookmarkBarBeShown = true;
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -232,6 +244,10 @@ public class BookmarkBarCoordinator
                                 BookmarkBarSceneLayerProperties.RESOURCE_ID,
                                 mViewResourceFrameLayout.getId())
                         .with(BookmarkBarSceneLayerProperties.VISIBILITY, true)
+                        .with(
+                                BookmarkBarSceneLayerProperties.HAIRLINE_HEIGHT,
+                                mContext.getResources()
+                                        .getDimensionPixelSize(R.dimen.toolbar_hairline_height))
                         .build();
 
         // Create a CurrentTabObserver to update the background color as it changes.
@@ -280,7 +296,7 @@ public class BookmarkBarCoordinator
         mMediator.destroy();
         mChangeProcessor.destroy();
         mCurrentTabObserver.destroy();
-        mView.removeOnLayoutChangeListener(this);
+        mContentContainer.removeOnLayoutChangeListener(this);
         mBrowserControlsStateProvider.removeObserver(this);
         mFullscreenManager.removeObserver(this);
         if (mIsResourceRegistered) unregisterResource();
@@ -569,11 +585,15 @@ public class BookmarkBarCoordinator
         // padding of the Android widgets). The snapshot includes the background of the Android
         // widgets, but if not set, the background will be transparent. With a transparent
         // background, the layer will show whatever is remaining in the buffer from the previous
-        // snapshot, so we also set the Android widget background.
+        // snapshot, so we also set the Android widget background. Using the background color, we
+        // can use the ThemeUtils to get the hairline background color as well.
         @ColorInt int color = mTopUiThemeColorProvider.getSceneLayerBackground(tab);
         mView.setBackgroundColor(color);
         mViewResourceFrameLayout.setBackgroundColor(color);
         mBookmarkBarSceneLayerModel.set(BookmarkBarSceneLayerProperties.BACKGROUND_COLOR, color);
+        mBookmarkBarSceneLayerModel.set(
+                BookmarkBarSceneLayerProperties.HAIRLINE_BACKGROUND_COLOR,
+                ThemeUtils.getToolbarHairlineColor(mContext, color, tab.isIncognito()));
         handleBookmarkBarChange();
     }
 

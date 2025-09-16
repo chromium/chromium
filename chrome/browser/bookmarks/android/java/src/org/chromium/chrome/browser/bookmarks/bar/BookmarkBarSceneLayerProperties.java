@@ -41,6 +41,13 @@ class BookmarkBarSceneLayerProperties {
     /** Background for the layer which the SceneLayer is drawn on. */
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
 
+    /** Height of the hairline at the bottom of the view. */
+    public static final WritableIntPropertyKey HAIRLINE_HEIGHT = new WritableIntPropertyKey();
+
+    /** Background for the hairline at the bottom of the view. */
+    public static final WritableIntPropertyKey HAIRLINE_BACKGROUND_COLOR =
+            new WritableIntPropertyKey();
+
     /** The OffsetTag indicating that this layer should be moved by viz. */
     public static final WritableObjectPropertyKey<OffsetTag> OFFSET_TAG =
             new WritableObjectPropertyKey<>();
@@ -55,6 +62,8 @@ class BookmarkBarSceneLayerProperties {
                 SNAPSHOT_OFFSET_WIDTH,
                 SNAPSHOT_OFFSET_HEIGHT,
                 BACKGROUND_COLOR,
+                HAIRLINE_HEIGHT,
+                HAIRLINE_BACKGROUND_COLOR,
                 OFFSET_TAG,
             };
 }
