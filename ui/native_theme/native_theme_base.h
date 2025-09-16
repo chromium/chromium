@@ -37,9 +37,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   float GetBorderRadiusForPart(Part part,
                                float width,
                                float height) const override;
-  bool SupportsNinePatch(Part part) const override;
-  gfx::Size GetNinePatchCanvasSize(Part part) const override;
-  gfx::Rect GetNinePatchAperture(Part part) const override;
 
  protected:
   enum ControlColorId {

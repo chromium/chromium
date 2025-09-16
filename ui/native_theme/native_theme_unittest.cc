@@ -25,20 +25,6 @@ class TestNativeTheme : public NativeTheme {
   ColorProviderKey::ForcedColors GetForcedColorsKey() const {
     return GetColorProviderKey(/*custom_theme=*/nullptr).forced_colors;
   }
-
-  // NativeTheme:
-  gfx::Size GetPartSize(Part part,
-                        State state,
-                        const ExtraParams& extra_params) const override {
-    return gfx::Size();
-  }
-  bool SupportsNinePatch(Part part) const override { return false; }
-  gfx::Size GetNinePatchCanvasSize(Part part) const override {
-    return gfx::Size();
-  }
-  gfx::Rect GetNinePatchAperture(Part part) const override {
-    return gfx::Rect();
-  }
 };
 
 }  // namespace

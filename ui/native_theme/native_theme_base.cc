@@ -164,18 +164,6 @@ float NativeThemeBase::GetBorderRadiusForPart(Part part,
   }
 }
 
-bool NativeThemeBase::SupportsNinePatch(Part part) const {
-  return false;
-}
-
-gfx::Size NativeThemeBase::GetNinePatchCanvasSize(Part part) const {
-  NOTREACHED() << "NativeThemeBase doesn't support nine-patch resources.";
-}
-
-gfx::Rect NativeThemeBase::GetNinePatchAperture(Part part) const {
-  NOTREACHED() << "NativeThemeBase doesn't support nine-patch resources.";
-}
-
 void NativeThemeBase::PaintImpl(cc::PaintCanvas* canvas,
                                 const ColorProvider* color_provider,
                                 Part part,

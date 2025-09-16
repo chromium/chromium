@@ -34,9 +34,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra_params) const override;
-  bool SupportsNinePatch(Part part) const override;
-  gfx::Size GetNinePatchCanvasSize(Part part) const override;
-  gfx::Rect GetNinePatchAperture(Part part) const override;
   PreferredContrast CalculatePreferredContrast() const override;
 
   PreferredColorScheme CalculatePreferredColorScheme() const;

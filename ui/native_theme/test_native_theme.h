@@ -19,14 +19,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) TestNativeTheme : public NativeTheme {
 
   ~TestNativeTheme() override;
 
-  // NativeTheme:
-  gfx::Size GetPartSize(Part part,
-                        State state,
-                        const ExtraParams& extra_params) const override;
-  bool SupportsNinePatch(Part part) const override;
-  gfx::Size GetNinePatchCanvasSize(Part part) const override;
-  gfx::Rect GetNinePatchAperture(Part part) const override;
-
   void SetPreferredColorScheme(PreferredColorScheme color_scheme);
 };
 

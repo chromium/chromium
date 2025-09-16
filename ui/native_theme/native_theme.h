@@ -368,7 +368,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
 
   virtual gfx::Size GetPartSize(Part part,
                                 State state,
-                                const ExtraParams& extra_params) const = 0;
+                                const ExtraParams& extra_params) const;
 
   virtual int GetPaintedScrollbarTrackInset() const;
 
@@ -381,16 +381,16 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Returns whether the theme uses a nine-patch resource for the given part.
   // If true, calling code should always paint into a canvas the size of which
   // can be gotten from GetNinePatchCanvasSize.
-  virtual bool SupportsNinePatch(Part part) const = 0;
+  virtual bool SupportsNinePatch(Part part) const;
 
   // If the part paints into a nine-patch resource, the size of the canvas
   // which should be painted into.
-  virtual gfx::Size GetNinePatchCanvasSize(Part part) const = 0;
+  virtual gfx::Size GetNinePatchCanvasSize(Part part) const;
 
   // If the part paints into a nine-patch resource, the rect in the canvas
   // which defines the center tile. This is the tile that should be resized out
   // when the part is resized.
-  virtual gfx::Rect GetNinePatchAperture(Part part) const = 0;
+  virtual gfx::Rect GetNinePatchAperture(Part part) const;
 
   // The scrollbar thumb color, if the theme uses a solid color for the
   // scrollbar thumb.

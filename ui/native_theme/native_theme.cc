@@ -35,6 +35,7 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/system_theme.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/native_theme/features/native_theme_features.h"
@@ -144,6 +145,12 @@ float NativeTheme::AdjustBorderRadiusByZoom(Part part,
              : border_radius;
 }
 
+gfx::Size NativeTheme::GetPartSize(Part part,
+                                   State state,
+                                   const ExtraParams& extra_params) const {
+  return {};
+}
+
 int NativeTheme::GetPaintedScrollbarTrackInset() const {
   return 0;
 }
@@ -156,6 +163,18 @@ float NativeTheme::GetBorderRadiusForPart(Part part,
                                           float width,
                                           float height) const {
   return 0;
+}
+
+bool NativeTheme::SupportsNinePatch(Part part) const {
+  return false;
+}
+
+gfx::Size NativeTheme::GetNinePatchCanvasSize(Part part) const {
+  NOTREACHED();
+}
+
+gfx::Rect NativeTheme::GetNinePatchAperture(Part part) const {
+  NOTREACHED();
 }
 
 SkColor NativeTheme::GetScrollbarThumbColor(

@@ -1186,20 +1186,6 @@ gfx::Size NativeThemeWin::GetPartSize(Part part,
                                                : gfx::Size();
 }
 
-bool NativeThemeWin::SupportsNinePatch(Part part) const {
-  // The only nine-patch resources currently supported (overlay scrollbar) are
-  // painted by NativeThemeAura on Windows.
-  return false;
-}
-
-gfx::Size NativeThemeWin::GetNinePatchCanvasSize(Part part) const {
-  NOTREACHED() << "NativeThemeWin doesn't support nine-patch resources.";
-}
-
-gfx::Rect NativeThemeWin::GetNinePatchAperture(Part part) const {
-  NOTREACHED() << "NativeThemeWin doesn't support nine-patch resources.";
-}
-
 void NativeThemeWin::PaintImpl(cc::PaintCanvas* canvas,
                                const ColorProvider* color_provider,
                                Part part,
