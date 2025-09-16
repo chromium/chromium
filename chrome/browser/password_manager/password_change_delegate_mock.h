@@ -39,7 +39,7 @@ class PasswordChangeDelegateMock final : public PasswordChangeDelegate {
               (override));
   MOCK_METHOD(void, OnPrivacyNoticeAccepted, (), (override));
   MOCK_METHOD(void, OnPasswordChangeDeclined, (), (override));
-  MOCK_METHOD(void, ProceedToChangePassword, (), (override));
+  MOCK_METHOD(void, OnUserSkippedLoginCheck, (), (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 

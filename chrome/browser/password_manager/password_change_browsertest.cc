@@ -198,7 +198,8 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
   void VerifyUniqueQualityLog(QualityStatus open_form_status,
                               QualityStatus submit_form_status,
                               QualityStatus verify_submission_status,
-                              FinalModelStatus final_status) {
+                              FinalModelStatus final_status,
+                              bool login_check_was_skipped = false) {
     const auto& logs = logs_uploader().uploaded_logs();
     ASSERT_EQ(1, std::ranges::count_if(logs, [](const auto& log) {
                 return log->password_change_submission().has_quality();
@@ -209,6 +210,8 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     // Verify the single log values.
     optimization_guide::proto::PasswordChangeQuality quality =
         it->get()->password_change_submission().quality();
+    EXPECT_EQ(quality.logged_in_check().classification_overridden_by_user(),
+              login_check_was_skipped);
     EXPECT_EQ(quality.final_model_status(), final_status);
     EXPECT_EQ(quality.verify_submission().status(), verify_submission_status);
     EXPECT_EQ(quality.open_form().status(), open_form_status);
@@ -1595,6 +1598,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
       .WillOnce(Return(GURL(kChangePasswordURL)));
   password_change_service()->OfferPasswordChangeUi(main_url, u"test",
                                                    u"password", WebContents());
+  SetModelQualityLogsUploader();
   auto* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1626,9 +1630,29 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
             PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
 
   // Now the user clicks "Continue" which skips login check.
-  delegate->ProceedToChangePassword();
+  delegate->OnUserSkippedLoginCheck();
   EXPECT_FALSE(delegate_impl->login_checker());
   EXPECT_TRUE(delegate_impl->executor());
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+  // Stop the flow to check the correct state of the quality log.
+  delegate->Stop();
+  // The quality log is uploaded in the destructor.
+  base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
+      delegate->AsWeakPtr();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
+  VerifyUniqueQualityLog(
+      /*open_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /* submit_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*verify_submission_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*final_status=*/
+      FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED,
+      /*login_check_was_skipped=*/true);
 }

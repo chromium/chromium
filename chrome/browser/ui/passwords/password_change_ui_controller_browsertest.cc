@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        WaitingForSignInToastClickedContinue) {
   UpdateState(PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
 
-  EXPECT_CALL(delegate_, ProceedToChangePassword);
+  EXPECT_CALL(delegate_, OnUserSkippedLoginCheck);
   views::test::ButtonTestApi clicker(GetToastActionButton());
   clicker.NotifyClick(ui::test::TestEvent());
 

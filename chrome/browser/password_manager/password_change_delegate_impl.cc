@@ -373,37 +373,6 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
   UpdateState(State::kChangePasswordFormNotFound);
 }
 
-void PasswordChangeDelegateImpl::ProceedToChangePassword() {
-  login_state_checker_.reset();
-  UpdateState(State::kWaitingForChangePasswordForm);
-
-  executor_ = CreateWebContents(profile_, change_password_url_);
-  CHECK(executor_);
-  auto* client = ChromePasswordManagerClient::FromWebContents(executor_.get());
-
-  navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
-      executor_.get(), AffiliationServiceFactory::GetForProfile(profile_),
-      base::BindOnce(
-          &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
-          weak_ptr_factory_.GetWeakPtr()));
-  form_finder_ = std::make_unique<ChangePasswordFormFinder>(
-      executor_.get(), client, logs_uploader_.get(),
-      base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  // Even though the user is assumed to be fully signed in by this point in
-  // time, they may still see an OTP during the password change flow, so watch
-  // for this.
-  autofill::ContentAutofillClient* autofill_client =
-      autofill::ContentAutofillClient::FromWebContents(executor_.get());
-  autofill::OtpFieldDetector* otp_field_detector =
-      autofill_client->GetOtpFieldDetector();
-  otp_fields_detected_subscription_ =
-      otp_field_detector->RegisterOtpFieldsDetectedCallback(
-          base::BindRepeating(&PasswordChangeDelegateImpl::OnOtpFieldDetected,
-                              weak_ptr_factory_.GetWeakPtr()));
-}
-
 void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   if (auto logger = GetLoggerIfAvailable(executor_.get())) {
     logger->LogMessage(BrowserSavePasswordProgressLogger::
@@ -567,16 +536,6 @@ void PasswordChangeDelegateImpl::OpenPasswordDetails() {
   }
 }
 
-void PasswordChangeDelegateImpl::AddObserver(
-    PasswordChangeDelegate::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void PasswordChangeDelegateImpl::RemoveObserver(
-    PasswordChangeDelegate::Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogMessage(
@@ -608,6 +567,52 @@ void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
       base::BindOnce(&OnLeakDialogHidden,
                      ManagePasswordsUIController::FromWebContents(originator_)
                          ->GetModelDelegateProxy()));
+}
+
+void PasswordChangeDelegateImpl::OnUserSkippedLoginCheck() {
+  logs_uploader_->LoginCheckSkipped();
+  ProceedToChangePassword();
+}
+
+void PasswordChangeDelegateImpl::AddObserver(
+    PasswordChangeDelegate::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PasswordChangeDelegateImpl::RemoveObserver(
+    PasswordChangeDelegate::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void PasswordChangeDelegateImpl::ProceedToChangePassword() {
+  login_state_checker_.reset();
+  UpdateState(State::kWaitingForChangePasswordForm);
+
+  executor_ = CreateWebContents(profile_, change_password_url_);
+  CHECK(executor_);
+  auto* client = ChromePasswordManagerClient::FromWebContents(executor_.get());
+
+  navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
+      executor_.get(), AffiliationServiceFactory::GetForProfile(profile_),
+      base::BindOnce(
+          &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
+          weak_ptr_factory_.GetWeakPtr()));
+  form_finder_ = std::make_unique<ChangePasswordFormFinder>(
+      executor_.get(), client, logs_uploader_.get(),
+      base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // Even though the user is assumed to be fully signed in by this point in
+  // time, they may still see an OTP during the password change flow, so watch
+  // for this.
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(executor_.get());
+  autofill::OtpFieldDetector* otp_field_detector =
+      autofill_client->GetOtpFieldDetector();
+  otp_fields_detected_subscription_ =
+      otp_field_detector->RegisterOtpFieldsDetectedCallback(
+          base::BindRepeating(&PasswordChangeDelegateImpl::OnOtpFieldDetected,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordChangeDelegateImpl::UpdateState(State new_state) {
