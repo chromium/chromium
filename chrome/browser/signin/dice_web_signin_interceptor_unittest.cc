@@ -1715,13 +1715,6 @@ TEST_F(DiceWebSigninInterceptorTest, WaitForAccountCapabilitiesTimeout) {
   // Delegate was not called yet.
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 
-  if (base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer)) {
-    // No interception happens, as we time out without the required info.
-    testing::Mock::VerifyAndClearExpectations(mock_delegate());
-    task_environment()->FastForwardBy(base::Seconds(5));
-    return;
-  }
-
   // Interception happens, as capabilities are not required.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,

@@ -139,6 +139,14 @@ void ProfileManagementDisclaimerService::
   // We should always know the access point that triggered the profile creation.
   CHECK_NE(access_point, signin_metrics::AccessPoint::kUnknown);
 
+  if (!state_->account_id.empty() && state_->account_id != account_id) {
+    // If the account is different from the one we are already handling, reset
+    // the state. This can happen if the account is removed and another one is
+    // added, or if the account is cleared and another account is set as primary
+    // account.
+    return;
+  }
+
   // If the management disclaimer is not enabled on primary account change,
   // reset the state and return early. This to avoid showing the disclaimer
   // after the primary account has changed when another class is handling
@@ -153,8 +161,7 @@ void ProfileManagementDisclaimerService::
   if (state_->profile_creation_controller) {
     return;
   }
-  // We can only create one managed profile at a time.
-  CHECK(state_->account_id.empty() || state_->account_id == account_id);
+
   state_->account_id = account_id;
 
   // If the user has already accepted the management disclaimer, nothing to
@@ -241,6 +248,12 @@ void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
     bool is_from_cached_registration_result,
     bool is_managed_account) {
   GaiaId gaia_id = GetExtendedAccountInfo(state_->account_id).gaia;
+  // If the account has been removed in the meantime, reset the state.
+  if (gaia_id.empty()) {
+    state_->profile_to_continue_in = nullptr;
+    Reset();
+    return;
+  }
   if (!is_managed_account) {
     if (!is_from_cached_registration_result) {
       signin_prefs_.SetPolicyDisclaimerLastRegistrationFailureTime(
@@ -307,8 +320,20 @@ void ProfileManagementDisclaimerService::OnPrimaryAccountChanged(
   if (skip_automatic_disclaimer_) {
     return;
   }
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+          signin::PrimaryAccountChangeEvent::Type::kCleared &&
+      state_->account_id == GetPrimaryAccountInfo().account_id) {
+    state_->profile_to_continue_in = nullptr;
+    Reset();
+    return;
+  }
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
       signin::PrimaryAccountChangeEvent::Type::kSet) {
+    return;
+  }
+
+  // If we are already handling a signin, ignore this event.
+  if (!state_->account_id.empty()) {
     return;
   }
 
