@@ -106,8 +106,9 @@ void SharingBrowserTest::SetUpDevices(
   for (size_t i = 0; i < original_devices.size(); i++) {
     AddDeviceInfo(*original_devices[i], i);
   }
-  const std::map<syncer::DeviceInfo::FormFactor, int> device_count_by_type =
-      fake_device_info_tracker_.CountActiveDevicesByType();
+  const absl::flat_hash_map<syncer::DeviceInfo::FormFactor, int>
+      device_count_by_type =
+          fake_device_info_tracker_.CountActiveDevicesByType();
   int total = 0;
   for (const auto& type_and_count : device_count_by_type) {
     total += type_and_count.second;

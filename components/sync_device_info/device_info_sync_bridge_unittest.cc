@@ -74,7 +74,7 @@ using testing::Return;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
-using DeviceCountMap = std::map<DeviceInfo::FormFactor, int>;
+using DeviceCountMap = absl::flat_hash_map<DeviceInfo::FormFactor, int>;
 using DeviceInfoList = std::vector<std::unique_ptr<DeviceInfo>>;
 using StorageKeyList = DataTypeSyncBridge::StorageKeyList;
 using RecordList = DataTypeStore::RecordList;

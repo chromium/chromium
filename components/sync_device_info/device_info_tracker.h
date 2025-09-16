@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_TRACKER_H_
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_TRACKER_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
+#include "absl/container/flat_hash_map.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace sync_pb {
@@ -64,8 +64,8 @@ class DeviceInfoTracker {
   // OsType and the FormFactor. Deduping logic may be used internally to prevent
   // double counting for devices that disable sync and reenable it, but callers
   // should nevertheless consider this an upper bound per type.
-  virtual std::map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()
-      const = 0;
+  virtual absl::flat_hash_map<DeviceInfo::FormFactor, int>
+  CountActiveDevicesByType() const = 0;
   // A function to to allow tests to ensure active devices. If called when the
   // local device info provider is not initialized, will force update after
   // initialization.

@@ -95,7 +95,7 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   std::vector<const DeviceInfo*> GetAllChromeDeviceInfo() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  std::map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()
+  absl::flat_hash_map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()
       const override;
   bool IsRecentLocalCacheGuid(const std::string& cache_guid) const override;
 

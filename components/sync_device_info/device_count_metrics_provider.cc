@@ -5,9 +5,10 @@
 #include "components/sync_device_info/device_count_metrics_provider.h"
 
 #include <algorithm>
-#include <map>
+#include <numeric>
 #include <vector>
 
+#include "absl/container/flat_hash_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -31,13 +32,12 @@ void DeviceCountMetricsProvider::ProvideCurrentSessionData(
   int max_phone_count = 0;
   int max_tablet_count = 0;
   for (auto* tracker : trackers) {
-    std::map<DeviceType, int> count_by_type =
+    absl::flat_hash_map<DeviceType, int> count_by_type =
         tracker->CountActiveDevicesByType();
-    int total_devices = 0;
+    const int total_devices = std::accumulate(
+        count_by_type.begin(), count_by_type.end(), 0,
+        [](int sum, const auto& pair) { return sum + pair.second; });
 
-    for (const auto& [device_type, count] : count_by_type) {
-      total_devices += count;
-    }
     max_total = std::max(max_total, total_devices);
     max_desktop_count = std::max(
         max_desktop_count, count_by_type[DeviceInfo::FormFactor::kDesktop]);

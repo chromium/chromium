@@ -206,7 +206,7 @@ class MockDeviceInfoTracker : public syncer::DeviceInfoTracker {
               (const));
   MOCK_METHOD(void, AddObserver, (Observer * observer));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer));
-  MOCK_METHOD((std::map<syncer::DeviceInfo::FormFactor, int>),
+  MOCK_METHOD((absl::flat_hash_map<syncer::DeviceInfo::FormFactor, int>),
               CountActiveDevicesByType,
               (),
               (const));

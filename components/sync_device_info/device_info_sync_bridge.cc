@@ -13,6 +13,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "absl/container/flat_hash_map.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -937,7 +938,7 @@ void DeviceInfoSyncBridge::CommitAndNotify(std::unique_ptr<WriteBatch> batch,
   }
 }
 
-std::map<DeviceInfo::FormFactor, int>
+absl::flat_hash_map<DeviceInfo::FormFactor, int>
 DeviceInfoSyncBridge::CountActiveDevicesByType() const {
   // The algorithm below leverages sync timestamps to give a tight lower bound
   // (modulo clock skew) on how many distinct devices are currently active
@@ -955,8 +956,8 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
   // The series of relevant events over time, the value being +1 when a device
   // was seen for the first time, and -1 when a device was seen last.
   const base::Time now = base::Time::Now();
-  std::map<std::pair<DeviceInfo::FormFactor, DeviceInfo::OsType>,
-           std::multimap<base::Time, int>>
+  absl::flat_hash_map<std::pair<DeviceInfo::FormFactor, DeviceInfo::OsType>,
+                      std::multimap<base::Time, int>>
       relevant_events;
 
   for (const auto& [cache_guid, device_info_and_specifics] : all_data_) {
@@ -985,7 +986,7 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
     }
   }
 
-  std::map<DeviceInfo::FormFactor, int> device_count_by_form_factor;
+  absl::flat_hash_map<DeviceInfo::FormFactor, int> device_count_by_form_factor;
   for (const auto& [type, events] : relevant_events) {
     int max_overlapping = 0;
     int overlapping = 0;
