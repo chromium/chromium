@@ -106,6 +106,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/file/histograms.xml",
   "//tools/metrics/histograms/metadata/fingerprint/enums.xml",
   "//tools/metrics/histograms/metadata/fingerprint/histograms.xml",
+  "//tools/metrics/histograms/metadata/fingerprinting_protection/enums.xml",
   "//tools/metrics/histograms/metadata/fingerprinting_protection/histograms.xml",
   "//tools/metrics/histograms/metadata/game_mode/histograms.xml",
   "//tools/metrics/histograms/metadata/gcm/histograms.xml",

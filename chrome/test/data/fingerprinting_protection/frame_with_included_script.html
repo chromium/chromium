@@ -1,5 +1,7 @@
 <html>
   <head>
+    <!-- Disable extra network request for /favicon.ico -->
+    <link rel="icon" href="data:,">
     <script>
       const params = new URLSearchParams(window.location.search);
       const scriptUrl = params.get('script_url') || 'included_script.js';

@@ -8,6 +8,7 @@ source_set("common") {
   sources = [
     "fingerprinting_protection_filter_constants.cc",
     "fingerprinting_protection_filter_constants.h",
+    "throttle_creation_result.h",
   ]
   public_deps = [
     "//base",

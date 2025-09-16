@@ -12,6 +12,8 @@
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_page_activation_throttle.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/common/throttle_creation_result.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -24,6 +26,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -38,6 +41,11 @@
 // functionality once blocking is fully implemented.
 namespace fingerprinting_protection_filter {
 
+constexpr const char kRendererThrottleCreationResultMetricName[] =
+    "FingerprintingProtection.RendererThrottleCreationResult";
+constexpr const char kRendererThrottleRedirectsMetricName[] =
+    "FingerprintingProtection.RendererThrottleRedirects";
+
 // =================================== Tests ==================================
 //
 // Note: Similar to the FPF component, these tests leverage Subresource Filter
@@ -45,6 +53,7 @@ namespace fingerprinting_protection_filter {
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        MainFrameActivation) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url =
       GetFrameWithScriptUrl(GetTestUrl("/frame_with_included_script.html"),
@@ -56,6 +65,12 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kCreate, 1)));
+
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
   ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
@@ -66,6 +81,12 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   EXPECT_FALSE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kCreate, 2)));
+
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
   ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
@@ -75,12 +96,20 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // The root frame document should never be filtered.
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kCreate, 3)));
 }
 
 // There should be no activation on localhosts, except for when
 // --enable-benchmarking switch is active.
+// TODO(crbug.com/444588122): Fix this test so it uses localhost.
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        NoMainFrameActivation_Localhost) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
   // Uses localhost without `UpdateIncludedScriptSource`.
   GURL test_url = GetTestUrl("/frame_with_included_script.html");
@@ -90,6 +119,12 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   ASSERT_TRUE(NavigateToDestination(test_url));
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 1)));
 
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
@@ -102,6 +137,12 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 2)));
+
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
   ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
@@ -111,10 +152,17 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // The root frame document should never be filtered.
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 3)));
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        MainFrameActivation_NotActivatedSameSite) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = GetTestUrl("/frame_with_included_script.html");
 
@@ -123,6 +171,12 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   ASSERT_TRUE(NavigateToDestination(test_url));
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 1)));
 
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
@@ -134,6 +188,12 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 2)));
+
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
   ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
@@ -143,6 +203,148 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // The root frame document should never be filtered.
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 3)));
+}
+
+IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
+                       SubresourceRedirect_SameSiteToSameSite) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL same_site_to_same_site_redirect_url = GetTestUrl(
+      "/server-redirect?" + GetTestUrl("/included_script.js").spec());
+  GURL test_url =
+      GetFrameWithScriptUrl(GetTestUrl("/frame_with_included_script.html"),
+                            same_site_to_same_site_redirect_url);
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithSubstring("included_script.js"));
+  ASSERT_TRUE(NavigateToDestination(test_url));
+
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleRedirectsMetricName),
+      base::BucketsAre(base::Bucket(
+          RendererThrottleRedirects::kSameSiteToSameSiteRedirect, 1)));
+}
+
+IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
+                       SubresourceRedirect_SameSiteToCrossSite) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL same_site_to_cross_site_redirect_url = GetTestUrl(
+      "/server-redirect?" + GetCrossSiteTestUrl("/included_script.js").spec());
+  GURL test_url =
+      GetFrameWithScriptUrl(GetTestUrl("/frame_with_included_script.html"),
+                            same_site_to_cross_site_redirect_url);
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithSubstring("included_script.js"));
+  ASSERT_TRUE(NavigateToDestination(test_url));
+
+  // TODO(crbug.com/444595008): Change to EXPECT_FALSE when we correctly block
+  // cross-site redirects.
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleRedirectsMetricName),
+      base::BucketsAre(base::Bucket(
+          RendererThrottleRedirects::kSameSiteToCrossSiteRedirect, 1)));
+}
+
+IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
+                       SubresourceRedirect_CrossSiteToSameSite) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL cross_site_to_same_site_redirect_url = GetCrossSiteTestUrl(
+      "/server-redirect?" + GetTestUrl("/included_script.js").spec());
+  GURL test_url =
+      GetFrameWithScriptUrl(GetTestUrl("/frame_with_included_script.html"),
+                            cross_site_to_same_site_redirect_url);
+
+  // We combine an allowed suffix rule to allow the redirecting URL to load
+  // and a disallowed suffix rule to block the final `included_script.js` URL.
+  auto allowed_suffix = subresource_filter::testing::CreateAllowlistSuffixRule(
+      cross_site_to_same_site_redirect_url.spec());
+  auto disallowed_suffix =
+      subresource_filter::testing::CreateSuffixRule("/included_script.js");
+  SetRulesetWithRules(
+      {std::move(disallowed_suffix), std::move(allowed_suffix)});
+
+  ASSERT_TRUE(NavigateToDestination(test_url));
+
+  // TODO(crbug.com/444588124): Change to EXPECT_TRUE when we don't block
+  // same-site requests that went through a redirect.
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kCreate, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleRedirectsMetricName),
+      base::BucketsAre(base::Bucket(
+          RendererThrottleRedirects::kCrossSiteToSameSiteRedirect, 1)));
+}
+
+IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
+                       SubresourceRedirect_CrossSiteToCrossSite) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL cross_site_to_cross_site_redirect_url = GetCrossSiteTestUrl(
+      "/server-redirect?" + GetCrossSiteTestUrl("/included_script.js").spec());
+  GURL test_url =
+      GetFrameWithScriptUrl(GetTestUrl("/frame_with_included_script.html"),
+                            cross_site_to_cross_site_redirect_url);
+
+  // We combine an allowed suffix rule to allow the redirecting URL to load
+  // and a disallowed suffix rule to block the final `included_script.js` URL.
+  auto allowed_suffix = subresource_filter::testing::CreateAllowlistSuffixRule(
+      cross_site_to_cross_site_redirect_url.spec());
+  auto disallowed_suffix =
+      subresource_filter::testing::CreateSuffixRule("/included_script.js");
+  ASSERT_NO_FATAL_FAILURE(SetRulesetWithRules(
+      {std::move(disallowed_suffix), std::move(allowed_suffix)}));
+
+  ASSERT_TRUE(NavigateToDestination(test_url));
+
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kCreate, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleRedirectsMetricName),
+      base::BucketsAre(base::Bucket(
+          RendererThrottleRedirects::kCrossSiteToCrossSiteRedirect, 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
@@ -155,14 +357,50 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 
   GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
 
-  // Disallow loading child frame documents that in turn would end up
-  // loading included_script.html, unless the document is loaded from an allowed
-  // (not in the blocklist) domain. This enables the third part of this test
-  // disallowing a load only after the first redirect.
+  // Disallow loading child frame documents that in turn would end up loading
+  // included_script.html, unless the document is loaded from an allowed (not in
+  // the blocklist) domain. This enables the third part of this test disallowing
+  // a load only after the first redirect.
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html"));
+  // `url` will load three subframes:
+  //   1. frame_with_included_script.html
+  //   2. frame_with_allowed_script.html
+  //   3. frame_with_included_script.html
+  //
+  // These are all same-site iframes so they and their scripts won't be blocked.
   ASSERT_TRUE(NavigateToDestination(url));
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 3)));
+
+  // Navigate all three subframes to:
+  //  1. http://cross-site.test/frame_with_included_script.html
+  //  2. http://cross-site.test/frame_with_allowed_script.html
+  //  3. http://cross-site.test/frame_with_included_script.html
+  //
+  // Since 1. and 3. are cross-site navigations to disallowed substrings, they
+  // get blocked. 2. and its script are allowed.
   NavigateSubframesToCrossOriginSite();
+
+  // TODO(crbug.com/444949848): Remove if() once associated bug is fixed.
+  std::vector<base::Bucket> expected_buckets;
+  if (web_contents()->GetPrimaryMainFrame()->GetProcess() ==
+      content::ChildFrameAt(web_contents(), 1)->GetProcess()) {
+    expected_buckets.emplace_back(RendererThrottleCreationResult::kSkipSameSite,
+                                  4);
+  } else {
+    expected_buckets.emplace_back(RendererThrottleCreationResult::kSkipSameSite,
+                                  3);
+    expected_buckets.emplace_back(
+        RendererThrottleCreationResult::kSkipDisabledForCrossSiteSubframe, 1);
+  }
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAreArray(expected_buckets));
 
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
@@ -174,6 +412,18 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
       GetCrossSiteTestUrl("/frame_with_allowed_script.html"));
   NavigateFrame(kSubframeNames[0], allowed_subdocument_url);
 
+  // TODO(crbug.com/444949848): Remove if() once associated bug is fixed.
+  if (web_contents()->GetPrimaryMainFrame()->GetProcess() ==
+      content::ChildFrameAt(web_contents(), 0)->GetProcess()) {
+    expected_buckets[0].count += 1;
+  } else {
+    expected_buckets[1].count += 1;
+  }
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAreArray(expected_buckets));
+
   const std::vector<bool> kExpectFirstAndSecondSubframe{true, true, false};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectFirstAndSecondSubframe));
@@ -184,15 +434,30 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
       GetCrossSiteTestUrl("/frame_with_no_subresources.html"));
   NavigateFrame(kSubframeNames[0], allowed_empty_subdocument_url);
 
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAreArray(expected_buckets));
+
   // Finally, navigate the first subframe to an allowed URL that redirects to a
   // disallowed URL, and verify that the navigation gets blocked and the frame
   // collapsed.
+  //
+  // TODO(crbug.com/444949843): We are blocking URLs with the suffix
+  // "frame_with_included_script.html" which includes
+  // https://allowed.com/.../frame_with_included_script.html, so the code below
+  // isn't actually exercising the redirect logic because the request
+  // gets immediately blocked.
   const char kAllowedDomain[] = "allowed.com";
   GURL disallowed_subdocument_url(
       GetCrossSiteTestUrl("/frame_with_included_script.html"));
   GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
       kAllowedDomain, "/server-redirect?" + disallowed_subdocument_url.spec()));
   NavigateFrame(kSubframeNames[0], redirect_to_disallowed_subdocument_url);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAreArray(expected_buckets));
 
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));

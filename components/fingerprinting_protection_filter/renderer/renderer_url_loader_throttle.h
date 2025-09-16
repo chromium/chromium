@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/fingerprinting_protection_filter/common/throttle_creation_result.h"
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
@@ -59,9 +60,11 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   ~RendererURLLoaderThrottle() override;
 
-  // Returns whether we will check `url` against the filtering ruleset based on
-  // scheme, request destination (i.e. file type), etc.
-  static bool WillIgnoreRequest(
+  // Returns `std::nullopt` if we will check `url` against the filtering
+  // ruleset based on scheme, request destination (i.e. file type), etc.
+  // Otherwise, returns a `ThrottleCreationResult` describing why the request
+  // will not be checked.
+  static std::optional<RendererThrottleCreationResult> WillIgnoreRequest(
       const GURL& url,
       network::mojom::RequestDestination request_destination);
 

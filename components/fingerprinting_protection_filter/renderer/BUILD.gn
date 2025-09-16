@@ -10,6 +10,8 @@ if (use_blink) {
     sources = [
       "renderer_agent.cc",
       "renderer_agent.h",
+      "renderer_metrics_url_loader_throttle.cc",
+      "renderer_metrics_url_loader_throttle.h",
       "renderer_url_loader_throttle.cc",
       "renderer_url_loader_throttle.h",
       "unverified_ruleset_dealer.cc",
@@ -71,7 +73,6 @@ if (use_blink) {
       "//components/variations",
       "//content/public/renderer",
       "//net",
-      "//services/network/public/cpp",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//testing/gmock",

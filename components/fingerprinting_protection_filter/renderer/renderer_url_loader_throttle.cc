@@ -152,17 +152,25 @@ RendererURLLoaderThrottle::CreateForTesting(
 }
 
 // static
-bool RendererURLLoaderThrottle::WillIgnoreRequest(
+std::optional<RendererThrottleCreationResult>
+RendererURLLoaderThrottle::WillIgnoreRequest(
     const GURL& url,
     network::mojom::RequestDestination request_destination) {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return RendererThrottleCreationResult::kSkipNonHttp;
+  }
   bool should_exclude_localhost =
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           variations::switches::kEnableBenchmarking) &&
       net::IsLocalhost(url);
-  return !url.SchemeIsHTTPOrHTTPS() || should_exclude_localhost ||
-         (request_destination !=
-              network::mojom::RequestDestination::kWebBundle &&
-          request_destination != network::mojom::RequestDestination::kScript);
+  if (should_exclude_localhost) {
+    return RendererThrottleCreationResult::kSkipLocalHost;
+  }
+  if (request_destination != network::mojom::RequestDestination::kWebBundle &&
+      request_destination != network::mojom::RequestDestination::kScript) {
+    return RendererThrottleCreationResult::kSkipSubresourceType;
+  }
+  return std::nullopt;
 }
 
 bool RendererURLLoaderThrottle::ShouldAllowRequest() {
@@ -181,7 +189,8 @@ void RendererURLLoaderThrottle::ProcessRequestStep(const GURL& latest_url,
 
   if (WillIgnoreRequest(current_url_,
                         request_destination_.value_or(
-                            network::mojom::RequestDestination::kEmpty))) {
+                            network::mojom::RequestDestination::kEmpty))
+          .has_value()) {
     // Short-circuit on URLs we do not want to filter or if there is no
     // filtering ruleset to use.
     return;

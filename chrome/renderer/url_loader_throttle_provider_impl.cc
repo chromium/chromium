@@ -20,6 +20,7 @@
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
+#include "components/fingerprinting_protection_filter/renderer/renderer_metrics_url_loader_throttle.h"
 #include "components/fingerprinting_protection_filter/renderer/renderer_url_loader_throttle.h"
 #include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
@@ -221,28 +222,52 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
     throttles.emplace_back(std::move(throttle));
   }
 #endif
-
   if (chrome_content_renderer_client_
-          ->IsContentBasedFingerprintingProtectionEnabled()) {
-    // Restrict the requests that we check as much as possible. This corresponds
-    // to a request where:
-    //   * The resource requested is not a frame.
-    //   * The resource request is made in the context of a frame.
-    //   * The request matches our URL filtering criteria.
-    //   * There is a valid frame token we can use to retrieve information
-    //     about the current `Document`.
-    //   * There is a valid ruleset we can use for filtering the request.
-    //   * The resource requested is not cross-origin. Uses
-    //   net::SchemefulSite::IsSameSite to reduce memory performance impact.
-    bool should_check_request =
-        !is_frame_resource &&
-        type_ == blink::URLLoaderThrottleProviderType::kFrame &&
-        !fingerprinting_protection_filter::RendererURLLoaderThrottle::
-            WillIgnoreRequest(request.url, request.destination) &&
-        local_frame_token.has_value() && fingerprinting_protection_ruleset_ &&
-        !net::SchemefulSite::IsSameSite(url::Origin::Create(request.url),
-                                        request.request_initiator.value());
-    if (should_check_request) {
+          ->IsContentBasedFingerprintingProtectionEnabledForMetrics()) {
+    using fingerprinting_protection_filter::RendererThrottleCreationResult;
+
+    auto get_throttle_creation_result =
+        [&]() -> RendererThrottleCreationResult {
+      // Restrict the requests that we check as much as possible.
+      if (!chrome_content_renderer_client_
+               ->IsContentBasedFingerprintingProtectionEnabled()) {
+        return RendererThrottleCreationResult::
+            kSkipDisabledForCrossSiteSubframe;
+      }
+      if (is_frame_resource) {
+        return RendererThrottleCreationResult::kSkipFrameResource;
+      }
+      if (type_ != blink::URLLoaderThrottleProviderType::kFrame) {
+        return RendererThrottleCreationResult::kSkipWorkerThrottle;
+      }
+      if (std::optional<RendererThrottleCreationResult> result =
+              fingerprinting_protection_filter::RendererURLLoaderThrottle::
+                  WillIgnoreRequest(request.url, request.destination)) {
+        return result.value();
+      }
+      if (!local_frame_token.has_value()) {
+        return RendererThrottleCreationResult::kSkipNoFrameToken;
+      }
+      if (!fingerprinting_protection_ruleset_) {
+        return RendererThrottleCreationResult::kSkipNoRuleset;
+      }
+      // Uses net::SchemefulSite::IsSameSite to reduce memory performance
+      // impact.
+      if (net::SchemefulSite::IsSameSite(url::Origin::Create(request.url),
+                                         request.request_initiator.value())) {
+        return RendererThrottleCreationResult::kSkipSameSite;
+      }
+      return RendererThrottleCreationResult::kCreate;
+    };
+
+    RendererThrottleCreationResult creation_result =
+        get_throttle_creation_result();
+
+    throttles.emplace_back(
+        std::make_unique<
+            fingerprinting_protection_filter::RendererMetricsURLLoaderThrottle>(
+            creation_result, request.request_initiator, request.url));
+    if (creation_result == RendererThrottleCreationResult::kCreate) {
       throttles.emplace_back(
           std::make_unique<
               fingerprinting_protection_filter::RendererURLLoaderThrottle>(

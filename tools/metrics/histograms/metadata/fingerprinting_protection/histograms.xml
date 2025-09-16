@@ -590,6 +590,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FingerprintingProtection.RendererThrottleCreationResult"
+    enum="FingerprintingProtectionRendererThrottleCreationResult"
+    expires_after="2026-03-01">
+  <owner>ortuno@google.com</owner>
+  <owner>src/components/fingerprinting_protection_filter/OWNERS</owner>
+  <summary>
+    Records whether we created a URL loader throttle for a subresource request
+    or the reason we didn't. This is recorded for renderer requests when
+    FingerprintingProtection is enabled.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.RendererThrottleRedirects"
+    enum="FingerprintingProtectionRendererThrottleRedirects"
+    expires_after="2026-03-01">
+  <owner>ortuno@google.com</owner>
+  <owner>src/components/fingerprinting_protection_filter/OWNERS</owner>
+  <summary>
+    Records redirect patterns for renderer requests. It tracks whether a request
+    that was initially same-site or cross-site redirects to a same-site or
+    cross-site URL. This is recorded for renderer requests when
+    FingerprintingProtection is enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="FingerprintingProtection.SubresourceLoad.Evaluation.CPUDuration"
     units="microseconds" expires_after="2026-03-01">

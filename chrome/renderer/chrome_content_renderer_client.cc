@@ -721,6 +721,11 @@ void ChromeContentRendererClient::RenderFrameCreated(
     subresource_filter_agent->Initialize();
   }
 
+  if (!render_frame->IsInFencedFrameTree()) {
+    content_based_fingerprinting_protection_enabled_for_metrics_ =
+        render_frame->GetBlinkPreferences()
+            .content_based_fingerprinting_protection_enabled;
+  }
   if (render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree()) {
     // This web pref applies at the level of the current browser session and may
     // change when settings are modified, so we copy the latest value every time
@@ -1668,6 +1673,11 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
 bool ChromeContentRendererClient::
     IsContentBasedFingerprintingProtectionEnabled() {
   return content_based_fingerprinting_protection_enabled_;
+}
+
+bool ChromeContentRendererClient::
+    IsContentBasedFingerprintingProtectionEnabledForMetrics() {
+  return content_based_fingerprinting_protection_enabled_for_metrics_;
 }
 
 scoped_refptr<const subresource_filter::MemoryMappedRuleset>
