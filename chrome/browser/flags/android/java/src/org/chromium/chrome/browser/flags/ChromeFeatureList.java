@@ -1074,11 +1074,6 @@ public abstract class ChromeFeatureList {
                     TAB_STRIP_INCOGNITO_MIGRATION,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
-    public static final CachedFlag sTabStripLayoutOptimization =
-            newCachedFlag(
-                    TAB_STRIP_LAYOUT_OPTIMIZATION,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
     public static final CachedFlag sTabletTabStripAnimation =
@@ -1266,7 +1261,6 @@ public abstract class ChromeFeatureList {
                     sTabModelInitFixes,
                     sTabStripDensityChangeAndroid,
                     sTabStripIncognitoMigration,
-                    sTabStripLayoutOptimization,
                     sTabWindowManagerReportIndicesMismatch,
                     sTabletTabStripAnimation,
                     sToolbarPhoneAnimationRefactor,
@@ -1395,6 +1389,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabStorageSqlitePrototype =
             newMutableFlagWithSafeDefault(TAB_STORAGE_SQLITE_PROTOTYPE, false);
+    public static final MutableFlagWithSafeDefault sTabStripLayoutOptimization =
+            newMutableFlagWithSafeDefault(TAB_STRIP_LAYOUT_OPTIMIZATION, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherForeignFaviconSupport =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsAndroid =
