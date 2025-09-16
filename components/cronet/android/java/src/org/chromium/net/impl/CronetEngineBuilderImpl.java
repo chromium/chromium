@@ -21,11 +21,11 @@ import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.IDN;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -136,8 +136,8 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     // Private fields are simply storage of configuration for the resulting CronetEngine.
     // See setters below for verbose descriptions.
     private final Context mApplicationContext;
-    private final List<QuicHint> mQuicHints = new LinkedList<>();
-    private final List<Pkp> mPkps = new LinkedList<>();
+    private final List<QuicHint> mQuicHints = new ArrayList<>();
+    private final List<Pkp> mPkps = new ArrayList<>();
     private boolean mPublicKeyPinningBypassForLocalTrustAnchorsEnabled;
     private String mUserAgent;
     private String mStoragePath;

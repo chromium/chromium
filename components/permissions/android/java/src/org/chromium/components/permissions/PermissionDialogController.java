@@ -20,7 +20,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -92,7 +92,7 @@ public class PermissionDialogController {
     }
 
     private PermissionDialogController() {
-        mRequestQueue = new LinkedList<>();
+        mRequestQueue = new ArrayList<>();
         mObservers = new ObserverList<>();
     }
 

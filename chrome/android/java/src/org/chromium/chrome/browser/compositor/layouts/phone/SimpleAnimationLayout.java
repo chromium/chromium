@@ -44,9 +44,9 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.List;
 
 /** This class handles animating the opening of new tabs. */
 @NullMarked
@@ -175,7 +175,7 @@ public class SimpleAnimationLayout extends Layout {
         sourceLayoutTab.setBorderAlpha(0.0f);
 
         mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
-        updateCacheVisibleIds(new LinkedList<>(Arrays.asList(sourceTabId)));
+        updateCacheVisibleIds(Collections.singletonList(sourceTabId));
     }
 
     @Override
@@ -228,7 +228,7 @@ public class SimpleAnimationLayout extends Layout {
         } else {
             mLayoutTabs = new LayoutTab[] {mLayoutTabs[0], newLayoutTab};
         }
-        updateCacheVisibleIds(new LinkedList<>(Arrays.asList(id, sourceId)));
+        updateCacheVisibleIds(List.of(id, sourceId));
 
         newLayoutTab.setBorderAlpha(0.0f);
 
@@ -299,7 +299,7 @@ public class SimpleAnimationLayout extends Layout {
         assert mLayoutTabs != null && mLayoutTabs.length == 1;
         LayoutTab sourceLayoutTab = mLayoutTabs[0];
         mLayoutTabs = new LayoutTab[] {sourceLayoutTab, newLayoutTab};
-        updateCacheVisibleIds(new LinkedList<>(Arrays.asList(id, sourceId)));
+        updateCacheVisibleIds(List.of(id, sourceId));
 
         forceAnimationToFinish();
 

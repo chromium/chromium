@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
 /** Describes the set of Actions from a .test file. */
@@ -30,7 +30,7 @@ public class CapturedSitesInstructions {
     private final Queue<Action> mActions;
 
     public CapturedSitesInstructions(String jsonUrl) throws Throwable {
-        mActions = new LinkedList<Action>();
+        mActions = new ArrayDeque<Action>();
         JSONObject json;
         try {
             String text =
@@ -46,7 +46,7 @@ public class CapturedSitesInstructions {
     }
 
     public CapturedSitesInstructions(JSONObject json) throws Throwable {
-        mActions = new LinkedList<Action>();
+        mActions = new ArrayDeque<Action>();
         completeParsing(json);
     }
 

@@ -18,7 +18,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /** Test for verify the names and test method Description works properly */
@@ -111,7 +110,7 @@ public class ParameterizedTestNameTest {
                 ParameterizedRunner.createRunners(
                         new TestClass(TestClassWithClassParameterAppendName.class));
         List<String> expectedTestNames =
-                new LinkedList<String>(Arrays.asList("test__Hello", "test__World"));
+                new ArrayList<String>(Arrays.asList("test__Hello", "test__World"));
         List<String> computedMethodNames = new ArrayList<>();
         for (Runner r : runners) {
             BlockJUnit4RunnerDelegate castedRunner = (BlockJUnit4RunnerDelegate) r;
@@ -137,7 +136,7 @@ public class ParameterizedTestNameTest {
         List<Runner> runners =
                 ParameterizedRunner.createRunners(
                         new TestClass(TestClassWithClassParameterDefaultName.class));
-        List<String> expectedTestNames = new LinkedList<String>(Arrays.asList("test", "test"));
+        List<String> expectedTestNames = new ArrayList<String>(Arrays.asList("test", "test"));
         for (Runner r : runners) {
             @SuppressWarnings("unchecked")
             BlockJUnit4RunnerDelegate castedRunner = (BlockJUnit4RunnerDelegate) r;
@@ -161,7 +160,7 @@ public class ParameterizedTestNameTest {
                 ParameterizedRunner.createRunners(
                         new TestClass(TestClassWithMethodParameter.class));
         List<String> expectedTestNames =
-                new LinkedList<String>(
+                new ArrayList<String>(
                         Arrays.asList(
                                 "test__Hello",
                                 "test__World",
@@ -188,7 +187,7 @@ public class ParameterizedTestNameTest {
         List<Runner> runners =
                 ParameterizedRunner.createRunners(new TestClass(TestClassWithMixedParameter.class));
         List<String> expectedTestNames =
-                new LinkedList<String>(
+                new ArrayList<String>(
                         Arrays.asList(
                                 "testA__Hello_A",
                                 "testA__World_A",

@@ -11,7 +11,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -33,7 +33,7 @@ public class NavigationInfoCaptureTrigger {
 
     private final Callback<Tab> mCapture;
     private final Handler mUiThreadHandler = new Handler(ThreadUtils.getUiThreadLooper());
-    private final List<Runnable> mPendingRunnables = new LinkedList<>();
+    private final List<Runnable> mPendingRunnables = new ArrayList<>();
 
     private boolean mOnloadTriggered;
     private boolean mFirstMeaningfulPaintTriggered;

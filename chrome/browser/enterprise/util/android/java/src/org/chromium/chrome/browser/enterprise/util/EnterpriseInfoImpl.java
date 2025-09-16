@@ -32,7 +32,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.RejectedExecutionException;
@@ -50,7 +50,7 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
     private boolean mSkipAsyncCheckForTesting;
 
     EnterpriseInfoImpl() {
-        mCallbackList = new LinkedList<>();
+        mCallbackList = new ArrayDeque<>();
         mHandler = new Handler(assumeNonNull(Looper.myLooper()));
     }
 

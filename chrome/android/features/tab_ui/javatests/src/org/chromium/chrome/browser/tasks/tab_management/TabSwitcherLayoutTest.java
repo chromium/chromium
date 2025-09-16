@@ -118,7 +118,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -138,7 +137,7 @@ public class TabSwitcherLayoutTest {
 
     private String mUrl;
     private int mRepeat;
-    private final List<WeakReference<Bitmap>> mAllBitmaps = new LinkedList<>();
+    private final List<WeakReference<Bitmap>> mAllBitmaps = new ArrayList<>();
     private final Callback<Bitmap> mBitmapListener =
             (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;

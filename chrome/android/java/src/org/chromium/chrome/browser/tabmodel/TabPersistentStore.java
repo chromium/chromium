@@ -540,7 +540,7 @@ public class TabPersistentStore {
      */
     @VisibleForTesting
     protected void updateMigratedFiles() {
-        List<Tab> updatedMigrations = new LinkedList<>();
+        List<Tab> updatedMigrations = new ArrayList<>();
         for (Tab tab : mTabsToMigrate) {
             int id = tab.getId();
             boolean incognito = tab.isIncognito();
@@ -1307,7 +1307,7 @@ public class TabPersistentStore {
         if (mLegacyTabStateFilesToDelete.isEmpty()) {
             return;
         }
-        List<File> filesToDelete = new LinkedList<>();
+        List<File> filesToDelete = new ArrayList<>();
         for (int i = 0;
                 !mLegacyTabStateFilesToDelete.isEmpty()
                         && i < ChromeFeatureList.sCleanupLegacyTabStateBatchSize.getValue();

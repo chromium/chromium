@@ -18,7 +18,7 @@ import org.chromium.components.translate.TranslateMessage.MenuItem;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.ListMenu;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 @NullMarked
@@ -53,7 +53,7 @@ class TranslateMessageSecondaryMenu implements ListMenu, OnItemClickListener {
         mListView.setDivider(null);
         mListView.setOnItemClickListener(this);
 
-        mClickRunnables = new LinkedList<>();
+        mClickRunnables = new ArrayList<>();
     }
 
     @Override

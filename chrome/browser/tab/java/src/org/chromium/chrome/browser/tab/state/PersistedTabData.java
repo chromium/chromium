@@ -25,9 +25,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -346,7 +346,7 @@ public abstract class PersistedTabData implements UserData {
     private static <T extends PersistedTabData> void addCallback(
             String key, Callback<@Nullable T> callback) {
         if (!sCachedCallbacks.containsKey(key)) {
-            sCachedCallbacks.put(key, new LinkedList<>());
+            sCachedCallbacks.put(key, new ArrayList<>());
         }
         sCachedCallbacks.get(key).add(callback);
     }

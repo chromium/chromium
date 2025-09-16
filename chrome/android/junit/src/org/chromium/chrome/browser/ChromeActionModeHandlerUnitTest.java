@@ -54,7 +54,6 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -171,8 +170,8 @@ public class ChromeActionModeHandlerUnitTest {
         List<String> browserPackageNames = new ArrayList<>();
         List<String> launcherPackageNames = new ArrayList<>();
         List<String> otherPackageNames = new ArrayList<>();
-        List<ResolveInfo> browsersList = new LinkedList<>();
-        List<ResolveInfo> launchersList = new LinkedList<>();
+        List<ResolveInfo> browsersList = new ArrayList<>();
+        List<ResolveInfo> launchersList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             browserPackageNames.add("foo " + i);
             browsersList.add(createResolveInfo(browserPackageNames.get(i)));
@@ -190,7 +189,7 @@ public class ChromeActionModeHandlerUnitTest {
 
         RoboMenu menu = new RoboMenu(RuntimeEnvironment.application);
 
-        List<String> allNames = new LinkedList<>();
+        List<String> allNames = new ArrayList<>();
         allNames.addAll(browserPackageNames);
         allNames.addAll(launcherPackageNames);
         allNames.addAll(otherPackageNames);

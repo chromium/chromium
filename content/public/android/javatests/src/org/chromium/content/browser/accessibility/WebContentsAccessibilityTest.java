@@ -146,9 +146,9 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -3411,7 +3411,7 @@ public class WebContentsAccessibilityTest {
             SpannableString spannableUnderTest = new SpannableString(mNodeInfo.getText());
 
             // Get all the spans we care about.
-            List<SpanRange> actualSpans = new LinkedList<>();
+            List<SpanRange> actualSpans = new ArrayList<>();
             addSpansToList(actualSpans, spannableUnderTest, StyleSpan.class);
             addSpansToList(actualSpans, spannableUnderTest, UnderlineSpan.class);
             addSpansToList(actualSpans, spannableUnderTest, StrikethroughSpan.class);

@@ -35,7 +35,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -120,7 +120,7 @@ public class BasicListMenu implements ListMenu {
     private final ModelList mContentModelList;
     private final ModelListAdapter mContentAdapter;
 
-    private final List<Runnable> mClickRunnables = new LinkedList<>();
+    private final List<Runnable> mClickRunnables = new ArrayList<>();
 
     /**
      * @param context The {@link Context} to inflate the layout.

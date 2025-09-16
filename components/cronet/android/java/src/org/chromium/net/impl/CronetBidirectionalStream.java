@@ -36,11 +36,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.AbstractMap;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -158,12 +158,12 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
 
     @GuardedBy("mNativeStreamLock")
     // Pending write data.
-    private final LinkedList<ByteBuffer> mPendingData;
+    private final ArrayList<ByteBuffer> mPendingData;
 
     @GuardedBy("mNativeStreamLock")
     // Flush data queue that should be pushed to the native stack when the previous
     // CronetBidirectionalStreamJni.get().writevData completes.
-    private final LinkedList<ByteBuffer> mFlushData;
+    private final ArrayDeque<ByteBuffer> mFlushData;
 
     @GuardedBy("mNativeStreamLock")
     // Whether an end-of-stream flag is passed in through write().
@@ -310,8 +310,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
         mInitialMethod = httpMethod;
         mRequestHeaders = stringsFromHeaderList(requestHeaders);
         mDelayRequestHeadersUntilFirstFlush = delayRequestHeadersUntilNextFlush;
-        mPendingData = new LinkedList<>();
-        mFlushData = new LinkedList<>();
+        mPendingData = new ArrayList<>();
+        mFlushData = new ArrayDeque<>();
         mRequestAnnotations = requestAnnotations;
         mTrafficStatsTagSet = trafficStatsTagSet;
         mTrafficStatsTag = trafficStatsTag;
@@ -504,7 +504,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     /** Returns a read-only copy of {@code mPendingData} for testing. */
     public List<ByteBuffer> getPendingDataForTesting() {
         synchronized (mNativeStreamLock) {
-            List<ByteBuffer> pendingData = new LinkedList<>();
+            List<ByteBuffer> pendingData = new ArrayList<>();
             for (ByteBuffer buffer : mPendingData) {
                 pendingData.add(buffer.asReadOnlyBuffer());
             }
@@ -515,7 +515,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     /** Returns a read-only copy of {@code mFlushData} for testing. */
     public List<ByteBuffer> getFlushDataForTesting() {
         synchronized (mNativeStreamLock) {
-            List<ByteBuffer> flushData = new LinkedList<>();
+            List<ByteBuffer> flushData = new ArrayList<>();
             for (ByteBuffer buffer : mFlushData) {
                 flushData.add(buffer.asReadOnlyBuffer());
             }

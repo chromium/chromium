@@ -41,7 +41,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -943,13 +942,13 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
         }
 
         public void addRequestToken(@Nullable String contentBinding, @NonNull String token) {
-            mResponses.computeIfAbsent(contentBinding, s -> new LinkedList<>()).offer(token);
+            mResponses.computeIfAbsent(contentBinding, s -> new ArrayDeque<>()).offer(token);
         }
 
         public void addRequestError(
                 @Nullable String contentBinding, @MediaIntegrityErrorCode int errorCode) {
             mResponses
-                    .computeIfAbsent(contentBinding, s -> new LinkedList<>())
+                    .computeIfAbsent(contentBinding, s -> new ArrayDeque<>())
                     .offer(new MediaIntegrityErrorWrapper(errorCode));
         }
 
@@ -1012,7 +1011,7 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                 @MediaIntegrityApiStatus int apiStatus,
                 MediaIntegrityProvider provider) {
             CallKey key = new CallKey(cloudProjectNumber, apiStatus);
-            mResponses.computeIfAbsent(key, k -> new LinkedList<>()).offer(provider);
+            mResponses.computeIfAbsent(key, k -> new ArrayDeque<>()).offer(provider);
         }
 
         public void addProviderError(
@@ -1021,7 +1020,7 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                 @MediaIntegrityErrorCode int errorCode) {
             CallKey key = new CallKey(cloudProjectNumber, apiStatus);
             mResponses
-                    .computeIfAbsent(key, k -> new LinkedList<>())
+                    .computeIfAbsent(key, k -> new ArrayDeque<>())
                     .offer(new MediaIntegrityErrorWrapper(errorCode));
         }
 

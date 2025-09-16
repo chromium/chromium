@@ -14,7 +14,7 @@ import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -39,10 +39,10 @@ public class Promise<T extends @Nullable Object> {
     @PromiseState private int mState = PromiseState.UNFULFILLED;
 
     private @Nullable T mResult;
-    private final List<Callback<T>> mFulfillCallbacks = new LinkedList<>();
+    private final List<Callback<T>> mFulfillCallbacks = new ArrayList<>();
 
     private @Nullable Exception mRejectReason;
-    private final List<Callback<@Nullable Exception>> mRejectCallbacks = new LinkedList<>();
+    private final List<Callback<@Nullable Exception>> mRejectCallbacks = new ArrayList<>();
 
     private final Thread mThread = Thread.currentThread();
     private final Handler mHandler = new Handler();

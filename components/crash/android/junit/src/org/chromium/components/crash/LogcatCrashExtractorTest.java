@@ -17,6 +17,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class LogcatCrashExtractorTest {
 
     @Test
     public void testLogcatEmpty() {
-        final List<String> original = new LinkedList<>();
+        final List<String> original = new ArrayList<>();
         assertLogcatLists(original, original);
     }
 

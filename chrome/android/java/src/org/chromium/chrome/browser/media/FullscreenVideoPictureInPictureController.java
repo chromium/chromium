@@ -41,8 +41,8 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -107,7 +107,7 @@ public class FullscreenVideoPictureInPictureController {
     private static final boolean sUseSourceRectHint = false;
 
     /** Callbacks to cleanup after leaving PiP. */
-    private final List<Runnable> mOnLeavePipCallbacks = new LinkedList<>();
+    private final List<Runnable> mOnLeavePipCallbacks = new ArrayList<>();
 
     /** Current observers, if any. */
     @Nullable DismissActivityOnTabChangeObserver mActivityTabObserver;

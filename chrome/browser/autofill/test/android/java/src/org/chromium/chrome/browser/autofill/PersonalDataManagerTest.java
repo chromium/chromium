@@ -48,8 +48,8 @@ import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -656,7 +656,7 @@ public class PersonalDataManagerTest {
         mHelper.setProfile(profile3);
         mHelper.setProfile(profile4);
 
-        List<String> expectedLabels = new LinkedList<>();
+        List<String> expectedLabels = new ArrayList<>();
         expectedLabels.add("123 Main, jm@example.com");
         expectedLabels.add("123 Main, jm-work@example.com");
         expectedLabels.add("1500 Second Ave, 90068");

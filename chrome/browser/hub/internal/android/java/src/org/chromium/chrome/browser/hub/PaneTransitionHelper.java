@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.hub;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Optional;
 import java.util.Queue;
 
@@ -36,7 +36,7 @@ public class PaneTransitionHelper {
         public final @LoadHint int loadHint;
     }
 
-    private final Queue<TransitionData> mTransitions = new LinkedList<>();
+    private final Queue<TransitionData> mTransitions = new ArrayDeque<>();
     private final PaneLookup mPaneLookup;
 
     private boolean mIsRunning;

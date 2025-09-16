@@ -83,13 +83,13 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -134,7 +134,7 @@ public class PaymentUiService
 
     private final boolean mIsOffTheRecord;
     private final Handler mHandler = new Handler();
-    private final Queue<Runnable> mRetryQueue = new LinkedList<>();
+    private final Queue<Runnable> mRetryQueue = new ArrayDeque<>();
     private final Callback<TabModel> mCurrentTabModelObserver = this::onTabModelSelected;
     private final TabModelObserver mTabModelObserver;
     private @MonotonicNonNull ContactEditor mContactEditor;
