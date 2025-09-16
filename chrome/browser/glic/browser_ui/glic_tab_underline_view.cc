@@ -594,7 +594,15 @@ void GlicTabUnderlineView::DrawEffect(gfx::Canvas* canvas,
   // At small sizes, paint the underline as a solid color instead of a gradient.
   if (underline_width < gfx::kFaviconSize) {
     new_flags.setShader(nullptr);
-    new_flags.setColor(colors_[0]);  // -gem-sys-color--brand-blue #3186FF
+    // `colors_` is not populated if the kGlicParameterizedShader feature is not
+    // enabled.
+    if (!colors_.empty()) {
+      new_flags.setColor(colors_[0]);  // -gem-sys-color--brand-blue #3186FF
+    } else {
+      // Use -gem-sys-color--brand-blue as fallback color.
+      const SkColor fallback_color = SkColorSetARGB(255, 49, 134, 255);
+      new_flags.setColor(fallback_color);
+    }
   }
 
   canvas->DrawRoundRect(gfx::RectF(effect_bounds), kCornerRadius, new_flags);
