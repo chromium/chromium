@@ -56,6 +56,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".NationalIdCard"
       summary="Emitted for national id card forms only."/>
   <variant name=".Passport" summary="Emitted for passport forms only."/>
+  <variant name=".RedressNumber"
+      summary="Emitted for redress number forms only."/>
   <variant name=".Vehicle"
       summary="Emitted for vehicle information forms only."/>
 </variants>
@@ -1122,7 +1124,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
-    name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.{EntityType}"
+    name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered{EntityType}"
     enum="Boolean" expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1146,7 +1148,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
-    name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.{EntityType}"
+    name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped{EntityType}"
     enum="Boolean" expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1464,14 +1466,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     so by an user action or not.
   </summary>
   <token key="PromptType" variants="Autofill.Ai.PromptTypes"/>
-  <token key="EntityType">
-    <variant name=".DriversLicense" summary="Driver license entity"/>
-    <variant name=".KnownTravelerNumber"
-        summary="Known traveler number entity"/>
-    <variant name=".NationalIdCard" summary="National ID card entity"/>
-    <variant name=".Passport" summary="Passport entity"/>
-    <variant name=".Vehicle" summary="Vehicle entity"/>
-  </token>
+  <token key="EntityType" variants="Autofill.Ai.EntityType"/>
 </histogram>
 
 <histogram
