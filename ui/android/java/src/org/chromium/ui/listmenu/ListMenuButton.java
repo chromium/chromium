@@ -74,6 +74,13 @@ public class ListMenuButton extends ChromeImageButton {
         mListMenuHost.setDelegate(delegate, overrideOnClickListener);
     }
 
+    /**
+     * @returns The {@link ListMenuHost} of the menu.
+     */
+    public ListMenuHost getHost() {
+        return mListMenuHost;
+    }
+
     /** Called to dismiss any popup menu that might be showing for this button. */
     public void dismiss() {
         mListMenuHost.dismiss();

@@ -114,6 +114,8 @@ found in the LICENSE file.
     <dimen name="list_menu_item_start_icon_end_margin_desktop">12dp</dimen>
     <dimen name="list_divider_layout_height_desktop">10dp</dimen>
 
+    <dimen name="list_menu_flyout_popup_horizontal_overlap">8dp</dimen>
+
     <!-- Automotive -->
     <item name="automotive_ui_scale_factor" format="float" type="dimen">1.34</item>
 

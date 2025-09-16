@@ -4,8 +4,6 @@
 
 package org.chromium.ui.listmenu;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -19,18 +17,25 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
+import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutHandler;
+import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutPopupEntry;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
+import org.chromium.ui.widget.RectProvider;
+
+import java.util.ArrayList;
 
 /**
  * The host class that makes a view capable of triggering list menu. The core logic is extracted
  * from ListMenuButton.
  */
 @NullMarked
-public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
+public class ListMenuHost
+        implements AnchoredPopupWindow.LayoutObserver, FlyoutHandler<AnchoredPopupWindow> {
     /** A listener that is notified when the popup menu is shown or dismissed. */
     @FunctionalInterface
     public interface PopupMenuShownListener {
@@ -60,7 +65,9 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
 
     private int mMenuMaxWidth;
 
-    private @Nullable AnchoredPopupWindow mPopupMenu;
+    // A list of the windows, paired with the parent `ListItem` if the window is a flyout.
+    private ArrayList<FlyoutPopupEntry<AnchoredPopupWindow>> mPopupMenus;
+
     private @Nullable ListMenuDelegate mDelegate;
     private final ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
@@ -92,6 +99,8 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
                 : "menuPositionedAtStart and menuPositionedAtEnd are both true.";
 
         a.recycle();
+
+        mPopupMenus = new ArrayList<>();
     }
 
     /**
@@ -112,12 +121,14 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
 
     /** Called to dismiss any popup menu that might be showing for this button. */
     public void dismiss() {
-        if (mPopupMenu != null) {
-            mPopupMenu.dismiss();
-            mPopupMenu = null;
+        if (mPopupMenus.size() != 0) {
+            for (FlyoutPopupEntry<AnchoredPopupWindow> entry : mPopupMenus) {
+                entry.popupWindow.dismiss();
+            }
+            mPopupMenus = new ArrayList<>();
 
             if (sPopupMenuHelperForTesting != null) {
-                mPopupMenu = sPopupMenuHelperForTesting.injectPopupMenu(null);
+                sPopupMenuHelperForTesting.injectPopupMenu(null);
             }
         }
     }
@@ -127,7 +138,7 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
         if (!mView.isAttachedToWindow()) return;
         dismiss();
         initPopupWindow();
-        mPopupMenu.show();
+        mPopupMenus.get(0).popupWindow.show();
         notifyPopupListeners(true);
     }
 
@@ -141,7 +152,6 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
     }
 
     /** Init the popup window with provided attributes, called before {@link #showMenu()} */
-    @EnsuresNonNull("mPopupMenu")
     private void initPopupWindow() {
         if (mDelegate == null) throw new IllegalStateException("Delegate was not set.");
 
@@ -154,39 +164,112 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
         if (viewParent instanceof ViewGroup) {
             ((ViewGroup) viewParent).removeView(contentView);
         }
-        mPopupMenu =
-                new AnchoredPopupWindow(
-                        mView.getContext(),
-                        mView,
-                        new ColorDrawable(Color.TRANSPARENT),
-                        contentView,
-                        mDelegate.getRectProvider(mView));
 
-        if (sPopupMenuHelperForTesting != null) {
-            mPopupMenu = sPopupMenuHelperForTesting.injectPopupMenu(mPopupMenu);
-        }
+        AnchoredPopupWindow.Builder builder =
+                new AnchoredPopupWindow.Builder(
+                                mView.getContext(),
+                                mView,
+                                new ColorDrawable(Color.TRANSPARENT),
+                                () -> contentView,
+                                mDelegate.getRectProvider(mView))
+                        .setVerticalOverlapAnchor(mMenuVerticalOverlapAnchor)
+                        .setHorizontalOverlapAnchor(mMenuHorizontalOverlapAnchor)
+                        .setMaxWidth(mMenuMaxWidth)
+                        .setFocusable(true)
+                        .setAnimateFromAnchor(true)
+                        .addOnDismissListener(
+                                () -> {
+                                    notifyPopupListeners(false);
+                                    dismiss();
+                                })
+                        // This should be called explicitly since it is not a default behavior on
+                        // Android S in split-screen mode. See crbug.com/1246956.
+                        .setOutsideTouchable(true);
 
-        mPopupMenu.setVerticalOverlapAnchor(mMenuVerticalOverlapAnchor);
-        mPopupMenu.setHorizontalOverlapAnchor(mMenuHorizontalOverlapAnchor);
-        mPopupMenu.setMaxWidth(mMenuMaxWidth);
         if (mTryToFitLargestItem) {
             // Content width includes the padding around the items, so add it here.
             final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
-            mPopupMenu.setDesiredContentWidth(menu.getMaxItemWidth() + lateralPadding);
+            builder.setDesiredContentWidth(menu.getMaxItemWidth() + lateralPadding);
         }
-        mPopupMenu.setFocusable(true);
-        mPopupMenu.setAnimateFromAnchor(true);
+
         if (mPositionedAtStart || mPositionedAtEnd) {
-            mPopupMenu.setLayoutObserver(this);
+            builder.setLayoutObserver(this);
         }
-        mPopupMenu.addOnDismissListener(
-                () -> {
-                    mPopupMenu = null;
-                    notifyPopupListeners(false);
-                });
-        // This should be called explicitly since it is not a default behavior on Android S
-        // in split-screen mode. See crbug.com/1246956.
-        mPopupMenu.setOutsideTouchable(true);
+
+        AnchoredPopupWindow popupMenu = builder.build();
+        mPopupMenus.add(new FlyoutPopupEntry(null, popupMenu));
+
+        if (sPopupMenuHelperForTesting != null) {
+            AnchoredPopupWindow spiedPopupMenu =
+                    sPopupMenuHelperForTesting.injectPopupMenu(popupMenu);
+            mPopupMenus.set(0, new FlyoutPopupEntry(null, spiedPopupMenu));
+        }
+    }
+
+    @Override
+    public ArrayList<FlyoutPopupEntry<AnchoredPopupWindow>> getFlyoutWindows() {
+        return mPopupMenus;
+    }
+
+    @Override
+    public void removeFlyoutWindows(int clearFromIndex) {
+        assert clearFromIndex < mPopupMenus.size();
+
+        for (int i = clearFromIndex; i < mPopupMenus.size(); i++) {
+            mPopupMenus.get(i).popupWindow.dismiss();
+        }
+
+        mPopupMenus.subList(clearFromIndex, mPopupMenus.size()).clear();
+    }
+
+    @Override
+    public void addFlyoutWindow(ListItem item, View view) {
+        if (mDelegate == null) throw new IllegalStateException("Delegate was not set.");
+        ListMenu menu = mDelegate.getListMenuFromParentListItem(item);
+        if (menu == null) {
+            return;
+        }
+
+        menu.addContentViewClickRunnable(this::dismiss);
+        final View contentView = menu.getContentView();
+
+        AnchoredPopupWindow popupMenu =
+                new AnchoredPopupWindow.Builder(
+                                mView.getContext(),
+                                mView,
+                                new ColorDrawable(Color.TRANSPARENT),
+                                () -> contentView,
+                                new RectProvider(calculateFlyoutAnchorRect(view)))
+                        .setVerticalOverlapAnchor(true)
+                        .setHorizontalOverlapAnchor(false)
+                        .setMaxWidth(mMenuMaxWidth)
+                        .setFocusable(true)
+                        .setTouchModal(false)
+                        .setAnimateFromAnchor(false)
+                        .setSpecCalculator(new FlyoutPopupSpecCalculator())
+                        .build();
+
+        popupMenu.show();
+        mPopupMenus.add(new FlyoutPopupEntry(item, popupMenu));
+    }
+
+    public Rect calculateFlyoutAnchorRect(View itemView) {
+        int[] result = new int[2];
+        itemView.getLocationOnScreen(result);
+
+        int[] rootCoordinates = new int[2];
+        mView.getRootView().getLocationOnScreen(rootCoordinates);
+
+        int horizontalOverlap =
+                itemView.getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.list_menu_flyout_popup_horizontal_overlap);
+
+        return new Rect(
+                result[0] - rootCoordinates[0] + horizontalOverlap,
+                result[1] - rootCoordinates[1],
+                result[0] - rootCoordinates[0] + itemView.getWidth() - horizontalOverlap,
+                result[1] - rootCoordinates[1]);
     }
 
     /**
@@ -211,12 +294,16 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
     @Override
     public void onPreLayoutChange(
             boolean positionBelow, int x, int y, int width, int height, Rect anchorRect) {
-        assumeNonNull(mPopupMenu);
+        assert mPopupMenus.size() > 0;
+
+        // This animation style is only for the main pane, not for flyout popups.
+        AnchoredPopupWindow popupMenu = mPopupMenus.get(0).popupWindow;
+
         if (mPositionedAtEnd) {
-            mPopupMenu.setAnimationStyle(
+            popupMenu.setAnimationStyle(
                     positionBelow ? R.style.EndIconMenuAnim : R.style.EndIconMenuAnimBottom);
         } else if (mPositionedAtStart) {
-            mPopupMenu.setAnimationStyle(
+            popupMenu.setAnimationStyle(
                     positionBelow ? R.style.StartIconMenuAnim : R.style.StartIconMenuAnimBottom);
         }
     }
