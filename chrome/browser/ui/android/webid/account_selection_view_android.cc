@@ -143,7 +143,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaRelyingPartyData(
     rp_icon_bitmap = gfx::ConvertToJavaBitmap(*rp_data.rp_icon.ToSkBitmap());
   }
   return Java_RelyingPartyData_Constructor(
-      env, rp_data.rp_for_display, rp_data.iframe_for_display, rp_icon_bitmap);
+      env, rp_data.rp_for_display, rp_data.iframe_for_display, rp_icon_bitmap,
+      rp_data.display_strings_may_change);
 }
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(

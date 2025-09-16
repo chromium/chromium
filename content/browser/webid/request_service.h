@@ -449,7 +449,9 @@ class CONTENT_EXPORT RequestService
 
   RpMode GetRpMode() const { return rp_mode_; }
 
-  RelyingPartyData CreateRpData() const;
+  // If the client metadata has not been received yet the UI may not be able to
+  // show a correct title, so we need to indicate that in the RelyingPartyData.
+  RelyingPartyData CreateRpData(bool client_metadata_received) const;
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;

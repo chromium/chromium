@@ -19,20 +19,29 @@ public class RelyingPartyData {
     private final String mRpForDisplay;
     private final String mIframeForDisplay;
     @Nullable private final Bitmap mRpIcon;
+    private final boolean mDisplayStringsMayChange;
+
+    public RelyingPartyData(String rpForDisplay, String iframeForDisplay, @Nullable Bitmap rpIcon) {
+        this(rpForDisplay, iframeForDisplay, rpIcon, /* displayStringsMayChange= */ false);
+    }
 
     /**
      * @param rpForDisplay The relying party eTLD+1 to be displayed.
      * @param iframeForDisplay The iframe eTLD+1 to be displayed.
      * @param rpIcon The icon of the relying party.
+     * @param displayStringsMayChange Whether the display strings are final or may change (e.g. for
+     *     cross-site iframes before we get the client metadata result).
      */
     @CalledByNative
     public RelyingPartyData(
             @JniType("std::u16string") String rpForDisplay,
             @JniType("std::u16string") String iframeForDisplay,
-            @Nullable Bitmap rpIcon) {
+            @Nullable Bitmap rpIcon,
+            boolean displayStringsMayChange) {
         mRpForDisplay = rpForDisplay;
         mIframeForDisplay = iframeForDisplay;
         mRpIcon = rpIcon;
+        mDisplayStringsMayChange = displayStringsMayChange;
     }
 
     /** Returns the relying party eTLD+1 to be displayed. */
@@ -49,5 +58,13 @@ public class RelyingPartyData {
     @Nullable
     public Bitmap getRpIcon() {
         return mRpIcon;
+    }
+
+    /**
+     * Returns whether the display strings may change. This can happen for cross-site iframes before
+     * we get the client metadata response.
+     */
+    public boolean getDisplayStringsMayChange() {
+        return mDisplayStringsMayChange;
     }
 }

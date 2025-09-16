@@ -544,7 +544,7 @@ void RequestService::RequestToken(
     auto get_info_it = token_request_get_infos_.find(idp_config_url);
     CHECK(get_info_it != token_request_get_infos_.end());
     if (!request_dialog_controller_->ShowLoadingDialog(
-            CreateRpData(),
+            CreateRpData(/*client_metadata_received=*/false),
             FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
             get_info_it->second.rp_context, rp_mode_,
             base::BindOnce(&RequestService::OnDialogDismissed,
@@ -1150,16 +1150,16 @@ void RequestService::MaybeShowAccountsDialog() {
     OnAccountSelected(accounts_[0]->identity_provider->idp_metadata.config_url,
                       accounts_[0]->id, /*is_sign_in=*/true);
     if (!request_dialog_controller_->ShowVerifyingDialog(
-            CreateRpData(), auto_reauthn_idp, accounts_[0], SignInMode::kAuto,
-            rp_mode_,
+            CreateRpData(/*client_metadata_received=*/true), auto_reauthn_idp,
+            accounts_[0], SignInMode::kAuto, rp_mode_,
             base::BindOnce(&RequestService::OnAccountsDisplayed,
                            weak_ptr_factory_.GetWeakPtr()))) {
       return;
     }
   } else {
     if (!request_dialog_controller_->ShowAccountsDialog(
-            CreateRpData(), idp_data_for_display_, accounts_, rp_mode_,
-            new_accounts_,
+            CreateRpData(/*client_metadata_received=*/true),
+            idp_data_for_display_, accounts_, rp_mode_, new_accounts_,
             base::BindOnce(&RequestService::OnAccountSelected,
                            weak_ptr_factory_.GetWeakPtr()),
             base::BindRepeating(&RequestService::LoginToIdP,
@@ -1239,7 +1239,8 @@ void RequestService::NotifyAutofillSuggestionAccepted(
   // necessary in the dialog controller. We should probably be able to create
   // the internal state on demand in case it isn't available.
   if (!request_dialog_controller_->ShowLoadingDialog(
-          CreateRpData(), FormatOriginForDisplay(url::Origin::Create(idp)),
+          CreateRpData(/*client_metadata_received=*/true),
+          FormatOriginForDisplay(url::Origin::Create(idp)),
           get_info_it->second.rp_context, blink::mojom::RpMode::kActive,
           base::BindOnce(&RequestService::OnDialogDismissed,
                          weak_ptr_factory_.GetWeakPtr()))) {
@@ -1260,8 +1261,8 @@ void RequestService::NotifyAutofillSuggestionAccepted(
   // probably refactor the API to support this use case, rather than overload
   // an unintended use.
   if (!request_dialog_controller_->ShowAccountsDialog(
-          CreateRpData(), idp_data_for_display_, {},
-          blink::mojom::RpMode::kActive, selected,
+          CreateRpData(/*client_metadata_received=*/true),
+          idp_data_for_display_, {}, blink::mojom::RpMode::kActive, selected,
           base::BindOnce(&RequestService::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&RequestService::LoginToIdP,
@@ -1346,8 +1347,9 @@ void RequestService::ShowSingleIdpFailureDialog() {
                    !idp_info->metadata.requested_label.empty();
 
   if (!request_dialog_controller_->ShowFailureDialog(
-          CreateRpData(), FormatOriginForDisplay(idp_origin),
-          idp_info->rp_context, rp_mode_, idp_info->metadata,
+          CreateRpData(/*client_metadata_received=*/true),
+          FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
+          idp_info->metadata,
           base::BindOnce(&RequestService::OnDismissFailureDialog,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&RequestService::LoginToIdP,
@@ -1672,7 +1674,7 @@ void RequestService::ShowErrorDialog(
 
   // TODO(crbug.com/40282657): Refactor IdentityCredentialTokenError
   if (!request_dialog_controller_->ShowErrorDialog(
-          CreateRpData(),
+          CreateRpData(/*client_metadata_received=*/true),
           FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
           idp_infos_[idp_config_url]->rp_context, rp_mode_,
           idp_infos_[idp_config_url]->metadata, token_error,
@@ -2705,7 +2707,8 @@ bool RequestService::HandlePendingRequestAndCancelNewRequest(
   return false;
 }
 
-RelyingPartyData RequestService::CreateRpData() const {
+RelyingPartyData RequestService::CreateRpData(
+    bool client_metadata_received) const {
   // We want to show the iframe origin if any IDP requests it.
   bool show_iframe_origin = false;
   for (const auto& entry : idp_infos_) {
@@ -2718,9 +2721,15 @@ RelyingPartyData RequestService::CreateRpData() const {
   if (show_iframe_origin) {
     iframe_origin = base::UTF8ToUTF16(FormatOriginForDisplay(origin()));
   }
+  bool display_strings_may_change = false;
+  if (IsIframeOriginEnabled()) {
+    display_strings_may_change =
+        !client_metadata_received &&
+        !net::SchemefulSite::IsSameSite(origin(), GetEmbeddingOrigin());
+  }
   return RelyingPartyData(
       base::UTF8ToUTF16(GetTopFrameOriginForDisplay(GetEmbeddingOrigin())),
-      iframe_origin);
+      iframe_origin, display_strings_may_change);
 }
 
 }  // namespace content::webid

@@ -116,11 +116,13 @@ class CONTENT_EXPORT IdentityProviderData
 
 // The relying party data that will be used to display a FedCM dialog. This data
 // is extracted from the website which invoked the API, not from the FedCM
-// endpoints themselves.
+// endpoints themselves, although whether iframe_for_display is set depends on
+// the response from the client metadata endpoint.
 struct CONTENT_EXPORT RelyingPartyData {
  public:
   RelyingPartyData(const std::u16string& rp_for_display,
-                   const std::u16string& iframe_for_display);
+                   const std::u16string& iframe_for_display,
+                   bool display_strings_may_change = false);
   RelyingPartyData(const RelyingPartyData& other);
   ~RelyingPartyData();
 
@@ -129,6 +131,11 @@ struct CONTENT_EXPORT RelyingPartyData {
   // `rp_for_display`.
   std::u16string iframe_for_display;
   gfx::Image rp_icon;
+  // This is true if the display strings in this object, especially
+  // iframe_for_display, may change later on. This can happen for a cross-site
+  // iframe before we receive the client metadata response, and the UI may want
+  // to avoid showing a title until the data is final.
+  bool display_strings_may_change;
 };
 
 // IdentityRequestDialogController is an interface, overridden and implemented
