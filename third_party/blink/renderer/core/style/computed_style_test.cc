@@ -213,7 +213,7 @@ TEST_F(ComputedStyleTest, TrackedPseudoStyle) {
     match_result.SetHasPseudoElementStyle(pseudo_id);
 
     ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-    builder.SetPseudoElementStyles(match_result.PseudoElementStyles());
+    builder.SetPseudoElementStyles(match_result.PseudoElementStyles().Bits());
     const ComputedStyle* style = builder.TakeStyle();
 
     EXPECT_TRUE(style->HasPseudoElementStyle(pseudo_id));

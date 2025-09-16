@@ -123,6 +123,58 @@ enum PseudoId : uint8_t {
   kFirstInternalPseudoId = kPseudoIdFirstLineInherited,
 };
 
+// Stores a set of PseudoId flags, but only in the range
+// [kFirstPublicPseudoId, kLastTrackedPublicPseudoId].
+class PseudoIdFlags {
+ public:
+  PseudoIdFlags() = default;
+
+  static const PseudoId kFirstValid = kFirstPublicPseudoId;
+  static const PseudoId kLastValid = kLastTrackedPublicPseudoId;
+
+  static PseudoIdFlags FromBits(uint32_t bits) { return PseudoIdFlags(bits); }
+
+  // See comment on similar constructor in CSSBitsetBase.
+  template <int N>
+  explicit constexpr PseudoIdFlags(const PseudoId (&list)[N]) {
+    for (PseudoId pseudo_id : list) {
+      bits_ |= uint32_t{1} << Bit(pseudo_id);
+    }
+  }
+
+  bool operator==(const PseudoIdFlags& o) const { return bits_ == o.bits_; }
+  bool operator!=(const PseudoIdFlags& o) const { return bits_ != o.bits_; }
+
+  PseudoIdFlags& operator|=(const PseudoIdFlags& o) {
+    bits_ |= o.bits_;
+    return *this;
+  }
+
+  void Set(PseudoId pseudo_id) {
+    DCHECK_LT(Bit(pseudo_id), 32u);
+    bits_ |= (uint32_t{1} << Bit(pseudo_id));
+  }
+
+  bool Has(PseudoId pseudo_id) const {
+    DCHECK_LT(Bit(pseudo_id), 32u);
+    return bits_ & (uint32_t{1} << Bit(pseudo_id));
+  }
+
+  bool HasAny() const { return bits_; }
+
+  uint32_t Bits() const { return bits_; }
+
+ private:
+  explicit PseudoIdFlags(uint32_t bits) : bits_(bits) {}
+
+  static constexpr uint32_t Bit(PseudoId pseudo_id) {
+    return pseudo_id - kFirstValid;
+  }
+
+  static_assert((kLastValid - kFirstValid) < 32);
+  uint32_t bits_ = 0;
+};
+
 inline bool IsHighlightPseudoElement(PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdSelection:

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/resolver/match_flags.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -222,9 +223,9 @@ class CORE_EXPORT MatchResult {
   void SetHasPseudoElementStyle(PseudoId pseudo) {
     DCHECK(pseudo >= kFirstPublicPseudoId);
     DCHECK(pseudo <= kLastTrackedPublicPseudoId);
-    pseudo_element_styles_ |= 1 << (pseudo - kFirstPublicPseudoId);
+    pseudo_element_styles_.Set(pseudo);
   }
-  unsigned PseudoElementStyles() const { return pseudo_element_styles_; }
+  PseudoIdFlags PseudoElementStyles() const { return pseudo_element_styles_; }
 
   const MatchedPropertiesVector& GetMatchedProperties() const {
     return matched_properties_;
@@ -274,7 +275,7 @@ class CORE_EXPORT MatchResult {
   CascadeOrigin last_origin_{CascadeOrigin::kNone};
 #endif
   uint16_t current_tree_order_{0};
-  uint32_t pseudo_element_styles_{kPseudoIdNone};
+  PseudoIdFlags pseudo_element_styles_;
 };
 
 inline bool operator==(const MatchedProperties& a, const MatchedProperties& b) {

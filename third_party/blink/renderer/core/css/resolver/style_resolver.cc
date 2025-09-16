@@ -1909,7 +1909,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (!match_result.CustomHighlightNames().empty()) {
     builder.SetCustomHighlightNames(match_result.CustomHighlightNames());
   }
-  builder.SetPseudoElementStyles(match_result.PseudoElementStyles());
+  builder.SetPseudoElementStyles(match_result.PseudoElementStyles().Bits());
 
   if (element->IsPseudoElement()) {
     state.StyleBuilder().SetStyleType(element->GetPseudoIdForStyling());
