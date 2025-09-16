@@ -783,7 +783,9 @@ public class TabGridDialogMediator
         if (mCurrentTabGroupId != null) {
             TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
             assumeNonNull(filter);
-            filter.setTabGroupColor(mCurrentTabGroupId, selectedColor);
+            if (filter.tabGroupExists(mCurrentTabGroupId)) {
+                filter.setTabGroupColor(mCurrentTabGroupId, selectedColor);
+            }
         }
     }
 

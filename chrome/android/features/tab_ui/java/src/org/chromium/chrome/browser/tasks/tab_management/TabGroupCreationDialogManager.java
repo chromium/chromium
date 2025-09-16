@@ -64,19 +64,23 @@ public class TabGroupCreationDialogManager {
 
         @Override
         public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
+            boolean stillExists = mTabGroupModelFilter.tabGroupExists(mTabGroupId);
+
             final @TabGroupColorId int defaultColorId =
                     mTabGroupVisualDataDialogManager.getDefaultColorId();
             final @TabGroupColorId int currentColorId =
                     mTabGroupVisualDataDialogManager.getCurrentColorId();
             boolean didChangeColor = currentColorId != defaultColorId;
-            mTabGroupModelFilter.setTabGroupColor(mTabGroupId, currentColorId);
+            if (stillExists) {
+                mTabGroupModelFilter.setTabGroupColor(mTabGroupId, currentColorId);
+            }
 
             // Only save the group title input text if it has been changed from the suggested
             // initial title and if it is not empty.
             String initialGroupTitle = mTabGroupVisualDataDialogManager.getInitialGroupTitle();
             String inputGroupTitle = mTabGroupVisualDataDialogManager.getCurrentGroupTitle();
             boolean didChangeTitle = !Objects.equals(initialGroupTitle, inputGroupTitle);
-            if (didChangeTitle && !TextUtils.isEmpty(inputGroupTitle)) {
+            if (didChangeTitle && !TextUtils.isEmpty(inputGroupTitle) && stillExists) {
                 mTabGroupModelFilter.setTabGroupTitle(mTabGroupId, inputGroupTitle);
             }
 
@@ -93,7 +97,7 @@ public class TabGroupCreationDialogManager {
                         TabGroupCreationDialogResultAction.DISMISSED_OTHER);
             }
 
-            mTabGroupVisualDataDialogManager.hideDialog();
+            mTabGroupVisualDataDialogManager.onHideDialog();
             if (mOnTabGroupCreation != null) {
                 mOnTabGroupCreation.run();
             }

@@ -997,7 +997,7 @@ class TabListMediator implements TabListNotificationHandler {
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @param undoBarExplicitTrigger Interface to explicitly trigger the undo closure snackbar.
      */
-    public TabListMediator(
+    TabListMediator(
             Activity activity,
             TabListModel modelList,
             @TabListMode int mode,
@@ -3122,6 +3122,7 @@ class TabListMediator implements TabListNotificationHandler {
                     @Override
                     public void onDismiss(PropertyModel model, int dismissalCause) {
                         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                            boolean stillExists = filter.tabGroupExists(tabGroupId);
                             @TabGroupColorId
                             int oldColorId = filter.getTabGroupColorWithFallback(tabGroupId);
                             @TabGroupColorId
@@ -3129,7 +3130,9 @@ class TabListMediator implements TabListNotificationHandler {
                                     tabGroupVisualDataDialogManager.getCurrentColorId();
                             boolean didChangeColor = oldColorId != currentColorId;
                             if (didChangeColor) {
-                                filter.setTabGroupColor(tabGroupId, currentColorId);
+                                if (stillExists) {
+                                    filter.setTabGroupColor(tabGroupId, currentColorId);
+                                }
                                 RecordUserAction.record("TabGroup.RenameDialog.ColorChanged");
                             }
 
@@ -3142,12 +3145,14 @@ class TabListMediator implements TabListNotificationHandler {
                             // This check must be included in case the user has a null title
                             // which is displayed as a tab count and chooses not to change it.
                             if (didChangeTitle) {
-                                filter.setTabGroupTitle(tabGroupId, inputGroupTitle);
+                                if (stillExists) {
+                                    filter.setTabGroupTitle(tabGroupId, inputGroupTitle);
+                                }
                                 RecordUserAction.record("TabGroup.RenameDialog.TitleChanged");
                             }
                         }
 
-                        tabGroupVisualDataDialogManager.hideDialog();
+                        tabGroupVisualDataDialogManager.onHideDialog();
                     }
                 };
 
