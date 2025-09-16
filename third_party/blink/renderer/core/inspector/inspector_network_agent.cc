@@ -1020,6 +1020,9 @@ BuildObjectForResourceRequest(const ResourceRequest& request,
     result->setTrustTokenParams(
         BuildTrustTokenParams(*request.TrustTokenParams()));
   }
+  if (request.IsAdResource()) {
+    result->setIsAdRelated(true);
+  }
   return result;
 }
 

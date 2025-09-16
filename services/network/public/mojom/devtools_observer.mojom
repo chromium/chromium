@@ -40,6 +40,7 @@ struct URLRequestDevToolsInfo {
   TrustTokenParams? trust_token_params;
   bool has_user_gesture;
   uint32 resource_type;
+  bool is_ad_related;
 };
 
 // A struct with info about a URLResponseHead that is reported to DevTools.

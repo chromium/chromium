@@ -211,6 +211,8 @@ domain Network
       # True if this resource request is considered to be the 'same site' as the
       # request corresponding to the main frame.
       experimental optional boolean isSameSite
+      # True when the resource request is ad-related.
+      experimental optional boolean isAdRelated
 
   # Details of a signed certificate timestamp (SCT).
   type SignedCertificateTimestamp extends object

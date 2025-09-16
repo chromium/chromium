@@ -2481,6 +2481,10 @@ void NetworkHandler::PrefetchRequestWillBeSent(
           .SetReferrerPolicy(referrerPolicy(request.referrer_policy))
           .Build();
 
+  if (request.is_ad_tagged) {
+    request_info->SetIsAdRelated(true);
+  }
+
   frontend_->RequestWillBeSent(
       request_id, request_id, url, std::move(request_info), current_ticks,
       current_wall_time, std::move(initiator), redirect_emitted_extra_info,
@@ -2524,6 +2528,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
           .SetInitialPriority(resourcePriority(net::HIGHEST))
           .SetReferrerPolicy(referrerPolicy(common_params.referrer->policy))
           .Build();
+
   if (!url_fragment.empty())
     request->SetUrlFragment(url_fragment);
 
@@ -2575,6 +2580,11 @@ void NetworkHandler::NavigationRequestWillBeSent(
           host_->ComputeSiteForCookies().IsFirstParty(common_params.url));
     }
   }
+
+  if (nav_request.is_ad_tagged()) {
+    request->SetIsAdRelated(true);
+  }
+
   frontend_->RequestWillBeSent(
       id, id, url_without_fragment, std::move(request), current_ticks,
       current_wall_time, std::move(initiator), redirect_emitted_extra_info,
@@ -2612,6 +2622,10 @@ void NetworkHandler::FencedFrameReportRequestSent(
   if (!event_data.empty()) {
     request_info->SetHasPostData(true);
     request_info->SetPostData(event_data);
+  }
+
+  if (request.is_ad_tagged) {
+    request_info->SetIsAdRelated(true);
   }
 
   frontend_->RequestWillBeSent(
@@ -2656,6 +2670,10 @@ void NetworkHandler::RequestSent(
   if (request_info.trust_token_params) {
     request_object->SetTrustTokenParams(
         BuildTrustTokenParams(*request_info.trust_token_params));
+  }
+
+  if (request_info.is_ad_related) {
+    request_object->SetIsAdRelated(true);
   }
 
   std::string resource_type = Network::ResourceTypeEnum::Other;
@@ -2894,6 +2912,10 @@ void NetworkHandler::FetchKeepAliveRequestWillBeSent(
         request_info->SetPostDataEntries(std::move(data_entries));
       }
     }
+  }
+
+  if (request.is_ad_tagged) {
+    request_info->SetIsAdRelated(true);
   }
 
   frontend_->RequestWillBeSent(
@@ -3269,6 +3291,9 @@ NetworkHandler::CreateRequestFromResourceRequest(
     }
     request_object->SetPostDataEntries(std::move(data_entries));
     request_object->SetHasPostData(true);
+  }
+  if (request.is_ad_tagged) {
+    request_object->SetIsAdRelated(true);
   }
   return request_object;
 }

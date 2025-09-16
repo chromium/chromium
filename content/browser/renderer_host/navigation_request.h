@@ -1496,6 +1496,8 @@ class CONTENT_EXPORT NavigationRequest
     return canvas_noise_token_;
   }
 
+  bool is_ad_tagged() const { return is_ad_tagged_; }
+
   // Called when the browser process is about to process beforeunload handlers
   // for this navigation, including sending an IPC to the renderer process to
   // run beforeunload handlers when necessary.
@@ -3292,7 +3294,7 @@ class CONTENT_EXPORT NavigationRequest
       EarlyRenderFrameHostSwapType::kNone;
 
   // Whether the embedder indicated this navigation is being used for
-  // advertising porpoises.
+  // advertising purposes.
   bool is_ad_tagged_ = false;
 
   // This is the origin to commit value calculated at request time for data: URL
