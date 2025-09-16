@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/api/web_navigation/frame_navigation_state.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_helpers.h"
+#include "chrome/browser/extensions/api/web_navigation/web_navigation_event_router.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/common/extensions/api/web_navigation.h"
 #include "content/public/browser/navigation_handle.h"
