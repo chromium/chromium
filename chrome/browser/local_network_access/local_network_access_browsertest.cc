@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -229,6 +230,62 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, IframeAcceptPermission) {
 
   // Check that the child iframe was successfully fetched.
   EXPECT_TRUE(nav_manager.was_successful());
+}
+
+// Tests that a script tag that is included in the main page HTML (and thus
+// load blocking) correctly triggers the LNA permission prompt.
+// Regression test for crbug.com/439876402.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       HtmlScriptSrcAllowPermission) {
+  auto https_server = net::test_server::EmbeddedTestServer(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetCertHostnames({"public.test", "local.test"});
+
+  // Set up repsonses for the public HTML (using CSP to force the document to be
+  // treated as public) and the local script resource.
+  https_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.GetURL().path() == "/html") {
+          auto http_response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          http_response->set_code(net::HTTP_OK);
+          http_response->set_content_type("text/html");
+          http_response->AddCustomHeader("Content-Security-Policy",
+                                         "treat-as-public-address");
+          http_response->set_content(content::JsReplace(
+              "<html><head><script src=$1 defer></script></head></html>",
+              request.GetURL().query()));
+          return std::move(http_response);
+        }
+        if (request.GetURL().path() == "/script") {
+          auto http_response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          http_response->set_code(net::HTTP_OK);
+          http_response->set_content_type("text/javascript");
+          http_response->set_content(
+              "console.log('local-network-access success');");
+          return std::move(http_response);
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(https_server.Start());
+
+  // Local script URL
+  GURL script_url = https_server.GetURL("local.test", "/script");
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Navigate to the public site, which will embed a <script> tag to the local
+  // URL. Wait for the expected console.log() call.
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("local-network-access success");
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server.GetURL("public.test", "/html?" + script_url.spec())));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
