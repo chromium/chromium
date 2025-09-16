@@ -224,7 +224,8 @@ try_.builder(
             "remoteexec",
             "minimal_symbols",
             "official_optimize",
-            "stable_channel",
+            # TODO(crbug.com/433988303): Swap to stable.
+            "dev_channel",
             "v8_release_branch",
         ],
     ),
@@ -266,7 +267,8 @@ try_.builder(
             "remoteexec",
             "minimal_symbols",
             "official_optimize",
-            "stable_channel",
+            # TODO(crbug.com/433988303): Swap to stable.
+            "dev_channel",
             "v8_release_branch",
         ],
     ),

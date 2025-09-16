@@ -1,6 +1,6 @@
 {
   "gn_args": {
-    "android_channel": "stable",
+    "android_channel": "dev",
     "debuggable_apks": false,
     "ffmpeg_branding": "Chrome",
     "is_desktop_android": true,

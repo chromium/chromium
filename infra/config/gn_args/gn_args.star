@@ -553,6 +553,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "dev_channel",
+    args = {
+        "android_channel": "dev",
+    },
+)
+
+gn_args.config(
     name = "developer",
     configs = [
         "debug",
