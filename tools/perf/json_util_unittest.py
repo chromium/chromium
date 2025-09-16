@@ -16,6 +16,37 @@ from parameterized import parameterized  # pylint: disable=import-error
 
 class JsonUtilTest(unittest.TestCase):
 
+  def _create_generic_set(self, guid, values):
+    """Helper to create a GenericSet entry for test data."""
+    return {'type': 'GenericSet', 'guid': guid, 'values': values}
+
+  def _create_sample_result(self, name, values, stories_guid, tags_guid):
+    """Helper to create a non-summary result item with sampleValues."""
+    return {
+        'name': name,
+        'unit': 'ms_smallerIsBetter',
+        'diagnostics': {
+            'stories': stories_guid,
+            'storyTags': tags_guid,
+        },
+        'sampleValues': values,
+    }
+
+  def _create_summary_result(self, name):
+    """Helper to create a summary result item with summaryOptions."""
+    return {
+        'name': name,
+        'unit': 'ms_smallerIsBetter',
+        'diagnostics': {
+            # Diagnostics can exist on summaries but are not used for subtests.
+            'stories': 'summary-story-guid',
+            'storyTags': 'summary-tag-guid',
+        },
+        'summaryOptions': {
+            'count': 'true'
+        },
+    }
+
   @parameterized.expand([
       (
           'empty_stories_and_tags',
@@ -27,7 +58,7 @@ class JsonUtilTest(unittest.TestCase):
           'just_stories',
           ['load:news:reddit:2018'],
           [],
-          ['load:news:reddit:2018', ''],
+          ['load_news_reddit_2018', ''],
       ),
       (
           'just_tags',
@@ -39,7 +70,7 @@ class JsonUtilTest(unittest.TestCase):
           'just_tags_2',
           ['no_colon_stories'],
           ['2018', 'case:load', 'group:games'],
-          ['load_games', ''],
+          ['load_games', 'no_colon_stories'],
       ),
       (
           'valid_stories_and_tags',
@@ -78,6 +109,30 @@ class JsonUtilTest(unittest.TestCase):
               'group',
           ],
           ['speedometer3', ''],
+      ),
+      (
+          'story_with_colon_and_slash',
+          ['browse:news/story'],
+          [],
+          ['browse_news_story', ''],
+      ),
+      (
+          'tag_with_equals_and_hash',
+          [],
+          ['case:run=fast', 'group:test#1'],
+          ['run_fast_test_1', ''],
+      ),
+      (
+          'story_and_tag_with_multiple_special_chars',
+          ['page|load,story#1'],
+          ['ver:1,2&3'],
+          ['1_2_3', 'page_load_story_1'],
+      ),
+      (
+          'no_colon_in_story',
+          ['speedometer3'],
+          ['case:run', 'group:all'],
+          ['run_all', 'speedometer3'],
       ),
   ])
   def test_extract_subtest_from_stories_tags(self, _, stories, tags, expected):
@@ -1272,6 +1327,41 @@ class JsonUtilTest(unittest.TestCase):
   def test_is_empty(self, _, data, expected):
     self.assertEqual(json_util.is_empty(data), expected)
 
+  def test_process_applies_logic_conditionally(self):
+    """
+    CRITICAL: Verifies that story/tag processing is ONLY applied to
+    non-summary results, matching the legacy pipeline's conditional logic.
+    """
+    with mock.patch(
+        'json_util.extract_subtest_from_stories_tags') as mock_extractor:
+      mock_extractor.return_value = ('sub1', 'sub2')
+
+      agent = json_util.JsonUtil()
+      # Create one non-summary item and one summary item.
+      result2_json = [
+          self._create_generic_set('s1', ['story1']),
+          self._create_generic_set('t1', ['tag1']),
+          self._create_sample_result('NonSummaryTest', [10], 's1', 't1'),
+          self._create_summary_result('SummaryTest'),
+      ]
+      agent.add(result2_json)
+      details = json_util.PerfBuilderDetails(bot='test-bot',
+                                             master='TestMaster',
+                                             git_hash='test-hash',
+                                             builder_page='',
+                                             chromium_commit_position='',
+                                             v8_git_hash='',
+                                             webrtc_git_hash='')
+
+      result = agent.process(details)
+
+      # Assert that the extraction logic was called only ONCE,
+      # for the non-summary item.
+      mock_extractor.assert_called_once()
+
+      # Assert the final output contains ONLY the processed non-summary result.
+      self.assertEqual(len(result['results']), 1)
+      self.assertEqual(result['results'][0]['key']['test'], 'NonSummaryTest')
 
 if __name__ == '__main__':
   unittest.main()
