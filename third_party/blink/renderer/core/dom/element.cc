@@ -5216,12 +5216,23 @@ StyleRecalcChange Element::RecalcOwnStyle(
     NotifyIfMatchedDocumentRulesSelectorsChanged(old_style, new_style);
   }
 
-  if (auto* context = GetDisplayLockContext()) {
-    // Combine the change from the display lock context. If the context is
-    // locked and is preventing child update, we'll store this style recalc
-    // change again from Element::RecalcStyle.
-    child_change =
-        child_change.Combine(context->TakeBlockedStyleRecalcChange());
+  // We do not allow locked content to resume recalc when computing styles for
+  // anchored fallback positions during layout.
+  //
+  // An anchored element with content-visibility:hidden may have stored a
+  // StyleRecalcChange for a blocked style update that forces a layout tree
+  // re-attachment. Re-attaching the box of an element being laid out would
+  // cause a crash. The stored StyleRecalcChange for the blocked style update
+  // would still be stored in the DisplayLockContext and considered for the next
+  // normal style recalc pass.
+  if (style_recalc_context.anchor_evaluator == nullptr) {
+    if (DisplayLockContext* context = GetDisplayLockContext()) {
+      // Combine the change from the display lock context. If the context is
+      // locked and is preventing child update, we'll store this style recalc
+      // change again from Element::RecalcStyle.
+      child_change =
+          child_change.Combine(context->TakeBlockedStyleRecalcChange());
+    }
   }
 
   if (new_style) {
