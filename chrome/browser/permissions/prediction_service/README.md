@@ -42,7 +42,7 @@ The following components are defined in this directory:
 
 ### UI Selectors
 
-- **[`PredictionBasedPermissionUiSelector`][prediction_based_ui_selector]**: A ML-based selector that decides
+- **[`PermissionsAiUiSelector`][prediction_based_ui_selector]**: A ML-based selector that decides
   whether a quiet permission prompt should be shown for a geolocation or
   notifications permission request. For this decision it gathers various aggregated
   client-specific and contextual signals (features) and queries one or more
@@ -62,7 +62,7 @@ initialization and provide an interface for model execution.G
 #### Model Access
 
 - **[`PredictionModelHandlerProvider`][model_handler_provider]**: Acts as a factory that provides the
-  `PredictionBasedPermissionUiSelector` with the correct on-device model
+  `PermissionsAiUiSelector` with the correct on-device model
   handler for a given permission request type.
 
 #### Prediction Models
@@ -129,13 +129,13 @@ implemented in `//components/permissions/prediction_service`.
 
 The prediction service uses a combination of a rule-based check that runs
 in parallel with a more sophisticated, multi-stage ML pipeline. The service's
-core logic, implemented in the `PredictionBasedPermissionUiSelector`, employs a
+core logic, implemented in the `PermissionsAiUiSelector`, employs a
 "model stacking" approach: on-device AI models (AIv1, AIv3, AIv4) run first to
 generate a `PermissionRequestRelevance` score. This score is then used as an
 input feature for the main server-side model, which makes the final grant
 likelihood prediction.
 
-The `PredictionBasedPermissionUiSelector::GetPredictionTypeToUse` method
+The `PermissionsAiUiSelector::GetPredictionTypeToUse` method
 selects the appropriate ML workflow based on user settings (e.g.,
 "Make searches and browsing better
 (`unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled`)"),
@@ -285,7 +285,7 @@ tools/autotest.py --output-directory out/Default chrome/browser/permissions/pred
 ## Relevant Context
 
 - **Core Interfaces:**
-  - [`//chrome/browser/permissions/prediction_service/prediction_based_permission_ui_selector.h`](https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/prediction_based_permission_ui_selector.h)
+  - [`//chrome/browser/permissions/prediction_service/permissions_ai_ui_selector.h`](https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/permissions_ai_ui_selector.h)
   - [`//chrome/browser/permissions/prediction_service/contextual_notification_permission_ui_selector.h`](https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/contextual_notification_permission_ui_selector.h)
 - **Model and Handler Providers:**
   - [`//chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h`](https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h)
@@ -306,7 +306,7 @@ tools/autotest.py --output-directory out/Default chrome/browser/permissions/pred
 [language_detection_observer]: https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/language_detection_observer.h
 [model_handler_provider]: https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h
 [passage_embedder_delegate]: https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/passage_embedder_delegate.h
-[prediction_based_ui_selector]: https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/prediction_based_permission_ui_selector.h
+[prediction_based_ui_selector]: https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/permissions_ai_ui_selector.h
 [prediction_service]: https://cs.chromium.org/chromium/src/components/permissions/prediction_service/prediction_service.h
 [prediction_service_factory]: https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/prediction_service_factory.h
 [prediction_service_request]: https://cs.chromium.org/chromium/src/chrome/browser/permissions/prediction_service/prediction_service_request.h

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_BASED_PERMISSION_UI_SELECTOR_H_
-#define CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_BASED_PERMISSION_UI_SELECTOR_H_
+#ifndef CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AI_UI_SELECTOR_H_
+#define CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AI_UI_SELECTOR_H_
 
 #include <memory>
 
@@ -42,8 +42,7 @@ class PassageEmbedderDelegate;
 
 // Each instance of this class is long-lived and can support multiple requests,
 // but only one at a time.
-class PredictionBasedPermissionUiSelector
-    : public permissions::PermissionUiSelector {
+class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
  public:
   // Contains information that are not important as features for the
   // prediction service, but contain details about the workflow and the origin
@@ -84,13 +83,11 @@ class PredictionBasedPermissionUiSelector
   static const int kPermissionRequestUiDecisionTimeout = 3;
 
   // Constructs an instance in the context of the given |profile|.
-  explicit PredictionBasedPermissionUiSelector(Profile* profile);
-  ~PredictionBasedPermissionUiSelector() override;
+  explicit PermissionsAiUiSelector(Profile* profile);
+  ~PermissionsAiUiSelector() override;
 
-  PredictionBasedPermissionUiSelector(
-      const PredictionBasedPermissionUiSelector&) = delete;
-  PredictionBasedPermissionUiSelector& operator=(
-      const PredictionBasedPermissionUiSelector&) = delete;
+  PermissionsAiUiSelector(const PermissionsAiUiSelector&) = delete;
+  PermissionsAiUiSelector& operator=(const PermissionsAiUiSelector&) = delete;
 
   // NotificationPermissionUiSelector:
   void SelectUiToUse(content::WebContents* web_contents,
@@ -134,13 +131,12 @@ class PredictionBasedPermissionUiSelector
   FRIEND_TEST_ALL_PREFIXES(
       PredictionBasedPermissionUiExpectedPredictionSourceTest,
       GetPredictionTypeToUse);
-  FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
+  FRIEND_TEST_ALL_PREFIXES(PermissionsAiUiSelectorTest,
                            GetPredictionTypeToUseCpssV1);
   FRIEND_TEST_ALL_PREFIXES(
       PredictionBasedPermissionUiExpectedHoldbackChanceTest,
       HoldbackHistogramTest);
-  FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
-                           HoldbackDecisionTest);
+  FRIEND_TEST_ALL_PREFIXES(PermissionsAiUiSelectorTest, HoldbackDecisionTest);
 
   // A safe way to invoke the callback with a decision.
   void FinishRequest(Decision decision, bool timeout = false);
@@ -309,8 +305,7 @@ class PredictionBasedPermissionUiSelector
 #endif
 
   // Used to asynchronously call the callback during on device model execution.
-  base::WeakPtrFactory<PredictionBasedPermissionUiSelector> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<PermissionsAiUiSelector> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_BASED_PERMISSION_UI_SELECTOR_H_
+#endif  // CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AI_UI_SELECTOR_H_

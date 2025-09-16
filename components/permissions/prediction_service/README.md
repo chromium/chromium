@@ -17,7 +17,7 @@ intrusive UI.
 
 This component provides the core prediction logic but is not intended for direct
 use by most features. The primary consumer is the
-`PredictionBasedPermissionUiSelector` located in
+`PermissionsAiUiSelector` located in
 `//chrome/browser/permissions/prediction_service/`.
 
 The PredictionService is embedded in the broader flow of how a permission request
@@ -26,7 +26,7 @@ is handled in the browser and potentially presented to the user as a UI chip:
 1. The `PermissionRequestManager` in `//components/permissions` manages the
    lifecycle of a permission prompt. It consults a list of registered
    `PermissionUiSelector` implementations to determine which UI to show.
-1. `PredictionBasedPermissionUiSelector` is one such implementation. When its
+1. `PermissionsAiUiSelector` is one such implementation. When its
    `SelectUiToUse` method is called, it determines which prediction model to
    use (server-side or one of several on-device models) based on feature flags
    and the availability of downloaded models.
@@ -41,12 +41,12 @@ is handled in the browser and potentially presented to the user as a UI chip:
    prediction-logic including the on-device models as well.
 1. After the model runs, the handler returns a prediction (e.g., a grant
    likelihood or a relevance score).
-1. The `PredictionBasedPermissionUiSelector` uses this prediction to make a
+1. The `PermissionsAiUiSelector` uses this prediction to make a
    final `Decision` on whether to show the standard permission prompt or a
    quieter UI, which is then passed back to the `PermissionRequestManager`.
 
 Therefore, developers looking to understand how permission predictions
-influence the UI should start by examining `PredictionBasedPermissionUiSelector`.
+influence the UI should start by examining `PermissionsAiUiSelector`.
 
 ## Architecture
 
@@ -56,7 +56,7 @@ The main components of the prediction service engine are:
   permission component, most often in the //chrome layer, implement. It defines
   the interface for deciding which UI to use for a permission request. The
   primary implementation using the prediction service logic is
-  `PredictionBasedPermissionUiSelector` in
+  `PermissionsAiUiSelector` in
   `//chrome/browser/permissions/prediction_service/`.
 
 - **`PredictionService`**: A `KeyedService` that handles making network
@@ -159,7 +159,7 @@ These tests follow a common pattern:
 - Mock model handlers (e.g., `PermissionsAiv4HandlerMock`) are used to control the asynchronous execution flow, allowing for tests of timeout logic and the prevention of concurrent requests.
 - `base::test::TestFuture` is used to wait for and capture the results from the asynchronous `ExecutionCallback`.
 
-Finally, end-to-end integration tests can be found in `//chrome/browser/permissions/prediction_service/prediction_service_browsertest.cc`. These browser tests verify that the `PredictionBasedPermissionUiSelector` correctly uses the output of the prediction service (both remote and on-device) to make decisions about which permission UI to display.
+Finally, end-to-end integration tests can be found in `//chrome/browser/permissions/prediction_service/prediction_service_browsertest.cc`. These browser tests verify that the `PermissionsAiUiSelector` correctly uses the output of the prediction service (both remote and on-device) to make decisions about which permission UI to display.
 
 ## Relevant Context
 

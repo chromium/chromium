@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/prediction_service/prediction_based_permission_ui_selector.h"
+#include "chrome/browser/permissions/prediction_service/permissions_ai_ui_selector.h"
 
 #include <memory>
 #include <string>
@@ -38,7 +38,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-using Decision = PredictionBasedPermissionUiSelector::Decision;
+using Decision = PermissionsAiUiSelector::Decision;
 using ::test::EmbedderMetadataProviderFake;
 using ::test::PassageEmbedderMock;
 using PredictionSource = permissions::PermissionPredictionSource;
@@ -74,9 +74,9 @@ std::unique_ptr<KeyedService> BuildPredictionModelHandler(
 
 }  // namespace
 
-class PredictionBasedPermissionUiSelectorTestBase : public testing::Test {
+class PermissionsAiUiSelectorTestBase : public testing::Test {
  public:
-  PredictionBasedPermissionUiSelectorTestBase()
+  PermissionsAiUiSelectorTestBase()
       : testing_profile_(std::make_unique<TestingProfile>()) {}
 
   void SetUp() override {
@@ -121,9 +121,8 @@ class PredictionBasedPermissionUiSelectorTestBase : public testing::Test {
     }
   }
 
-  Decision SelectUiToUseAndGetDecision(
-      PredictionBasedPermissionUiSelector* selector,
-      permissions::RequestType request_type) {
+  Decision SelectUiToUseAndGetDecision(PermissionsAiUiSelector* selector,
+                                       permissions::RequestType request_type) {
     std::optional<Decision> actual_decision;
     base::RunLoop run_loop;
 
@@ -163,8 +162,7 @@ class PredictionBasedPermissionUiSelectorTestBase : public testing::Test {
   raw_ptr<PredictionModelHandlerProvider> model_handler_provider_;
 };
 
-class PredictionBasedPermissionUiSelectorTest
-    : public PredictionBasedPermissionUiSelectorTestBase {};
+class PermissionsAiUiSelectorTest : public PermissionsAiUiSelectorTestBase {};
 
 struct CmdLineDecisionTestCase {
   const char* command_line_value;
@@ -172,17 +170,16 @@ struct CmdLineDecisionTestCase {
 };
 
 class PredictionBasedPermissionUiDecisionTest
-    : public PredictionBasedPermissionUiSelectorTestBase,
+    : public PermissionsAiUiSelectorTestBase,
       public testing::WithParamInterface<CmdLineDecisionTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
     CmdLineValueToDecision,
     PredictionBasedPermissionUiDecisionTest,
     testing::ValuesIn<CmdLineDecisionTestCase>(
-        {{"very-unlikely",
-          Decision(PredictionBasedPermissionUiSelector::QuietUiReason::
-                       kServicePredictedVeryUnlikelyGrant,
-                   Decision::ShowNoWarning())},
+        {{"very-unlikely", Decision(PermissionsAiUiSelector::QuietUiReason::
+                                        kServicePredictedVeryUnlikelyGrant,
+                                    Decision::ShowNoWarning())},
          {"unlikely", Decision::UseNormalUiAndShowNoWarning()},
          {"neutral", Decision::UseNormalUiAndShowNoWarning()},
          {"likely", Decision::UseNormalUiAndShowNoWarning()},
@@ -197,7 +194,7 @@ TEST_P(PredictionBasedPermissionUiDecisionTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       "prediction-service-mock-likelihood", GetParam().command_line_value);
 
-  PredictionBasedPermissionUiSelector prediction_selector(profile());
+  PermissionsAiUiSelector prediction_selector(profile());
 
   Decision decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kNotifications);
@@ -208,9 +205,9 @@ TEST_P(PredictionBasedPermissionUiDecisionTest,
             decision.warning_reason);
 }
 
-TEST_F(PredictionBasedPermissionUiSelectorTest, ConcurrentRequestsTest) {
+TEST_F(PermissionsAiUiSelectorTest, ConcurrentRequestsTest) {
   base::HistogramTester histogram_tester;
-  PredictionBasedPermissionUiSelector prediction_selector(profile());
+  PermissionsAiUiSelector prediction_selector(profile());
 
   // Imitate that there is a still running model execution and the callback
   // has not been called yet.
@@ -230,11 +227,11 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, ConcurrentRequestsTest) {
       permissions::PermissionPredictionSupportedType::kNotifications, 1);
 }
 
-TEST_F(PredictionBasedPermissionUiSelectorTest, RequestsWithFewPromptsAreSent) {
+TEST_F(PermissionsAiUiSelectorTest, RequestsWithFewPromptsAreSent) {
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       "prediction-service-mock-likelihood", "very-unlikely");
-  PredictionBasedPermissionUiSelector prediction_selector(profile());
+  PermissionsAiUiSelector prediction_selector(profile());
 
   // Requests that have 0-3 previous permission prompts will return "quiet".
   for (size_t request_id = 0; request_id < 4; ++request_id) {
@@ -244,10 +241,10 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, RequestsWithFewPromptsAreSent) {
     Decision geolocation_decision = SelectUiToUseAndGetDecision(
         &prediction_selector, permissions::RequestType::kGeolocation);
 
-    EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+    EXPECT_EQ(PermissionsAiUiSelector::QuietUiReason::
                   kServicePredictedVeryUnlikelyGrant,
               notification_decision.quiet_ui_reason);
-    EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+    EXPECT_EQ(PermissionsAiUiSelector::QuietUiReason::
                   kServicePredictedVeryUnlikelyGrant,
               geolocation_decision.quiet_ui_reason);
 
@@ -265,21 +262,20 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, RequestsWithFewPromptsAreSent) {
   Decision geolocation_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kGeolocation);
 
-  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+  EXPECT_EQ(PermissionsAiUiSelector::QuietUiReason::
                 kServicePredictedVeryUnlikelyGrant,
             notification_decision.quiet_ui_reason);
 
-  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+  EXPECT_EQ(PermissionsAiUiSelector::QuietUiReason::
                 kServicePredictedVeryUnlikelyGrant,
             geolocation_decision.quiet_ui_reason);
 }
 
-TEST_F(PredictionBasedPermissionUiSelectorTest,
-       OnlyPromptsForCurrentTypeAreCounted) {
+TEST_F(PermissionsAiUiSelectorTest, OnlyPromptsForCurrentTypeAreCounted) {
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       "prediction-service-mock-likelihood", "very-unlikely");
-  PredictionBasedPermissionUiSelector prediction_selector(profile());
+  PermissionsAiUiSelector prediction_selector(profile());
 
   // In CPSSv3 we do not check the action history.
   RecordHistoryActions(/*action_count=*/3,
@@ -293,10 +289,10 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   Decision geolocation_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kGeolocation);
 
-  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+  EXPECT_EQ(PermissionsAiUiSelector::QuietUiReason::
                 kServicePredictedVeryUnlikelyGrant,
             notification_decision.quiet_ui_reason);
-  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+  EXPECT_EQ(PermissionsAiUiSelector::QuietUiReason::
                 kServicePredictedVeryUnlikelyGrant,
             geolocation_decision.quiet_ui_reason);
 }
@@ -304,7 +300,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
 // This test verifies that `GetPredictionRequestProto` does not crash if
 // `kPermissionsAIv1` is enabled.
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUseCpssV1) {
+TEST_F(PermissionsAiUiSelectorTest, GetPredictionTypeToUseCpssV1) {
   // Disable msbb.
   profile()->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
@@ -314,7 +310,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUseCpssV1) {
       /*enabled_features=*/{permissions::features::kPermissionsAIv1},
       /*disabled_features=*/{});
 
-  PredictionBasedPermissionUiSelector prediction_selector(profile());
+  PermissionsAiUiSelector prediction_selector(profile());
 
   EXPECT_EQ(PredictionSource::kOnDeviceCpssV1Model,
             prediction_selector.GetPredictionTypeToUse(
@@ -346,7 +342,7 @@ struct PredictionSourceTestCase {
 };
 
 class PredictionBasedPermissionUiExpectedPredictionSourceTest
-    : public PredictionBasedPermissionUiSelectorTestBase,
+    : public PermissionsAiUiSelectorTestBase,
       public testing::WithParamInterface<PredictionSourceTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
@@ -407,7 +403,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(PredictionBasedPermissionUiExpectedPredictionSourceTest,
        GetPredictionTypeToUse) {
-  PredictionBasedPermissionUiSelector prediction_selector(profile());
+  PermissionsAiUiSelector prediction_selector(profile());
 
   feature_list_->Reset();
   feature_list_->InitWithFeatures(GetParam().enabled_features,
@@ -429,11 +425,11 @@ struct HoldbackChanceTestCase {
 };
 
 class PredictionBasedPermissionUiExpectedHoldbackChanceTest
-    : public PredictionBasedPermissionUiSelectorTestBase,
+    : public PermissionsAiUiSelectorTestBase,
       public testing::WithParamInterface<HoldbackChanceTestCase> {
  public:
   void SetUp() override {
-    PredictionBasedPermissionUiSelectorTestBase::SetUp();
+    PermissionsAiUiSelectorTestBase::SetUp();
     feature_list_->Reset();
     feature_list_->InitWithFeaturesAndParameters(
         {
@@ -607,7 +603,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(PredictionBasedPermissionUiExpectedHoldbackChanceTest,
        HoldbackHistogramTest) {
-  PredictionBasedPermissionUiSelector prediction_selector(profile());
+  PermissionsAiUiSelector prediction_selector(profile());
   prediction_selector.cpss_v1_model_holdback_probability_ =
       GetParam().holdback_chance;
 

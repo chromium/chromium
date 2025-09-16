@@ -21,8 +21,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
 #include "chrome/browser/permissions/prediction_service/passage_embedder_delegate.h"
+#include "chrome/browser/permissions/prediction_service/permissions_ai_ui_selector.h"
 #include "chrome/browser/permissions/prediction_service/permissions_aiv1_handler.h"
-#include "chrome/browser/permissions/prediction_service/prediction_based_permission_ui_selector.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/permissions/prediction_service/prediction_service_factory.h"
@@ -390,9 +390,8 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
 
   PredictionServiceMock& prediction_service() { return prediction_service_; }
 
-  PredictionBasedPermissionUiSelector*
-  prediction_based_permission_ui_selector() {
-    return static_cast<PredictionBasedPermissionUiSelector*>(
+  PermissionsAiUiSelector* permissions_ai_ui_selector() {
+    return static_cast<PermissionsAiUiSelector*>(
         permission_request_manager()
             ->get_permission_ui_selectors_for_testing()
             .back()
@@ -622,9 +621,8 @@ IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
   EXPECT_CALL(prediction_service(), StartLookup(_, _, _))
       .WillOnce(WithArg<2>(
           [&](PredictionService::LookupResponseCallback response_callback) {
-            task_runner->FastForwardBy(
-                base::Seconds(PredictionBasedPermissionUiSelector::
-                                  kPermissionRequestUiDecisionTimeout));
+            task_runner->FastForwardBy(base::Seconds(
+                PermissionsAiUiSelector::kPermissionRequestUiDecisionTimeout));
           }));
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -858,7 +856,7 @@ class AivXModelPredictionServiceBrowserTest
 
   // We do not test screenshot handling here; this is so the code does not fail.
   void set_dummy_screenshot_for_testing() {
-    prediction_based_permission_ui_selector()->set_snapshot_for_testing(
+    permissions_ai_ui_selector()->set_snapshot_for_testing(
         BuildBitmap(64, 64, kDefaultColor));
   }
 
@@ -867,7 +865,7 @@ class AivXModelPredictionServiceBrowserTest
   void set_dummy_inner_text_for_testing(
       std::string inner_text =
           "dummy text that is more than min length characters long") {
-    prediction_based_permission_ui_selector()->set_inner_text_for_testing(
+    permissions_ai_ui_selector()->set_inner_text_for_testing(
         {.inner_text = std::move(inner_text)});
   }
 };
@@ -1172,9 +1170,8 @@ class Aiv4ModelLanguageDetectionBrowserTest
     auto language_detection_observer =
         std::make_unique<LanguageDetectionObserverFake>();
     language_detection_observer_ = language_detection_observer.get();
-    prediction_based_permission_ui_selector()
-        ->set_language_detection_observer_for_testing(
-            std::move(language_detection_observer));
+    permissions_ai_ui_selector()->set_language_detection_observer_for_testing(
+        std::move(language_detection_observer));
   }
 
   void TearDownOnMainThread() override {
@@ -1401,8 +1398,7 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
   embedder_metadata_provider_fake.NotifyObservers(GetParam().embedder_metadata);
 
   // We setup various failure conditions defined by the testcases.
-  prediction_based_permission_ui_selector()->set_snapshot_for_testing(
-      GetParam().snapshot);
+  permissions_ai_ui_selector()->set_snapshot_for_testing(GetParam().snapshot);
   set_dummy_inner_text_for_testing(GetParam().inner_text);
   std::unique_ptr<PassageEmbedderMock> passage_embedder;
 

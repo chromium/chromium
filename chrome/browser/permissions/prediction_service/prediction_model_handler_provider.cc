@@ -46,7 +46,7 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
   // CPSSv1 is defined always as backup if further requirements for AivX are not
   // fulfilled (like the MSBB bit that we don't check here at the moment).
   // TODO(crbug.com/414527270) Only create models when its really necessary (see
-  // PredictionBasedPermissionUiSelector::GetPredictionTypeToUse).
+  // PermissionsAiUiSelector::GetPredictionTypeToUse).
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (embedder_metadata_provider) {
     embedder_metadata_observation_.Observe(embedder_metadata_provider);

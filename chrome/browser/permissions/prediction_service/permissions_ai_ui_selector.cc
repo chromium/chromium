@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/prediction_service/prediction_based_permission_ui_selector.h"
+#include "chrome/browser/permissions/prediction_service/permissions_ai_ui_selector.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -65,8 +65,8 @@ using ::permissions::PermissionUmaUtil;
 using ::permissions::PredictionModelHandlerProvider;
 using ::permissions::PredictionModelType;
 using ::permissions::PredictionRequestFeatures;
-using QuietUiReason = PredictionBasedPermissionUiSelector::QuietUiReason;
-using Decision = PredictionBasedPermissionUiSelector::Decision;
+using QuietUiReason = PermissionsAiUiSelector::QuietUiReason;
+using Decision = PermissionsAiUiSelector::Decision;
 using PredictionSource = ::permissions::PermissionPredictionSource;
 using ::optimization_guide::proto::PermissionsAiResponse;
 
@@ -117,15 +117,14 @@ bool ShouldPredictionTriggerQuietUi(
 }
 }  // namespace
 
-inline PredictionBasedPermissionUiSelector::ModelExecutionData::
-    ModelExecutionData() = default;
-inline PredictionBasedPermissionUiSelector::ModelExecutionData::
-    ModelExecutionData(
-        PredictionBasedPermissionUiSelector::ModelExecutionData&&) = default;
-inline PredictionBasedPermissionUiSelector::ModelExecutionData::
-    ~ModelExecutionData() = default;
+inline PermissionsAiUiSelector::ModelExecutionData::ModelExecutionData() =
+    default;
+inline PermissionsAiUiSelector::ModelExecutionData::ModelExecutionData(
+    PermissionsAiUiSelector::ModelExecutionData&&) = default;
+inline PermissionsAiUiSelector::ModelExecutionData::~ModelExecutionData() =
+    default;
 
-PredictionBasedPermissionUiSelector::ModelExecutionData::ModelExecutionData(
+PermissionsAiUiSelector::ModelExecutionData::ModelExecutionData(
     permissions::PredictionRequestFeatures features,
     PredictionRequestMetadata request_metadata,
     permissions::PredictionModelType model_type)
@@ -133,8 +132,7 @@ PredictionBasedPermissionUiSelector::ModelExecutionData::ModelExecutionData(
       request_metadata(std::move(request_metadata)),
       model_type(model_type) {}
 
-PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
-    Profile* profile)
+PermissionsAiUiSelector::PermissionsAiUiSelector(Profile* profile)
     : profile_(profile),
       passage_embedder_delegate_(
           std::make_unique<PassageEmbedderDelegate>(profile_)),
@@ -151,10 +149,9 @@ PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
   }
 }
 
-PredictionBasedPermissionUiSelector::~PredictionBasedPermissionUiSelector() =
-    default;
+PermissionsAiUiSelector::~PermissionsAiUiSelector() = default;
 
-void PredictionBasedPermissionUiSelector::InquireServerModel(
+void PermissionsAiUiSelector::InquireServerModel(
     const PredictionRequestFeatures& features,
     PredictionRequestMetadata request_metadata) {
   permissions::PredictionService* service =
@@ -164,30 +161,27 @@ void PredictionBasedPermissionUiSelector::InquireServerModel(
 
   request_ = std::make_unique<PredictionServiceRequest>(
       service, features,
-      base::BindOnce(
-          &PredictionBasedPermissionUiSelector::LookupResponseReceived,
-          base::Unretained(this),
-          /*model_inquire_start_time=*/base::TimeTicks::Now(),
-          std::move(request_metadata)));
+      base::BindOnce(&PermissionsAiUiSelector::LookupResponseReceived,
+                     base::Unretained(this),
+                     /*model_inquire_start_time=*/base::TimeTicks::Now(),
+                     std::move(request_metadata)));
 }
 
-void PredictionBasedPermissionUiSelector::
-    InquireOnDeviceAiv1AndServerModelIfAvailable(
-        content::RenderFrameHost* render_frame_host,
-        permissions::PredictionRequestFeatures features,
-        PredictionRequestMetadata request_metadata) {
+void PermissionsAiUiSelector::InquireOnDeviceAiv1AndServerModelIfAvailable(
+    content::RenderFrameHost* render_frame_host,
+    permissions::PredictionRequestFeatures features,
+    PredictionRequestMetadata request_metadata) {
   VLOG(1) << "[PermissionsAIv1] On device AI prediction requested";
   GetInnerText(
       render_frame_host,
       ModelExecutionData{std::move(features), std::move(request_metadata),
                          PredictionModelType::kOnDeviceAiV1Model},
-      base::BindOnce(
-          &PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel,
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&PermissionsAiUiSelector::ExecuteOnDeviceAivXModel,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-void PredictionBasedPermissionUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
+void PermissionsAiUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
     const PredictionRequestFeatures& features,
     PredictionRequestMetadata request_metadata) {
   PredictionModelHandlerProvider* prediction_model_handler_provider =
@@ -204,12 +198,12 @@ void PredictionBasedPermissionUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
     cpss_v1_model_holdback_probability_ =
         prediction_model_handler->HoldBackProbability();
     prediction_model_handler->ExecuteModelWithMetadata(
-        base::BindOnce(
-            &PredictionBasedPermissionUiSelector::LookupResponseReceived,
-            weak_ptr_factory_.GetWeakPtr(),
-            /*model_inquire_start_time=*/base::TimeTicks::Now(),
-            std::move(request_metadata),
-            /*lookup_succesful=*/true, /*response_from_cache=*/false),
+        base::BindOnce(&PermissionsAiUiSelector::LookupResponseReceived,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /*model_inquire_start_time=*/base::TimeTicks::Now(),
+                       std::move(request_metadata),
+                       /*lookup_succesful=*/true,
+                       /*response_from_cache=*/false),
         std::move(proto_request));
     return;
   }
@@ -217,41 +211,39 @@ void PredictionBasedPermissionUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
   FinishRequest(Decision::UseNormalUiAndShowNoWarning());
 }
 
-void PredictionBasedPermissionUiSelector::
-    InquireOnDeviceAiv3AndServerModelIfAvailable(
-        content::RenderWidgetHostView* host_view,
-        permissions::PredictionRequestFeatures features,
-        PredictionRequestMetadata request_metadata) {
+void PermissionsAiUiSelector::InquireOnDeviceAiv3AndServerModelIfAvailable(
+    content::RenderWidgetHostView* host_view,
+    permissions::PredictionRequestFeatures features,
+    PredictionRequestMetadata request_metadata) {
   VLOG(1) << "[PermissionsAIv3] On device AI prediction requested";
   TakeSnapshot(host_view, {std::move(features), std::move(request_metadata),
                            PredictionModelType::kOnDeviceAiV3Model});
 }
 
-void PredictionBasedPermissionUiSelector::
-    InquireOnDeviceAiv4AndServerModelIfAvailable(
-        content::WebContents* web_contents,
-        permissions::PredictionRequestFeatures features,
-        PredictionRequestMetadata request_metadata) {
+void PermissionsAiUiSelector::InquireOnDeviceAiv4AndServerModelIfAvailable(
+    content::WebContents* web_contents,
+    permissions::PredictionRequestFeatures features,
+    PredictionRequestMetadata request_metadata) {
   VLOG(1) << "[PermissionsAIv4] On device AI prediction requested";
 
   auto language_detected_cbk = base::BindOnce(
-      &PredictionBasedPermissionUiSelector::GetInnerText,
-      weak_ptr_factory_.GetWeakPtr(), web_contents->GetPrimaryMainFrame(),
+      &PermissionsAiUiSelector::GetInnerText, weak_ptr_factory_.GetWeakPtr(),
+      web_contents->GetPrimaryMainFrame(),
       ModelExecutionData{features, request_metadata,
                          PredictionModelType::kOnDeviceAiV4Model},
-      base::BindOnce(&PredictionBasedPermissionUiSelector::TakeSnapshot,
+      base::BindOnce(&PermissionsAiUiSelector::TakeSnapshot,
                      weak_ptr_factory_.GetWeakPtr(),
                      web_contents->GetRenderWidgetHostView()));
 
   language_detection_observer_->Init(
       web_contents, std::move(language_detected_cbk),
       /*on_fallback=*/
-      base::BindOnce(&PredictionBasedPermissionUiSelector::InquireServerModel,
+      base::BindOnce(&PermissionsAiUiSelector::InquireServerModel,
                      weak_ptr_factory_.GetWeakPtr(), std::move(features),
                      std::move(request_metadata)));
 }
 
-void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
+void PermissionsAiUiSelector::OnSnapshotTakenForOnDeviceModel(
     base::TimeTicks snapshot_inquire_start_time,
     ModelExecutionData model_data,
     const SkBitmap& snapshot) {
@@ -269,13 +261,12 @@ void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
   ExecuteOnDeviceAivXModel(std::move(model_data));
 }
 
-void PredictionBasedPermissionUiSelector::
-    OnDeviceTfliteAivXModelExecutionCallback(
-        base::TimeTicks model_inquire_start_time,
-        permissions::PredictionRequestFeatures features,
-        PredictionRequestMetadata request_metadata,
-        permissions::PredictionModelType model_type,
-        const std::optional<PermissionRequestRelevance>& relevance) {
+void PermissionsAiUiSelector::OnDeviceTfliteAivXModelExecutionCallback(
+    base::TimeTicks model_inquire_start_time,
+    permissions::PredictionRequestFeatures features,
+    PredictionRequestMetadata request_metadata,
+    permissions::PredictionModelType model_type,
+    const std::optional<PermissionRequestRelevance>& relevance) {
   PermissionUmaUtil::RecordPredictionModelInquireTime(model_type,
                                                       model_inquire_start_time);
   VLOG(1) << "[PermissionsAI]: Model execution callback called "
@@ -298,7 +289,7 @@ void PredictionBasedPermissionUiSelector::
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
-void PredictionBasedPermissionUiSelector::SelectUiToUse(
+void PermissionsAiUiSelector::SelectUiToUse(
     content::WebContents* web_contents,
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
@@ -324,10 +315,10 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   }
 
   callback_ = std::move(callback);
-  timeout_timer_.Start(
-      FROM_HERE, base::Seconds(kPermissionRequestUiDecisionTimeout),
-      base::BindOnce(&PredictionBasedPermissionUiSelector::OnTimeout,
-                     weak_ptr_factory_.GetWeakPtr()));
+  timeout_timer_.Start(FROM_HERE,
+                       base::Seconds(kPermissionRequestUiDecisionTimeout),
+                       base::BindOnce(&PermissionsAiUiSelector::OnTimeout,
+                                      weak_ptr_factory_.GetWeakPtr()));
   last_permission_request_relevance_ = std::nullopt;
   last_request_grant_likelihood_ = std::nullopt;
   cpss_v1_model_holdback_probability_ = std::nullopt;
@@ -423,7 +414,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   }
 }
 
-void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
+void PermissionsAiUiSelector::OnGetInnerTextForOnDeviceModel(
     ModelExecutionData model_data,
     ModelExecutionCallback model_execution_callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
@@ -458,15 +449,15 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
                "Continue AIv4 execution";
     // Aiv4.
     auto fallback_callback =
-        base::BindOnce(&PredictionBasedPermissionUiSelector::InquireServerModel,
+        base::BindOnce(&PermissionsAiUiSelector::InquireServerModel,
                        weak_ptr_factory_.GetWeakPtr(),
                        PredictionRequestFeatures(model_data.features),
                        model_data.request_metadata);
 
-    auto on_passage_embeddings_computed_callback = base::BindOnce(
-        &PredictionBasedPermissionUiSelector::OnPassageEmbeddingsComputed,
-        weak_ptr_factory_.GetWeakPtr(), std::move(model_data),
-        std::move(model_execution_callback));
+    auto on_passage_embeddings_computed_callback =
+        base::BindOnce(&PermissionsAiUiSelector::OnPassageEmbeddingsComputed,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(model_data),
+                       std::move(model_execution_callback));
 
     return passage_embedder_delegate_->CreatePassageEmbeddingFromRenderedText(
         std::move(inner_text),
@@ -480,20 +471,19 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
                      std::move(model_data.request_metadata));
 }
 
-void PredictionBasedPermissionUiSelector::OnTimeout() {
+void PermissionsAiUiSelector::OnTimeout() {
   VLOG(1) << "[CPSS] Overall timeout for prediction reached.";
   Cleanup();
   FinishRequest(Decision::UseNormalUiAndShowNoWarning(), /*timeout=*/true);
 }
 
-void PredictionBasedPermissionUiSelector::Cancel() {
+void PermissionsAiUiSelector::Cancel() {
   timeout_timer_.Stop();
   callback_.Reset();
   Cleanup();
 }
 
-void PredictionBasedPermissionUiSelector::FinishRequest(Decision decision,
-                                                        bool timeout) {
+void PermissionsAiUiSelector::FinishRequest(Decision decision, bool timeout) {
   timeout_timer_.Stop();
   PermissionUmaUtil::RecordPredictionServiceTimeout(timeout);
   if (!callback_) {
@@ -505,35 +495,34 @@ void PredictionBasedPermissionUiSelector::FinishRequest(Decision decision,
   std::move(callback_).Run(std::move(decision));
 }
 
-void PredictionBasedPermissionUiSelector::Cleanup() {
+void PermissionsAiUiSelector::Cleanup() {
   request_.reset();
   passage_embedder_delegate_->Reset();
   language_detection_observer_->Reset();
 }
 
-bool PredictionBasedPermissionUiSelector::IsPermissionRequestSupported(
+bool PermissionsAiUiSelector::IsPermissionRequestSupported(
     permissions::RequestType request_type) {
   return request_type == permissions::RequestType::kNotifications ||
          request_type == permissions::RequestType::kGeolocation;
 }
 
 std::optional<permissions::PermissionUiSelector::PredictionGrantLikelihood>
-PredictionBasedPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
+PermissionsAiUiSelector::PredictedGrantLikelihoodForUKM() {
   return last_request_grant_likelihood_;
 }
 
 std::optional<PermissionRequestRelevance>
-PredictionBasedPermissionUiSelector::PermissionRequestRelevanceForUKM() {
+PermissionsAiUiSelector::PermissionRequestRelevanceForUKM() {
   return last_permission_request_relevance_;
 }
 
-std::optional<bool>
-PredictionBasedPermissionUiSelector::WasSelectorDecisionHeldback() {
+std::optional<bool> PermissionsAiUiSelector::WasSelectorDecisionHeldback() {
   return was_decision_held_back_;
 }
 
 PredictionRequestFeatures
-PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
+PermissionsAiUiSelector::BuildPredictionRequestFeatures(
     PermissionRequest* request,
     PredictionSource prediction_source) {
   PredictionRequestFeatures features;
@@ -593,7 +582,7 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   return features;
 }
 
-void PredictionBasedPermissionUiSelector::OnDeviceAiv1ModelExecutionCallback(
+void PermissionsAiUiSelector::OnDeviceAiv1ModelExecutionCallback(
     PredictionRequestFeatures features,
     PredictionRequestMetadata request_metadata,
     std::optional<PermissionsAiResponse> response) {
@@ -618,7 +607,7 @@ void PredictionBasedPermissionUiSelector::OnDeviceAiv1ModelExecutionCallback(
   InquireServerModel(features, std::move(request_metadata));
 }
 
-void PredictionBasedPermissionUiSelector::LookupResponseReceived(
+void PermissionsAiUiSelector::LookupResponseReceived(
     base::TimeTicks model_inquire_start_time,
     PredictionRequestMetadata request_metadata,
     bool lookup_successful,
@@ -676,7 +665,7 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
   FinishRequest(Decision(Decision::UseNormalUi(), Decision::ShowNoWarning()));
 }
 
-bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
+bool PermissionsAiUiSelector::ShouldHoldBack(
     const PredictionRequestMetadata& request_metadata) const {
   permissions::RequestType request_type = request_metadata.request_type;
   PredictionSource prediction_source = request_metadata.prediction_source;
@@ -721,7 +710,7 @@ bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
   return should_holdback;
 }
 
-PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
+PredictionSource PermissionsAiUiSelector::GetPredictionTypeToUse(
     permissions::RequestType request_type) {
   const bool is_msbb_enabled = profile_->GetPrefs()->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
@@ -805,28 +794,26 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   return PredictionSource::kNoCpssModel;
 }
 
-void PredictionBasedPermissionUiSelector::
-    set_language_detection_observer_for_testing(
-        std::unique_ptr<permissions::LanguageDetectionObserver>
-            language_detection_observer) {
+void PermissionsAiUiSelector::set_language_detection_observer_for_testing(
+    std::unique_ptr<permissions::LanguageDetectionObserver>
+        language_detection_observer) {
   CHECK_IS_TEST();
   language_detection_observer_ = std::move(language_detection_observer);
 }
 
-void PredictionBasedPermissionUiSelector::set_inner_text_for_testing(
+void PermissionsAiUiSelector::set_inner_text_for_testing(
     content_extraction::InnerTextResult inner_text_) {
   CHECK_IS_TEST();
   inner_text_for_testing_ = std::move(inner_text_);
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-void PredictionBasedPermissionUiSelector::set_snapshot_for_testing(
-    SkBitmap snapshot) {
+void PermissionsAiUiSelector::set_snapshot_for_testing(SkBitmap snapshot) {
   CHECK_IS_TEST();
   snapshot_for_testing_ = snapshot;
 }
 
-void PredictionBasedPermissionUiSelector::TakeSnapshot(
+void PermissionsAiUiSelector::TakeSnapshot(
     content::RenderWidgetHostView* host_view,
     ModelExecutionData model_data) {
   VLOG(1) << "[PermissionsAIvX] TakeSnapshot";
@@ -841,15 +828,15 @@ void PredictionBasedPermissionUiSelector::TakeSnapshot(
   } else {
     host_view->CopyFromSurface(
         gfx::Rect(), gfx::Size(),
-        base::BindOnce(&PredictionBasedPermissionUiSelector::
-                           OnSnapshotTakenForOnDeviceModel,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       snapshot_inquire_start_time, std::move(model_data)));
+        base::BindOnce(
+            &PermissionsAiUiSelector::OnSnapshotTakenForOnDeviceModel,
+            weak_ptr_factory_.GetWeakPtr(), snapshot_inquire_start_time,
+            std::move(model_data)));
   }
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
-void PredictionBasedPermissionUiSelector::GetInnerText(
+void PermissionsAiUiSelector::GetInnerText(
     content::RenderFrameHost* render_frame_host,
     ModelExecutionData model_data,
     ModelExecutionCallback model_execution_callback) {
@@ -862,13 +849,12 @@ void PredictionBasedPermissionUiSelector::GetInnerText(
   }
   content_extraction::GetInnerText(
       *render_frame_host, /*node_id=*/std::nullopt,
-      base::BindOnce(
-          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
-          weak_ptr_factory_.GetWeakPtr(), std::move(model_data),
-          std::move(model_execution_callback)));
+      base::BindOnce(&PermissionsAiUiSelector::OnGetInnerTextForOnDeviceModel,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(model_data),
+                     std::move(model_execution_callback)));
 }
 
-void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
+void PermissionsAiUiSelector::ExecuteOnDeviceAivXModel(
     ModelExecutionData model_data) {
   VLOG(1) << "[PermissionsAI] ExecuteOnDeviceAivXModel";
   PredictionModelHandlerProvider* prediction_model_handler_provider =
@@ -887,11 +873,11 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
           VLOG(1) << "[PermissionsAIv1] Inquire model";
           return aiv1_handler->InquireAiOnDeviceModel(
               std::move(model_data.inner_text.value()), request_type,
-              base::BindOnce(&PredictionBasedPermissionUiSelector::
-                                 OnDeviceAiv1ModelExecutionCallback,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             std::move(model_data.features),
-                             std::move(model_data.request_metadata)));
+              base::BindOnce(
+                  &PermissionsAiUiSelector::OnDeviceAiv1ModelExecutionCallback,
+                  weak_ptr_factory_.GetWeakPtr(),
+                  std::move(model_data.features),
+                  std::move(model_data.request_metadata)));
         }
         break;
       }
@@ -906,7 +892,7 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
           VLOG(1) << "[PermissionsAI] Inquire AIv3 model";
           return aiv3_handler->ExecuteModel(
               /*callback=*/base::BindOnce(
-                  &PredictionBasedPermissionUiSelector::
+                  &PermissionsAiUiSelector::
                       OnDeviceTfliteAivXModelExecutionCallback,
                   weak_ptr_factory_.GetWeakPtr(),
                   /*model_inquire_start_time=*/base::TimeTicks::Now(),
@@ -929,7 +915,7 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
           VLOG(1) << "[PermissionsAIv4] Inquire model";
           return aiv4_handler->ExecuteModel(
               /*callback=*/base::BindOnce(
-                  &PredictionBasedPermissionUiSelector::
+                  &PermissionsAiUiSelector::
                       OnDeviceTfliteAivXModelExecutionCallback,
                   weak_ptr_factory_.GetWeakPtr(),
                   /*model_inquire_start_time=*/base::TimeTicks::Now(),
@@ -955,7 +941,7 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-void PredictionBasedPermissionUiSelector::OnPassageEmbeddingsComputed(
+void PermissionsAiUiSelector::OnPassageEmbeddingsComputed(
     ModelExecutionData model_data,
     ModelExecutionCallback model_execution_callback,
     passage_embeddings::Embedding embedding) {
