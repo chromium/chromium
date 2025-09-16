@@ -6,10 +6,32 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace autofill {
 
-OtpFieldDetector::OtpFieldDetector() = default;
+namespace {
+
+// Returns if `form` in `manager` contains at least one `ONE_TIME_CODE` field.
+[[nodiscard]] bool IsOtpForm(AutofillManager& manager, FormGlobalId form) {
+  const FormStructure* form_structure = manager.FindCachedFormById(form);
+  if (!form_structure) {
+    return false;
+  }
+  return std::ranges::any_of(
+      form_structure->fields(), [](const std::unique_ptr<AutofillField>& f) {
+        return f->Type().GetTypes().contains(ONE_TIME_CODE) &&
+               f->is_focusable();
+      });
+}
+
+}  // namespace
+
+OtpFieldDetector::OtpFieldDetector(AutofillClient* client) {
+  if (client) {
+    autofill_manager_observation_.Observe(client);
+  }
+}
 OtpFieldDetector::~OtpFieldDetector() = default;
 
 base::CallbackListSubscription
@@ -35,6 +57,47 @@ bool OtpFieldDetector::IsOtpFieldPresent() const {
   base::UmaHistogramBoolean("PasswordManager.OtpPresentInMainTab",
                             is_otp_present);
   return is_otp_present;
+}
+
+void OtpFieldDetector::OnFieldTypesDetermined(AutofillManager& manager,
+                                              FormGlobalId form,
+                                              FieldTypeSource source) {
+  if (IsOtpForm(manager, form)) {
+    AddFormAndNotifyIfNecessary(form);
+  } else {
+    RemoveFormAndNotifyIfNecessary(form);
+  }
+}
+
+void OtpFieldDetector::OnAfterFormsSeen(
+    AutofillManager& manager,
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
+  for (const FormGlobalId form : removed_forms) {
+    RemoveFormAndNotifyIfNecessary(form);
+  }
+}
+
+void OtpFieldDetector::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    AutofillDriver::LifecycleState previous,
+    AutofillDriver::LifecycleState current) {
+  if (current != AutofillDriver::LifecycleState::kActive) {
+    for (const auto& [form_id, form_structure] : manager.form_structures()) {
+      RemoveFormAndNotifyIfNecessary(form_id);
+    }
+  } else {
+    for (const auto& [form_id, form_structure] : manager.form_structures()) {
+      if (IsOtpForm(manager, form_id)) {
+        AddFormAndNotifyIfNecessary(form_id);
+      }
+    }
+  }
+}
+
+void OtpFieldDetector::OnAfterFormSubmitted(AutofillManager& manager,
+                                            const FormData& form) {
+  RemoveFormAndNotifyIfNecessary(form.global_id());
 }
 
 void OtpFieldDetector::AddFormAndNotifyIfNecessary(FormGlobalId form_id) {

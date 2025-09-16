@@ -6,8 +6,8 @@
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_CONTENT_AUTOFILL_CLIENT_H_
 
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/content/browser/integrators/one_time_tokens/content_otp_field_detector.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -32,7 +32,7 @@ class TestContentAutofillClient
   OtpFieldDetector* GetOtpFieldDetector() override;
 
  private:
-  ContentOtpFieldDetector otp_field_detector_;
+  OtpFieldDetector otp_field_detector_;
 };
 
 }  // namespace autofill

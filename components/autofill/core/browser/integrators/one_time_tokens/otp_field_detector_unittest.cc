@@ -6,7 +6,14 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -17,6 +24,10 @@ namespace {
 
 class TestOtpFieldDetector : public OtpFieldDetector {
  public:
+  // Passing no autofill client disables subscription to
+  // AutofillManager::Observer events.
+  TestOtpFieldDetector() : OtpFieldDetector(nullptr) {}
+  ~TestOtpFieldDetector() override = default;
   using OtpFieldDetector::AddFormAndNotifyIfNecessary;
   using OtpFieldDetector::OtpFieldDetector;
   using OtpFieldDetector::RemoveFormAndNotifyIfNecessary;
@@ -24,6 +35,8 @@ class TestOtpFieldDetector : public OtpFieldDetector {
 
 }  // namespace
 
+// These are tests for the basic callback mechanisms, mocking the integration
+// AutofillManager::Observer aspects.
 class OtpFieldDetectorTest : public testing::Test {
  public:
   OtpFieldDetectorTest() = default;
@@ -116,6 +129,217 @@ TEST_F(OtpFieldDetectorTest, IsOtpFieldPresent) {
   histogram_tester.ExpectBucketCount("PasswordManager.OtpPresentInMainTab",
                                      false, 2);
   histogram_tester.ExpectTotalCount("PasswordManager.OtpPresentInMainTab", 3);
+}
+
+// Tests that the AutofillManager::Observer notifications work as expected.
+class OtpFieldDetectorAutofillManagerObserverTest : public testing::Test {
+ public:
+  OtpFieldDetectorAutofillManagerObserverTest() = default;
+  ~OtpFieldDetectorAutofillManagerObserverTest() override = default;
+
+  void SetUp() override {
+    driver_ = std::make_unique<TestAutofillDriver>(&client_);
+
+    auto autofill_manager =
+        std::make_unique<TestBrowserAutofillManager>(driver_.get());
+    autofill_manager_ = autofill_manager.get();
+
+    driver_->set_autofill_manager(std::move(autofill_manager));
+    autofill_manager_observation_.Observe(&driver_->GetAutofillManager());
+  }
+
+  void TearDown() override { autofill_manager_ = nullptr; }
+
+  void SimulateNavigation() {
+    otp_field_detector_.OnAutofillManagerStateChanged(
+        autofill_manager(), AutofillDriver::LifecycleState::kActive,
+        AutofillDriver::LifecycleState::kPendingDeletion);
+  }
+
+  FormData CreateSimpleOtp(bool is_focusable = true) {
+    FormData form;
+    form.set_url(GURL("https://www.foo.com"));
+    form.set_renderer_id(autofill::test::MakeFormRendererId());
+    FormFieldData field = {autofill::test::CreateTestFormField(
+        "some_label", "some_name", "some_value", FormControlType::kInputText)};
+    field.set_is_focusable(is_focusable);
+    form.set_fields({field});
+    return form;
+  }
+
+  void AddOtpToThePage(const FormData& form) {
+    autofill_manager().AddSeenForm(
+        form,
+        /*field_types=*/std::vector<FieldType>{ONE_TIME_CODE});
+
+    // Notify observers manually as this would typically happen during parsing
+    // but the step is skipped when using the Test APIs.
+    autofill_manager().NotifyObservers(
+        &TestBrowserAutofillManager::Observer::OnFieldTypesDetermined,
+        form.global_id(),
+        TestBrowserAutofillManager::Observer::FieldTypeSource::
+            kHeuristicsOrAutocomplete);
+  }
+
+  void RemoveOtpFromThePage(FormData form) {
+    autofill_manager().OnFormsSeen(
+        /*updated_forms=*/{},
+        /*removed_forms=*/{form.global_id()});
+  }
+
+  void SimulateSubmission(FormData form) {
+    autofill_manager().OnFormSubmitted(form,
+                                       mojom::SubmissionSource::XHR_SUCCEEDED);
+  }
+
+  OtpFieldDetector& otp_field_detector() { return otp_field_detector_; }
+
+  TestBrowserAutofillManager& autofill_manager() { return *autofill_manager_; }
+
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  autofill::test::AutofillUnitTestEnvironment autofill_environment_;
+  TestAutofillClient client_;
+  std::unique_ptr<TestAutofillDriver> driver_;
+  raw_ptr<TestBrowserAutofillManager> autofill_manager_ = nullptr;
+  // Passing no autofill client disables subscription to
+  // AutofillManager::Observer events.
+  OtpFieldDetector otp_field_detector_{nullptr};
+  // Instead of relying on the ScopedAutofillManagersObservation
+  // in OtpFieldDetector, these tests use the following ScopedObservation.
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      autofill_manager_observation_{&otp_field_detector_};
+};
+
+// Verify that IsOtpFieldPresent works as expected.
+TEST_F(OtpFieldDetectorAutofillManagerObserverTest, IsOtpFieldPresent) {
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
+  histogram_tester.ExpectUniqueSample("PasswordManager.OtpPresentInMainTab",
+                                      false, 1);
+
+  FormData form = CreateSimpleOtp();
+  AddOtpToThePage(form);
+
+  EXPECT_TRUE(otp_field_detector().IsOtpFieldPresent());
+  histogram_tester.ExpectBucketCount("PasswordManager.OtpPresentInMainTab",
+                                     true, 1);
+  histogram_tester.ExpectTotalCount("PasswordManager.OtpPresentInMainTab", 2);
+
+  RemoveOtpFromThePage(form);
+
+  EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
+  histogram_tester.ExpectBucketCount("PasswordManager.OtpPresentInMainTab",
+                                     false, 2);
+  histogram_tester.ExpectTotalCount("PasswordManager.OtpPresentInMainTab", 3);
+}
+
+// Verify that the OtpFieldsDetectedCallback is triggered when an OTP form is
+// detected.
+TEST_F(OtpFieldDetectorAutofillManagerObserverTest, DiscoverOTPs) {
+  base::MockRepeatingCallback<void()> otp_detected_callback;
+  base::CallbackListSubscription subscription =
+      otp_field_detector().RegisterOtpFieldsDetectedCallback(
+          otp_detected_callback.Get());
+
+  EXPECT_CALL(otp_detected_callback, Run()).Times(1);
+  AddOtpToThePage(CreateSimpleOtp());
+  ASSERT_TRUE(
+      testing::Mock::VerifyAndClearExpectations(&otp_detected_callback));
+
+  // The second addition of OTPs should not generate more callbacks
+  EXPECT_CALL(otp_detected_callback, Run()).Times(0);
+  AddOtpToThePage(CreateSimpleOtp());
+}
+
+// Verify that an OTP form that is parsed but has non-focusable fields does
+// not trigger the OTP detected callback.
+TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
+       DiscoverOTPs_IgnoreNonfocusableOtpFields) {
+  base::MockRepeatingCallback<void()> otp_detected_callback;
+  base::CallbackListSubscription subscription =
+      otp_field_detector().RegisterOtpFieldsDetectedCallback(
+          otp_detected_callback.Get());
+
+  EXPECT_CALL(otp_detected_callback, Run()).Times(0);
+  AddOtpToThePage(CreateSimpleOtp(/*is_focusable=*/false));
+}
+
+// Verify that a navigation which drops all forms is recognized.
+TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
+       CallbackInvokedAfterNavigationClearsOtps) {
+  AddOtpToThePage(CreateSimpleOtp());
+
+  base::MockRepeatingCallback<void()> otp_fields_submitted_callback;
+  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+
+  base::CallbackListSubscription subscription =
+      otp_field_detector().RegisterOtpFieldsSubmittedCallback(
+          otp_fields_submitted_callback.Get());
+
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
+      &otp_fields_submitted_callback));
+
+  // Verify that a navigation triggers a callback.
+  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(1);
+  SimulateNavigation();
+}
+
+// Verify that removing an OTP form from the DOM is detected.
+TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
+       CallbackInvokedFromFormRemoval) {
+  FormData form = CreateSimpleOtp();
+  AddOtpToThePage(form);
+
+  base::MockRepeatingCallback<void()> otp_fields_submitted_callback;
+  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+
+  base::CallbackListSubscription subscription =
+      otp_field_detector().RegisterOtpFieldsSubmittedCallback(
+          otp_fields_submitted_callback.Get());
+
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
+      &otp_fields_submitted_callback));
+
+  // Now, make the field disappear and simulate another navigation.
+  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(1);
+  RemoveOtpFromThePage(form);
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
+      &otp_fields_submitted_callback));
+
+  // A following navigation should not trigger another callback.
+  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+  SimulateNavigation();
+}
+
+// Verify that submitting an OTP form is detected.
+TEST_F(OtpFieldDetectorAutofillManagerObserverTest,
+       CallbackInvokedFromFormSubmission) {
+  FormData form = CreateSimpleOtp();
+  AddOtpToThePage(form);
+
+  base::MockRepeatingCallback<void()> otp_fields_submitted_callback;
+  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+
+  base::CallbackListSubscription subscription =
+      otp_field_detector().RegisterOtpFieldsSubmittedCallback(
+          otp_fields_submitted_callback.Get());
+
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
+      &otp_fields_submitted_callback));
+
+  // Now, make the field disappear and simulate another navigation.
+  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(1);
+  SimulateSubmission(form);
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
+      &otp_fields_submitted_callback));
+
+  // A following navigation should not trigger another callback because the site
+  // had a single form that was considered removed at submission time (even
+  // though it stayed in the DOM).
+  EXPECT_CALL(otp_fields_submitted_callback, Run()).Times(0);
+  SimulateNavigation();
 }
 
 }  // namespace autofill

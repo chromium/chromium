@@ -24,8 +24,6 @@ static_library("browser") {
     "content_autofill_shared_storage_handler.h",
     "content_identity_credential_delegate.cc",
     "content_identity_credential_delegate.h",
-    "integrators/one_time_tokens/content_otp_field_detector.cc",
-    "integrators/one_time_tokens/content_otp_field_detector.h",
     "renderer_forms_from_browser_form.cc",
     "renderer_forms_from_browser_form.h",
     "risk/fingerprint.cc",
@@ -129,7 +127,6 @@ source_set("unit_tests") {
     "content_autofill_driver_factory_unittest.cc",
     "content_autofill_driver_unittest.cc",
     "content_identity_credential_delegate_unittest.cc",
-    "integrators/one_time_tokens/content_otp_field_detector_unittest.cc",
     "scoped_autofill_managers_observation_unittest.cc",
     "suggestions/identity_credential_suggestion_generator_unittest.cc",
   ]

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate_mock.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/content/browser/integrators/one_time_tokens/content_otp_field_detector.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
