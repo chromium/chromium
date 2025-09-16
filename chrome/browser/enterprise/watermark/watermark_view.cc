@@ -37,6 +37,41 @@ WatermarkView::WatermarkView() : background_color_(SkColorSetARGB(0, 0, 0, 0)) {
 
 WatermarkView::~WatermarkView() = default;
 
+void WatermarkView::InvalidateView() {
+  SchedulePaint();
+}
+
+bool WatermarkView::MaybeUpdateWatermark(const std::string& watermark_text,
+                                         SkColor fill_color,
+                                         SkColor outline_color,
+                                         int font_size) {
+  // No need to invalidate when both old and new strings are empty, even if the
+  // style values change.
+  if (watermark_text_.empty() && watermark_text.empty()) {
+    return false;
+  }
+
+  // If at least one value changes, invalidate the view.
+  bool result = false;
+  if (watermark_text_ != watermark_text) {
+    watermark_text_ = watermark_text;
+    result = true;
+  }
+  if (fill_color_ != fill_color) {
+    fill_color_ = fill_color;
+    result = true;
+  }
+  if (outline_color_ != outline_color) {
+    outline_color_ = outline_color;
+    result = true;
+  }
+  if (font_size_ != font_size) {
+    font_size_ = font_size;
+    result = true;
+  }
+  return result;
+}
+
 void WatermarkView::SetString(const std::string& text,
                               SkColor fill_color,
                               SkColor outline_color,
@@ -44,11 +79,14 @@ void WatermarkView::SetString(const std::string& text,
   DCHECK(base::IsStringUTF8(text));
   CHECK_GE(font_size, 1);
 
+  if (!MaybeUpdateWatermark(text, fill_color, outline_color, font_size)) {
+    return;
+  }
+
   watermark_block_ =
       DrawWatermarkToPaintRecord(text, fill_color, outline_color, font_size);
 
-  // Invalidate the state of the view.
-  SchedulePaint();
+  InvalidateView();
 }
 
 void WatermarkView::OnPaint(gfx::Canvas* canvas) {
@@ -61,7 +99,7 @@ void WatermarkView::OnPaint(gfx::Canvas* canvas) {
 
 void WatermarkView::SetBackgroundColor(SkColor background_color) {
   background_color_ = background_color;
-  SchedulePaint();
+  InvalidateView();
 }
 
 BEGIN_METADATA(WatermarkView)
