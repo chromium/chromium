@@ -720,24 +720,30 @@ CGFloat GetSubtitleMarginDistance() {
 - (void)animateFloatingSetAsDefaultContainer {
   CHECK(!_moreOrContinueButton);
 
-  // 1- Fades grey color to blue color to have better animation.
-  UIButton* fakeButtonForGreyToBlueFading = nil;
+  // 1- Fades disable state to enabled state button to have better animation.
+  // This is using a view containing a fake disabled button to cover the
+  // existing enabled button to have a smooth animation.
+  UIView* greyToBlueFadingView = nil;
   CGPoint inlineButtonOriginInMainView =
       [self.view convertPoint:_inlineSetAsDefaultButton.bounds.origin
                      fromView:_inlineSetAsDefaultButton];
   if (inlineButtonOriginInMainView.y < self.view.bounds.size.height ||
       !_floatingSetAsDefaultButtonContainer.hidden) {
     // When the inline button is visible, a fake Set as Default button is added
-    // in the floating container. The fake button is as the same color than
-    // the inline button.
+    // in the floating container.
     // The fake button is faded out at the same time than the floating container
     // is moved up.
-    fakeButtonForGreyToBlueFading = CreateSetAsDefaultButton();
+    greyToBlueFadingView = [[UIView alloc] init];
+    UIButton* fakeButtonForGreyToBlueFading = CreateSetAsDefaultButton();
     fakeButtonForGreyToBlueFading.translatesAutoresizingMaskIntoConstraints =
         YES;
-    fakeButtonForGreyToBlueFading.frame = _floatingSetAsDefaultButton.frame;
-    [_floatingSetAsDefaultButtonContainer
-        addSubview:fakeButtonForGreyToBlueFading];
+    greyToBlueFadingView.backgroundColor =
+        _floatingSetAsDefaultButtonContainer.backgroundColor;
+    greyToBlueFadingView.frame = _floatingSetAsDefaultButton.frame;
+    fakeButtonForGreyToBlueFading.frame = greyToBlueFadingView.bounds;
+
+    [_floatingSetAsDefaultButtonContainer addSubview:greyToBlueFadingView];
+    [greyToBlueFadingView addSubview:fakeButtonForGreyToBlueFading];
   }
   // Hide the inline SetAsDefault button. It is replace by
   // `fakeButtonForGreyToBlueFading` during the animation.
@@ -807,10 +813,10 @@ CGFloat GetSubtitleMarginDistance() {
   [UIView animateWithDuration:kFloatingSetAsDefaultAnimationDuration
       animations:^{
         // 1- Fades in.
-        fakeButtonForGreyToBlueFading.alpha = 0;
+        greyToBlueFadingView.alpha = 0;
         // 2- Moves from the bottom or fade in.
         floatingSetAsDefaultButtonContainer.frame = animationEndFrame;
-        floatingSetAsDefaultButtonContainer.alpha = 1.;
+        floatingSetAsDefaultButtonContainer.alpha = 1;
         // 3- Scrolls up, if needed.
         if (heightToScrollUp) {
           CGPoint contentOffset = scrollView.contentOffset;
@@ -819,7 +825,7 @@ CGFloat GetSubtitleMarginDistance() {
         }
       }
       completion:^(BOOL) {
-        [fakeButtonForGreyToBlueFading removeFromSuperview];
+        [greyToBlueFadingView removeFromSuperview];
       }];
 }
 
