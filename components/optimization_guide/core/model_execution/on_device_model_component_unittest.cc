@@ -30,6 +30,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/on_device_model/public/cpp/cpu.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-data-view.h"
@@ -325,11 +326,18 @@ TEST_F(OnDeviceModelComponentTest, PerformanceClassTooLow) {
   fake_settings_.performance_class = PerformanceClass::kVeryLow;
   DoStartup();
   EnsurePerformanceClassAvailable();
-  ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
+  // We may still install the model given a "very low" performance class if the
+  // device is capable of running the model on CPU.
+  const bool expect_device_is_capable = on_device_model::IsCpuCapable();
+  if (expect_device_is_capable) {
+    ASSERT_TRUE(WaitUntilInstallerRegistered());
+  } else {
+    ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
+  }
   histograms_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "AtRegistration.DeviceCapability",
-      false, 1);
+      expect_device_is_capable, 1);
 }
 
 TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
@@ -399,11 +407,15 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotAllowed) {
   DoStartup();
   EnsurePerformanceClassAvailable();
   EXPECT_TRUE(WaitUntilInstallerRegistered());
-  test_component_state_.Install(
-      std::make_unique<FakeBaseModelAsset>(AllHints()));
+
+  std::vector<proto::OnDeviceModelPerformanceHint> hints{
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE,
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY};
+  test_component_state_.Install(std::make_unique<FakeBaseModelAsset>(hints));
   SimulateShutdown();
 
   local_state_.SetString(kOnDevicePerformanceClassVersion, "0.0.0.1");
+  // This performance class is not supported with `hints`.
   fake_settings_.performance_class = PerformanceClass::kVeryLow;
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -429,7 +441,7 @@ TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdateEveryStartup) {
   SimulateShutdown();
 
   fake_launcher_.clear_did_launch_service();
-  fake_settings_.performance_class = PerformanceClass::kVeryLow;
+  fake_settings_.performance_class = PerformanceClass::kLow;
   DoStartup();
   EXPECT_FALSE(classifier().IsPerformanceClassAvailable());
   base::RunLoop run_loop2;
@@ -438,7 +450,12 @@ TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdateEveryStartup) {
   EXPECT_TRUE(fake_launcher_.did_launch_service());
   EXPECT_TRUE(classifier().IsPerformanceClassAvailable());
   EXPECT_EQ(classifier().GetPerformanceClass(),
-            OnDeviceModelPerformanceClass::kVeryLow);
+            OnDeviceModelPerformanceClass::kLow);
+
+  // The original model is still installed, but we won't run it because the
+  // performance class is too low.
+  EXPECT_TRUE(WaitUntilInstallerRegistered());
+  ASSERT_FALSE(manager().GetState());
 }
 
 TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdate) {
