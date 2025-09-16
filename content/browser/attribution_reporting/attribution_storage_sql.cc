@@ -274,8 +274,6 @@ struct AttributionStorageSql::ReportCorruptionStatusSetAndIds {
 base::expected<AttributionStorageSql::StoredSourceData,
                AttributionStorageSql::ReportCorruptionStatusSetAndIds>
 AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
-  CHECK_GE(statement.ColumnCount(), kSourceColumnCount);
-
   int col = 0;
 
   if (statement.GetColumnType(col) == sql::ColumnType::kNull) {
@@ -1273,8 +1271,6 @@ bool AttributionStorageSql::IncrementNumAttributions(StoredSource::Id id) {
 base::expected<AttributionReport,
                AttributionStorageSql::ReportCorruptionStatusSetAndIds>
 AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
-  CHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 12);
-
   int col = kSourceColumnCount;
   AttributionReport::Id report_id(statement.ColumnInt64(col++));
   base::Time trigger_time = statement.ColumnTime(col++);
@@ -1477,8 +1473,6 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   auto delete_sources_from_paged_select =
       [this](sql::Statement& statement)
           VALID_CONTEXT_REQUIRED(sequence_checker_) -> bool {
-    CHECK_EQ(statement.ColumnCount(), 1);
-
     while (true) {
       std::vector<StoredSource::Id> source_ids;
       while (statement.Step()) {
