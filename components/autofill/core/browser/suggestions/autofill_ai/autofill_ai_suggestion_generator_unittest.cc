@@ -751,33 +751,5 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               SuggestionsAre(HasLabel(u"Flight reservation · MUC–BEY")));
 }
 
-// Test that if any of the entities suggested are from Google Wallet, the manage
-// suggestion in the footer will contain a trailing Wallet icon.
-TEST_F(AutofillAiSuggestionGeneratorTest, ManageSuggestion_ShowWalletLogo) {
-  EntityInstance local_passport = MakePassportWithRandomGuid(
-      {.number = u"123", .record_type = EntityInstance::RecordType::kLocal});
-  EntityInstance wallet_passport = MakePassportWithRandomGuid(
-      {.number = u"456",
-       .record_type = EntityInstance::RecordType::kServerWallet});
-  SetForm({NAME_FULL, PASSPORT_NUMBER});
-
-  SetEntities({local_passport});
-  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              ElementsAre(HasType(SuggestionType::kFillAutofillAi),
-                          HasType(SuggestionType::kSeparator),
-                          AllOf(HasType(SuggestionType::kManageAutofillAi),
-                                Field(&Suggestion::trailing_icon,
-                                      Suggestion::Icon::kNoIcon))));
-
-  SetEntities({local_passport, wallet_passport});
-  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              ElementsAre(HasType(SuggestionType::kFillAutofillAi),
-                          HasType(SuggestionType::kFillAutofillAi),
-                          HasType(SuggestionType::kSeparator),
-                          AllOf(HasType(SuggestionType::kManageAutofillAi),
-                                Field(&Suggestion::trailing_icon,
-                                      Suggestion::Icon::kGoogleWallet))));
-}
-
 }  // namespace
 }  // namespace autofill
