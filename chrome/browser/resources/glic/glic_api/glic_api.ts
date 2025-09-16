@@ -244,11 +244,9 @@ export declare interface GlicBrowserHost {
    * tab. Any in progress actions are canceled and the associated Promises are
    * rejected.
    *
-   * If the task ID is not provided or 0, the most recent task is stopped.
    * If the stopReason is not provided, it uses the default value
    * ActorTaskStopReason.TASK_COMPLETE.
    *
-   * @todo Require callers to provide a valid ID.
    */
   stopActorTask?(taskId?: number, stopReason?: ActorTaskStopReason): void;
 
@@ -260,11 +258,9 @@ export declare interface GlicBrowserHost {
    * from interacting with the associated tab. Any in progress actions are
    * canceled and the associated Promises are rejected.
    *
-   * If the task ID is 0, the most recent task is paused.
    * If the pauseReason is not provided, it uses the default value
    * ActorTaskPauseReason.PAUSED_BY_MODEL.
    *
-   * @todo Require callers to provide a valid ID.
    */
   pauseActorTask?(taskId: number, pauseReason?: ActorTaskPauseReason): void;
 
@@ -274,11 +270,8 @@ export declare interface GlicBrowserHost {
    * Returns the tab context at the time of resumption, based on the provided
    * context options.
    *
-   * If the task ID is 0, the most recent task is resumed.
-   *
    * @throws {Error} on failure.
    *
-   * @todo Require callers to provide a valid ID.
    */
   resumeActorTask?(taskId: number, tabContextOptions: TabContextOptions):
       Promise<TabContextResult>;

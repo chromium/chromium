@@ -574,7 +574,7 @@ interface WebClientHandler {
   // the given id and exits acting mode. The stop_reason indicates the reason
   // for why the stop was initiated. Any in flight actions are canceled and
   // their callbacks will be (asynchronously) invoked. No-op if a task with the
-  // given id does not exist. An id of 0 refers to the most recent task.
+  // given id does not exist.
   StopActorTask(int32 task_id, ActorTaskStopReason stop_reason);
 
   // Pauses the task associated with the given id. Any restrictions on the tab
@@ -582,16 +582,14 @@ interface WebClientHandler {
   // indicates the reason for why the pause was initiated. ResumeActorTask
   // restores these restrictions, and allows for further actions. Any in flight
   // actions are canceled and their callbacks will be (asynchronously) invoked.
-  // No-op if a task with the given id does not exist. An id of 0 refers to the
-  // most recent task.
+  // No-op if a task with the given id does not exist.
   PauseActorTask(int32 task_id, ActorTaskPauseReason pause_reason);
 
   // Resumes a paused task associated with the given id, allowing for further
   // actions. Any restrictions on the tab lifted by PauseActorTask are
   // reimposed. After resumption, computes the context of the tab associated
   // with the task according to the given `context_options` and returns the
-  // result. Returns an error if the task doesn't exist or is not paused. An id
-  // of 0 refers to the most recent task.
+  // result. Returns an error if the task doesn't exist or is not paused.
   ResumeActorTask(int32 task_id, GetTabContextOptions context_options)
       => (GetContextResult result);
 
