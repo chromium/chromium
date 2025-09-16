@@ -63,7 +63,7 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   attachment_upload->set_max_size_bytes(200000000);
   attachment_upload->set_mime_types_allowed(".pdf,application/pdf");
 
-  composebox->set_max_num_files(1);
+  composebox->set_max_num_files(kMaxNumFiles.Get());
   composebox->set_input_placeholder_text(
       l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_PLACEHOLDER_TEXT));
   composebox->set_is_pdf_upload_enabled(true);
@@ -171,6 +171,9 @@ const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &kNtpComposebox,
     "ContextMenuMaxTabSuggestions",
     5);
+const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox,
+                                            "MaxNumFiles",
+                                            1);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 

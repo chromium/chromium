@@ -1660,6 +1660,11 @@ const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZps[] = {
     {"ShowComposeboxZps", "true"},
     {"ShowContextMenu", "true"},
 };
+const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZpsMultiFile[] = {
+    {"MaxNumFiles", "5"},
+    {"ShowComposeboxZps", "true"},
+    {"ShowContextMenu", "true"},
+};
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show ZPS", kComposeboxShowZps, std::size(kComposeboxShowZps), nullptr},
@@ -1673,6 +1678,9 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      std::size(kComposeboxShowContextMenu), nullptr},
     {"- Show Contextual Input Menu and ZPS", kComposeboxShowContextMenuAndZps,
      std::size(kComposeboxShowContextMenuAndZps), nullptr},
+    {"- Show Contextual Input Menu and ZPS 5 File Limit",
+     kComposeboxShowContextMenuAndZpsMultiFile,
+     std::size(kComposeboxShowContextMenuAndZpsMultiFile), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
