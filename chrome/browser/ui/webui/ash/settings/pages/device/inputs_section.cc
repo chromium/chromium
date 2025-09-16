@@ -316,9 +316,7 @@ void AddInputMethodOptionsLoadTimeData(
   html_source->AddBoolean(
       "autocorrectEnableByDefault",
       base::FeatureList::IsEnabled(features::kAutocorrectByDefault));
-  html_source->AddBoolean(
-      "allowFirstPartyVietnameseInput",
-      base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput));
+  html_source->AddBoolean("allowFirstPartyVietnameseInput", true);
 }
 
 void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source,

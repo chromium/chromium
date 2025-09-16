@@ -4159,9 +4159,6 @@ extern const char kFileSystemProviderContentCacheDescription[];
 extern const char kFirmwareUpdateUIV2Name[];
 extern const char kFirmwareUpdateUIV2Description[];
 
-extern const char kFirstPartyVietnameseInputName[];
-extern const char kFirstPartyVietnameseInputDescription[];
-
 extern const char kFocusFollowsCursorName[];
 extern const char kFocusFollowsCursorDescription[];
 

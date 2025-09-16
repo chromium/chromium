@@ -69,8 +69,7 @@ struct InputFieldContext {
 };
 
 bool ShouldRouteToFirstPartyVietnameseInput(const std::string& engine_id) {
-  return base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput) &&
-         (engine_id == "vkd_vi_vni" || engine_id == "vkd_vi_telex");
+  return engine_id == "vkd_vi_vni" || engine_id == "vkd_vi_telex";
 }
 
 bool IsRuleBasedEngine(const std::string& engine_id) {

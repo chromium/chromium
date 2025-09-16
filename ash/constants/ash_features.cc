@@ -821,9 +821,6 @@ BASE_FEATURE(kFilesTrashDrive, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the v2 version of the Firmware Updates app.
 BASE_FEATURE(kFirmwareUpdateUIV2, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables first party Vietnamese input method.
-BASE_FEATURE(kFirstPartyVietnameseInput, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls if the Fjord variant of OOBE is shown.
 BASE_FEATURE(kFjordOobe, base::FEATURE_DISABLED_BY_DEFAULT);
 

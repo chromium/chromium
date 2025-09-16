@@ -7242,11 +7242,6 @@ const char kFirmwareUpdateUIV2Name[] =
 const char kFirmwareUpdateUIV2Description[] =
     "Enable the v2 version of the Firmware Updates App.";
 
-const char kFirstPartyVietnameseInputName[] =
-    "First party Vietnamese Input Method";
-const char kFirstPartyVietnameseInputDescription[] =
-    "Use first party input method for Vietnamese VNI and Telex";
-
 const char kFocusFollowsCursorName[] = "Focus follows cursor";
 const char kFocusFollowsCursorDescription[] =
     "Enable window focusing by moving the cursor.";
