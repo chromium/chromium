@@ -496,7 +496,6 @@ crbug.com/425739516 [ mac apple-angle-metal-renderer:-apple-m3 	angle-metal grap
 # Tests either fail consistently or flakily on Android in TreesInViz mode.
 crbug.com/415830130 [ android android-chromium ] Pixel_Video_MP4_TreesInViz [ Failure ]
 crbug.com/415830130 [ fuchsia ] Pixel_Video_MP4_TreesInViz [ Failure ]
-crbug.com/415830130 [ android android-chromium ] Pixel_Canvas2DRedBox_TreesInViz [ RetryOnFailure ]
 crbug.com/415830130 [ android android-chromium ] Pixel_ViewTransitionsCapture_TreesInViz [ RetryOnFailure ]
 crbug.com/415830130 [ android android-chromium ] Pixel_WebGLGreenTriangle_AA_Alpha_TreesInViz [ RetryOnFailure ]
 crbug.com/415830130 [ android android-chromium ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
