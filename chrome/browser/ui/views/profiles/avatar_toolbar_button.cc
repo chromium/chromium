@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -446,6 +447,52 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
   params.title_params = base::UTF8ToUTF16(account_info.given_name);
   BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
       std::move(params));
+}
+
+void AvatarToolbarButton::MaybeShowSignInBenefitsIPH() {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) ||
+      !base::FeatureList::IsEnabled(
+          feature_engagement::kIPHSignInBenefitsFeature)) {
+    return;
+  }
+
+  // Prevent showing the IPH bubble right when the browser was created. Wait a
+  // small delay for a smoother animation.
+  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
+  if (time_since_creation < g_iph_min_delay_after_creation) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AvatarToolbarButton::MaybeShowSignInBenefitsIPH,
+                       weak_ptr_factory_.GetWeakPtr()),
+        g_iph_min_delay_after_creation - time_since_creation);
+    return;
+  }
+
+  Profile* profile = browser_->profile();
+  CHECK(profile);
+
+  // The IPH only concerns signed-in, non-syncing profiles.
+  signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  CHECK(prefs);
+
+  // Users who sign in after the migration and users migrated from DICe will be
+  // notified with other promos communicating sign-in benefits.
+  if (prefs->GetBoolean(prefs::kPrimaryAccountSetAfterSigninMigration) ||
+      prefs->GetBoolean(kDiceMigrationMigrated)) {
+    return;
+  }
+
+  BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
+      feature_engagement::kIPHSignInBenefitsFeature);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

@@ -79,7 +79,8 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kPrefsThemesSearchEnginesAccountStorageEnabled[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kBoundSessionCredentialsEnabled[];
-
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kPrimaryAccountSetAfterSigninMigration[];
 }  // namespace prefs
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_PREF_NAMES_H_

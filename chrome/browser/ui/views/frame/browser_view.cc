@@ -5299,6 +5299,7 @@ void BrowserView::AddedToWidget() {
 
   MaybeInitializeWebUITabStrip();
   MaybeShowTabStripToolbarButtonIPH();
+  MaybeShowSignInBenefitsIPH();
 
   // Want to show this promo, but not right at startup.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -6000,6 +6001,16 @@ void BrowserView::MaybeShowSupervisedUserProfileSignInIPH() {
   toolbar_button_provider_->GetAvatarToolbarButton()
       ->MaybeShowSupervisedUserSignInIPH();
 #endif
+}
+
+void BrowserView::MaybeShowSignInBenefitsIPH() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (!ShouldShowAvatarToolbarIPH()) {
+    return;
+  }
+  toolbar_button_provider_->GetAvatarToolbarButton()
+      ->MaybeShowSignInBenefitsIPH();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 void BrowserView::ShowHatsDialog(

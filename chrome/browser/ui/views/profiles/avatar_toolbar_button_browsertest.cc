@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
@@ -55,6 +56,7 @@
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test_common.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -78,8 +80,10 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/common/user_education_features.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -3089,3 +3093,102 @@ IN_PROC_BROWSER_TEST_F(
   // The button should return to the normal state.
   EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class AvatarToolbarButtonSignInBenefitsIphBrowserTest
+    : public InteractiveFeaturePromoTestT<AvatarToolbarButtonBrowserTest> {
+ public:
+  AvatarToolbarButtonSignInBenefitsIphBrowserTest()
+      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHSignInBenefitsFeature})) {
+    // Disable the migration feature flag for PRE tests. This allows simulating
+    // users signing in before the sync-to-signin migration.
+    if (content::IsPreTest()) {
+      feature_list_.InitAndDisableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    } else {
+      feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
+
+  bool WillShowPromo() {
+    auto* const user_education = BrowserUserEducationInterface::From(browser());
+    return user_education->IsFeaturePromoActive(
+               feature_engagement::kIPHSignInBenefitsFeature) ||
+           user_education->IsFeaturePromoQueued(
+               feature_engagement::kIPHSignInBenefitsFeature);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
+                       PRE_ShownForUsersSignedInBeforeMigration) {
+  // Sign in a user before the sync-to-signin migration.
+  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_FALSE(
+      prefs->GetBoolean(prefs::kPrimaryAccountSetAfterSigninMigration));
+}
+
+// Tests that the IPH bubble for signin benefits is shown for users who have
+// signed in before the sync-to-signin migration.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
+                       ShownForUsersSignedInBeforeMigration) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
+
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      WaitForPromo(feature_engagement::kIPHSignInBenefitsFeature),
+      PressNonDefaultPromoButton(), InstrumentTab(kSecondTabContents, 1),
+      WaitForWebContentsReady(kSecondTabContents,
+                              GURL("chrome://settings/account")),
+      CheckPromoActive(feature_engagement::kIPHSignInBenefitsFeature, false));
+}
+
+// Tests that the IPH bubble for signin benefits is not shown for users who have
+// signed in after the sync-to-signin migration.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
+                       NotShownForUsersSignedInAfterMigration) {
+  // Sign in a user after the sync-to-signin migration.
+  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+
+  // Attempt to show the IPH.
+  avatar_toolbar_button->MaybeShowSignInBenefitsIPH();
+  EXPECT_FALSE(WillShowPromo());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
+                       PRE_NotShownForUsersMigratedFromDice) {
+  // Sign in a user before the sync-to-signin migration.
+  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_FALSE(
+      prefs->GetBoolean(prefs::kPrimaryAccountSetAfterSigninMigration));
+
+  // Simulate user having migrated from DICe.
+  prefs->SetBoolean(kDiceMigrationMigrated, true);
+}
+
+// Tests that the IPH bubble for signin benefits is not shown for users who have
+// migrated from DICe.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
+                       NotShownForUsersMigratedFromDice) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+
+  // Attempt to show the IPH.
+  avatar_toolbar_button->MaybeShowSignInBenefitsIPH();
+  EXPECT_FALSE(WillShowPromo());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

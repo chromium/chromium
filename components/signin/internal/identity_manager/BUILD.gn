@@ -68,6 +68,7 @@ source_set("identity_manager") {
     "//components/signin/public/identity_manager:tribool",
     "//components/signin/public/webdata",
     "//components/supervised_user/core/common:features",
+    "//components/sync/base:features",
     "//components/unexportable_keys",
     "//components/version_info",
     "//crypto",

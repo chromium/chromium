@@ -1184,4 +1184,7 @@
       Continue
     </message>
   </if>
+    <message name="IDS_SIGN_IN_BENEFITS_IPH_TEXT" desc="Text of the IPH bubble announcing benefits for users who signed in before the sync-to-signin migration.">
+      While you're signed in, you can use the bookmarks, extensions, and more saved in your Google Account on all your devices
+    </message>
 </grit-part>

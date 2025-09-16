@@ -29,6 +29,7 @@
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/features.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -336,6 +337,8 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kExplicitBrowserSignin, false);
   registry->RegisterBooleanPref(
       prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false);
+  registry->RegisterBooleanPref(prefs::kPrimaryAccountSetAfterSigninMigration,
+                                false);
 }
 
 // static
@@ -715,7 +718,7 @@ PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
   return state;
 }
 
-void PrimaryAccountManager::ComputeExplicitBrowserSignin(
+void PrimaryAccountManager::SetExplicitBrowserSigninPrefs(
     const PrimaryAccountChangeEvent& event_details,
     ScopedPrefCommit& scoped_pref_commit) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
@@ -733,6 +736,12 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
           event_details.GetSetPrimaryAccountAccessPoint().value();
       GaiaId current_gaia_id =
           event_details.GetCurrentState().primary_account.gaia;
+
+      if (base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)) {
+        scoped_pref_commit.SetBoolean(
+            prefs::kPrimaryAccountSetAfterSigninMigration, true);
+      }
 
       bool is_implicit_signin =
           access_point == signin_metrics::AccessPoint::kUnknown ||
@@ -839,7 +848,7 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 
   LogPrimaryAccountChangeMetrics(event_details);
 
-  ComputeExplicitBrowserSignin(event_details, scoped_pref_commit);
+  SetExplicitBrowserSigninPrefs(event_details, scoped_pref_commit);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==

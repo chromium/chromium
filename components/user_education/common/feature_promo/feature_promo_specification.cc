@@ -39,6 +39,7 @@ bool IsAllowedActionableAlert(const base::Feature& promo_feature) {
       base::MakeFixedFlatSet<std::string_view>({
           "IPH_DownloadEsbPromo",
           "IPH_HighEfficiencyMode",
+          "IPH_SignInBenefits",
           "IPH_SupervisedUserProfileSignin",
           "IPH_TabSearchToolbarButton",
       });

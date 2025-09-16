@@ -557,7 +557,7 @@ class BrowserWindow : public ui::BaseWindow {
 
   virtual void ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) = 0;
 
-  // Attempts showing the In-Produce-Help for profile Switching. This is called
+  // Attempts showing the In-Product-Help for profile Switching. This is called
   // after creating a new profile or opening an existing profile. If the profile
   // customization bubble is shown, the IPH should be shown after.
   virtual void MaybeShowProfileSwitchIPH() = 0;

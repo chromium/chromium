@@ -50776,6 +50776,7 @@ should be able to be added at any place in this file.
       label="For side search feature automatic triggering."/>
   <suffix name="SideSearchPageActionLabel"
       label="For side search feature page action label triggering."/>
+  <suffix name="SignInBenefits" label="For sign-in benefits IPH feature."/>
   <suffix name="SignoutWebIntercept" label="For web signout IPH feature."/>
   <suffix name="SupervisedUserProfileSignin"
       label="For displaying the supervised user sign-in IPH."/>

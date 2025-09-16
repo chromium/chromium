@@ -93,13 +93,17 @@ class AvatarToolbarButton : public ToolbarButton,
   void SetButtonActionDisabled(bool disabled);
   bool IsButtonActionDisabled() const;
 
-  // Attempts showing the In-Produce-Help for profile Switching.
+  // Attempts showing the In-Product-Help for profile Switching.
   void MaybeShowProfileSwitchIPH();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // Attempts showing the In-Produce-Help when a supervised user signs-in in a
+  // Attempts showing the In-Product-Help when a supervised user signs-in in a
   // profile.
   void MaybeShowSupervisedUserSignInIPH();
+
+  // Attempts showing the In-Product-Help listing benefits for signed-in users
+  // after the sync-to-signin migration.
+  void MaybeShowSignInBenefitsIPH();
 #endif
 
   // Attempts showing the In-Product-Help in a subsequent web sign-in when the
@@ -107,7 +111,7 @@ class AvatarToolbarButton : public ToolbarButton,
   void MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
       const AccountInfo& account_info);
 
-  // Attempts showing the In-Produce-Help for web sign out.
+  // Attempts showing the In-Product-Help for web sign out.
   void MaybeShowWebSignoutIPH(const GaiaId& gaia_id);
 
   // Returns true if a text is set and is visible.
