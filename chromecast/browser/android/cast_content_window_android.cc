@@ -126,6 +126,9 @@ void CastContentWindowAndroid::OnActivityStopped(JNIEnv* env) {
   for (auto& observer : observers_) {
     observer->OnWindowDestroyed();
   }
+  for (auto& observer : sync_observers_) {
+    observer.OnWindowDestroyed();
+  }
 }
 
 void CastContentWindowAndroid::RequestVisibility(

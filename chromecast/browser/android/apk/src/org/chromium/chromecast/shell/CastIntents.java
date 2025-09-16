@@ -9,9 +9,6 @@ package org.chromium.chromecast.shell;
  * the life cycle of CastWebContentsActivity.
  */
 public class CastIntents {
-    public static final String ACTION_SCREEN_OFF =
-            "com.google.android.apps.castshell.intent.action.ACTION_SCREEN_OFF";
-
     /**
      * Used by CastWebContentsComponent to tell CastWebContentsSurfaceHelper to tear down the web
      * contents.

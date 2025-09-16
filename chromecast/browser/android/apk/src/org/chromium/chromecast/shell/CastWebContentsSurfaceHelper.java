@@ -122,15 +122,19 @@ class CastWebContentsSurfaceHelper {
         mCreatedState.subscribe(Observer.onClose(x -> webContentsState.reset()));
 
         // Receive broadcasts indicating the screen turned off while we have active WebContents.
-        uriState.subscribe(
-                (Uri uri) -> {
+        mCreatedState.subscribe(
+                x -> {
                     IntentFilter filter = new IntentFilter();
-                    filter.addAction(CastIntents.ACTION_SCREEN_OFF);
-                    return new LocalBroadcastReceiverScope(
+                    filter.addAction(Intent.ACTION_SCREEN_OFF);
+                    return new BroadcastReceiverScope(
                             filter,
                             (Intent intent) -> {
+                                final String sessionId = mSessionId;
+                                if (sessionId == null) return;
+                                Uri uri = CastWebContentsIntentUtils.getInstanceUri(sessionId);
                                 mStartParamsState.reset();
                                 webContentsState.reset();
+                                CastWebContentsComponent.onComponentClosed(sessionId);
                                 maybeFinishLater(handler, () -> finishCallback.accept(uri));
                             });
                 });

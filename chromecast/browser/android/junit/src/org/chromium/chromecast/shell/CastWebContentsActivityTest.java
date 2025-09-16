@@ -169,8 +169,6 @@ public class CastWebContentsActivityTest {
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
         mShadowActivity = Shadows.shadowOf(mActivity);
-
-        ContextUtils.initApplicationContextForTests(RuntimeEnvironment.application);
     }
 
     @Test
