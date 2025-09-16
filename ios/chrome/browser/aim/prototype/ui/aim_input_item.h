@@ -37,6 +37,10 @@ enum class AIMInputItemType {
 @property(nonatomic, assign, readonly) const base::UnguessableToken& token;
 // The preview image for this item.
 @property(nonatomic, strong) UIImage* previewImage;
+// The title for this item.
+@property(nonatomic, copy) NSString* title;
+// The subtitle for this item.
+@property(nonatomic, copy) NSString* subtitle;
 // The current state of the item.
 @property(nonatomic, assign) AIMInputItemState state;
 // The type of the input item.

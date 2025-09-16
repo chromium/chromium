@@ -189,6 +189,8 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)processPDFFileURL:(GURL)PDFFileURL {
   AIMInputItem* item = [[AIMInputItem alloc]
       initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeFile];
+  item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
+  item.subtitle = @"PDF";
   [_items addObject:item];
   [self.consumer setItems:_items];
   const base::UnguessableToken& token = item.token;
@@ -412,12 +414,16 @@ CreateInputDataFromAnnotatedPageContent(
 // snapshot is generated.
 - (void)didGetPageContext:
     (PageContextWrapperCallbackResponse)pageContextResponse {
-  if (!pageContextResponse.has_value()) {
+  web::WebState* webState = _webStateList->GetActiveWebState();
+
+  if (!pageContextResponse.has_value() || !webState) {
     return;
   }
 
   AIMInputItem* item = [[AIMInputItem alloc]
       initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeTab];
+  item.title = base::SysUTF16ToNSString(webState->GetTitle());
+  item.subtitle = base::SysUTF8ToNSString(webState->GetVisibleURL().host());
   [_items addObject:item];
   [self.consumer setItems:_items];
   __block const base::UnguessableToken& token = item.token;
@@ -425,7 +431,6 @@ CreateInputDataFromAnnotatedPageContent(
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
       std::move(pageContextResponse.value());
 
-  web::WebState* webState = _webStateList->GetActiveWebState();
   __block std::unique_ptr<lens::ContextualInputData> input_data =
       CreateInputDataFromAnnotatedPageContent(
           base::WrapUnique(page_context->release_annotated_page_content()),
