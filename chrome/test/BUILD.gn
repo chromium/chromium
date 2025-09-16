@@ -2354,6 +2354,7 @@ if (!is_android) {
       "//chrome/browser/importer",
       "//chrome/browser/importer:browser_tests",
       "//chrome/browser/ip_protection:browser_tests",
+      "//chrome/browser/lens:lens_tab_contextualization_test",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/media/router:test_support",

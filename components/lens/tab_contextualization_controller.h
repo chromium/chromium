@@ -11,9 +11,15 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/lens/contextual_input.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace optimization_guide {
+struct AIPageContentResult;
+}  // namespace optimization_guide
 
 namespace lens {
 
@@ -33,9 +39,6 @@ class TabContextualizationController : public content::WebContentsObserver {
   using GetPageContextEligibilityCallback =
       base::OnceCallback<void(bool page_context_eligible)>;
 
-  // Gets contextual page content for the tab.
-  virtual void GetPageContext(GetPageContextCallback callback);
-
   // Triggers initial page context eligibility check on the current page.
   // Equivalent to calling `optimization_guide::IsPageContextEligible()` with
   // empty frame_metadata. Only needed for the Chromnient use case, lower
@@ -49,18 +52,36 @@ class TabContextualizationController : public content::WebContentsObserver {
   // implement.
   bool GetCurrentPageContextEligibility();
 
+  // Gets contextual page content for the tab.
+  virtual void GetPageContext(GetPageContextCallback callback);
+
+  // Updates current page eligibility once received.
+  void OnEligibilityChecked(bool is_page_context_eligible);
+
+  // Starts the steps needed to update the page context eligibility.
+  void UpdatePageContextEligibility(GetPageContextEligibilityCallback callback);
+
  private:
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  //   void DidFinishNavigation(
+  //       content::NavigationHandle* navigation_handle) override;
 
   // TabInterface::WillDiscardContentsCallback:
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
-  void OnEligibilityChecked(bool is_page_context_eligible);
+  // Retrieves annotated page contents.
+  void OnAnnotatedPageContentReceived(
+      GetPageContextEligibilityCallback callback,
+      std::optional<optimization_guide::AIPageContentResult> result);
+
+  // Gets whether page context is eligible and returns it to the callback.
+  void IsPageContextEligible(
+      const GURL& main_frame_url,
+      std::vector<optimization_guide::FrameMetadata> frame_metadata,
+      GetPageContextEligibilityCallback callback);
 
   ::ui::ScopedUnownedUserData<TabContextualizationController>
       scoped_unowned_user_data_;
@@ -70,6 +91,8 @@ class TabContextualizationController : public content::WebContentsObserver {
   base::CallbackListSubscription tab_subscription_;
 
   bool is_page_context_eligible_ = false;
+
+  base::WeakPtrFactory<TabContextualizationController> weak_ptr_factory_{this};
 };
 
 }  // namespace lens
