@@ -360,6 +360,7 @@ blink_core_tests_svg = [
   "svg_element_test.cc",
   "svg_filter_element_test.cc",
   "svg_foreign_object_element_test.cc",
+  "svg_parser_utilities_test.cc",
   "svg_path_parser_test.cc",
   "svg_path_query_test.cc",
   "svg_resource_document_content_test.cc",

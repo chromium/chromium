@@ -105,6 +105,12 @@ inline bool SkipOptionalSVGSpacesOrDelimiter(const CharType*& ptr,
   return ptr < end;
 }
 
+// Skips optional spaces and an optional delimiter (a comma, by default).
+// This is used for parsing separators in lists of values in SVG attributes.
+//
+// This function starts scanning `chars` at `position`, and returns the new
+// position after skipping characters.  If nothing can be skipped, `position`
+// is returned.
 template <typename CharType>
 [[nodiscard]] size_t SkipOptionalSVGSpacesOrDelimiter(
     const base::span<const CharType> chars,
@@ -112,7 +118,7 @@ template <typename CharType>
     char delimiter = ',') {
   if (position < chars.size() && !IsHTMLSpace<CharType>(chars[position]) &&
       chars[position] != delimiter) {
-    return false;
+    return position;
   }
   if (SkipOptionalSVGSpaces(chars, position)) {
     if (chars[position] == delimiter) {
