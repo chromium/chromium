@@ -31,6 +31,7 @@ found in the LICENSE file.
     <item type="id" name="history_and_tabs_toggle"/>
 
     <!-- Keyboard shortcuts -->
+    <item type="id" name="close_window" />
     <item type="id" name="print_id" />
     <item type="id" name="focus_url_bar" />
     <item type="id" name="focus_and_clear_url_bar" />

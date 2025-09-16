@@ -77,7 +77,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TAB_SEARCH,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_MULTITASK_MENU,
         KeyboardShortcutsSemanticMeaning.CLOSE_TAB,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLOSE_WINDOW,
+        KeyboardShortcutsSemanticMeaning.CLOSE_WINDOW,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_QUIT_CHROME,
         KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX,
         KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH,
@@ -150,7 +150,7 @@ public class KeyboardShortcuts {
 
         // Closing.
         int CLOSE_TAB = 13;
-        int NOT_IMPLEMENTED_CLOSE_WINDOW = 14;
+        int CLOSE_WINDOW = 14;
         int NOT_IMPLEMENTED_QUIT_CHROME = 15;
 
         // Navigation controls.
@@ -232,7 +232,6 @@ public class KeyboardShortcuts {
     private static @KeyboardShortcutsSemanticMeaning int getKeyboardSemanticMeaning(
             KeyEvent event) {
         int keyCodeAndMeta = event.getKeyCode() | KeyboardUtils.getMetaState(event);
-
         if (KEYBOARD_SHORTCUT_SEMANTIC_MAP.containsKey(keyCodeAndMeta)) {
             return KEYBOARD_SHORTCUT_SEMANTIC_MAP.get(keyCodeAndMeta);
         }
@@ -370,29 +369,6 @@ public class KeyboardShortcuts {
                     /* resId= */ Resources.ID_NULL,
                     /* groupId= */ Resources.ID_NULL);
         }
-
-        /**
-         * Build a new instance with no alternate key combinations and null integer values for resId
-         * and groupId.
-         *
-         * @param semanticMeaning An integer representing the meaning or purpose of the shortcut.
-         * @param primaryShortcut A KeyCombo object that contains the keycode and modifier for the
-         *     shortcut.
-         * @param alternateShortcuts An array of KeyCombo objects that contain alternative keycode
-         *     and modifier combinations for the shortcut. These will be added to the semantic map
-         *     but will not be displayed in the keyboard shortcut helper window.
-         */
-        KeyboardShortcutDefinition(
-                @KeyboardShortcutsSemanticMeaning int semanticMeaning,
-                KeyCombo primaryShortcut,
-                KeyCombo[] alternateShortcuts) {
-            this(
-                    semanticMeaning,
-                    primaryShortcut,
-                    /* resId= */ Resources.ID_NULL,
-                    /* groupId= */ Resources.ID_NULL,
-                    alternateShortcuts);
-        }
     }
 
     // Adds all shortcuts to KEYBOARD_SHORTCUT_DEFINITION_MAP to be referenced by
@@ -404,6 +380,15 @@ public class KeyboardShortcuts {
                 new KeyCombo(KeyEvent.KEYCODE_N, KeyEvent.META_CTRL_ON),
                 R.string.keyboard_shortcut_open_new_window,
                 R.string.keyboard_shortcut_tab_group_header);
+        // TODO(crbug.com/402775002): Change fn signature to allow (Alt + F then X) or
+        // Command+Q
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.CLOSE_WINDOW,
+                new KeyCombo(KeyEvent.KEYCODE_W, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                R.string.keyboard_shortcut_close_window,
+                R.string.keyboard_shortcut_tab_group_header,
+                new KeyCombo[] {new KeyCombo(KeyEvent.KEYCODE_F4, KeyEvent.META_ALT_ON)});
+
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB,
                 new KeyCombo(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON),
@@ -701,12 +686,6 @@ public class KeyboardShortcuts {
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TAB_SEARCH,
                 new KeyCombo(KeyEvent.KEYCODE_A, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)));
-        // TODO(crbug.com/402775002): Change fn signature to allow (Alt + F then X) or
-        // Command+Q
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLOSE_WINDOW,
-                new KeyCombo(KeyEvent.KEYCODE_W, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
-                new KeyCombo[] {new KeyCombo(KeyEvent.KEYCODE_F4, KeyEvent.META_ALT_ON)});
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE,
                 new KeyCombo(KeyEvent.KEYCODE_F6, KeyEvent.META_CTRL_ON));
@@ -1034,6 +1013,9 @@ public class KeyboardShortcuts {
             case KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR:
                 return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                         R.id.toggle_bookmark_bar, /* fromMenu= */ false);
+            case KeyboardShortcutsSemanticMeaning.CLOSE_WINDOW:
+                return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                        R.id.close_window, /* fromMenu= */ false);
         }
 
         if (isCurrentTabVisible) {

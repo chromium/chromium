@@ -1907,6 +1907,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 }
                 return true;
             }
+        } else if (id == R.id.close_window) {
+            mActivity.finishAndRemoveTask();
+            return true;
         }
 
         return false;
