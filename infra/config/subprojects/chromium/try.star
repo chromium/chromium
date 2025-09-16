@@ -168,6 +168,13 @@ luci.cq_group(
             ],
             run = cq.run_limits(max_active = None),
         ),
+        cq.user_limit(
+            name = "cherry-picker-quota",
+            users = [
+                "chrome-cherry-picker@chops-service-accounts.iam.gserviceaccount.com",
+            ],
+            run = cq.run_limits(max_active = 3),
+        ),
     ],
 )
 
