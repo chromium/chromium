@@ -79,19 +79,23 @@ BrokerServices* g_broker_services = NULL;
 // For more information about how this list is generated, and how to get off
 // of it, see:
 // https://sites.google.com/a/chromium.org/dev/Home/third-party-developers
+//
+// If modifying this list, be sure to update WinTroublesomeDllName enum in
+// tools/metrics/histograms/metadata/others/enums.xml.
 const wchar_t* const kTroublesomeDlls[] = {
-    L"btkeyind.dll",               // Widcomm Bluetooth.
-    L"dockshellhook.dll",          // Stardock Objectdock.
-    L"easyhook32.dll",             // GDIPP and others.
-    L"easyhook64.dll",             // Symantec BlueCoat and others.
-    L"guard64.dll",                // Comodo Internet Security x64.
-    L"mdnsnsp.dll",                // Bonjour.
-    L"n64hooks.dll",               // Neilsen//NetRatings NetSight.
-    L"pmls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"prochook.dll",               // Unknown (GBill-Tools?) (crbug.com/974722).
-    L"rlls.dll",                   // PremierOpinion and Relevant-Knowledge.
-    L"rlls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"rpchromebrowserrecordhelper.dll",    // RealPlayer.
+    L"btkeyind.dll",       // Widcomm Bluetooth.
+    L"dockshellhook.dll",  // Stardock Objectdock.
+    L"easyhook32.dll",     // GDIPP and others.
+    L"easyhook64.dll",     // Symantec BlueCoat and others.
+    L"guard64.dll",        // Comodo Internet Security x64.
+    L"kwsui64.dll",        // Kingsoft Antivirus (crbug.com/426094102).
+    L"mdnsnsp.dll",        // Bonjour.
+    L"n64hooks.dll",       // Neilsen//NetRatings NetSight.
+    L"pmls64.dll",         // PremierOpinion and Relevant-Knowledge.
+    L"prochook.dll",       // Unknown (GBill-Tools?) (crbug.com/974722).
+    L"rlls.dll",           // PremierOpinion and Relevant-Knowledge.
+    L"rlls64.dll",         // PremierOpinion and Relevant-Knowledge.
+    L"rpchromebrowserrecordhelper.dll",  // RealPlayer.
 };
 
 // Return a mapping between the long and short names for all loaded modules in
