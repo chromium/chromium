@@ -47,6 +47,13 @@ using ::testing::ResultOf;
 
 constexpr char kAppLocaleUS[] = "en-US";
 
+EntityInstance MakeFlightReservationWithRandomGuid(
+    test::FlightReservationOptions options = {}) {
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  options.guid = guid.AsLowercaseString();
+  return test::GetFlightReservationEntityInstance(options);
+}
+
 EntityInstance MakePassportWithRandomGuid(
     test::PassportEntityOptions options = {}) {
   base::Uuid guid = base::Uuid::GenerateRandomV4();
@@ -373,6 +380,18 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestion_PassportEntity) {
             GetPassportNumber(passport_entity));
   // The third field is not of Autofill AI type.
   EXPECT_EQ(GetFillValueForField(*payload, field(2)), std::nullopt);
+}
+
+// Tests that the flight icon is shown for flight reservation entities.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_FlightReservationEntity_HasFlightIcon) {
+  SetEntities({MakeFlightReservationWithRandomGuid()});
+  SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER, FLIGHT_RESERVATION_TICKET_NUMBER,
+           FLIGHT_RESERVATION_CONFIRMATION_CODE});
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(suggestions[0], HasIcon(Suggestion::Icon::kFlight));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestion_PrefixMatching) {

@@ -70,6 +70,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kEmail";
     case Suggestion::Icon::kError:
       return "kError";
+    case Suggestion::Icon::kFlight:
+      return "kFlight";
     case Suggestion::Icon::kGlobe:
       return "kGlobe";
     case Suggestion::Icon::kGoogle:

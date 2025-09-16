@@ -308,6 +308,7 @@ struct Suggestion {
     kEdit,
     kEmail,
     kError,
+    kFlight,
     kGlobe,
     kGoogle,
     kGoogleMonochrome,

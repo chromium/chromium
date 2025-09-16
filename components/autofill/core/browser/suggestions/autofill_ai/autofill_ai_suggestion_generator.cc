@@ -274,8 +274,7 @@ Suggestion::Icon GetSuggestionIcon(EntityType trigger_entity_type) {
     case EntityTypeName::kDriversLicense:
       return Suggestion::Icon::kIdCard;
     case EntityTypeName::kFlightReservation:
-      // TODO(crbug.com/436175248): Update icon.
-      return Suggestion::Icon::kNoIcon;
+      return Suggestion::Icon::kFlight;
     case EntityTypeName::kNationalIdCard:
       return Suggestion::Icon::kIdCard;
     case EntityTypeName::kPassport:

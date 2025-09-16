@@ -102,6 +102,7 @@ if (current_toolchain == default_toolchain) {
       "filter.icon",
       "fingerprint.icon",
       "fingerprint_off.icon",
+      "flight.icon",
       "folder.icon",
       "folder_chrome_refresh.icon",
       "folder_managed_refresh.icon",
