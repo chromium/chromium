@@ -13,8 +13,10 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sorter.h"
@@ -85,6 +87,23 @@ class CompositorFrameReporterTest : public testing::Test {
     viz_breakdown.swap_timings.swap_start = AdvanceNowByUs(3);
     viz_breakdown.swap_timings.swap_end = AdvanceNowByUs(4);
     viz_breakdown.presentation_feedback.timestamp = AdvanceNowByUs(5);
+    return viz_breakdown;
+  }
+
+  viz::FrameTimingDetails BuildVizBreakdownWithTreesInVizTimestamps() {
+    viz::FrameTimingDetails viz_breakdown;
+    // Optional TreesInViz - related timestamps should happen *before* other
+    // details
+    viz_breakdown.start_update_display_tree = AdvanceNowByUs(1);
+    viz_breakdown.start_prepare_to_draw = AdvanceNowByUs(2);
+    viz_breakdown.start_draw_layers = AdvanceNowByUs(3);
+    viz_breakdown.submit_compositor_frame = AdvanceNowByUs(4);
+
+    viz_breakdown.received_compositor_frame_timestamp = AdvanceNowByUs(5);
+    viz_breakdown.draw_start_timestamp = AdvanceNowByUs(6);
+    viz_breakdown.swap_timings.swap_start = AdvanceNowByUs(7);
+    viz_breakdown.swap_timings.swap_end = AdvanceNowByUs(8);
+    viz_breakdown.presentation_feedback.timestamp = AdvanceNowByUs(9);
     return viz_breakdown;
   }
 
@@ -376,6 +395,84 @@ TEST_F(CompositorFrameReporterTest, SubmittedFrameReportingTest) {
   histogram_tester.ExpectBucketCount(
       "CompositorLatency2.EndActivateToSubmitCompositorFrame", 2, 1);
   histogram_tester.ExpectBucketCount("CompositorLatency2.TotalLatency", 5, 1);
+}
+
+// Tests that timestamps are converted to latency histograms correctly over the
+// TreesInViz lifecycle.
+TEST_F(CompositorFrameReporterTest, TreesInVizLifecycleTest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTreesInViz);
+  base::HistogramTester histogram_tester;
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kActivation, Now());
+
+  AdvanceNowByUs(3);  // This should be the Activation delta
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kEndActivateToSubmitUpdateDisplayTree,
+      Now());
+  AdvanceNowByUs(1);  // This should be the EndActivateToDrawLayers delta
+  pipeline_reporter_->SetTreesInVizBranchTime(Now());
+  AdvanceNowByUs(2);  // This should be DrawLayersToSendUpdateDisplayTree delta
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::
+          kSubmitUpdateDisplayTreeToPresentationCompositorFrame,
+      Now());
+
+  viz::FrameTimingDetails viz_breakdown =
+      BuildVizBreakdownWithTreesInVizTimestamps();
+
+  pipeline_reporter_->SetVizBreakdown(viz_breakdown);
+  pipeline_reporter_->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame,
+      viz_breakdown.presentation_feedback.timestamp);
+
+  EXPECT_EQ(3u, pipeline_reporter_->stage_history_size_for_testing());
+  pipeline_reporter_ = nullptr;
+  auto x = histogram_tester.GetAllHistogramsRecorded();
+
+  // Confirm TreesInViz expected latencies
+  struct {
+    const char* name;
+    const base::HistogramBase::Sample32 latency_ms;
+  } expected_latencies[] = {
+      {"CompositorLatency2.Activation",
+       static_cast<base::HistogramBase::Sample32>((3))},
+      {"CompositorLatency2.EndActivateToSubmitUpdateDisplayTree."
+       "EndActivateToDrawLayers",
+       static_cast<base::HistogramBase::Sample32>((1))},
+      {"CompositorLatency2.EndActivateToSubmitUpdateDisplayTree."
+       "DrawLayersToSubmitUpdateDisplayTree",
+       static_cast<base::HistogramBase::Sample32>((2))},
+      // Remaining values derived from BuildVizBreakdownWithTreesInVizTimestamps
+      {"CompositorLatency2."
+       "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+       "SendUpdateDisplayTreeToRecieveUpdateDisplayTree",
+       static_cast<base::HistogramBase::Sample32>((1))},
+      {"CompositorLatency2."
+       "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+       "RecieveUpdateDisplayTreeToStartPrepareToDraw",
+       static_cast<base::HistogramBase::Sample32>((2))},
+      {"CompositorLatency2."
+       "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+       "StartPrepareToDrawToStartDrawLayers",
+       static_cast<base::HistogramBase::Sample32>((3))},
+      {"CompositorLatency2."
+       "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+       "StartDrawLayersToSubmitCompositorFrame",
+       static_cast<base::HistogramBase::Sample32>((4))},
+      // Total time of EndActivateToSubmitUpdateDisplayTree should be 1 + 2
+      {"CompositorLatency2.EndActivateToSubmitUpdateDisplayTree",
+       static_cast<base::HistogramBase::Sample32>((3))},
+      // Total time of SubmitUpdateDisplayTreeToPresentationCompositorFrame
+      // should be 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 = 45
+      {"CompositorLatency2."
+       "SubmitUpdateDisplayTreeToPresentationCompositorFrame",
+       static_cast<base::HistogramBase::Sample32>((45))},
+  };
+  for (const auto& expected_latency : expected_latencies) {
+    histogram_tester.ExpectBucketCount(expected_latency.name,
+                                       expected_latency.latency_ms, 1);
+  }
 }
 
 // Tests that when a frame is presented to the user, total event latency metrics

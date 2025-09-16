@@ -87,6 +87,7 @@ LatencyUkmReporter::LatencyUkmReporter()
 
 LatencyUkmReporter::~LatencyUkmReporter() = default;
 
+// TODO(crbug.com/443785891): Report UKMs for TreesInViz
 void LatencyUkmReporter::ReportCompositorLatencyUkm(
     const CompositorFrameReporter::FrameReportTypes& report_types,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,

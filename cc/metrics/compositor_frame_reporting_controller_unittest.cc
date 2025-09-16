@@ -5,22 +5,27 @@
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_trace_processor.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
+#include "cc/scheduler/scheduler.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,10 +43,13 @@ using SmoothEffectDrivingThread = FrameInfo::SmoothEffectDrivingThread;
 class TestCompositorFrameReportingController
     : public CompositorFrameReportingController {
  public:
-  TestCompositorFrameReportingController()
-      : CompositorFrameReportingController(/*should_report_histograms=*/true,
-                                           /*should_report_ukm=*/false,
-                                           /*layer_tree_host_id=*/1) {}
+  explicit TestCompositorFrameReportingController(
+      bool is_trees_in_viz_client = false)
+      : CompositorFrameReportingController(
+            /*should_report_histograms=*/true,
+            /*should_report_ukm=*/false,
+            /*layer_tree_host_id=*/1,
+            /*is_trees_in_viz_client=*/is_trees_in_viz_client) {}
 
   TestCompositorFrameReportingController(
       const TestCompositorFrameReportingController& controller) = delete;
@@ -113,6 +121,10 @@ class TestCompositorFrameReportingController
         count += reporter->owned_partial_update_dependents_size_for_testing();
     }
     return count;
+  }
+
+  void trees_in_viz_client(bool new_value) {
+    set_trees_in_viz_client_for_testing(new_value);
   }
 };
 
@@ -985,6 +997,122 @@ TEST_F(CompositorFrameReportingControllerTest, BlinkBreakdown) {
   histogram_tester.ExpectTotalCount(
       "CompositorLatency2.SendBeginMainFrameToCommit.BeginMainSentToStarted",
       1);
+}
+
+class TreesInVizClientCompositorFrameReportingControllerTest
+    : public CompositorFrameReportingControllerTest {
+ public:
+  TreesInVizClientCompositorFrameReportingControllerTest() {
+    reporting_controller_.trees_in_viz_client(true);
+    scoped_feature_list_.InitAndEnableFeature(features::kTreesInViz);
+  }
+
+  void SimulateSubmitCompositorFrameWithTreesInVizTimingDetails(
+      EventMetricsSet events_metrics) {
+    if (!reporting_controller_.ReportersForTesting()
+             [CompositorFrameReportingController::PipelineStage::kActivate]) {
+      CompositorFrameReportingControllerTest::SimulateActivate();
+    }
+    CHECK(reporting_controller_.ReportersForTesting()
+              [CompositorFrameReportingController::PipelineStage::kActivate]);
+    submit_time_ = AdvanceNowByMs(7);
+    ++current_token_;
+    SubmitInfo submit_info = {*current_token_, submit_time_};
+    submit_info.events_metrics = std::move(events_metrics);
+    submit_info.trees_in_viz_submit_time = AdvanceNowByMs(11);
+    reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_,
+                                                   last_activated_id_);
+  }
+
+  void SimulatePresentCompositorFrameWithTreesInVizTimingDetails() {
+    SimulateSubmitCompositorFrameWithTreesInVizTimingDetails({});
+    viz::FrameTimingDetails details = {};
+    // Optional TreesInViz - related timestamps.
+    details.start_update_display_tree =
+        AdvanceNowByMs(35);  // Pretend it took a long time
+    details.start_prepare_to_draw = AdvanceNowByMs(2);
+    details.start_draw_layers = AdvanceNowByMs(3);
+    details.submit_compositor_frame = AdvanceNowByMs(5);
+
+    // Older timestamps
+    details.received_compositor_frame_timestamp = AdvanceNowByMs(6);
+    details.draw_start_timestamp = AdvanceNowByMs(7);
+    details.swap_timings.swap_start = AdvanceNowByMs(8);
+    details.swap_timings.swap_end = AdvanceNowByMs(9);
+
+    details.presentation_feedback.timestamp = AdvanceNowByMs(10);
+    reporting_controller_.DidPresentCompositorFrame(*current_token_, details);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(TreesInVizClientCompositorFrameReportingControllerTest,
+       ValidateTreesInVizBreakdown) {
+  base::HistogramTester histogram_tester;
+
+  // This function will simulate stepping through the entire CFRC flow,
+  // with timestamps added to the stages relevant for TreesInViz.
+  SimulatePresentCompositorFrameWithTreesInVizTimingDetails();
+
+  // TreesInViz should introduce the following breakdowns
+  // CC-only stages
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.EndActivateToSubmitUpdateDisplayTree."
+      "EndActivateToDrawLayers",
+      7, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.EndActivateToSubmitUpdateDisplayTree."
+      "DrawLayersToSubmitUpdateDisplayTree",
+      11, 1);
+  // CC -> Viz RPC
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+      "SendUpdateDisplayTreeToRecieveUpdateDisplayTree",
+      35, 1);
+  // Viz-only stages
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+      "RecieveUpdateDisplayTreeToStartPrepareToDraw",
+      2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+      "StartPrepareToDrawToStartDrawLayers",
+      3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+      "StartDrawLayersToSubmitCompositorFrame",
+      5, 1);
+
+  // Stages not introduced by TreesInViz should remain accurate.
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+      "SubmitToReceiveCompositorFrame",
+      6, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+      "ReceivedCompositorFrameToStartDraw",
+      7, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+      "StartDrawToSwapStart",
+      8, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+      "SwapStartToSwapEnd",
+      9, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+      "SwapEndToPresentationCompositorFrame",
+      10, 1);
+
+  // The sum of these values should sum to the total of the stage breakdown.
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.EndActivateToSubmitUpdateDisplayTree", 7 + 11, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame",
+      35 + 2 + 3 + 5 + 6 + 7 + 8 + 9 + 10, 1);
 }
 
 // If the presentation of the frame happens before deadline.

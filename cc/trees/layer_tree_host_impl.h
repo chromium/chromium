@@ -477,7 +477,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void DidDrawAllLayers(const FrameData& frame);
 
   // Pushes differential updates to the display tree via a LayerContext.
-  void UpdateDisplayTree(FrameData& frame);
+  base::TimeTicks UpdateDisplayTree(FrameData& frame);
 
   const LayerTreeSettings& settings() const { return settings_; }
 

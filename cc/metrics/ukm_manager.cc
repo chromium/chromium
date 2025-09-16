@@ -60,6 +60,7 @@ void UkmManager::SetSourceId(ukm::SourceId source_id) {
   source_id_ = source_id;
 }
 
+// TODO(crbug.com/443785891): Report processed TreesInViz breakdowns.
 void UkmManager::RecordCompositorLatencyUKM(
     const CompositorFrameReporter::FrameReportTypes& report_types,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
@@ -93,6 +94,9 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
       CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
+      case StageType::kEndActivateToSubmitUpdateDisplayTree:
+      case StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+        break;
       case StageType::kStageTypeCount:
         NOTREACHED();
     }
@@ -335,6 +339,9 @@ void UkmManager::RecordEventLatencyUKM(
           CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame,
                          SubmitCompositorFrame);
 #undef CASE_FOR_STAGE
+          case StageType::kEndActivateToSubmitUpdateDisplayTree:
+          case StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+            break;
           case StageType::kTotalLatency:
           case StageType::kStageTypeCount:
             NOTREACHED();
@@ -356,6 +363,9 @@ void UkmManager::RecordEventLatencyUKM(
           CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame,
                          SubmitCompositorFrame);
 #undef CASE_FOR_STAGE
+          case StageType::kEndActivateToSubmitUpdateDisplayTree:
+          case StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+            break;
           case StageType::kTotalLatency:
           case StageType::kStageTypeCount:
             NOTREACHED();
@@ -412,6 +422,9 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
         CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
+        case StageType::kEndActivateToSubmitUpdateDisplayTree:
+        case StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+          break;
         case StageType::kStageTypeCount:
           NOTREACHED();
       }
@@ -466,6 +479,8 @@ void UkmManager::RecordEventLatencyUKM(
           NOTREACHED();
       }
     }
+
+    // TODO(crbug.com/443785891): Record TreesInViz breakdowns.
 
     builder.Record(recorder_.get());
   }

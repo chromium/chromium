@@ -61,7 +61,8 @@ class FrameSequenceTrackerTest : public testing::Test,
             std::make_unique<CompositorFrameReportingController>(
                 /*should_report_histograms=*/true,
                 /*should_report_ukm=*/false,
-                /*layer_tree_host_id=*/1)) {
+                /*layer_tree_host_id=*/1,
+                /*is_trees_in_viz_client=*/false)) {
     compositor_frame_reporting_controller_->SetFrameSorter(&sorter_);
     sorter_.AddObserver(this);
     tracker_ = collection_.StartScrollSequence(

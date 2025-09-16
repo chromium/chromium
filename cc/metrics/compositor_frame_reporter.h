@@ -108,10 +108,27 @@ class CC_EXPORT CompositorFrameReporter {
     kCommit = 2,
     kEndCommitToActivation = 3,
     kActivation = 4,
+    // Regular path
     kEndActivateToSubmitCompositorFrame = 5,
     kSubmitCompositorFrameToPresentationCompositorFrame = 6,
-    kTotalLatency = 7,
+    // For TreesInViz mode
+    kEndActivateToSubmitUpdateDisplayTree = 7,
+    kSubmitUpdateDisplayTreeToPresentationCompositorFrame = 8,
+    kTotalLatency = 9,
     kStageTypeCount
+  };
+
+  // Optional substages of `kEndActivateToSubmitUpdateDisplayTree` and
+  // `kSubmitUpdateDisplayeTreeToPresentationCompositorFrame` introduced by
+  // TreesInViz mode.
+  enum class TreesInVizBreakdown {
+    kEndActivateToDrawLayers = 0,                          // in cc
+    kDrawLayersToSubmitUpdateDisplayTree = 1,              // in cc
+    kSendUpdateDisplayTreeToRecieveUpdateDisplayTree = 2,  // cc-> viz
+    kRecieveUpdateDisplayTreeToStartPrepareToDraw = 3,     // viz
+    kStartPrepareToDrawToStartDrawLayers = 4,              // viz
+    kStartDrawLayersToSubmitCompositorFrame = 5,           // viz
+    kTreesInVizBreakdownCount
   };
 
   // Note that the values of `VizBreakdown` enum should be defined in order,
@@ -278,6 +295,51 @@ class CC_EXPORT CompositorFrameReporter {
     base::TimeTicks swap_start_;
   };
 
+  class CC_EXPORT ProcessedTreesInVizBreakdown {
+   public:
+    class Iterator {
+     public:
+      explicit Iterator(const ProcessedTreesInVizBreakdown* owner);
+      ~Iterator();
+
+      bool IsValid() const;
+      void Advance();
+      TreesInVizBreakdown GetBreakdown() const;
+      base::TimeTicks GetStartTime() const;
+      base::TimeTicks GetEndTime() const;
+      base::TimeDelta GetDuration() const;
+
+     private:
+      bool HasValue() const;
+
+      // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+      // stacks.
+      RAW_PTR_EXCLUSION const ProcessedTreesInVizBreakdown* owner_;
+
+      size_t index_ = 0;
+    };
+
+    explicit ProcessedTreesInVizBreakdown(
+        base::TimeTicks trees_in_viz_branch_time,
+        base::TimeTicks start_draw_layers,
+        base::TimeTicks viz_start_time,
+        const viz::FrameTimingDetails& viz_breakdown);
+    ~ProcessedTreesInVizBreakdown();
+
+    ProcessedTreesInVizBreakdown(const ProcessedTreesInVizBreakdown&) = delete;
+    ProcessedTreesInVizBreakdown& operator=(
+        const ProcessedTreesInVizBreakdown&) = delete;
+
+    // Returns a new iterator for the TreesInViz breakdowns.
+    Iterator CreateIterator() const;
+
+   private:
+    std::array<std::optional<std::pair<base::TimeTicks, base::TimeTicks>>,
+               static_cast<size_t>(
+                   TreesInVizBreakdown::kTreesInVizBreakdownCount)>
+        list_;
+  };
+
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
                           const viz::BeginFrameArgs& args,
                           bool should_report_histograms,
@@ -296,12 +358,17 @@ class CC_EXPORT CompositorFrameReporter {
   static const char* GetStageName(
       StageType stage_type,
       std::optional<VizBreakdown> viz_breakdown = std::nullopt,
-      std::optional<BlinkBreakdown> blink_breakdown = std::nullopt);
+      std::optional<BlinkBreakdown> blink_breakdown = std::nullopt,
+      std::optional<TreesInVizBreakdown> trees_in_viz_breakdown = std::nullopt);
 
   // Name for the viz breakdowns which are shown in traces as substages under
   // PipelineReporter -> SubmitCompositorFrameToPresentationCompositorFrame or
   // EventLatency -> SubmitCompositorFrameToPresentationCompositorFrame.
   static const char* GetVizBreakdownName(VizBreakdown breakdown);
+  // Same but for TreesInVizBreakdowns, which are substages under
+  // kEndActivateToSubmitUpdateDisplayTree &
+  // kSubmitUpdateDisplayTreeToPresentationCompositorFrame.
+  static const char* GetTreesInVizBreakdownName(TreesInVizBreakdown breakdown);
 
   // Creates and returns a clone of the reporter, only if it is currently in the
   // 'begin impl frame' stage. For any other state, it returns null.
@@ -313,6 +380,9 @@ class CC_EXPORT CompositorFrameReporter {
   // Note that the started stage may be reported to UMA. If the histogram is
   // intended to be reported then the histograms.xml file must be updated too.
   void StartStage(StageType stage_type, base::TimeTicks start_time);
+  // Helper functions for TreesInViz Stages.
+  void StartStageUpdateDisplayTree(SubmitInfo& submit_info);
+  void StartStagePresentationCompositorFrame(SubmitInfo& submit_info);
   void TerminateFrame(FrameTerminationStatus termination_status,
                       base::TimeTicks termination_time);
   void SetBlinkBreakdown(std::unique_ptr<BeginMainFrameMetrics> blink_breakdown,
@@ -320,6 +390,7 @@ class CC_EXPORT CompositorFrameReporter {
   void SetVizBreakdown(const viz::FrameTimingDetails& viz_breakdown);
 
   void AddEventsMetrics(EventMetrics::List events_metrics);
+  void SetTreesInVizBranchTime(base::TimeTicks timestamp);
 
   // Erase and return all EventMetrics objects from our list.
   EventMetrics::List TakeEventsMetrics();
@@ -463,12 +534,16 @@ class CC_EXPORT CompositorFrameReporter {
   void ReportCompositorLatencyBlinkBreakdowns(
       FrameSequenceTrackerType frame_sequence_tracker_type) const;
   void ReportCompositorLatencyVizBreakdowns(
+      FrameSequenceTrackerType frame_sequence_tracker_type,
+      StageType stage_type) const;
+  void ReportCompositorLatencyTreesInVizBreakdowns(
       FrameSequenceTrackerType frame_sequence_tracker_type) const;
   void ReportCompositorLatencyHistogram(
       FrameSequenceTrackerType intraction_type,
       StageType stage_type,
       std::optional<VizBreakdown> viz_breakdown,
       std::optional<BlinkBreakdown> blink_breakdown,
+      std::optional<TreesInVizBreakdown> trees_in_viz_breakdown,
       base::TimeDelta time_delta) const;
 
   void ReportEventLatencyMetrics() const;
@@ -509,8 +584,19 @@ class CC_EXPORT CompositorFrameReporter {
   std::unique_ptr<ProcessedBlinkBreakdown> processed_blink_breakdown_;
 
   viz::FrameTimingDetails viz_breakdown_;
-  base::TimeTicks viz_start_time_;
+  base::TimeTicks viz_start_time_;  // Not valid for TreesInViz breakdown.
   std::unique_ptr<ProcessedVizBreakdown> processed_viz_breakdown_;
+
+  // Optional breakdowns for TreesInViz mode.
+  struct TreesInVizTimestamps {
+    base::TimeTicks trees_in_viz_activate_time_;
+    base::TimeTicks trees_in_viz_branch_time_;
+    base::TimeTicks trees_in_viz_viz_start_time_;
+  };
+
+  std::optional<TreesInVizTimestamps> trees_in_viz_timestamps_;
+  std::unique_ptr<ProcessedTreesInVizBreakdown>
+      processed_trees_in_viz_breakdown_;
 
   // Stage data is recorded here. On destruction these stages will be reported
   // to UMA if the termination status is |kPresentedFrame|. Reported data will
