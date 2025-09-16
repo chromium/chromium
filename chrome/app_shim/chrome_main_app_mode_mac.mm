@@ -158,14 +158,12 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     // <user_data_dir>/<profile_dir>/Web Applications/_crx_extensionid/.
     const base::FilePath user_data_dir =
         base::FilePath(info->user_data_dir).DirName().DirName().DirName();
-
-    // TODO(crbug.com/40807881): Specify `user_data_dir` to  CrashPad.
-    ChromeCrashReporterClient::Create();
-    crash_reporter::InitializeCrashpad(true, "app_shim");
-
     base::PathService::OverrideAndCreateIfNeeded(
         chrome::DIR_USER_DATA, user_data_dir, /*is_absolute=*/false,
         /*create=*/false);
+
+    ChromeCrashReporterClient::Create();
+    crash_reporter::InitializeCrashpad(true, "app_shim");
 
     // Initialize features and field trials, either from command line or from
     // file in user data dir.
