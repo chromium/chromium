@@ -76,12 +76,28 @@ struct NavigateParams {
   explicit NavigateParams(
       std::unique_ptr<content::WebContents> contents_to_insert);
 #else
+  // Deprecated. Use the constructor that takes a |BrowserWindowInterface|
+  // if possible.
+  // TODO(http://crbug.com/443062679): Delete this.
   NavigateParams(Browser* browser,
                  const GURL& a_url,
                  ui::PageTransition a_transition);
+
+  // Deprecated. Use the constructor that takes a |BrowserWindowInterface|
+  // if possible.
+  // TODO(http://crbug.com/443062679): Delete this.
   NavigateParams(Browser* browser,
                  std::unique_ptr<content::WebContents> contents_to_insert);
 #endif
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+  NavigateParams(BrowserWindowInterface* a_bwi,
+                 const GURL& a_url,
+                 ui::PageTransition a_transition);
+  NavigateParams(BrowserWindowInterface* a_bwi,
+                 std::unique_ptr<content::WebContents> contents_to_insert);
+#endif
+
   NavigateParams(Profile* profile,
                  const GURL& a_url,
                  ui::PageTransition a_transition);
