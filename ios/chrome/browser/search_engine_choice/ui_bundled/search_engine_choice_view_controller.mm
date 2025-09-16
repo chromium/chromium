@@ -107,8 +107,8 @@ void SetPillButtonTitle(UIButton* pill_button, int string_id) {
 }
 
 // Creates a "Set as Default" button. The button is returned as disabled.
-UIButton* CreateSetAsDefaultButton() {
-  UIButton* button = PrimaryActionButton();
+ChromeButton* CreateSetAsDefaultButton() {
+  ChromeButton* button = PrimaryActionButton();
   SetConfigurationTitle(
       button, l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
   button.translatesAutoresizingMaskIntoConstraints = NO;
@@ -188,7 +188,7 @@ UITextView* CreateSubtitleTextView() {
   // Button to confirm the default search engine selection. This button is
   // visually identical to `_floatingSetAsDefaultButton` but it is part of
   // `_inlineSetAsDefaultButtonContainer`.
-  UIButton* _inlineSetAsDefaultButton;
+  ChromeButton* _inlineSetAsDefaultButton;
   // Container to display the "Set as Default" button on top of the scroll view.
   // Related to `_floatingSetAsDefaultButton`.
   // This container needs to have the same size than
@@ -202,7 +202,7 @@ UITextView* CreateSubtitleTextView() {
   // Button to confirm the default search engine selection. This button is
   // visually identical to `_inlineSetAsDefaultButton` but it is inside
   // `_floatingSetAsDefaultButtonContainer`.
-  UIButton* _floatingSetAsDefaultButton;
+  ChromeButton* _floatingSetAsDefaultButton;
   // Whether the choice screen is being displayed for the FRE.
   BOOL _isForFRE;
   // YES, when showing the floating button and hidding the inline button.
@@ -1006,6 +1006,9 @@ UITextView* CreateSubtitleTextView() {
   // properly scaled.
   UIFontTextStyle textStyle = GetTitleLabelFontTextStyle(self);
   _titleLabel.font = GetFRETitleFont(textStyle);
+  // TODO(crbug.com/445341113): Need to adjust `_moreOrContinueButton` size.
+  UpdateButtonToMatchPrimaryAction(_inlineSetAsDefaultButton);
+  UpdateButtonToMatchPrimaryAction(_floatingSetAsDefaultButton);
   // Update the SetAsDefault button once the layout changes take effect to have
   // the right measurements to evaluate the scroll position.
   __weak __typeof(self) weakSelf = self;
