@@ -954,6 +954,9 @@ struct URLLoaderFactoryParams {
   // If this is true, this URLLoaderFactory should not be reset when
   // calling `ResetURLLoaderFactories()`.
   bool ignore_factory_reset = false;
+
+  // If this is true, the request's main frame origin is recently accessed.
+  bool is_main_frame_origin_recently_accessed = false;
 };
 
 // Represents a Durable Message Collector instance tied to a throttling profile.

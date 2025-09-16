@@ -916,6 +916,13 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
 // from the EXTRA-TEXT field of Extended DNS Errors.
 NET_EXPORT BASE_DECLARE_FEATURE(kDnsFilteringDetails);
 
+// When enabled, the browser checks if a navigation URL is in any navigation
+// entry. If so, it sets the
+// `IS_MAIN_FRAME_ORIGIN_RECENTLY_ACCESSED` load flag.
+// Note that this flag is only set for metric collection.
+NET_EXPORT BASE_DECLARE_FEATURE(kUpdateIsMainFrameOriginRecentlyAccessed);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kRecentlyAccessedOriginCacheSize);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

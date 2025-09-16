@@ -2179,54 +2179,6 @@ void ChromeContentBrowserClient::OverrideURLLoaderFactoryParams(
 #endif
 }
 
-bool IsURLAccessibleByHistoryNavigationFromWebContents(
-    const GURL& url,
-    content::WebContents* web_contents) {
-  if (!web_contents) {
-    return false;
-  }
-  content::NavigationController& controller = web_contents->GetController();
-  for (int j = 0; j < controller.GetEntryCount(); ++j) {
-    content::NavigationEntry* entry = controller.GetEntryAtIndex(j);
-    if (entry && entry->GetURL().EqualsIgnoringRef(url)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool ChromeContentBrowserClient::IsURLAccessibleByHistoryNavigation(
-    const GURL& url) {
-#if BUILDFLAG(IS_ANDROID)
-  for (const TabModel* model : TabModelList::models()) {
-    if (!model) {
-      continue;
-    }
-    for (int i = 0; i < model->GetTabCount(); ++i) {
-      if (IsURLAccessibleByHistoryNavigationFromWebContents(
-              url, model->GetWebContentsAt(i))) {
-        return true;
-      }
-    }
-  }
-  return false;
-#else
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    TabStripModel* model = browser->tab_strip_model();
-    if (!model) {
-      continue;
-    }
-    for (int i = 0; i < model->count(); ++i) {
-      if (IsURLAccessibleByHistoryNavigationFromWebContents(
-              url, model->GetWebContentsAt(i))) {
-        return true;
-      }
-    }
-  }
-  return false;
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 // These are treated as WebUI schemes but do not get WebUI bindings. Also,
 // view-source is allowed for these schemes.
 void ChromeContentBrowserClient::GetAdditionalWebUISchemes(

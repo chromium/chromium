@@ -2926,6 +2926,7 @@ test("content_unittests") {
     "../browser/tracing/trace_report_database_unittest.cc",
     "../browser/tracing/traces_internals/traces_internals_handler_unittest.cc",
     "../browser/tracing/tracing_scenario_unittest.cc",
+    "../browser/url_loader_factory_params_helper_unittest.cc",
     "../browser/usb/web_usb_service_impl_unittest.cc",
     "../browser/web_contents/aura/gesture_nav_simple_unittest.cc",
     "../browser/web_contents/file_chooser_impl_unittest.cc",

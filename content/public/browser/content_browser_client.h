@@ -659,11 +659,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void CrossProcessSubframeRenderProcessGone(
       RenderFrameHost* render_frame_host) {}
 
-  // Returns true if the given URL is in any of the NavigationEntries. This is
-  // used to determine if a URL is already in the navigation history of any of
-  // the tabs in a given browser context.
-  virtual bool IsURLAccessibleByHistoryNavigation(const GURL& url);
-
   // Temporary hack to determine whether to skip OOPIFs on the new tab page.
   // TODO(creis): Remove when https://crbug.com/566091 is fixed.
   virtual bool ShouldStayInParentProcessForNTP(const GURL& url,

@@ -145,6 +145,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
@@ -6775,6 +6776,12 @@ void NavigationRequest::CommitNavigation() {
   if (service_worker_handle_ &&
       service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();
+  }
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kUpdateIsMainFrameOriginRecentlyAccessed) &&
+      IsInMainFrame()) {
+    URLLoaderFactoryParamsHelper::OnMainFrameNavigation(origin_to_commit);
   }
   UpdateNavigationHandleTimingsOnCommitSent();
 

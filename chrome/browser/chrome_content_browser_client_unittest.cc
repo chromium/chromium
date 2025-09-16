@@ -554,48 +554,6 @@ TEST_F(ChromeContentBrowserClientWindowTest,
       browser()->profile(), GURL("https://example.com/test?q=test")));
 }
 
-TEST_F(ChromeContentBrowserClientWindowTest,
-       IsURLAccessibleByHistoryNavigation) {
-  ChromeContentBrowserClient client;
-  const GURL url1("https://a.com");
-  const GURL url2("https://b.org");
-  const GURL url3("https://c.com");
-
-  // No tabs.
-  EXPECT_FALSE(client.IsURLAccessibleByHistoryNavigation(url1));
-
-  // One tab, one entry, URL matches.
-  AddTab(browser(), url1);
-  EXPECT_TRUE(client.IsURLAccessibleByHistoryNavigation(url1));
-
-  // One tab, one entry, URL does not match.
-  EXPECT_FALSE(client.IsURLAccessibleByHistoryNavigation(url2));
-
-  // One tab, multiple entries, URL matches the latest entry.
-  NavigateAndCommitActiveTab(url2);
-  EXPECT_TRUE(client.IsURLAccessibleByHistoryNavigation(url2));
-
-  // One tab, multiple entries, URL matches a previous entry.
-  EXPECT_TRUE(client.IsURLAccessibleByHistoryNavigation(url1));
-
-  // Multiple tabs, URL in one of them.
-  AddTab(browser(), url3);
-  EXPECT_TRUE(client.IsURLAccessibleByHistoryNavigation(url1));
-  EXPECT_TRUE(client.IsURLAccessibleByHistoryNavigation(url2));
-  EXPECT_TRUE(client.IsURLAccessibleByHistoryNavigation(url3));
-
-  // Multiple tabs, URL not in any of them.
-  EXPECT_FALSE(
-      client.IsURLAccessibleByHistoryNavigation(GURL("https://notfound.com")));
-
-  // Multiple browser windows.
-  std::unique_ptr<Browser> new_browser(
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, /*hosted_app=*/false));
-  const GURL url4("https://d.com");
-  AddTab(new_browser.get(), url4);
-  EXPECT_TRUE(client.IsURLAccessibleByHistoryNavigation(url4));
-  new_browser->tab_strip_model()->CloseAllTabs();
-}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // NOTE: Any updates to the expectations in these tests should also be done in

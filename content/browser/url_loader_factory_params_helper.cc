@@ -8,6 +8,8 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/containers/lru_cache.h"
+#include "base/no_destructor.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -20,6 +22,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -131,7 +134,18 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   params->require_cross_site_request_for_cookies =
       require_cross_site_request_for_cookies;
 
+  if (URLLoaderFactoryParamsHelper::IsMainFrameOriginRecentlyAccessed(
+          isolation_info)) {
+    params->is_main_frame_origin_recently_accessed = true;
+  }
+
   return params;
+}
+
+base::LRUCacheSet<url::Origin>& GetRecentlyAccessedOriginSet() {
+  static base::NoDestructor<base::LRUCacheSet<url::Origin>> origin_set(
+      net::features::kRecentlyAccessedOriginCacheSize.Get());
+  return *origin_set;
 }
 
 }  // namespace
@@ -360,6 +374,32 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
       net::CookieSettingOverrides(), "ParamHelper::CreateForEarlyHintsPreload",
       /*require_cross_site_request_for_cookies=*/false,
       /*is_for_service_worker=*/false);
+}
+
+// static
+void URLLoaderFactoryParamsHelper::OnMainFrameNavigation(url::Origin origin) {
+  if (base::FeatureList::IsEnabled(
+          net::features::kUpdateIsMainFrameOriginRecentlyAccessed)) {
+    GetRecentlyAccessedOriginSet().Put(std::move(origin));
+  }
+}
+
+// static
+bool URLLoaderFactoryParamsHelper::IsMainFrameOriginRecentlyAccessed(
+    const net::IsolationInfo& isolation_info) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kUpdateIsMainFrameOriginRecentlyAccessed)) {
+    return false;
+  }
+
+  const std::optional<url::Origin> top_frame_origin =
+      isolation_info.top_frame_origin();
+  if (!top_frame_origin) {
+    return false;
+  }
+
+  auto& origin_set = GetRecentlyAccessedOriginSet();
+  return origin_set.Peek(top_frame_origin.value()) != origin_set.end();
 }
 
 }  // namespace content

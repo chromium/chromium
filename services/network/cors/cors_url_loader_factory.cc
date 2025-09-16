@@ -19,6 +19,7 @@
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_handle.h"
 #include "net/http/http_request_headers.h"
@@ -254,6 +255,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
       factory_cookie_setting_overrides_(params->cookie_setting_overrides),
       devtools_cookie_setting_overrides_(
           params->devtools_cookie_setting_overrides),
+      is_main_frame_origin_recently_accessed_(
+          params->is_main_frame_origin_recently_accessed),
       origin_access_list_(origin_access_list),
       owner_(owner) {
   TRACE_EVENT("loading", "CorsURLLoaderFactory::CorsURLLoaderFactory",
@@ -394,6 +397,13 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     mojo::Remote<mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kUpdateIsMainFrameOriginRecentlyAccessed) &&
+      is_main_frame_origin_recently_accessed_) {
+    resource_request.load_flags |=
+        net::LOAD_IS_MAIN_FRAME_ORIGIN_RECENTLY_ACCESSED;
   }
 
   if (resource_request.destination ==

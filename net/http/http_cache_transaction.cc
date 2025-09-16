@@ -3145,6 +3145,20 @@ bool HttpCache::Transaction::MaybeRejectBasedOnEntryInMemoryData(
   HttpCacheEntryRejectionStatus status =
       GetHttpCacheEntryRejectionStatus(in_memory_info);
   UMA_HISTOGRAM_ENUMERATION("HttpCache.EntryRejectionStatus", status);
+  if (base::FeatureList::IsEnabled(
+          features::kUpdateIsMainFrameOriginRecentlyAccessed)) {
+    if (effective_load_flags_ & LOAD_IS_MAIN_FRAME_ORIGIN_RECENTLY_ACCESSED) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "HttpCache.EntryRejectionStatus."
+          "MainFrameOriginRecentlyAccessed",
+          status);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          "HttpCache.EntryRejectionStatus."
+          "MainFrameOriginNotRecentlyAccessed",
+          status);
+    }
+  }
 
   return status == HttpCacheEntryRejectionStatus::kRejection;
 }

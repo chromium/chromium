@@ -116,4 +116,11 @@ LOAD_FLAG(DISABLE_SHARED_DICTIONARY_AFTER_CROSS_ORIGIN_REDIRECT, 1 << 17)
 // CRL, and OCSP requests in order to prevent circular dependencies.
 LOAD_FLAG(SHOULD_BYPASS_HSTS, 1 << 18)
 
+// Indicates that this request is loading resource from a page whose main
+// frame's origin is accessible from some navigation entry.
+// For now we use this flag to record some additional metrics from
+// net/http/http_cache_transaction.cc, it will be cleaned up after that so the
+// compromised renderer concern is acceptable.
+LOAD_FLAG(IS_MAIN_FRAME_ORIGIN_RECENTLY_ACCESSED, 1 << 19)
+
 // See note at top of file about why adding LoadFlags is often a bad idea.

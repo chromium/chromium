@@ -611,7 +611,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HttpCache.EntryRejectionStatus"
+<histogram name="HttpCache.EntryRejectionStatus{Type}"
     enum="HttpCacheEntryRejectionStatus" expires_after="2026-08-11">
   <owner>leimy@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
@@ -619,8 +619,19 @@ chromium-metrics-reviews@google.com.
     Records the outcome of considering whether to reject a cache entry based on
     in-memory hints. This is used to avoid accessing disk for entries that are
     likely to be unusable. Recorded every time we try to open a cache entry, but
-    there is no active one.
+    there is no active one{Type}
   </summary>
+  <token key="Type">
+    <variant name="" summary="."/>
+    <variant name=".MainFrameOriginNotRecentlyAccessed"
+        summary=", only if `UpdateIsMainFrameOriginRecentlyAccessed` is
+                 enabled and the request is for a resource whose main frame's
+                 origin is not recently accessed."/>
+    <variant name=".MainFrameOriginRecentlyAccessed"
+        summary=", only if `UpdateIsMainFrameOriginRecentlyAccessed` is
+                 enabled and the request is for a resource whose main frame's
+                 origin is recently accessed."/>
+  </token>
 </histogram>
 
 <histogram name="HttpCache.Experimental.Read.EntryContentSize" units="bytes"

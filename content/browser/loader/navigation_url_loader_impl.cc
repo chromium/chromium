@@ -50,6 +50,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
@@ -83,6 +84,7 @@
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/cert/sct_status_flags.h"
@@ -289,6 +291,11 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   if (request_info.is_outermost_main_frame) {
     load_flags |= net::LOAD_MAIN_FRAME_DEPRECATED;
     load_flags |= net::LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
+  }
+
+  if (URLLoaderFactoryParamsHelper::IsMainFrameOriginRecentlyAccessed(
+          request_info.isolation_info)) {
+    load_flags |= net::LOAD_IS_MAIN_FRAME_ORIGIN_RECENTLY_ACCESSED;
   }
 
   // Sync loads should have maximum priority and should be the only
