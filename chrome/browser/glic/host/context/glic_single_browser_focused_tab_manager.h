@@ -21,7 +21,7 @@ class GlicSingleBrowserFocusedTabManager
  public:
   explicit GlicSingleBrowserFocusedTabManager(
       BrowserWindowInterface* browser_interface);
-  ~GlicSingleBrowserFocusedTabManager();
+  ~GlicSingleBrowserFocusedTabManager() override;
 
   GlicSingleBrowserFocusedTabManager(
       const GlicSingleBrowserFocusedTabManager&) = delete;

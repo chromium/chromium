@@ -12,7 +12,7 @@ namespace glic {
 class GlicEmptyFocusedTabManager : public GlicFocusedTabManagerInterface {
  public:
   GlicEmptyFocusedTabManager();
-  ~GlicEmptyFocusedTabManager();
+  ~GlicEmptyFocusedTabManager() override;
 
   GlicEmptyFocusedTabManager(const GlicEmptyFocusedTabManager&) = delete;
   GlicEmptyFocusedTabManager& operator=(const GlicEmptyFocusedTabManager&) =

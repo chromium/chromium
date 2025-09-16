@@ -14,6 +14,13 @@ namespace glic {
 // its WebContents.
 class GlicFocusedTabManagerInterface {
  public:
+  GlicFocusedTabManagerInterface() = default;
+  virtual ~GlicFocusedTabManagerInterface() = default;
+  GlicFocusedTabManagerInterface(const GlicFocusedTabManagerInterface&) =
+      delete;
+  GlicFocusedTabManagerInterface& operator=(
+      const GlicFocusedTabManagerInterface&) = delete;
+
   // Callback for changes to focused tab. If no tab is in focus an error reason
   // is returned indicating why and maybe a tab candidate with details as to
   // why it cannot be focused.

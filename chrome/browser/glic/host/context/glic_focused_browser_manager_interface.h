@@ -14,6 +14,13 @@ namespace glic {
 // Responsible for managing which browser window is considered "focused".
 class GlicFocusedBrowserManagerInterface {
  public:
+  GlicFocusedBrowserManagerInterface() = default;
+  virtual ~GlicFocusedBrowserManagerInterface() = default;
+  GlicFocusedBrowserManagerInterface(
+      const GlicFocusedBrowserManagerInterface&) = delete;
+  GlicFocusedBrowserManagerInterface& operator=(
+      const GlicFocusedBrowserManagerInterface&) = delete;
+
   // Callback for changes to the focused browser window, or the candidate
   // to be focused.
   using FocusedBrowserChangedCallback =

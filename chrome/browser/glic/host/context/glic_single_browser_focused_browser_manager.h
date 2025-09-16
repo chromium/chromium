@@ -16,7 +16,7 @@ class GlicSingleBrowserFocusedBrowserManager
     : public GlicFocusedBrowserManagerInterface {
  public:
   explicit GlicSingleBrowserFocusedBrowserManager(BrowserWindowInterface* bwi);
-  ~GlicSingleBrowserFocusedBrowserManager();
+  ~GlicSingleBrowserFocusedBrowserManager() override;
   GlicSingleBrowserFocusedBrowserManager(
       const GlicSingleBrowserFocusedBrowserManager&) = delete;
   GlicSingleBrowserFocusedBrowserManager& operator=(
