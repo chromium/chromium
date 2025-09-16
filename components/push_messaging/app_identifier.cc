@@ -48,15 +48,6 @@ AppIdentifier AppIdentifier::Generate(
 }
 
 // static
-AppIdentifier AppIdentifier::LegacyGenerateForTesting(
-    const GURL& origin,
-    int64_t service_worker_registration_id,
-    const std::optional<base::Time>& expiration_time) {
-  return GenerateInternal(origin, service_worker_registration_id,
-                          false /* use_instance_id */, expiration_time);
-}
-
-// static
 AppIdentifier AppIdentifier::GenerateInternal(
     const GURL& origin,
     int64_t service_worker_registration_id,

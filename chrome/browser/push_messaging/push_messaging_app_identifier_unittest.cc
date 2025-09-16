@@ -8,92 +8,51 @@
 
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/push_messaging/app_identifier_test_support.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
-
-void ExpectAppIdentifiersEqual(const push_messaging::AppIdentifier& a,
-                               const push_messaging::AppIdentifier& b) {
-  EXPECT_EQ(a.app_id(), b.app_id());
-  EXPECT_EQ(a.origin(), b.origin());
-  EXPECT_EQ(a.service_worker_registration_id(),
-            b.service_worker_registration_id());
-  EXPECT_EQ(a.expiration_time(), b.expiration_time());
-}
 
 base::Time kExpirationTime =
     base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(1));
 
 }  // namespace
 
-namespace push_messaging {
-
-class PushMessagingAppIdentifierTest : public testing::Test {
+class PushMessagingAppIdentifierTest
+    : public push_messaging::AppIdentifierTestSupport,
+      public testing::Test {
  protected:
-  push_messaging::AppIdentifier GenerateId(
-      const GURL& origin,
-      int64_t service_worker_registration_id) {
-    // To bypass DCHECK in push_messaging::AppIdentifier::Generate, we just use
-    // it to generate app_id, and then use private constructor.
-    std::string app_id = push_messaging::AppIdentifier::Generate(
-                             GURL("https://www.example.com/"), 1)
-                             .app_id();
-    return push_messaging::AppIdentifier(app_id, origin,
-                                         service_worker_registration_id);
-  }
-
-  void SetUp() override {
-    original_ = push_messaging::AppIdentifier::Generate(
-        GURL("https://www.example.com/"), 1);
-    same_origin_and_sw_ = push_messaging::AppIdentifier::Generate(
-        GURL("https://www.example.com"), 1);
-    different_origin_ = push_messaging::AppIdentifier::Generate(
-        GURL("https://foobar.example.com/"), 1);
-    different_sw_ = push_messaging::AppIdentifier::Generate(
-        GURL("https://www.example.com/"), 42);
-    with_et_ = push_messaging::AppIdentifier::Generate(
-        GURL("https://www.example.com/"), 1, kExpirationTime);
-    different_et_ = push_messaging::AppIdentifier::Generate(
-        GURL("https://www.example.com/"), 1,
-        kExpirationTime + base::Seconds(100));
-  }
-
   Profile* profile() { return &profile_; }
 
-  push_messaging::AppIdentifier original_;
-  push_messaging::AppIdentifier same_origin_and_sw_;
-  push_messaging::AppIdentifier different_origin_;
-  push_messaging::AppIdentifier different_sw_;
-  push_messaging::AppIdentifier different_et_;
-  push_messaging::AppIdentifier with_et_;
+  const push_messaging::AppIdentifier original_ =
+      push_messaging::AppIdentifier::Generate(GURL("https://www.example.com/"),
+                                              1);
+  const push_messaging::AppIdentifier same_origin_and_sw_ =
+      push_messaging::AppIdentifier::Generate(GURL("https://www.example.com"),
+                                              1);
+  const push_messaging::AppIdentifier different_origin_ =
+      push_messaging::AppIdentifier::Generate(
+          GURL("https://foobar.example.com/"),
+          1);
+  const push_messaging::AppIdentifier different_sw_ =
+      push_messaging::AppIdentifier::Generate(GURL("https://www.example.com/"),
+                                              42);
+  const push_messaging::AppIdentifier different_et_ =
+      push_messaging::AppIdentifier::Generate(
+          GURL("https://www.example.com/"),
+          1,
+          kExpirationTime + base::Seconds(100));
+  const push_messaging::AppIdentifier with_et_ =
+      push_messaging::AppIdentifier::Generate(GURL("https://www.example.com/"),
+                                              1,
+                                              kExpirationTime);
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
-
-TEST_F(PushMessagingAppIdentifierTest, ConstructorValidity) {
-  // The following two are valid:
-  EXPECT_FALSE(GenerateId(GURL("https://www.example.com/"), 1).is_null());
-  EXPECT_FALSE(GenerateId(GURL("https://www.example.com"), 1).is_null());
-  // The following four are invalid and will DCHECK in Generate:
-  EXPECT_FALSE(GenerateId(GURL(""), 1).is_null());
-  EXPECT_FALSE(GenerateId(GURL("foo"), 1).is_null());
-  EXPECT_FALSE(GenerateId(GURL("https://www.example.com/foo"), 1).is_null());
-  EXPECT_FALSE(GenerateId(GURL("https://www.example.com/#foo"), 1).is_null());
-  // The following one is invalid and will DCHECK in Generate and be null:
-  EXPECT_TRUE(GenerateId(GURL("https://www.example.com/"), -1).is_null());
-}
-
-TEST_F(PushMessagingAppIdentifierTest, UniqueGuids) {
-  EXPECT_NE(push_messaging::AppIdentifier::Generate(
-                GURL("https://www.example.com/"), 1)
-                .app_id(),
-            push_messaging::AppIdentifier::Generate(
-                GURL("https://www.example.com/"), 1)
-                .app_id());
-}
 
 TEST_F(PushMessagingAppIdentifierTest, FindInvalidAppId) {
   // These calls to FindByAppId should not DCHECK.
@@ -146,23 +105,24 @@ TEST_F(PushMessagingAppIdentifierTest, FindLegacy) {
   // Create a legacy preferences entry (the test happens to use PersistToPrefs
   // since that currently works, but it's ok to change the behavior of
   // PersistToPrefs; if so, this test can just do a raw ScopedDictPrefUpdate).
-  original_.app_id_ = legacy_app_id;
-  PushMessagingAppIdentifier::PersistToPrefs(original_, profile());
+  const auto legacy_original = ReplaceAppId(original_, legacy_app_id);
+  PushMessagingAppIdentifier::PersistToPrefs(legacy_original, profile());
 
   // Test that legacy entries can be read back from prefs.
   {
     push_messaging::AppIdentifier found_by_app_id =
-        PushMessagingAppIdentifier::FindByAppId(profile(), original_.app_id());
+        PushMessagingAppIdentifier::FindByAppId(profile(),
+                                                legacy_original.app_id());
     EXPECT_FALSE(found_by_app_id.is_null());
-    ExpectAppIdentifiersEqual(original_, found_by_app_id);
+    ExpectAppIdentifiersEqual(legacy_original, found_by_app_id);
   }
   {
     push_messaging::AppIdentifier found_by_origin_and_swr_id =
         PushMessagingAppIdentifier::FindByServiceWorker(
-            profile(), original_.origin(),
+            profile(), legacy_original.origin(),
             original_.service_worker_registration_id());
     EXPECT_FALSE(found_by_origin_and_swr_id.is_null());
-    ExpectAppIdentifiersEqual(original_, found_by_origin_and_swr_id);
+    ExpectAppIdentifiersEqual(legacy_original, found_by_origin_and_swr_id);
   }
 }
 
@@ -312,5 +272,3 @@ TEST_F(PushMessagingAppIdentifierTest, PersistWithExpirationTime) {
     EXPECT_TRUE(found_by_different_et_app_id.is_null());
   }
 }
-
-}  // namespace push_messaging

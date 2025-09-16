@@ -18,7 +18,6 @@
 #include "url/gurl.h"
 
 class PushMessagingAppIdentifier;
-class PushMessagingBrowserTestBase;
 
 namespace push_messaging {
 
@@ -92,17 +91,8 @@ class AppIdentifier final {
  private:
   // TODO(crbug.com/444713031): Reduce the use of friends to avoid the
   // dependency leaking from //chrome to //components.
-  friend class PushMessagingAppIdentifierTest;
-  friend class ::PushMessagingBrowserTestBase;
-  FRIEND_TEST_ALL_PREFIXES(PushMessagingAppIdentifierTest, FindLegacy);
   friend class ::PushMessagingAppIdentifier;
-
-  // Generates a new app identifier for legacy GCM (not modern InstanceID).
-  // Allows the derived class creating a legacy instance for tests.
-  static AppIdentifier LegacyGenerateForTesting(
-      const GURL& origin,
-      int64_t service_worker_registration_id,
-      const std::optional<base::Time>& expiration_time = std::nullopt);
+  friend class AppIdentifierTestSupport;
 
   static AppIdentifier GenerateInternal(
       const GURL& origin,

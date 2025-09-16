@@ -61,6 +61,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/push_messaging/app_identifier.h"
+#include "components/push_messaging/app_identifier_test_support.h"
 #include "components/push_messaging/push_messaging_constants.h"
 #include "components/push_messaging/push_messaging_features.h"
 #include "components/push_messaging/push_messaging_utils.h"
@@ -165,7 +166,9 @@ void InstanceIDResultCallback(base::OnceClosure done_callback,
 
 }  // namespace
 
-class PushMessagingBrowserTestBase : public InProcessBrowserTest {
+class PushMessagingBrowserTestBase
+    : public InProcessBrowserTest,
+      public push_messaging::AppIdentifierTestSupport {
  public:
   PushMessagingBrowserTestBase()
       : scoped_testing_factory_installer_(
@@ -499,9 +502,8 @@ void PushMessagingBrowserTestBase::LegacySubscribeSuccessfully(
   GURL requesting_origin =
       https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   int64_t service_worker_registration_id = 0LL;
-  push_messaging::AppIdentifier app_identifier =
-      push_messaging::AppIdentifier::LegacyGenerateForTesting(
-          requesting_origin, service_worker_registration_id);
+  push_messaging::AppIdentifier app_identifier = LegacyGenerateForTesting(
+      requesting_origin, service_worker_registration_id);
   push_service_->IncreasePushSubscriptionCount(1, true /* is_pending */);
 
   std::string subscription_id;

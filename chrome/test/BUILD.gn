@@ -4013,6 +4013,8 @@ if (!is_android) {
       "//components/live_caption:live_translate",
       "//components/plus_addresses/core/browser:blocklist_data",
       "//components/policy/core/common:common_constants",
+      "//components/push_messaging",
+      "//components/push_messaging:test_support",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
       "//third_party/federated_compute:confidential_compute",
     ]
@@ -7153,6 +7155,8 @@ test("unit_tests") {
     "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
     "//components/privacy_sandbox/privacy_sandbox_attestations/proto",
     "//components/proxy_config",
+    "//components/push_messaging",
+    "//components/push_messaging:test_support",
     "//components/qr_code_generator:bitmap_generator",
     "//components/query_parser",
     "//components/reading_list/core",

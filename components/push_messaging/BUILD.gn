@@ -19,3 +19,28 @@ static_library("push_messaging") {
     "//url",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "app_identifier_test_support.cc",
+    "app_identifier_test_support.h",
+  ]
+  deps = [
+    ":push_messaging",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_identifier_unittest.cc" ]
+  deps = [
+    ":push_messaging",
+    ":test_support",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
