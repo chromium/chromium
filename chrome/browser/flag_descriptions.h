@@ -2872,9 +2872,6 @@ extern const char kCCTResizableForThirdPartiesDescription[];
 extern const char kCCTRevampedBrandingName[];
 extern const char kCCTRevampedBrandingDescription[];
 
-extern const char kCCTSignInPromptName[];
-extern const char kCCTSignInPromptDescription[];
-
 extern const char kCCTToolbarRefactorName[];
 extern const char kCCTToolbarRefactorDescription[];
 

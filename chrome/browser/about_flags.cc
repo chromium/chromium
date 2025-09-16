@@ -1019,26 +1019,6 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kTopChromeTouchUi,
      switches::kTopChromeTouchUiEnabled}};
 
-#if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kCctSignInPromptAlways[] = {
-    {"cadence_day", "0"},
-    {"show_limit", "10000"},
-    {"user_act_count", "10000"},
-    {"if_allowed_by_embedder", "true"},
-    {"if_enabled_by_embedder", "true"}};
-const FeatureEntry::FeatureParam kCctSignInTestOnly[] = {
-    {"cadence_day", "0"},
-    {"show_limit", "4"},
-    {"user_act_count", "2"},
-    {"if_allowed_by_embedder", "true"},
-    {"if_enabled_by_embedder", "true"}};
-
-const FeatureEntry::FeatureVariation kCctSignInPromptVariations[] = {
-    {"always show", kCctSignInPromptAlways, std::size(kCctSignInPromptAlways),
-     nullptr},
-    {"for test", kCctSignInTestOnly, std::size(kCctSignInTestOnly), nullptr}};
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 
 const FeatureEntry::FeatureParam kZinkEnableRecommended[] = {
@@ -11678,13 +11658,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement)},
-#if BUILDFLAG(IS_ANDROID)
-    {"cct-sign-in-prompt", flag_descriptions::kCCTSignInPromptName,
-     flag_descriptions::kCCTSignInPromptDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kCctSignInPrompt,
-                                    kCctSignInPromptVariations,
-                                    "CctSignInPrompt")},
-#endif
 
     {"enable-bookmarks-selected-type-on-signin-for-testing",
      flag_descriptions::kEnableBookmarksSelectedTypeOnSigninForTestingName,

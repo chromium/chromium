@@ -4784,28 +4784,6 @@
             ]
         }
     ],
-    "CctSignInPrompt": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "cadence_day": "14",
-                        "if_allowed_by_embedder": "true",
-                        "if_enabled_by_embedder": "true",
-                        "show_limit": "2",
-                        "user_act_count": "2"
-                    },
-                    "enable_features": [
-                        "CctSignInPrompt"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChangeGeneratedCodeCacheSize": [
         {
             "platforms": [

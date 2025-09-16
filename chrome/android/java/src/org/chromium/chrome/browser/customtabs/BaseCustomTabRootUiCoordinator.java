@@ -23,7 +23,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -111,8 +110,6 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -126,7 +123,6 @@ import java.util.function.Supplier;
 
 /** A {@link RootUiCoordinator} variant that controls UI for {@link BaseCustomTabActivity}. */
 public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
-
     private final CustomTabActivityTabProvider mCustomTabProvider;
     private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
@@ -329,15 +325,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
         Intent intent = mIntentDataProvider.get().getIntent();
         if (!connection.isAppForAccountMismatchNotification(intent)) return null;
-
-        // MismatchNotificationChecker requires Profile which becomes available after
-        // native init. This method is expected to be called lazily, when it is actually
-        // needed.
-        boolean signInPromptEnabled =
-                appId != null
-                        && FeatureList.isInitialized()
-                        && SigninFeatureMap.isEnabled(SigninFeatures.CCT_SIGN_IN_PROMPT);
-        if (!signInPromptEnabled) return null;
+        if (appId == null) return null;
 
         if (isMismatchNotificationSuppressed()) {
             MismatchNotificationController.recordMismatchNoticeSuppressedHistogram(
@@ -375,14 +363,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     private static boolean isMismatchNotificationSuppressed() {
-        // Skip checking if the cadence is set to zero for easy local testing.
-        // TODO(crbug.com/372609889): Use a dedicated flag param.
-        SigninFeatureMap featureMap = SigninFeatureMap.getInstance();
-        int cadence =
-                featureMap.getFieldTrialParamByFeatureAsInt(
-                        SigninFeatures.CCT_SIGN_IN_PROMPT, "cadence_day", 14);
-        if (cadence == 0) return false;
-
         final long suppressionPeriodStart =
                 SigninPreferencesManager.getInstance().getCctMismatchNoticeSuppressionPeriodStart();
         if (suppressionPeriodStart == 0) return false;

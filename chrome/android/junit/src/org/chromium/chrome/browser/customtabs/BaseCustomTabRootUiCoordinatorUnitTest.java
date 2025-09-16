@@ -35,8 +35,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -85,7 +83,6 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -307,7 +304,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({SigninFeatures.CCT_SIGN_IN_PROMPT})
     public void testCreateMismatchNotificationChecker() {
         HistogramWatcher freCompletedRecentlyWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -322,8 +318,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                                 MismatchNotificationController.SuppressedReason
                                         .CCT_IS_OFF_THE_RECORD)
                         .build();
-        FeatureList.setDisableNativeForTesting(true);
-        FeatureOverrides.enable(SigninFeatures.CCT_SIGN_IN_PROMPT);
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);

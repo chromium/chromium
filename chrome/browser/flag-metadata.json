@@ -1682,11 +1682,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "cct-sign-in-prompt",
-    "owners": ["samarchehade@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "cct-toolbar-refactor",
     "owners": ["sinansahin@google.com", "chrome-connective-tissue@google.com"],
     "expiry_milestone": 150

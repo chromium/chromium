@@ -4972,11 +4972,6 @@ const char kCCTRevampedBrandingName[] = "Revamped CCT toolbar branding.";
 const char kCCTRevampedBrandingDescription[] =
     "Enables a revamped branding animation on the CCT toolbar.";
 
-const char kCCTSignInPromptName[] = "Sign-in prompt in CCT.";
-const char kCCTSignInPromptDescription[] =
-    "Displays a sign-in prompt message in CCT opened by 1P apps when the user "
-    "is signed out of Chrome but signed in to the 1P app.";
-
 const char kCCTToolbarRefactorName[] = "CCT Toolbar Refactor";
 const char kCCTToolbarRefactorDescription[] = "CCT Toolbar Refactor";
 
