@@ -29,8 +29,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_outline.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
@@ -404,7 +409,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<LookalikeTestHelper> test_helper_;
 };
@@ -1767,4 +1771,46 @@ class SafetyTipPageInfoBubbleViewDialogTest : public DialogBrowserTest {
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewDialogTest,
                        InvokeUi_Lookalike) {
   ShowAndVerifyUi();
+}
+
+class SafetyTipPageInfoBubbleSplitViewTest
+    : public SafetyTipPageInfoBubbleViewBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
+    SafetyTipPageInfoBubbleViewBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleSplitViewTest,
+                       ShowLookalikeDialog) {
+  // Create a split tab.
+  ASSERT_TRUE(AddTabAtIndex(0, GetURL("example.com"),
+                            ui::PageTransition::PAGE_TRANSITION_TYPED));
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->ActivateTabAt(0);
+  tab_strip_model->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Trigger bubble to show on the 0 indexed tab.
+  auto kNavigatedUrl = GetURL("accounts-google.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(IsUIShowing());
+
+  // The highlight should show around the contents container for the 0th tab
+  // but not for the other tabs in the split.
+  std::vector<ContentsContainerView*> contents_container_views =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->multi_contents_view()
+          ->contents_container_views();
+  ASSERT_EQ(contents_container_views.size(), 2U);
+  EXPECT_TRUE(
+      contents_container_views[0]->contents_outline_view()->is_highlighted());
+  EXPECT_FALSE(
+      contents_container_views[1]->contents_outline_view()->is_highlighted());
 }
