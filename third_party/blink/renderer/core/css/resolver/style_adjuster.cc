@@ -1075,8 +1075,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // Elements in the top layer must be out-of-flow positioned.
     // Root elements that are in the top layer should just be left alone
     // because the fullscreen.css doesn't apply any style to them.
+    //
+    // Similarly, overscroll-position elements must be out of flow positioned
+    // with a box.
     if ((builder.Overlay() == EOverlay::kAuto && !is_document_element) ||
-        builder.StyleType() == kPseudoIdBackdrop) {
+        builder.StyleType() == kPseudoIdBackdrop ||
+        builder.OverscrollPosition()) {
       if (!builder.HasOutOfFlowPosition()) {
         builder.SetPosition(EPosition::kAbsolute);
       }

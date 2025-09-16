@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html >
+<title>Overscroll position: out of flow positioned</title>
+<link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+.overscrollpos {
+  overscroll-position: --foo;
+}
+.fixed {
+  position: fixed;
+}
+
+.absolute {
+  position: absolute;
+}
+.contents {
+  display: contents;
+}
+.inline {
+  display: inline;
+}
+.inlineblock {
+  display: inline-block;
+}
+
+</style>
+
+<div id="e1" class="overscrollpos"></div>
+<div id="e2" class="overscrollpos fixed"></div>
+<div id="e3" class="overscrollpos absolute"></div>
+<div id="e4" class="overscrollpos contents"></div>
+<div id="e5" class="overscrollpos inline"></div>
+<div id="e6" class="overscrollpos inlineblock"></div>
+
+<script>
+test(() => {
+  assert_equals(getComputedStyle(e1).position, "absolute", "e1");
+  assert_equals(getComputedStyle(e2).position, "fixed", "e2");
+  assert_equals(getComputedStyle(e3).position, "absolute", "e3");
+  assert_equals(getComputedStyle(e4).position, "absolute", "e4");
+  assert_equals(getComputedStyle(e5).position, "absolute", "e5");
+  assert_equals(getComputedStyle(e6).position, "absolute", "e6");
+}, "overscroll-position implies out of flow positioning");
+
+test(() => {
+  assert_equals(getComputedStyle(e1).display, "block", "e1");
+  assert_equals(getComputedStyle(e2).display, "block", "e2");
+  assert_equals(getComputedStyle(e3).display, "block", "e3");
+  assert_equals(getComputedStyle(e4).display, "block", "e4");
+  assert_equals(getComputedStyle(e5).display, "block", "e5");
+  assert_equals(getComputedStyle(e6).display, "block", "e6");
+}, "overscroll-position cannot be display: contents");
+</script>
