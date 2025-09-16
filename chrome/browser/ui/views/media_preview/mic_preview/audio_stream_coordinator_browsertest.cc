@@ -53,12 +53,7 @@ class AudioStreamCoordinatorTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     parent_view_ = std::make_unique<views::View>();
-    coordinator_ = std::make_unique<AudioStreamCoordinator>(
-        *parent_view_, media_preview_metrics::Context(
-                           media_preview_metrics::UiLocation::kPermissionPrompt,
-                           media_preview_metrics::PreviewType::kMic,
-                           media_preview_metrics::PromptType::kSingle,
-                           /*request=*/nullptr));
+    coordinator_ = std::make_unique<AudioStreamCoordinator>(*parent_view_);
     fake_stream_factory_ = std::make_unique<MockStreamFactory>();
   }
 

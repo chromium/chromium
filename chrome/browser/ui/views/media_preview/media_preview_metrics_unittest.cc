@@ -17,8 +17,7 @@ using testing::ElementsAre;
 TEST(MediaPreviewMetricsTest, CustomDurationHistogramPermissionPrompt) {
   base::HistogramTester tester;
 
-  Context context(UiLocation::kPermissionPrompt, PreviewType::kCameraAndMic,
-                  PromptType::kCombined, /*request=*/nullptr);
+  Context context(UiLocation::kPermissionPrompt, PreviewType::kCameraAndMic);
   std::string metric_name =
       "MediaPreviews.UI.Permissions.CameraAndMic.Duration";
 
@@ -43,8 +42,7 @@ TEST(MediaPreviewMetricsTest, CustomDurationHistogramPermissionPrompt) {
 TEST(MediaPreviewMetricsTest, CustomDurationHistogramPageInfo) {
   base::HistogramTester tester;
 
-  Context context(UiLocation::kPageInfo, PreviewType::kCamera,
-                  PromptType::kSingle, /*request=*/nullptr);
+  Context context(UiLocation::kPageInfo, PreviewType::kCamera);
   std::string metric_name = "MediaPreviews.UI.PageInfo.Camera.Duration";
 
   tester.ExpectTotalCount(metric_name, 0);

@@ -44,8 +44,7 @@ media_preview_metrics::Context GetMetricsContext() {
   // Camera coordinator is expected to narrow preview type to kCamera.
   // This is verified in ExpectHistogramTotalDevices() below.
   return {media_preview_metrics::UiLocation::kPermissionPrompt,
-          media_preview_metrics::PreviewType::kCameraAndMic,
-          media_preview_metrics::PromptType::kCombined, nullptr};
+          media_preview_metrics::PreviewType::kCameraAndMic};
 }
 
 MATCHER_P(HasItems, items, "") {

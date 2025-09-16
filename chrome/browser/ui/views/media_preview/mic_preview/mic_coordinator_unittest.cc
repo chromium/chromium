@@ -44,8 +44,7 @@ media_preview_metrics::Context GetMetricsContext() {
   // Mic coordinator is expected to narrow preview type to kMic.
   // This is verified in ExpectHistogramTotalDevices() below.
   return {media_preview_metrics::UiLocation::kPermissionPrompt,
-          media_preview_metrics::PreviewType::kCameraAndMic,
-          media_preview_metrics::PromptType::kSingle, nullptr};
+          media_preview_metrics::PreviewType::kCameraAndMic};
 }
 
 }  // namespace

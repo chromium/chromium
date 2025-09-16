@@ -57,9 +57,7 @@ media_preview_metrics::Context GetMetricsContext(
     MediaCoordinator::ViewType type) {
   return media_preview_metrics::Context(
       media_preview_metrics::UiLocation::kPageInfo,
-      media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(type),
-      /*prompt_type=*/std::nullopt,
-      /*request=*/nullptr);
+      media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(type));
 }
 
 }  // namespace

@@ -38,9 +38,7 @@ CameraCoordinator::CameraCoordinator(
       browser_context_(browser_context),
       allow_device_selection_(allow_device_selection),
       metrics_context_(metrics_context.ui_location,
-                       media_preview_metrics::PreviewType::kCamera,
-                       metrics_context.prompt_type,
-                       metrics_context.request) {
+                       media_preview_metrics::PreviewType::kCamera) {
   auto* camera_view = parent_view.AddChildView(std::make_unique<MediaView>());
   camera_view_tracker_.SetView(camera_view);
   // Safe to use base::Unretained() because `this` owns / outlives

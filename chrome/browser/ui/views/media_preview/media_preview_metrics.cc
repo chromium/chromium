@@ -7,11 +7,9 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "components/permissions/permission_request.h"
 
 using base::StrCat;
 
@@ -92,14 +90,8 @@ void UmaHistogramLinearCounts(const std::string& name,
 
 }  // anonymous namespace
 
-Context::Context(UiLocation ui_location,
-                 PreviewType preview_type,
-                 std::optional<PromptType> prompt_type,
-                 base::WeakPtr<permissions::PermissionRequest> request)
-    : ui_location(ui_location),
-      preview_type(preview_type),
-      prompt_type(prompt_type),
-      request(request) {}
+Context::Context(UiLocation ui_location, PreviewType preview_type)
+    : ui_location(ui_location), preview_type(preview_type) {}
 
 Context::~Context() = default;
 

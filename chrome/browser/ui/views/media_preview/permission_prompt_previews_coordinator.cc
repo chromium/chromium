@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
-#include "components/permissions/permission_prompt.h"
 
 namespace {
 
@@ -55,15 +54,14 @@ PermissionPromptPreviewsCoordinator::PermissionPromptPreviewsCoordinator(
 
   const auto metrics_context = media_preview_metrics::Context(
       media_preview_metrics::UiLocation::kPermissionPrompt,
-      media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(view_type_),
-      media_coordinator::GetPromptTypeFromMediaCoordinatorViewType(view_type_),
-      /*request=*/nullptr);
+      media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(
+          view_type_));
 
   media_preview_coordinator_.emplace(view_type_, *container_view,
                                      /*is_subsection=*/false, eligible_devices,
                                      browser->profile()->GetWeakPtr(),
                                      /*allow_device_selection=*/true,
-                                     metrics_context, delegate);
+                                     metrics_context);
 
   start_time_ = base::TimeTicks::Now();
 }
@@ -72,9 +70,7 @@ PermissionPromptPreviewsCoordinator::~PermissionPromptPreviewsCoordinator() {
   media_preview_metrics::RecordMediaPreviewDuration(
       {media_preview_metrics::UiLocation::kPermissionPrompt,
        media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(
-           view_type_),
-       media_coordinator::GetPromptTypeFromMediaCoordinatorViewType(view_type_),
-       nullptr},
+           view_type_)},
       base::TimeTicks::Now() - start_time_);
 }
 
