@@ -15,6 +15,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "url/gurl.h"
@@ -71,9 +72,15 @@ enum AuthType {
 };
 
 struct EndpointResponse {
+  EndpointResponse();
+  EndpointResponse(const EndpointResponse& other);
+  EndpointResponse& operator=(const EndpointResponse& other);
+  ~EndpointResponse();
+
   std::string response;
   int http_status_code{-1};
   std::optional<FetchErrorType> error_type;
+  scoped_refptr<net::HttpResponseHeaders> headers;
 };
 
 using EndpointFetcherCallback =

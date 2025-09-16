@@ -61,6 +61,12 @@ HttpMethod GetHttpMethod(const std::string& http_method_string) {
 
 }  // namespace
 
+EndpointResponse::EndpointResponse() = default;
+EndpointResponse::EndpointResponse(const EndpointResponse& other) = default;
+EndpointResponse& EndpointResponse::operator=(const EndpointResponse& other) =
+    default;
+EndpointResponse::~EndpointResponse() = default;
+
 EndpointFetcher::RequestParams::RequestParams(
     const HttpMethod& method,
     const net::NetworkTrafficAnnotationTag& annotation_tag)
@@ -377,13 +383,15 @@ void EndpointFetcher::PerformHttpRequest(
 void EndpointFetcher::OnResponseFetched(
     EndpointFetcherCallback endpoint_fetcher_callback,
     std::unique_ptr<std::string> response_body) {
-  int http_status_code = -1;
+  auto response = std::make_unique<EndpointResponse>();
   std::string mime_type;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
-    http_status_code =
+    response->http_status_code =
         simple_url_loader_->ResponseInfo()->headers->response_code();
     mime_type = simple_url_loader_->ResponseInfo()->mime_type;
+    response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        simple_url_loader_->ResponseInfo()->headers->raw_headers());
   }
   int net_error_code = simple_url_loader_->NetError();
   // The EndpointFetcher and its members will be destroyed after
@@ -391,11 +399,8 @@ void EndpointFetcher::OnResponseFetched(
   // or its members after the callbacks.
   simple_url_loader_.reset();
 
-  auto response = std::make_unique<EndpointResponse>();
-  response->http_status_code = http_status_code;
-
-  if (http_status_code == net::HTTP_UNAUTHORIZED ||
-      http_status_code == net::HTTP_FORBIDDEN) {
+  if (response->http_status_code == net::HTTP_UNAUTHORIZED ||
+      response->http_status_code == net::HTTP_FORBIDDEN) {
     response->error_type =
         std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
     // We cannot assume that the response was in JSON, and hence cannot sanitize

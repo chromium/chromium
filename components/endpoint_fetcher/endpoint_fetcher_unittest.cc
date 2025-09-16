@@ -39,6 +39,9 @@ const char kExpectedAuthError[] = "There was an authentication error";
 const char kExpectedResponseError[] = "There was a response error";
 const char kExpectedPrimaryAccountError[] = "No primary accounts found";
 const char kHttpPostMethod[] = "POST";
+const char kLocationResponseHeader[] =
+    "HTTP/1.1 200 OK\nContent-type: application/json\n\nLOCATION: "
+    "http://www.google.com\n\n";
 const char kMalformedResponse[] = "asdf";
 const char kJsonMimeType[] = "application/json";
 const char kMockPostData[] = "mock_post_data";
@@ -95,17 +98,24 @@ class EndpointFetcherTest : public testing::Test {
     return identity_test_env_;
   }
 
-  void SetMockResponse(const GURL& request_url,
-                       const std::string& response_data,
-                       const std::string& mime_type,
-                       net::HttpStatusCode response_code,
-                       net::Error error) {
+  void SetMockResponse(
+      const GURL& request_url,
+      const std::string& response_data,
+      const std::string& mime_type,
+      net::HttpStatusCode response_code,
+      net::Error error,
+      scoped_refptr<net::HttpResponseHeaders> response_headers = nullptr) {
     auto head = network::mojom::URLResponseHead::New();
-    std::string headers(base::StringPrintf(
-        "HTTP/1.1 %d %s\nContent-type: %s\n\n", static_cast<int>(response_code),
-        GetHttpReasonPhrase(response_code), mime_type.c_str()));
-    head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-        net::HttpUtil::AssembleRawHeaders(headers));
+    if (response_headers) {
+      head->headers = response_headers;
+    } else {
+      std::string headers(base::StringPrintf(
+          "HTTP/1.1 %d %s\nContent-type: %s\n\n",
+          static_cast<int>(response_code), GetHttpReasonPhrase(response_code),
+          mime_type.c_str()));
+      head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+          net::HttpUtil::AssembleRawHeaders(headers));
+    }
     head->mime_type = mime_type;
     network::URLLoaderCompletionStatus status(error);
     status.decoded_body_length = response_data.size();
@@ -438,6 +448,36 @@ TEST_F(EndpointFetcherTest, CustomHeadersAreAdded) {
   SetMockResponse(kUrl, kExpectedResponse, kJsonMimeType, net::HTTP_OK,
                   net::OK);
 
+  run_loop.Run();
+}
+
+TEST_F(EndpointFetcherTest, ResponseHeadersAreSet) {
+  SignIn();
+  std::string header_string(kLocationResponseHeader);
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(header_string));
+
+  SetMockResponse(GURL(kEndpoint), kExpectedResponse, kJsonMimeType,
+                  net::HTTP_OK, net::OK, headers);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(endpoint_fetcher_callback(),
+              Run(Pointee(AllOf(
+                  Field(&EndpointResponse::response, kExpectedResponse),
+                  Field(&EndpointResponse::http_status_code, net::HTTP_OK),
+                  Field(&EndpointResponse::error_type, std::nullopt),
+                  Field(&EndpointResponse::headers,
+                        Pointee(::testing::Truly(
+                            [](const net::HttpResponseHeaders& headers) {
+                              auto location =
+                                  headers.EnumerateHeader(nullptr, "Location");
+                              return location &&
+                                     *location == "http://www.google.com";
+                            })))))))
+      .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
+        run_loop.Quit();
+      });
+  endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   run_loop.Run();
 }
 
