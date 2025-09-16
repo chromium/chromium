@@ -72,7 +72,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void tearDown() {
         // Clean up listeners to not affect other tests.
         mNtpCustomizationConfigManager.removeListener(mListener);
-        mNtpCustomizationConfigManager.setBackgroundImageDrawableForTesting(null);
+        mNtpCustomizationConfigManager.resetForTesting();
 
         // Removes the newly generated file and cleans up SharedPreference.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();

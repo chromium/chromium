@@ -1038,7 +1038,9 @@ public class RootUiCoordinator
                         mWindowAndroid, mIsTablet)) {
             var topInsetCoordinator =
                     new TopInsetCoordinator(
-                            mActivityTabProvider, mWindowAndroid.getInsetObserver());
+                            mActivityTabProvider,
+                            mWindowAndroid.getInsetObserver(),
+                            mLayoutStateProviderOneShotSupplier);
             mTopInsetCoordinatorSupplier.set(topInsetCoordinator);
         }
     }

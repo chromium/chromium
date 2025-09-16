@@ -13,8 +13,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
@@ -43,16 +46,27 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private final TabObserver mTabObserver;
+    private final LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private final InsetObserver mInsetObserver;
     private final InsetObserver.WindowInsetsConsumer mWindowInsetsConsumer;
+    private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private final NtpCustomizationConfigManager.HomepageStateListener mHomepageStateListener;
 
     private Insets mSystemInsets = Insets.NONE;
     private int mAppliedTopPadding;
     private boolean mConsumeTopInset;
 
+    // A flag to indicate whether it is in the layout transition from the Tab switcher to a NTP.
+    private boolean mInTabSwitcherToNtpTransition;
+    // If true, there is an attempt to add a LayoutStateObserver when the LayoutStateProvider hasn't
+    // been initialized yet.
+    private boolean mAddLayoutStateObserverPending;
+    // A flag to indicate whether a Tab to track has been set before.
+    private boolean mHasTrackingTab;
+
     private @Nullable TabSupplierObserver mTabSupplierObserver;
     private @Nullable Tab mTrackingTab;
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     /**
      * Instantiate the coordinator to handle drawing page into the Status bar area.
@@ -60,11 +74,15 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
      * @param tabSupplier The supplier of current Tab instance.
      * @param insetObserver The {@link InsetObserver} that manages insets changes on the
      *     CoordinatorView.
+     * @param layoutStateProviderSupplier The supplier of {@link LayoutStateProvider}.
      */
     public TopInsetCoordinator(
-            ObservableSupplier<@Nullable Tab> tabSupplier, InsetObserver insetObserver) {
+            ObservableSupplier<@Nullable Tab> tabSupplier,
+            InsetObserver insetObserver,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mInsetObserver = insetObserver;
         mTabSupplier = tabSupplier;
+        mLayoutStateProviderSupplier = layoutStateProviderSupplier;
 
         // Observing the events when 1) a Tab shows its native page or 2) a native page
         // navigates to a URL for web page. This observer is only added when needed.
@@ -87,6 +105,24 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
                         mInsetObserver.retriggerOnApplyWindowInsets();
                     }
                 };
+
+        mLayoutStateObserver =
+                new LayoutStateProvider.LayoutStateObserver() {
+                    @Override
+                    public void onFinishedShowing(int layoutType) {
+                        // When GTS is hiding, ToolbarPositionController updates the position of
+                        // toolbar in #onFinishedShowing() of the next layout. Therefore, calling
+                        // retriggerOnApplyWindowInsets() to apply the top insets if the transition
+                        // happens from GTS to a NTP. This can't be handled in #onTabSwitched()
+                        // which happens before the ToolbarPositionController updates the Toolbar's
+                        // position.
+                        if (mInTabSwitcherToNtpTransition && layoutType == LayoutType.BROWSING) {
+                            mInTabSwitcherToNtpTransition = false;
+                            mInsetObserver.retriggerOnApplyWindowInsets();
+                        }
+                    }
+                };
+        mLayoutStateProviderSupplier.onAvailable(this::onLayoutStateProviderAvailable);
 
         // Observing the NTP's background image changes. Showing edge to edge on top when a
         // customized image is set.
@@ -178,14 +214,28 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
         // NTP is the only NativePage to support edge to edge on top so far. To reduce the times to
         // call retriggerOnApplyWindowInsets(), adds specific check of NTP URLs.
         boolean isNtp = tab != null && UrlUtilities.isNtpUrl(tab.getUrl());
+
+        if (mHasTrackingTab && (mTrackingTab == null) && isNtp) {
+            mInTabSwitcherToNtpTransition = true;
+        }
+
         if (mTrackingTab != null) {
             mTrackingTab.removeObserver(mTabObserver);
         }
 
         mTrackingTab = tab;
+        mHasTrackingTab = true;
+
         if (mTrackingTab != null) {
             mTrackingTab.addObserver(mTabObserver);
         }
+
+        // Holds off calling mInsetObserver.retriggerOnApplyWindowInsets() until the layout
+        // transition ends. This could prevent removing the toolbar padding too early, i.e., the
+        // GTS is fading out while NTP is still in the expanding animation.
+        // mInsetObserver.retriggerOnApplyWindowInsets() will be called in
+        // LayoutStateObserver#onFinishedShowing().
+        if (mInTabSwitcherToNtpTransition) return;
 
         boolean shouldReTriggerOnApplyWindowInsets = false;
         if (isNtp) {
@@ -257,9 +307,19 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
 
         if (mTrackingTab == null) {
             mTrackingTab = mTabSupplier.get();
+            mHasTrackingTab = true;
             if (mTrackingTab != null) {
                 mTrackingTab.addObserver(mTabObserver);
             }
+        }
+
+        if (mLayoutStateProvider == null) {
+            mLayoutStateProvider = mLayoutStateProviderSupplier.get();
+        }
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.addObserver(mLayoutStateObserver);
+        } else {
+            mAddLayoutStateObserverPending = true;
         }
     }
 
@@ -275,6 +335,22 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
             mTrackingTab.removeObserver(mTabObserver);
             mTrackingTab = null;
         }
+
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+            mLayoutStateProvider = null;
+        }
+        mAddLayoutStateObserverPending = false;
+    }
+
+    /** Called when the {@link LayoutStateProvider} is available. */
+    private void onLayoutStateProviderAvailable(LayoutStateProvider layoutStateProvider) {
+        if (!mAddLayoutStateObserverPending) return;
+
+        assert mLayoutStateProvider == null;
+        mLayoutStateProvider = layoutStateProvider;
+        mLayoutStateProvider.addObserver(mLayoutStateObserver);
+        mAddLayoutStateObserverPending = false;
     }
 
     /** Computes the new top Insets. */
@@ -302,5 +378,9 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
 
     public @Nullable Tab getTrackingTabForTesting() {
         return mTrackingTab;
+    }
+
+    public boolean getAddLayoutStateObserverPendingForTesting() {
+        return mAddLayoutStateObserverPending;
     }
 }
