@@ -176,6 +176,12 @@ export class EarconEngine {
     BridgeHelper.registerHandler(
         OffscreenTarget, OffscreenAction.PLAY_EARCON,
         (earconId: EarconId) => this.playEarcon(earconId));
+    BridgeHelper.registerHandler(
+        OffscreenTarget, OffscreenAction.EARCON_CANCEL_LOADING,
+        () => this.stopLoop(EarconId.CHROMEVOX_LOADING));
+    BridgeHelper.registerHandler(
+        OffscreenTarget, OffscreenAction.EARCON_CANCEL_PROGRESS,
+        () => this.cancelProgress());
 
     // Test functionality.
     BridgeHelper.registerHandler(

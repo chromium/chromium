@@ -86,6 +86,9 @@ export class Earcons extends AbstractEarcons {
       case EarconId.PAGE_START_LOADING:
         OffscreenBridge.earconCancelProgress();
         break;
+      case EarconId.CHROMEVOX_LOADING:
+        OffscreenBridge.earconCancelLoading();
+        break;
     }
   }
 

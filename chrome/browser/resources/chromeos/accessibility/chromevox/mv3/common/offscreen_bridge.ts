@@ -31,6 +31,11 @@ export class OffscreenBridge {
         OffscreenTarget, OffscreenAction.EARCON_CANCEL_PROGRESS);
   }
 
+  static earconCancelLoading(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        OffscreenTarget, OffscreenAction.EARCON_CANCEL_LOADING)
+  }
+
   static earconResetPan(): Promise<void> {
     return BridgeHelper.sendMessage(
         OffscreenTarget, OffscreenAction.EARCON_RESET_PAN);

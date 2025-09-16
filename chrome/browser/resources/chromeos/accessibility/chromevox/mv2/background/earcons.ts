@@ -87,6 +87,11 @@ export class Earcons extends AbstractEarcons {
       case EarconId.PAGE_START_LOADING:
         this.engine_.cancelProgress();
         break;
+      case EarconId.CHROMEVOX_LOADING:
+        // Cannot simply run engine_.chromevoxLoaded because that plays an
+        // additional earcon.
+        this.engine_.stopLoop(EarconId.CHROMEVOX_LOADING);
+        break;
     }
   }
 

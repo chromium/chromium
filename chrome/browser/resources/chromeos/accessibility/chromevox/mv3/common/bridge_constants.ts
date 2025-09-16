@@ -160,6 +160,7 @@ export const BridgeConstants = {
     TARGET: 'Offscreen',
     Action: {
       CHROMEVOX_READY: 'chromeVoxReady',
+      EARCON_CANCEL_LOADING: 'earconCancelLoading',
       EARCON_CANCEL_PROGRESS: 'earconCancelProgress',
       EARCON_RESET_PAN: 'earconSesetPan',
       EARCON_SET_POSITION_FOR_RECT: 'earconSetPositionForRect',
