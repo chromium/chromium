@@ -119,7 +119,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
 
  private:
   void ReadBack();
-  void OnReadBack(bool success);
+  void OnReadBack(SkBitmap bitmap, bool success);
   void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
 
   void SetupCompressionTask(const SkBitmap& bitmap,
@@ -133,8 +133,6 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   // The uncompressed bitmap cached when navigating away from this navigation
   // entry.
   std::optional<cc::UIResourceBitmap> bitmap_;
-
-  std::optional<SkBitmap> read_back_bitmap_;
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
