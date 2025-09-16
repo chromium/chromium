@@ -56,6 +56,7 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetLinkText() const override;
   int GetButtons() const override;
   bool ShouldShowLinkBeforeButton() const override;
+  int GetLinkSpacingWhenPositionedBeforeButton() const override;
   void InfoBarDismissed() override;
 
  private:

@@ -81,6 +81,10 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // custom layout to show the link text before the button.
   virtual bool ShouldShowLinkBeforeButton() const;
 
+  // Returns spacing which is to be used when the link shows before the button
+  // on the infobar.
+  virtual int GetLinkSpacingWhenPositionedBeforeButton() const;
+
 #if BUILDFLAG(IS_IOS)
   // Returns whether or not a tint should be applied to the icon background.
   // Defaults to true.

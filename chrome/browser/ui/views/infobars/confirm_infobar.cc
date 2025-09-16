@@ -100,7 +100,10 @@ void ConfirmInfoBar::Layout(PassKey) {
   }
 
   if (GetDelegate()->ShouldShowLinkBeforeButton()) {
-    link_->SetPosition(gfx::Point(label_->bounds().right(), OffsetY(link_)));
+    const int link_spacing =
+        GetDelegate()->GetLinkSpacingWhenPositionedBeforeButton();
+    link_->SetPosition(
+        gfx::Point(label_->bounds().right() + link_spacing, OffsetY(link_)));
 
     if (!link_->GetText().empty()) {
       x = link_->bounds().right() +

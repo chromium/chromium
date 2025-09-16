@@ -85,6 +85,11 @@ bool SessionRestoreInfoBarDelegate::ShouldShowLinkBeforeButton() const {
   return true;
 }
 
+int SessionRestoreInfoBarDelegate::GetLinkSpacingWhenPositionedBeforeButton()
+    const {
+  return 4;
+}
+
 void SessionRestoreInfoBarDelegate::InfoBarDismissed() {
   if (close_cb_) {
     std::move(close_cb_).Run();
