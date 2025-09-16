@@ -355,16 +355,6 @@ bool IsSelectableArea(PDFiumPage::Area area) {
   return area == PDFiumPage::TEXT_AREA || IsLinkArea(area);
 }
 
-int GetCharIndexBasedOnCharBounds(int char_index,
-                                  const gfx::PointF& point,
-                                  const PdfRect& bounds) {
-  // TODO(crbug.com/443275584): Handle vertical text.
-  if (point.x() < bounds.AsGfxRectF().CenterPoint().x()) {
-    return char_index;
-  }
-  return char_index + 1;
-}
-
 // These values are intended for the JS to handle, and it doesn't have access
 // to the PDFDEST_VIEW_* defines.
 std::string ConvertViewIntToViewString(unsigned long view_int) {
@@ -1449,6 +1439,15 @@ PDFiumEngine::PointData PDFiumEngine::GetPointData(const gfx::PointF& point) {
   return point_data;
 }
 
+// TODO(crbug.com/443275584): Handle vertical text.
+int PDFiumEngine::GetCharIndexBasedOnPointData(const PointData& point_data) {
+  if (point_data.pdf_point.x() <
+      point_data.char_bounds.AsGfxRectF().CenterPoint().x()) {
+    return point_data.char_index;
+  }
+  return point_data.char_index + 1;
+}
+
 bool PDFiumEngine::OnMouseDown(const blink::WebMouseEvent& event) {
   blink::WebMouseEvent normalized_event = NormalizeMouseEvent(event);
   switch (normalized_event.button) {
@@ -1513,8 +1512,7 @@ void PDFiumEngine::OnTextOrLinkAreaClickInternal(const PointData& point_data,
   }
 
   if (click_count == 1) {
-    int char_index = GetCharIndexBasedOnCharBounds(
-        point_data.char_index, point_data.pdf_point, point_data.char_bounds);
+    int char_index = GetCharIndexBasedOnPointData(point_data);
     OnSingleClick(point_data.page_index, char_index);
 
     if (caret_) {
@@ -1896,8 +1894,7 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
   DCHECK_GE(point_data.char_index, 0);
 
   const int page_index = point_data.page_index;
-  const int char_index = GetCharIndexBasedOnCharBounds(
-      point_data.char_index, point_data.pdf_point, point_data.char_bounds);
+  const int char_index = GetCharIndexBasedOnPointData(point_data);
 
   // Check if the user has decreased their selection area and we need to remove
   // pages from `selection_`.

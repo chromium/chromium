@@ -837,6 +837,10 @@ class PDFiumEngine : public DocumentLoader::Client,
   // `point` is in device coordinates.
   PointData GetPointData(const gfx::PointF& point);
 
+  // Helper that returns `point_data.char_index`, possibly with an adjustment,
+  // based on the relative position of the point to the character.
+  int GetCharIndexBasedOnPointData(const PointData& point_data);
+
   void OnSingleClick(int page_index, int char_index);
   void OnMultipleClick(int click_count, int page_index, int char_index);
   // Internal version of `OnTextOrLinkAreaClick()` that takes a PointData
