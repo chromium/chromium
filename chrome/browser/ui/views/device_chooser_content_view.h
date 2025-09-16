@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/permissions/chooser_controller.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -33,6 +34,7 @@ class DeviceChooserContentView : public views::View,
   METADATA_HEADER(DeviceChooserContentView, views::View)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeviceChooserDialogBubbleElementId);
   DeviceChooserContentView(
       views::TableViewObserver* table_view_observer,
       std::unique_ptr<permissions::ChooserController> chooser_controller);

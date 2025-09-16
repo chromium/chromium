@@ -512,6 +512,7 @@ if (!is_android) {
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/tabs/alert:tab_alert",

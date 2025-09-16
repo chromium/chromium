@@ -8,9 +8,12 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/split_tab_highlight_delegate.h"
+#include "chrome/browser/ui/views/device_chooser_content_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -18,6 +21,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -29,24 +33,36 @@ SplitTabHighlightController::SplitTabHighlightController(
           std::make_unique<split_tabs::SplitTabHighlightDelegateImpl>(
               browser_view)),
       browser_window_interface_(browser_view->browser()) {
-  active_tab_change_subscription_ =
+  browser_scoped_subscriptions_.emplace_back(
       browser_window_interface_->RegisterActiveTabDidChange(
           base::BindRepeating(&SplitTabHighlightController::OnActiveTabChange,
-                              base::Unretained(this)));
+                              base::Unretained(this))));
   chip_controller_observation_.Observe(
       browser_view->toolbar()->location_bar()->GetChipController());
-  page_info_bubble_created_subscription_ =
+  browser_scoped_subscriptions_.emplace_back(
       PageInfoBubbleViewBase::RegisterPageInfoCreatedCallback(
           base::BindRepeating(
               &SplitTabHighlightController::OnPageInfoBubbleCreated,
-              base::Unretained(this)));
+              base::Unretained(this))));
+  browser_scoped_subscriptions_.emplace_back(
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          DeviceChooserContentView::kDeviceChooserDialogBubbleElementId,
+          BrowserElements::From(browser_window_interface_)->GetContext(),
+          base::BindRepeating(&SplitTabHighlightController::OnElementShown,
+                              base::Unretained(this))));
+  browser_scoped_subscriptions_.emplace_back(
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          DeviceChooserContentView::kDeviceChooserDialogBubbleElementId,
+          BrowserElements::From(browser_window_interface_)->GetContext(),
+          base::BindRepeating(&SplitTabHighlightController::OnElementHidden,
+                              base::Unretained(this))));
 }
 
 SplitTabHighlightController::~SplitTabHighlightController() = default;
 
 bool SplitTabHighlightController::ShouldHighlight() {
   return is_omnibox_popup_showing_ || is_permission_prompt_showing_ ||
-         is_page_info_bubble_showing_;
+         is_page_info_bubble_showing_ || is_device_chooser_bubble_showing_;
 }
 
 void SplitTabHighlightController::OnOmniboxPopupVisibilityChanged(
@@ -130,6 +146,22 @@ void SplitTabHighlightController::OnPageInfoBubbleCreated(
   }
 
   is_page_info_bubble_showing_ = bubble_widget->IsVisible();
+  UpdateHighlight();
+}
+
+void SplitTabHighlightController::OnElementShown(
+    ui::TrackedElement* tracked_element) {
+  CHECK_EQ(tracked_element->identifier(),
+           DeviceChooserContentView::kDeviceChooserDialogBubbleElementId);
+  is_device_chooser_bubble_showing_ = true;
+  UpdateHighlight();
+}
+
+void SplitTabHighlightController::OnElementHidden(
+    ui::TrackedElement* tracked_element) {
+  CHECK_EQ(tracked_element->identifier(),
+           DeviceChooserContentView::kDeviceChooserDialogBubbleElementId);
+  is_device_chooser_bubble_showing_ = false;
   UpdateHighlight();
 }
 
