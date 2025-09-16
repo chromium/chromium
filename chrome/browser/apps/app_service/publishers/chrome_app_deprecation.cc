@@ -20,6 +20,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/component_updater/component_installer.h"
@@ -35,7 +36,12 @@ BASE_FEATURE(kAllowUserInstalledChromeApps,
 
 BASE_FEATURE(kAllowChromeAppsInKioskSessions,
              "AllowChromeAppsInKioskSessions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(PLATFORM_CFM)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kChromeAppsDeprecationComponentUpdater,
              "ChromeAppsDeprecationComponentUpdater",

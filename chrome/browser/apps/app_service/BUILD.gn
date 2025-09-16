@@ -193,6 +193,7 @@ source_set("app_service") {
       "//ash/webui/mall:app_id",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
+      "//build/config/chromebox_for_meetings:buildflags",
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_service/app_install",
