@@ -1079,18 +1079,18 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       if (has_contents_parameter) {
         // Try first the parameter from @apply, then the fallback block given in
         // @contents, and if neither exists, nothing happens.
+        StyleRule* rules_to_add = nullptr;
         if (apply->FakeParentRuleForDeclarations()) {
-          AddChildRules(parent_rule,
-                        *apply->FakeParentRuleForDeclarations()->ChildRules(),
-                        medium, mixins, add_rule_flags, container_query,
-                        cascade_layer, style_scope, apply_mixins_stack);
+          rules_to_add = apply->FakeParentRuleForDeclarations();
         } else if (contents_rule->FakeParentRuleForFallback() &&
                    contents_rule->FakeParentRuleForFallback()->ChildRules()) {
-          AddChildRules(
-              parent_rule,
-              *contents_rule->FakeParentRuleForFallback()->ChildRules(), medium,
-              mixins, add_rule_flags, container_query, cascade_layer,
-              style_scope, apply_mixins_stack);
+          rules_to_add = contents_rule->FakeParentRuleForFallback();
+        }
+        if (rules_to_add) {
+          rules_to_add = To<StyleRule>(rules_to_add->Clone(parent_rule));
+          AddChildRules(parent_rule, *rules_to_add->ChildRules(), medium,
+                        mixins, add_rule_flags, container_query, cascade_layer,
+                        style_scope, apply_mixins_stack);
         }
       }
     } else if (auto* nested_declarations =
@@ -1124,9 +1124,11 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
     }
     apply_mixins_stack.push_back(ApplyingMixin{
         .mixin = it->value.Get(), .invoking_apply_rule = apply_mixin_rule});
-    AddChildRules(parent_rule, it->value->ChildRules(), medium, mixins,
-                  add_rule_flags, container_query, cascade_layer, style_scope,
-                  apply_mixins_stack);
+    AddChildRules(
+        parent_rule,
+        To<StyleRuleMixin>(it->value->Clone(parent_rule))->ChildRules(), medium,
+        mixins, add_rule_flags, container_query, cascade_layer, style_scope,
+        apply_mixins_stack);
     apply_mixins_stack.pop_back();
 
     // If the @mixin we are applying (or currently: any @mixin) was defined
@@ -1343,9 +1345,6 @@ void RuleSet::AddStyleRule(StyleRule* style_rule,
                            const ContainerQuery* container_query,
                            CascadeLayer* cascade_layer,
                            const StyleScope* style_scope) {
-  if (!apply_mixins_stack.empty()) {
-    style_rule = To<StyleRule>(style_rule->Clone(parent_rule));
-  }
   for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
        selector = CSSSelectorList::Next(*selector)) {
     wtf_size_t selector_index = style_rule->SelectorIndex(*selector);

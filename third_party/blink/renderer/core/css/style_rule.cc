@@ -610,6 +610,7 @@ StyleRuleBase* StyleRuleBase::Clone(StyleRule* new_parent) {
           CloneRules(To<StyleRulePage>(this)->ChildRules(), new_parent));
     }
     case kMixin:
+      return CloneGroupRule(To<StyleRuleMixin>(this), new_parent);
     case kApplyMixin:
     case kContents:
       // The parent pointers in mixins don't really matter;
@@ -1012,6 +1013,12 @@ StyleRuleMixin::StyleRuleMixin(
     : StyleRuleGroup(kMixin, child_rules),
       name_(std::move(name)),
       parameters_(std::move(parameters)) {}
+
+StyleRuleMixin::StyleRuleMixin(const StyleRuleMixin& other,
+                               HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleGroup(kMixin, child_rules),
+      name_(other.name_),
+      parameters_(other.parameters_) {}
 
 void StyleRuleMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);

@@ -659,6 +659,8 @@ class CORE_EXPORT StyleRuleMixin : public StyleRuleGroup {
                  HeapVector<StyleRuleFunction::Parameter> parameters,
                  HeapVector<Member<StyleRuleBase>> child_rules);
   StyleRuleMixin(const StyleRuleMixin&) = delete;
+  StyleRuleMixin(const StyleRuleMixin&,
+                 HeapVector<Member<StyleRuleBase>> child_rules);
 
   const AtomicString& GetName() const { return name_; }
   const HeapVector<StyleRuleFunction::Parameter>& GetParameters() const {

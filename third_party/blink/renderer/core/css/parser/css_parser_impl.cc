@@ -2449,7 +2449,14 @@ StyleRule* CSSParserImpl::ConsumeDeclarationListForMixins(
   dummy.SetLastInSelectorList(true);
   dummy.SetLastInComplexSelector(true);
 
-  StyleRule* fake_parent_rule = StyleRule::Create(base::span_from_ref(dummy));
+  // We do not use the properties for anything, but we need a valid pointer
+  // or we will have a crash when we try to clone the rule during apply.
+  ImmutableCSSPropertyValueSet* empty_properties =
+      ImmutableCSSPropertyValueSet::Create({},
+                                           CSSParserMode::kHTMLStandardMode);
+
+  StyleRule* fake_parent_rule =
+      StyleRule::Create(base::span_from_ref(dummy), empty_properties);
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
   ConsumeRuleListOrNestedDeclarationList(stream, CSSNestingType::kNesting,
                                          fake_parent_rule, &child_rules);
