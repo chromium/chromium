@@ -28,14 +28,11 @@ bool AlmostEqual(base::TimeDelta a, base::TimeDelta b) {
 }
 
 BASE_FEATURE(kForceMacVSyncTimerForDebugging,
-             "ForceMacVSyncTimerForDebugging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow CADisplayLink to handle refresh rate within the range based on the app
 // work load.
-BASE_FEATURE(kUseRefreshRateRange,
-             "UseRefreshRateRange",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseRefreshRateRange, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with

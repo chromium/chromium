@@ -16,7 +16,6 @@ namespace performance_manager::features {
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kBackgroundTabLoadingFromPerformanceManager,
-             "BackgroundTabLoadingFromPerformanceManager",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,
@@ -25,9 +24,7 @@ BASE_FEATURE_PARAM(size_t,
                    "min_site_engagement",
                    0);
 
-BASE_FEATURE(kPerformanceControlsPPMSurvey,
-             "PerformanceControlsPPMSurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPerformanceControlsPPMSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kPerformanceControlsPPMSurveyMinDelay,
@@ -105,11 +102,9 @@ BASE_FEATURE_PARAM(size_t,
                    0);
 
 BASE_FEATURE(kPerformanceInterventionDemoMode,
-             "PerformanceInterventionDemoMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPerformanceInterventionNotificationImprovements,
-             "PerformanceInterventionNotificationImprovements",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
@@ -143,7 +138,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Days(7));
 
 BASE_FEATURE(kPerformanceInterventionNotificationStringImprovements,
-             "PerformanceInterventionNotificationStringImprovements",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
@@ -153,15 +147,12 @@ BASE_FEATURE_PARAM(int,
                    1);
 
 #if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kUnthrottledTabProcessReporting,
-             "UnthrottledTabProcessReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUnthrottledTabProcessReporting, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #endif
 
 BASE_FEATURE(kEnableBestEffortTaskInhibitingPolicy,
-             "EnableBestEffortTaskInhibitingPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kBestEffortTaskInhibitingPeriod,
@@ -175,9 +166,7 @@ BASE_FEATURE_PARAM(
     "enable_best_effort_task_inhibiting_minimum_allowed_time_per_period",
     base::Seconds(30));
 
-BASE_FEATURE(kPMProcessPriorityPolicy,
-             "PMProcessPriorityPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPMProcessPriorityPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kInheritParentPriority{
     &kPMProcessPriorityPolicy, "inherit_parent_priority", true};
@@ -189,28 +178,19 @@ const base::FeatureParam<bool> kNonSpareRendererHighInitialPriority{
     &kPMProcessPriorityPolicy, "non_spare_renderer_high_initial_priority",
     false};
 
-BASE_FEATURE(kPMLoadingPageVoter,
-             "PMLoadingPageVoter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPMLoadingPageVoter, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
-             "BFCachePerformanceManagerPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUrgentPageDiscarding,
-             "UrgentPageDiscarding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUrgentPageDiscarding, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCPUMeasurementInFreezingPolicy,
-             "CPUMeasurementInFreezingPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCPUMeasurementInFreezingPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMemoryMeasurementInFreezingPolicy,
-             "MemoryMeasurementInFreezingPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDiscardFrozenBrowsingInstancesWithGrowingPMF,
-             "DiscardFrozenBrowsingInstancesWithGrowingPMF",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Note: These params are associated with `kCPUMeasurementInFreezingPolicy`
@@ -239,25 +219,16 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "freezing_audio_protection_time",
                    base::Minutes(5));
 
-BASE_FEATURE(kFreezingOnBatterySaver,
-             "FreezingOnBatterySaver",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFreezingOnBatterySaver, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFreezingOnBatterySaverForTesting,
-             "FreezingOnBatterySaverForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFreezingFollowsDiscardOptOut,
-             "FreezingFollowsDiscardOptOut",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFreezingFollowsDiscardOptOut, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRecordFreezingEligibilityUKM,
-             "RecordFreezingEligibilityUKM",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRecordFreezingEligibilityUKM, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kInfiniteTabsFreezing,
-             "InfiniteTabsFreezing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInfiniteTabsFreezing, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kInfiniteTabsFreezing_NumProtectedTabs,
@@ -278,7 +249,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Seconds(5));
 
 BASE_FEATURE(kInfiniteTabsFreezingOnMemoryPressure,
-             "InfiniteTabsFreezingOnMemoryPressure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
@@ -294,27 +264,17 @@ BASE_FEATURE_PARAM(int,
                    15);
 
 BASE_FEATURE(kResourceAttributionIncludeOrigins,
-             "ResourceAttributionIncludeOrigins",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSeamlessRenderFrameSwap,
-             "SeamlessRenderFrameSwap",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSeamlessRenderFrameSwap, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUnimportantFramesPriority,
-             "UnimportantFramesPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUnimportantFramesPriority, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThrottleUnimportantFrameRate,
-             "ThrottleUnimportantFrameRate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kThrottleUnimportantFrameRate, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kKeepDefaultSearchEngineRendererAlive,
-             "KeepDefaultSearchEngineRendererAlive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBoostClosingTabs,
-             "BoostClosingTabs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBoostClosingTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace performance_manager::features

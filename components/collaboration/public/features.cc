@@ -9,16 +9,10 @@
 
 namespace collaboration::features {
 
-BASE_FEATURE(kCollaborationMessaging,
-             "CollaborationMessaging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCollaborationMessaging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCollaborationMessagingDatabase,
-             "CollaborationMessagingDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCollaborationMessagingDatabase, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCollaborationComments,
-             "CollaborationComments",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCollaborationComments, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace collaboration::features

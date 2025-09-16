@@ -30,9 +30,7 @@
 namespace {
 
 // If true, then use the HDRCopierLayer for all HLG video content.
-BASE_FEATURE(kMacHlgUseHdrCopier,
-             "MacHlgUseHdrCopier",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMacHlgUseHdrCopier, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Source of the shader to perform tonemapping. Note that the functions
 // ToLinearSRGBIsh, ToLinearPQ, and ToLinearHLG are copy-pasted from the GLSL

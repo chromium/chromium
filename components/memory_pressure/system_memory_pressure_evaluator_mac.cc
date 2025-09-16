@@ -30,14 +30,11 @@ namespace {
 // treated as 'none'. This is to experiment with the idea that the 'warn'
 // level signal from the OS is not always an accurate or useful signal.
 BASE_FEATURE(kSkipModerateMemoryPressureLevelMac,
-             "SkipModerateMemoryPressureLevelMac",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature controls the critical memory pressure signal based on low disk
 // space. Disabling this feature turns off the disk space check entirely.
-BASE_FEATURE(kMacCriticalDiskSpacePressure,
-             "MacCriticalDiskSpacePressure",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMacCriticalDiskSpacePressure, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default threshold for the critical disk space pressure
 // signal.

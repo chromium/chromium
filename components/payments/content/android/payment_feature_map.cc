@@ -60,25 +60,14 @@ static jlong JNI_PaymentFeatureMap_GetNativeMap(JNIEnv* env) {
 
 // Android only features.
 BASE_FEATURE(kAndroidPaymentIntentsOmitDeprecatedParameters,
-             "AndroidPaymentIntentsOmitDeprecatedParameters",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kGooglePayViaAndroidIntents,
-             "GooglePayViaAndroidIntents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kOmitParametersInReadyToPay,
-             "OmitParametersInReadyToPay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAllowShowWithoutReadyToPay,
-             "AllowShowWithoutReadyToPay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGooglePayViaAndroidIntents, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOmitParametersInReadyToPay, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowShowWithoutReadyToPay, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kReconnectOnLostConnectionToUpdatePaymentDetailsService,
-             "ReconnectOnLostConnectionToUpdatePaymentDetailsService",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kShowReadyToPayDebugInfo,
-             "ShowReadyToPayDebugInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShowReadyToPayDebugInfo, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUpdatePaymentDetailsIntentFilterInPaymentApp,
-             "UpdatePaymentDetailsIntentFilterInPaymentApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace payments::android

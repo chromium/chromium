@@ -21,16 +21,12 @@
 namespace policy {
 
 // Kill switch for applying default values to the covered GenAI policies.
-BASE_FEATURE(kApplyGenAiPolicyDefaults,
-             "ApplyGenAiPolicyDefaults",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kApplyGenAiPolicyDefaults, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for using the policy_value_to_pref_map for translation.
 // If disabled, the pref map will not be used and the GenAI policy will not be
 // set.
-BASE_FEATURE(kGenAiPolicyDefaultsUsePrefMap,
-             "GenAiPolicyDefaultsUsePrefMap",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGenAiPolicyDefaultsUsePrefMap, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

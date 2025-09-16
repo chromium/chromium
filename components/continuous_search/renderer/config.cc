@@ -19,9 +19,7 @@ Config& GetConfigInternal() {
 
 }  // namespace
 
-BASE_FEATURE(kRelatedSearchesExtraction,
-             "RelatedSearchesExtraction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRelatedSearchesExtraction, base::FEATURE_ENABLED_BY_DEFAULT);
 
 Config::Config() {
   std::string id_value = base::GetFieldTrialParamValueByFeature(

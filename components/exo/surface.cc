@@ -83,9 +83,7 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Surface*)
 
 namespace exo {
 
-BASE_FEATURE(kDisableNonYUVOverlaysFromExo,
-             "DisableNonYUVOverlaysFromExo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisableNonYUVOverlaysFromExo, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

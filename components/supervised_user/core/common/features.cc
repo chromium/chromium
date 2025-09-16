@@ -20,14 +20,11 @@ namespace supervised_user {
 
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
-BASE_FEATURE(kLocalWebApprovals,
-             "LocalWebApprovals",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLocalWebApprovals, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/391799078): Support local web approval for subframes on
 // Desktop.
 BASE_FEATURE(kAllowSubframeLocalWebApprovals,
-             "AllowSubframeLocalWebApprovals",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -46,7 +43,6 @@ const base::FeatureParam<int> kLocalWebApprovalBottomSheetLoadTimeoutMs{
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kEnableLocalWebApprovalErrorDialog,
-             "EnableLocalWebApprovalErrorDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
@@ -56,7 +52,6 @@ BASE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload,
 
 // TODO(crbug.com/435635774): Release the interstitial v3 in all platforms.
 BASE_FEATURE(kSupervisedUserBlockInterstitialV3,
-             "SupervisedUserBlockInterstitialV3",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -96,31 +91,23 @@ bool IsLocalWebApprovalsEnabledForSubframes() {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
-             "EnableSupervisedUserVersionSignOutDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAllowNonFamilyLinkUrlFilterMode,
-             "AllowNonFamilyLinkUrlFilterMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPropagateDeviceContentFiltersToSupervisedUser,
-             "PropagateDeviceContentFiltersToSupervisedUser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserBrowserContentFiltersKillSwitch,
-             "SupervisedUserBrowserContentFiltersKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch,
-             "SupervisedUserSearchContentFiltersKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserClearDeviceContentFiltersPrefsOnStartup,
-             "SupervisedUserClearDeviceContentFiltersPrefsOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserInterstitialWithoutApprovals,
-             "SupervisedUserInterstitialWithoutApprovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserLocalSupervisionPreview,
-             "SupervisedUserLocalSupervisionPreview",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string>

@@ -11,15 +11,10 @@ BASE_FEATURE(kStructuredMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFlushPersistentSystemProfileOnWrite,
-             "FlushPersistentSystemProfileOnWrite",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReportingServiceAlwaysFlush,
-             "ReportingServiceAlwaysFlush",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReportingServiceAlwaysFlush, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMetricsLogTrimming,
-             "MetricsLogTrimming",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMetricsLogTrimming, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace metrics::features

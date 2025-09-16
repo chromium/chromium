@@ -10,7 +10,6 @@
 namespace switches {
 
 BASE_FEATURE(kMigrateSyncingUserToSignedIn,
-             "MigrateSyncingUserToSignedIn",
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -24,11 +23,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Days(7));
 
 BASE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn,
-             "UndoMigrationOfSyncingUserToSignedIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceMigrateSyncingUserToSignedIn,
-             "ForceMigrateSyncingUserToSignedIn",
 #if BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else

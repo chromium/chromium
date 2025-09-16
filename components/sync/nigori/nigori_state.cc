@@ -31,7 +31,6 @@ namespace {
 // When enabled, if the local state does not contain the private key for the
 // current version, the key pair will be removed and re-generated.
 BASE_FEATURE(kSyncDropCrossUserKeyPairIfPrivateKeyDoesNotExist,
-             "SyncDropCrossUserKeyPairIfPrivateKeyDoesNotExist",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // These values are persisted to UMA. Entries should not be renumbered and

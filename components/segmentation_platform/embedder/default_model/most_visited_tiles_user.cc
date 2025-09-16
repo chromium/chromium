@@ -14,7 +14,6 @@
 namespace segmentation_platform {
 
 BASE_FEATURE(kSegmentationPlatformMostVisitedTilesUser,
-             "SegmentationPlatformMostVisitedTilesUser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {

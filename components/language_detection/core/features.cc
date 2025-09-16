@@ -10,7 +10,5 @@ namespace language_detection::features {
 
 // If enabled, we lazily initiate `TranslateAgent` in
 // `ChromeRenderFrameObserver` (crbug/361215212).
-BASE_FEATURE(kLazyUpdateTranslateModel,
-             "LazyUpdateTranslateModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLazyUpdateTranslateModel, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace language_detection::features

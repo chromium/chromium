@@ -18,9 +18,7 @@ namespace internal {
 
 // Used to deliver the allowlist via a feature param. If disabled, the
 // allowlist is treated as empty (nothing allowed).
-BASE_FEATURE(kExternalExperimentAllowlist,
-             "ExternalExperimentAllowlist",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kExternalExperimentAllowlist, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace internal
 

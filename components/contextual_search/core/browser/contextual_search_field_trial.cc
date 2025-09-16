@@ -33,7 +33,6 @@ const int
         400;
 
 BASE_FEATURE(kContextualSearchWithCredentialsForDebug,
-             "ContextualSearchWithCredentialsForDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 ContextualSearchFieldTrial::ContextualSearchFieldTrial()

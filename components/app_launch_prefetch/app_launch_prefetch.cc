@@ -15,9 +15,7 @@ namespace app_launch_prefetch {
 
 namespace {
 
-BASE_FEATURE(kExpandedPrefetchRange,
-             "ExpandedPrefetchRange",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kExpandedPrefetchRange, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // /prefetch:# arguments to use when launching various process types. It has
 // been observed that when file reads are consistent for 3 process launches with

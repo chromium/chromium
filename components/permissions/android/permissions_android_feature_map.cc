@@ -40,7 +40,6 @@ base::android::FeatureMap* GetFeatureMap() {
 // Enables tapping outside the permission prompt scrim to dismiss a permission
 // prompt. Do not remove flag (killswitch).
 BASE_FEATURE(kAndroidCancelPermissionPromptOnTouchOutside,
-             "AndroidCancelPermissionPromptOnTouchOutside",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static jlong JNI_PermissionsAndroidFeatureMap_GetNativeMap(JNIEnv* env) {

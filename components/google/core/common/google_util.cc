@@ -146,9 +146,7 @@ bool IsGoogleSearchSubdomainUrl(const GURL& url) {
 
 }  // namespace
 
-BASE_FEATURE(kIsViewerGoogleSearchUrl,
-             "IsViewerGoogleSearchUrl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIsViewerGoogleSearchUrl, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Global functions -----------------------------------------------------------
 

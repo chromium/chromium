@@ -52,39 +52,27 @@ const char kNotificationContentDetectionEnterprisePolicyAllowed[] =
 }  // namespace prefs
 
 namespace features {
-BASE_FEATURE(kComposeMqlsLogging,
-             "ComposeMqlsLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabOrganizationMqlsLogging,
-             "TabOrganizationMqlsLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTabOrganizationMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWallpaperSearchMqlsLogging,
-             "WallpaperSearchMqlsLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWallpaperSearchMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHistorySearchMqlsLogging,
-             "HistorySearchMqlsLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kHistorySearchMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProductSpecificationsMqlsLogging,
-             "ProductSpecificationsMqlsLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFormsClassificationsMqlsLogging,
-             "FormsClassificationsMqlsLogging",
              BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
                      BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
                  ? base::FEATURE_ENABLED_BY_DEFAULT
                  : base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordChangeSubmissionMqlsLogging,
-             "PasswordChangeSubmissionMqlsLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationContentDetectionMqlsLogging,
-             "NotificationContentDetectionMqlsLogging",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -130,7 +130,6 @@ constexpr int kMaxEvictionTaskIntervalMs = 10000;
 #endif  // defined(ARCH_CPU_64_BITS)
 
 BASE_FEATURE(kLightweightUafDetector,
-             "LightweightUafDetector",
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

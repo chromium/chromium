@@ -26,9 +26,7 @@ constexpr int kMaxNumRepeatableQueriesDefaultValue =
 
 // If enabled, the most repeated queries from the user browsing history are
 // shown in the Most Visited tiles.
-BASE_FEATURE(kOrganicRepeatableQueries,
-             "OrganicRepeatableQueries",
-             kOrganicRepeatableQueriesDefaultValue);
+BASE_FEATURE(kOrganicRepeatableQueries, kOrganicRepeatableQueriesDefaultValue);
 
 // The maximum number of repeatable queries to show in the Most Visited tiles.
 const base::FeatureParam<int> kMaxNumRepeatableQueries(
@@ -73,25 +71,19 @@ const base::FeatureParam<int> kRepeatableQueriesMinVisitCount(
     "RepeatableQueriesMinVisitCount",
     is_android ? 6 : 1);
 
-BASE_FEATURE(kPopulateVisitedLinkDatabase,
-             "PopulateVisitedLinkDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPopulateVisitedLinkDatabase, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, makes links `:visited` even when the visit results in an HTTP
 // response code of 404.
-BASE_FEATURE(kVisitedLinksOn404,
-             "VisitedLinksOn404",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVisitedLinksOn404, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, uses new scoring function for Most Visited Tiles computation.
 BASE_FEATURE(kMostVisitedTilesNewScoring,
-             "MostVisitedTilesNewScoring",
              is_android ? base::FEATURE_ENABLED_BY_DEFAULT
                         : base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, heuristically remove possible visual duplicates from top sites.
 BASE_FEATURE(kMostVisitedTilesVisualDeduplication,
-             "MostVisitedTilesVisualDeduplication",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kMvtScoringParamRecencyFactor_Classic[] = "default";

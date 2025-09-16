@@ -8,8 +8,6 @@
 
 namespace paint_preview {
 
-BASE_FEATURE(kPaintPreviewDemo,
-             "PaintPreviewDemo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPaintPreviewDemo, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace paint_preview

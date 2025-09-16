@@ -23,9 +23,7 @@ namespace em = enterprise_management;
 namespace policy {
 namespace {
 
-BASE_FEATURE(kAlwaysVerifyPolicyKey,
-             "AlwaysVerifyPolicyKey",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAlwaysVerifyPolicyKey, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FilePath::CharType kPolicyCache[] =
     FILE_PATH_LITERAL("Machine Level User Cloud Policy");

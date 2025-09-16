@@ -6,8 +6,6 @@
 
 namespace storage {
 
-BASE_FEATURE(kCoalesceStorageAreaCommits,
-             "CoalesceStorageAreaCommits",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCoalesceStorageAreaCommits, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace storage

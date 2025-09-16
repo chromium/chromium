@@ -102,12 +102,9 @@ inline constexpr int kDefaultNtpBrowserPromoIndividualPromoLimit = 1;
 }  // namespace
 
 BASE_FEATURE(kUserEducationExperienceVersion2Point5,
-             "UserEducationExperienceVersion2Point5",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewBadgeTestFeature,
-             "NewBadgeTestFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNewBadgeTestFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsUserEducationV25() {
   return base::FeatureList::IsEnabled(kUserEducationExperienceVersion2Point5);
@@ -209,9 +206,7 @@ base::TimeDelta GetNtpSetupListSnoozeTime() {
   return GetNtpBrowserPromosSnoozedHideDuration();
 }
 
-BASE_FEATURE(kEnableNtpBrowserPromos,
-             "EnableNtpBrowserPromos",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableNtpBrowserPromos, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_ENUM_PARAM(NtpBrowserPromoType,
                         kNtpBrowserPromoType,

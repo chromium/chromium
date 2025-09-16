@@ -22,11 +22,9 @@ const base::TimeDelta kReminderNotificationsDefaultOffset = base::Hours(24);
 namespace send_tab_to_self {
 
 BASE_FEATURE(kSendTabToSelfEnableNotificationTimeOut,
-             "SendTabToSelfEnableNotificationTimeOut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfIOSPushNotifications,
-             "SendTabToSelfIOSPushNotifications",
 #if BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else

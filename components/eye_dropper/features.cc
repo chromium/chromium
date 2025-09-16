@@ -10,7 +10,6 @@ namespace eye_dropper::features {
 
 // Enables the use of WGC for the Eye Dropper screen capture.
 BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
-             "AllowEyeDropperWGCScreenCapture",
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

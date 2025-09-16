@@ -30,9 +30,7 @@ bool ShouldStartDistillabilityService() {
       switches::kEnableDistillabilityService);
 }
 
-BASE_FEATURE(kReaderModeUseReadability,
-             "ReaderModeUseReadability",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReaderModeUseReadability, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_IOS)
 constexpr base::FeatureParam<bool> kReaderModeUseReadabilityUseDistiller{
@@ -75,13 +73,9 @@ int GetMinimumAllowableDistilledContentLength() {
 
 #if BUILDFLAG(IS_ANDROID)
 // Feature declarations below -- alphabetical order.
-BASE_FEATURE(kReaderModeDistillInApp,
-             "ReaderModeDistillInApp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReaderModeDistillInApp, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReaderModeImprovements,
-             "ReaderModeImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReaderModeImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace android {
 static jlong JNI_DomDistillerFeatureMap_GetNativeMap(JNIEnv* env) {
@@ -96,9 +90,7 @@ static jlong JNI_DomDistillerFeatureMap_GetNativeMap(JNIEnv* env) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kEnableReaderModeNewCss,
-             "EnableReaderModeNewCss",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableReaderModeNewCss, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace dom_distiller

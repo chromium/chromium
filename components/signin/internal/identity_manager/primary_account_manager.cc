@@ -34,9 +34,7 @@
 
 using signin::PrimaryAccountChangeEvent;
 
-BASE_FEATURE(kRestorePrimaryAccountInfo,
-             "RestorePrimaryAccountInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRestorePrimaryAccountInfo, base::FEATURE_ENABLED_BY_DEFAULT);
 namespace {
 
 // Registers that the sign in occurred with an explicit user action.

@@ -24,13 +24,9 @@
 
 namespace tracing {
 
-BASE_FEATURE(kTracingTriggers,
-             "TracingTriggers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kFieldTracing, "FieldTracing", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kPresetTracing,
-             "PresetTracing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTracingTriggers, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFieldTracing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPresetTracing, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kFieldTracingAnonymized,

@@ -6,9 +6,7 @@
 
 namespace private_inference {
 
-BASE_FEATURE(kPrivateInference,
-             "PrivateInference",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivateInference, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPrivateInferenceApiKey{
     &kPrivateInference, "api-key", ""};

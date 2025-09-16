@@ -18,7 +18,6 @@ const char kSecurityOrigin[] = "https://translate.googleapis.com/";
 // The feature is explicitly disabled on WebView.
 // TODO(crbug.com/40819484): Enable the feature on WebView.
 BASE_FEATURE(kTFLiteLanguageDetectionEnabled,
-             "TFLiteLanguageDetectionEnabled",
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -46,9 +45,7 @@ float GetTFLiteLanguageDetectionThreshold() {
       kTFLiteLanguageDetectionEnabled, "reliability_threshold", .7);
 }
 
-BASE_FEATURE(kTranslateAutoSnackbars,
-             "TranslateAutoSnackbars",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTranslateAutoSnackbars, base::FEATURE_ENABLED_BY_DEFAULT);
 
 int GetAutoAlwaysThreshold() {
   static constexpr base::FeatureParam<int> auto_always_threshold{

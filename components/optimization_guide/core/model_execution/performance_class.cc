@@ -26,14 +26,10 @@ namespace optimization_guide {
 namespace {
 
 // Whether image input is enabled for CPU backend.
-BASE_FEATURE(kOnDeviceModelCpuImageInput,
-             "OnDeviceModelCpuImageInput",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOnDeviceModelCpuImageInput, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether audio input is enabled for CPU backend.
-BASE_FEATURE(kOnDeviceModelCpuAudioInput,
-             "OnDeviceModelCpuAudioInput",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOnDeviceModelCpuAudioInput, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Commandline switch to force a particular performance class.
 const char kOverridePerformanceClassSwitch[] =

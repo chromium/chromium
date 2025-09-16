@@ -6,12 +6,8 @@
 
 namespace features {
 
-BASE_FEATURE(kFullscreenBubbleShowOpaque,
-             "FullscreenBubbleShowOpaque",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFullscreenBubbleShowOpaque, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFullscreenBubbleShowOrigin,
-             "FullscreenBubbleShowOrigin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFullscreenBubbleShowOrigin, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

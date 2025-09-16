@@ -18,15 +18,12 @@ namespace fingerprinting_protection_filter::features {
 // resource requests on certain pages against the Fingerprinting Protection
 // blocklist, possibly blocks via a subresource filter.
 BASE_FEATURE(kEnableFingerprintingProtectionFilter,
-             "EnableFingerprintingProtectionFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFingerprintingProtectionFilterInIncognito,
-             "EnableFingerprintingProtectionFilterInIncognito",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFingerprintingProtectionFilteriOSDryRun,
-             "EnableFingerprintingProtectionFilteriOSDryRun",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsFingerprintingProtectionFeatureEnabled() {
@@ -147,6 +144,5 @@ const base::FeatureParam<double> kPerformanceMeasurementRateIncognito{
     kPerformanceMeasurementRateParam, 0.0};
 
 BASE_FEATURE(kUseCnameAliasesForFingerprintingProtectionFilter,
-             "UseCnameAliasesForFingerprintingProtectionFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace fingerprinting_protection_filter::features

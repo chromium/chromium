@@ -6,17 +6,13 @@
 
 namespace stylus_handwriting::win {
 
-BASE_FEATURE(kStylusHandwritingWin,
-             "StylusHandwritingWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kStylusHandwritingWin, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsStylusHandwritingWinEnabled() {
   return base::FeatureList::IsEnabled(kStylusHandwritingWin);
 }
 
-BASE_FEATURE(kProximateBoundsCollection,
-             "ProximateBoundsCollection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProximateBoundsCollection, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kProximateBoundsCollectionHalfLimit,

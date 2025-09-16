@@ -22,7 +22,6 @@ namespace viz {
 namespace {
 
 BASE_FEATURE(kAndroidSurfaceControlSingleOnTOp,
-             "AndroidSurfaceControlSingleOnTOp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 gfx::RectF ClipFromOrigin(gfx::RectF input) {

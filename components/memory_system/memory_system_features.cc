@@ -12,7 +12,6 @@
 namespace memory_system::features {
 
 BASE_FEATURE(kAllocationTraceRecorder,
-             "AllocationTraceRecorder",
 #if BUILDFLAG(CLANG_PGO_PROFILING) || BUILDFLAG(USE_CLANG_COVERAGE)
              // If creating a profiling build include the allocation recorder
              // unconditionally. This way we ensure that the recorder is covered

@@ -140,9 +140,7 @@ namespace features {
 // This should be safe as it is very unlikely for apps to accidentally register
 // listeners with the same name as `kNavigationListenerAllowBFCacheObjectName` /
 // `kNavigationListenerDisableBFCacheObjectName`.
-BASE_FEATURE(kEnableNavigationListener,
-             "EnableNavigationListener",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableNavigationListener, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace js_injection {

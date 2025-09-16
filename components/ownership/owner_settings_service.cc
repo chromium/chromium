@@ -115,9 +115,7 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
 
 }  // namespace
 
-BASE_FEATURE(kOwnerSettingsWithSha256,
-             "OwnerSettingsWithSha256",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOwnerSettingsWithSha256, base::FEATURE_ENABLED_BY_DEFAULT);
 
 OwnerSettingsService::OwnerSettingsService(
     const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util)

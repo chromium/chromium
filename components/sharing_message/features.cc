@@ -6,11 +6,9 @@
 
 #include "build/build_config.h"
 
-BASE_FEATURE(kClickToCall, "ClickToCall", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kClickToCall, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMobilePromoOnDesktop,
-             "MobilePromoOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMobilePromoOnDesktop, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kMobilePromoOnDesktopPromoTypeParam[] =
     "mobile_promo_on_desktop_promo_type";

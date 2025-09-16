@@ -12,7 +12,6 @@ namespace content_settings {
 // Enables auto dark feature in theme settings.
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kDarkenWebsitesCheckboxInThemesSetting,
-             "DarkenWebsitesCheckboxInThemesSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<bool> kDarkenWebsitesCheckboxOptOut{
     &kDarkenWebsitesCheckboxInThemesSetting, "opt_out", true};
@@ -22,7 +21,6 @@ namespace features {
 
 // Enables unused site permission module in Safety Check.
 BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
-             "SafetyCheckUnusedSitePermissions",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else   // BUILDFLAG(IS_ANDROID)
@@ -30,12 +28,9 @@ BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
-             "SafetyCheckUnusedSitePermissionsForSupportedChooserPermissions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kActiveContentSettingExpiry,
-             "ActiveContentSettingExpiry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kActiveContentSettingExpiry, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
     kSafetyCheckUnusedSitePermissionsRepeatedUpdateInterval{
@@ -61,7 +56,6 @@ const base::FeatureParam<base::TimeDelta>
         "unused-site-permissions-revocation-cleanup-threshold", base::Days(30)};
 
 BASE_FEATURE(kApproximateGeolocationPermission,
-             "ApproximateGeolocationPermission",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kApproximateGeolocationPermissionPromptArm(
@@ -69,7 +63,7 @@ const base::FeatureParam<int> kApproximateGeolocationPermissionPromptArm(
     "prompt_arm",
     0);
 
-BASE_FEATURE(kUserBypassUI, "UserBypassUI", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUserBypassUI, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kUserBypassUIExceptionExpiration{
     &kUserBypassUI, "expiration", base::Days(90)};
@@ -83,13 +77,9 @@ const base::FeatureParam<base::TimeDelta> kUserBypassUIReloadTime{
 const base::FeatureParam<base::TimeDelta> kUserBypassUIReloadBubbleTimeout{
     &kUserBypassUI, "reload-bubble-timeout", base::Seconds(5)};
 
-BASE_FEATURE(kUserBypassFeedback,
-             "UserBypassFeedback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUserBypassFeedback, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLeftHandSideActivityIndicators,
-             "LeftHandSideActivityIndicators",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLeftHandSideActivityIndicators, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kCrosSystemLevelPermissionBlockedWarnings,
@@ -97,16 +87,12 @@ BASE_FEATURE(kCrosSystemLevelPermissionBlockedWarnings,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kTrackingProtection3pcd,
-             "TrackingProtection3pcd",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackingProtection3pcd, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNativeUnpartitionedStoragePermittedWhen3PCOff,
-             "NativeUnpartitionedStoragePermittedWhen3PCOff",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlockV8OptimizerOnUnfamiliarSitesSetting,
-             "BlockV8OptimizerOnUnfamiliarSitesSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kTpcdReadHeuristicsGrantsName[] = "TpcdReadHeuristicsGrants";
@@ -129,9 +115,7 @@ const char kTpcdPopupHeuristicDisableForAdTaggedPopupsName[] =
 const char kTpcdPopupHeuristicEnableForIframeInitiatorName[] =
     "TpcdPopupHeuristicEnableForIframeInitiator";
 
-BASE_FEATURE(kTpcdHeuristicsGrants,
-             "TpcdHeuristicsGrants",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTpcdHeuristicsGrants, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kTpcdReadHeuristicsGrants{
     &kTpcdHeuristicsGrants, kTpcdReadHeuristicsGrantsName, true};
@@ -172,13 +156,9 @@ const base::FeatureParam<EnableForIframeTypes>
         kTpcdPopupHeuristicEnableForIframeInitiatorName,
         EnableForIframeTypes::kAll, &kEnableForIframeTypesOptions};
 
-BASE_FEATURE(kContentSettingsPartitioning,
-             "ContentSettingsPartitioning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kContentSettingsPartitioning, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kForceAllowStorageAccess,
-             "ForceAllowStorageAccess",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kForceAllowStorageAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace content_settings

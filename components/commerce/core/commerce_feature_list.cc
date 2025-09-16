@@ -119,29 +119,18 @@ const re2::RE2& GetCouponPartnerMerchantPattern() {
 
 }  // namespace
 
-BASE_FEATURE(kCommerceAllowLocalImages,
-             "CommerceAllowLocalImages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCommerceAllowLocalImages, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates,
-             "CommerceAllowOnDemandBookmarkUpdates",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommerceMerchantViewer,
-             "CommerceMerchantViewer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCommerceMerchantViewer, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommerceLocalPDPDetection,
-             "CommerceLocalPDPDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCommerceLocalPDPDetection, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPriceAnnotations,
-             "PriceAnnotations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPriceAnnotations, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPriceInsights,
-             "PriceInsights",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPriceInsights, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kPriceInsightsDelayChipParam[] = "price-inishgts-delay-chip";
 const base::FeatureParam<bool> kPriceInsightsDelayChip{
@@ -159,51 +148,34 @@ const base::FeatureParam<bool> kPriceInsightsUseCache{
     &commerce::kPriceInsights, kPriceInsightsUseCacheParam, true};
 
 // Discount Autofill at Checkout
-BASE_FEATURE(kDiscountAutofill,
-             "DiscountAutofill",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDiscountAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Promotion in Magic Stack for Price Tracking users from other platforms.
-BASE_FEATURE(kPriceTrackingPromo,
-             "PriceTrackingPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPriceTrackingPromo, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // ShopCard in Magic Stack, including shopping features like price drop,
 // reviews, etc.
-BASE_FEATURE(kShopCard, "ShopCard", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShopCard, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Impression limits on ShopCards
-BASE_FEATURE(kShopCardImpressionLimits,
-             "ShopCardImpressionLimits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShopCardImpressionLimits, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kProductSpecifications,
-             "ProductSpecifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProductSpecifications, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for unsupported fields becoming supported in the event of a
 // browser upgrade.
 BASE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields,
-             "ProductSpecificationsClearMetadataOnNewlySupportedFields",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCompareConfirmationToast,
-             "CompareConfirmationToast",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCompareConfirmationToast, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kProductSpecificationsCache,
-             "ProductSpecificationsCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kProductSpecificationsCache, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Discount on navigation
-BASE_FEATURE(kEnableDiscountInfoApi,
-             "EnableDiscountInfoApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableDiscountInfoApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Force traffic to alternate Chrome shopping server.
-BASE_FEATURE(kShoppingAlternateServer,
-             "ShoppingAlternateServer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShoppingAlternateServer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/406555154): Clean up this flag when discount on clank launched.
 const char kDiscountOnShoppyPageParam[] = "discount-on-shoppy-page";
@@ -224,7 +196,6 @@ const char kNonMerchantWideBehaviorParam[] = "non-merchant-wide-behavior";
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting,
-             "DiscountDialogAutoPopupBehaviorSetting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kHistoryClustersBehavior{
     &commerce::kDiscountDialogAutoPopupBehaviorSetting,
@@ -237,7 +208,6 @@ const base::FeatureParam<int> kNonMerchantWideBehavior{
     kNonMerchantWideBehaviorParam, 0};
 #else
 BASE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting,
-             "DiscountDialogAutoPopupBehaviorSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kHistoryClustersBehavior{
     &commerce::kDiscountDialogAutoPopupBehaviorSetting,
@@ -251,60 +221,43 @@ const base::FeatureParam<int> kNonMerchantWideBehavior{
 #endif
 
 BASE_FEATURE(kDiscountDialogAutoPopupCounterfactual,
-             "DiscountDialogAutoPopupCounterfactual",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDiscountsUiRefactor,
-             "DiscountsUiRefactor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDiscountsUiRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory{
     &kCommerceMerchantViewer, "delete_all_merchants_on_clear_history", false};
 
-BASE_FEATURE(kShoppingList, "ShoppingList", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShoppingList, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey,
-             "PriceTrackingSubscriptionServiceLocaleKey",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPriceTrackingSubscriptionServiceProductVersion,
-             "PriceTrackingSubscriptionServiceProductVersion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kShoppingPDPMetrics,
-             "ShoppingPDPMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShoppingPDPMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSubscriptionsApi,
-             "SubscriptionsApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSubscriptionsApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kPriceInsightsIos,
-             "PriceInsightsIos",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPriceInsightsIos, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPriceInsightsHighPriceIos,
              "PriceInsightsHighPrice",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kShoppingPageTypes,
-             "ShoppingPageTypes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShoppingPageTypes, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRetailCoupons, "RetailCoupons", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRetailCoupons, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommerceDeveloper,
-             "CommerceDeveloper",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCommerceDeveloper, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 
 // Params use for Discount Consent v2.
-BASE_FEATURE(kDiscountConsentV2,
-             "DiscountConsentV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDiscountConsentV2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 extern const char kShopCardArm1[] = "arm_1";
 extern const char kShopCardArm2[] = "arm_2";

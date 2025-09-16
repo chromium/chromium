@@ -10,9 +10,7 @@
 
 namespace passage_embeddings {
 
-BASE_FEATURE(kPassageEmbedder,
-             "PassageEmbedder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPassageEmbedder, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kUserInitiatedPriorityNumThreads(
     &kPassageEmbedder,

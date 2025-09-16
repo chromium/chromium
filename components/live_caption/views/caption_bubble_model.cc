@@ -39,9 +39,7 @@ int GetLongestCommonPrefixLength(const std::string& str1,
 
 namespace captions {
 
-BASE_FEATURE(kLiveCaptionScrollable,
-             "LiveCaptionScrollable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLiveCaptionScrollable, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,
                    kLiveCaptionScrollableMaxLines,

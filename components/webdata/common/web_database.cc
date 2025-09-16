@@ -28,12 +28,9 @@ namespace {
 //     sql::Transaction transaction(db());
 //     if (!transaction.Begin()) {...}
 BASE_FEATURE(kSqlScopedTransactionWebDatabase,
-             "SqlScopedTransactionWebDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSqlWALModeOnWebDatabase,
-             "SqlWALModeOnWebDatabase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSqlWALModeOnWebDatabase, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // These values are logged as histogram buckets and most not be changed nor
 // reused.

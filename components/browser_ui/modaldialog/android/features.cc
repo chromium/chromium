@@ -10,7 +10,6 @@
 namespace browser_ui {
 
 BASE_FEATURE(kModalDialogLayoutWithSystemInsets,
-             "ModalDialogLayoutWithSystemInsets",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace browser_ui

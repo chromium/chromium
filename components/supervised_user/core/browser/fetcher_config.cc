@@ -21,7 +21,6 @@
 namespace supervised_user {
 
 BASE_FEATURE(kSupervisedUserProtoFetcherConfig,
-             "SupervisedUserProtoFetcherConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace annotations {

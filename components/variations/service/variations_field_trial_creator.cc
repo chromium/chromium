@@ -194,7 +194,6 @@ Study::Channel ConvertProductChannelToStudyChannel(
 }  // namespace
 
 BASE_FEATURE(kForceFieldTrialSetupCrashForTesting,
-             "ForceFieldTrialSetupCrashForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool CreateTrialsResult::AppliedSeedHasActiveLimitedLayer() const {

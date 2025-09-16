@@ -11,7 +11,6 @@
 namespace client_certificates::features {
 
 BASE_FEATURE(kManagedBrowserClientCertificateEnabled,
-             "ManagedBrowserClientCertificateEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsManagedBrowserClientCertificateEnabled() {
@@ -19,7 +18,6 @@ bool IsManagedBrowserClientCertificateEnabled() {
 }
 
 BASE_FEATURE(kEnableClientCertificateProvisioningOnAndroid,
-             "EnableClientCertificateProvisioningOnAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsClientCertificateProvisioningOnAndroidEnabled() {
@@ -28,7 +26,6 @@ bool IsClientCertificateProvisioningOnAndroidEnabled() {
 }
 
 BASE_FEATURE(kManagedUserClientCertificateInPrefs,
-             "ManagedUserClientCertificateInPrefs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsManagedUserClientCertificateInPrefsEnabled() {
@@ -36,9 +33,7 @@ bool IsManagedUserClientCertificateInPrefsEnabled() {
 }
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kWindowsSoftwareKeysEnabled,
-             "WindowsSoftwareKeysEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWindowsSoftwareKeysEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool AreWindowsSoftwareKeysEnabled() {
   // Windows Software keys depend on a fix in the //crypto layer.

@@ -23,9 +23,7 @@ namespace {
 
 // Processed terminated by RenderProcessHost::Cleanup() is marked as
 // normal_termination in ChildExitObserver::TerminationInfo.
-BASE_FEATURE(kCleanupToBeNormalTermination,
-             "CleanupToBeNormalTermination",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCleanupToBeNormalTermination, base::FEATURE_DISABLED_BY_DEFAULT);
 
 void PopulateTerminationInfo(
     const content::ChildProcessTerminationInfo& content_info,

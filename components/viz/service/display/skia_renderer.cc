@@ -119,13 +119,12 @@ namespace {
 // See: crbug.com/344458294, crbug.com/345673794
 // TODO(crbug.com/347909405): Remove this
 BASE_FEATURE(kDumpWithoutCrashingOnMissingRenderPassBacking,
-             "DumpWithoutCrashingOnMissingRenderPassBacking",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // Use BufferQueue for the primary plane instead of a DXGI swap chain or DComp
 // surface.
-BASE_FEATURE(kBufferQueue, "BufferQueue", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBufferQueue, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Smallest unit that impacts anti-aliasing output. We use this to determine

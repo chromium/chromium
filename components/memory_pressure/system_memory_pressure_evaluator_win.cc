@@ -31,7 +31,6 @@ namespace {
 // memory pressure detection via the |kCommitAvailableCriticalThresholdMB|
 // and |kCommitAvailableModerateThresholdMB| parameters.
 BASE_FEATURE(kCommitAvailableMemoryPressureThresholds,
-             "CommitAvailableMemoryPressureThresholds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default thresholds for commit-based memory pressure detection.

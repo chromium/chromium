@@ -6,8 +6,6 @@
 
 namespace captive_portal::features {
 
-BASE_FEATURE(kCaptivePortalUpdatedOrigin,
-             "CaptivePortalUpdatedOrigin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCaptivePortalUpdatedOrigin, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace captive_portal::features

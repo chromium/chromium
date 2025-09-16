@@ -13,7 +13,6 @@ BASE_FEATURE(kDownloadServiceFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadServiceForegroundSessionIOSFeature,
-             "DownloadServiceForegroundSessionIOSFeature",
 #if BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

@@ -26,9 +26,7 @@ namespace policy {
 namespace {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kRetryWithKeyReset,
-             "RetryWithKeyReset",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRetryWithKeyReset, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 base::Clock* clock_for_testing_ = nullptr;

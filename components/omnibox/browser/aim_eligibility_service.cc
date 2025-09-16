@@ -36,7 +36,7 @@
 namespace {
 
 // If disabled, AIM is completely turned off (kill switch).
-BASE_FEATURE(kAimEnabled, "AimEnabled", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAimEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // UMA histograms:
 // Histogram for the eligibility request status.

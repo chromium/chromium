@@ -42,7 +42,6 @@
 
 namespace {
 BASE_FEATURE(kRestartReadAccessForConcurrentReadWrite,
-             "RestartReadAccessForConcurrentReadWrite",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 base::TimeTicks g_last_reshape_failure = base::TimeTicks();

@@ -34,33 +34,23 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 
 // Alphabetical:
 
-BASE_FEATURE(kExternalNavigationDebugLogs,
-             "ExternalNavigationDebugLogs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExternalNavigationDebugLogs, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBlockIntentsToSelf,
-             "BlockIntentsToSelf",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBlockIntentsToSelf, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNavigationCaptureRefactorAndroid,
-             "NavigationCaptureRefactorAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAuxiliaryNavigationStaysInBrowser,
-             "AuxiliaryNavigationStaysInBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReparentTopLevelNavigationFromPWA,
-             "ReparentTopLevelNavigationFromPWA",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReparentAuxiliaryNavigationFromPWA,
-             "ReparentAuxiliaryNavigationFromPWA",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAuxiliaryNavigationStaysInPWA,
-             "AuxiliaryNavigationStaysInPWA",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAuxiliaryNavigationStaysInPWA, base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_ExternalIntentsFeatures_GetFeature(JNIEnv* env, jint ordinal) {
   return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);

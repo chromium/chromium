@@ -6,8 +6,6 @@
 
 namespace sync_preferences::features {
 
-BASE_FEATURE(kEnableCrossDevicePrefTracker,
-             "EnableCrossDevicePrefTracker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableCrossDevicePrefTracker, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace sync_preferences::features

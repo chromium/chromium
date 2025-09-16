@@ -11,7 +11,6 @@ namespace feedback::features {
 // Enables feedback tool to save feedback report to local disk.
 // This flag is only for e2e tast test purpose.
 BASE_FEATURE(kOsFeedbackSaveReportToLocalForE2ETesting,
-             "OsFeedbackSaveReportToLocalForE2ETesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsOsFeedbackSaveReportToLocalForE2ETestingEnabled() {
@@ -21,7 +20,6 @@ bool IsOsFeedbackSaveReportToLocalForE2ETestingEnabled() {
 
 // Disables dispatching reports in Tast tests.
 BASE_FEATURE(kSkipSendingFeedbackReportInTastTests,
-             "SkipSendingFeedbackReportInTastTests",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSkipSendingFeedbackReportInTastTestsEnabled() {

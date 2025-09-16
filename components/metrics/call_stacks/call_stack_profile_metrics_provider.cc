@@ -376,7 +376,6 @@ void ReceivedProfileCounter::ResetToDefaultStateForTesting() {
 // CallStackProfileMetricsProvider --------------------------------------------
 
 BASE_FEATURE(kSamplingProfilerReporting,
-             "SamplingProfilerReporting",
              kSamplingProfilerReportingDefaultState);
 
 CallStackProfileMetricsProvider::CallStackProfileMetricsProvider() = default;

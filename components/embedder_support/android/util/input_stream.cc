@@ -39,7 +39,6 @@ const int kExceptionThrownStatusCode = -2;
 // Experiment to control the size of the intermediate buffer used to copy from
 // Java's InputStream into C++'s net::IOBuffer.
 BASE_FEATURE(kEnableCustomInputStreamBufferSize,
-             "EnableCustomInputStreamBufferSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Effectively the maximum number of bytes that will be copied during a JNI call

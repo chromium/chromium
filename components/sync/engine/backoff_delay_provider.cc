@@ -21,7 +21,6 @@ namespace {
 // If enabled, the initial delay on network error will be 1 second instead of
 // 30 seconds.
 BASE_FEATURE(kSyncShortInitialDelayOnNetworkError,
-             "SyncShortInitialDelayOnNetworkError",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This calculates approx. last_delay * kBackoffMultiplyFactor +/- last_delay

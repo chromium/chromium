@@ -10,17 +10,13 @@ namespace switches {
 
 // TODO(crbug.com/40780588): remove the feature toggle once most of bookmarks
 // have been reuploaded.
-BASE_FEATURE(kSyncReuploadBookmarks,
-             "SyncReuploadBookmarks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSyncReuploadBookmarks, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncMigrateBookmarksWithoutClientTagHash,
-             "SyncMigrateBookmarksWithoutClientTagHash",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabled by default, intended as a kill switch.
 BASE_FEATURE(kSyncBookmarksBatchUploadSelectedItems,
-             "SyncBookmarksBatchUploadSelectedItems",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace switches

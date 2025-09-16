@@ -29,7 +29,6 @@ namespace {
 // When enabled, sharing messages sent using sync may be postponed until sync
 // is active.
 BASE_FEATURE(kSharingPostponeFcmMessageSending,
-             "SharingPostponeFcmMessageSending",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

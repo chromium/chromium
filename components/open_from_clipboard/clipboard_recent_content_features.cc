@@ -8,7 +8,6 @@ const char kClipboardMaximumAgeParam[] = "UIClipboardMaximumAge";
 
 // Feature used to determine the maximum age of clipboard content.
 BASE_FEATURE(kClipboardMaximumAge,
-             "ClipboardMaximumAge",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

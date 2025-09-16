@@ -7,8 +7,6 @@
 namespace wallet {
 
 // Controls whether to enable walletable pass detection on web pages.
-BASE_FEATURE(kWalletablePassDetection,
-             "WalletablePassDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWalletablePassDetection, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace wallet

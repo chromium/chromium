@@ -124,43 +124,31 @@ const base::FeatureParam<std::string> kAnnotatedPageContentMode{
 }  // namespace
 
 // Enables page content to be annotated.
-BASE_FEATURE(kPageContentAnnotations,
-             "PageContentAnnotations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPageContentAnnotations, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the page visibility model to be annotated on every page load.
 BASE_FEATURE(kPageVisibilityPageContentAnnotations,
-             "PageVisibilityPageContentAnnotations",
              enabled_by_default_non_arm32);
 
 BASE_FEATURE(kPageContentAnnotationsValidation,
-             "PageContentAnnotationsValidation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables fetching page metadata from the remote Optimization Guide service.
-BASE_FEATURE(kRemotePageMetadata,
-             "RemotePageMetadata",
-             enabled_by_default_desktop_only);
+BASE_FEATURE(kRemotePageMetadata, enabled_by_default_desktop_only);
 
 BASE_FEATURE(kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations,
-             "OptimizationGuideUseContinueOnShutdownForPageContentAnnotations",
              enabled_by_default_non_ios);
 
 BASE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata,
-             "PageContentAnnotationsPersistSalientImageMetadata",
              enabled_by_default_desktop_only);
 
 BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,
-             "ExtractRelatedSearchesFromPrefetchedZPSResponse",
              enabled_by_default_desktop_only);
 
 BASE_FEATURE(kAnnotatedPageContentExtraction,
-             "AnnotatedPageContentExtraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOnDeviceCategoryClassifier,
-             "OnDeviceCategoryClassifier",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOnDeviceCategoryClassifier, base::FEATURE_DISABLED_BY_DEFAULT);
 
 base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(

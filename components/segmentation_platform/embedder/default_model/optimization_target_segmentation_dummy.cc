@@ -15,7 +15,6 @@
 namespace segmentation_platform {
 
 BASE_FEATURE(kSegmentationPlatformOptimizationTargetSegmentationDummy,
-             "SegmentationPlatformOptimizationTargetSegmentationDummy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

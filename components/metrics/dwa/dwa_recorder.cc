@@ -14,11 +14,9 @@
 
 namespace metrics::dwa {
 
-BASE_FEATURE(kDwaFeature, "DwaFeature", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDwaFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivateMetricsFeature,
-             "PrivateMetricsFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivateMetricsFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

@@ -15,7 +15,6 @@
 namespace segmentation_platform {
 
 BASE_FEATURE(kSegmentationPlatformChromeUserEngagement,
-             "SegmentationPlatformChromeUserEngagement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {

@@ -60,9 +60,7 @@ namespace cronet {
 // should be aware of how the tag is used in QUICHE.
 //
 // The above warning applies to both client copts and copts.
-BASE_FEATURE(kOverrideConnectionOptions,
-             "OverrideConnectionOptions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOverrideConnectionOptions, base::FEATURE_DISABLED_BY_DEFAULT);
 // The expected format for this flag is comma-separated tags.
 BASE_FEATURE_PARAM(std::string,
                    kConnectionOptionsForceOn,
@@ -77,7 +75,6 @@ BASE_FEATURE_PARAM(std::string,
                    "");
 
 BASE_FEATURE(kOverrideClientConnectionOptions,
-             "OverrideClientConnectionOptions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // The expected format for this flag is comma-separated tags.
 BASE_FEATURE_PARAM(std::string,

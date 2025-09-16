@@ -7,17 +7,12 @@
 namespace omnibox {
 
 // If enabled, uses the server response for AIM eligibility for all locales.
-BASE_FEATURE(kAimServerEligibilityEnabled,
-             "AimServerEligibilityEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAimServerEligibilityEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, uses the server response for AIM eligibility for English locales.
 // Has no effect if kAimServerEligibilityEnabled is enabled.
-BASE_FEATURE(kAimServerEligibilityEnabledEn,
-             "AimServerEligibilityEnabledEn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAimServerEligibilityEnabledEn, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, notifies AIM eligibility changes.
 BASE_FEATURE(kAimServerEligibilityChangedNotification,
-             "AimServerEligibilityChangedNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace omnibox

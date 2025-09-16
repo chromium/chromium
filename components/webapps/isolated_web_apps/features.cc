@@ -7,12 +7,9 @@
 namespace features {
 
 BASE_FEATURE(kIsolatedWebAppManagedAllowlist,
-             "IsolatedWebAppManagedAllowlist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace web_app {
-BASE_FEATURE(kIwaKeyDistributionDevMode,
-             "IwaKeyDistributionDevMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIwaKeyDistributionDevMode, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace web_app

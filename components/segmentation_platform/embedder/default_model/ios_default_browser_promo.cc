@@ -245,7 +245,6 @@ constexpr std::array<MetadataWriter::UMAFeature, 32> kUMAFeatures = {
 
 // TODO(crbug.com/407788921): Clean up the killswitch.
 BASE_FEATURE(kIOSDefaultBrowserPromoDefaultModel,
-             "IOSDefaultBrowserPromoDefaultModel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

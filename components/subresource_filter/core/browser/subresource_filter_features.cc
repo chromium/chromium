@@ -248,13 +248,9 @@ BASE_FEATURE(kSafeBrowsingSubresourceFilter,
              "SubresourceFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFilterAdsOnAbusiveSites,
-             "FilterAdsOnAbusiveSites",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFilterAdsOnAbusiveSites, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAdsInterventionsEnforced,
-             "AdsInterventionsEnforced",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAdsInterventionsEnforced, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kAdsInterventionDuration = {
     &kAdsInterventionsEnforced, "kAdsInterventionDuration", base::Days(3)};

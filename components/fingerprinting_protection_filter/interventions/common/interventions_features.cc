@@ -10,9 +10,7 @@ namespace fingerprinting_protection_interventions::features {
 
 // Whether the canvas interventions should be enabled that add noise to the
 // readback values.
-BASE_FEATURE(kCanvasNoise,
-             "CanvasNoise",
-             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCanvasNoise, base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kCanvasNoiseInRegularMode,
@@ -22,7 +20,6 @@ BASE_FEATURE_PARAM(bool,
 
 // [Experimental] Whether readback of canvases should be blocked.
 BASE_FEATURE(kBlockCanvasReadback,
-             "BlockCanvasReadback",
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,

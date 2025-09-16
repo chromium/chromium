@@ -10,23 +10,17 @@
 namespace trusted_vault {
 
 #if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kSetClientEncryptionKeysJsApi,
-             "SetClientEncryptionKeysJsApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSetClientEncryptionKeysJsApi, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kEnableICloudKeychainRecoveryFactor,
-             "EnableICloudKeychainRecoveryFactor",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kEnableRegistrationStateSecurityDomainFiltering,
-             "EnableRegistrationStateSecurityDomainFiltering",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableTrustedVaultSHA256,
-             "EnableTrustedVaultSHA256",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableTrustedVaultSHA256, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace trusted_vault

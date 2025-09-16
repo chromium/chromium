@@ -76,7 +76,6 @@ const gpu::SharedImageUsageSet kDefaultMappableSIUsage =
 
 // Killswitch for fixing SyncToken issue.
 BASE_FEATURE(kExoAlwaysUseSyncTokenFromTexture,
-             "ExoAlwaysUseSyncTokenFromTexture",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Gets the color type of |format| for creating bitmap. If it returns

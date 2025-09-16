@@ -37,9 +37,7 @@ namespace {
 
 // Runs fast WebCrypto operations on the main thread.
 // TODO(crbug.com/40842931): Remove this sometime after 2025-10-02.
-BASE_FEATURE(kWebCryptoOnMainThread,
-             "WebCryptoOnMainThread",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebCryptoOnMainThread, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // ---------------------
 // Threading

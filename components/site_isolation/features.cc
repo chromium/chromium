@@ -38,7 +38,6 @@ BASE_FEATURE(kSiteIsolationForPasswordSites,
 // This feature does not affect Android Webview, which does not include this
 // code.
 BASE_FEATURE(kSiteIsolationForOAuthSites,
-             "SiteIsolationForOAuthSites",
 // Enabled by default on Android only; see https://crbug.com/1206770.
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -84,7 +83,6 @@ const char kPartialSiteIsolationMemoryThresholdParamName[] =
 // On Desktop, this feature starts isolating origins where the custom policy
 // targets an origin that is not already origin-isolated.
 BASE_FEATURE(kOriginIsolationForJsOptExceptions,
-             "OriginIsolationForJsOptExceptions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Desktop-only: kOriginIsolationMemoryThreshold (if enabled) is used to
@@ -92,7 +90,6 @@ BASE_FEATURE(kOriginIsolationForJsOptExceptions,
 // isolation (a stronger model than site isolation, but with potentially higher
 // resource usage).
 BASE_FEATURE(kOriginIsolationMemoryThreshold,
-             "OriginIsolationMemoryThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kOriginIsolationMemoryThresholdParamName[] =
     "origin_isolation_threshold_mb";

@@ -47,11 +47,9 @@ using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
 namespace policy {
 
-BASE_FEATURE(kPolicyFetchWithSha256,
-             "PolicyFetchWithSha256",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPolicyFetchWithSha256, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReregistration, "EnableReregistration",
+BASE_FEATURE(kEnableReregistration,
 #if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else

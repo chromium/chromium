@@ -20,9 +20,7 @@ BASE_FEATURE(kIPHDummyFeature, "IPH_Dummy", base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 // Feature used to add on-device storage for feature engagement.
-BASE_FEATURE(kOnDeviceStorage,
-             "OnDeviceStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOnDeviceStorage, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 bool IsOnDeviceStorageEnabled() {
@@ -823,7 +821,6 @@ BASE_FEATURE(kIPHiOSOneTimeDefaultBrowserNotificationFeature,
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
-             "DefaultBrowserEligibilitySlidingWindow",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
@@ -832,7 +829,6 @@ constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
     /*default_value=*/180};
 
 BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
-             "DefaultBrowserTriggerCriteriaExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIPHiOSAIHubNewBadge,

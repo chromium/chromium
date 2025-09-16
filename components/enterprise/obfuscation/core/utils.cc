@@ -66,9 +66,7 @@ const std::vector<uint8_t> ComputeNonce(base::span<const uint8_t> nonce_prefix,
 
 }  // namespace
 
-BASE_FEATURE(kEnterpriseFileObfuscation,
-             "EnterpriseFileObfuscation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnterpriseFileObfuscation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsFileObfuscationEnabled() {
   return base::FeatureList::IsEnabled(kEnterpriseFileObfuscation);

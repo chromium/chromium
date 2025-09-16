@@ -82,7 +82,6 @@ namespace syncer {
 namespace {
 
 BASE_FEATURE(kSyncUnsubscribeFromTypesWithPermanentErrors,
-             "SyncUnsubscribeFromTypesWithPermanentErrors",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

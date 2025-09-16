@@ -13,13 +13,11 @@ namespace remote_cocoa::features {
 // TODO(http://crbug.com/1454606): Remove this flag once the space switching
 // issue is fixed in AppKit.
 BASE_FEATURE(kImmersiveFullscreenSpaceSwitchMitigation,
-             "ImmersiveFullscreenSpaceSwitchMitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled the overlay windows become visible, allowing for visual
 // debugging of their position on screen.
 BASE_FEATURE(kImmersiveFullscreenOverlayWindowDebug,
-             "ImmersiveFullscreenOverlayWindowDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace remote_cocoa::features

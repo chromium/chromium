@@ -9,8 +9,6 @@
 namespace security_interstitials::features {
 
 // Enables a dialog-based UI for HTTPS-First Mode.
-BASE_FEATURE(kHttpsFirstDialogUi,
-             "HttpsFirstDialogUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHttpsFirstDialogUi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace security_interstitials::features

@@ -29,7 +29,6 @@ namespace features {
 
 // https://html.spec.whatwg.org/multipage/system-state.html#security-and-privacy
 BASE_FEATURE(kStripCredentialsForExternalProtocolHandler,
-             "StripCredentialsForExternalProtocolHandler",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 

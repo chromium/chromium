@@ -23,14 +23,11 @@ constexpr char kPlusAddressRequestTimeoutName[] = "request-timeout";
 // When enabled, the user is shown the GMS core plus address management activity
 // instead of the web page in a Chrome custom tab.
 BASE_FEATURE(kPlusAddressAndroidOpenGmsCoreManagementPage,
-             "PlusAddressAndroidOpenGmsCoreManagementPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls the enabled/disabled state of the experimental feature.
-BASE_FEATURE(kPlusAddressesEnabled,
-             "PlusAddressesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPlusAddressesEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope{
     &kPlusAddressesEnabled, kEnterprisePlusAddressOAuthScopeName, ""};
@@ -45,7 +42,6 @@ const base::FeatureParam<base::TimeDelta> kPlusAddressRequestTimeout{
 
 // When enabled, plus addresses are supported within the context menu.
 BASE_FEATURE(kPlusAddressFallbackFromContextMenu,
-             "PlusAddressFallbackFromContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, plus address creation is offered on all email fields that are
@@ -54,20 +50,16 @@ BASE_FEATURE(kPlusAddressFallbackFromContextMenu,
 // Intended as a killswitch to protect against unexpected behavior.
 // TODO: crbug.com/355398505 - clean up.
 BASE_FEATURE(kPlusAddressOfferCreationOnAllNonUsernameFields,
-             "PlusAddressOfferCreationOnAllNonUsernameFields",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, we check whether the server response to a Create call returned
 // information about existing profiles and return those as the parsing result.
 BASE_FEATURE(kPlusAddressParseExistingProfilesFromCreateResponse,
-             "PlusAddressParseExistingProfilesFromCreateResponse",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, plus addresses are preallocated to avoid having to query the
 // server for every reserve call.
-BASE_FEATURE(kPlusAddressPreallocation,
-             "PlusAddressPreallocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPlusAddressPreallocation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The minimum number of locally stored pre-allocated plus addresses. If the
 // number slips below this threshold, more are requested.

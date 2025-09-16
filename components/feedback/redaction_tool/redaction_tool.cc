@@ -36,15 +36,9 @@ using redaction_internal::IPAddress;
 namespace redaction {
 
 namespace features {
-COMPONENT_EXPORT(REDACTION_TOOL)
-BASE_FEATURE(kEnableCreditCardRedaction,
-             "EnableCreditCardRedaction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableCreditCardRedaction, base::FEATURE_ENABLED_BY_DEFAULT);
 
-COMPONENT_EXPORT(REDACTION_TOOL)
-BASE_FEATURE(kEnableIbanRedaction,
-             "EnableIbanRedaction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableIbanRedaction, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace {

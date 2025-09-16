@@ -42,9 +42,7 @@ const enterprise_management::PolicyData* GetPolicyData(
 
 }  // namespace
 
-BASE_FEATURE(kPublishPolicyWithoutWaiting,
-             "PublishPolicyWithoutWaiting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPublishPolicyWithoutWaiting, base::FEATURE_ENABLED_BY_DEFAULT);
 
 CloudPolicyManager::CloudPolicyManager(
     const std::string& policy_type,

@@ -15,12 +15,9 @@
 
 namespace lens::features {
 
-BASE_FEATURE(kLensStandalone,
-             "LensStandalone",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLensStandalone, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlay,
-             "LensOverlay",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
@@ -28,120 +25,79 @@ BASE_FEATURE(kLensOverlay,
 #endif
 );
 
-BASE_FEATURE(kLensOverlayTranslateButton,
-             "LensOverlayTranslateButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayTranslateButton, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayTranslateLanguages,
-             "LensOverlayTranslateLanguages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayTranslateLanguages, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayImageContextMenuActions,
-             "LensOverlayImageContextMenuActions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayContextualSearchbox,
-             "LensOverlayContextualSearchbox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlaySuggestionsMigration,
-             "LensOverlaySuggestionsMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayLatencyOptimizations,
-             "LensOverlayLatencyOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayRoutingInfo,
-             "LensOverlayRoutingInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayRoutingInfo, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlaySurvey,
-             "LensOverlaySurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlaySurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlaySidePanelOpenInNewTab,
-             "LensOverlaySidePanelOpenInNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayVisualSelectionUpdates,
-             "LensOverlayVisualSelectionUpdates",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayUpdatedClientContext,
-             "LensOverlayUpdatedClientContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensSearchSidePanelNewFeedback,
-             "LensSearchSidePanelNewFeedback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLensSearchSidePanelNewFeedback, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Lens Overlay omnibox entry point. This is a separate feature from
 // kLensOverlay so that the omnibox entry point can be disabled without a
 // dependency on the rest of the Lens Overlay features. This means if can be
 // experimented with independently.
-BASE_FEATURE(kLensOverlayOmniboxEntryPoint,
-             "LensOverlayOmniboxEntryPoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayOmniboxEntryPoint, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayUploadChunking,
-             "LensOverlayUploadChunking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayUploadChunking, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayRecontextualizeOnQuery,
-             "LensOverlayRecontextualizeOnQuery",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayCornerSliders,
-             "LensOverlayCornerSliders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayCornerSliders, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchProtectedPage,
-             "LensSearchProtectedPage",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-BASE_FEATURE(kLensOverlayEduActionChip,
-             "LensOverlayEduActionChip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayEduActionChip, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayKeyboardSelection,
-             "LensOverlayKeyboardSelection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayKeyboardSelection, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayPermissionBubbleAlt,
-             "LensOverlayPermissionBubbleAlt",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayPermissionBubbleAlt, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchNotFoundOnPageToast,
              "kLensSearchNotFoundOnPageToast",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayStraightToSrp,
-             "LensOverlayStraightToSrp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayStraightToSrp, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensSearchAimM3,
-             "LensSearchAimM3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensSearchAimM3, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayEntrypointLabelAlt,
-             "LensOverlayEntrypointLabelAlt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayEntrypointLabelAlt, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayTextSelectionContextMenuEntrypoint,
-             "LensOverlayTextSelectionContextMenuEntrypoint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayForceEmptyCsbQuery,
-             "LensOverlayForceEmptyCsbQuery",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayForceEmptyCsbQuery, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSidePanelEnableWebviewResults,
-             "LensSidePanelEnableWebviewResults",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",

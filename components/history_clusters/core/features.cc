@@ -26,11 +26,9 @@ constexpr auto enabled_by_default_desktop_only =
 
 namespace internal {
 
-BASE_FEATURE(kJourneys, "Journeys", enabled_by_default_desktop_only);
+BASE_FEATURE(kJourneys, enabled_by_default_desktop_only);
 
-BASE_FEATURE(kJourneysImages,
-             "JourneysImages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kJourneysImages, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kJourneysImagesCover{
     &kJourneysImages, "JourneysImagesCover", true};
@@ -51,20 +49,14 @@ BASE_FEATURE(kUserVisibleDebug,
              "JourneysUserVisibleDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHistoryClustersInternalsPage,
-             "HistoryClustersInternalsPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHistoryClustersInternalsPage, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHistoryClustersKeywordFiltering,
-             "HistoryClustersKeywordFiltering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHistoryClustersVisitDeduping,
-             "HistoryClustersVisitDeduping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHistoryClustersVisitDeduping, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHistoryClustersNavigationContextClustering,
-             "HistoryClustersNavigationContextClustering",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace internal

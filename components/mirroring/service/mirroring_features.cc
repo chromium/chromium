@@ -10,9 +10,7 @@ namespace features {
 //
 // This feature is enabled by the Chrome command line flag
 // --enable-cast-streaming-with-hidpi.
-BASE_FEATURE(kCastEnableStreamingWithHiDPI,
-             "CastEnableStreamingWithHiDPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCastEnableStreamingWithHiDPI, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace mirroring

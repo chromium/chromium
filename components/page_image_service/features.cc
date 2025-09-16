@@ -7,16 +7,14 @@
 namespace page_image_service {
 
 // Enabled by default because we are only using this as a killswitch.
-BASE_FEATURE(kImageService, "ImageService", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kImageService, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled the capability by default, can be used as a killswitch.
 BASE_FEATURE(kImageServiceSuggestPoweredImages,
-             "ImageServiceSuggestPoweredImages",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled the capability by default, can be used as a killswitch.
 BASE_FEATURE(kImageServiceOptimizationGuideSalientImages,
-             "ImageServiceOptimizationGuideSalientImages",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace page_image_service

@@ -14,6 +14,5 @@ namespace embedder_support {
 // Users from control group will have the feature disabled, excluding them
 // from the origin trial.
 BASE_FEATURE(kOriginTrialsSampleAPIThirdPartyAlternativeUsage,
-             "OriginTrialsSampleAPIThirdPartyAlternativeUsage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace embedder_support

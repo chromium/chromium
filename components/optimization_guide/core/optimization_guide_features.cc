@@ -49,14 +49,10 @@ constexpr auto enabled_by_default_mobile_only =
 
 // Enables the syncing of the Optimization Hints component, which provides
 // hints for what optimizations can be applied on a page load.
-BASE_FEATURE(kOptimizationHints,
-             "OptimizationHints",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOptimizationHints, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the prediction of optimization targets.
-BASE_FEATURE(kOptimizationTargetPrediction,
-             "OptimizationTargetPrediction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOptimizationTargetPrediction, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables push notification of hints.
 BASE_FEATURE(kPushNotifications,
@@ -71,19 +67,15 @@ BASE_FEATURE(kPageTextExtraction,
 
 // Enables the validation of optimization guide metadata.
 BASE_FEATURE(kOptimizationGuideMetadataValidation,
-             "OptimizationGuideMetadataValidation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPreventLongRunningPredictionModels,
-             "PreventLongRunningPredictionModels",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOverrideNumThreadsForModelExecution,
-             "OverrideNumThreadsForModelExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite,
-             "OptGuideEnableXNNPACKDelegateWithTFLite",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Killswitch for fetching on search results from a remote Optimization Guide
@@ -93,9 +85,7 @@ BASE_FEATURE(kOptimizationGuideFetchingForSRP,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for disabling model quality logging.
-BASE_FEATURE(kModelQualityLogging,
-             "ModelQualityLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kModelQualityLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables fetching personalized metadata from the Optimization Guide Service
 // (on-demand fetching).
@@ -108,17 +98,14 @@ BASE_FEATURE(kOptimizationGuidePersonalizedFetching,
 // model version got served that lead to crashes or critical failures, and an
 // immediate remedy is needed to stop serving those versions.
 BASE_FEATURE(kOptimizationGuidePredictionModelKillswitch,
-             "OptimizationGuidePredictionModelKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to enable model execution.
 BASE_FEATURE(kOptimizationGuideModelExecution,
-             "OptimizationGuideModelExecution",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to use the on device model service in optimization guide.
 BASE_FEATURE(kOptimizationGuideOnDeviceModel,
-             "OptimizationGuideOnDeviceModel",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -129,54 +116,39 @@ BASE_FEATURE(kOptimizationGuideOnDeviceModel,
 // Whether to allow on device model evaluation for Compose. This has no effect
 // if OptimizationGuideOnDeviceModel is off.
 BASE_FEATURE(kOptimizationGuideComposeOnDeviceEval,
-             "OptimizationGuideComposeOnDeviceEval",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the on device service is launched after a delay on startup to log
 // metrics.
-BASE_FEATURE(kLogOnDeviceMetricsOnStartup,
-             "LogOnDeviceMetricsOnStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLogOnDeviceMetricsOnStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to download the text safety classifier model.
-BASE_FEATURE(kTextSafetyClassifier,
-             "TextSafetyClassifier",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTextSafetyClassifier, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to scan the full text when running the language detection in the text
 // safety classifier.
 BASE_FEATURE(kTextSafetyScanLanguageDetection,
-             "TextSafetyScanLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether performance class should be fetched each startup or just after a
 // version update.
 BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
-             "OnDeviceModelFetchPerformanceClassEveryStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Force show the AI page and all AI feature sub-pages in settings, even if they
 // would be unavailable otherwise. This is meant for development and test
 // purposes only.
-BASE_FEATURE(kAiSettingsPageForceAvailable,
-             "AiSettingsPageForceAvailable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAiSettingsPageForceAvailable, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable AI settings page integration with Privacy Guide.
-BASE_FEATURE(kPrivacyGuideAiSettings,
-             "PrivacyGuideAiSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacyGuideAiSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOnDeviceModelPerformanceParams,
-             "OnDeviceModelPerformanceParams",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOnDeviceModelPerformanceParams, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnnotatedPageContentWithActionableElements,
-             "AnnotatedPageContentWithActionableElements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnnotatedPageContentWithMediaData,
-             "AnnotatedPageContentWithMediaData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
@@ -196,22 +168,17 @@ const base::FeatureParam<std::string> kPerformanceClassListForAudioInput{
     &kOnDeviceModelPerformanceParams,
     "compatible_on_device_performance_classes_audio_input", "5,6"};
 
-BASE_FEATURE(kOptimizationGuideIconView,
-             "OptimizationGuideIconView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOptimizationGuideIconView, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBrokerModelSessionsForUntrustedProcesses,
-             "BrokerModelSessionsForUntrustedProcesses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables proactively sending GAIA information to the Optimization Guide
 // Service.
 BASE_FEATURE(kOptimizationGuideProactivePersonalizedHintsFetching,
-             "OptimizationGuideProactivePersonalizedHintsFetching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOptimizationGuideBypassFormsClassificationAuth,
-             "OptimizationGuideBypassFormsClassificationAuth",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default value here is a bit of a guess.

@@ -122,12 +122,9 @@ bool IsTranslateLanguage(std::string_view language) {
 // * translate_too_often_denied
 // * translate_language_blacklist
 
-BASE_FEATURE(kTranslateRecentTarget,
-             "TranslateRecentTarget",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTranslateRecentTarget, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMigrateAlwaysTranslateLanguagesFix,
-             "MigrateAlwaysTranslateLanguagesFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 TranslateLanguageInfo::TranslateLanguageInfo() = default;

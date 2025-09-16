@@ -10,14 +10,12 @@
 namespace input::features {
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kInputOnViz, "InputOnViz", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInputOnViz, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseAndroidBufferedInputDispatch,
-             "UseAndroidBufferedInputDispatch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kLogBubblingTouchscreenGesturesForDebug,
-             "LogBubblingTouchscreenGesturesForDebug",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
@@ -27,23 +25,17 @@ BASE_FEATURE(kLogBubblingTouchscreenGesturesForDebug,
 
 // Flag guard for fix for crbug.com/346629231.
 BASE_FEATURE(kIgnoreBubblingCollisionIfSourceDevicesMismatch,
-             "IgnoreBubblingCollisionIfSourceDevicesMismatch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Flag guard for fix for crbug.com/346629231.
-BASE_FEATURE(kScrollBubblingFix,
-             "ScrollBubblingFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kScrollBubblingFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Flag guard for fix for crbug.com/404464598.
 BASE_FEATURE(kUseFirstCoalescedFrameAsFlingGenerationTimestamp,
-             "UseFirstCoalescedFrameAsFlingGenerationTimestamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Flag guard for renderer hang watcher \ hang monitor.
-BASE_FEATURE(kRendererHangWatcher,
-             "RendererHangWatcher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRendererHangWatcher, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(
     base::TimeDelta,
     kRendererHangWatcherDelay,
@@ -54,7 +46,6 @@ BASE_FEATURE_PARAM(
 
 // Flag guard for unresponsive renderer multiple stack collection attempts.
 BASE_FEATURE(kUnresponsiveMultipleStackCollection,
-             "UnresponsiveMultipleStackCollection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kUnresponsiveMultipleStackCollectionDelay,

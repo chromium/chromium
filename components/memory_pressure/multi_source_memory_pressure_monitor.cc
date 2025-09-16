@@ -19,9 +19,7 @@
 
 namespace memory_pressure {
 namespace {
-BASE_FEATURE(kSuppressMemoryMonitor,
-             "SuppressMemoryMonitor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSuppressMemoryMonitor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(std::string,
                    kSuppressMemoryMonitorMask,
