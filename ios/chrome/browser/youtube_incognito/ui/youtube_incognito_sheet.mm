@@ -394,7 +394,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   UILabel* title = [[UILabel alloc] init];
   title.numberOfLines = 0;
   UIFontDescriptor* descriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleTitle3];
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleTitle2];
   UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
                                    weight:UIFontWeightBold];
   UIFontMetrics* fontMetrics =
