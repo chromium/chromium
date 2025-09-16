@@ -177,8 +177,8 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini">
     Shares the current tab with Gemini, even as you switch tabs
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini, but the user's data is not used to improve the model">
-    Share page content with Gemini to get more relevant answers. Your data is not used to improve generative AI models.
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" translateable="false" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini, but the user's data is not used to improve the model">
+    Shares the current tab with Gemini, even as you switch tabs. Your data is not used to improve generative AI models.
    </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE" desc="Name of the enable current default tab access setting." translateable="false">
     Always share current tab
