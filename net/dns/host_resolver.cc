@@ -50,7 +50,6 @@ namespace {
 
 // The experiment settings of features::kUseDnsHttpsSvcb. See the comments in
 // net/base/features.h for more details.
-const char kUseDnsHttpsSvcbEnable[] = "enable";
 const char kUseDnsHttpsSvcbInsecureExtraTimeMax[] = "insecure_extra_time_max";
 const char kUseDnsHttpsSvcbInsecureExtraTimePercent[] =
     "insecure_extra_time_percent";
@@ -254,8 +253,6 @@ HostResolver::HttpsSvcbOptions::~HttpsSvcbOptions() = default;
 HostResolver::HttpsSvcbOptions HostResolver::HttpsSvcbOptions::FromDict(
     const base::Value::Dict& dict) {
   net::HostResolver::HttpsSvcbOptions options;
-  options.enable =
-      dict.FindBool(kUseDnsHttpsSvcbEnable).value_or(options.enable);
   GetTimeDeltaFromDictString(dict, kUseDnsHttpsSvcbInsecureExtraTimeMax,
                              &options.insecure_extra_time_max);
 
@@ -280,7 +277,6 @@ HostResolver::HttpsSvcbOptions HostResolver::HttpsSvcbOptions::FromDict(
 // static
 HostResolver::HttpsSvcbOptions HostResolver::HttpsSvcbOptions::FromFeatures() {
   net::HostResolver::HttpsSvcbOptions options;
-  options.enable = base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb);
   options.insecure_extra_time_max =
       features::kUseDnsHttpsSvcbInsecureExtraTimeMax.Get();
   options.insecure_extra_time_percent =

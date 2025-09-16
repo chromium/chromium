@@ -298,7 +298,6 @@ class NET_EXPORT HostResolver {
     static HttpsSvcbOptions FromDict(const base::Value::Dict& dict);
     static HttpsSvcbOptions FromFeatures();
 
-    bool enable = false;
     base::TimeDelta insecure_extra_time_max;
     int insecure_extra_time_percent = 0;
     base::TimeDelta insecure_extra_time_min;
