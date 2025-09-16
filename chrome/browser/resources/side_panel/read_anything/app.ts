@@ -19,7 +19,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
-import {LOG_EMPTY_DELAY_MS, minOverflowLengthToScroll} from './common.js';
+import {minOverflowLengthToScroll} from './common.js';
 import {ContentController} from './content_controller.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
@@ -328,14 +328,7 @@ export class AppElement extends AppElementBase implements
     if (this.isEmptyState()) {
       return;
     }
-    // Log the empty state only after a short delay. Sometimes the empty state
-    // is only shown very briefly before the content is distilled, so we don't
-    // need to count those instances as a failure to distill.
-    setTimeout(() => {
-      if (this.isEmptyState() && !this.hasContent_) {
-        this.logger_.logEmptyState();
-      }
-    }, LOG_EMPTY_DELAY_MS);
+    this.logger_.logEmptyState();
     if (!chrome.readingMode.isGoogleDocs) {
       this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
     } else {

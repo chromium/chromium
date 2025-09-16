@@ -10,7 +10,7 @@ export {PageCallbackRouter} from '//resources/cr_components/color_change_listene
 export type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export type {AppElement} from './app.js';
 export {AppStyleUpdater} from './app_style_updater.js';
-export {getWordCount, isRectMostlyVisible, isRectVisible, LOG_EMPTY_DELAY_MS, MOSTLY_VISIBLE_PERCENT, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
+export {getWordCount, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 export {ContentController, HIGHLIGHTED_LINK_CLASS} from './content_controller.js';
 export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
 export type {LanguageMenuElement} from './language_menu.js';
