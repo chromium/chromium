@@ -13,6 +13,12 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "Ic2b5cf6b19baaa298fe6bd64bd55268f85d70fa7",
+      "good_change_id": "Ia28dbc3aa037a6a9fd0cc157213f6f9aa34641f6",
+      "bugs": ["b/445372626"],
+      "comment": "jni_zero annotations break ProGuard on the fallback impl"
+    },
+    {
       "bad_change_id": "Iaf91186149315066f1bf9928c4bef66015d55a46",
       "good_change_id": "Ib13d999649a26230a09bd970a16ae04a7a1a4e68",
       "bugs": ["b/425901872"],
