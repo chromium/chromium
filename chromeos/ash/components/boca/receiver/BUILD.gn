@@ -53,12 +53,14 @@ source_set("unit_tests") {
     "boca_device_auth_token_service_unittest.cc",
     "get_kiosk_receiver_request_unittest.cc",
     "get_receiver_connection_info_request_unittest.cc",
+    "kiosk_receiver_parser_unittest.cc",
     "register_receiver_request_unittest.cc",
     "start_kiosk_receiver_request_unittest.cc",
   ]
 
   deps = [
     ":receiver",
+    ":util",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/boca/proto",
