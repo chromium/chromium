@@ -1,3 +1,4 @@
+CONSOLE WARNING: crbug.com/435623334: This page uses XSLT, which being considered for removal from the web. If that happens, it is possible that this page will need to be updated to maintain functionality.
 This test loads the XML document in an iframe so that it can call dumpAsText(). This test passes if the iframe below contains a message starting with "PASS".
 
 --------

@@ -6,3 +6,4 @@ CONSOLE ERROR: Opening and ending tag mismatch: html line 5 and xsl:template
 
 CONSOLE ERROR: Opening and ending tag mismatch: template line 4 and stylesheet
 
+CONSOLE WARNING: crbug.com/435623334: This page uses XSLT, which being considered for removal from the web. If that happens, it is possible that this page will need to be updated to maintain functionality.

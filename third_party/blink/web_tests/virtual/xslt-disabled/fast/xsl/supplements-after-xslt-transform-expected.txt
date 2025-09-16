@@ -1,0 +1,1 @@
+Ensure supplements are updated to the new ExecutionContext after XSLT processing changes the document. PASS if we don't crash. 

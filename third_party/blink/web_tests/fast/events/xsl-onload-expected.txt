@@ -1,3 +1,4 @@
+CONSOLE WARNING: crbug.com/435623334: This page uses XSLT, which being considered for removal from the web. If that happens, it is possible that this page will need to be updated to maintain functionality.
 This is a regression test that checks for a problem where parsing would be stuck true and you'd never get a load event for an XSL-generated page
 
 If the test succeeds, the next paragraph will say "handled load event". If that message is missing, the test failed.

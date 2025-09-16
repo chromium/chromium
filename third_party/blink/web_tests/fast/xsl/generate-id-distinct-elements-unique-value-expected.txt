@@ -1,3 +1,4 @@
+CONSOLE WARNING: crbug.com/435623334: This page uses XSLT, which being considered for removal from the web. If that happens, it is possible that this page will need to be updated to maintain functionality.
 Verify that generate-id() does not return the same value for different nodes.
 
 1 and 2 have distinct IDs as expected: PASSED

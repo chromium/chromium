@@ -23,14 +23,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_XSLT_PROCESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XSLT_PROCESSOR_H_
 
+#include <libxml/parserInternals.h>
+#include <libxslt/documents.h>
+
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/xml/xsl_style_sheet.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-
-#include <libxml/parserInternals.h>
-#include <libxslt/documents.h>
 
 namespace blink {
 
@@ -46,9 +49,19 @@ class XSLTProcessor final : public ScriptWrappable {
     return MakeGarbageCollected<XSLTProcessor>(document);
   }
 
-  XSLTProcessor(Document& document) : document_(&document) {
+  explicit XSLTProcessor(Document& document) : document_(&document) {
     CHECK(RuntimeEnabledFeatures::XSLTEnabled());
+
+    document.domWindow()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            ConsoleMessage::Source::kDeprecation,
+            ConsoleMessage::Level::kWarning,
+            "crbug.com/435623334: This page uses XSLT, which being considered "
+            "for removal from the web. If that happens, it is possible that "
+            "this page will need to be updated to maintain functionality."),
+        /*discard_duplicates=*/true);
   }
+
   ~XSLTProcessor() override;
 
   void SetXSLStyleSheet(XSLStyleSheet* style_sheet) {
