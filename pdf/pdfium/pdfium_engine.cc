@@ -24,6 +24,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -1441,8 +1442,21 @@ PDFiumEngine::PointData PDFiumEngine::GetPointData(const gfx::PointF& point) {
 
 // TODO(crbug.com/443275584): Handle vertical text.
 int PDFiumEngine::GetCharIndexBasedOnPointData(const PointData& point_data) {
-  if (point_data.pdf_point.x() <
-      point_data.char_bounds.AsGfxRectF().CenterPoint().x()) {
+  DCHECK(PageIndexInBounds(point_data.page_index));
+
+  bool point_is_left_of_char =
+      point_data.pdf_point.x() <
+      point_data.char_bounds.AsGfxRectF().CenterPoint().x();
+  PDFiumRange current_char(pages_[point_data.page_index].get(),
+                           point_data.char_index,
+                           /*char_count=*/1);
+  // Treat unknown direction as LTR.
+  if (base::i18n::GetStringDirection(current_char.GetText()) ==
+      base::i18n::RIGHT_TO_LEFT) {
+    point_is_left_of_char = !point_is_left_of_char;
+  }
+
+  if (point_is_left_of_char) {
     return point_data.char_index;
   }
   return point_data.char_index + 1;
@@ -1507,7 +1521,7 @@ void PDFiumEngine::OnMultipleClick(int click_count,
 void PDFiumEngine::OnTextOrLinkAreaClickInternal(const PointData& point_data,
                                                  int click_count) {
   CHECK(IsSelectableArea(point_data.area));
-  if (point_data.page_index < 0 || point_data.char_index < 0) {
+  if (!PageIndexInBounds(point_data.page_index) || point_data.char_index < 0) {
     return;
   }
 

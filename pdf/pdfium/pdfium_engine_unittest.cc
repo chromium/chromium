@@ -1310,6 +1310,49 @@ TEST_P(PDFiumEngineSelectionTest, SelectTextAcrossLine) {
   EXPECT_EQ("wo", engine->GetSelectedText());
 }
 
+TEST_P(PDFiumEngineSelectionTest, SelectTextAcrossLineRtl) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hebrew_mirrored.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Click and drag to the right.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition({220, 50})));
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({225, 50})));
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({230, 50})));
+  EXPECT_EQ("י", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({235, 50})));
+  EXPECT_EQ("ני", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({240, 50})));
+  EXPECT_EQ("בני", engine->GetSelectedText());
+
+  // Click and drag to the left.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition({225, 50})));
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({220, 50})));
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({215, 50})));
+  EXPECT_EQ("מ", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({210, 50})));
+  EXPECT_EQ("מי", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({205, 50})));
+  EXPECT_EQ("מין", engine->GetSelectedText());
+}
+
 TEST_P(PDFiumEngineSelectionTest, SelectTextAcrossEmptyPage) {
   PDFiumEngine* engine = CreateEngine(
       FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
