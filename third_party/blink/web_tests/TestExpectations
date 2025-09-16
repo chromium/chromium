@@ -9720,3 +9720,6 @@ crbug.com/443533494 [ Linux ] http/tests/worklet/paint-worklet-csp-eval.html [ F
 
 # Temporary disable due to incompatability while rolling DevTools
 crbug.com/444247021 http/tests/devtools/a11y-axe-core/settings/menu-a11y-test.js [ Skip Timeout ]
+
+# Gardener 2025-09-16
+crbug.com/445283253 [ Win11-arm64 ] http/tests/html/translated-oopif-scrollbar-both.html [ Failure Pass ]
