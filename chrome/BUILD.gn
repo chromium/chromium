@@ -173,10 +173,12 @@ if (!is_android && !is_mac) {
     data = [ "$root_out_dir/resources.pak" ]
     data_deps = []
 
+    if (is_win || is_linux || is_chromeos) {
+      deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+    }
+
     if (is_chromeos) {
-      data_deps += [
-        "//sandbox/linux:chrome_sandbox",
-      ]
+      data_deps += [ "//sandbox/linux:chrome_sandbox" ]
       if (build_mojo_proxy) {
         data_deps += [ "//mojo/proxy:mojo_proxy" ]
       }
@@ -425,6 +427,7 @@ if (is_win) {
       "//components/crash/core/app",
       "//components/memory_system",
       "//components/policy:generated",
+      "//components/webapps/isolated_web_apps:scheme",
       "//content/public/app",
       "//crypto",
       "//headless:headless_non_renderer",
@@ -1128,6 +1131,7 @@ if (is_win) {
       "//components/crash/core/app",
       "//components/memory_system",
       "//components/policy:generated",
+      "//components/webapps/isolated_web_apps:scheme",
       "//content/public/app",
       "//headless:headless_shell_lib",
       "//third_party/cld_3/src/src:cld_3",

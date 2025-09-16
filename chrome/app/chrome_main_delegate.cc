@@ -104,6 +104,11 @@
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include <malloc.h>
 
@@ -221,7 +226,11 @@ const char* const ChromeMainDelegate::kNonWildcardDomainNonPortSchemes[] = {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions::kExtensionScheme,
 #endif
-    chrome::kChromeSearchScheme,       chrome::kIsolatedAppScheme,
+    chrome::kChromeSearchScheme,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
+    webapps::kIsolatedAppScheme,
+#endif
     content::kChromeDevToolsScheme,    content::kChromeUIScheme,
     content::kChromeUIUntrustedScheme,
 };

@@ -154,6 +154,10 @@ static_library("test_support") {
   ]
   public_deps = [ "//ui/lottie" ]
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
+
   if (is_android) {
     deps += [
       "//chrome/browser/flags:flags_android",
