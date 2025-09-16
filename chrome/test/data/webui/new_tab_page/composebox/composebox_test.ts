@@ -269,13 +269,18 @@ suite('NewTabPageComposeboxTest', () => {
     await uploadFileAndVerify(
         id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
     callbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kUploadSuccessful, null);
+        id, FileUploadStatus.kProcessing, null);
     await microtasksFinished();
 
     // Autocomplete should be stopped (with matches cleared) and then
     // queried again when a file is uploaded.
     assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 1);
     assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
+
+    // The suggest request should be triggered before the file has finished
+    // uploading.
+    callbackRouterRemote.onContextualInputStatusChanged(
+        id, FileUploadStatus.kUploadSuccessful, null);
 
     // Delete the uploaded file.
     const deletedId = composeboxElement.$.carousel.files[0]!.uuid;

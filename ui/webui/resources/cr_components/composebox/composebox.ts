@@ -246,14 +246,14 @@ export class ComposeboxElement extends I18nMixinLit
                 file = {...file, status: status};
                 this.files_.set(token, file);
 
+                if (status === FileUploadStatus.kProcessing && this.showZps) {
+                  // Query autocomplete to get contextual suggestions for files.
+                  this.clearAutocompleteMatches_();
+                  this.lastQueriedInput_ = this.$.input.value;
+                  this.searchboxHandler_.queryAutocomplete(
+                      stringToMojoString16(this.$.input.value), false);
+                }
                 if (status === FileUploadStatus.kUploadSuccessful) {
-                  // Query autocomplete to get contextual suggestions for file.
-                  if (this.showZps) {
-                    this.clearAutocompleteMatches_();
-                    this.lastQueriedInput_ = this.$.input.value;
-                    this.searchboxHandler_.queryAutocomplete(
-                        stringToMojoString16(this.$.input.value), false);
-                  }
                   const announcer = getAnnouncerInstance();
                   announcer.announce(
                       this.i18n('composeboxFileUploadCompleteText'));
