@@ -34,7 +34,6 @@ import org.chromium.base.TerminationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -602,9 +601,6 @@ public class WebContentsImpl
             @ChildProcessImportance int mainFrameImportance,
             @ChildProcessImportance int subframeImportance) {
         checkNotDestroyed();
-        assert ChildProcessConnection.supportNotPerceptibleBinding()
-                || (mainFrameImportance != ChildProcessImportance.PERCEPTIBLE
-                        && subframeImportance != ChildProcessImportance.PERCEPTIBLE);
         assert mainFrameImportance >= subframeImportance;
         WebContentsImplJni.get()
                 .setPrimaryPageImportance(

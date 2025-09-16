@@ -431,9 +431,6 @@ public class ChildProcessLauncherHelperTest {
     @MediumTest
     @Feature({"ProcessManagement"})
     public void testNotPerceptiveBindingForSpareRenderer() {
-        if (!ChildProcessConnection.supportNotPerceptibleBinding()) {
-            return;
-        }
         FeatureOverrides.overrideParam(
                 ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getFeatureName(),
                 ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getName(),

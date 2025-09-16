@@ -99,19 +99,7 @@ public class BindingManagerTest {
         LauncherThread.setLauncherThreadAsLauncherThread();
     }
 
-    private void setupBindingType(boolean useNotPerceptibleBinding) {
-        boolean isQOrHigher = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-        ChildProcessConnection.setSupportNotPerceptibleBindingForTesting(
-                useNotPerceptibleBinding && isQOrHigher);
-        if (useNotPerceptibleBinding) {
-            Assert.assertEquals(isQOrHigher, ChildProcessConnection.supportNotPerceptibleBinding());
-            return;
-        }
-        Assert.assertFalse(ChildProcessConnection.supportNotPerceptibleBinding());
-    }
-
-    private void checkConnections(
-            ChildProcessConnection[] connections, boolean isConnected) {
+    private void checkConnections(ChildProcessConnection[] connections, boolean isConnected) {
         boolean[] connected = new boolean[connections.length];
         Arrays.fill(connected, isConnected);
         checkConnections(connections, connected);
@@ -121,12 +109,8 @@ public class BindingManagerTest {
         assertThat(connections.length).isEqualTo(connected.length);
         for (int i = 0; i < connections.length; i++) {
             Assert.assertEquals(
-                    "isVisibleBindingBound check failed for connection " + i,
-                    !ChildProcessConnection.supportNotPerceptibleBinding() && connected[i],
-                    connections[i].bindingStateCurrent() == ChildBindingState.VISIBLE);
-            Assert.assertEquals(
                     "isNotPerceptibleBindingBound check failed for connection " + i,
-                    ChildProcessConnection.supportNotPerceptibleBinding() && connected[i],
+                    connected[i],
                     connections[i].bindingStateCurrent() == ChildBindingState.NOT_PERCEPTIBLE);
         }
     }
@@ -137,29 +121,13 @@ public class BindingManagerTest {
      */
     @Test
     @Feature({"ProcessManagement"})
-    public void testVisibleBindingDropOnBackground() {
-        setupBindingType(false);
-        doTestBindingDropOnBackground(mManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testVisibleBindingDropOnBackgroundWithVariableSize() {
-        setupBindingType(false);
-        doTestBindingDropOnBackground(mVariableManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingDropOnBackground() {
-        setupBindingType(true);
         doTestBindingDropOnBackground(mManager);
     }
 
     @Test
     @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingDropOnBackgroundWithVariableSize() {
-        setupBindingType(true);
         doTestBindingDropOnBackground(mVariableManager);
     }
 
@@ -197,32 +165,15 @@ public class BindingManagerTest {
         checkConnections(connections, /* isConnected= */ false);
     }
 
-    /** Verifies that onLowMemory() drops all the moderate bindings. */
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testVisibleBindingDropOnLowMemory() {
-        setupBindingType(false);
-        doTestBindingDropOnLowMemory(mManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testVisibleBindingDropOnLowMemoryVariableSize() {
-        setupBindingType(false);
-        doTestBindingDropOnLowMemory(mVariableManager);
-    }
-
     @Test
     @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingDropOnLowMemory() {
-        setupBindingType(true);
         doTestBindingDropOnLowMemory(mManager);
     }
 
     @Test
     @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingDropOnLowMemoryVariableSize() {
-        setupBindingType(true);
         doTestBindingDropOnLowMemory(mVariableManager);
     }
 
@@ -244,29 +195,13 @@ public class BindingManagerTest {
     /** Verifies that onTrimMemory() drops moderate bindings properly. */
     @Test
     @Feature({"ProcessManagement"})
-    public void testVisibleBindingDropOnTrimMemory() {
-        setupBindingType(false);
-        doTestBindingDropOnTrimMemory(mManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testVisibleBindingDropOnTrimMemoryWithVariableSize() {
-        setupBindingType(false);
-        doTestBindingDropOnTrimMemory(mVariableManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingDropOnTrimMemory() {
-        setupBindingType(true);
         doTestBindingDropOnTrimMemory(mManager);
     }
 
     @Test
     @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingDropOnTrimMemoryWithVariableSize() {
-        setupBindingType(true);
         doTestBindingDropOnTrimMemory(mVariableManager);
     }
 
@@ -304,11 +239,7 @@ public class BindingManagerTest {
                 Assert.assertEquals(
                         message,
                         i >= pair.second,
-                        ChildProcessConnection.supportNotPerceptibleBinding()
-                                ? connections[i].bindingStateCurrent()
-                                        == ChildBindingState.NOT_PERCEPTIBLE
-                                : connections[i].bindingStateCurrent()
-                                        == ChildBindingState.VISIBLE);
+                        connections[i].bindingStateCurrent() == ChildBindingState.NOT_PERCEPTIBLE);
             }
         }
     }
@@ -319,29 +250,13 @@ public class BindingManagerTest {
      */
     @Test
     @Feature({"ProcessManagement"})
-    public void testVisibleBindingTillBackgroundedSentToBackground() {
-        setupBindingType(false);
-        doTestBindingTillBackgroundedSentToBackground(mManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testVisibleBindingTillBackgroundedSentToBackgroundWithVariableSize() {
-        setupBindingType(false);
-        doTestBindingTillBackgroundedSentToBackground(mVariableManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingTillBackgroundedSentToBackground() {
-        setupBindingType(true);
         doTestBindingTillBackgroundedSentToBackground(mManager);
     }
 
     @Test
     @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingTillBackgroundedSentToBackgroundWithVariableSize() {
-        setupBindingType(true);
         doTestBindingTillBackgroundedSentToBackground(mVariableManager);
     }
 
@@ -361,29 +276,13 @@ public class BindingManagerTest {
 
     @Test
     @Feature({"ProcessManagement"})
-    public void testOneWaivedConnection_VisibleBinding() {
-        setupBindingType(false);
-        doTestOneWaivedConnection(mManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testOneWaivedConnectionWithVariableSize_VisibleBinding() {
-        setupBindingType(false);
-        doTestOneWaivedConnection(mVariableManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
     public void testOneWaivedConnection_NotPerceptibleBinding() {
-        setupBindingType(true);
         doTestOneWaivedConnection(mManager);
     }
 
     @Test
     @Feature({"ProcessManagement"})
     public void testOneWaivedConnectionWithVariableSize_NotPerceptibleBinding() {
-        setupBindingType(true);
         doTestOneWaivedConnection(mVariableManager);
     }
 
@@ -420,29 +319,13 @@ public class BindingManagerTest {
 
     @Test
     @Feature({"ProcessManagement"})
-    public void testBindingCountLimit_VisibleBinding() {
-        setupBindingType(false);
-        doTestBindingCountLimit(mManager, /* limited= */ true);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testNoBindingCountLimitWithVariableSize_VisibleBinding() {
-        setupBindingType(false);
-        doTestBindingCountLimit(mVariableManager, /* limited= */ false);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
     public void testBindingCountLimit_NotPerceptibleBinding() {
-        setupBindingType(true);
         doTestBindingCountLimit(mManager, /* limited= */ true);
     }
 
     @Test
     @Feature({"ProcessManagement"})
     public void testNoBindingCountLimitWithVariableSize_NotPerceptibleBinding() {
-        setupBindingType(true);
         doTestBindingCountLimit(mVariableManager, /* limited= */ false);
     }
 
@@ -461,29 +344,13 @@ public class BindingManagerTest {
 
     @Test
     @Feature({"ProcessManagement"})
-    public void testBindingCountLimitLowestRankAddedLast_VisibleBinding() {
-        setupBindingType(false);
-        doTestBindingCountLimitLowestRankAddedLast(mManager, /* limited= */ true);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testNoBindingCountLimitLowestRankAddedLastWithVariableSize_VisibleBinding() {
-        setupBindingType(false);
-        doTestBindingCountLimitLowestRankAddedLast(mVariableManager, /* limited= */ false);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
     public void testBindingCountLimitLowestRankAddedLast_NotPerceptibleBinding() {
-        setupBindingType(true);
         doTestBindingCountLimitLowestRankAddedLast(mManager, /* limited= */ true);
     }
 
     @Test
     @Feature({"ProcessManagement"})
     public void testNoBindingCountLimitLowestRankAddedLastWithVariableSize_NotPerceptibleBinding() {
-        setupBindingType(true);
         doTestBindingCountLimitLowestRankAddedLast(mVariableManager, /* limited= */ false);
     }
 

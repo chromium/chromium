@@ -164,13 +164,6 @@ public class ChildProcessConnectionMetrics {
         cancelEmitting();
     }
 
-    private boolean bindingManagerHasExclusiveVisibleBinding(ChildProcessConnection connection) {
-        if (mBindingManager != null) {
-            return mBindingManager.hasExclusiveVisibleBinding(connection);
-        }
-        return false;
-    }
-
     // These metrics are only emitted in the foreground.
     @VisibleForTesting
     void emitMetrics() {
@@ -201,11 +194,7 @@ public class ChildProcessConnectionMetrics {
                     break;
                 case ChildBindingState.VISIBLE:
                     visibleBindingCount++;
-                    if (bindingManagerHasExclusiveVisibleBinding(connection)) {
-                        contentWaivedBindingCount++;
-                    } else {
-                        contentVisibleBindingCount++;
-                    }
+                    contentVisibleBindingCount++;
                     break;
                 case ChildBindingState.NOT_PERCEPTIBLE:
                     notPerceptibleBindingCount++;

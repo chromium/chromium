@@ -480,7 +480,6 @@ public class ChildProcessRankingTest {
     @Test
     @EnableFeatures({ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU})
     public void testRebindHighRankConnectionStrictWithoutConflict() {
-        ChildProcessConnection.setSupportNotPerceptibleBindingForTesting(true);
         ChildProcessRanking ranking = new ChildProcessRanking();
         ranking.enableServiceGroupImportance();
 
@@ -650,7 +649,6 @@ public class ChildProcessRankingTest {
     @Test
     @EnableFeatures({ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU})
     public void testRebindHighRankConnectionStrictWithConflict() {
-        ChildProcessConnection.setSupportNotPerceptibleBindingForTesting(true);
         ChildProcessRanking ranking = new ChildProcessRanking();
         ranking.enableServiceGroupImportance();
 

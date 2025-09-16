@@ -880,8 +880,7 @@ public final class ChildProcessLauncherHelperImpl {
                 || hasForegroundServiceWorker
                 || boostForLoading) {
             newEffectiveImportance = ChildProcessImportance.MODERATE;
-        } else if (importance == ChildProcessImportance.PERCEPTIBLE
-                && ChildProcessConnection.supportNotPerceptibleBinding()) {
+        } else if (importance == ChildProcessImportance.PERCEPTIBLE) {
             newEffectiveImportance = ChildProcessImportance.PERCEPTIBLE;
         } else {
             newEffectiveImportance = ChildProcessImportance.NORMAL;
@@ -907,9 +906,6 @@ public final class ChildProcessLauncherHelperImpl {
                     // This binding is out of control of BindingManager which always unbinds the
                     // lowest ranked process from not-perceptible binding by
                     // ensureLowestRankIsWaived().
-                    //
-                    // Note that ChildProcessConnection.supportNotPerceptibleBinding() is checked
-                    // above on setting ChildProcessImportance.PERCEPTIBLE.
                     connection.addNotPerceptibleBinding();
                     break;
                 case ChildProcessImportance.MODERATE:
@@ -924,7 +920,6 @@ public final class ChildProcessLauncherHelperImpl {
         }
 
         if (getIsSpareRenderer() != isSpareRenderer
-                && ChildProcessConnection.supportNotPerceptibleBinding()
                 && ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getValue()) {
             if (isSpareRenderer) {
                 connection.addNotPerceptibleBinding();

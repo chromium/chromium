@@ -592,11 +592,8 @@ public class ChildProcessConnectionTest {
         // Add strong binding so that connection is oom protected.
         connection.removeVisibleBinding();
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            connection.addNotPerceptibleBinding();
-            assertEquals(
-                    ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
-        }
+        connection.addNotPerceptibleBinding();
+        assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
         connection.addVisibleBinding();
         assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrentOrWhenDied());
         connection.addStrongBinding();
@@ -632,9 +629,7 @@ public class ChildProcessConnectionTest {
         // Add all bindings
         connection.addStrongBinding();
         connection.addVisibleBinding();
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            connection.addNotPerceptibleBinding();
-        }
+        connection.addNotPerceptibleBinding();
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
 
@@ -643,22 +638,17 @@ public class ChildProcessConnectionTest {
         assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrentOrWhenDied());
         connection.removeVisibleBinding();
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrent());
-            assertEquals(
-                    ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
+        assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
 
-            connection.removeNotPerceptibleBinding();
-        }
+        connection.removeNotPerceptibleBinding();
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
 
         // Add all bindings
         connection.addStrongBinding();
         connection.addVisibleBinding();
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            connection.addNotPerceptibleBinding();
-        }
+        connection.addNotPerceptibleBinding();
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
 
@@ -667,13 +657,10 @@ public class ChildProcessConnectionTest {
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
         connection.removeStrongBinding();
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrent());
-            assertEquals(
-                    ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
+        assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
 
-            connection.removeNotPerceptibleBinding();
-        }
+        connection.removeNotPerceptibleBinding();
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
 

@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -27,7 +26,6 @@ import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.IRelroLibInfo;
@@ -51,11 +49,7 @@ import javax.annotation.concurrent.GuardedBy;
 public class ChildProcessConnection {
     private static final String TAG = "ChildProcessConn";
     private static final int FALLBACK_TIMEOUT_IN_SECONDS = 10;
-    private static final boolean SUPPORT_NOT_PERCEPTIBLE_BINDING =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     private static final String HISTOGRAM_NAME = "Android.ChildProcessConectionEventCounts";
-
-    private static @Nullable Boolean sSupportNotPerceptibleBindingForTesting;
 
     /**
      * Used to notify the consumer about the process start. These callbacks will be invoked before
@@ -193,16 +187,6 @@ public class ChildProcessConnection {
         return BindService.supportVariableConnections();
     }
 
-    /** Run time check if not perceptible binding is supported. */
-    public static boolean supportNotPerceptibleBinding() {
-        if (sSupportNotPerceptibleBindingForTesting != null) {
-            return sSupportNotPerceptibleBindingForTesting;
-        }
-        // Note that we need to keep this in sync with IsPerceptibleImportanceSupported() in
-        // content/browser/android/child_process_importance.cc
-        return SUPPORT_NOT_PERCEPTIBLE_BINDING;
-    }
-
     /** The string passed to bindToCaller to identify this class loader. */
     @VisibleForTesting
     public static String getBindToCallerClazz() {
@@ -210,12 +194,6 @@ public class ChildProcessConnection {
         // this could still collide in theory.
         ClassLoader cl = ChildProcessConnection.class.getClassLoader();
         return cl.toString() + cl.hashCode();
-    }
-
-    @VisibleForTesting
-    public static void setSupportNotPerceptibleBindingForTesting(boolean supported) {
-        sSupportNotPerceptibleBindingForTesting = supported;
-        ResettersForTesting.register(() -> sSupportNotPerceptibleBindingForTesting = null);
     }
 
     // The last zygote PID for which the zygote startup metrics were recorded. Lives on the
@@ -1044,7 +1022,6 @@ public class ChildProcessConnection {
 
     public void addNotPerceptibleBinding() {
         assert isRunningOnLauncherThread();
-        assert supportNotPerceptibleBinding();
         if (!isConnected()) {
             Log.w(TAG, "The connection is not bound for %d", getPid());
             return;
@@ -1057,7 +1034,6 @@ public class ChildProcessConnection {
 
     public void removeNotPerceptibleBinding() {
         assert isRunningOnLauncherThread();
-        assert supportNotPerceptibleBinding();
         if (!isConnected()) {
             return;
         }
