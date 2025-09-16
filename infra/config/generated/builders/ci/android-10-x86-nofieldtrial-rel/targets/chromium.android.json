@@ -4081,6 +4081,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_perf_unittests_android_chrome",
+        "module_scheme": "pyunit",
         "name": "telemetry_chromium_minidump_unittests",
         "resultdb": {
           "enable": true,
@@ -4124,6 +4125,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_perf_unittests_android_chrome",
+        "module_scheme": "pyunit",
         "name": "telemetry_perf_unittests_android_chrome",
         "resultdb": {
           "enable": true,

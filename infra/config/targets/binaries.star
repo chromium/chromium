@@ -2276,6 +2276,7 @@ targets.binaries.script(
 targets.binaries.generated_script(
     name = "telemetry_perf_unittests",
     label = "//chrome/test:telemetry_perf_unittests",
+    module_scheme = "pyunit",
 )
 
 targets.binaries.generated_script(
@@ -2283,6 +2284,7 @@ targets.binaries.generated_script(
     label = "//chrome/test:telemetry_perf_unittests_android_chrome",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "pyunit",
 )
 
 targets.binaries.generated_script(
@@ -2290,11 +2292,13 @@ targets.binaries.generated_script(
     label = "//chrome/test:telemetry_perf_unittests_android_monochrome",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "pyunit",
 )
 
 targets.binaries.generated_script(
     name = "telemetry_unittests",
     label = "//chrome/test:telemetry_unittests",
+    module_scheme = "pyunit",
 )
 
 targets.binaries.console_test_launcher(
