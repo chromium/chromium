@@ -44,3 +44,12 @@
 -LayerTreeHostPictureTestForceRecalculateScales.RunSingleThread_DelegatingRenderer
 -LayerTreeHostTestDamageWithScale.RunMultiThread_DelegatingRenderer
 -LayerTreeHostTestDamageWithScale.RunSingleThread_DelegatingRenderer
+
+#TODO(crbug.com/443785891) Report UKMs with TreesInViz mode enabled.
+#Current tests query the normalpath metrics, which would be invalid w/ TreesInViz
+-UkmManagerTest.EventLatency
+-UkmManagerCompositorLatencyTest.CompositorLatency/0
+-UkmManagerCompositorLatencyTest.CompositorLatency/1
+-UkmManagerCompositorLatencyTest.CompositorLatency/2
+-UkmManagerCompositorLatencyTest.CompositorLatency/3
+
