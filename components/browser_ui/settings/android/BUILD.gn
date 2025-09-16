@@ -7,14 +7,14 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/settings/CustomDividerFragment.java",
-    "java/src/org/chromium/components/browser_ui/settings/CustomStyledPreference.java",
+    "java/src/org/chromium/components/browser_ui/settings/CustomStyledContainer.java",
     "java/src/org/chromium/components/browser_ui/settings/EmbeddableSettingsPage.java",
     "java/src/org/chromium/components/browser_ui/settings/FragmentSettingsNavigation.java",
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferenceDelegate.java",
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtils.java",
-    "java/src/org/chromium/components/browser_ui/settings/PreferenceStyle.java",
     "java/src/org/chromium/components/browser_ui/settings/PreferenceUpdateObserver.java",
     "java/src/org/chromium/components/browser_ui/settings/SearchUtils.java",
+    "java/src/org/chromium/components/browser_ui/settings/SettingsContainerStyle.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsCustomTabLauncher.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsFragment.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsNavigation.java",

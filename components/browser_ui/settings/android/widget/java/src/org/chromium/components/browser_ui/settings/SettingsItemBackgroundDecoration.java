@@ -24,7 +24,7 @@ import java.util.ArrayList;
  */
 @NullMarked
 public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoration {
-    private @Nullable ArrayList<PreferenceStyle> mPreferenceStyles;
+    private @Nullable ArrayList<SettingsContainerStyle> mPreferenceStyles;
 
     /**
      * A flag to ensure that the background update logic in {@link #onDraw(Canvas, RecyclerView,
@@ -43,7 +43,7 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
      *
      * @param preferenceStyles The new list of preference styles.
      */
-    public void updatePreferenceStyles(ArrayList<PreferenceStyle> preferenceStyles) {
+    public void updatePreferenceStyles(ArrayList<SettingsContainerStyle> preferenceStyles) {
         mPreferenceStyles = preferenceStyles;
         mUpdateBackgrounds = true;
     }
@@ -64,7 +64,7 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
             return;
         }
 
-        PreferenceStyle style = mPreferenceStyles.get(position);
+        SettingsContainerStyle style = mPreferenceStyles.get(position);
         outRect.top = style.getTopMargin();
         outRect.bottom = style.getBottomMargin();
         outRect.left = style.getHorizontalMargin();
@@ -92,10 +92,10 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
      * Applies the specified background style to the given view.
      *
      * @param view The view to apply the background to.
-     * @param style The {@link PreferenceStyle} to apply.
+     * @param style The {@link SettingsContainerStyle} to apply.
      */
-    private void applyBackgroundStyle(View view, @NonNull PreferenceStyle style) {
-        if (style == PreferenceStyle.EMPTY) {
+    private void applyBackgroundStyle(View view, @NonNull SettingsContainerStyle style) {
+        if (style == SettingsContainerStyle.EMPTY) {
             view.setBackground(null);
             return;
         }

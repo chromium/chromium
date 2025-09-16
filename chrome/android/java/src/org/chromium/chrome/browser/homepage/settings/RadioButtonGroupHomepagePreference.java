@@ -19,7 +19,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.components.browser_ui.settings.CustomStyledPreference;
+import org.chromium.components.browser_ui.settings.CustomStyledContainer;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -37,9 +37,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public final class RadioButtonGroupHomepagePreference extends Preference
-        implements RadioGroup.OnCheckedChangeListener,
-                OnTextChangeListener,
-                CustomStyledPreference {
+        implements RadioGroup.OnCheckedChangeListener, OnTextChangeListener, CustomStyledContainer {
     /** A data structure which holds the displayed value and the status for this preference. */
     static class PreferenceValues {
         /** The option that is checked in {@link RadioButtonGroupHomepagePreference}. */

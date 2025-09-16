@@ -4,8 +4,9 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_COLOR;
-import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_COLOR;
+import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.styles.ChromeColors.getSettingsContainerBackgroundColor;
 
 import android.content.Context;
 
@@ -16,8 +17,7 @@ import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.settings.CustomStyledPreference.BackgroundStyle;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.settings.CustomStyledContainer.BackgroundStyle;
 
 import java.util.ArrayList;
 
@@ -57,18 +57,18 @@ public class SettingsStylingController {
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.settings_section_bottom_margin);
         mDefaultBackgroundColor =
-                SemanticColorUtils.getColorSurfaceContainerLowest(mPreferenceScreen.getContext());
+                getSettingsContainerBackgroundColor(mPreferenceScreen.getContext());
     }
 
     /**
      * Traverses the preference screen and returns a list of preference styles for each visible
      * preference.
      *
-     * @return A list of {@link PreferenceStyle} objects.
+     * @return A list of {@link SettingsContainerStyle} objects.
      */
-    public ArrayList<PreferenceStyle> generatePreferenceStyles() {
+    public ArrayList<SettingsContainerStyle> generatePreferenceStyles() {
         ArrayList<Preference> visiblePreferences = getVisiblePreferences();
-        ArrayList<PreferenceStyle> preferenceStyles = new ArrayList<>();
+        ArrayList<SettingsContainerStyle> preferenceStyles = new ArrayList<>();
         for (int i = 0; i < visiblePreferences.size(); i++) {
             preferenceStyles.add(getPreferenceStyleForPosition(visiblePreferences, i));
         }
@@ -114,13 +114,13 @@ public class SettingsStylingController {
      * @return Whether the preference has custom styling.
      */
     private boolean hasCustomStyling(Preference preference) {
-        if (preference instanceof CustomStyledPreference customStyledPreference) {
+        if (preference instanceof CustomStyledContainer customStyledPreference) {
             return customStyledPreference.getCustomBackgroundStyle() != BackgroundStyle.STANDARD;
         }
         return preference instanceof PreferenceCategory;
     }
 
-    private @NonNull PreferenceStyle getPreferenceStyleForPosition(
+    private @NonNull SettingsContainerStyle getPreferenceStyleForPosition(
             ArrayList<Preference> visiblePreferences, int position) {
         Preference currentPref = visiblePreferences.get(position);
 
@@ -154,7 +154,7 @@ public class SettingsStylingController {
             topRadius = mInnerRadius;
             bottomRadius = mInnerRadius;
         }
-        return new PreferenceStyle.Builder()
+        return new SettingsContainerStyle.Builder()
                 .setTopRadius(topRadius)
                 .setBottomRadius(bottomRadius)
                 .setTopMargin(mDefaultVerticalMargin)
@@ -164,10 +164,10 @@ public class SettingsStylingController {
                 .build();
     }
 
-    private PreferenceStyle getPreferenceStyleForCustomPreference(Preference preference) {
+    private SettingsContainerStyle getPreferenceStyleForCustomPreference(Preference preference) {
         if (preference instanceof PreferenceCategory) {
-            return PreferenceStyle.EMPTY;
-        } else if (preference instanceof CustomStyledPreference customStyledPreference) {
+            return SettingsContainerStyle.EMPTY;
+        } else if (preference instanceof CustomStyledContainer customStyledPreference) {
             if (customStyledPreference.getCustomBackgroundStyle() == BackgroundStyle.CARD) {
                 int topMargin = customStyledPreference.getCustomTopMargin();
                 if (topMargin == DEFAULT_MARGIN) topMargin = mDefaultVerticalMargin;
@@ -185,7 +185,7 @@ public class SettingsStylingController {
                 int backgroundColor = customStyledPreference.getCustomBackgroundColor();
                 if (backgroundColor == DEFAULT_COLOR) backgroundColor = mDefaultBackgroundColor;
 
-                return new PreferenceStyle.Builder()
+                return new SettingsContainerStyle.Builder()
                         .setTopRadius(mDefaultRadius)
                         .setBottomRadius(mDefaultRadius)
                         .setTopMargin(topMargin)
@@ -196,6 +196,6 @@ public class SettingsStylingController {
             }
         }
 
-        return PreferenceStyle.EMPTY;
+        return SettingsContainerStyle.EMPTY;
     }
 }

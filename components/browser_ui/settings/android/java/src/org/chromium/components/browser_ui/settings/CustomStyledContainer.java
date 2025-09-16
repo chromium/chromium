@@ -11,9 +11,9 @@ import org.chromium.build.annotations.NullMarked;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** An interface for preferences that should have custom background styling applied to them. */
+/** An interface for container that should have custom background styling applied to them. */
 @NullMarked
-public interface CustomStyledPreference {
+public interface CustomStyledContainer {
     int DEFAULT_MARGIN = -1;
     int DEFAULT_COLOR = -1;
     float DEFAULT_RADIUS = -1f;
@@ -30,7 +30,7 @@ public interface CustomStyledPreference {
     // LINT.ThenChange(//components/browser_ui/settings/android/java/res/values/attrs.xml)
 
     /**
-     * Returns the custom background style for the preference. By default, the standard background
+     * Returns the custom background style for the container. By default, the standard background
      * will be used.
      */
     @BackgroundStyle
@@ -39,7 +39,7 @@ public interface CustomStyledPreference {
     }
 
     /**
-     * @return The custom top margin for the preference in pixels. If DEFAULT_MARGIN, the default
+     * @return The custom top margin for the container in pixels. If DEFAULT_MARGIN, the default
      *     margin will be used.
      */
     default int getCustomTopMargin() {
@@ -47,7 +47,7 @@ public interface CustomStyledPreference {
     }
 
     /**
-     * @return The custom bottom margin for the preference in pixels. If DEFAULT_MARGIN, the default
+     * @return The custom bottom margin for the container in pixels. If DEFAULT_MARGIN, the default
      *     margin will be used.
      */
     default int getCustomBottomMargin() {
@@ -55,7 +55,7 @@ public interface CustomStyledPreference {
     }
 
     /**
-     * @return The custom horizontal margin for the preference in pixels. If DEFAULT_MARGIN, the
+     * @return The custom horizontal margin for the container in pixels. If DEFAULT_MARGIN, the
      *     default margin will be used.
      */
     default int getCustomHorizontalMargin() {
@@ -63,7 +63,7 @@ public interface CustomStyledPreference {
     }
 
     /**
-     * @return The custom background color for the preference. If DEFAULT_COLOR, the default color
+     * @return The custom background color for the container. If DEFAULT_COLOR, the default color
      *     will be used.
      */
     default int getCustomBackgroundColor() {

@@ -22,7 +22,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.CustomStyledPreference;
+import org.chromium.components.browser_ui.settings.CustomStyledContainer;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -30,7 +30,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /** A dedicated preference for the account settings signout button. */
 @NullMarked
-public class SignoutButtonPreference extends Preference implements CustomStyledPreference {
+public class SignoutButtonPreference extends Preference implements CustomStyledContainer {
     private Context mContext;
     private Profile mProfile;
     private FragmentManager mFragmentManager;

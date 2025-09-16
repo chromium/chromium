@@ -23,7 +23,7 @@ found in the LICENSE file.
             <enum name="card" value="1" />
             <enum name="none" value="2" />
         </attr>
-        <!-- LINT.ThenChange(//components/browser_ui/settings/android/java/src/org/chromium/components/browser_ui/settings/CustomStyledPreference.java) -->
+        <!-- LINT.ThenChange(//components/browser_ui/settings/android/java/src/org/chromium/components/browser_ui/settings/CustomStyledContainer.java) -->
         <!-- The background color for the preference. -->
         <attr name="backgroundColor" format="color|reference" />
     </declare-styleable>

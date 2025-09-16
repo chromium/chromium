@@ -31,7 +31,7 @@ import org.chromium.build.annotations.Nullable;
  * ColorStateList is set, only the default color will be used.
  */
 @NullMarked
-public class ChromeBasePreference extends Preference implements CustomStyledPreference {
+public class ChromeBasePreference extends Preference implements CustomStyledContainer {
     private final @Nullable ColorStateList mIconTint;
     private final int mBackgroundStyle;
     private final int mBackgroundColor;
@@ -116,7 +116,6 @@ public class ChromeBasePreference extends Preference implements CustomStyledPref
         super.onClick();
     }
 
-    /** Returns the background style for the preference. */
     @Override
     public int getCustomBackgroundStyle() {
         return mBackgroundStyle;

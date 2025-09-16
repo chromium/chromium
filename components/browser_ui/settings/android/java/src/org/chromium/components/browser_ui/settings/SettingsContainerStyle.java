@@ -4,15 +4,15 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_COLOR;
-import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_MARGIN;
-import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_RADIUS;
+import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_COLOR;
+import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_RADIUS;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** A class that holds the styling information for a preference. */
+/** A class that holds the styling information for a settings container. */
 @NullMarked
-public class PreferenceStyle {
+public class SettingsContainerStyle {
     private final float mTopRadius;
     private final float mBottomRadius;
     private final int mTopMargin;
@@ -20,10 +20,10 @@ public class PreferenceStyle {
     private final int mHorizontalMargin;
     private final int mBackgroundColor;
 
-    /** A style with no background. */
-    public static final PreferenceStyle EMPTY = new Builder().build();
+    /** A container with no background. */
+    public static final SettingsContainerStyle EMPTY = new Builder().build();
 
-    private PreferenceStyle(Builder builder) {
+    private SettingsContainerStyle(Builder builder) {
         mTopRadius = builder.mTopRadius;
         mBottomRadius = builder.mBottomRadius;
         mTopMargin = builder.mTopMargin;
@@ -32,7 +32,7 @@ public class PreferenceStyle {
         mBackgroundColor = builder.mBackgroundColor;
     }
 
-    /** Builder for creating a {@link PreferenceStyle}. */
+    /** Builder for creating a {@link SettingsContainerStyle}. */
     public static class Builder {
         private float mTopRadius = DEFAULT_RADIUS;
         private float mBottomRadius = DEFAULT_RADIUS;
@@ -71,8 +71,8 @@ public class PreferenceStyle {
             return this;
         }
 
-        public PreferenceStyle build() {
-            return new PreferenceStyle(this);
+        public SettingsContainerStyle build() {
+            return new SettingsContainerStyle(this);
         }
     }
 
@@ -112,7 +112,7 @@ public class PreferenceStyle {
     }
 
     /**
-     * @return The background color for the preference.
+     * @return The background color for the container.
      */
     public int getBackgroundColor() {
         return mBackgroundColor;

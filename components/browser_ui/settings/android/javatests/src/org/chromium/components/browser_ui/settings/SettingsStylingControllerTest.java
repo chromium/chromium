@@ -8,8 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 
-import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_COLOR;
-import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_COLOR;
+import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.styles.ChromeColors.getSettingsContainerBackgroundColor;
 
 import android.content.Context;
 
@@ -24,9 +25,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.settings.CustomStyledPreference.BackgroundStyle;
+import org.chromium.components.browser_ui.settings.CustomStyledContainer.BackgroundStyle;
 import org.chromium.components.browser_ui.settings.test.R;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class SettingsStylingControllerTest {
     private SettingsStylingController mController;
     private PreferenceScreen mPreferenceScreen;
     private List<Preference> mVisiblePreferences;
-    private ArrayList<PreferenceStyle> mPreferenceStyles;
+    private ArrayList<SettingsContainerStyle> mPreferenceStyles;
 
     @Before
     public void setUp() {
@@ -77,7 +77,7 @@ public class SettingsStylingControllerTest {
         mHorizontalMargin =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.settings_item_horizontal_margin);
-        mBackgroundColor = SemanticColorUtils.getColorSurfaceContainerLowest(mContext);
+        mBackgroundColor = getSettingsContainerBackgroundColor(mContext);
 
         mSettingsRule
                 .getPreferenceFragment()
@@ -108,21 +108,22 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testPreferenceCategoryStyle() {
-        PreferenceStyle preferenceCategoryStyle = getPreferenceStyle("preference_category");
-        assertSame(PreferenceStyle.EMPTY, preferenceCategoryStyle);
+        SettingsContainerStyle preferenceCategoryStyle = getPreferenceStyle("preference_category");
+        assertSame(SettingsContainerStyle.EMPTY, preferenceCategoryStyle);
     }
 
     @Test
     @SmallTest
     public void testTextMessagePreferenceStyle() {
-        PreferenceStyle textMessagePreferencestyle = getPreferenceStyle("text_message_preference");
-        assertSame(PreferenceStyle.EMPTY, textMessagePreferencestyle);
+        SettingsContainerStyle textMessagePreferencestyle =
+                getPreferenceStyle("text_message_preference");
+        assertSame(SettingsContainerStyle.EMPTY, textMessagePreferencestyle);
     }
 
     @Test
     @SmallTest
-    public void testPreferenceStyle_PreferenceTop() {
-        PreferenceStyle preferenceTopStyle = getPreferenceStyle("preference_top");
+    public void testContainerStyle_PreferenceTop() {
+        SettingsContainerStyle preferenceTopStyle = getPreferenceStyle("preference_top");
         assertEquals(mDefaultRadius, preferenceTopStyle.getTopRadius(), 0);
         assertEquals(mInnerRadius, preferenceTopStyle.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, preferenceTopStyle.getTopMargin());
@@ -131,8 +132,8 @@ public class SettingsStylingControllerTest {
 
     @Test
     @SmallTest
-    public void testPreferenceStyle_PreferenceMiddle() {
-        PreferenceStyle preferenceMiddleStyle = getPreferenceStyle("preference_middle");
+    public void testContainerStyle_PreferenceMiddle() {
+        SettingsContainerStyle preferenceMiddleStyle = getPreferenceStyle("preference_middle");
         assertEquals(mInnerRadius, preferenceMiddleStyle.getTopRadius(), 0);
         assertEquals(mInnerRadius, preferenceMiddleStyle.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, preferenceMiddleStyle.getTopMargin());
@@ -141,8 +142,8 @@ public class SettingsStylingControllerTest {
 
     @Test
     @SmallTest
-    public void testPreferenceStyle_PreferenceBottom() {
-        PreferenceStyle preferenceBottomStyle = getPreferenceStyle("preference_bottom");
+    public void testContainerStyle_PreferenceBottom() {
+        SettingsContainerStyle preferenceBottomStyle = getPreferenceStyle("preference_bottom");
         assertEquals(mInnerRadius, preferenceBottomStyle.getTopRadius(), 0);
         assertEquals(mDefaultRadius, preferenceBottomStyle.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, preferenceBottomStyle.getTopMargin());
@@ -153,7 +154,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testCardBackgroundStyle() {
-        PreferenceStyle styleCard = getPreferenceStyle("preference_card");
+        SettingsContainerStyle styleCard = getPreferenceStyle("preference_card");
         assertEquals(mDefaultRadius, styleCard.getTopRadius(), 0);
         assertEquals(mDefaultRadius, styleCard.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, styleCard.getTopMargin());
@@ -164,7 +165,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testCustomColorBackgroundStyle() {
-        PreferenceStyle styleCustomColor = getPreferenceStyle("preference_color");
+        SettingsContainerStyle styleCustomColor = getPreferenceStyle("preference_color");
         assertEquals(mDefaultRadius, styleCustomColor.getTopRadius(), 0);
         assertEquals(mDefaultRadius, styleCustomColor.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, styleCustomColor.getTopMargin());
@@ -177,7 +178,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testStandardBackgroundStyle() {
-        PreferenceStyle styleStandard = getPreferenceStyle("preference_standard");
+        SettingsContainerStyle styleStandard = getPreferenceStyle("preference_standard");
         assertEquals(mDefaultRadius, styleStandard.getTopRadius(), 0);
         assertEquals(mDefaultRadius, styleStandard.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, styleStandard.getTopMargin());
@@ -188,14 +189,14 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testNoneBackgroundStyle() {
-        PreferenceStyle styleNone = getPreferenceStyle("preference_none");
-        assertSame(PreferenceStyle.EMPTY, styleNone);
+        SettingsContainerStyle styleNone = getPreferenceStyle("preference_none");
+        assertSame(SettingsContainerStyle.EMPTY, styleNone);
     }
 
     @Test
     @SmallTest
     public void testCustomStyledPreference_WithCustomMargins() {
-        PreferenceStyle customMarginPreferenceStyle =
+        SettingsContainerStyle customMarginPreferenceStyle =
                 getPreferenceStyle("preference_with_custom_margins");
         assertEquals(CUSTOM_TOP_MARGIN, customMarginPreferenceStyle.getTopMargin());
         assertEquals(CUSTOM_BOTTOM_MARGIN, customMarginPreferenceStyle.getBottomMargin());
@@ -205,7 +206,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testCustomStyledPreference_WithTopMarginOnly() {
-        PreferenceStyle topMarginOnlyPreferenceStyle =
+        SettingsContainerStyle topMarginOnlyPreferenceStyle =
                 getPreferenceStyle("preference_with_top_margin_only");
         assertEquals(CUSTOM_TOP_MARGIN, topMarginOnlyPreferenceStyle.getTopMargin());
         assertEquals(
@@ -217,7 +218,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testCustomStyledPreference_WithBottomMarginOnly() {
-        PreferenceStyle bottomMarginOnlyPreferenceStyle =
+        SettingsContainerStyle bottomMarginOnlyPreferenceStyle =
                 getPreferenceStyle("preference_with_bottom_margin_only");
         assertEquals(mVerticalMargin, bottomMarginOnlyPreferenceStyle.getTopMargin());
         assertEquals(CUSTOM_BOTTOM_MARGIN, bottomMarginOnlyPreferenceStyle.getBottomMargin());
@@ -227,7 +228,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testCustomStyledPreference_WithBottomAndHorizontalMargin() {
-        PreferenceStyle bottomAndHorizontalMarginsPreferenceStyle =
+        SettingsContainerStyle bottomAndHorizontalMarginsPreferenceStyle =
                 getPreferenceStyle("preference_with_bottom_and_horizontal_margins");
         assertEquals(mVerticalMargin, bottomAndHorizontalMarginsPreferenceStyle.getTopMargin());
         assertEquals(
@@ -318,7 +319,7 @@ public class SettingsStylingControllerTest {
         mPreferenceScreen.addPreference(bottomAndHorizontalMarginsPreference);
     }
 
-    private PreferenceStyle getPreferenceStyle(String key) {
+    private SettingsContainerStyle getPreferenceStyle(String key) {
         Preference preference = mPreferenceScreen.findPreference(key);
         int preferenceIndex = mVisiblePreferences.indexOf(preference);
         assertNotEquals(
