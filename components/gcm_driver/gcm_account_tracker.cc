@@ -18,8 +18,7 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/scope_set.h"
-#include "google_apis/gaia/gaia_constants.h"
+#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/ip_endpoint.h"
 
@@ -27,8 +26,6 @@ namespace gcm {
 
 namespace {
 
-// Name of the GCM account tracker for fetching access tokens.
-const char kGCMAccountTrackerName[] = "gcm_account_tracker";
 // Minimum token validity when sending to GCM groups server.
 const int64_t kMinimumTokenValidityMs = 500;
 // Token reporting interval, when no account changes are detected.
@@ -291,16 +288,12 @@ void GCMAccountTracker::GetAllNeededTokens() {
 void GCMAccountTracker::GetToken(AccountInfos::iterator& account_iter) {
   DCHECK_EQ(account_iter->second.state, TOKEN_NEEDED);
 
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kGCMGroupServerOAuth2Scope);
-  scopes.insert(GaiaConstants::kGCMCheckinServerOAuth2Scope);
-
   // NOTE: It is safe to use base::Unretained() here as |token_fetcher| is owned
   // by this object and guarantees that it will not invoke its callback after
   // its destruction.
   std::unique_ptr<signin::AccessTokenFetcher> token_fetcher =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          account_iter->first, kGCMAccountTrackerName, scopes,
+          account_iter->first, signin::OAuthConsumerId::kGcmAccountTracker,
           base::BindOnce(
               &GCMAccountTracker::OnAccessTokenFetchCompleteForAccount,
               base::Unretained(this), account_iter->first),
