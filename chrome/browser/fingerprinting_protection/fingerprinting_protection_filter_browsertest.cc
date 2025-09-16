@@ -106,13 +106,14 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 
 // There should be no activation on localhosts, except for when
 // --enable-benchmarking switch is active.
-// TODO(crbug.com/444588122): Fix this test so it uses localhost.
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        NoMainFrameActivation_Localhost) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
-  // Uses localhost without `UpdateIncludedScriptSource`.
-  GURL test_url = GetTestUrl("/frame_with_included_script.html");
+  // Use embedded_test_server()->GetURL without a host so it returns a
+  // localhost URL.
+  GURL test_url =
+      embedded_test_server()->GetURL("/frame_with_included_script.html");
 
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithSubstring(
       "suffix-that-does-not-match-anything"));
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
       base::BucketsAre(
-          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 1)));
+          base::Bucket(RendererThrottleCreationResult::kSkipLocalHost, 1)));
 
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
@@ -132,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithSubstring("included_script.js"));
-  ASSERT_TRUE(
-      NavigateToDestination(GetTestUrl("/frame_with_included_script.html")));
+  ASSERT_TRUE(NavigateToDestination(test_url));
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
@@ -141,11 +141,12 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
       base::BucketsAre(
-          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 2)));
+          base::Bucket(RendererThrottleCreationResult::kSkipLocalHost, 2)));
 
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
   ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+
   SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html");
   ASSERT_TRUE(NavigateToDestination(test_url));
 
@@ -157,7 +158,48 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
       base::BucketsAre(
-          base::Bucket(RendererThrottleCreationResult::kSkipSameSite, 3)));
+          base::Bucket(RendererThrottleCreationResult::kSkipLocalHost, 3)));
+}
+
+// There should be no activation on localhosts, except for when
+// --enable-benchmarking switch is active.
+IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
+                       NoMainFrameActivation_LocalhostCrossSite) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = GetFrameWithScriptUrl(
+      // Use embedded_test_server()->GetURL without a host so it returns a
+      // localhost URL.
+      embedded_test_server()->GetURL("/frame_with_included_script.html"),
+      GetTestUrl("/included_script.js"));
+
+  ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithSubstring(
+      "suffix-that-does-not-match-anything"));
+  ASSERT_TRUE(NavigateToDestination(test_url));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kCreate, 1)));
+
+  // Navigate to about:blank first to avoid reusing the previous ruleset for
+  // the next check.
+  ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithSubstring("included_script.js"));
+  ASSERT_TRUE(NavigateToDestination(test_url));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kRendererThrottleCreationResultMetricName),
+      base::BucketsAre(
+          base::Bucket(RendererThrottleCreationResult::kCreate, 2)));
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
