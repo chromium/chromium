@@ -931,10 +931,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEdgeToEdgeMonitorConfigurations =
             newCachedFlag(EDGE_TO_EDGE_MONITOR_CONFIGURATIONS, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeTablet =
-            newCachedFlag(
-                    EDGE_TO_EDGE_TABLET,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(EDGE_TO_EDGE_TABLET, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeUseBackupNavbarInsets =
             newCachedFlag(EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, true);
     public static final CachedFlag sEducationalTipDefaultBrowserPromoCard =

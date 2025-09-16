@@ -535,7 +535,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET + ":e2e_tablet_width_threshold/-1")
     public void overlappingKeyboard_SwitchToAndFromDesktopWindowingMode_E2ETabletEnabled() {
         verifyDesktopWindowingDisabled(
                 /* error= */ "DesktopWindowing should exit when no insets is supplied.");
@@ -605,7 +605,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET + ":e2e_tablet_width_threshold/-1")
     public void overlappingKeyboard_MoveDesktopWindow_E2ETabletEnabled() {
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
@@ -675,7 +675,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET + ":e2e_tablet_width_threshold/-1")
     public void overlappingNavBar_SwitchToAndFromDesktopWindowingMode_E2ETabletEnabled() {
         verifyDesktopWindowingDisabled(
                 /* error= */ "Desktop windowing mode should be disabled initially.");
@@ -741,7 +741,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET + ":e2e_tablet_width_threshold/-1")
     public void overlappingNavBar_MoveDesktopWindow_E2ETabletEnabled() {
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
@@ -782,7 +782,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET + ":e2e_tablet_width_threshold/-1")
     public void overlappingKeyboardAndNavBar_E2ETabletEnabled() {
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();

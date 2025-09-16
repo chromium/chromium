@@ -738,7 +738,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @Config(qualifiers = "xlarge")
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET + ":e2e_tablet_width_threshold/-1")
     public void enabledOnTabletWhenFeatureEnabled() {
         // Even these always-draw flags do not override the device abilities.
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
@@ -784,7 +784,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET + ":e2e_tablet_width_threshold/-1")
     public void supportFormFactor() {
         assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         assertTrue(
