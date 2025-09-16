@@ -55,7 +55,7 @@ dependencies {
     // exclude it in ChromiumDepGraph.
     androidTestCompile 'com.google.protobuf:protobuf-lite:3.0.0'
 
-    String mockitoVersion = '5.19.0'
+    String mockitoVersion = '5.11.0'
     androidTestCompile "org.mockito:mockito-android:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-core:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-subclass:${mockitoVersion}"
