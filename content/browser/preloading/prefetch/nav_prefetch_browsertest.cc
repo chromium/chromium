@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
@@ -12,7 +13,10 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -37,6 +41,11 @@ using net::test_server::ControllableHttpResponse;
 class NavPrefetchBrowserTest : public ContentBrowserTest,
                                public BackForwardCacheMetricsTestMatcher {
  public:
+  NavPrefetchBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kPreloadingRespectUserAgentOverride);
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -85,13 +94,24 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
     // This should be called on `EmbeddedTestServer::io_thread_`.
     EXPECT_FALSE(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     base::AutoLock auto_lock(lock_);
-    request_count_by_path_[request.GetURL().PathForRequest()]++;
+    std::string path = request.GetURL().PathForRequest();
+    request_count_by_path_[path]++;
+    if (auto ua_it = request.headers.find(net::HttpRequestHeaders::kUserAgent);
+        ua_it != request.headers.end()) {
+      request_user_agent_by_path_[path] = ua_it->second;
+    }
   }
 
   int GetRequestCount(const GURL& url) {
     EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     base::AutoLock auto_lock(lock_);
     return request_count_by_path_[url.PathForRequest()];
+  }
+
+  const std::string& GetLastReceivedUserAgent(const GURL& url) {
+    EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    base::AutoLock auto_lock(lock_);
+    return request_user_agent_by_path_[url.PathForRequest()];
   }
 
   // BackForwardCacheMetricsTestMatcher implementation.
@@ -115,12 +135,16 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::ScopedMockElapsedTimersForTest test_timer_;
 
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 
   std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
+  std::map<std::string, std::string> request_user_agent_by_path_
+      GUARDED_BY(lock_);
+
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
@@ -497,6 +521,36 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ClientCertRequested) {
           blink::mojom::SpeculationEagerness::kImmediate)});
 }
 
+// WebContentsDelegate to set UserAgentOverrideOption for prefetch and
+// prerender.
+class ScopedUserAgentOverrideTestDelegate : public WebContentsDelegate {
+ public:
+  explicit ScopedUserAgentOverrideTestDelegate(WebContents& web_contents)
+      : web_contents_(web_contents.GetWeakPtr()) {
+    web_contents_->SetDelegate(this);
+  }
+  ~ScopedUserAgentOverrideTestDelegate() override {
+    if (web_contents_) {
+      web_contents_->SetDelegate(nullptr);
+    }
+  }
+
+  NavigationController::UserAgentOverrideOption
+  ShouldOverrideUserAgentForPrerender2(const GURL& url) override {
+    return is_override_on
+               ? NavigationController::UserAgentOverrideOption::UA_OVERRIDE_TRUE
+               : NavigationController::UserAgentOverrideOption::
+                     UA_OVERRIDE_FALSE;
+  }
+
+  void EnableOverride() { is_override_on = true; }
+  void DisableOverride() { is_override_on = false; }
+
+ private:
+  bool is_override_on = false;
+  base::WeakPtr<WebContents> web_contents_;
+};
+
 // Tests that prefetch fails when cert is expired.
 IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, CertExpired) {
   GURL initiator_url = GetUrl("a.test", "/empty.html");
@@ -541,6 +595,78 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, CertExpired) {
           /*accurate=*/true,
           /*ready_time=*/std::nullopt,
           blink::mojom::SpeculationEagerness::kImmediate)});
+}
+
+// Tests that WebContents-level User-Agent header overrides are used for
+// prefetch requests.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
+                       RespectWebContentsUserAgentOverride) {
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL destination_url_1 = GetUrl("a.test", "/title1.html");
+  GURL destination_url_2 = GetUrl("a.test", "/title2.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  const std::string default_ua = GetLastReceivedUserAgent(initiator_url);
+
+  ScopedUserAgentOverrideTestDelegate ua_override_delegate(
+      *shell()->web_contents());
+  test::TestPrefetchWatcher test_prefetch_watcher;
+
+  // Scenario 1: A prefetch result has an overridden UA if it is registered and
+  // enabled.
+  {
+    raw_ptr rfh = GetPrimaryMainFrameHost().GetMainFrame();
+
+    // Set UA override and enable it for prefetch and prerender.
+    shell()->web_contents()->SetUserAgentOverride(
+        blink::UserAgentOverride::UserAgentOnly("fake"),
+        /*override_in_new_tabs=*/true);
+    ua_override_delegate.EnableOverride();
+
+    // Prefetch a page and navigate to it.
+    StartPrefetch(destination_url_1);
+    test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+        GetPrimaryMainFrameHost().GetDocumentToken(), destination_url_1);
+
+    TestFrameNavigationObserver nav_observer(rfh);
+    ASSERT_TRUE(BeginNavigateToURLFromRenderer(rfh, destination_url_1));
+    ASSERT_TRUE(nav_observer.navigation_started());
+    nav_observer.Wait();
+    ASSERT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+
+    // The overridden User-Agent is used.
+    ASSERT_EQ(GetRequestCount(destination_url_1), 1);
+    ASSERT_EQ(GetLastReceivedUserAgent(destination_url_1), "fake");
+  }
+
+  // Scenario 2: A prefetch result has a default UA if an UA override is
+  // registered but disabled.
+  {
+    raw_ptr rfh = GetPrimaryMainFrameHost().GetMainFrame();
+
+    // Disable UA override and make sure the disabled UA override is still
+    // registered.
+    ua_override_delegate.DisableOverride();
+    ASSERT_FALSE(shell()
+                     ->web_contents()
+                     ->GetUserAgentOverride()
+                     .ua_string_override.empty());
+
+    // Prefetch a page and navigate to it.
+    StartPrefetch(destination_url_2);
+    test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+        GetPrimaryMainFrameHost().GetDocumentToken(), destination_url_2);
+    TestFrameNavigationObserver nav_observer(rfh);
+    ASSERT_TRUE(BeginNavigateToURLFromRenderer(rfh, destination_url_2));
+    ASSERT_TRUE(nav_observer.navigation_started());
+    nav_observer.Wait();
+
+    // The overridden User-Agent is NOT used.
+    ASSERT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+    EXPECT_EQ(GetRequestCount(destination_url_2), 1);
+    ASSERT_EQ(GetLastReceivedUserAgent(destination_url_2), default_ua);
+  }
 }
 
 }  // namespace

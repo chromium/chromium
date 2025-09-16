@@ -577,10 +577,13 @@ class CONTENT_EXPORT PrefetchContainer {
   // The returned value is for an initial guess and shouldn't be used without a
   // plan for the header validation (crbug.com/444065296).
   bool ShouldApplyUserAgentOverride(const GURL& request_url) const;
-  // Add client hints headers to a request bound for |origin|.
+  // Adds the User-Agent header by UA override if applicable.
+  void MaybeApplyOverrideForUserAgentHeader(
+      network::ResourceRequest& resource_request);
+  // Adds client hints headers to a request bound for |origin|.
   void AddClientHintsHeaders(const url::Origin& origin,
                              net::HttpRequestHeaders* request_headers);
-  // Add X-Client-Data request header to a request.
+  // Adds X-Client-Data request header to a request.
   void AddXClientDataHeader(network::ResourceRequest& request);
 
   // Returns the `PrefetchSingleRedirectHop` to be prefetched next.
