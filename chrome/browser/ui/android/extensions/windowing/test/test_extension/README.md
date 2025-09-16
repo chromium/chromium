@@ -15,7 +15,7 @@ This folder contains a test extension for `chrome.windows` APIs.
 
   * Push all files:
 
-    `$ adb push ./chrome/browser/ui/android/extensions/windowing/test/test_extension/* /sdcard/text_extension`
+    `$ adb push ./chrome/browser/ui/android/extensions/windowing/test/test_extension/* /sdcard/test_extension`
 
 
 * Open `chrome://extensions`.
