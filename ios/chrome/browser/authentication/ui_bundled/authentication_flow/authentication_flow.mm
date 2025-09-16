@@ -929,11 +929,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   _presentingViewController = nil;
   _browserForAuthenticationFlowInProfile = newProfileBrowser;
   CHECK(!_signInInProfileCompletion);
-  _signInInProfileCompletion = base::CallbackToBlock(base::BindOnce(
-      [](base::OnceClosure closure, SigninCoordinatorResult result) {
-        std::move(closure).Run();
-      },
-      std::move(completion)));
+  _signInInProfileCompletion = base::CallbackToBlock(
+      base::IgnoreArgs<SigninCoordinatorResult>(std::move(completion)));
 
   [self continueFlow];
 }
