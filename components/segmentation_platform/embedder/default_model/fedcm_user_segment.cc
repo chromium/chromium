@@ -130,17 +130,7 @@ void FedCmUserModel::ExecuteModelWithInput(const ModelProvider::Request& inputs,
     return;
   }
 
-  float result = 0;
-  const int accounts_dialog_shown_count = inputs[0];
-  const int successful_token_requests_count = inputs[1];
-  const int intentional_ui_dismissed_count = inputs[2];
-  const int signed_in_user_count = inputs[3];
-
-  if (accounts_dialog_shown_count == 0 ||
-      successful_token_requests_count >= 1 ||
-      intentional_ui_dismissed_count <= 2 || signed_in_user_count >= 1) {
-    result = 1;
-  }
+  float result = 1;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

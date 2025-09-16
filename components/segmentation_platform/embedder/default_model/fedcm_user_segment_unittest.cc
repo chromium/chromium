@@ -9,7 +9,6 @@
 namespace segmentation_platform {
 
 const char kFedCmUserLoudLabel[] = "FedCmUserLoud";
-const char kFedCmUserQuietLabel[] = "FedCmUserQuiet";
 
 class FedCmUserModelTest : public DefaultModelTestBase {
  public:
@@ -34,9 +33,9 @@ TEST_F(FedCmUserModelTest, ExecuteModelWithInput) {
   ExpectClassifierResults(/*input=*/{1, 0, 1, 0}, {kFedCmUserLoudLabel});
   ExpectClassifierResults(/*input=*/{1, 0, 3, 1}, {kFedCmUserLoudLabel});
 
-  // FedCM Quiet UI.
-  ExpectClassifierResults(/*input=*/{1, 0, 3, 0}, {kFedCmUserQuietLabel});
-  ExpectClassifierResults(/*input=*/{2, 0, 5, 0}, {kFedCmUserQuietLabel});
+  // All inputs should result in FedCM Loud UI.
+  ExpectClassifierResults(/*input=*/{1, 0, 3, 0}, {kFedCmUserLoudLabel});
+  ExpectClassifierResults(/*input=*/{2, 0, 5, 0}, {kFedCmUserLoudLabel});
 }
 
 }  // namespace segmentation_platform
