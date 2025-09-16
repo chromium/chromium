@@ -22,7 +22,6 @@ import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITE
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
@@ -39,8 +38,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutHandler;
+import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -133,8 +132,8 @@ public class ListMenuFlyoutControllerUnitTest {
     @Test
     public void hoverShowsFlyoutAfterDelay() {
         // Create the main menu popup window (level 0).
-        List<Pair<@Nullable ListItem, Object>> dialogs = new ArrayList<>();
-        dialogs.add(new Pair(null, new Object()));
+        List<FlyoutPopupEntry<Object>> dialogs = new ArrayList<>();
+        dialogs.add(new FlyoutPopupEntry(null, new Object()));
         when(mFlyoutHandler.getFlyoutWindows()).thenReturn(dialogs);
 
         // Start hover on one of the items on the main menu (level 0).
@@ -148,7 +147,7 @@ public class ListMenuFlyoutControllerUnitTest {
 
         // Verify that the call to create a new popup (level 1) is called.
         verify(mFlyoutHandler).addFlyoutWindow(mSubmenuLevel0, mListView);
-        dialogs.add(new Pair(mSubmenuLevel0, new Object()));
+        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel0, new Object()));
 
         // Hover on an item inside the level 1 popup for long enough.
         triggerHoverEnter(mSubmenuLevel1, 1, List.of(mSubmenuLevel0, mSubmenuLevel1));
@@ -160,13 +159,13 @@ public class ListMenuFlyoutControllerUnitTest {
 
     @Test
     public void hoverOnNewItemClosesAllDescendentPopups() {
-        List<Pair<@Nullable ListItem, Object>> dialogs = new ArrayList<>();
+        List<FlyoutPopupEntry<Object>> dialogs = new ArrayList<>();
         when(mFlyoutHandler.getFlyoutWindows()).thenReturn(dialogs);
 
         // Create level 0, 1, and 2 popup windows.
-        dialogs.add(new Pair(null, new Object())); // Level 0 popup.
-        dialogs.add(new Pair(mSubmenuLevel0, new Object())); // Level 1 popup.
-        dialogs.add(new Pair(mSubmenuLevel1, new Object())); // Level 2 popup.
+        dialogs.add(new FlyoutPopupEntry(null, new Object())); // Level 0 popup.
+        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel0, new Object())); // Level 1 popup.
+        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel1, new Object())); // Level 2 popup.
 
         // Hover on a different item on the level 0 popup.
         triggerHoverEnter(
@@ -178,9 +177,9 @@ public class ListMenuFlyoutControllerUnitTest {
 
         // Create level 0, 1, and 2 popup windows again.
         dialogs = new ArrayList<>();
-        dialogs.add(new Pair(null, new Object())); // Level 0 popup.
-        dialogs.add(new Pair(mSubmenuLevel0, new Object())); // Level 1 popup.
-        dialogs.add(new Pair(mSubmenuLevel1, new Object())); // Level 2 popup.
+        dialogs.add(new FlyoutPopupEntry(null, new Object())); // Level 0 popup.
+        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel0, new Object())); // Level 1 popup.
+        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel1, new Object())); // Level 2 popup.
 
         // Hover on a different item on the level 1 popup.
         triggerHoverEnter(mSubmenu0Child1, 1, List.of(mSubmenuLevel0, mSubmenu0Child1));
@@ -192,13 +191,13 @@ public class ListMenuFlyoutControllerUnitTest {
 
     @Test
     public void hoverOnOriginalItemKeepsDirectChild() {
-        List<Pair<@Nullable ListItem, Object>> dialogs = new ArrayList<>();
+        List<FlyoutPopupEntry<Object>> dialogs = new ArrayList<>();
         when(mFlyoutHandler.getFlyoutWindows()).thenReturn(dialogs);
 
         // Create level 0, 1, and 2 popup windows.
-        dialogs.add(new Pair(null, new Object())); // Level 0 popup.
-        dialogs.add(new Pair(mSubmenuLevel0, new Object())); // Level 1 popup.
-        dialogs.add(new Pair(mSubmenuLevel1, new Object())); // Level 2 popup.
+        dialogs.add(new FlyoutPopupEntry(null, new Object())); // Level 0 popup.
+        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel0, new Object())); // Level 1 popup.
+        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel1, new Object())); // Level 2 popup.
 
         // Hover on the original item on the level 0 popup.
         triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));

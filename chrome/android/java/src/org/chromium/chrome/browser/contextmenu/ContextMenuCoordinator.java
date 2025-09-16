@@ -11,7 +11,6 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 
 import android.app.Activity;
 import android.graphics.Rect;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
@@ -45,6 +44,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.listmenu.ListMenuFlyoutController;
 import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutHandler;
+import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -86,7 +86,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     private final float mTopContentOffsetPx;
 
     // A list of dialogs, paired with the parent `ListItem` if the dialog is a flyout.
-    private List<Pair<@Nullable ListItem, ContextMenuDialog>> mDialogs;
+    private List<FlyoutPopupEntry<ContextMenuDialog>> mDialogs;
 
     private Runnable mOnMenuClosed;
     private final ContextMenuNativeDelegate mNativeDelegate;
@@ -251,7 +251,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                     (chipRenderParams) -> {
                         assert mDialogs.size() > 0;
                         if (chipDelegate.isValidChipRenderParams(chipRenderParams)
-                                && mDialogs.get(0).second.isShowing()) {
+                                && mDialogs.get(0).popupWindow.isShowing()) {
                             assert chipRenderParams != null;
                             assumeNonNull(mChipController).showChip(chipRenderParams);
                         }
@@ -374,11 +374,11 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         dialog.show();
 
         assert mDialogs.size() == 0;
-        mDialogs.add(new Pair(null, dialog));
+        mDialogs.add(new FlyoutPopupEntry(null, dialog));
     }
 
     @Override
-    public List<Pair<@Nullable ListItem, ContextMenuDialog>> getFlyoutWindows() {
+    public List<FlyoutPopupEntry<ContextMenuDialog>> getFlyoutWindows() {
         return mDialogs;
     }
 
@@ -387,7 +387,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         assert clearFromIndex < mDialogs.size();
 
         for (int i = clearFromIndex; i < mDialogs.size(); i++) {
-            mDialogs.get(i).second.dismiss();
+            mDialogs.get(i).popupWindow.dismiss();
         }
 
         mDialogs.subList(clearFromIndex, mDialogs.size()).clear();
@@ -427,7 +427,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         calculateFlyoutAnchorRect(mActivity, mWindowAndroid, view));
 
         dialog.show();
-        mDialogs.add(new Pair(item, dialog));
+        mDialogs.add(new FlyoutPopupEntry(item, dialog));
     }
 
     private static Rect calculateFlyoutAnchorRect(
@@ -516,8 +516,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         if (mChipController != null) {
             mChipController.dismissChipIfShowing();
         }
-        for (Pair<@Nullable ListItem, ContextMenuDialog> dialog : mDialogs) {
-            dialog.second.dismiss();
+        for (FlyoutPopupEntry<ContextMenuDialog> entry : mDialogs) {
+            entry.popupWindow.dismiss();
         }
         mDialogs = new ArrayList<>();
         mListViews = new ArrayList<>();
@@ -527,7 +527,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         return (chipRenderParams) -> {
             assert mDialogs.size() > 0;
             if (chipDelegate.isValidChipRenderParams(chipRenderParams)
-                    && mDialogs.get(0).second.isShowing()) {
+                    && mDialogs.get(0).popupWindow.isShowing()) {
                 assumeNonNull(mChipController).showChip(chipRenderParams);
             }
         };
@@ -641,7 +641,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         return adapter;
     }
 
-    public List<Pair<@Nullable ListItem, ContextMenuDialog>> getDialogsForTest() {
+    public List<FlyoutPopupEntry<ContextMenuDialog>> getDialogsForTest() {
         return mDialogs;
     }
 

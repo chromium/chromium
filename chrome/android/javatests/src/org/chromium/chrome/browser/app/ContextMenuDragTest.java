@@ -183,7 +183,7 @@ public class ContextMenuDragTest {
             Assert.assertEquals(
                     "Context menu dialog is not showing.",
                     showing,
-                    mContextMenu.getDialogsForTest().get(0).second.isShowing());
+                    mContextMenu.getDialogsForTest().get(0).popupWindow.isShowing());
         } else {
             Assert.assertEquals(
                     "There should be no dialog.", 0, mContextMenu.getDialogsForTest().size());

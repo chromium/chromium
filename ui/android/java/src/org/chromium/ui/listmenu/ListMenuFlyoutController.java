@@ -8,7 +8,6 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.os.Handler;
-import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -37,6 +36,22 @@ public class ListMenuFlyoutController<T> {
     private List<ListItem> mLastHighlightedPath = new ArrayList<ListItem>();
 
     /**
+     * A data class holding a flyout popup window and the (optional) parent ListItem that triggered
+     * it. The root popup will have a null parentItem.
+     *
+     * @param <T> The type of the object representing the flyout popup.
+     */
+    public static class FlyoutPopupEntry<T> {
+        public final @Nullable ListItem parentItem;
+        public final T popupWindow;
+
+        public FlyoutPopupEntry(@Nullable ListItem parentItem, T popupWindow) {
+            this.parentItem = parentItem;
+            this.popupWindow = popupWindow;
+        }
+    }
+
+    /**
      * Defines a contract for managing a series of flyout popups, typically used for nested context
      * menus. An implementing class is responsible for the lifecycle of these popups, including
      * their creation, tracking, and dismissal as the user navigates the menu hierarchy.
@@ -48,10 +63,10 @@ public class ListMenuFlyoutController<T> {
         /**
          * Returns the list of the dialogs, along with the parent ListItem.
          *
-         * @return A List of pairs of the parent ListItems and their corresponding dialog popups of
-         *     type T.
+         * @return A List of {@link FlyoutWindowEntry} objects, each mapping a popup to its parent
+         *     item.
          */
-        List<Pair<@Nullable ListItem, T>> getFlyoutWindows();
+        List<FlyoutPopupEntry<T>> getFlyoutWindows();
 
         /**
          * Adds a flyout popup.
@@ -173,7 +188,7 @@ public class ListMenuFlyoutController<T> {
     }
 
     private void onFlyoutAfterDelay(ListItem item, View view, int levelOfHoveredItem) {
-        List<Pair<@Nullable ListItem, T>> dialogs = mFlyoutHandler.getFlyoutWindows();
+        List<FlyoutPopupEntry<T>> dialogs = mFlyoutHandler.getFlyoutWindows();
 
         if (levelOfHoveredItem >= dialogs.size()) {
             return;
@@ -184,8 +199,8 @@ public class ListMenuFlyoutController<T> {
         // If child popups exist.
         if (levelOfHoveredItem < dialogs.size() - 1) {
             // We want to keep the direct child open if the hover is still on the same child.
-            ListItem parentItemOfCurrentFlyoutPopup = dialogs.get(levelOfHoveredItem + 1).first;
-            keepChildWindow = item == parentItemOfCurrentFlyoutPopup;
+            FlyoutPopupEntry<T> currentFlyoutPopupEntry = dialogs.get(levelOfHoveredItem + 1);
+            keepChildWindow = item == currentFlyoutPopupEntry.parentItem;
 
             int clearFromIndex = keepChildWindow ? levelOfHoveredItem + 2 : levelOfHoveredItem + 1;
             if (clearFromIndex < dialogs.size()) {

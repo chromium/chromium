@@ -805,7 +805,7 @@ public class ContextMenuTest {
         Assert.assertEquals(downloadCount, newCount);
 
         // The context menu should still show.
-        Assert.assertTrue(mMenuCoordinator.getDialogsForTest().get(0).second.isShowing());
+        Assert.assertTrue(mMenuCoordinator.getDialogsForTest().get(0).popupWindow.isShowing());
     }
 
     /**

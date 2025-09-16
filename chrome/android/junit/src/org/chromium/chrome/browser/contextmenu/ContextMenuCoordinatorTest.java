@@ -14,7 +14,6 @@ import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITE
 
 import android.app.Activity;
 import android.graphics.Rect;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -61,6 +60,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragStateTracker;
+import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -512,9 +512,9 @@ public class ContextMenuCoordinatorTest {
         mCoordinator.displayMenu(
                 windowAndroid, mWebContentsMock, params, rawItems, null, null, null);
 
-        List<Pair<ListItem, ContextMenuDialog>> dialogs = mCoordinator.getDialogsForTest();
+        List<FlyoutPopupEntry<ContextMenuDialog>> dialogs = mCoordinator.getDialogsForTest();
         Assert.assertEquals("mDialogs contains no windows.", 1, dialogs.size());
-        return dialogs.get(0).second;
+        return dialogs.get(0).popupWindow;
     }
 
     private void setupMocksForDragShadowImage(
