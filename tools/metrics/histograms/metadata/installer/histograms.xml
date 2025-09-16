@@ -176,8 +176,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Recovery.NbrDurationMinutes" units="minutes"
-    expires_after="2025-08-17">
-  <owner>yuanpengni@chromium.org</owner>
+    expires_after="2026-03-11">
+  <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
     The duration in minutes for the network based recovery to complete.

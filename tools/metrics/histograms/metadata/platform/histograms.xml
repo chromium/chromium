@@ -772,8 +772,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DlcService.TotalUsedMBytes" units="MiB"
-    expires_after="2025-09-14">
-  <owner>yuanpengni@chromium.org</owner>
+    expires_after="2026-03-11">
+  <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
     The storage space used by DLC packages on the device. This metric is
@@ -928,7 +928,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Firmware.Mismatch" enum="BooleanDetected"
     expires_after="2026-03-26">
-  <owner>yuanpengni@chromium.org</owner>
+  <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
     Records if the system firmware mismatched OS bundled firmware. Reported once

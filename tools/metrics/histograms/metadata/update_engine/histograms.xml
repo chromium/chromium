@@ -391,8 +391,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.ConsumerAutoUpdate" enum="BooleanOptedOut"
-    expires_after="2025-04-13">
-  <owner>yuanpengni@chromium.org</owner>
+    expires_after="2026-03-11">
+  <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
     This records if the eligible user has opted out the consumer auto update.
