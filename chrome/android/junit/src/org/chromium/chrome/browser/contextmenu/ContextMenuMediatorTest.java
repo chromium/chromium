@@ -346,7 +346,7 @@ public class ContextMenuMediatorTest {
     }
 
     private ModelList getItemList(List<ModelList> items, boolean hasHeader) {
-        return mMediator.updateAndGetModelList(items, hasHeader, /* flyoutHandler= */ null);
+        return mMediator.updateAndGetModelList(items, hasHeader, /* flyoutController= */ null);
     }
 
     private ListItem createListItem(@ChromeContextMenuItem.Item int item) {

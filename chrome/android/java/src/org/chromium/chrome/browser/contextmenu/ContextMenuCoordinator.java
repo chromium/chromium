@@ -43,9 +43,10 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.ui.listmenu.ListMenuFlyoutController;
+import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutHandler;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
-import org.chromium.ui.listmenu.ListMenuUtils.FlyoutHandler;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -336,7 +337,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         // preview the page before initiating any actions. This is not needed for
                         // actions performed on the current page.
                         /* hasHeader= */ !params.getOpenedFromHighlight() && !params.isPage(),
-                        /* flyoutHandler= */ this);
+                        new ListMenuFlyoutController(this));
 
         ModelListAdapter adapter = createAdapter(listItems);
 

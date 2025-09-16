@@ -20,7 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.ui.listmenu.ListItemType;
-import org.chromium.ui.listmenu.ListMenuUtils.FlyoutHandler;
+import org.chromium.ui.listmenu.ListMenuFlyoutController;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -92,7 +92,7 @@ public class ContextMenuMediator {
      * @return The {@link ModelList} to show in the context menu.
      */
     /*package*/ ModelList updateAndGetModelList(
-            List<ModelList> items, boolean hasHeader, FlyoutHandler flyoutHandler) {
+            List<ModelList> items, boolean hasHeader, ListMenuFlyoutController flyoutController) {
 
         mModelList.clear();
 
@@ -120,7 +120,7 @@ public class ContextMenuMediator {
                 /* headerModelList= */ null,
                 mModelList,
                 mDismissDialog,
-                flyoutHandler,
+                flyoutController,
                 /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
         // Add callbacks to all other first-level items.
         for (ListItem item : mModelList) {
