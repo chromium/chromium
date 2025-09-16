@@ -164,6 +164,9 @@ class WebClient {
   // Allows WKWebViews to be inspected using Safari's Web Inspector.
   virtual bool EnableWebInspector(web::BrowserState* browser_state) const;
 
+  // Allows the embedder to override the open panel (also called upload panel).
+  virtual bool OverrideOpenPanel() const;
+
   // Returns the UserAgentType that should be used by default for the web
   // content, based on the `web_state`.
   virtual UserAgentType GetDefaultUserAgent(web::WebState* web_state,

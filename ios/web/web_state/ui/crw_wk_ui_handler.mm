@@ -86,6 +86,21 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
   return self;
 }
 
+#pragma mark - NSObject
+
+// Overriden to return NO for
+// -webView:runOpenPanelWithParameters:initiatedByFrame:completionHandler:
+// if the web client does not want to override the native open panel behaviour.
+- (BOOL)respondsToSelector:(SEL)selector {
+  SEL runOpenPanelWithParametersSelector = @selector
+      (webView:runOpenPanelWithParameters:initiatedByFrame:completionHandler:);
+  if (selector == runOpenPanelWithParametersSelector &&
+      !web::GetWebClient()->OverrideOpenPanel()) {
+    return NO;
+  }
+  return [super respondsToSelector:selector];
+}
+
 #pragma mark - CRWWebViewHandler
 
 - (void)close {
@@ -304,6 +319,17 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
   }
 
   delegate->ContextMenuWillCommitWithAnimator(self.webStateImpl, animator);
+}
+
+- (void)webView:(WKWebView*)webView
+    runOpenPanelWithParameters:(WKOpenPanelParameters*)parameters
+              initiatedByFrame:(WKFrameInfo*)frame
+             completionHandler:(void (^)(NSArray<NSURL*>*))completionHandler
+    API_AVAILABLE(ios(18.4)) {
+  CHECK(web::GetWebClient()->OverrideOpenPanel());
+  // TODO(crbug.com/441659098): Forward parameters and completion handler to the
+  // embedder instead of passing nil.
+  completionHandler(nil);
 }
 
 #pragma mark - CRWMediaCapturePermissionPresenter

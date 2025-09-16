@@ -556,6 +556,12 @@ bool ChromeWebClient::EnableWebInspector(
   return profile->GetPrefs()->GetBoolean(prefs::kWebInspectorEnabled);
 }
 
+bool ChromeWebClient::OverrideOpenPanel() const {
+  // TODO(crbug.com/441659098): Use a feature flag to determine whether to
+  // override the open panel.
+  return false;
+}
+
 web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
     web::WebState* web_state,
     const GURL& url) const {
