@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_model.h"
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_prefs.h"
 #include "content/public/browser/web_contents.h"
 
 namespace session_restore_infobar {
@@ -28,7 +29,9 @@ void SessionRestoreInfobarController::MaybeShowInfoBar(
     bool is_post_crash_launch) {
   model_ = std::make_unique<SessionRestoreInfobarModel>(profile, was_restarted,
                                                         is_post_crash_launch);
-
+  if (InfoBarShownMaxTimes(profile.GetPrefs())) {
+    return;
+  }
   if (!model_->ShouldShowOnStartup()) {
     return;
   }
@@ -39,6 +42,7 @@ void SessionRestoreInfobarController::MaybeShowInfoBar(
 
   SessionRestoreInfoBarManager::GetInstance()->ShowInfoBar(
       profile, GetInfobarMessageType());
+  IncrementInfoBarShownCount(profile.GetPrefs());
 }
 
 SessionRestoreInfobarController::SessionRestoreInfobarController() = default;

@@ -8,12 +8,14 @@ source_set("session_restore_infobar") {
     "session_restore_infobar_delegate.h",
     "session_restore_infobar_manager.h",
     "session_restore_infobar_model.h",
+    "session_restore_infobar_prefs.h",
   ]
   sources = [
     "session_restore_infobar_controller.cc",
     "session_restore_infobar_delegate.cc",
     "session_restore_infobar_manager.cc",
     "session_restore_infobar_model.cc",
+    "session_restore_infobar_prefs.cc",
   ]
   public_deps = [ "//base" ]
 
@@ -50,6 +52,7 @@ source_set("unit_tests") {
   sources = [
     "session_restore_infobar_delegate_unittest.cc",
     "session_restore_infobar_model_unittest.cc",
+    "session_restore_infobar_prefs_unittest.cc",
   ]
 
   deps = [
