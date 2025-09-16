@@ -175,7 +175,8 @@ public class TabSwitcherMessageManagerUnitTest {
                         mPaneManagerSupplier,
                         mTabGroupUiActionHandlerSupplier,
                         mLayoutStateProviderSupplier);
-        mMessageManager.registerMessages(mTabListCoordinator);
+        mMessageManager.registerMessageHostDelegate(
+                MessageHostDelegateFactory.build(mTabListCoordinator));
         mMessageManager.bind(
                 mTabListCoordinator,
                 container,

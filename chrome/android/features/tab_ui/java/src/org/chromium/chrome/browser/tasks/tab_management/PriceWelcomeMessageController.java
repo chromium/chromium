@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 
 /** Controller for the price welcome message in the grid tab switcher. */
@@ -92,7 +93,8 @@ public class PriceWelcomeMessageController {
     PriceWelcomeMessageController(
             TabSwitcherMessageManager tabSwitcherMessageManager,
             ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
-            MessageCardProviderCoordinator messageCardProviderCoordinator,
+            MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer>
+                    messageCardProviderCoordinator,
             ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,
             Profile profile,
@@ -126,7 +128,8 @@ public class PriceWelcomeMessageController {
     public static PriceWelcomeMessageController build(
             TabSwitcherMessageManager tabSwitcherMessageManager,
             ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
-            MessageCardProviderCoordinator<@MessageType Integer> messageCardProviderCoordinator,
+            MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer>
+                    messageCardProviderCoordinator,
             ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,
             Profile profile,
@@ -210,7 +213,7 @@ public class PriceWelcomeMessageController {
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         if (tabListCoordinator != null) {
             tabListCoordinator.removeSpecialListItem(
-                    TabProperties.UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
+                    UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
         }
 
         for (PriceMessageUpdateObserver observer : mObservers) {

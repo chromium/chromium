@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
-import android.view.ViewGroup;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -18,7 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** ViewBinder for TabGridLargeMessageItem. */
 @NullMarked
 class LargeMessageCardViewBinder {
-    public static void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
+    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         assert view instanceof LargeMessageCardView;
 
         LargeMessageCardView itemView = (LargeMessageCardView) view;

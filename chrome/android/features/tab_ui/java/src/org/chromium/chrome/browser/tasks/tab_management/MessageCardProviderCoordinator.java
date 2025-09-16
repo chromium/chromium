@@ -20,19 +20,34 @@ import java.util.function.Supplier;
  * TabGridMessageCardView for each message type. This coordinator manages the life-cycle of all
  * shared components and the connection between all subscribed {@link MessageService}.
  *
- * @param <T> The message type.
+ * @param <MessageT> The message type.
+ * @param <UiT> The UI type.
  */
 @NullMarked
-public class MessageCardProviderCoordinator<T> {
-    private final MessageCardProviderMediator<T> mMediator;
+public class MessageCardProviderCoordinator<MessageT, UiT> {
+    private final MessageCardProviderMediator<MessageT, UiT> mMediator;
+    private @Nullable MessageHostDelegate<MessageT, UiT> mMessageHostDelegate;
 
     MessageCardProviderCoordinator(
             Context context,
             Supplier<Profile> profileSupplier,
-            ServiceDismissActionProvider<T> serviceDismissActionProvider) {
+            ServiceDismissActionProvider<MessageT> serviceDismissActionProvider) {
         mMediator =
                 new MessageCardProviderMediator<>(
                         context, profileSupplier, serviceDismissActionProvider);
+    }
+
+    /**
+     * Binds a {@link MessageHostDelegate} to the coordinator and registers services to it.
+     *
+     * @param messageHostDelegate The {@link MessageHostDelegate} to bind.
+     */
+    public void bindHostDelegate(MessageHostDelegate<MessageT, UiT> messageHostDelegate) {
+        mMessageHostDelegate = messageHostDelegate;
+
+        for (MessageService<MessageT, UiT> service : mMediator.getMessageServices()) {
+            mMessageHostDelegate.registerService(service);
+        }
     }
 
     /**
@@ -40,7 +55,11 @@ public class MessageCardProviderCoordinator<T> {
      *
      * @param service The {@link MessageService} to subscribe.
      */
-    public void subscribeMessageService(MessageService<T> service) {
+    public void subscribeMessageService(MessageService<MessageT, UiT> service) {
+        if (mMessageHostDelegate != null) {
+            mMessageHostDelegate.registerService(service);
+        }
+
         // TODO(crbug.com/439557010): Simplify the observer interactions.
         // We must register the service to the mediator before registering the mediator to the
         // service.
@@ -54,7 +73,7 @@ public class MessageCardProviderCoordinator<T> {
      *
      * @param messageType The message type associates with the message.
      */
-    public @Nullable Message<T> getNextMessageItemForType(T messageType) {
+    public @Nullable Message<MessageT> getNextMessageItemForType(MessageT messageType) {
         return mMediator.getNextMessageItemForType(messageType);
     }
 
@@ -64,20 +83,20 @@ public class MessageCardProviderCoordinator<T> {
      * @param messageType The message type associated with the message.
      * @param identifier The identifier associated with the message.
      */
-    boolean isMessageShown(T messageType, int identifier) {
+    boolean isMessageShown(MessageT messageType, int identifier) {
         return mMediator.isMessageShown(messageType, identifier);
     }
 
     /** Returns all registered message services. */
-    public List<MessageService<T>> getMessageServices() {
+    public List<MessageService<MessageT, UiT>> getMessageServices() {
         return mMediator.getMessageServices();
     }
 
     /** Clean up all member fields. */
     public void destroy() {
-        List<MessageService<T>> services = mMediator.getMessageServices();
+        List<MessageService<MessageT, UiT>> services = mMediator.getMessageServices();
         for (int i = 0; i < services.size(); i++) {
-            MessageService<T> service = services.get(i);
+            MessageService<MessageT, UiT> service = services.get(i);
             mMediator.removeMessageService(service);
             service.removeObserver(mMediator);
         }

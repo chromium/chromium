@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -38,7 +39,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Message service class to show the Incognito re-auth promo inside the incognito tab switcher. */
 @NullMarked
-public class IncognitoReauthPromoMessageService extends MessageService<@MessageType Integer>
+public class IncognitoReauthPromoMessageService
+        extends MessageService<@MessageType Integer, @UiType Integer>
         implements PauseResumeWithNativeObserver {
     /** TODO(crbug.com/40056462): Remove this when we support all the Android versions. */
     public static @Nullable Boolean sIsPromoEnabledForTesting;
@@ -111,7 +113,6 @@ public class IncognitoReauthPromoMessageService extends MessageService<@MessageT
     }
 
     /**
-     * @param mMessageType The type of the message.
      * @param profile {@link Profile} to use to check the re-auth status.
      * @param sharedPreferencesManager The {@link SharedPreferencesManager} to query about re-auth
      *     promo shared preference.
@@ -123,14 +124,17 @@ public class IncognitoReauthPromoMessageService extends MessageService<@MessageT
      *     register listening to onResume events.
      */
     IncognitoReauthPromoMessageService(
-            int mMessageType,
             Profile profile,
             Context context,
             SharedPreferencesManager sharedPreferencesManager,
             IncognitoReauthManager incognitoReauthManager,
             SnackbarManager snackbarManager,
             ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-        super(mMessageType);
+        super(
+                MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+                UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+                R.layout.large_message_card_item,
+                LargeMessageCardViewBinder::bind);
         mProfile = profile;
         mContext = context;
         mSharedPreferencesManager = sharedPreferencesManager;

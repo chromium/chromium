@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -61,7 +62,8 @@ import java.util.function.Supplier;
 
 /** A message service to surface information about archived tabs. */
 @NullMarked
-public class ArchivedTabsMessageService extends MessageService<@MessageType Integer>
+public class ArchivedTabsMessageService
+        extends MessageService<@MessageType Integer, @UiType Integer>
         implements MessageUpdateObserver {
 
     /** Provides message data for the archived message card. */
@@ -159,7 +161,11 @@ public class ArchivedTabsMessageService extends MessageService<@MessageType Inte
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
-        super(MessageType.ARCHIVED_TABS_MESSAGE);
+        super(
+                MessageType.ARCHIVED_TABS_MESSAGE,
+                UiType.ARCHIVED_TABS_MESSAGE,
+                R.layout.archived_tabs_message_card_view,
+                ArchivedTabsCardViewBinder::bind);
         mActivity = activity;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mBrowserControlsStateProvider = browserControlStateProvider;

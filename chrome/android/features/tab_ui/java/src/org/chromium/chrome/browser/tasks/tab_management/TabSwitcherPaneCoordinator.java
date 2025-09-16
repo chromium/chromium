@@ -475,7 +475,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     mTabListEditorManager.getControllerSupplier());
 
             mMessageManager = messageManager;
-            mMessageManager.registerMessages(tabListCoordinator);
+            mMessageManager.registerMessageHostDelegate(
+                    MessageHostDelegateFactory.build(tabListCoordinator));
 
             CollaborationService collaborationService =
                     CollaborationServiceFactory.getForProfile(profile);

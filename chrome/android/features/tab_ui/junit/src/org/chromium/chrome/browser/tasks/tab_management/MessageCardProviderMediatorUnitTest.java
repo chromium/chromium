@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -46,7 +47,7 @@ public class MessageCardProviderMediatorUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private MessageCardProviderMediator<@MessageType Integer> mMediator;
+    private MessageCardProviderMediator<@MessageType Integer, @UiType Integer> mMediator;
 
     @Mock private ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider;
 
@@ -76,11 +77,10 @@ public class MessageCardProviderMediatorUnitTest {
         mMediator =
                 new MessageCardProviderMediator<>(
                         mContext, mProfileSupplier, mServiceDismissActionProvider);
-        mMediator.addMessageService(new MessageService<>(MessageType.FOR_TESTING));
-        mMediator.addMessageService(new MessageService<>(MessageType.PRICE_MESSAGE));
-        mMediator.addMessageService(new MessageService<>(MessageType.IPH));
-        mMediator.addMessageService(
-                new MessageService<>(MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE));
+        mMediator.addMessageService(initService(MessageType.FOR_TESTING));
+        mMediator.addMessageService(initService(MessageType.PRICE_MESSAGE));
+        mMediator.addMessageService(initService(MessageType.IPH));
+        mMediator.addMessageService(initService(MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE));
     }
 
     private void enqueueMessageItem(@MessageType int type, int tabSuggestionAction) {
@@ -364,5 +364,14 @@ public class MessageCardProviderMediatorUnitTest {
     @Nullable
     private Message<@MessageType Integer> getShownMessageFromService(@MessageType int messageType) {
         return mMediator.getMessageServicesMap().get(messageType).getShownMessage();
+    }
+
+    private static MessageService<@MessageType Integer, @UiType Integer> initService(
+            @MessageType int messageType) {
+        return new MessageService<>(
+                messageType,
+                UiType.IPH_MESSAGE,
+                R.layout.tab_grid_message_card_item,
+                MessageCardViewBinder::bind);
     }
 }

@@ -73,9 +73,9 @@ public class MessageCardProviderTest {
     private TabListModel mModelList;
     private SimpleRecyclerViewAdapter mAdapter;
 
-    private MessageCardProviderCoordinator<@MessageType Integer> mCoordinator;
-    private MessageService<@MessageType Integer> mTestingService;
-    private MessageService<@MessageType Integer> mPriceService;
+    private MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer> mCoordinator;
+    private MessageService<@MessageType Integer, @UiType Integer> mTestingService;
+    private MessageService<@MessageType Integer, @UiType Integer> mPriceService;
 
     private final ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider =
             (messageType) -> {};
@@ -142,8 +142,18 @@ public class MessageCardProviderTest {
 
                     view.addView(mRecyclerView);
 
-                    mTestingService = new MessageService<>(MessageType.FOR_TESTING);
-                    mPriceService = new MessageService<>(MessageType.PRICE_MESSAGE);
+                    mTestingService =
+                            new MessageService<>(
+                                    MessageType.FOR_TESTING,
+                                    UiType.IPH_MESSAGE,
+                                    R.layout.tab_grid_message_card_item,
+                                    MessageCardViewBinder::bind);
+                    mPriceService =
+                            new MessageService<>(
+                                    MessageType.PRICE_MESSAGE,
+                                    UiType.IPH_MESSAGE,
+                                    R.layout.tab_grid_message_card_item,
+                                    MessageCardViewBinder::bind);
 
                     mCoordinator =
                             new MessageCardProviderCoordinator<>(
@@ -204,7 +214,8 @@ public class MessageCardProviderTest {
     }
 
     private void addMessageCards() {
-        for (MessageService<@MessageType Integer> service : mCoordinator.getMessageServices()) {
+        for (MessageService<@MessageType Integer, @UiType Integer> service :
+                mCoordinator.getMessageServices()) {
             Message<@MessageType Integer> message =
                     mCoordinator.getNextMessageItemForType(service.getMessageType());
             if (message == null) continue;

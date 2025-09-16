@@ -5,15 +5,19 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -21,24 +25,25 @@ import java.util.Deque;
 import java.util.List;
 
 /**
- * Ideally, each message type, <T>, requires a MessageService class. This is the base class. All the
- * concrete subclass should contain logic that convert the data from the corresponding external
- * service to a data structure that the TabGridMessageCardProvider understands.
+ * Ideally, each message type, <MessageT>, requires a MessageService class. This is the base class.
+ * All the concrete subclass should contain logic that convert the data from the corresponding
+ * external service to a data structure that the TabGridMessageCardProvider understands.
  *
- * @param <T> The message type.
+ * @param <MessageT> The message type.
+ * @param <UiT> The UI type.
  */
 @NullMarked
-public class MessageService<T> {
+public class MessageService<MessageT, UiT> {
     /**
      * A class represents a Message.
      *
-     * @param <T> The message type.
+     * @param <MessageType> The message type.
      */
-    public static class Message<T> {
-        public final T type;
+    public static class Message<MessageType> {
+        public final MessageType type;
         public final PropertyModel model;
 
-        Message(T type, PropertyModel model) {
+        Message(MessageType type, PropertyModel model) {
             this.type = type;
             this.model = model;
         }
@@ -49,10 +54,10 @@ public class MessageService<T> {
     /**
      * Used to build the property model for a message.
      *
-     * @param <T> The message type.
+     * @param <MessageT> The message type.
      */
     @FunctionalInterface
-    public interface MessageModelFactory<T> {
+    public interface MessageModelFactory<MessageT> {
         /**
          * Builds the property model for the message.
          *
@@ -61,38 +66,48 @@ public class MessageService<T> {
          *     message service.
          */
         PropertyModel build(
-                Context context, ServiceDismissActionProvider<T> msgServiceDismissRunnable);
+                Context context, ServiceDismissActionProvider<MessageT> msgServiceDismissRunnable);
     }
 
     /**
      * An interface to be notified about changes to a Message.
      *
-     * @param <T> The message type.
+     * @param <MessageT> The message type.
      */
-    public interface MessageObserver<T> {
+    public interface MessageObserver<MessageT> {
         /**
          * Called when a message is available.
          *
          * @param type The type of the message.
          * @param data {@link MessageModelFactory} associated with the message.
          */
-        void messageReady(T type, MessageModelFactory<T> data);
+        void messageReady(MessageT type, MessageModelFactory<MessageT> data);
 
         /**
          * Called when a message is invalidated.
          *
          * @param type The type of the message.
          */
-        void messageInvalidate(T type);
+        void messageInvalidate(MessageT type);
     }
 
-    private final ObserverList<MessageObserver<T>> mObservers = new ObserverList<>();
-    private final T mMessageType;
-    private final Deque<Message<T>> mMessageItems = new ArrayDeque<>();
-    private @Nullable Message<T> mShownMessage;
+    private final ObserverList<MessageObserver<MessageT>> mObservers = new ObserverList<>();
+    private final MessageT mMessageType;
+    private final UiT mUiType;
+    private final @LayoutRes int mLayoutRes;
+    private final ViewBinder<PropertyModel, ? extends View, PropertyKey> mBinder;
+    private final Deque<Message<MessageT>> mMessageItems = new ArrayDeque<>();
+    private @Nullable Message<MessageT> mShownMessage;
 
-    MessageService(T messageType) {
+    MessageService(
+            MessageT messageType,
+            UiT uiType,
+            @LayoutRes int layoutRes,
+            ViewBinder<PropertyModel, ? extends View, PropertyKey> binder) {
         mMessageType = messageType;
+        mUiType = uiType;
+        mLayoutRes = layoutRes;
+        mBinder = binder;
     }
 
     @CallSuper
@@ -105,7 +120,7 @@ public class MessageService<T> {
      *
      * @param observer The observer to add.
      */
-    public void addObserver(MessageObserver<T> observer) {
+    public void addObserver(MessageObserver<MessageT> observer) {
         mObservers.addObserver(observer);
     }
 
@@ -114,7 +129,7 @@ public class MessageService<T> {
      *
      * @param observer The observer to remove.
      */
-    public void removeObserver(MessageObserver<T> observer) {
+    public void removeObserver(MessageObserver<MessageT> observer) {
         mObservers.removeObserver(observer);
     }
 
@@ -123,15 +138,15 @@ public class MessageService<T> {
      *
      * @param data The factory to build the message model.
      */
-    public void sendAvailabilityNotification(MessageModelFactory<T> data) {
-        for (MessageObserver<T> observer : mObservers) {
+    public void sendAvailabilityNotification(MessageModelFactory<MessageT> data) {
+        for (MessageObserver<MessageT> observer : mObservers) {
             observer.messageReady(mMessageType, data);
         }
     }
 
     /** Notifies all {@link MessageObserver} that a message was invalidated. */
     public void sendInvalidNotification() {
-        for (MessageObserver<T> observer : mObservers) {
+        for (MessageObserver<MessageT> observer : mObservers) {
             observer.messageInvalidate(mMessageType);
         }
     }
@@ -141,7 +156,7 @@ public class MessageService<T> {
      *
      * @param message The message to add.
      */
-    public void addMessage(Message<T> message) {
+    public void addMessage(Message<MessageT> message) {
         mMessageItems.add(message);
     }
 
@@ -158,7 +173,7 @@ public class MessageService<T> {
      * Returns the next {@link Message} to be shown, if there is any. If a message is already shown,
      * it will be returned. If not, the next message in the queue will be returned and set as shown.
      */
-    public @Nullable Message<T> getNextMessageItem() {
+    public @Nullable Message<MessageT> getNextMessageItem() {
         if (mShownMessage == null && !mMessageItems.isEmpty()) {
             mShownMessage = mMessageItems.removeFirst();
         }
@@ -183,23 +198,38 @@ public class MessageService<T> {
         mShownMessage = null;
     }
 
-    protected ObserverList<MessageObserver<T>> getObserversForTesting() {
+    protected ObserverList<MessageObserver<MessageT>> getObserversForTesting() {
         return mObservers;
     }
 
     @VisibleForTesting
-    List<Message<T>> getMessageItems() {
+    List<Message<MessageT>> getMessageItems() {
         return new ArrayList<>(mMessageItems);
     }
 
     @Nullable
     @VisibleForTesting
-    Message<T> getShownMessage() {
+    Message<MessageT> getShownMessage() {
         return mShownMessage;
     }
 
     /** Returns the message type of this service. */
-    public T getMessageType() {
+    public MessageT getMessageType() {
         return mMessageType;
+    }
+
+    /** Returns the UI type of the messages created by this service. */
+    public UiT getUiType() {
+        return mUiType;
+    }
+
+    /** Returns the layout resource for the message's UI. */
+    public @LayoutRes int getLayout() {
+        return mLayoutRes;
+    }
+
+    /** Returns the {@link ViewBinder} for the message's UI. */
+    public ViewBinder<PropertyModel, ? extends View, PropertyKey> getBinder() {
+        return mBinder;
     }
 }

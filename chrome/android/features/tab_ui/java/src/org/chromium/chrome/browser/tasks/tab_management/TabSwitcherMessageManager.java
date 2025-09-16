@@ -51,11 +51,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.ElementType;
@@ -153,7 +151,7 @@ public class TabSwitcherMessageManager {
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final SnackbarManager mSnackbarManager;
     private final ModalDialogManager mModalDialogManager;
-    private final MessageCardProviderCoordinator<@MessageType Integer>
+    private final MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer>
             mMessageCardProviderCoordinator;
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
@@ -242,7 +240,7 @@ public class TabSwitcherMessageManager {
                     return assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
                 };
         mMessageCardProviderCoordinator =
-                new MessageCardProviderCoordinator<@MessageType Integer>(
+                new MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer>(
                         activity, profileSupplier, this::dismissHandler);
 
         mTabGridIphDialogCoordinator =
@@ -254,6 +252,17 @@ public class TabSwitcherMessageManager {
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mPaneManagerSupplier = paneManagerSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
+    }
+
+    /**
+     * Register message host delegate for a particular {@link TabListCoordinator}. Should only be
+     * called once per coordinator.
+     *
+     * @param messageHostDelegate The {@link MessageHostDelegate} to register.
+     */
+    public void registerMessageHostDelegate(
+            MessageHostDelegate<@MessageType Integer, @UiType Integer> messageHostDelegate) {
+        mMessageCardProviderCoordinator.bindHostDelegate(messageHostDelegate);
     }
 
     /**
@@ -277,6 +286,7 @@ public class TabSwitcherMessageManager {
             }
         }
         mTabListCoordinatorSupplier.set(tabListCoordinator);
+
         mPriceWelcomeMessageReviewActionProviderSupplier.set(
                 priceWelcomeMessageReviewActionProvider);
 
@@ -303,37 +313,6 @@ public class TabSwitcherMessageManager {
         mPriceWelcomeMessageReviewActionProviderSupplier.set(null);
 
         mTabGridIphDialogCoordinator.setParentView(null);
-    }
-
-    /**
-     * Register messages for a particular {@link TabListCoordinator}. Should only be called once per
-     * coordinator.
-     */
-    public void registerMessages(TabListCoordinator tabListCoordinator) {
-        tabListCoordinator.registerItemType(
-                UiType.IPH_MESSAGE,
-                new LayoutViewBuilder<>(R.layout.tab_grid_message_card_item),
-                MessageCardViewBinder::bind);
-
-        tabListCoordinator.registerItemType(
-                UiType.PRICE_MESSAGE,
-                new LayoutViewBuilder<>(R.layout.large_message_card_item),
-                LargeMessageCardViewBinder::bind);
-
-        tabListCoordinator.registerItemType(
-                UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
-                new LayoutViewBuilder<>(R.layout.large_message_card_item),
-                LargeMessageCardViewBinder::bind);
-
-        tabListCoordinator.registerItemType(
-                UiType.ARCHIVED_TABS_MESSAGE,
-                new LayoutViewBuilder<>(R.layout.archived_tabs_message_card_view),
-                ArchivedTabsCardViewBinder::bind);
-
-        tabListCoordinator.registerItemType(
-                UiType.TAB_GROUP_SUGGESTION_MESSAGE,
-                new LayoutViewBuilder<>(R.layout.tab_grid_message_card_item),
-                MessageCardViewBinder::bind);
     }
 
     /** Post-native initialization. */
@@ -377,7 +356,6 @@ public class TabSwitcherMessageManager {
                     new IncognitoReauthManager(mActivity, profile);
             mIncognitoReauthPromoMessageService =
                     new IncognitoReauthPromoMessageService(
-                            MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                             profile,
                             mActivity,
                             ChromeSharedPreferences.getInstance(),
@@ -516,9 +494,9 @@ public class TabSwitcherMessageManager {
         assert tabListCoordinator != null;
 
         sAppendedMessagesForTesting = false;
-        List<MessageService<@MessageType Integer>> messageServices =
+        List<MessageService<@MessageType Integer, @UiType Integer>> messageServices =
                 mMessageCardProviderCoordinator.getMessageServices();
-        for (MessageService<@MessageType Integer> service : messageServices) {
+        for (MessageService<@MessageType Integer, @UiType Integer> service : messageServices) {
             Message<@MessageType Integer> message = service.getNextMessageItem();
             if (message == null || !shouldAppendMessage(message)) continue;
 
@@ -622,9 +600,9 @@ public class TabSwitcherMessageManager {
                 != null;
 
         sAppendedMessagesForTesting = false;
-        List<MessageService<@MessageType Integer>> messageServices =
+        List<MessageService<@MessageType Integer, @UiType Integer>> messageServices =
                 mMessageCardProviderCoordinator.getMessageServices();
-        for (MessageService<@MessageType Integer> service : messageServices) {
+        for (MessageService<@MessageType Integer, @UiType Integer> service : messageServices) {
             Message<@MessageType Integer> message = service.getNextMessageItem();
             if (message == null || !shouldAppendMessage(message)) continue;
 

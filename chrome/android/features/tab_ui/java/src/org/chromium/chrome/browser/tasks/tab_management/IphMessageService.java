@@ -17,14 +17,16 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherIphController;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** One of the concrete {@link MessageService} that only serves {@link MessageType.IPH}. */
 @NullMarked
-public class IphMessageService extends MessageService<@MessageType Integer> {
+public class IphMessageService extends MessageService<@MessageType Integer, @UiType Integer> {
     private static boolean sSkipIphInTests = true;
 
     private final TabSwitcherIphController mIphController;
@@ -66,7 +68,11 @@ public class IphMessageService extends MessageService<@MessageType Integer> {
     }
 
     IphMessageService(Profile profile, TabSwitcherIphController controller) {
-        super(MessageType.IPH);
+        super(
+                MessageType.IPH,
+                UiType.IPH_MESSAGE,
+                R.layout.tab_grid_message_card_item,
+                MessageCardViewBinder::bind);
         mIphController = controller;
         mTracker = TrackerFactory.getTrackerForProfile(profile);
     }

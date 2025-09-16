@@ -34,6 +34,7 @@ import java.lang.annotation.Target;
 @NullMarked
 public class TabProperties {
     /** IDs for possible types of UI in the tab list. */
+    @Target(ElementType.TYPE_USE)
     @IntDef({
         UiType.TAB,
         UiType.STRIP,
