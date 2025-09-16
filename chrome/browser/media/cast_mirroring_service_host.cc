@@ -90,17 +90,11 @@ CreateVideoCaptureHostOnIO(
     blink::mojom::MediaStreamType type,
     mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  scoped_refptr<base::SingleThreadTaskRunner> device_task_runner =
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   return mojo::MakeSelfOwnedReceiver(
       std::make_unique<SingleClientVideoCaptureHost>(
           device_id, type,
           base::BindRepeating(&content::VideoCaptureDeviceLauncher::
-                                  CreateInProcessVideoCaptureDeviceLauncher,
-                              std::move(device_task_runner))),
+                                  CreateDeviceLauncherFromMediaStreamManager)),
       std::move(receiver));
 }
 

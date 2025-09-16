@@ -49,8 +49,7 @@ class CONTENT_EXPORT VideoCaptureDeviceLauncher {
 
   // Creates an InProcessVideoCaptureDeviceLauncher.
   static std::unique_ptr<VideoCaptureDeviceLauncher>
-  CreateInProcessVideoCaptureDeviceLauncher(
-      scoped_refptr<base::SingleThreadTaskRunner> device_task_runner);
+  CreateDeviceLauncherFromMediaStreamManager();
 
   // The passed-in `done_cb` must guarantee that the context relevant
   // during the asynchronous processing stays alive.

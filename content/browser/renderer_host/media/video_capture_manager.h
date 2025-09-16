@@ -252,6 +252,10 @@ class CONTENT_EXPORT VideoCaptureManager
 
   void CloseNativeScreenCapturePicker(DesktopMediaID device_id);
 
+  VideoCaptureProvider& video_capture_provider() {
+    return *video_capture_provider_.get();
+  }
+
   bool is_idle_close_timer_running_for_testing() const {
     return idle_close_timer_.IsRunning();
   }
