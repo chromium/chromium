@@ -2616,7 +2616,7 @@ TEST_F(AutocompleteControllerTest, UpdateSearchboxStatsForAnswerAction) {
           ->search_terms_args->searchbox_stats.SerializeAsString());
 }
 
-// Anroid and iOS have different handling for pedals.
+// Android and iOS have different handling for pedals.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutocompleteControllerTest, NoActionsAttachedToLensSearchboxMatches) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
@@ -2673,6 +2673,48 @@ TEST_F(AutocompleteControllerTest, NoActionsAttachedToLensSearchboxMatches) {
       controller_.internal_result_.match_at(1)->takeover_action->ActionId());
   EXPECT_TRUE(
       controller_.internal_result_.match_at(2)->has_tab_match.value_or(false));
+}
+#endif
+
+// Android and iOS have different handling for pedals.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteControllerTest, NoActionsAttachedToNtpComposeboxMatches) {
+  // Create input with lens searchbox page classification.
+  controller_.input_ = AutocompleteInput(
+      u"Clear History", metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+      TestSchemeClassifier());
+
+  SetAutocompleteMatches(
+      {CreateSearchMatch(u"search 2"),
+       CreateHistoryURLMatch(
+           /*destination_url=*/"http://this-site-matches.com")});
+
+  static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(provider_client()->GetTabMatcher()))
+      .set_url_substring_match("matches");
+
+  controller_.AttachActions();
+
+  // For a Lens Searchbox, AttachActions shouldn't attach a switch to this tab
+  // action to the last match.
+  EXPECT_FALSE(
+      controller_.internal_result_.match_at(1)->has_tab_match.value_or(false));
+
+  controller_.input_ =
+      AutocompleteInput(u"Clear History", metrics::OmniboxEventProto::OTHER,
+                        TestSchemeClassifier());
+
+  SetAutocompleteMatches(
+      {CreateSearchMatch(u"Clear History"),
+       CreateHistoryURLMatch(
+           /*destination_url=*/"http://this-site-matches.com")});
+
+  controller_.AttachActions();
+
+  // For any other page classification, AttachActions should attach a switch
+  // to this tab action to the relevant matches.
+  EXPECT_TRUE(
+      controller_.internal_result_.match_at(1)->has_tab_match.value_or(false));
 }
 #endif
 

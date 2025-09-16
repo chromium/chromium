@@ -225,6 +225,9 @@ class ComposeboxQueryController {
   // Clear entire file cache.
   virtual void ClearFiles();
 
+  // Clears the suggest inputs.
+  virtual void ClearSuggestInputs();
+
   int num_files_in_request() { return num_files_in_request_; }
 
   // Return the file from `active_files_` map or nullptr if not found.
