@@ -90,7 +90,7 @@
 <translation id="1163507966173624031">民謠與傳統音樂</translation>
 <translation id="11635448457105324">「管理地址」按鈕，啟動後即可在 Chrome 設定中新增及管理地址</translation>
 <translation id="1165039591588034296">錯誤</translation>
-<translation id="1165174597379888365">已造訪網頁</translation>
+<translation id="1165174597379888365">造訪網頁</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{無}=1{1 個網站 (Google 帳戶會保持登入狀態)}other{# 個網站 (Google 帳戶會保持登入狀態)}}</translation>
 <translation id="1167877250265821930">無法下載<ph name="LANGUAGE" /></translation>
 <translation id="1173894706177603556">重新命名</translation>
@@ -251,7 +251,7 @@
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1408696301184924537">如要下次自動填入這個 IBAN，請先儲存到 Google 帳戶</translation>
 <translation id="1408787208417187241">三釘 (頂端)</translation>
-<translation id="1410365862999780287">這部裝置的其他使用者不會看到你的活動，瀏覽活動記錄的隱私更有保障。無痕模式不會影響網站及其使用的服務 (包括 Google) 收集資料的方式，而且下載內容、新增的書籤及加入閱讀清單中的項目仍會保留在裝置上。</translation>
+<translation id="1410365862999780287">這部裝置的其他使用者不會看到你的活動，瀏覽網路時更能保障隱私。無痕模式不會影響網站與相關服務 (包括 Google) 收集資料的方式。系統依然會儲存下載內容、書籤及閱讀清單中的項目。</translation>
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413809658975081374">隱私權設定發生錯誤</translation>
 <translation id="1414134146594747368">幼稚園</translation>
@@ -736,7 +736,7 @@
 <translation id="2210794033760923560">上傳報告</translation>
 <translation id="2212735316055980242">找不到政策</translation>
 <translation id="2213606439339815911">正在擷取項目...</translation>
-<translation id="2213612003795704869">已列印頁面</translation>
+<translation id="2213612003795704869">列印頁面</translation>
 <translation id="2214086901479959524">請更新 Chrome，才能繼續使用共用分頁群組</translation>
 <translation id="2215368073167343359">使用 Google 自動填入功能</translation>
 <translation id="2215539479425228550">攀岩與登山運動</translation>
@@ -758,7 +758,7 @@
 <translation id="2233745931693710080">光碟</translation>
 <translation id="2239100178324503013">立即傳送</translation>
 <translation id="224130779555573777">新增補救號碼 (redress number)</translation>
-<translation id="2241693394036365668">已下載檔案</translation>
+<translation id="2241693394036365668">下載檔案</translation>
 <translation id="2242389809734574253">已關閉儲存 IBAN 的底部功能表。</translation>
 <translation id="2246264294482514010">10 x 12 吋</translation>
 <translation id="2246480341630108201">家長尚未核准</translation>
@@ -942,7 +942,7 @@
 <translation id="2535585790302968248">開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{和另外 1 個網域}other{和另外 # 個網域}}</translation>
 <translation id="2536110899380797252">新增地址</translation>
-<translation id="2537931901612099523">這部裝置的其他使用者不會看到你的活動，瀏覽活動記錄的隱私更有保障。無痕模式不會影響網站及其使用的服務 (包括 Google) 收集資料的方式，而且下載內容和新增的書籤仍會保留在裝置上。</translation>
+<translation id="2537931901612099523">這部裝置的其他使用者不會看到你的活動，瀏覽網路時更能保障隱私。無痕模式不會影響網站與相關服務 (包括 Google) 收集資料的方式。系統依然會儲存下載內容及書籤。</translation>
 <translation id="2541219929084442027">關閉所有無痕分頁後，你在其中瀏覽的網頁都不會保留在瀏覽器記錄、Cookie 儲存庫或搜尋記錄中。不過，你下載的檔案或建立的書籤全部都會保留下來。</translation>
 <translation id="2542106216580219892">衝浪</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> - 如要退出全螢幕模式，請按住 |<ph name="ACCELERATOR" />|</translation>
@@ -1459,7 +1459,7 @@
 <translation id="3433144818443565002">語音及視訊通訊</translation>
 <translation id="3434025015623587566">Google 密碼管理工具需要更多存取權</translation>
 <translation id="3434346831962601311">未封鎖任何主題</translation>
-<translation id="343474037147570563">你上傳或附加的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描檔案，檢查是否含有敏感資料或惡意軟體，也可能會依據公司政策儲存這些檔案，並通知系統管理員查看。</translation>
+<translation id="343474037147570563">你上傳或附加的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，前述公司組織可能會掃描檔案，檢查是否含有敏感資料或惡意軟體，也可能會依據公司政策儲存這些檔案供系統管理員查看。</translation>
 <translation id="3435557549311968410">連續 (短邊)</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3440783957068352691">正方形</translation>
@@ -2375,7 +2375,7 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可搜尋</translation>
 <translation id="4930153903256238152">大容量</translation>
 <translation id="4930714375720679147">開啟</translation>
-<translation id="4932035752129140860">你貼上或附加的文字會傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描內容，檢查是否含有敏感資料，也可能會依據公司政策儲存這些資料，並通知系統管理員查看。</translation>
+<translation id="4932035752129140860">你貼上或附加的文字會傳送到 Google Cloud 或第三方進行分析。舉例來說，前述公司組織可能會掃描內容，檢查是否含有敏感資料，也可能會依據公司政策儲存這些資料供系統管理員查看。</translation>
 <translation id="4933788293078559286">使用 Pix 付款</translation>
 <translation id="4934780484581617878">視窗管理</translation>
 <translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
@@ -2662,7 +2662,7 @@
 <translation id="541416427766103491">堆疊出紙器 4</translation>
 <translation id="5414446060143308245">轉移檔案前請務必確認</translation>
 <translation id="5414511064953050917">仍要移動</translation>
-<translation id="5418700249417444482">你造訪的網頁網址會傳送到 Google Cloud 或第三方進行分析，因此你的系統管理員可能會看到這些資料。舉例來說，Google Cloud 或第三方會掃描網址，偵測網站是否不安全或根據系統管理員設定的規則篩選網站。</translation>
+<translation id="5418700249417444482">你造訪的網頁網址會傳送到 Google Cloud 或第三方進行分析，因此你的系統管理員可能會看到這些資料。舉例來說，前述公司組織可能會掃描網址，偵測網站是否不安全或根據系統管理員設定的規則篩選網站。</translation>
 <translation id="5419311651396341287">系統管理員可查看：</translation>
 <translation id="5421408724705443535">搖滾音樂</translation>
 <translation id="5423269318075950257">追蹤價格</translation>
@@ -3774,7 +3774,7 @@
 <translation id="7264942008235065057">你已加入 Google 進階保護計畫，因此這個網站會維持封鎖狀態。<ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">這項地址資訊僅供此裝置存取</translation>
 <translation id="7269151392155523061">捷徑不得與 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 定義的搜尋聚合器關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
-<translation id="7273111226200291353">你下載的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描檔案，檢查是否含有敏感資料或惡意軟體，也可能會依據公司政策儲存這些檔案，並通知系統管理員查看。</translation>
+<translation id="7273111226200291353">你下載的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，前述公司組織可能會掃描檔案，檢查是否含有敏感資料或惡意軟體，也可能會依據公司政策儲存這些檔案供系統管理員查看。</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
 <translation id="7275808129217605899">健康飲食</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可變更 Google 帳戶密碼</translation>
@@ -3823,7 +3823,7 @@
 <translation id="7374461526650987610">通訊協定處理常式</translation>
 <translation id="7374733840632556089">發生這個問題是因為你或其他人在裝置上安裝了具有風險的憑證。已知這個憑證是用於監控及攔截網路資訊，且不受 Chrome 信任。雖然有部分監控活動屬於正當行為 (例如學校或公司網路上的監控機制)，Chrome 仍想確保你知曉此一情況，即使你無法阻止這類監控活動。任何存取網路的瀏覽器或應用程式都可能受到監控。</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{未允許任何網站}=1{已允許 1 個網站}other{已允許 # 個網站}}</translation>
-<translation id="7375818412732305729">已附加檔案</translation>
+<translation id="7375818412732305729">附加檔案</translation>
 <translation id="7376031331622621328">商務底部功能表</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">餐旅業</translation>
@@ -4330,7 +4330,7 @@
 <translation id="8202370299023114387">衝突</translation>
 <translation id="8207625368992715508">賽車運動</translation>
 <translation id="8208363704094329105">300 x 400 公釐</translation>
-<translation id="8208629719488976364">你列印的頁面內容和印表機相關資訊會傳送給 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描內容，檢查是否含有敏感資料，也可能會依據公司政策儲存這些資料，並通知系統管理員查看。</translation>
+<translation id="8208629719488976364">你列印的頁面內容和印表機資訊會傳送給 Google Cloud 或第三方進行分析。舉例來說，前述公司組織可能會掃描內容，檢查是否含有敏感資料，也可能會依據公司政策儲存這些資料供系統管理員查看。</translation>
 <translation id="8210490490377416373">選取政策名稱</translation>
 <translation id="8211406090763984747">已建立安全連線</translation>
 <translation id="8213853114485953510">JIS Exec</translation>

@@ -6986,7 +6986,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5855643921295613558">0,6 seconde</translation>
 <translation id="5856721540245522153">Activer les fonctionnalités de débogage</translation>
 <translation id="5857090052475505287">Nouveau dossier</translation>
-<translation id="5857171483910641802">Les raccourcis affichés sont des suggestions fondées sur les sites Web que vous consultez souvent</translation>
+<translation id="5857171483910641802">Les raccourcis affichés sont suggérés en fonction des sites Web que vous consultez souvent</translation>
 <translation id="5857675236236529683">Votre liste de lecture s'affichera ici dès que vous serez prêt</translation>
 <translation id="5857693745746757503">Économisez 50 $ ou plus en passant dès aujourd'hui à un nouveau Chromebook</translation>
 <translation id="5858490737742085133">Terminal</translation>
@@ -11781,7 +11781,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
       <ph name="LIST_ITEM" />Reconnectez-vous au réseau Wi-Fi.
       <ph name="LIST_ITEM" />Exécutez Chrome Connectivity Diagnostics.
     <ph name="END_LIST" /></translation>
-<translation id="9161172953291434881">Faites-vous confiance à ce site et à ce qu'il fera de vos données ?</translation>
+<translation id="9161172953291434881">Faites-vous confiance à ce site pour vos données ?</translation>
 <translation id="9164418710391288146">Non autorisés à se connecter aux appareils sur votre réseau local</translation>
 <translation id="9165856803582999927">Scannez ce QR code avec l'appareil photo de l'appareil sur lequel vous voulez créer et enregistrer votre clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Picture-in-picture</translation>
