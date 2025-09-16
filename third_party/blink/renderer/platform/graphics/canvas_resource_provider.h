@@ -649,6 +649,16 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override;
 
+  bool WritePixels(const SkImageInfo& orig_info,
+                   const void* pixels,
+                   size_t row_bytes,
+                   int x,
+                   int y) override;
+  bool OverwriteImage(const scoped_refptr<gpu::ClientSharedImage>& shared_image,
+                      const gfx::Rect& copy_rect,
+                      const gpu::SyncToken& ready_sync_token,
+                      gpu::SyncToken& completion_sync_token) override;
+
   void OnDestroyResource() override { --num_inflight_resources_; }
   void SetResourceRecyclingEnabled(bool value) override;
   void OnResourceRefReturned(

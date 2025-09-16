@@ -589,6 +589,89 @@ void CanvasResourceProviderSharedImage::WillDraw() {
   WillDrawInternal(true);
 }
 
+bool CanvasResourceProviderSharedImage::WritePixels(
+    const SkImageInfo& orig_info,
+    const void* pixels,
+    size_t row_bytes,
+    int x,
+    int y) {
+  if (!use_oop_rasterization_) {
+    return CanvasResourceProvider::WritePixels(orig_info, pixels, row_bytes, x,
+                                               y);
+  }
+
+  TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::WritePixels");
+  if (IsGpuContextLost()) {
+    return false;
+  }
+
+  // TODO(crbug.com/352263194): This code calls WillDrawInternal(true)
+  // followed immediately by GetBackingClientSharedImageForOverwrite(), which
+  // calls WillDrawInternal(false). The former calls EnsureWriteAccess() and
+  // then the latter immediately calls EndWriteAccess(). Figure out what is
+  // actually intended here and either don't call the former (preserving
+  // current behavior) or call resource()->GetClientSharedImage() rather than
+  // the latter (if the current behavior is a bug).
+  WillDrawInternal(true);
+
+  // End the internal write access before calling WillDrawInternal(), which
+  // has a precondition that there should be no current write access on the
+  // resource.
+  EndWriteAccess();
+  WillDrawInternal(false);
+
+  auto client_si = resource()->GetClientSharedImage();
+  RasterInterface()->WritePixels(client_si->mailbox(), x, y,
+                                 client_si->GetTextureTarget(),
+                                 SkPixmap(orig_info, pixels, row_bytes));
+  resource()->GetSyncToken();
+
+  // If the overdraw optimization kicked in, we need to indicate that the
+  // pixels do not need to be cleared, otherwise the subsequent
+  // rasterizations will clobber canvas contents.
+  if (x <= 0 && y <= 0 && orig_info.width() >= Size().width() &&
+      orig_info.height() >= Size().height()) {
+    is_cleared_ = true;
+  }
+
+  return true;
+}
+
+bool CanvasResourceProviderSharedImage::OverwriteImage(
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
+    const gfx::Rect& copy_rect,
+    const gpu::SyncToken& ready_sync_token,
+    gpu::SyncToken& completion_sync_token) {
+  gpu::raster::RasterInterface* raster = RasterInterface();
+  if (!raster) {
+    return false;
+  }
+
+  if (IsGpuContextLost()) {
+    return false;
+  }
+
+  EndWriteAccess();
+  WillDrawInternal(false);
+
+  auto dst_client_si = resource()->GetClientSharedImage();
+  if (!dst_client_si) {
+    return false;
+  }
+
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      shared_image->BeginRasterAccess(raster, ready_sync_token,
+                                      /*readonly=*/true);
+  raster->CopySharedImage(shared_image->mailbox(), dst_client_si->mailbox(),
+                          /*xoffset=*/0,
+                          /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
+                          copy_rect.width(), copy_rect.height());
+  completion_sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+  resource()->GetSyncToken();
+  return true;
+}
+
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
 class CanvasResourceProviderSharedImageImpl
@@ -734,85 +817,6 @@ class CanvasResourceProviderSharedImageImpl
 
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const override {
     return shared_image_usage_flags_;
-  }
-
-  bool WritePixels(const SkImageInfo& orig_info,
-                   const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y) override {
-    if (!use_oop_rasterization_) {
-      return CanvasResourceProvider::WritePixels(orig_info, pixels, row_bytes,
-                                                 x, y);
-    }
-
-    TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::WritePixels");
-    if (IsGpuContextLost())
-      return false;
-
-    // TODO(crbug.com/352263194): This code calls WillDrawInternal(true)
-    // followed immediately by GetBackingClientSharedImageForOverwrite(), which
-    // calls WillDrawInternal(false). The former calls EnsureWriteAccess() and
-    // then the latter immediately calls EndWriteAccess(). Figure out what is
-    // actually intended here and either don't call the former (preserving
-    // current behavior) or call resource()->GetClientSharedImage() rather than
-    // the latter (if the current behavior is a bug).
-    WillDrawInternal(true);
-
-    // End the internal write access before calling WillDrawInternal(), which
-    // has a precondition that there should be no current write access on the
-    // resource.
-    EndWriteAccess();
-    WillDrawInternal(false);
-
-    auto client_si = resource()->GetClientSharedImage();
-    RasterInterface()->WritePixels(client_si->mailbox(), x, y,
-                                   client_si->GetTextureTarget(),
-                                   SkPixmap(orig_info, pixels, row_bytes));
-    resource()->GetSyncToken();
-
-    // If the overdraw optimization kicked in, we need to indicate that the
-    // pixels do not need to be cleared, otherwise the subsequent
-    // rasterizations will clobber canvas contents.
-    if (x <= 0 && y <= 0 && orig_info.width() >= Size().width() &&
-        orig_info.height() >= Size().height())
-      is_cleared_ = true;
-
-    return true;
-  }
-
-  bool OverwriteImage(const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-                      const gfx::Rect& copy_rect,
-                      const gpu::SyncToken& ready_sync_token,
-                      gpu::SyncToken& completion_sync_token) override {
-    gpu::raster::RasterInterface* raster = RasterInterface();
-    if (!raster) {
-      return false;
-    }
-
-    if (IsGpuContextLost()) {
-      return false;
-    }
-
-    EndWriteAccess();
-    WillDrawInternal(false);
-
-    auto dst_client_si = resource()->GetClientSharedImage();
-    if (!dst_client_si) {
-      return false;
-    }
-
-    std::unique_ptr<gpu::RasterScopedAccess> ri_access =
-        shared_image->BeginRasterAccess(raster, ready_sync_token,
-                                        /*readonly=*/true);
-    raster->CopySharedImage(shared_image->mailbox(), dst_client_si->mailbox(),
-                            /*xoffset=*/0,
-                            /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
-                            copy_rect.width(), copy_rect.height());
-    completion_sync_token =
-        gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
-    resource()->GetSyncToken();
-    return true;
   }
 
   void ExternalCanvasDrawHelper(
