@@ -590,6 +590,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Actor login: no username field";
     case STRING_ACTOR_LOGIN_NO_PASWORD_FIELD:
       return "Actor login: no password field";
+    case STRING_ACTOR_LOGIN_FILLING_FIELD_WITH_ID:
+      return "Actor login: filling field with id";
     case STRING_ACTOR_LOGIN_USERNAME_FILL_SUCCESS:
       return "Actor login: username filled";
     case STRING_ACTOR_LOGIN_PASSWORD_FILL_SUCCESS:

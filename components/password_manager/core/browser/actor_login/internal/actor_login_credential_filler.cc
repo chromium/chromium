@@ -277,6 +277,8 @@ void ActorLoginCredentialFiller::FillForm(
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_NO_USERNAME_FIELD);
     OnUsernameFillingDone(false);
   } else {
+    LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_FILLING_FIELD_WITH_ID,
+              base::ToString(form_to_fill->username_element_renderer_id));
     driver->FillField(
         form_to_fill->username_element_renderer_id, username,
         autofill::FieldPropertiesFlags::kAutofilledActorLogin,
@@ -288,6 +290,8 @@ void ActorLoginCredentialFiller::FillForm(
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_NO_PASWORD_FIELD);
     OnPasswordFillingDone(false);
   } else {
+    LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_FILLING_FIELD_WITH_ID,
+              base::ToString(form_to_fill->password_element_renderer_id));
     driver->FillField(
         form_to_fill->password_element_renderer_id, password,
         autofill::FieldPropertiesFlags::kAutofilledActorLogin,
