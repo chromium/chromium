@@ -11371,6 +11371,23 @@
             ]
         }
     ],
+    "GlicGA": [
+        {
+            "platforms": [
+                "mac",
+                "windows",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicRollout"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicMultitabContext": [
         {
             "platforms": [
@@ -11399,23 +11416,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GlicPanelResetSizeAndLocationOnOpen"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GlicRolloutDogfood": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicRollout"
                     ]
                 }
             ]
