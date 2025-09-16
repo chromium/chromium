@@ -23,6 +23,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/components/ui_util/dynamic_type_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -160,6 +161,40 @@ UITextView* CreateSubtitleTextView() {
   return subtitleTextView;
 }
 
+// Returns the distance between subtitles according the system font size based
+// on the system font size.
+CGFloat GetSubtitleMarginDistance() {
+  ui_util::IOSContentSizeCategory size_category =
+      ui_util::GetPreferredContentSizeCategory();
+  switch (size_category) {
+    case ui_util::IOSContentSizeCategory::kUnspecified:
+    case ui_util::IOSContentSizeCategory::kExtraSmall:
+    case ui_util::IOSContentSizeCategory::kSmall:
+    case ui_util::IOSContentSizeCategory::kMedium:
+    case ui_util::IOSContentSizeCategory::kLarge:
+      // System default.
+      return 6;
+    case ui_util::IOSContentSizeCategory::kExtraLarge:
+      return 7;
+    case ui_util::IOSContentSizeCategory::kExtraExtraLarge:
+      return 12;
+    case ui_util::IOSContentSizeCategory::kExtraExtraExtraLarge:
+      return 14;
+    case ui_util::IOSContentSizeCategory::kAccessibilityMedium:
+      return 32;
+    case ui_util::IOSContentSizeCategory::kAccessibilityLarge:
+      // With accessibility, margin needs to be smaller.
+      return 15;
+    case ui_util::IOSContentSizeCategory::kAccessibilityExtraLarge:
+      return 15;
+    case ui_util::IOSContentSizeCategory::kAccessibilityExtraExtraLarge:
+      return 15;
+    case ui_util::IOSContentSizeCategory::kAccessibilityExtraExtraExtraLarge:
+      return 15;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 @interface SearchEngineChoiceViewController () <UITextViewDelegate>
@@ -214,6 +249,7 @@ UITextView* CreateSubtitleTextView() {
   BOOL _viewIsAppearingCalled;
   // Whether the search engine buttons have been loaded in the stack view.
   BOOL _searchEnginesLoaded;
+  NSLayoutConstraint* _subtitleMarginLayoutConstraint;
 }
 
 @synthesize searchEngines = _searchEngines;
@@ -428,12 +464,12 @@ UITextView* CreateSubtitleTextView() {
       addLayoutGuide:inlineContainerButtonBottomMargin];
 
   if (subtitle2TextView) {
+    _subtitleMarginLayoutConstraint = [subtitle2TextView.topAnchor
+        constraintEqualToAnchor:subtitle1TextView.bottomAnchor
+                       constant:kTitleSubtitleMargin];
+    _subtitleMarginLayoutConstraint.constant = GetSubtitleMarginDistance();
     [NSLayoutConstraint activateConstraints:@[
-      // TODO(crbug.com/423883364): The constraint needs to be adjusted
-      // according to the system font size.
-      [subtitle2TextView.topAnchor
-          constraintEqualToAnchor:subtitle1TextView.bottomAnchor
-                         constant:kTitleSubtitleMargin],
+      _subtitleMarginLayoutConstraint,
       [subtitle2TextView.leadingAnchor
           constraintEqualToAnchor:_searchEngineStackView.leadingAnchor],
       [subtitle2TextView.trailingAnchor
@@ -1009,6 +1045,7 @@ UITextView* CreateSubtitleTextView() {
   // TODO(crbug.com/445341113): Need to adjust `_moreOrContinueButton` size.
   UpdateButtonToMatchPrimaryAction(_inlineSetAsDefaultButton);
   UpdateButtonToMatchPrimaryAction(_floatingSetAsDefaultButton);
+  _subtitleMarginLayoutConstraint.constant = GetSubtitleMarginDistance();
   // Update the SetAsDefault button once the layout changes take effect to have
   // the right measurements to evaluate the scroll position.
   __weak __typeof(self) weakSelf = self;
