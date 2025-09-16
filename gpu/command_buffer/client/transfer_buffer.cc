@@ -335,7 +335,7 @@ bool ScopedTransferBufferPtr::BelongsToBuffer(uint8_t* memory) const {
     return false;
   uint8_t* start = static_cast<uint8_t*>(buffer_.get());
   uint8_t* end = UNSAFE_TODO(start + size_);
-  return memory >= start && memory <= end;
+  return memory >= start && memory < end;
 }
 
 }  // namespace gpu

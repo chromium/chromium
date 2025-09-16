@@ -225,6 +225,16 @@ TEST_F(TransferBufferTest, MemoryAlignmentAfterZeroAllocation) {
   transfer_buffer_->FreePendingToken(ptr, helper_->InsertToken());
 }
 
+TEST_F(TransferBufferTest, ScopedTransferBuffer) {
+  Initialize();
+  ScopedTransferBufferPtr scoped_transfer_buffer(1, helper_.get(), transfer_buffer_.get());
+  EXPECT_EQ(scoped_transfer_buffer.size(), 1u);
+  uint8_t* c = static_cast<uint8_t*>(scoped_transfer_buffer.address());
+  EXPECT_FALSE(scoped_transfer_buffer.BelongsToBuffer(UNSAFE_TODO(c - 1)));
+  EXPECT_TRUE(scoped_transfer_buffer.BelongsToBuffer(c));
+  EXPECT_FALSE(scoped_transfer_buffer.BelongsToBuffer(UNSAFE_TODO(c + 1)));
+}
+
 class MockClientCommandBufferCanFail : public MockClientCommandBufferMockFlush {
  public:
   MockClientCommandBufferCanFail() = default;
