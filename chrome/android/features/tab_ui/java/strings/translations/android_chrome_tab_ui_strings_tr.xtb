@@ -5,7 +5,7 @@
 <translation id="1063300264396686489">Diğer cihazlardaki sekme gruplarını otomatik olarak aç</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> yıl önce oluşturuldu}other{<ph name="NUM_YEARS_MANY" /> yıl önce oluşturuldu}}</translation>
-<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Etkin olmayan sekmeler ve gruplar 1 ay sonra kapatılır}other{Etkin olmayan sekmeler ve gruplar <ph name="MONTH_COUNT_MANY" /> ay sonra kapatılır}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Etkin olmayan sekmeler ve gruplar 1 ay sonra kapatılır.}other{Etkin olmayan sekmeler ve gruplar <ph name="MONTH_COUNT_MANY" /> ay sonra kapatılır.}}</translation>
 <translation id="1173894706177603556">Yeniden adlandır</translation>
 <translation id="1197088940767939838">Turuncu</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> grubunu <ph name="TAB_COUNT2" /> sekmeyle aç}other{<ph name="TITLE_OF_GROUP" /> grubunu <ph name="TAB_COUNT2" /> sekmeyle aç}}</translation>
@@ -152,7 +152,7 @@
 <translation id="6709297274997495821">Sekme seçin</translation>
 <translation id="6744956528665271406">Grup rengini düzenle</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> grubuna <ph name="TAB_COUNT1" /> sekme ekle}other{<ph name="TITLE_OF_GROUP" /> grubuna <ph name="TAB_COUNT1" /> sekme ekle}}</translation>
-<translation id="6818926723028410516">Öğe seçin</translation>
+<translation id="6818926723028410516">Öğe seç</translation>
 <translation id="6856809498882026482">Çoklu seçim modunu gizle</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme paylaşılan <ph name="TITLE_OF_GROUP" /> sekme grubunu genişletin.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme paylaşılan <ph name="TITLE_OF_GROUP" /> sekme grubunu genişletin.}}</translation>
 <translation id="709473454666962555">Sekme grubu seçin</translation>

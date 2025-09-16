@@ -1030,7 +1030,7 @@
 <translation id="5833984609253377421">Поделиться ссылкой</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Все равно скачать файл <ph name="FILE_NAME" />?</translation>
-<translation id="5842871376175639063">Вкладки и группы вкладок, которые вы не открывали в течение нескольких дней (<ph name="DAYS_INACTIVE" />), попадают в этот список,<ph name="AUTODELETE_SECTION" />. Этот параметр можно в любой момент изменить в разделе "<ph name="SETTINGS_TITLE" />".</translation>
+<translation id="5842871376175639063">Вкладки и группы вкладок, которые вы не открывали в течение определенного количества дней (<ph name="DAYS_INACTIVE" />), попадают в этот список,<ph name="AUTODELETE_SECTION" />. Эти значения можно изменить в разделе "<ph name="SETTINGS_TITLE" />".</translation>
 <translation id="5848257610304005265">Открыть PDF-файл в приложении "<ph name="APP_NAME" />"?</translation>
 <translation id="5849288995120328556">Закрыть доступ?</translation>
 <translation id="5853623416121554550">пауза</translation>

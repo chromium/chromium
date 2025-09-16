@@ -1321,7 +1321,7 @@
 <translation id="6144589619057374135">${url} をシークレット モードで開く</translation>
 <translation id="6147279996212084542">説明</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でシークレット タブのロックを解除</translation>
-<translation id="6152340033632117531">無効</translation>
+<translation id="6152340033632117531">非アクティブ</translation>
 <translation id="6152406514676263192">同期すると、興味や関心と最も関連性の高いコンテンツが表示されます。</translation>
 <translation id="6159839020698489198">任意</translation>
 <translation id="6160780110287872296">ファイルをダウンロードしますか？</translation>

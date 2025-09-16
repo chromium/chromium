@@ -249,7 +249,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1164891049599601209">Zadané na klamlivom webe</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1166212789817575481">Zatvoriť karty vpravo</translation>
-<translation id="1166457390969131095">Používajte a ukladajte heslá a prístupové kľúče zo svojho účtu Google</translation>
+<translation id="1166457390969131095">Používať a ukladať heslá a prístupové kľúče z môjho účtu Google</translation>
 <translation id="1166583374608765787">Kontrola aktualizácie názvu</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> patrí na plochu <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Izolované webové aplikácie sa automaticky riadia týmto nastavením</translation>
@@ -7442,7 +7442,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6216154119179790291">Posunúť na prvú kartu</translation>
 <translation id="6216239400972191926">Odmietnuté weby a aplikácie</translation>
 <translation id="6216601812881225442">Váš kontajner nepodporuje zmenu veľkosti. Ak chcete upraviť priestor, ktorý bol vopred pridelený systému Linux, vytvorte zálohu a potom ju obnovte do nového kontajnera.</translation>
-<translation id="6216696360484424239">Automatické prihlasovanie</translation>
+<translation id="6216696360484424239">Prihlasovať automaticky</translation>
 <translation id="6217806119082621377">Zdieľané priečinky sú k dispozícii vo virtuálnom počítači <ph name="SPECIFIC_NAME" /> na <ph name="BASE_DIR" />.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> je offline. Pripojte sa k internetu a skúste to znova.</translation>
 <translation id="6220413761270491930">Chyba pri načítaní rozšírenia</translation>

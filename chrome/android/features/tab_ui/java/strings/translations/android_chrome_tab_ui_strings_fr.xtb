@@ -5,7 +5,7 @@
 <translation id="1063300264396686489">Ouvrir automatiquement les groupes d'onglets d'autres appareils</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Créé il y a <ph name="NUM_YEARS_ONE" /> an}one{Créé il y a <ph name="NUM_YEARS_MANY" /> an}other{Créé il y a <ph name="NUM_YEARS_MANY" /> ans}}</translation>
-<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Les onglets et groupes inactifs seront fermés après 1 mois}one{Les onglets et groupes inactifs seront fermés après <ph name="MONTH_COUNT_MANY" /> mois}other{Les onglets et groupes inactifs seront fermés après <ph name="MONTH_COUNT_MANY" /> mois}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Les onglets et groupes inactifs seront fermés après 1 mois.}one{Les onglets et groupes inactifs seront fermés après <ph name="MONTH_COUNT_MANY" /> mois.}other{Les onglets et groupes inactifs seront fermés après <ph name="MONTH_COUNT_MANY" /> mois.}}</translation>
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Ouvrir <ph name="TITLE_OF_GROUP" /> avec <ph name="TAB_COUNT2" /> onglet}one{Ouvrir <ph name="TITLE_OF_GROUP" /> avec <ph name="TAB_COUNT2" /> onglet}other{Ouvrir <ph name="TITLE_OF_GROUP" /> avec <ph name="TAB_COUNT2" /> onglets}}</translation>

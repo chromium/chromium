@@ -132,7 +132,7 @@
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6051432659151380973">Deine Tabgruppen werden automatisch gespeichert</translation>
 <translation id="6054741997831917303">Der Preis dieses Artikels ist kürzlich von <ph name="PREVIOUS_PRICE" /> auf <ph name="NEW_PRICE" /> gefallen</translation>
-<translation id="6109251075362363230">Alle doppelten Tabs werden jetzt ebenfalls archiviert, mit Ausnahme der zuletzt verwendeten Kopie.</translation>
+<translation id="6109251075362363230">Alle doppelten Tabs werden jetzt ebenfalls archiviert, mit Ausnahme des zuletzt verwendeten Elements.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewähltes Element schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Elemente schließen}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Gruppe in ein neues Fenster verschieben}other{Gruppe in ein anderes Fenster verschieben}}</translation>
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
@@ -152,7 +152,7 @@
 <translation id="6709297274997495821">Tab auswählen</translation>
 <translation id="6744956528665271406">Gruppenfarbe bearbeiten</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Zur Gruppe mit dem Namen „<ph name="TITLE_OF_GROUP" />“ und <ph name="TAB_COUNT1" /> Tab hinzufügen}other{Zur Gruppe mit dem Namen „<ph name="TITLE_OF_GROUP" />“ und <ph name="TAB_COUNT1" /> Tabs hinzufügen}}</translation>
-<translation id="6818926723028410516">Einträge auswählen</translation>
+<translation id="6818926723028410516">Elemente auswählen</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Tabgruppe auswählen</translation>

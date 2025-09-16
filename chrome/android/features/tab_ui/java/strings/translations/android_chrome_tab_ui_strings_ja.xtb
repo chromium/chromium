@@ -5,12 +5,12 @@
 <translation id="1063300264396686489">他のデバイスで作成されたタブグループを自動的に開く</translation>
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前に作成}other{<ph name="NUM_YEARS_MANY" /> 年前に作成}}</translation>
-<translation id="1137385688780024041">{DAY_COUNT,plural, =1{アクティブでないタブとグループは 1 か月後に閉じられます}other{アクティブでないタブとグループは <ph name="MONTH_COUNT_MANY" /> か月後に閉じられます}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{アクティブでないタブとグループを 1 か月後に閉じます}other{アクティブでないタブとグループを <ph name="MONTH_COUNT_MANY" /> か月後に閉じます}}</translation>
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> 個のタブがある「<ph name="TITLE_OF_GROUP" />」を開きます}other{<ph name="TAB_COUNT2" /> 個のタブがある「<ph name="TITLE_OF_GROUP" />」を開きます}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> 個のタブグループのオプション</translation>
-<translation id="1300188005269437765">アクティブでないセクションにタブとタブグループをいつ自動的に移動するかを選択します。</translation>
+<translation id="1300188005269437765">タブとタブグループを非アクティブ セクションに移動するタイミングを選択できます。</translation>
 <translation id="1321004960118052490">アクティブでないアイテムは整理されます</translation>
 <translation id="1329584516321524826">たった今更新されました</translation>
 <translation id="1340839264183302272">グループから退出</translation>
@@ -19,7 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分前に作成}other{<ph name="NUM_MINS_MANY" /> 分前に作成}}</translation>
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
 <translation id="1501480321619201731">グループを削除</translation>
-<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のアクティブでないアイテム}other{<ph name="TABS_COUNT_MANY" /> 個のアクティブでないアイテム}}</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個の非アクティブ アイテム}other{<ph name="TABS_COUNT_MANY" /> 個の非アクティブ アイテム}}</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="161042844686301425">シアン</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> 個のタブをグループ化しました</translation>
@@ -132,7 +132,7 @@
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6051432659151380973">タブグループは自動的に保存されます</translation>
 <translation id="6054741997831917303">このアイテムの価格は最近 <ph name="PREVIOUS_PRICE" /> から <ph name="NEW_PRICE" /> に下がりました</translation>
-<translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブもアーカイブされるようになりました。</translation>
+<translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブをアーカイブします</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のアイテムを閉じる}other{選択した <ph name="TABS_COUNT_MANY" /> 個のアイテムを閉じる}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{グループを新しいウィンドウに移動}other{グループを別のウィンドウに移動}}</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>

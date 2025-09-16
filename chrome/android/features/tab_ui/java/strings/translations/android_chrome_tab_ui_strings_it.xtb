@@ -5,12 +5,12 @@
 <translation id="1063300264396686489">Apri automaticamente i gruppi di schede da altri dispositivi</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creato <ph name="NUM_YEARS_ONE" /> anno fa}other{Creato <ph name="NUM_YEARS_MANY" /> anni fa}}</translation>
-<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Le schede e i gruppi inattivi verranno chiusi dopo 1 mese}other{Le schede e i gruppi inattivi verranno chiusi dopo <ph name="MONTH_COUNT_MANY" /> mesi}}</translation>
+<translation id="1137385688780024041">{DAY_COUNT,plural, =1{Le schede e i gruppi inattivi verranno chiusi dopo 1 mese.}other{Le schede e i gruppi inattivi verranno chiusi dopo <ph name="MONTH_COUNT_MANY" /> mesi.}}</translation>
 <translation id="1173894706177603556">Rinomina</translation>
 <translation id="1197088940767939838">Arancione</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Apri <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT2" /> scheda}other{Apri <ph name="TITLE_OF_GROUP" /> con <ph name="TAB_COUNT2" /> schede}}</translation>
 <translation id="1273910660700874265">Opzioni del gruppo di schede <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1300188005269437765">Scegli quando spostare automaticamente schede e gruppi di schede nella sezione Inattivi.</translation>
+<translation id="1300188005269437765">Scegli quando spostare automaticamente schede e gruppi di schede tra gli elementi inattivi.</translation>
 <translation id="1321004960118052490">Gli elementi non attivi non si accumuleranno</translation>
 <translation id="1329584516321524826">Aggiornata adesso</translation>
 <translation id="1340839264183302272">Lascia il gruppo</translation>
