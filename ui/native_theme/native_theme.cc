@@ -274,15 +274,6 @@ void NativeTheme::Paint(cc::PaintCanvas* canvas,
             forced_colors, dark_mode, contrast, accent_color_opaque);
 }
 
-void NativeTheme::NotifyOnPreferredContrastUpdated() {
-  // This specific method is prone to being mistakenly called on the wrong
-  // sequence, because it is often invoked from a platform-specific event
-  // listener, and those events may be delivered on unexpected sequences.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  NotifyOnPreferredContrastUpdatedImpl();
-}
-
 ColorProviderKey NativeTheme::GetColorProviderKey(
     scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
     bool use_custom_frame) const {
@@ -333,7 +324,7 @@ void NativeTheme::SetPreferredContrast(
     return;
   }
   preferred_contrast_ = preferred_contrast;
-  NotifyOnPreferredContrastUpdated();
+  NotifyOnNativeThemeUpdated();
 }
 
 bool NativeTheme::IsForcedDarkMode() {
@@ -528,15 +519,6 @@ void NativeTheme::NotifyOnNativeThemeUpdatedImpl() {
     // Calling `NotifyOnNativeThemeUpdated()` here would unnecessarily churn the
     // color provider cache.
     associated_web_instance_->NotifyOnNativeThemeUpdatedImpl();
-  }
-}
-
-void NativeTheme::NotifyOnPreferredContrastUpdatedImpl() {
-  const bool updated_web_instance = UpdateWebInstance();
-  native_theme_observers_.Notify(
-      &NativeThemeObserver::OnPreferredContrastChanged, this);
-  if (updated_web_instance) {
-    associated_web_instance_->NotifyOnPreferredContrastUpdatedImpl();
   }
 }
 

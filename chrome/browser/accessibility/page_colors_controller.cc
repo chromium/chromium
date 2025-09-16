@@ -97,7 +97,7 @@ void PageColorsController::MigrateObsoleteProfilePrefs(
   profile_prefs->ClearPref(kIsDefaultPageColorsOnHighContrast);
 }
 
-void PageColorsController::OnPreferredContrastChanged(
+void PageColorsController::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
   RecomputePageColors();
 }

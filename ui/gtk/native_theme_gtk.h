@@ -48,7 +48,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
       const gfx::Rect& rect,
       const FrameTopAreaExtraParams& frame_top_area) const override;
   void NotifyOnNativeThemeUpdated() override;
-  void NotifyOnPreferredContrastUpdated() override;
 
   void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
 

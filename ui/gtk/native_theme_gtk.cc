@@ -89,32 +89,6 @@ void PaintWidget(cc::PaintCanvas* canvas,
                     rect.x(), rect.y());
 }
 
-void UpdateNativeUiInstance(const ui::NativeTheme* native_theme) {
-  auto* const ui_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  bool updated = false;
-  if (ui_theme->forced_colors() != native_theme->forced_colors()) {
-    ui_theme->set_forced_colors(native_theme->forced_colors());
-    updated = true;
-  }
-  if (ui_theme->page_colors() != native_theme->page_colors()) {
-    ui_theme->set_page_colors(native_theme->page_colors());
-    updated = true;
-  }
-  if (ui_theme->preferred_color_scheme() !=
-      native_theme->preferred_color_scheme()) {
-    ui_theme->set_preferred_color_scheme(
-        native_theme->preferred_color_scheme());
-    updated = true;
-  }
-  if (ui_theme->preferred_contrast() != native_theme->preferred_contrast()) {
-    ui_theme->SetPreferredContrast(native_theme->preferred_contrast());
-    updated = true;
-  }
-  if (updated) {
-    ui_theme->NotifyOnNativeThemeUpdated();
-  }
-}
-
 }  // namespace
 
 // static
@@ -163,13 +137,29 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
   // NativeThemeGtk pulls information about contrast from NativeThemeAura. As
   // such, Aura must be updated with this information before we call
   // NotifyOnNativeThemeUpdated().
-  UpdateNativeUiInstance(this);
-  NativeTheme::NotifyOnNativeThemeUpdated();
-}
+  auto* const ui_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  bool updated = false;
+  if (ui_theme->forced_colors() != forced_colors()) {
+    ui_theme->set_forced_colors(forced_colors());
+    updated = true;
+  }
+  if (ui_theme->page_colors() != page_colors()) {
+    ui_theme->set_page_colors(page_colors());
+    updated = true;
+  }
+  if (ui_theme->preferred_color_scheme() != preferred_color_scheme()) {
+    ui_theme->set_preferred_color_scheme(preferred_color_scheme());
+    updated = true;
+  }
+  if (ui_theme->preferred_contrast() != preferred_contrast()) {
+    ui_theme->SetPreferredContrast(preferred_contrast());
+    updated = true;
+  }
+  if (updated) {
+    ui_theme->NotifyOnNativeThemeUpdated();
+  }
 
-void NativeThemeGtk::NotifyOnPreferredContrastUpdated() {
-  UpdateNativeUiInstance(this);
-  NativeTheme::NotifyOnPreferredContrastUpdated();
+  NativeTheme::NotifyOnNativeThemeUpdated();
 }
 
 void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,

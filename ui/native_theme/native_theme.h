@@ -424,9 +424,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // `NativeThemeObserver` with a `CallbackList`.
   virtual void NotifyOnCaptionStyleUpdated();
 
-  // Notify observers of preferred contrast changes.
-  virtual void NotifyOnPreferredContrastUpdated();
-
   // Paints the provided `part`/`state`. This is largely a wrapper around
   // `PaintImpl()`.
   void Paint(
@@ -572,7 +569,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
  private:
   // Updates web instance and notifies observers something has changed.
   void NotifyOnNativeThemeUpdatedImpl();
-  void NotifyOnPreferredContrastUpdatedImpl();
 
   // Updates variables affected by toolkit settings and returns whether anything
   // changed as a result.
