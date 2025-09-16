@@ -117,21 +117,23 @@ class ChildFrameRegistrationJavascriptTest : public web::JavascriptTest {
     AddGCrWebScript();
     AddCommonScript();
     AddMessageScript();
+    AddUserScript(@"autofill_form_features");
     AddUserScript(
         base::SysUTF8ToNSString(autofill::kRemoteFrameRegistrationScriptName));
     AddUserScript(@"child_frame_registration_test");
-    AddUserScript(@"autofill_form_features");
   }
 
   // Script that enables xframes on all frames and set registration attempts
   // counter.
   void SetFramesForTesting() {
     NSString* const script =
-        @"__gCrWeb.autofill_form_features.setAutofillAcrossIframes(true);"
+        @"__gCrWeb.getRegisteredApi('autofill_form_features')."
+        @"getFunction('setAutofillAcrossIframes')(true);"
          "let registrationAttemptsCount = 0;"
          "for (const frame of document.querySelectorAll('iframe')) { "
-         "frame.contentWindow.eval('__gCrWeb.autofill_form_features."
-         "setAutofillAcrossIframes(true)');"
+         "frame.contentWindow.eval(\"__gCrWeb.getRegisteredApi('autofill_form_"
+         "features')."
+         "getFunction('setAutofillAcrossIframes')(true)\");"
          "}"
          "window.addEventListener('message', () => "
          "++registrationAttemptsCount);";
@@ -267,9 +269,8 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
     // Set up the frame in a retry loop until the utils functions are injected.
     const timeoutFn = () => {
         if (typeof __gCrWeb != 'undefined' &&
-            typeof __gCrWeb?.autofill_form_features?.setAutofillAcrossIframes
-            == 'function') {
-          __gCrWeb.autofill_form_features.setAutofillAcrossIframes(true);
+            typeof __gCrWeb.getRegisteredApi('autofill_form_features').getFunction('setAutofillAcrossIframes') == 'function') {
+          __gCrWeb.getRegisteredApi('autofill_form_features').getFunction('setAutofillAcrossIframes')(true);
           window.parent?.postMessage({type: 'frame-ready'}, '*');
           // Done.
           return;

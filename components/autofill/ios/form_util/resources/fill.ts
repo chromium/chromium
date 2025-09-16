@@ -15,6 +15,13 @@ import {isTextField, removeQueryAndReferenceFromURL} from '//ios/web/public/js_m
 
 // Requires functions from form.ts and child_frame_registration_lib.ts.
 
+/**
+ * Retrieves the registered 'autofill_form_features' CrWebApi
+ * instance for use in this file.
+ */
+const autofillFormFeaturesApi =
+  gCrWeb.getRegisteredApi('autofill_form_features');
+
 declare global {
   // Defines an additional property, `__gcrweb`, on the Window object.
   // This definition is needed in order to call into gCrWeb inside an iframe.
@@ -454,16 +461,15 @@ gCrWebLegacy.fill.webFormElementToFormData = function(
   const controlElements = gCrWebLegacy.form.getFormControlElements(formElement);
 
   let iframeElements = extractChildFrames &&
-      gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled() ?
-      gCrWebLegacy.form.getIframeElements(formElement) :
+    autofillFormFeaturesApi.getFunction('isAutofillAcrossIframesEnabled')() ?
+    gCrWebLegacy.form.getIframeElements(formElement) :
       [];
 
   // To avoid performance bottlenecks, do not keep child frames if their
   // quantity exceeds the allowed threshold.
   if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
-      gCrWebLegacy.autofill_form_features
-          .isAutofillAcrossIframesThrottlingEnabled()) {
-    iframeElements = [];
+    autofillFormFeaturesApi.getFunction('isAutofillAcrossIframesThrottlingEnabled')()) {
+      iframeElements = [];
   }
 
   return formOrFieldsetsToFormData(
@@ -684,9 +690,8 @@ gCrWebLegacy.fill.unownedFormElementsAndFieldSetsToFormData = function(
   // To avoid performance bottlenecks, do not keep child frames if their
   // quantity exceeds the allowed threshold.
   if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
-      gCrWebLegacy.autofill_form_features
-          .isAutofillAcrossIframesThrottlingEnabled()) {
-    iframeElements = [];
+    autofillFormFeaturesApi.getFunction('isAutofillAcrossIframesThrottlingEnabled')()) {
+      iframeElements = [];
   }
 
   if (!restrictUnownedFieldsToFormlessCheckout) {

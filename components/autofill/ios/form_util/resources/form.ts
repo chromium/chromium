@@ -38,6 +38,13 @@ const wasEditedByUser: WeakMap<any, any> = new WeakMap();
  */
 const formSubmissionRegistry: WeakSet<any> = new WeakSet();
 
+/**
+ * Retrieves the registered 'autofill_form_features' CrWebApi
+ * instance for use in this file.
+ */
+const autofillFormFeaturesApi =
+  gCrWeb.getRegisteredApi('autofill_form_features');
+
 // LINT.IfChange(autofill_count_form_submission_in_renderer)
 // The source that triggered the sending of the form submission report.
 enum FormSubmissionReportSource {
@@ -103,8 +110,8 @@ class FormSubmissionReportManager {
   }
 
   sendReport(isProgrammatic: boolean, handler: string): void {
-    if (!gCrWebLegacy.autofill_form_features
-             .isAutofillCountFormSubmissionInRendererEnabled()) {
+    if (!autofillFormFeaturesApi.getFunction(
+            'isAutofillCountFormSubmissionInRendererEnabled')()) {
       // Do not report anything if the feature is disabled.
       return;
     }
@@ -436,8 +443,8 @@ function getFormElementFromRendererId(identifier: number): HTMLFormElement|
  * makes an edited field unedited.
  */
 function fieldWasEditedByUser(element: Element) {
-  return !gCrWebLegacy.autofill_form_features
-              .isAutofillCorrectUserEditedBitInParsedField() ||
+  return !autofillFormFeaturesApi.getFunction(
+             'isAutofillCorrectUserEditedBitInParsedField')() ||
       (wasEditedByUser.get(element) ?? false);
 }
 
@@ -460,8 +467,7 @@ function formSubmittedInternal(
     programmaticSubmission: boolean,
     includeRemoteFrameToken: boolean = false,
     ): void {
-  if (gCrWebLegacy.autofill_form_features
-          .isAutofillDedupeFormSubmissionEnabled()) {
+  if (autofillFormFeaturesApi.getFunction('isAutofillDedupeFormSubmissionEnabled')()) {
     // Handle deduping when the feature allows it.
     if (formSubmissionRegistry.has(form)) {
       // Do not double submit the same form.
@@ -509,8 +515,7 @@ function formSubmitted(
     formSubmittedInternal(
         form, messageHandler, programmaticSubmission, includeRemoteFrameToken);
   } catch (error) {
-    if (gCrWebLegacy.autofill_form_features
-            .isAutofillReportFormSubmissionErrorsEnabled()) {
+    if (autofillFormFeaturesApi.getFunction('isAutofillReportFormSubmissionErrorsEnabled')()) {
       reportFormSubmissionError(error, programmaticSubmission, messageHandler);
     } else {
       // Just let the error go through if not reported.

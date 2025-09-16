@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+
 
 /**
  * @fileoverview Contains feature flag state for behavior relating to Autofill
@@ -207,23 +208,55 @@ function isAutofillCountFormSubmissionInRendererEnabled(): boolean {
 
 // Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
-gCrWebLegacy.autofill_form_features = {
-  setAutofillAcrossIframes,
-  isAutofillAcrossIframesEnabled,
-  setAutofillAcrossIframesThrottling,
-  isAutofillAcrossIframesThrottlingEnabled,
-  setAutofillIgnoreCheckableElements,
-  isAutofillIgnoreCheckableElementsEnabled,
-  setAutofillIsolatedContentWorld,
-  isAutofillIsolatedContentWorldEnabled,
-  setAutofillCorrectUserEditedBitInParsedField,
-  isAutofillCorrectUserEditedBitInParsedField,
-  setAutofillAllowDefaultPreventedSubmission,
-  isAutofillAllowDefaultPreventedSubmission,
-  setAutofillDedupeFormSubmission,
-  isAutofillDedupeFormSubmissionEnabled,
-  setAutofillReportFormSubmissionErrors,
-  isAutofillReportFormSubmissionErrorsEnabled,
-  setAutofillCountFormSubmissionInRenderer,
-  isAutofillCountFormSubmissionInRendererEnabled,
-};
+const autofillFormFeatures = new CrWebApi();
+
+autofillFormFeatures.addFunction(
+    'setAutofillAcrossIframes', setAutofillAcrossIframes);
+autofillFormFeatures.addFunction(
+    'isAutofillAcrossIframesEnabled', isAutofillAcrossIframesEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillAcrossIframesThrottling', setAutofillAcrossIframesThrottling);
+autofillFormFeatures.addFunction(
+    'isAutofillAcrossIframesThrottlingEnabled',
+    isAutofillAcrossIframesThrottlingEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillIgnoreCheckableElements', setAutofillIgnoreCheckableElements);
+autofillFormFeatures.addFunction(
+    'isAutofillIgnoreCheckableElementsEnabled',
+    isAutofillIgnoreCheckableElementsEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillIsolatedContentWorld', setAutofillIsolatedContentWorld);
+autofillFormFeatures.addFunction(
+    'isAutofillIsolatedContentWorldEnabled',
+    isAutofillIsolatedContentWorldEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillCorrectUserEditedBitInParsedField',
+    setAutofillCorrectUserEditedBitInParsedField);
+autofillFormFeatures.addFunction(
+    'isAutofillCorrectUserEditedBitInParsedField',
+    isAutofillCorrectUserEditedBitInParsedField);
+autofillFormFeatures.addFunction(
+    'setAutofillAllowDefaultPreventedSubmission',
+    setAutofillAllowDefaultPreventedSubmission);
+autofillFormFeatures.addFunction(
+    'isAutofillAllowDefaultPreventedSubmission',
+    isAutofillAllowDefaultPreventedSubmission);
+autofillFormFeatures.addFunction(
+    'setAutofillDedupeFormSubmission', setAutofillDedupeFormSubmission);
+autofillFormFeatures.addFunction(
+    'isAutofillDedupeFormSubmissionEnabled',
+    isAutofillDedupeFormSubmissionEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillReportFormSubmissionErrors',
+    setAutofillReportFormSubmissionErrors);
+autofillFormFeatures.addFunction(
+    'isAutofillReportFormSubmissionErrorsEnabled',
+    isAutofillReportFormSubmissionErrorsEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillCountFormSubmissionInRenderer',
+    setAutofillCountFormSubmissionInRenderer);
+autofillFormFeatures.addFunction(
+    'isAutofillCountFormSubmissionInRendererEnabled',
+    isAutofillCountFormSubmissionInRendererEnabled);
+
+gCrWeb.registerApi('autofill_form_features', autofillFormFeatures);

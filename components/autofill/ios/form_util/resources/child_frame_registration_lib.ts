@@ -69,6 +69,13 @@ const REGISTRATION_LOGBOOK_MAX_CAPACITY = 100;
 const registrationLogbook: Map<string, number> = new Map();
 
 /**
+ * Retrieves the registered 'autofill_form_features' CrWebApi
+ * instance for use in this file.
+ */
+const autofillFormFeaturesApi =
+  gCrWeb.getRegisteredApi('autofill_form_features');
+
+/**
  * Updates `count` of the corresponding `remoteToken` in the registration
  * logbook iff the maximal capacity wasn't reached.
  * @param remoteToken The remote token to update.
@@ -98,7 +105,8 @@ function registerSelfWithRemoteToken(remoteId: string): void {
  * @param {MessageEvent} payload The data sent via postMessage.
  */
 function processChildFrameMessage(payload: MessageEvent): void {
-  if (!gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled()) {
+  if (!autofillFormFeaturesApi.getFunction(
+          'isAutofillAcrossIframesEnabled')()) {
     return;
   }
   const command: unknown = payload.data?.command;

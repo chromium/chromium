@@ -77,6 +77,13 @@ const NATIVE_MESSAGE_HANDLER = 'autofill_controller';
 const FORM_FILLED_COMMAND = 'formFilled';
 
 /**
+ * Retrieves the registered 'autofill_form_features' CrWebApi
+ * instance for use in this file.
+ */
+const autofillFormFeaturesApi =
+    gCrWeb.getRegisteredApi('autofill_form_features');
+
+/**
  * Determines whether the form is interesting enough to send to the browser for
  * further operations.
  *
@@ -151,7 +158,7 @@ function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
   const numEditableUnownedElements =
       countEditableElements_(unownedControlElements);
   const iframeElements =
-      gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+      autofillFormFeaturesApi.getFunction('isAutofillAcrossIframesEnabled')() ?
       getUnownedIframes() :
       [];
   if (numEditableUnownedElements > 0 || iframeElements.length > 0) {
@@ -466,7 +473,8 @@ __gCrWeb.autofill.extractNewForms = function(
   // Returns true if the child frames can be extracted.
   const canExtractChildFrames = () =>
       numFramesSeen <= fill_constants.MAX_EXTRACTABLE_FRAMES ||
-      !gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesThrottlingEnabled();
+      !autofillFormFeaturesApi.getFunction(
+          'isAutofillAcrossIframesThrottlingEnabled')();
 
   for (let formIndex = 0; formIndex < webForms.length; ++formIndex) {
     /** @type {HTMLFormElement} */
@@ -474,8 +482,8 @@ __gCrWeb.autofill.extractNewForms = function(
     const controlElements =
         __gCrWeb.autofill.extractAutofillableElementsInForm(formElement);
     const numEditableElements = countEditableElements_(controlElements);
-    const hasChildFrames =
-        gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+    const hasChildFrames = autofillFormFeaturesApi.getFunction(
+                               'isAutofillAcrossIframesEnabled')() ?
         formElement.getElementsByTagName('iframe').length > 0 :
         false;
 

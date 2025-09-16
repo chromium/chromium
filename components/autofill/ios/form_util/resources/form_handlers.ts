@@ -62,6 +62,13 @@ let numberOfPendingMessages: number = 0;
 let formMsgBatchMetadata: FormMsgBatchMetadata = {dropCount: 0};
 
 /**
+ * Retrieves the registered 'autofill_form_features' CrWebApi
+ * instance for use in this file.
+ */
+const autofillFormFeaturesApi =
+  gCrWeb.getRegisteredApi('autofill_form_features');
+
+/**
  * Parses a string to a boolean.
  * @param boolStr The string to parse as a boolean.
  * @returns The boolean value if parsing worked, null otherwise.
@@ -187,9 +194,7 @@ function formActivity(evt: Event): void {
  * content.
  */
 function submitHandler(evt: Event): void {
-  const allowDefaultPrevented =
-      gCrWebLegacy.autofill_form_features
-          .isAutofillAllowDefaultPreventedSubmission();
+  const allowDefaultPrevented = autofillFormFeaturesApi.getFunction('isAutofillAllowDefaultPreventedSubmission')();
   // Ignore the submission if it was preventDefault()ed by the content AND
   // `defaultPrevented` isn't allowed as a feature by Autofill.
   if (evt['defaultPrevented'] && !allowDefaultPrevented) {
@@ -216,8 +221,7 @@ function submitHandlerWithErrorWrapper(evt: Event): void {
   try {
     submitHandler(evt);
   } catch (error) {
-    if (gCrWebLegacy.autofill_form_features
-            .isAutofillReportFormSubmissionErrorsEnabled()) {
+    if (autofillFormFeaturesApi.getFunction('isAutofillReportFormSubmissionErrorsEnabled')()) {
       gCrWebLegacy.form.reportFormSubmissionError(
           error, /*programmaticSubmission=*/ false,
           /*handler=*/ NATIVE_MESSAGE_HANDLER);
@@ -277,7 +281,7 @@ function sendFormMutationMessagesAfterDelay(
  * the Child Frame Registration lib.
  */
 function processInboundMessage(event: MessageEvent<any>): void {
-  if (gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled()) {
+  if (autofillFormFeaturesApi.getFunction('isAutofillAcrossIframesEnabled')()) {
     gCrWebLegacy.remoteFrameRegistration.processChildFrameMessage(event);
   }
 }
@@ -317,8 +321,7 @@ function attachListeners(): void {
     HTMLFormElement.prototype.submit = function() {
       gCrWebLegacy.form.reportDetectedFormSubmission(
           /*isProgrammatic=*/ true, /*handler=*/ NATIVE_MESSAGE_HANDLER);
-      if (!gCrWebLegacy.autofill_form_features
-               .isAutofillIsolatedContentWorldEnabled()) {
+      if (!autofillFormFeaturesApi.getFunction('isAutofillIsolatedContentWorldEnabled')()) {
         // If an error happens in formSubmitted, this will cancel the form
         // submission which can lead to usability issue for the user.
         // Put the formSubmitted in a try catch to ensure the original function

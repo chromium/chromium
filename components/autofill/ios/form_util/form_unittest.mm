@@ -53,9 +53,9 @@ class FormJsTest : public web::JavascriptTest {
     AddGCrWebScript();
     AddCommonScript();
     AddMessageScript();
+    AddUserScript(@"autofill_form_features");
     AddUserScript(@"fill");
     AddUserScript(@"form");
-    AddUserScript(@"autofill_form_features");
   }
 
   FakeScriptMessageHandlerForFormTesting* handler_;
@@ -98,9 +98,12 @@ TEST_F(FormJsTest, FormSubmitted_Deduping) {
   ExecuteJavaScriptInWebView(web_view(), swizzleScript);
 
   // Enable form submission deduping.
-  ExecuteJavaScriptInWebView(web_view(),
-                             @"__gCrWeb.autofill_form_features."
-                              "setAutofillDedupeFormSubmission(true);");
+  ExecuteJavaScriptInWebView(
+      web_view(), @"__gCrWeb.getRegisteredApi('autofill_form_features')."
+                  @"getFunction('setAutofillDedupeFormSubmission')(true);");
+  ExecuteJavaScriptInWebView(
+      web_view(), @"__gCrWeb.getRegisteredApi('autofill_form_features')."
+                  @"getFunction('isAutofillDedupeFormSubmissionEnabled')();");
 
   // == Submit first form ==
 
@@ -184,9 +187,9 @@ TEST_F(FormJsTest, FormSubmitted_NoDeduping) {
   LoadHtml(@"<form></form>");
 
   // Enable deduping.
-  ExecuteJavaScriptInWebView(web_view(),
-                             @"__gCrWeb.autofill_form_features."
-                              "setAutofillDedupeFormSubmission(false);");
+  ExecuteJavaScriptInWebView(
+      web_view(), @"__gCrWeb.getRegisteredApi('autofill_form_features')."
+                  @"getFunction('setAutofillDedupeFormSubmission')(false);");
 
   // Submit the form 4 times where each event should be reported (messaged over)
   // because there is no deduping.
