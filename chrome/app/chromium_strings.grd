@@ -1038,7 +1038,7 @@ Chromium is unable to recover your settings.
         Continue where you left off: Chromium can restore your tabs every time you restart. To turn this on, go to
       </message>
       <message name="IDS_SESSION_RESTORE_LINK" desc="Text for the link in the session restore infobar to open the Settings page.">
-        Settings.
+         Settings.
       </message>
 
       <!-- Enterprise sign-in dialog -->
