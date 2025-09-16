@@ -1822,7 +1822,7 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
 
   // We're selecting but right now we're not over text, so don't change the
   // current selection.
-  if (point_data.page_index < 0 || point_data.char_index < 0) {
+  if (!PageIndexInBounds(point_data.page_index) || point_data.char_index < 0) {
     return false;
   }
 
@@ -1890,7 +1890,7 @@ void PDFiumEngine::OnMouseEnter(const blink::WebMouseEvent& event) {
 }
 
 bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
-  DCHECK_GE(point_data.page_index, 0);
+  DCHECK(PageIndexInBounds(point_data.page_index));
   DCHECK_GE(point_data.char_index, 0);
 
   const int page_index = point_data.page_index;
@@ -4382,7 +4382,7 @@ void PDFiumEngine::SetCaretPosition(const gfx::Point& position) {
 
 void PDFiumEngine::MoveRangeSelectionExtent(const gfx::Point& extent) {
   auto point_data = GetPointData(gfx::PointF(extent));
-  if (point_data.page_index < 0 || point_data.char_index < 0) {
+  if (!PageIndexInBounds(point_data.page_index) || point_data.char_index < 0) {
     return;
   }
 
@@ -4919,7 +4919,7 @@ void PDFiumEngine::RegenerateContents() {
 
 bool PDFiumEngine::ExtendSelectionByPoint(const gfx::PointF& point) {
   auto point_data = GetPointData(point);
-  if (point_data.page_index < 0 || point_data.char_index < 0) {
+  if (!PageIndexInBounds(point_data.page_index) || point_data.char_index < 0) {
     return false;
   }
 
