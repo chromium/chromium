@@ -1435,7 +1435,13 @@ bool SelectorChecker::MatchesAnyInList(const SelectorCheckingContext& context,
   SelectorCheckingContext sub_context(context);
   sub_context.is_sub_selector = true;
   sub_context.in_nested_complex_selector = true;
-  sub_context.pseudo_id = kPseudoIdNone;
+  // With CSSLogicalCombinationPseudo enabled, pseudo-element selectors
+  // within logical combinations are valid, e.g. :is(::before).
+  // We therefore need keep the pseudo_id around, otherwise CheckVirtualPseudo
+  // won't know that we're matching for a virtual pseudo within nested lists.
+  if (!RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled()) {
+    sub_context.pseudo_id = kPseudoIdNone;
+  }
   for (sub_context.selector = selector_list; sub_context.selector;
        sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
     SubResult sub_result(result);
@@ -3017,7 +3023,8 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
 
   Element& element = GetCandidateElement(context, result);
 
-  if (context.in_nested_complex_selector) {
+  if (!RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled() &&
+      context.in_nested_complex_selector) {
     // This would normally be rejected parse-time, but can happen
     // with the & selector, so reject it match-time.
     // See https://github.com/w3c/csswg-drafts/issues/7912.
@@ -3441,15 +3448,16 @@ bool SelectorChecker::CheckVirtualPseudo(const SelectorCheckingContext& context,
 
   switch (selector.Match()) {
     case CSSSelector::kPseudoClass:
-      // TODO(crbug.com/444386484): Support :is(), :where(), :not().
-      //
-      // All of these should match a virtual kPseudoIdBefore:
-      //
-      //  * :is(::before)
-      //  * :not(:hover):is(::before)
-      //  * :not(::marker):is(::before)
-      //
-      return false;
+      switch (selector.GetPseudoType()) {
+        case CSSSelector::kPseudoIs:
+        case CSSSelector::kPseudoWhere:
+          return MatchesAnyInList(context, selector.SelectorListOrParent(),
+                                  result);
+        case CSSSelector::kPseudoNot:
+          return CheckPseudoNot(context, result);
+        default:
+          return false;
+      }
     case CSSSelector::kPseudoElement:
       // TODO(crbug.com/444386484): Support all pseudo-elements.
       switch (selector.GetPseudoType()) {

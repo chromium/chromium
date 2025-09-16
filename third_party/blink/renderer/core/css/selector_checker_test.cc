@@ -856,6 +856,28 @@ PseudoChildMatchTestData pseudo_child_match_data[] = {
       .expected_match = true,
     },
 
+    // Logical combinations:
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before) {}",
+      .expected_match = true,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":not(:not(::before)) {}",
+      .expected_match = true,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":not(::marker):is(::before) {}",
+      .expected_match = true,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":not(:hover):is(::before) {}",
+      .expected_match = true,
+    },
+
     // Nested cases:
 
     {
@@ -942,6 +964,14 @@ PseudoChildMatchTestData pseudo_child_match_data[] = {
     {
       .pseudo_element_chain = { kPseudoIdBefore },
       .rule = ":is(::before):is([id]) {}",
+      .expected_match = false,
+    },
+
+    // An element can't both be a before-pseudo-element
+    // and a marker-pseudo-element.
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before):is(::marker) {}",
       .expected_match = false,
     },
 
