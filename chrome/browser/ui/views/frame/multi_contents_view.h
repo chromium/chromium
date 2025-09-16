@@ -172,6 +172,10 @@ class MultiContentsView : public views::View,
     return contents_container_views_[index]->mini_toolbar();
   }
 
+  MultiContentsBackgroundView* background_view_for_testing() const {
+    return background_view_;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest, DropTargetLayout);
   FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest, SeparatorLayout);

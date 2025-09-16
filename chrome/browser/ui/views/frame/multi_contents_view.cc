@@ -37,6 +37,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -424,8 +425,11 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
   const int height = size_bounds.height().value();
 
   gfx::Rect available_space = gfx::Rect(width, height);
-  layouts.child_layouts.emplace_back(
-      background_view_.get(), background_view_->GetVisible(), available_space);
+
+  const bool show_background =
+      drop_target_view_->GetVisible() || IsInSplitView();
+  layouts.child_layouts.emplace_back(background_view_.get(), show_background,
+                                     available_space);
 
   if (IsDragAndDropEnabled()) {
     available_space =

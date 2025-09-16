@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
+#include "chrome/browser/ui/views/frame/multi_contents_background_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -677,6 +678,25 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, RoundedCornersForSplitView) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, BackgroundVisibility) {
+  RunTestSequence(
+      CreateTabsAndEnterSplitView(), WaitForActiveTabChange(0),
+      // Ensure the background is visible when in sidebyside view
+      CheckView(kMultiContentsViewElementId,
+                [](MultiContentsView* multi_contents_view) -> bool {
+                  return multi_contents_view->background_view_for_testing()
+                      ->GetVisible();
+                }),
+      // Add a regular tab to the tab strip
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
+      WaitForActiveTabChange(2),
+      CheckView(kMultiContentsViewElementId,
+                [](MultiContentsView* multi_contents_view) -> bool {
+                  return !multi_contents_view->background_view_for_testing()
+                              ->GetVisible();
+                }));
+}
+
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                        MiniToolbarVisibilityForContents) {
   bool visible_on_active_contents =
@@ -997,6 +1017,28 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
       MoveMouseTo(kNewTab, DeepQuery{"#title1"}),
       DragMouseToWithoutWait(kMultiContentsViewElementId, PointForDropTarget()),
       WaitForDropTargetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
+                       DISABLED_BackgroundVisibleWhenDropTargetShown) {
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, GetURL("/links.html"), 0),
+      CheckView(kMultiContentsViewElementId,
+                [](MultiContentsView* multi_contents_view) -> bool {
+                  return !multi_contents_view->background_view_for_testing()
+                              ->GetVisible();
+                }),
+      WaitForActiveTabChange(0),
+      // Drag an href element to the drop target area. The drop
+      // target should be shown.
+      MoveMouseTo(kNewTab, DeepQuery{"#title1"}),
+      DragMouseToWithoutWait(kMultiContentsViewElementId, PointForDropTarget()),
+      WaitForDropTargetVisible(),
+      CheckView(kMultiContentsViewElementId,
+                [](MultiContentsView* multi_contents_view) -> bool {
+                  return multi_contents_view->background_view_for_testing()
+                      ->GetVisible();
+                }));
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
