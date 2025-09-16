@@ -17,8 +17,7 @@ void InitializeSharedGpuContextGLES2(
     viz::TestContextProvider* test_context_provider,
     cc::ImageDecodeCache* cache,
     SetIsContextLost set_context_lost) {
-  auto factory = [](viz::TestGLES2Interface* gl, GrDirectContext* context,
-                    cc::ImageDecodeCache* cache,
+  auto factory = [](viz::TestGLES2Interface* gl, cc::ImageDecodeCache* cache,
                     viz::TestContextProvider* raster_context_provider,
                     SetIsContextLost set_context_lost)
       -> std::unique_ptr<WebGraphicsContext3DProvider> {
@@ -29,17 +28,15 @@ void InitializeSharedGpuContextGLES2(
     // else set_context_lost will not be modified
 
     auto context_provider = std::make_unique<FakeWebGraphicsContext3DProvider>(
-        gl, cache, context, raster_context_provider);
+        gl, cache, raster_context_provider);
     context_provider->SetCapabilities(gl->test_capabilities());
     return context_provider;
   };
   test_context_provider->BindToCurrentSequence();
   viz::TestGLES2Interface* gl = test_context_provider->TestContextGL();
-  GrDirectContext* context = test_context_provider->GrContext();
   SharedGpuContext::SetContextProviderFactoryForTesting(blink::BindRepeating(
-      factory, blink::Unretained(gl), blink::Unretained(context),
-      blink::Unretained(cache), blink::Unretained(test_context_provider),
-      set_context_lost));
+      factory, blink::Unretained(gl), blink::Unretained(cache),
+      blink::Unretained(test_context_provider), set_context_lost));
 }
 
 void InitializeSharedGpuContextRaster(
