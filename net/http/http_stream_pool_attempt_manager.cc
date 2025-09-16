@@ -1675,6 +1675,14 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
 }
 
 bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
+  // If the destination is marked as requiring HTTP/1.1, act as if there's no
+  // available SPDY session. This matches the behavior of
+  // HttpStreamPool::FindAvailableSpdySession().
+  if (pool()->RequiresHTTP11(stream_key().destination(),
+                             stream_key().network_anonymization_key())) {
+    return false;
+  }
+
   return spdy_session_pool()->HasAvailableSession(
       spdy_session_key(), IsIpBasedPoolingEnabledForH2(),
       /*is_websocket=*/false);

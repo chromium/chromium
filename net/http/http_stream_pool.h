@@ -264,8 +264,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   void ProcessPendingRequestsInGroups();
 
   // Returns true when HTTP/1.1 is required for `destination`.
-  bool RequiresHTTP11(const url::SchemeHostPort& destination,
-                      const NetworkAnonymizationKey& network_anonymization_key);
+  bool RequiresHTTP11(
+      const url::SchemeHostPort& destination,
+      const NetworkAnonymizationKey& network_anonymization_key) const;
 
   // Returns true when QUIC is broken for `destination`.
   bool IsQuicBroken(const url::SchemeHostPort& destination,

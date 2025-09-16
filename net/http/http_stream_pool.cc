@@ -370,7 +370,7 @@ void HttpStreamPool::ProcessPendingRequestsInGroups() {
 
 bool HttpStreamPool::RequiresHTTP11(
     const url::SchemeHostPort& destination,
-    const NetworkAnonymizationKey& network_anonymization_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) const {
   return http_network_session()->http_server_properties()->RequiresHTTP11(
       destination, network_anonymization_key);
 }
@@ -532,19 +532,20 @@ base::WeakPtr<SpdySession> HttpStreamPool::FindAvailableSpdySession(
     const SpdySessionKey& spdy_session_key,
     bool enable_ip_based_pooling_for_h2,
     const NetLogWithSource& net_log) {
-  if (!GURL::SchemeIsCryptographic(stream_key.destination().scheme())) {
+  // Only SSL origins may have H2 sessions.
+  //
+  // Also ignore any live H2 sessions for origins marked as requiring HTTP/1.1.
+  // Ideally such sessions would not exist, but that is a difficult invariant to
+  // enforce globally.
+  if (!GURL::SchemeIsCryptographic(stream_key.destination().scheme()) ||
+      RequiresHTTP11(stream_key.destination(),
+                     stream_key.network_anonymization_key())) {
     return nullptr;
   }
 
-  base::WeakPtr<SpdySession> spdy_session =
-      http_network_session()->spdy_session_pool()->FindAvailableSession(
-          spdy_session_key, enable_ip_based_pooling_for_h2,
-          /*is_websocket=*/false, net_log);
-  if (spdy_session) {
-    CHECK(!RequiresHTTP11(stream_key.destination(),
-                          stream_key.network_anonymization_key()));
-  }
-  return spdy_session;
+  return http_network_session()->spdy_session_pool()->FindAvailableSession(
+      spdy_session_key, enable_ip_based_pooling_for_h2,
+      /*is_websocket=*/false, net_log);
 }
 
 void HttpStreamPool::OnPreconnectComplete(JobController* job_controller,
