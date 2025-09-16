@@ -335,16 +335,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SendMessageWithSyncAckFcmConfiguration" enum="Boolean"
-    expires_after="2025-10-26">
-  <owner>rushans@google.com</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Records whether a SharingMessage contains data required to send Ack message
-    using sync. Recorded for non-ack messages before sending them.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
     enum="SendTabToSelfNotificationStatus" expires_after="2026-03-01">
   <owner>jeffreycohen@chromium.org</owner>
