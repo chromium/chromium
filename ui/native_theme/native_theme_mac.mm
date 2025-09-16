@@ -151,26 +151,16 @@ SkColor NativeThemeMac::GetSystemButtonPressedColor(SkColor base_color) const {
                                              base_color);
 }
 
-void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
-                           const ColorProvider* color_provider,
-                           Part part,
-                           State state,
-                           const gfx::Rect& rect,
-                           const ExtraParams& extra_params,
-                           bool forced_colors,
-                           PreferredColorScheme color_scheme,
-                           PreferredContrast contrast,
-                           std::optional<SkColor> accent_color) const {
-  // For `color_scheme`, `kNoPreference` means "use current".
-  const bool dark_mode =
-      color_scheme == PreferredColorScheme::kDark ||
-      (color_scheme == PreferredColorScheme::kNoPreference &&
-       preferred_color_scheme() == PreferredColorScheme::kDark);
-
-  if (rect.IsEmpty()) {
-    return;
-  }
-
+void NativeThemeMac::PaintImpl(cc::PaintCanvas* canvas,
+                               const ColorProvider* color_provider,
+                               Part part,
+                               State state,
+                               const gfx::Rect& rect,
+                               const ExtraParams& extra_params,
+                               bool forced_colors,
+                               bool dark_mode,
+                               PreferredContrast contrast,
+                               std::optional<SkColor> accent_color) const {
   // Mac uses bespoke scrollbar painting methods (instead of simply overriding
   // the parent ones) in order to pass `ScrollbarExtraParams`, which doesn't
   // exist on other platforms.
@@ -188,9 +178,9 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
     return;
   }
 
-  NativeThemeBase::Paint(canvas, color_provider, part, state, rect,
-                         extra_params, forced_colors, color_scheme, contrast,
-                         accent_color);
+  NativeThemeBase::PaintImpl(canvas, color_provider, part, state, rect,
+                             extra_params, forced_colors, dark_mode, contrast,
+                             accent_color);
 }
 
 NativeTheme::PreferredContrast NativeThemeMac::CalculatePreferredContrast()

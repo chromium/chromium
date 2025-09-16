@@ -144,40 +144,21 @@ gfx::Rect NativeThemeBase::GetNinePatchAperture(Part part) const {
   NOTREACHED() << "NativeThemeBase doesn't support nine-patch resources.";
 }
 
-void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
-                            const ui::ColorProvider* color_provider,
-                            Part part,
-                            State state,
-                            const gfx::Rect& rect,
-                            const ExtraParams& extra_params,
-                            bool forced_colors,
-                            PreferredColorScheme color_scheme,
-                            PreferredContrast contrast,
-                            std::optional<SkColor> accent_color) const {
-  if (rect.IsEmpty()) {
-    return;
-  }
-
-  // For `color_scheme`, `kNoPreference` means "use current".
-  const bool dark_mode =
-      color_scheme == PreferredColorScheme::kDark ||
-      (color_scheme == PreferredColorScheme::kNoPreference &&
-       preferred_color_scheme() == PreferredColorScheme::kDark);
-
-  canvas->save();
-  canvas->clipRect(gfx::RectToSkRect(rect));
-
-  // Form control accents shouldn't be drawn with any transparency.
-  std::optional<SkColor> accent_color_opaque;
-  if (accent_color) {
-    accent_color_opaque = SkColorSetA(accent_color.value(), SK_AlphaOPAQUE);
-  }
-
+void NativeThemeBase::PaintImpl(cc::PaintCanvas* canvas,
+                                const ColorProvider* color_provider,
+                                Part part,
+                                State state,
+                                const gfx::Rect& rect,
+                                const ExtraParams& extra_params,
+                                bool forced_colors,
+                                bool dark_mode,
+                                PreferredContrast contrast,
+                                std::optional<SkColor> accent_color) const {
   switch (part) {
     case kCheckbox:
       PaintCheckbox(canvas, color_provider, state, rect,
                     std::get<ButtonExtraParams>(extra_params), dark_mode,
-                    accent_color_opaque);
+                    accent_color);
       break;
 #if BUILDFLAG(IS_LINUX)
     case kFrameTopArea:
@@ -210,7 +191,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kProgressBar:
       PaintProgressBar(canvas, color_provider, state, rect,
                        std::get<ProgressBarExtraParams>(extra_params),
-                       dark_mode, contrast, accent_color_opaque);
+                       dark_mode, contrast, accent_color);
       break;
     case kPushButton:
       PaintButton(canvas, color_provider, state, rect,
@@ -219,7 +200,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kRadio:
       PaintRadio(canvas, color_provider, state, rect,
                  std::get<ButtonExtraParams>(extra_params), dark_mode,
-                 accent_color_opaque);
+                 accent_color);
       break;
     case kScrollbarDownArrow:
     case kScrollbarUpArrow:
@@ -253,12 +234,12 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kSliderTrack:
       PaintSliderTrack(canvas, color_provider, state, rect,
                        std::get<SliderExtraParams>(extra_params), dark_mode,
-                       contrast, accent_color_opaque);
+                       contrast, accent_color);
       break;
     case kSliderThumb:
       PaintSliderThumb(canvas, color_provider, state, rect,
                        std::get<SliderExtraParams>(extra_params), dark_mode,
-                       accent_color_opaque);
+                       accent_color);
       break;
     case kTextField:
       PaintTextField(canvas, color_provider, state, rect,
@@ -273,8 +254,6 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     default:
       NOTREACHED();
   }
-
-  canvas->restore();
 }
 
 NativeThemeBase::~NativeThemeBase() = default;

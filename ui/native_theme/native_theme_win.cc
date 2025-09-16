@@ -230,20 +230,16 @@ gfx::Rect NativeThemeWin::GetNinePatchAperture(Part part) const {
   NOTREACHED() << "NativeThemeWin doesn't support nine-patch resources.";
 }
 
-void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
-                           const ui::ColorProvider* color_provider,
-                           Part part,
-                           State state,
-                           const gfx::Rect& rect,
-                           const ExtraParams& extra_params,
-                           bool forced_colors,
-                           PreferredColorScheme color_scheme,
-                           PreferredContrast contrast,
-                           std::optional<SkColor> accent_color) const {
-  if (rect.IsEmpty()) {
-    return;
-  }
-
+void NativeThemeWin::PaintImpl(cc::PaintCanvas* canvas,
+                               const ColorProvider* color_provider,
+                               Part part,
+                               State state,
+                               const gfx::Rect& rect,
+                               const ExtraParams& extra_params,
+                               bool forced_colors,
+                               bool dark_mode,
+                               PreferredContrast contrast,
+                               std::optional<SkColor> accent_color) const {
   switch (part) {
     case kMenuPopupGutter:
       PaintMenuGutter(canvas, color_provider, rect);

@@ -37,16 +37,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
 
   // NativeThemeBase:
   SkColor GetSystemButtonPressedColor(SkColor base_color) const override;
-  void Paint(cc::PaintCanvas* canvas,
-             const ColorProvider* color_provider,
-             Part part,
-             State state,
-             const gfx::Rect& rect,
-             const ExtraParams& extra_params,
-             bool forced_colors,
-             PreferredColorScheme color_scheme,
-             PreferredContrast contrast,
-             std::optional<SkColor> accent_color) const override;
   PreferredContrast CalculatePreferredContrast() const override;
 
  protected:
@@ -54,6 +44,16 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
   ~NativeThemeMac() override;
 
   // NativeThemeBase:
+  void PaintImpl(cc::PaintCanvas* canvas,
+                 const ColorProvider* color_provider,
+                 Part part,
+                 State state,
+                 const gfx::Rect& rect,
+                 const ExtraParams& extra_params,
+                 bool forced_colors,
+                 bool dark_mode,
+                 PreferredContrast contrast,
+                 std::optional<SkColor> accent_color) const override;
   void PaintMenuItemBackground(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,

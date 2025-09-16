@@ -23,16 +23,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) TestNativeTheme : public NativeTheme {
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra_params) const override;
-  void Paint(cc::PaintCanvas* canvas,
-             const ui::ColorProvider* color_provider,
-             Part part,
-             State state,
-             const gfx::Rect& rect,
-             const ExtraParams& extra_params,
-             bool forced_colors,
-             PreferredColorScheme color_scheme,
-             PreferredContrast contrast,
-             std::optional<SkColor> accent_color) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;

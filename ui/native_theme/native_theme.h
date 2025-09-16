@@ -427,30 +427,19 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Notify observers of preferred contrast changes.
   virtual void NotifyOnPreferredContrastUpdated();
 
-  // Paints the provided `part`/`state`.
-  virtual void Paint(cc::PaintCanvas* canvas,
-                     const ui::ColorProvider* color_provider,
-                     Part part,
-                     State state,
-                     const gfx::Rect& rect,
-                     const ExtraParams& extra_params,
-                     bool forced_colors,
-                     PreferredColorScheme color_scheme,
-                     PreferredContrast contrast,
-                     std::optional<SkColor> accent_color) const = 0;
+  // Paints the provided `part`/`state`. This is largely a wrapper around
+  // `PaintImpl()`.
   void Paint(
       cc::PaintCanvas* canvas,
-      const ui::ColorProvider* color_provider,
+      const ColorProvider* color_provider,
       Part part,
       State state,
       const gfx::Rect& rect,
       const ExtraParams& extra_params,
       bool forced_colors = false,
       PreferredColorScheme color_scheme = PreferredColorScheme::kNoPreference,
-      PreferredContrast contrast = PreferredContrast::kNoPreference) const {
-    Paint(canvas, color_provider, part, state, rect, extra_params,
-          forced_colors, color_scheme, contrast, std::nullopt);
-  }
+      PreferredContrast contrast = PreferredContrast::kNoPreference,
+      std::optional<SkColor> accent_color = std::nullopt) const;
 
   // Returns the key corresponding to this native theme object.
   // Use `use_custom_frame` == true when Chromium renders the titlebar.
@@ -543,6 +532,19 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
 
   // Whether high contrast is forced via command-line flag.
   static bool IsForcedHighContrast();
+
+  // Paints the provided `part`/`state`. Subclasses must override this if they
+  // want visible output.
+  virtual void PaintImpl(cc::PaintCanvas* canvas,
+                         const ColorProvider* color_provider,
+                         Part part,
+                         State state,
+                         const gfx::Rect& rect,
+                         const ExtraParams& extra_params,
+                         bool forced_colors,
+                         bool dark_mode,
+                         PreferredContrast contrast,
+                         std::optional<SkColor> accent_color) const {}
 
   // Common implementation used by several subclasses.
   virtual void PaintMenuItemBackground(

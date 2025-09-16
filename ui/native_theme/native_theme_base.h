@@ -40,16 +40,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
-  void Paint(cc::PaintCanvas* canvas,
-             const ui::ColorProvider* color_provider,
-             Part part,
-             State state,
-             const gfx::Rect& rect,
-             const ExtraParams& extra_params,
-             bool forced_colors,
-             PreferredColorScheme color_scheme,
-             PreferredContrast contrast,
-             std::optional<SkColor> accent_color) const override;
 
  protected:
   enum ControlColorId {
@@ -106,6 +96,18 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   void set_scrollbar_button_length(int length) {
     scrollbar_button_length_ = length;
   }
+
+  // NativeTheme:
+  void PaintImpl(cc::PaintCanvas* canvas,
+                 const ColorProvider* color_provider,
+                 Part part,
+                 State state,
+                 const gfx::Rect& rect,
+                 const ExtraParams& extra_params,
+                 bool forced_colors,
+                 bool dark_mode,
+                 PreferredContrast contrast,
+                 std::optional<SkColor> accent_color) const override;
 
   // Shrinks checkbox/radio button rect, if necessary, to make room for padding
   // and drop shadow.

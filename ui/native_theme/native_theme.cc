@@ -34,7 +34,9 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/system_theme.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/native_theme/os_settings_provider.h"
@@ -212,6 +214,45 @@ void NativeTheme::NotifyOnCaptionStyleUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   native_theme_observers_.Notify(&NativeThemeObserver::OnCaptionStyleUpdated);
+}
+
+void NativeTheme::Paint(cc::PaintCanvas* canvas,
+                        const ColorProvider* color_provider,
+                        Part part,
+                        State state,
+                        const gfx::Rect& rect,
+                        const ExtraParams& extra_params,
+                        bool forced_colors,
+                        PreferredColorScheme color_scheme,
+                        PreferredContrast contrast,
+                        std::optional<SkColor> accent_color) const {
+  if (rect.IsEmpty()) {
+    return;
+  }
+
+  // For `color_scheme`, `kNoPreference` means "use current".
+  const bool dark_mode =
+      color_scheme == PreferredColorScheme::kDark ||
+      (color_scheme == PreferredColorScheme::kNoPreference &&
+       preferred_color_scheme() == PreferredColorScheme::kDark);
+
+  // Form control accents shouldn't be drawn with any transparency.
+  // TODO(C++23): Replace the below with:
+  // ```
+  //  const std::optional<SkColor> accent_color_opaque = accent_color.transform(
+  //      [](SkColor c) { return SkColorSetA(c, SK_AlphaOPAQUE); });
+  // ```
+  const std::optional<SkColor> accent_color_opaque =
+      accent_color.has_value() ? std::make_optional(SkColorSetA(
+                                     accent_color.value(), SK_AlphaOPAQUE))
+                               : std::nullopt;
+
+  gfx::Canvas gfx_canvas(canvas, 1.0f);
+  gfx::ScopedCanvas scoped_canvas(&gfx_canvas);
+  gfx_canvas.ClipRect(rect);
+
+  PaintImpl(canvas, color_provider, part, state, rect, extra_params,
+            forced_colors, dark_mode, contrast, accent_color_opaque);
 }
 
 void NativeTheme::NotifyOnPreferredContrastUpdated() {
