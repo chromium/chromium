@@ -72,10 +72,10 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
                        features::IsBocaSpotlightRobotRequesterEnabled());
     source->AddBoolean("userFeedbackAllowed",
                        pref_service->GetBoolean(::prefs::kUserFeedbackAllowed));
-    source->AddBoolean("configureMaxStudents",
-                       features::IsBocaConfigureMaxStudentsEnabled());
-    source->AddInteger("maxNumStudentsAllowed",
-                       features::kBocaMaxNumStudentsAllowed.Get());
+    if (features::IsBocaConfigureMaxStudentsEnabled()) {
+      source->AddInteger("maxNumStudentsAllowed",
+                         features::kBocaMaxNumStudentsAllowed.Get());
+    }
   }
 
  private:
