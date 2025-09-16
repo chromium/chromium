@@ -107,13 +107,25 @@ NSView* CreateAccessoryView() {
       addObject:[label.leadingAnchor constraintEqualToAnchor:group.leadingAnchor
                                                     constant:10]];
 
-  // Horizontal and vertical baseline between the label and popup.
+  // Horizontal and vertical between the label and popup.
   [constraints addObject:[popup.leadingAnchor
                              constraintEqualToAnchor:label.trailingAnchor
                                             constant:8]];
-  [constraints
-      addObject:[popup.firstBaselineAnchor
-                    constraintEqualToAnchor:label.firstBaselineAnchor]];
+  if (base::mac::MacOSMajorVersion() >= 26) {
+    // Since macOS 26, using the firstBaselineAnchor property for auto layout
+    // with NSPopUpButton causes frequent computations on the main thread of the
+    // main process, resulting in higher CPU usage. Referring to Safari's
+    // implementation, switching to the centerYAnchor property reduces CPU
+    // overhead. Visually, since NSPopUpButton and label fonts share the same
+    // size on macOS, centering alignment creates little noticeable difference
+    // compared to the previous firstBaseline alignment.
+    [constraints addObject:[label.centerYAnchor
+                               constraintEqualToAnchor:popup.centerYAnchor]];
+  } else {
+    [constraints
+        addObject:[popup.firstBaselineAnchor
+                      constraintEqualToAnchor:label.firstBaselineAnchor]];
+  }
 
   // Trailing.
   [constraints addObject:[group.trailingAnchor
