@@ -350,7 +350,7 @@ MockPeerConnectionImpl::MockPeerConnectionImpl(
           [this](std::unique_ptr<webrtc::SessionDescriptionInterface>* desc,
                  webrtc::scoped_refptr<
                      webrtc::SetLocalDescriptionObserverInterface>* observer) {
-            SetLocalDescriptionWorker(nullptr, desc->release());
+            SetLocalDescriptionWorker(nullptr, desc->get());
           });
   // TODO(hbos): Remove once no longer mandatory to implement.
   ON_CALL(*this, SetRemoteDescription(_, _))
@@ -361,7 +361,7 @@ MockPeerConnectionImpl::MockPeerConnectionImpl(
           [this](std::unique_ptr<webrtc::SessionDescriptionInterface>* desc,
                  webrtc::scoped_refptr<
                      webrtc::SetRemoteDescriptionObserverInterface>* observer) {
-            SetRemoteDescriptionWorker(nullptr, desc->release());
+            SetRemoteDescriptionWorker(nullptr, desc->get());
           });
 }
 
@@ -548,14 +548,14 @@ void MockPeerConnectionImpl::SetLocalDescriptionWorker(
     SetSessionDescriptionObserver* observer,
     SessionDescriptionInterface* desc) {
   desc->ToString(&description_sdp_);
-  local_desc_.reset(desc);
+  local_desc_ = desc->Clone();
 }
 
 void MockPeerConnectionImpl::SetRemoteDescriptionWorker(
     SetSessionDescriptionObserver* observer,
     SessionDescriptionInterface* desc) {
   desc->ToString(&description_sdp_);
-  remote_desc_.reset(desc);
+  remote_desc_ = desc->Clone();
 }
 
 webrtc::RTCError MockPeerConnectionImpl::SetConfiguration(
