@@ -49,15 +49,26 @@ specific_include_rules = {
   r"browser_command_controller_browsertest\.cc": [
     "+ash/wm/window_pin_util.h",
   ],
+  r"browser_finder\.cc": [
+    "+ash/shell.h",
+  ],
   r"browser_finder_chromeos_browsertest\.cc": [
+    "+ash/shell.h",
     "+ash/wm/desks/desk.h",
     "+ash/wm/desks/desks_controller.h",
     "+ash/wm/desks/desks_test_util.h",
+  ],
+  r"browser_finder_chromeos_unittest\.cc": [
+    "+ash/shell.h",
+  ],
+  r"browser_navigator\.cc": [
+    "+ash/shell.h",
   ],
   r"browser_navigator_browsertest\.cc": [
     "+ash/shell.h",
   ],
   r"browser_navigator_browsertest_chromeos\.cc": [
+    "+ash/shell.h",
     "+ash/wm/window_pin_util.h",
   ],
   r"browser_tabstrip_browsertest_chromeos\.cc": [

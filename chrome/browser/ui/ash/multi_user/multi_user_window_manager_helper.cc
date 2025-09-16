@@ -22,14 +22,6 @@ MultiUserWindowManagerHelper* MultiUserWindowManagerHelper::GetInstance() {
 }
 
 // static
-ash::MultiUserWindowManager* MultiUserWindowManagerHelper::GetWindowManager() {
-  // In tests this may be called before the instance has been set.
-  return ash::Shell::HasInstance()
-             ? ash::Shell::Get()->multi_user_window_manager()
-             : nullptr;
-}
-
-// static
 MultiUserWindowManagerHelper* MultiUserWindowManagerHelper::CreateInstance() {
   CHECK(!g_multi_user_window_manager_instance);
   g_multi_user_window_manager_instance = new MultiUserWindowManagerHelper();
@@ -57,6 +49,6 @@ void MultiUserWindowManagerHelper::AddUser(const AccountId& account_id) {
 MultiUserWindowManagerHelper::MultiUserWindowManagerHelper()
     : multi_user_window_manager_browser_adaptor_(
           std::make_unique<ash::MultiUserWindowManagerBrowserAdaptor>(
-              MultiUserWindowManagerHelper::GetWindowManager())) {}
+              ash::Shell::Get()->multi_user_window_manager())) {}
 
 MultiUserWindowManagerHelper::~MultiUserWindowManagerHelper() = default;

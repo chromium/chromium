@@ -35,11 +35,6 @@ class MultiUserWindowManagerHelper {
   // Gets the instance of the object.
   static MultiUserWindowManagerHelper* GetInstance();
 
-  // DEPRECATED. TODO(crbug.com/425160398): Replace the callers by
-  // MultiUserWindowManagerImpl::Get() or
-  // ash::Shell::Get()->multi_user_window_manager().
-  static ash::MultiUserWindowManager* GetWindowManager();
-
   // Removes the instance.
   static void DeleteInstance();
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -126,8 +127,8 @@ TEST_F(MultiUserContextMenuChromeOSTest, UnownedWindow) {
 TEST_F(MultiUserContextMenuChromeOSTest, OwnedWindow) {
   // Make the window owned and check that there is no menu (since only a single
   // user exists).
-  MultiUserWindowManagerHelper::GetWindowManager()->SetWindowOwner(window(),
-                                                                   kAccountId1);
+  ash::Shell::Get()->multi_user_window_manager()->SetWindowOwner(window(),
+                                                                 kAccountId1);
   EXPECT_EQ(nullptr, CreateMultiUserContextMenu(window()).get());
 
   // After adding another user a menu should get created.

@@ -70,7 +70,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/multi_user_window_manager.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "ash/shell.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/account_id/account_id.h"
 #endif
@@ -734,7 +734,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     // When the newly created browser was spawned by a browser which visits
     // another user's desktop, it should be shown on the same desktop as the
     // originating one. (This is part of the desktop separation per profile).
-    auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
+    auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
     // Some unit tests have no client instantiated.
     if (window_manager) {
       aura::Window* src_window = source_browser->window()->GetNativeWindow();

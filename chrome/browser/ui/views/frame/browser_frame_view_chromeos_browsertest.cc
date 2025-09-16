@@ -40,7 +40,6 @@
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/ash/test_util.h"
@@ -1705,7 +1704,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshTestNoWebUiTabStrip,
       session_manager::SessionManager::Get()->GetActiveSession()->account_id(),
       kPrimaryAccountId);
 
-  auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
+  auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
 
   // Teleport the window to secondary user's desktop.
   browser_view->Activate();

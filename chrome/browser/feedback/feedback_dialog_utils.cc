@@ -16,8 +16,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "components/account_id/account_id.h"
 #include "ui/base/base_window.h"
 #endif
@@ -60,7 +60,7 @@ Profile* GetFeedbackProfile(BrowserWindowInterface* bwi) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Obtains the display profile ID on which the Feedback window should show.
-  auto* const window_manager = MultiUserWindowManagerHelper::GetWindowManager();
+  auto* const window_manager = ash::Shell::Get()->multi_user_window_manager();
   const AccountId display_account_id =
       window_manager && bwi ? window_manager->GetUserPresentingWindow(
                                   bwi->GetWindow()->GetNativeWindow())

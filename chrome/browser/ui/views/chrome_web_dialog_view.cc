@@ -17,10 +17,10 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "ash/utility/wm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_view.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
@@ -98,7 +98,7 @@ gfx::NativeWindow ShowWebDialogWithParams(
                   session_manager::SessionState::ACTIVE) {
     // Dialogs should not be shown for other users when logged in and the
     // session is active.
-    MultiUserWindowManagerHelper::GetWindowManager()->SetWindowOwner(
+    ash::Shell::Get()->multi_user_window_manager()->SetWindowOwner(
         window, user->GetAccountId());
   }
 #endif

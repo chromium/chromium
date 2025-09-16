@@ -7,6 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/shell.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
   // Start multi-user sign-in.
   LogIn(kSecondaryAccountId);
 
-  auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
+  auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
 
   // Test 1: Test that a browser created from a visiting browser will be on the
   // same visiting desktop.

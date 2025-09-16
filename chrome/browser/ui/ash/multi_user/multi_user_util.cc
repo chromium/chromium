@@ -8,7 +8,6 @@
 #include "ash/shell.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -37,15 +36,15 @@ Profile* GetProfileFromAccountId(const AccountId& account_id) {
 }
 
 Profile* GetProfileFromWindow(aura::Window* window) {
-  MultiUserWindowManagerHelper* helper =
-      MultiUserWindowManagerHelper::GetInstance();
+  auto* multi_user_window_manager =
+      ash::Shell::Get()->multi_user_window_manager();
   // We might come here before the helper got created - or in a unit test.
-  if (!helper) {
+  if (!multi_user_window_manager) {
+    // TODO(crbug.com/444572622): this should be unittest only now.
     return nullptr;
   }
   const AccountId account_id =
-      MultiUserWindowManagerHelper::GetWindowManager()->GetUserPresentingWindow(
-          window);
+      multi_user_window_manager->GetUserPresentingWindow(window);
   return account_id.is_valid() ? GetProfileFromAccountId(account_id) : nullptr;
 }
 

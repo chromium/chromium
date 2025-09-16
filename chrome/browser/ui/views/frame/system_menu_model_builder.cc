@@ -24,9 +24,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -261,7 +261,7 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
 
   // If this does not belong to a profile or there is no window, or the window
   // is not owned by anyone, we don't show the menu addition.
-  auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
+  auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
   const AccountId account_id =
       multi_user_util::GetAccountIdFromProfile(browser()->profile());
   aura::Window* window = browser()->window()->GetNativeWindow();

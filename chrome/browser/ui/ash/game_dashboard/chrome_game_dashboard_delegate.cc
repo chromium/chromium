@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
 
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
@@ -85,7 +85,7 @@ void ChromeGameDashboardDelegate::RecordGameWindowOpenedEvent(
   }
 
   ash::MultiUserWindowManager* multi_user_window_manager =
-      MultiUserWindowManagerHelper::GetWindowManager();
+      ash::Shell::Get()->multi_user_window_manager();
   if (multi_user_window_manager) {
     // If multi user is not enabled, `MultiUserWindowManagerStub` is set. It
     // returns an invalid account id.

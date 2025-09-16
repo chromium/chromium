@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_crostini_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_item_controller.h"
@@ -243,7 +242,7 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
   // This will match both the Plugin VM App window and installer.
   if (shelf_id.app_id == plugin_vm::kPluginVmShelfAppId) {
     // Plugin VM can only be used on the primary profile.
-    MultiUserWindowManagerHelper::GetWindowManager()->SetWindowOwner(
+    ash::Shell::Get()->multi_user_window_manager()->SetWindowOwner(
         window,
         user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   }
@@ -390,7 +389,7 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
     // The window is teleported to the current user could be hidden as
     // well. But we only remove the window added for the active user, and skip
     // the window teleported to the current user, because
-    // MultiUserWindowManagerHelper manages those windows.
+    // MultiUserWindowManager manages those windows.
     auto app_window_it = aura_window_to_app_window_.find(window);
     if (app_window_it != aura_window_to_app_window_.end() &&
         proxy_->InstanceRegistry().Exists(window)) {

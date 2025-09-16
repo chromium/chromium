@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -112,7 +113,7 @@ TEST_F(BrowserFinderChromeOSTest, FindBrowserOwnedByAnotherProfile) {
   Browser::CreateParams params(profile()->GetOriginalProfile(), true);
   std::unique_ptr<Browser> browser(
       chrome::CreateBrowserWithViewsTestWindowForParams(params));
-  MultiUserWindowManagerHelper::GetWindowManager()->SetWindowOwner(
+  ash::Shell::Get()->multi_user_window_manager()->SetWindowOwner(
       browser->window()->GetNativeWindow(), kTestAccountId1);
   EXPECT_EQ(1u, chrome::GetBrowserCount(profile()));
   EXPECT_TRUE(chrome::FindAnyBrowser(profile(), true));
@@ -120,7 +121,7 @@ TEST_F(BrowserFinderChromeOSTest, FindBrowserOwnedByAnotherProfile) {
 
   // Move the browser window to another user's desktop. Then no window should
   // be available for the current profile.
-  MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
+  ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(
       browser->window()->GetNativeWindow(), kTestAccountId2);
   // ShowWindowForUser() notifies chrome async. FlushBindings() to ensure all
   // the changes happen.

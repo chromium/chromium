@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -66,7 +67,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -431,8 +431,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetProfilesFunction::Run() {
 
   // Obtains the display profile ID.
   AppWindow* const app_window = GetCurrentAppWindow(this);
-  ash::MultiUserWindowManager* const window_manager =
-      MultiUserWindowManagerHelper::GetWindowManager();
+  auto* const window_manager = ash::Shell::Get()->multi_user_window_manager();
   const AccountId current_profile_id = multi_user_util::GetAccountIdFromProfile(
       Profile::FromBrowserContext(browser_context()));
   const AccountId display_profile_id =

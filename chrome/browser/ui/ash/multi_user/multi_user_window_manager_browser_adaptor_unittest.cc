@@ -197,7 +197,7 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
   }
 
   ash::MultiUserWindowManager* multi_user_window_manager() {
-    return MultiUserWindowManagerHelper::GetWindowManager();
+    return ash::Shell::Get()->multi_user_window_manager();
   }
 
   TestingProfileManager* profile_manager() { return profile_manager_.get(); }
@@ -506,8 +506,6 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest, BasicTests) {
   // Check the basic assumptions: All windows are visible and there is no owner.
   EXPECT_EQ("S[], S[], S[]", GetStatus());
   EXPECT_TRUE(multi_user_window_manager());
-  EXPECT_EQ(multi_user_window_manager(),
-            ::MultiUserWindowManagerHelper::GetWindowManager());
   EXPECT_FALSE(multi_user_window_manager()->AreWindowsSharedAmongUsers());
 
   // The owner of an unowned window should be empty and it should be shown on

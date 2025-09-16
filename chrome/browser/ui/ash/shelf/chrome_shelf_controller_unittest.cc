@@ -35,6 +35,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_application_menu_model.h"
+#include "ash/shell.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -3197,7 +3198,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   InitShelfController();
 
   ash::MultiUserWindowManager* window_manager =
-      MultiUserWindowManagerHelper::GetWindowManager();
+      ash::Shell::Get()->multi_user_window_manager();
 
   // Create a browser window with a native window for user0.
   std::unique_ptr<Browser> browser(
@@ -3714,7 +3715,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   CheckAppMenu(shelf_controller_.get(), item_browser, 1, one_menu_item1);
 
   // Transferred browsers of other users should not show up in the list.
-  MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
+  ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(
       browser()->window()->GetNativeWindow(), account_id1());
   CheckAppMenu(shelf_controller_.get(), item_browser, 1, one_menu_item1);
 
@@ -3823,7 +3824,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   CheckAppMenu(shelf_controller_.get(), item_gmail, 0, nullptr);
 
   // Transfer the browser of the first user - it should still not show up.
-  MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
+  ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(
       browser()->window()->GetNativeWindow(), account_id1());
 
   CheckAppMenu(shelf_controller_.get(), item_browser, 0, nullptr);
@@ -3951,7 +3952,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
        V2AppFollowsTeleportedWindow) {
   InitShelfController();
   ash::MultiUserWindowManager* window_manager =
-      MultiUserWindowManagerHelper::GetWindowManager();
+      ash::Shell::Get()->multi_user_window_manager();
 
   // Create and add three users / profiles, and go to #1's desktop.
   TestingProfile* profile1 =

@@ -45,7 +45,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
@@ -1103,8 +1102,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestGameMultiUser,
   window->SetProperty(ash::kAppIDKey,
                       std::string(extension_misc::kGeForceNowAppId));
   ash::MultiUserWindowManager* multi_user_window_manager =
-      MultiUserWindowManagerHelper::GetWindowManager();
-  CHECK(multi_user_window_manager);
+      ash::Shell::Get()->multi_user_window_manager();
+  ASSERT_TRUE(multi_user_window_manager);
   multi_user_window_manager->SetWindowOwner(
       window.get(), GetSecondaryUserContext().GetAccountId());
 }
@@ -1125,8 +1124,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestGameMultiUser,
 
   std::unique_ptr<aura::Window> window = CreateAuraWindow(kTestGameWindowTitle);
   ash::MultiUserWindowManager* multi_user_window_manager =
-      MultiUserWindowManagerHelper::GetWindowManager();
-  CHECK(multi_user_window_manager);
+      ash::Shell::Get()->multi_user_window_manager();
+  ASSERT_TRUE(multi_user_window_manager);
   multi_user_window_manager->SetWindowOwner(
       window.get(), GetSecondaryUserContext().GetAccountId());
 

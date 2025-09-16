@@ -14,6 +14,7 @@ specific_include_rules = {
     "+ash/user_education/views/help_bubble_factory_views_ash.h",
   ],
   "chrome_web_dialog_view\.cc": [
+    "+ash/shell.h",
     "+ash/utility/wm_util.h",
   ],
   "chrome_views_delegate_ash\.cc": [

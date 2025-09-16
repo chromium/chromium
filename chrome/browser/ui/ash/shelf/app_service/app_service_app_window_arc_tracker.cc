@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
@@ -178,7 +178,7 @@ void AppServiceAppWindowArcTracker::HandleWindowVisibilityChanged(
 
   // Attach window to multi-user manager now to let it manage visibility state
   // of the ARC window correctly.
-  MultiUserWindowManagerHelper::GetWindowManager()->SetWindowOwner(
+  ash::Shell::Get()->multi_user_window_manager()->SetWindowOwner(
       window,
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
 }

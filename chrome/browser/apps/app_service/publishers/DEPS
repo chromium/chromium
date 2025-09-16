@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "extension_apps_chromeos\\.cc": [
+    "+ash/shell.h",
+  ],
+}
