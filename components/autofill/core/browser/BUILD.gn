@@ -1481,6 +1481,7 @@ source_set("unit_tests") {
     "foundations/autofill_manager_unittest.cc",
     "foundations/browser_autofill_manager_unittest.cc",
     "foundations/form_forest_unittest.cc",
+    "foundations/scoped_autofill_managers_observation_unittest.cc",
     "geo/address_i18n_unittest.cc",
     "geo/address_rewriter_unittest.cc",
     "geo/alternative_state_name_map_unittest.cc",

@@ -39,7 +39,6 @@ class AutofillDriver;
 //
 // The unit test lives in //components/autofill/content/browser because there is
 // currently no TestAutofillDriverFactory.
-// TODO(crbug.com/40714201): Add TestAutofillDriverFactory and move the test.
 class ScopedAutofillManagersObservation final
     : public AutofillDriverFactory::Observer {
  public:
