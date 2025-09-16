@@ -77,24 +77,23 @@ bool TargetCanHaveMotionTransform(const SVGElement& target) {
 }
 
 template <typename CharType>
-std::optional<gfx::PointF> ParsePointInternal(const CharType* ptr,
-                                              const CharType* end) {
-  if (!SkipOptionalSVGSpaces(ptr, end)) {
+std::optional<gfx::PointF> ParsePointInternal(base::span<const CharType> span) {
+  if (!SkipOptionalSVGSpaces(span)) {
     return std::nullopt;
   }
 
   float x = 0;
-  if (!ParseNumber(ptr, end, x)) {
+  if (!ParseNumber(span, x)) {
     return std::nullopt;
   }
 
   float y = 0;
-  if (!ParseNumber(ptr, end, y)) {
+  if (!ParseNumber(span, y)) {
     return std::nullopt;
   }
 
   // disallow anything except spaces at the end
-  if (SkipOptionalSVGSpaces(ptr, end)) {
+  if (SkipOptionalSVGSpaces(span)) {
     return std::nullopt;
   }
   return gfx::PointF(x, y);
@@ -103,9 +102,8 @@ std::optional<gfx::PointF> ParsePointInternal(const CharType* ptr,
 base::expected<gfx::PointF, SVGParseStatus> ParsePoint(const String& string) {
   std::optional<gfx::PointF> point;
   if (!string.empty()) {
-    point = VisitCharacters(string, [&](auto chars) {
-      return ParsePointInternal(chars.data(), chars.data() + chars.size());
-    });
+    point = VisitCharacters(
+        string, [&](auto chars) { return ParsePointInternal(chars); });
 
     if (point.has_value()) {
       return point.value();
