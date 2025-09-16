@@ -33,4 +33,12 @@ TEST_F(AndroidBnplStrategyTest, GetNextActionOnBnplSuggestionAcceptance) {
                 kCheckAmountExtractionBeforeContinuingFlow);
 }
 
+// Verify that GetNextActionOnAmountExtractionReturned() returns the correct
+// action for the Android platform.
+TEST_F(AndroidBnplStrategyTest, GetNextActionOnAmountExtractionReturned) {
+  EXPECT_EQ(android_bnpl_strategy_.GetNextActionOnAmountExtractionReturned(),
+            BnplStrategy::BnplAmountExtractionReturnedNextAction::
+                kNotifyUiOfAmountExtractionReturnedResponse);
+}
+
 }  // namespace autofill::payments

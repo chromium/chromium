@@ -33,4 +33,12 @@ TEST_F(DesktopBnplStrategyTest, GetNextActionOnBnplSuggestionAcceptance) {
                 kShowSelectBnplIssuerUi);
 }
 
+// Verify that GetNextActionOnAmountExtractionReturned() returns the correct
+// action for the desktop platform.
+TEST_F(DesktopBnplStrategyTest, GetNextActionOnAmountExtractionReturned) {
+  EXPECT_EQ(desktop_bnpl_strategy_.GetNextActionOnAmountExtractionReturned(),
+            BnplStrategy::BnplAmountExtractionReturnedNextAction::
+                kNotifyUpdateCallbackOfAmountExtractionReturnedResponse);
+}
+
 }  // namespace autofill::payments

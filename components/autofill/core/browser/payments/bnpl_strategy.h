@@ -41,6 +41,20 @@ class BnplStrategy {
     kMaxValue = kCheckAmountExtractionBeforeContinuingFlow,
   };
 
+  // Defines the next step that the BnplManager should take after amount
+  // extraction returns. The strategy implementation determines
+  // which action to return based on the platform.
+  enum class BnplAmountExtractionReturnedNextAction {
+    // Run the update suggestions barrier callback.
+    kNotifyUpdateCallbackOfAmountExtractionReturnedResponse = 0,
+
+    // Notify the UI to update accordingly based on the amount extraction
+    // response.
+    kNotifyUiOfAmountExtractionReturnedResponse = 1,
+
+    kMaxValue = kNotifyUiOfAmountExtractionReturnedResponse,
+  };
+
   virtual ~BnplStrategy();
 
   // Returns the next action to take after the user has been shown a payment
@@ -51,6 +65,10 @@ class BnplStrategy {
   // suggestion.
   virtual BnplSuggestionAcceptedNextAction
   GetNextActionOnBnplSuggestionAcceptance();
+
+  // Returns the next action to take after the amount extraction is finished.
+  virtual BnplAmountExtractionReturnedNextAction
+  GetNextActionOnAmountExtractionReturned();
 };
 
 }  // namespace autofill::payments

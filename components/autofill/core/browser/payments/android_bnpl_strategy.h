@@ -22,6 +22,8 @@ class AndroidBnplStrategy : public BnplStrategy {
   SuggestionShownNextAction GetNextActionOnSuggestionShown() override;
   BnplSuggestionAcceptedNextAction GetNextActionOnBnplSuggestionAcceptance()
       override;
+  BnplAmountExtractionReturnedNextAction
+  GetNextActionOnAmountExtractionReturned() override;
 };
 
 }  // namespace autofill::payments

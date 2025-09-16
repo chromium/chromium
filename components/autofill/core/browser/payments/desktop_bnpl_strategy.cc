@@ -21,4 +21,10 @@ DesktopBnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
   return BnplSuggestionAcceptedNextAction::kShowSelectBnplIssuerUi;
 }
 
+BnplStrategy::BnplAmountExtractionReturnedNextAction
+DesktopBnplStrategy::GetNextActionOnAmountExtractionReturned() {
+  return BnplAmountExtractionReturnedNextAction::
+      kNotifyUpdateCallbackOfAmountExtractionReturnedResponse;
+}
+
 }  // namespace autofill::payments

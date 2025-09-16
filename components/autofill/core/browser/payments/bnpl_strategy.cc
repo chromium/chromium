@@ -20,4 +20,9 @@ BnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
   NOTREACHED();
 }
 
+BnplStrategy::BnplAmountExtractionReturnedNextAction
+BnplStrategy::GetNextActionOnAmountExtractionReturned() {
+  NOTREACHED();
+}
+
 }  // namespace autofill::payments

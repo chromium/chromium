@@ -22,4 +22,10 @@ AndroidBnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
       kCheckAmountExtractionBeforeContinuingFlow;
 }
 
+BnplStrategy::BnplAmountExtractionReturnedNextAction
+AndroidBnplStrategy::GetNextActionOnAmountExtractionReturned() {
+  return BnplAmountExtractionReturnedNextAction::
+      kNotifyUiOfAmountExtractionReturnedResponse;
+}
+
 }  // namespace autofill::payments

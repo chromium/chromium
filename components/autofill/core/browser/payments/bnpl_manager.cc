@@ -176,27 +176,36 @@ void BnplManager::OnSuggestionsShown(
 void BnplManager::OnAmountExtractionReturned(
     const std::optional<uint64_t>& extracted_amount,
     bool timeout_reached) {
-  if (!update_suggestions_barrier_callback_.has_value()) {
-    return;
-  }
-
-  if (update_suggestions_barrier_callback_.has_value()) {
-    update_suggestions_barrier_callback_->Run(extracted_amount);
-  }
-
-  if (timeout_reached && !has_logged_bnpl_suggestion_not_shown_reason_) {
-    LogBnplSuggestionNotShownReason(
-        autofill_metrics::BnplSuggestionNotShownReason::
-            kAmountExtractionTimeout);
-    has_logged_bnpl_suggestion_not_shown_reason_ = true;
-    return;
-  }
-
-  if (!extracted_amount && !has_logged_bnpl_suggestion_not_shown_reason_) {
-    LogBnplSuggestionNotShownReason(
-        autofill_metrics::BnplSuggestionNotShownReason::
-            kAmountExtractionFailure);
-    has_logged_bnpl_suggestion_not_shown_reason_ = true;
+  CHECK(payments_autofill_client().GetBnplStrategy());
+  using enum BnplStrategy::BnplAmountExtractionReturnedNextAction;
+  switch (payments_autofill_client()
+              .GetBnplStrategy()
+              ->GetNextActionOnAmountExtractionReturned()) {
+    case kNotifyUpdateCallbackOfAmountExtractionReturnedResponse:
+      if (!update_suggestions_barrier_callback_.has_value()) {
+        return;
+      }
+      update_suggestions_barrier_callback_->Run(extracted_amount);
+      if (!has_logged_bnpl_suggestion_not_shown_reason_) {
+        if (timeout_reached) {
+          LogBnplSuggestionNotShownReason(
+              autofill_metrics::BnplSuggestionNotShownReason::
+                  kAmountExtractionTimeout);
+          has_logged_bnpl_suggestion_not_shown_reason_ = true;
+        } else if (!extracted_amount) {
+          LogBnplSuggestionNotShownReason(
+              autofill_metrics::BnplSuggestionNotShownReason::
+                  kAmountExtractionFailure);
+          has_logged_bnpl_suggestion_not_shown_reason_ = true;
+        }
+      }
+      break;
+    case kNotifyUiOfAmountExtractionReturnedResponse:
+      // TODO(crbug.com/438785327): Implements the Android flow logic:
+      // If a valid amount is not available, notify android UI to update
+      // accordingly.
+      NOTIMPLEMENTED();
+      break;
   }
 }
 
