@@ -333,7 +333,8 @@ void AppTestHelper::FirstTaskRun() {
                                     WithSwitch(
                                         "crash_upload_url",
                                         WithSwitch("update_url",
-                                                   Wrap(&EnterTestMode)))))))))},  // NOLINT
+                                                   Wrap(
+                                                       &EnterTestMode)))))))))},
           {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
           {"set_dict_policies", WithSwitch("values", Wrap(&SetDictPolicies))},
           {"set_platform_policies",
@@ -405,16 +406,15 @@ void AppTestHelper::FirstTaskRun() {
           {"install_scheduled_task",
            WithSwitch("use_task_subfolders",
                       WithSwitch("task_name",
-                                 WithSystemScope(Wrap(&InstallScheduledTask))))},  // NOLINT
-          {"is_scheduled_task_registered_from_medium",
+                                 Wrap(&InstallScheduledTask)))},
+          {"is_scheduled_task_registered",
            WithSwitch("use_task_subfolders",
                       WithSwitch("task_name",
-                                 WithSystemScope(
-                                     Wrap(&IsScheduledTaskRegisteredFromMedium))))},  // NOLINT
+                                 Wrap(&IsScheduledTaskRegistered)))},
           {"delete_scheduled_task",
            WithSwitch("use_task_subfolders",
                       WithSwitch("task_name",
-                                 WithSystemScope(Wrap(&DeleteScheduledTask))))},
+                                 Wrap(&DeleteScheduledTask)))},
 #endif  // BUILDFLAG(IS_WIN)
           {"expect_version_active",
            WithSwitch("updater_version",

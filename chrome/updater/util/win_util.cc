@@ -367,6 +367,55 @@ CSecurityDesc GetAdminDaclSecurityDescriptor(ACCESS_MASK accessmask) {
   return sd;
 }
 
+std::optional<std::wstring> AddCurrentUserAllowedAce(
+    const std::wstring& sddl,
+    ACCESS_MASK required_permissions,
+    UINT8 required_ace_flags) {
+  CAccessToken token;
+  CSid sid;
+  if (!token.GetEffectiveToken(TOKEN_QUERY) || !token.GetUser(&sid)) {
+    VLOG(2) << "Failed to get current user sid: " << std::hex
+            << HRESULTFromLastError();
+    return {};
+  }
+
+  CSecurityDesc sd;
+  if (!sd.FromString(sddl.c_str())) {
+    return {};
+  }
+  CDacl dacl;
+  if (!sd.GetDacl(&dacl)) {
+    VLOG(2) << "Failed to get dacl: " << std::hex << HRESULTFromLastError();
+    return {};
+  }
+
+  int ace_count = dacl.GetAceCount();
+  for (int i = 0; i < ace_count; ++i) {
+    CSid sid_entry;
+    ACCESS_MASK existing_permissions = 0;
+    BYTE existing_ace_flags = 0;
+    dacl.GetAclEntry(i, &sid_entry, &existing_permissions, NULL,
+                     &existing_ace_flags);
+    if (sid_entry == sid &&
+        required_permissions == (existing_permissions & required_permissions) &&
+        required_ace_flags == (existing_ace_flags & ~INHERITED_ACE)) {
+      return sddl;
+    }
+  }
+
+  if (!dacl.AddAllowedAce(sid, required_permissions, required_ace_flags)) {
+    VLOG(2) << "Failed to add ace: " << std::hex << HRESULTFromLastError();
+    return {};
+  }
+
+  sd.SetDacl(dacl);
+  CString new_sddl;
+  if (!sd.ToString(&new_sddl)) {
+    return {};
+  }
+  return std::wstring(new_sddl);
+}
+
 std::wstring GetAppClientsKey(const std::string& app_id) {
   return GetAppClientsKey(base::UTF8ToWide(app_id));
 }

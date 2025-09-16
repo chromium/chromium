@@ -217,6 +217,15 @@ std::optional<CSecurityDesc> GetCurrentUserDefaultSecurityDescriptor();
 // to admins and system.
 CSecurityDesc GetAdminDaclSecurityDescriptor(ACCESS_MASK accessmask);
 
+// Returns an SDDL string derived from `sddl`, with the addition of an allowed
+// ACE entry for the current user with the `required_permissions` and
+// `required_ace_flags`. If the addition already exists, `sddl` is returned
+// unchanged.
+std::optional<std::wstring> AddCurrentUserAllowedAce(
+    const std::wstring& sddl,
+    ACCESS_MASK required_permissions,
+    UINT8 required_ace_flags);
+
 // Returns the registry path `Software\{CompanyName}\Update\Clients\{app_id}`.
 std::wstring GetAppClientsKey(const std::string& app_id);
 std::wstring GetAppClientsKey(const std::wstring& app_id);

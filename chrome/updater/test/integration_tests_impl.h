@@ -410,14 +410,11 @@ void InvokeTestServiceFunction(const std::string& function_name,
 void RunUninstallCmdLine(UpdaterScope scope);
 void RunHandoff(UpdaterScope scope, const std::string& app_id);
 
-void InstallScheduledTask(UpdaterScope scope,
-                          const std::string& task_name,
+void InstallScheduledTask(const std::string& task_name,
                           bool use_task_subfolders);
-void IsScheduledTaskRegisteredFromMedium(UpdaterScope scope,
-                                         const std::string& task_name,
-                                         bool use_task_subfolders);
-void DeleteScheduledTask(UpdaterScope scope,
-                         const std::string& task_name,
+void IsScheduledTaskRegistered(const std::string& task_name,
+                               bool use_task_subfolders);
+void DeleteScheduledTask(const std::string& task_name,
                          bool use_task_subfolders);
 #endif  // BUILDFLAG(IS_WIN)
 

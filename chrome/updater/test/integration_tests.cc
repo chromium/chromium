@@ -507,18 +507,23 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RunHandoff(app_id);
   }
 
-  void InstallScheduledTask(const std::string& task_name,
+  void InstallScheduledTask(bool run_elevated,
+                            const std::string& task_name,
                             bool use_task_subfolders) {
-    test_commands_->InstallScheduledTask(task_name, use_task_subfolders);
+    test_commands_->InstallScheduledTask(run_elevated, task_name,
+                                         use_task_subfolders);
   }
-  void IsScheduledTaskRegisteredFromMedium(const std::string& task_name,
-                                           bool use_task_subfolders) {
-    test_commands_->IsScheduledTaskRegisteredFromMedium(task_name,
-                                                        use_task_subfolders);
+  void IsScheduledTaskRegistered(bool run_elevated,
+                                 const std::string& task_name,
+                                 bool use_task_subfolders) {
+    test_commands_->IsScheduledTaskRegistered(run_elevated, task_name,
+                                              use_task_subfolders);
   }
-  void DeleteScheduledTask(const std::string& task_name,
+  void DeleteScheduledTask(bool run_elevated,
+                           const std::string& task_name,
                            bool use_task_subfolders) {
-    test_commands_->DeleteScheduledTask(task_name, use_task_subfolders);
+    test_commands_->DeleteScheduledTask(run_elevated, task_name,
+                                        use_task_subfolders);
   }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -1362,9 +1367,20 @@ TEST_F(IntegrationTest, SelfUpdateAfterEulaAcceptedViaRegistry) {
 }
 
 TEST_F(IntegrationTest, TaskSchedulerHighToMedium) {
-  ASSERT_NO_FATAL_FAILURE(InstallScheduledTask("Task1", true));
-  ASSERT_NO_FATAL_FAILURE(IsScheduledTaskRegisteredFromMedium("Task1", true));
-  ASSERT_NO_FATAL_FAILURE(DeleteScheduledTask("Task1", true));
+  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP();
+  }
+
+  // Install the scheduled task at high integrity, then test that the task is
+  // visible and can be deleted from medium integrity.
+  ASSERT_NO_FATAL_FAILURE(
+      InstallScheduledTask(/*run_elevated=*/true, "Task1", true));
+  ASSERT_NO_FATAL_FAILURE(
+      IsScheduledTaskRegistered(/*run_elevated=*/false, "Task1", true));
+  ASSERT_NO_FATAL_FAILURE(
+      DeleteScheduledTask(/*run_elevated=*/false, "Task1", true));
+  ASSERT_NO_FATAL_FAILURE(
+      DeleteScheduledTask(/*run_elevated=*/true, "Task1", true));
 }
 
 #endif  // BUILDFLAG(IS_WIN)

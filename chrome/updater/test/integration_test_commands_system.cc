@@ -511,25 +511,27 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("run_handoff", {Param("app_id", app_id)});
   }
 
-  void InstallScheduledTask(const std::string& task_name,
+  void InstallScheduledTask(bool run_elevated,
+                            const std::string& task_name,
                             bool use_task_subfolders) const override {
     RunCommand(
-        "install_scheduled_task",
+        run_elevated, "install_scheduled_task",
         {Param("task_name", task_name),
          Param("use_task_subfolders", BoolToString(use_task_subfolders))});
   }
-  void IsScheduledTaskRegisteredFromMedium(
-      const std::string& task_name,
-      bool use_task_subfolders) const override {
-    RunCommandDeElevated(
-        "is_scheduled_task_registered_from_medium",
+  void IsScheduledTaskRegistered(bool run_elevated,
+                                 const std::string& task_name,
+                                 bool use_task_subfolders) const override {
+    RunCommand(
+        run_elevated, "is_scheduled_task_registered",
         {Param("task_name", task_name),
          Param("use_task_subfolders", BoolToString(use_task_subfolders))});
   }
-  void DeleteScheduledTask(const std::string& task_name,
+  void DeleteScheduledTask(bool run_elevated,
+                           const std::string& task_name,
                            bool use_task_subfolders) const override {
     RunCommand(
-        "delete_scheduled_task",
+        run_elevated, "delete_scheduled_task",
         {Param("task_name", task_name),
          Param("use_task_subfolders", BoolToString(use_task_subfolders))});
   }
@@ -805,6 +807,13 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunDeElevated(updater_scope_, GenerateHelperCommand(command_switch, params),
                   &exit_code);
     ASSERT_EQ(exit_code, 0);
+  }
+
+  void RunCommand(bool run_elevated,
+                  const std::string& command_switch,
+                  const std::vector<Param>& params) const {
+    run_elevated ? RunCommand(command_switch, params)
+                 : RunCommandDeElevated(command_switch, params);
   }
 
   const UpdaterScope updater_scope_;

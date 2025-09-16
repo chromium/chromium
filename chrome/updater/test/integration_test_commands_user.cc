@@ -397,21 +397,20 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunHandoff(updater_scope_, app_id);
   }
 
-  void InstallScheduledTask(const std::string& task_name,
+  void InstallScheduledTask(bool run_elevated,
+                            const std::string& task_name,
                             bool use_task_subfolders) const override {
-    updater::test::InstallScheduledTask(updater_scope_, task_name,
-                                        use_task_subfolders);
+    ADD_FAILURE() << "This test function is only called for the system scope";
   }
-  void IsScheduledTaskRegisteredFromMedium(
-      const std::string& task_name,
-      bool use_task_subfolders) const override {
-    updater::test::IsScheduledTaskRegisteredFromMedium(
-        updater_scope_, task_name, use_task_subfolders);
+  void IsScheduledTaskRegistered(bool run_elevated,
+                                 const std::string& task_name,
+                                 bool use_task_subfolders) const override {
+    ADD_FAILURE() << "This test function is only called for the system scope";
   }
-  void DeleteScheduledTask(const std::string& task_name,
+  void DeleteScheduledTask(bool run_elevated,
+                           const std::string& task_name,
                            bool use_task_subfolders) const override {
-    updater::test::DeleteScheduledTask(updater_scope_, task_name,
-                                       use_task_subfolders);
+    ADD_FAILURE() << "This test function is only called for the system scope";
   }
 #endif  // BUILDFLAG(IS_WIN)
 
