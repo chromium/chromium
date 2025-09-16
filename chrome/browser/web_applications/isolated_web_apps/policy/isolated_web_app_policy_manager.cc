@@ -525,8 +525,8 @@ void IsolatedWebAppPolicyManager::OnInstallTaskCompleted(
   install_tasks_.pop();
 
   if (install_result.type() != IwaInstallerResultType::kSuccess) {
-    DLOG(WARNING) << "Could not force-install IWA " << web_bundle_id
-                  << ". Error: " << install_result.ToDebugValue();
+    LOG(ERROR) << "Could not force-install IWA " << web_bundle_id
+               << ". Error: " << install_result.ToDebugValue();
   }
   current_process_log_.EnsureDict("install_results")
       ->Set(base::ToString(web_bundle_id), install_result.ToDebugValue());

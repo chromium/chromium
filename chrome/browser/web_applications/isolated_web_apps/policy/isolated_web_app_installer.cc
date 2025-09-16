@@ -194,6 +194,8 @@ void IwaInstaller::Start() {
     base::UmaHistogramEnumeration(
         kNonAllowlistedAppInstallationRejectedHistogramName,
         GetCurrentManagedSessionType());
+    LOG(ERROR) << "App " << install_options_.web_bundle_id().id()
+               << " installation failed: Not in the managed allowlist.";
     Finish(Result(Result::Type::kErrorAppNotInAllowlist,
                   "Not in the managed allowlist."));
     return;
