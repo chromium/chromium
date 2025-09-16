@@ -39,6 +39,9 @@ class BackButtonViewBinder {
                     button, model.get(BackButtonProperties.TINT_COLOR_LIST));
         } else if (key == BackButtonProperties.BACKGROUND_HIGHLIGHT) {
             button.setBackground(model.get(BackButtonProperties.BACKGROUND_HIGHLIGHT));
+        } else if (key == BackButtonProperties.PADDING) {
+            final var padding = model.get(BackButtonProperties.PADDING);
+            button.setPadding(padding.left, padding.top, padding.right, padding.bottom);
         } else if (key == BackButtonProperties.LONG_CLICK_LISTENER) {
             final var listener = model.get(BackButtonProperties.LONG_CLICK_LISTENER);
             final java.util.function.BooleanSupplier callback =

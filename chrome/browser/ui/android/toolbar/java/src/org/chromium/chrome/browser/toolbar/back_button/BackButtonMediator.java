@@ -168,6 +168,13 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
                         mInsets.right,
                         mInsets.bottom);
         mModel.set(BackButtonProperties.BACKGROUND_HIGHLIGHT, drawable);
+
+        // When setting the background of a view to an `InsetDrawable`, the padding of the view
+        // is automatically set to the insets of the `InsetDrawable`. However, a bug prevents the
+        // padding from being set if the insets are all 0. The workaround is to set the padding
+        // explicitly.
+        // https://crbug.com/442688217
+        mModel.set(BackButtonProperties.PADDING, mInsets);
     }
 
     public @DrawableRes int getBackgroundResForTesting() {

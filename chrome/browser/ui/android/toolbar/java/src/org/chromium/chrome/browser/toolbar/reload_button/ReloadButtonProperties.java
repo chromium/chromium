@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.core.graphics.Insets;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -37,6 +39,8 @@ class ReloadButtonProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Drawable> BACKGROUND_HIGHLIGHT =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Insets> PADDING =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<ColorStateList> TINT_LIST =
             new WritableObjectPropertyKey<>();
 
@@ -52,7 +56,8 @@ class ReloadButtonProperties {
                 IS_VISIBLE,
                 CONTENT_DESCRIPTION,
                 TINT_LIST,
-                BACKGROUND_HIGHLIGHT
+                BACKGROUND_HIGHLIGHT,
+                PADDING
             };
 
     private ReloadButtonProperties() {}
