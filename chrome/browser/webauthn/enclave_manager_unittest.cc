@@ -1566,7 +1566,7 @@ TEST_P(EnclaveManagerRenewPINTest, NotYetDeprecated) {
   manager_.RenewPIN(renew_future.GetCallback());
   EXPECT_TRUE(renew_future.Wait());
   EXPECT_FALSE(renew_future.Get());
-  EXPECT_EQ(LastPINRenewalTime(), initial_time);
+  EXPECT_GT(*LastPINRenewalTime(), *initial_time);
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
   histogram_tester.ExpectUniqueSample(

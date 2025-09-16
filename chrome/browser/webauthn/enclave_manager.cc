@@ -2553,8 +2553,12 @@ class EnclaveManager::StateMachine {
           base::UmaHistogramEnumeration(
               kPinRenewalFailureHistogram,
               PinRenewalFailureCause::kCohortNotYetDeprecated);
-          FIDO_LOG(ERROR) << "Not renewing PIN because the enclave reports the "
+          // This is the usual expected result of a PIN renewal.
+          FIDO_LOG(EVENT) << "Not renewing PIN because the enclave reports the "
                              "cohort is not yet deprecated";
+          user_->set_last_refreshed_pin_epoch_secs(
+              base::Time::Now().InSecondsFSinceUnixEpoch());
+          manager_->WriteState(&local_state_);
           return;
         case device::enclave::RequestError::kRecoveryKeyStoreDowngrade:
           base::UmaHistogramEnumeration(
