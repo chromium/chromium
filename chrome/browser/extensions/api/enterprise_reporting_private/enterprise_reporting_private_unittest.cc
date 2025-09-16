@@ -1009,11 +1009,9 @@ class EnterpriseReportingPrivateEnqueueRecordFunctionTest
   ::reporting::Record GetTestRecord() const {
     base::Value::Dict data;
     data.Set("TEST_KEY", base::Value("TEST_VALUE"));
-    std::string serialized_data;
-    DCHECK(base::JSONWriter::Write(data, &serialized_data));
 
     ::reporting::Record record;
-    record.set_data(serialized_data);
+    record.set_data(base::WriteJson(data).value());
     record.set_destination(::reporting::Destination::TELEMETRY_METRIC);
     record.set_timestamp_us(base::Time::Now().InMillisecondsSinceUnixEpoch() *
                             base::Time::kMicrosecondsPerMillisecond);
