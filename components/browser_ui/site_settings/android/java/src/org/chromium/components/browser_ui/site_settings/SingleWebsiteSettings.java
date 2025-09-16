@@ -265,7 +265,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
         private final WebsiteAddress mSiteAddress;
 
-        public SingleWebsitePermissionsPopulator(WebsiteAddress siteAddress) {
+        private SingleWebsitePermissionsPopulator(WebsiteAddress siteAddress) {
             mSiteAddress = siteAddress;
         }
 
@@ -343,6 +343,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setDivider(null);
 
         getListView().setItemAnimator(null);
     }
