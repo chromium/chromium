@@ -79,7 +79,6 @@ _X86_EMULATORS = {
 _GN_ARGS = [
     'target_os="android"',
     'use_remoteexec=true',
-    'use_siso=true',
 ]
 
 _NO_SERVER = [
