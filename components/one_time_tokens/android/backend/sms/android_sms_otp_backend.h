@@ -68,7 +68,7 @@ class AndroidSmsOtpBackend
 
   // True if OTP fetching request is received before it can be triggered (before
   // the downstream initialization is complete).
-  bool pending_fetch_request_ = false;
+  bool has_pending_fetch_request_ = false;
 
   // A bridge to communicate Java OTP fetcher replies back to the native code.
   std::unique_ptr<AndroidSmsOtpFetchReceiverBridgeInterface> receiver_bridge_;

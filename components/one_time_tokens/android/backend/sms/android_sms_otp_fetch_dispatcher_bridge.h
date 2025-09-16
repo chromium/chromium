@@ -21,7 +21,6 @@ class AndroidSmsOtpFetchDispatcherBridge
   // Factory function for creating the bridge.
   static std::unique_ptr<AndroidSmsOtpFetchDispatcherBridgeInterface> Create();
 
-  AndroidSmsOtpFetchDispatcherBridge();
   ~AndroidSmsOtpFetchDispatcherBridge() override;
 
   // AndroidSmsOtpFetchDispatcherBridgeInterface:
@@ -31,6 +30,8 @@ class AndroidSmsOtpFetchDispatcherBridge
   void RetrieveSmsOtp() override;
 
  private:
+  AndroidSmsOtpFetchDispatcherBridge();
+
   // The Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_
       GUARDED_BY_CONTEXT(thread_checker_);

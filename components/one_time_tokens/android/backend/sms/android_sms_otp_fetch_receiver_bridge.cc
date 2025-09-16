@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -18,7 +19,7 @@ namespace one_time_tokens {
 // static
 std::unique_ptr<AndroidSmsOtpFetchReceiverBridgeInterface>
 AndroidSmsOtpFetchReceiverBridge::Create() {
-  return std::make_unique<AndroidSmsOtpFetchReceiverBridge>();
+  return base::WrapUnique(new AndroidSmsOtpFetchReceiverBridge());
 }
 
 AndroidSmsOtpFetchReceiverBridge::AndroidSmsOtpFetchReceiverBridge() {

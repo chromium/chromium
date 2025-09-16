@@ -23,7 +23,6 @@ class AndroidSmsOtpFetchReceiverBridge
   // Factory function for creating the bridge.
   static std::unique_ptr<AndroidSmsOtpFetchReceiverBridgeInterface> Create();
 
-  AndroidSmsOtpFetchReceiverBridge();
   ~AndroidSmsOtpFetchReceiverBridge() override;
 
   // Returns reference to the Java JNI bridge object.
@@ -41,6 +40,8 @@ class AndroidSmsOtpFetchReceiverBridge
   void OnOtpValueRetrievalError(JNIEnv* env, jint api_error_code);
 
  private:
+  AndroidSmsOtpFetchReceiverBridge();
+
   // Method to be run on the correct sequence when value retrieval succeeds.
   void OnOtpValueRetrievedInternal(const std::string& otp_value);
 

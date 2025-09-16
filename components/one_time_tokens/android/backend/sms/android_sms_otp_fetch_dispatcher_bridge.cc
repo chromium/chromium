@@ -5,6 +5,9 @@
 #include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_dispatcher_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "base/memory/ptr_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/one_time_tokens/android/backend/sms/jni_headers/AndroidSmsOtpFetchDispatcherBridge_jni.h"
@@ -14,7 +17,7 @@ namespace one_time_tokens {
 // static
 std::unique_ptr<AndroidSmsOtpFetchDispatcherBridgeInterface>
 AndroidSmsOtpFetchDispatcherBridge::Create() {
-  return std::make_unique<AndroidSmsOtpFetchDispatcherBridge>();
+  return base::WrapUnique(new AndroidSmsOtpFetchDispatcherBridge());
 }
 
 AndroidSmsOtpFetchDispatcherBridge::AndroidSmsOtpFetchDispatcherBridge() {

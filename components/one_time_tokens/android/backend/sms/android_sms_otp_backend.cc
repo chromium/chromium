@@ -43,7 +43,7 @@ void AndroidSmsOtpBackend::RetrieveSmsOtp(
 
   if (!initialization_result_.has_value()) {
     // The downstream backend initialization is in progress, postpone the call.
-    pending_fetch_request_ = true;
+    has_pending_fetch_request_ = true;
     pending_callbacks_.push(std::move(callback));
     return;
   }
@@ -117,10 +117,10 @@ void AndroidSmsOtpBackend::OnBridgesInitComplete(bool init_success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   initialization_result_ = init_success;
 
-  if (init_success && pending_fetch_request_) {
+  if (init_success && has_pending_fetch_request_) {
     // A request was received while initialization was in progress. Now that
     // initialization is complete, trigger the request.
-    pending_fetch_request_ = false;
+    has_pending_fetch_request_ = false;
     StartDownstreamBackendRequest();
   }
 }
