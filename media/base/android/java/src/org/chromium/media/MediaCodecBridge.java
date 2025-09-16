@@ -10,7 +10,6 @@ import android.media.MediaCodec.CryptoInfo;
 import android.media.MediaCrypto;
 import android.media.MediaDrm;
 import android.media.MediaFormat;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -45,7 +44,6 @@ class MediaCodecBridge {
     private static final String KEY_CROP_TOP = "crop-top";
 
     protected MediaCodec mMediaCodec;
-    private final @BitrateAdjuster.Type int mBitrateAdjuster;
 
     private String mMediaCodecName = "unknown";
 
@@ -333,20 +331,6 @@ class MediaCodecBridge {
         }
 
         @CalledByNative("MediaFormatWrapper")
-        private int stride() {
-            // Missing stride means a 16x16 resolution alignment is required. See configureVideo().
-            if (!mFormat.containsKey(MediaFormat.KEY_STRIDE)) return width();
-            return mFormat.getInteger(MediaFormat.KEY_STRIDE);
-        }
-
-        @CalledByNative("MediaFormatWrapper")
-        private int yPlaneHeight() {
-            // Missing stride means a 16x16 resolution alignment is required. See configureVideo().
-            if (!mFormat.containsKey(MediaFormat.KEY_SLICE_HEIGHT)) return height();
-            return mFormat.getInteger(MediaFormat.KEY_SLICE_HEIGHT);
-        }
-
-        @CalledByNative("MediaFormatWrapper")
         private int colorStandard() {
             if (!mFormat.containsKey(MediaFormat.KEY_COLOR_STANDARD)) return -1;
             return mFormat.getInteger(MediaFormat.KEY_COLOR_STANDARD);
@@ -442,11 +426,9 @@ class MediaCodecBridge {
     }
     ;
 
-    MediaCodecBridge(
-            MediaCodec mediaCodec, @BitrateAdjuster.Type int bitrateAdjuster, boolean useAsyncApi) {
+    MediaCodecBridge(MediaCodec mediaCodec, boolean useAsyncApi) {
         assert mediaCodec != null;
         mMediaCodec = mediaCodec;
-        mBitrateAdjuster = bitrateAdjuster;
 
         try {
             mMediaCodecName = mediaCodec.getName();
@@ -742,17 +724,6 @@ class MediaCodecBridge {
         return null;
     }
 
-    @CalledByNative
-    private @Nullable MediaFormatWrapper getInputFormat() {
-        try {
-            MediaFormat format = mMediaCodec.getInputFormat();
-            if (format != null) return new MediaFormatWrapper(format);
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "Failed to get input format", e);
-        }
-        return null;
-    }
-
     /** Returns null if MediaCodec throws IllegalStateException. */
     @CalledByNative
     private @Nullable ByteBuffer getInputBuffer(int index) {
@@ -889,30 +860,6 @@ class MediaCodecBridge {
             return MediaCodecStatus.INPUT_SLOT_UNAVAILABLE;
         }
         return MediaCodecStatus.OK;
-    }
-
-    @CalledByNative
-    private void setVideoBitrate(int bps, int frameRate) {
-        int targetBps = BitrateAdjuster.getTargetBitrate(mBitrateAdjuster, bps, frameRate);
-        Bundle b = new Bundle();
-        b.putInt(MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, targetBps);
-        try {
-            mMediaCodec.setParameters(b);
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "Failed to set MediaCodec parameters", e);
-        }
-        Log.v(TAG, "setVideoBitrate: input %dbps@%d, targetBps %d", bps, frameRate, targetBps);
-    }
-
-    @CalledByNative
-    private void requestKeyFrameSoon() {
-        Bundle b = new Bundle();
-        b.putInt(MediaCodec.PARAMETER_KEY_REQUEST_SYNC_FRAME, 0);
-        try {
-            mMediaCodec.setParameters(b);
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "Failed to set MediaCodec parameters", e);
-        }
     }
 
     // Incoming |native| values are as defined in media/base/encryption_scheme.h. Translated values
@@ -1096,10 +1043,6 @@ class MediaCodecBridge {
         return mMediaCodec.dequeueOutputBuffer(info, timeoutUs);
     }
 
-    private static int alignDown(int size, int alignment) {
-        return size & ~(alignment - 1);
-    }
-
     @SuppressLint("NewApi")
     boolean configureVideo(
             MediaFormat format,
@@ -1126,42 +1069,6 @@ class MediaCodecBridge {
                 }
             }
 
-            // Aligned resolutions are only required for encoding.
-            if ((flags & MediaCodec.CONFIGURE_FLAG_ENCODE) == 0) return true;
-
-            // Non 16x16 aligned resolutions don't work well with the MediaCodec encoder
-            // unfortunately, see https://crbug.com/1084702 for details. It seems they
-            // only work when the stride and slice height information are provided.
-            boolean requireAlignedResolution =
-                    !inputFormat.containsKey(MediaFormat.KEY_STRIDE)
-                            || !inputFormat.containsKey(MediaFormat.KEY_SLICE_HEIGHT);
-
-            if (!requireAlignedResolution) return true;
-
-            int currentWidth = inputFormat.getInteger(MediaFormat.KEY_WIDTH);
-            int alignedWidth = alignDown(currentWidth, 16);
-
-            int currentHeight = inputFormat.getInteger(MediaFormat.KEY_HEIGHT);
-            int alignedHeight = alignDown(currentHeight, 16);
-
-            if (alignedHeight == 0 || alignedWidth == 0) {
-                Log.e(
-                        TAG,
-                        "MediaCodec requires 16x16 alignment, which is not possible for: "
-                                + currentWidth
-                                + "x"
-                                + currentHeight);
-                return false;
-            }
-
-            if (alignedWidth == currentWidth && alignedHeight == currentHeight) return true;
-
-            // We must reconfigure the MediaCodec now since setParameters() doesn't work
-            // consistently across devices and versions of Android.
-            mMediaCodec.reset();
-            format.setInteger(MediaFormat.KEY_WIDTH, alignedWidth);
-            format.setInteger(MediaFormat.KEY_HEIGHT, alignedHeight);
-            mMediaCodec.configure(format, surface, crypto, flags);
             return true;
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Cannot configure the video codec, wrong format or surface", e);

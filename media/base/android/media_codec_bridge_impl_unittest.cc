@@ -28,7 +28,6 @@
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_frame.h"
-#include "media/parsers/h264_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 
@@ -170,123 +169,6 @@ void DecodeMediaFrame(MediaCodecBridge* media_codec,
     input_pts += base::Microseconds(33000);
     timestamp = new_timestamp;
   }
-}
-
-// Performs basic, codec-specific sanity checks on the encoded H264 frame:
-// - as to key frames, correct sequences of H.264 NALUs (SPS before PPS and
-//   before slices).
-// - as to non key frames, contain no SPS/PPS infront.
-void H264Validate(base::span<const uint8_t> frame) {
-  H264Parser h264_parser;
-  h264_parser.SetStream(frame.data(), frame.size());
-  bool seen_sps = false;
-  bool seen_pps = false;
-
-  while (1) {
-    H264NALU nalu;
-    H264Parser::Result result;
-
-    result = h264_parser.AdvanceToNextNALU(&nalu);
-    if (result == H264Parser::kEOStream) {
-      break;
-    }
-    ASSERT_THAT(result, H264Parser::kOk);
-
-    switch (nalu.nal_unit_type) {
-      case H264NALU::kIDRSlice: {
-        ASSERT_TRUE(seen_sps);
-        ASSERT_TRUE(seen_pps);
-        break;
-      }
-
-      case H264NALU::kNonIDRSlice: {
-        ASSERT_FALSE(seen_sps);
-        ASSERT_FALSE(seen_pps);
-        break;
-      }
-
-      case H264NALU::kSPS: {
-        int sps_id;
-        ASSERT_EQ(H264Parser::kOk, h264_parser.ParseSPS(&sps_id));
-        seen_sps = true;
-        break;
-      }
-
-      case H264NALU::kPPS: {
-        ASSERT_TRUE(seen_sps);
-        int pps_id;
-        ASSERT_EQ(H264Parser::kOk, h264_parser.ParsePPS(&pps_id));
-        seen_pps = true;
-        break;
-      }
-
-      default:
-        break;
-    }
-  }
-}
-
-void EncodeMediaFrame(MediaCodecBridge* media_codec,
-                      const uint8_t* src_data,
-                      const int width,
-                      const int height,
-                      const base::TimeDelta input_timestamp) {
-  int input_buf_index = -1;
-  MediaCodecResult result =
-      media_codec->DequeueInputBuffer(InfiniteTimeOut(), &input_buf_index);
-  ASSERT_TRUE(result.is_ok());
-
-  auto buffer = media_codec->GetInputBuffer(input_buf_index);
-  ASSERT_TRUE(!buffer.empty());
-
-  int stride, yplane_height;
-  gfx::Size encoded_size;
-  result = media_codec->GetInputFormat(&stride, &yplane_height, &encoded_size);
-  ASSERT_TRUE(result.is_ok());
-
-  const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
-      PIXEL_FORMAT_NV12, VideoFrame::Plane::kUV, encoded_size);
-  const size_t src_size =
-      // size of Y-plane plus padding till UV-plane
-      stride * yplane_height +
-      // size of all UV-plane lines but the last one
-      (uv_plane_size.height() - 1) * stride +
-      // size of the very last line in UV-plane (it's not padded to full stride)
-      uv_plane_size.width() * 2;
-  ASSERT_LE(src_size, buffer.size());
-
-  // Convert to NV12 because H264 encoder is created with color format
-  // COLOR_FormatYUV420SemiPlanar, both in main code path and unittest here.
-  bool converted = !libyuv::I420ToNV12(
-      src_data, width, src_data + width * height, width / 2,
-      src_data + width * height * 5 / 4, width / 2, buffer.data(), stride,
-      buffer.data() + stride * yplane_height, stride, encoded_size.width(),
-      encoded_size.height());
-  ASSERT_TRUE(converted);
-
-  result = media_codec->QueueFilledInputBuffer(input_buf_index, src_size,
-                                               input_timestamp);
-  ASSERT_TRUE(result.is_ok());
-
-  int32_t buf_index = -1;
-  size_t offset = 0;
-  size_t output_size;
-  bool key_frame = false;
-  do {
-    result = media_codec->DequeueOutputBuffer(InfiniteTimeOut(), &buf_index,
-                                              &offset, &output_size, nullptr,
-                                              nullptr, &key_frame);
-    EXPECT_NE(result.code(), MediaCodecResult::Codes::kError);
-  } while (buf_index < 0);
-  ASSERT_TRUE(result.is_ok() && buf_index >= 0);
-
-  auto output_data = base::HeapArray<uint8_t>::Uninit(output_size);
-  result = media_codec->CopyFromOutputBuffer(buf_index, offset, output_data);
-  ASSERT_TRUE(result.is_ok());
-
-  H264Validate(output_data);
-
-  media_codec->ReleaseOutputBuffer(buf_index, false);
 }
 
 AudioDecoderConfig NewAudioConfig(
@@ -441,75 +323,6 @@ TEST(MediaCodecBridgeTest, CreateUnsupportedCodec) {
   config.codec_type = CodecType::kAny;
   config.initial_expected_coded_size = gfx::Size(320, 240);
   EXPECT_THAT(MediaCodecBridgeImpl::CreateVideoDecoder(config), IsNull());
-}
-
-// Test MediaCodec HW H264 encoding and validate the format of encoded frames.
-TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
-  SKIP_TEST_IF_HW_H264_IS_NOT_AVAILABLE();
-
-  const int width = 640;
-  const int height = 360;
-  const int bit_rate = 300000;
-  const int frame_rate = 30;
-  const int i_frame_interval = 20;
-  const std::set<int> supported_color_formats =
-      MediaCodecUtil::GetEncoderColorFormats("video/avc");
-
-  int color_format;
-  if (supported_color_formats.count(COLOR_FORMAT_YUV420_SEMIPLANAR) > 0) {
-    color_format = COLOR_FORMAT_YUV420_SEMIPLANAR;
-  } else if (supported_color_formats.count(COLOR_FORMAT_YUV420_PLANAR) > 0) {
-    color_format = COLOR_FORMAT_YUV420_PLANAR;
-  } else {
-    VLOG(0) << "Could not run test - YUV420_PLANAR and YUV420_SEMIPLANAR "
-               "unavailable for h264 encode.";
-    return;
-  }
-
-  std::unique_ptr<MediaCodecBridge> media_codec(
-      MediaCodecBridgeImpl::CreateVideoEncoder(
-          VideoCodec::kH264, gfx::Size(width, height), bit_rate, frame_rate,
-          i_frame_interval, color_format));
-  ASSERT_THAT(media_codec, NotNull());
-
-  const char kSrcFileName[] = "bali_640x360_P420.yuv";
-  base::FilePath src_file = GetTestDataFilePath(kSrcFileName);
-  std::optional<int64_t> src_file_size = base::GetFileSize(src_file);
-  ASSERT_TRUE(src_file_size.has_value());
-
-  const VideoPixelFormat kInputFormat = PIXEL_FORMAT_I420;
-  const int frame_size = static_cast<int>(
-      VideoFrame::AllocationSize(kInputFormat, gfx::Size(width, height)));
-  ASSERT_TRUE(frame_size > 0);
-  ASSERT_TRUE(src_file_size.value() % frame_size == 0U);
-
-  const int num_frames = src_file_size.value() / frame_size;
-  base::File src(src_file, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  auto frame_data = base::HeapArray<uint8_t>::Uninit(frame_size);
-  ASSERT_THAT(
-      src.Read(0, reinterpret_cast<char*>(frame_data.data()), frame_size),
-      frame_size);
-
-  // A monotonically-growing value.
-  base::TimeDelta input_timestamp;
-
-  // Src_file contains 1 frames. Encode it 3 times.
-  for (int frame = 0; frame < num_frames && frame < 3; frame++) {
-    input_timestamp +=
-        base::Microseconds(base::Time::kMicrosecondsPerSecond / frame_rate);
-    EncodeMediaFrame(media_codec.get(), frame_data.data(), width, height,
-                     input_timestamp);
-  }
-
-  // Request key frame and encode 3 more frames. The second key frame should
-  // also contain SPS/PPS NALUs.
-  media_codec->RequestKeyFrameSoon();
-  for (int frame = 0; frame < num_frames && frame < 3; frame++) {
-    input_timestamp +=
-        base::Microseconds(base::Time::kMicrosecondsPerSecond / frame_rate);
-    EncodeMediaFrame(media_codec.get(), frame_data.data(), width, height,
-                     input_timestamp);
-  }
 }
 
 }  // namespace media

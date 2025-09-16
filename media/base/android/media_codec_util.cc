@@ -107,13 +107,6 @@ static jboolean JNI_MediaCodecUtil_IsDecoderSupportedForDevice(
   return IsDecoderSupportedByDevice(mime_type);
 }
 
-static bool IsEncoderSupportedByDevice(const std::string& android_mime_type) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_mime =
-      ConvertUTF8ToJavaString(env, android_mime_type);
-  return Java_MediaCodecUtil_isEncoderSupportedByDevice(env, j_mime);
-}
-
 static bool CanDecodeInternal(const std::string& mime, bool is_secure) {
   if (mime.empty())
     return false;
@@ -195,34 +188,8 @@ std::string MediaCodecUtil::CodecToAndroidMimeType(VideoCodec codec) {
 }
 
 // static
-std::set<int> MediaCodecUtil::GetEncoderColorFormats(
-    const std::string& mime_type) {
-  std::set<int> color_formats;
-
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_mime = ConvertUTF8ToJavaString(env, mime_type);
-  ScopedJavaLocalRef<jintArray> j_color_format_array =
-      Java_MediaCodecUtil_getEncoderColorFormatsForMime(env, j_mime);
-
-  if (!j_color_format_array.is_null()) {
-    std::vector<int> formats;
-    JavaIntArrayToIntVector(env, j_color_format_array, &formats);
-    color_formats = std::set<int>(formats.begin(), formats.end());
-  }
-
-  return color_formats;
-}
-
-// static
 bool MediaCodecUtil::IsVp8DecoderAvailable() {
   return IsDecoderSupportedByDevice(kVp8MimeType);
-}
-
-// static
-bool MediaCodecUtil::IsVp8EncoderAvailable() {
-  // Currently the vp8 encoder and decoder blocklists cover the same devices,
-  // but we have a second method for clarity in future issues.
-  return IsVp8DecoderAvailable();
 }
 
 // static
@@ -383,11 +350,6 @@ bool MediaCodecUtil::CanDecode(VideoCodec codec, bool is_secure) {
 // static
 bool MediaCodecUtil::CanDecode(AudioCodec codec) {
   return CanDecodeInternal(CodecToAndroidMimeType(codec), false);
-}
-
-// static
-bool MediaCodecUtil::IsH264EncoderAvailable() {
-  return IsEncoderSupportedByDevice(kAvcMimeType);
 }
 
 // static

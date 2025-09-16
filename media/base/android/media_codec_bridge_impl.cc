@@ -476,34 +476,6 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
 }
 
 // static
-std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
-    VideoCodec codec,
-    const gfx::Size& size,
-    int bit_rate,
-    int frame_rate,
-    int i_frame_interval,
-    int color_format) {
-  const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
-  if (mime.empty()) {
-    return nullptr;
-  }
-
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_mime = ConvertUTF8ToJavaString(env, mime);
-  ScopedJavaGlobalRef<jobject> j_bridge(
-      Java_MediaCodecBridgeBuilder_createVideoEncoder(
-          env, j_mime, size.width(), size.height(), kBitrateModeCBR, bit_rate,
-          frame_rate, i_frame_interval, color_format));
-
-  if (j_bridge.is_null()) {
-    return nullptr;
-  }
-
-  return base::WrapUnique(new MediaCodecBridgeImpl(
-      CodecType::kAny, std::nullopt, std::move(j_bridge)));
-}
-
-// static
 void MediaCodecBridgeImpl::SetupCallbackHandlerForTesting() {
   JNIEnv* env = AttachCurrentThread();
   Java_MediaCodecBridge_createCallbackHandlerForTesting(env);
@@ -680,22 +652,6 @@ MediaCodecResult MediaCodecBridgeImpl::GetOutputColorSpace(
   return OkStatus();
 }
 
-MediaCodecResult MediaCodecBridgeImpl::GetInputFormat(int* stride,
-                                                      int* slice_height,
-                                                      gfx::Size* encoded_size) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> result =
-      Java_MediaCodecBridge_getInputFormat(env, j_bridge_);
-  if (!result) {
-    return {MediaCodecResult::Codes::kError, "Failed to get input format."};
-  }
-
-  *stride = Java_MediaFormatWrapper_stride(env, result);
-  *slice_height = Java_MediaFormatWrapper_yPlaneHeight(env, result);
-  *encoded_size = gfx::Size(Java_MediaFormatWrapper_width(env, result),
-                            Java_MediaFormatWrapper_height(env, result));
-  return OkStatus();
-}
 MediaCodecResult MediaCodecBridgeImpl::QueueInputBuffer(
     int index,
     base::span<const uint8_t> data,
@@ -958,16 +914,6 @@ bool MediaCodecBridgeImpl::IsSoftwareCodec() {
 bool MediaCodecBridgeImpl::SetSurface(const JavaRef<jobject>& surface) {
   JNIEnv* env = AttachCurrentThread();
   return Java_MediaCodecBridge_setSurface(env, j_bridge_, surface);
-}
-
-void MediaCodecBridgeImpl::SetVideoBitrate(int bps, int frame_rate) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_MediaCodecBridge_setVideoBitrate(env, j_bridge_, bps, frame_rate);
-}
-
-void MediaCodecBridgeImpl::RequestKeyFrameSoon() {
-  JNIEnv* env = AttachCurrentThread();
-  Java_MediaCodecBridge_requestKeyFrameSoon(env, j_bridge_);
 }
 
 CodecType MediaCodecBridgeImpl::GetCodecType() const {

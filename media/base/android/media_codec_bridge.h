@@ -148,19 +148,6 @@ class MEDIA_EXPORT MediaCodecBridge {
   virtual MediaCodecResult GetOutputColorSpace(
       gfx::ColorSpace* color_space) = 0;
 
-  // Fills in |stride| with required Y-plane stride in the encoder's input
-  // buffer. Returns kOk on success, with |stride| initialized, or
-  // kError with |stride| unmodified otherwise.
-  // Fills in |slice_height| with required Y-plane height in the encoder's input
-  // buffer. (i.e. the number of rows that must be skipped to get from the top
-  // of the Y plane to the top of the UV plane in the bytebuffer.)
-  // Fills in |encoded_size| with actual size the encoder was configured for,
-  // which may differ if the codec requires 16x16 aligned resolutions.
-  // (see MediaFormat#KEY_STRIDE for more details)
-  virtual MediaCodecResult GetInputFormat(int* stride,
-                                          int* slice_height,
-                                          gfx::Size* encoded_size) = 0;
-
   // Submits a byte array to the given input buffer. Call this after getting an
   // available buffer from DequeueInputBuffer(). `data` will be copied into the
   // input buffer.
@@ -230,12 +217,6 @@ class MEDIA_EXPORT MediaCodecBridge {
   // Changes the output surface for the MediaCodec. May only be used on API
   // level 23 and higher (Marshmallow).
   virtual bool SetSurface(const base::android::JavaRef<jobject>& surface) = 0;
-
-  // Sets the video encoder target bitrate and framerate.
-  virtual void SetVideoBitrate(int bps, int frame_rate) = 0;
-
-  // Requests that the video encoder insert a key frame.
-  virtual void RequestKeyFrameSoon() = 0;
 
   // When the MediaCodec has been configured in async mode, this is called when
   // input or output buffers are available.

@@ -125,8 +125,6 @@ component("gpu") {
 
   if (is_android) {
     sources += [
-      "android/android_video_encode_accelerator.cc",
-      "android/android_video_encode_accelerator.h",
       "android/android_video_surface_chooser.cc",
       "android/android_video_surface_chooser.h",
       "android/android_video_surface_chooser_impl.cc",
