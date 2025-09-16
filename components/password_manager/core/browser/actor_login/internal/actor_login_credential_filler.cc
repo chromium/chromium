@@ -153,10 +153,10 @@ void ActorLoginCredentialFiller::AttemptLogin(
       continue;
     }
 
-    // Prefer filling the primary main frame form if one exists.
+    // Prefer filling the primary main frame form if one exists, but
+    // also prefer more recently-parsed forms.
     if (manager->GetDriver()->IsInPrimaryMainFrame()) {
       signin_form_manager = manager.get();
-      break;
     }
 
     // Otherwise, store this form manager and look to see if there is a primary
