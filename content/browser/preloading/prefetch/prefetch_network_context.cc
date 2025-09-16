@@ -30,6 +30,14 @@
 
 namespace content {
 
+namespace {
+
+// Enable Zstd for cross-site prefetch (crbug.com/444393104).
+BASE_FEATURE(ZstdForCrossSiteSpeculationRulesPrefetch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
 PrefetchNetworkContext::PrefetchNetworkContext(
     bool use_isolated_network_context,
     const PrefetchType& prefetch_type,
@@ -92,7 +100,15 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
 
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+
+  // These should be synced with
+  // `SystemNetworkContextManager::ConfigureDefaultNetworkContextParams()`.
+  // TODO(crbug.com/444335342): Unify NetworkContextParams setup with other
+  // places.
+  context_params->enable_zstd =
+      base::FeatureList::IsEnabled(kZstdForCrossSiteSpeculationRulesPrefetch);
   context_params->user_agent = embedder_support::GetUserAgent();
+
   // The verifier created here does not have the same parameters as used in the
   // profile (where additional parameters are added in
   // chrome/browser/net/profile_network_context_service.h
