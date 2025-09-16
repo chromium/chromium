@@ -713,11 +713,6 @@ void CompleteSigninFlow() {
 // Tests that intents are handled when sign-in is done from the regular sign-in
 // prompt, where the forced sign-in prompt is skipped.
 - (void)testHandlingIntentWhenSigninFromRegularPrompt {
-  // TODO(crbug.com/439554897): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   // Serve the test page locally using the internal embedded server.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&PageHttpResponse));
