@@ -67,10 +67,18 @@ DataSharingNetworkLoaderImpl::CreateEndpointFetcher(
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
   return std::make_unique<EndpointFetcher>(
-      url_loader_factory_, kOauthConsumerName, url,
-      net::HttpRequestHeaders::kPostMethod, kRequestContentType, scopes,
-      kTimeout, post_data, annotation_tag, identity_manager_,
-      signin::ConsentLevel::kSignin);
+      url_loader_factory_, identity_manager_,
+      EndpointFetcher::RequestParams::Builder(
+          endpoint_fetcher::HttpMethod::kPost, annotation_tag)
+          .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetConsentLevel(signin::ConsentLevel::kSignin)
+          .SetContentType(kRequestContentType)
+          .SetTimeout(kTimeout)
+          .SetUrl(url)
+          .SetOauthScopes(scopes)
+          .SetOauthConsumerName(kOauthConsumerName)
+          .SetPostData(post_data)
+          .Build());
 }
 
 void DataSharingNetworkLoaderImpl::OnDownloadComplete(

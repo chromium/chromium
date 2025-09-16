@@ -340,10 +340,18 @@ void PreviewServerProxy::GetSharedDataPreview(
 std::unique_ptr<EndpointFetcher> PreviewServerProxy::CreateEndpointFetcher(
     const GURL& url) {
   return std::make_unique<EndpointFetcher>(
-      url_loader_factory_, kOAuthName, url, net::HttpRequestHeaders::kGetMethod,
-      kContentType, std::vector<std::string>{kOAuthScope}, kTimeout,
-      /* post_data= */ std::string(), kGetSharedDataPreviewTrafficAnnotation,
-      identity_manager_, signin::ConsentLevel::kSignin);
+      url_loader_factory_, identity_manager_,
+      EndpointFetcher::RequestParams::Builder(
+          endpoint_fetcher::HttpMethod::kGet,
+          kGetSharedDataPreviewTrafficAnnotation)
+          .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetConsentLevel(signin::ConsentLevel::kSignin)
+          .SetContentType(kContentType)
+          .SetTimeout(kTimeout)
+          .SetUrl(url)
+          .SetOauthScopes(std::vector<std::string>{kOAuthScope})
+          .SetOauthConsumerName(kOAuthName)
+          .Build());
 }
 
 void PreviewServerProxy::HandleServerResponse(
