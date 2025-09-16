@@ -1422,7 +1422,6 @@ crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 # ====== Style team owned tests to here ======
 
 # Failing WPT tests with the RunSnapshotPostLayoutStateSteps flag enabled
-crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/css/css-anchor-position/anchor-scroll-js-expose.html [ Failure Pass ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/animation-trigger/animation-trigger-animation-target-removed-listener.tentative.html [ Pass Timeout ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/animation-trigger/animation-trigger-timeline-subject-removed.tentative.html [ Failure Pass ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/css/scroll-timeline-multi-pass.tentative.html [ Failure ]
