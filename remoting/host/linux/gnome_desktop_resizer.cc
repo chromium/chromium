@@ -83,18 +83,19 @@ inline bool IsSameScale(double s1, double s2) {
 // Note: this method only adds a monitor for the purpose of layout calculation.
 // DO NOT call ApplyMonitorsConfig with the updated `config`.
 void AddMonitorForLayoutCalculation(GnomeDisplayConfig& config,
-                                    const protocol::VideoTrackLayout& track) {
+                                    const webrtc::DesktopVector& position,
+                                    const ScreenResolution& resolution) {
   // We can't use the screen_id as the key, since it may be empty.
   GnomeDisplayConfig::MonitorInfo& info =
       config.monitors[base::NumberToString(config.monitors.size())];
-  info.x = track.position_x();
-  info.y = track.position_y();
-  info.scale = track.x_dpi() == 0.0
+  info.x = position.x();
+  info.y = position.y();
+  info.scale = resolution.dpi().x() == 0.0
                    ? 1.0
-                   : static_cast<double>(track.x_dpi()) / kDefaultDpi;
+                   : static_cast<double>(resolution.dpi().x()) / kDefaultDpi;
   GnomeDisplayConfig::MonitorMode mode;
-  mode.width = track.width();
-  mode.height = track.height();
+  mode.width = resolution.dimensions().width();
+  mode.height = resolution.dimensions().height();
   mode.is_current = true;
   info.modes.push_back(mode);
 }
@@ -267,7 +268,7 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
       SetResolutionAndPosition(screen_resolution, position, track.screen_id());
     }
     AddMonitorForLayoutCalculation(display_config_for_layout_calculation,
-                                   track);
+                                   position, screen_resolution);
   }
   preferred_layout_ = display_config_for_layout_calculation.GetLayoutInfo();
   MaybeDelayClearPreferredConfig();
