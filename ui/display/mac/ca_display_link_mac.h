@@ -30,7 +30,7 @@ class CADisplayLinkMac : public DisplayLinkMac {
                                base::TimeDelta& max_interval,
                                base::TimeDelta& granularity) const override;
 
-  void SetPreferredInterval(base::TimeDelta interval) override;
+  void SetPreferredInterval(base::TimeDelta interval) override {}
 
   // Use the same minimum, maximum and preferred frame rate for the fixed frame
   // rate rerquest. If different minimum and maximum frame rates are set, the
@@ -38,7 +38,7 @@ class CADisplayLinkMac : public DisplayLinkMac {
   // other animation sources.
   void SetPreferredIntervalRange(base::TimeDelta min_interval,
                                  base::TimeDelta max_interval,
-                                 base::TimeDelta preferred_interval) override;
+                                 base::TimeDelta preferred_interval) override {}
 
   base::TimeTicks GetCurrentTime() const override;
 
@@ -51,9 +51,6 @@ class CADisplayLinkMac : public DisplayLinkMac {
 
   // This is called by VSyncCallbackMac's destructor.
   void UnregisterCallback(VSyncCallbackMac* callback);
-
-  // Return a nearest refresh interval that is supported by CADisplaylink.
-  base::TimeDelta AdjustedToSupportedInterval(base::TimeDelta interval);
 
   // CADisplayLink callback from ObjCState.display_link.
   void Step();

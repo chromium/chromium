@@ -123,95 +123,11 @@ void CADisplayLinkMac::GetRefreshIntervalRange(
     base::TimeDelta& granularity) const {
   NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
   min_interval = base::Seconds(1) * screen.minimumRefreshInterval;
-  max_interval = base::Seconds(1) * screen.maximumRefreshInterval;
-  granularity = base::Seconds(1) * screen.displayUpdateGranularity;
-}
-
-void CADisplayLinkMac::SetPreferredInterval(base::TimeDelta interval) {
-  return SetPreferredIntervalRange(interval, interval, interval);
-}
-
-void CADisplayLinkMac::SetPreferredIntervalRange(
-    base::TimeDelta min_interval,
-    base::TimeDelta max_interval,
-    base::TimeDelta preferred_interval) {
-  if (@available(macos 14.0, *)) {
-    // Sanity check for the order.
-    DCHECK(preferred_interval <= max_interval &&
-           preferred_interval >= min_interval);
-
-    // The |preferred_interval| must be a supported interval if a fixed refresh
-    // rate is requested, otherwise CVDisplayLink terminates app due to uncaught
-    // exception 'NSInvalidArgumentException', reason: 'invalid range'.
-    if (min_interval == max_interval && min_interval == preferred_interval) {
-      preferred_interval = AdjustedToSupportedInterval(preferred_interval);
-    }
-
-    NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
-    base::TimeDelta ns_screen_min_interval =
-        base::Seconds(1) * screen.minimumRefreshInterval;
-    base::TimeDelta ns_screen_max_interval =
-        base::Seconds(1) * screen.maximumRefreshInterval;
-
-    // Cap the intervals to the upper bound and the lower bound.
-    if (max_interval > ns_screen_max_interval) {
-      max_interval = ns_screen_max_interval;
-    }
-    if (min_interval < ns_screen_min_interval) {
-      min_interval = ns_screen_min_interval;
-    }
-    if (preferred_interval > max_interval) {
-      preferred_interval = max_interval;
-    }
-    if (preferred_interval < min_interval) {
-      preferred_interval = min_interval;
-    }
-
-    // No interval changes.
-    if (preferred_interval_ == preferred_interval &&
-        max_interval_ == max_interval && min_interval_ == min_interval) {
-      return;
-    }
-
-    min_interval_ = min_interval;
-    max_interval_ = max_interval;
-    preferred_interval_ = preferred_interval;
-
-    float min_refresh_rate = base::Seconds(1) / max_interval;
-    float max_refresh_rate = base::Seconds(1) / min_interval;
-    float preferred_refresh_rate = base::Seconds(1) / preferred_interval;
-    [objc_state_->display_link
-        setPreferredFrameRateRange:CAFrameRateRange{
-                                       .minimum = min_refresh_rate,
-                                       .maximum = max_refresh_rate,
-                                       .preferred = preferred_refresh_rate}];
-  }
-}
-
-base::TimeDelta CADisplayLinkMac::AdjustedToSupportedInterval(
-    base::TimeDelta interval) {
-  base::TimeDelta min_interval;
-  base::TimeDelta max_interval;
-  base::TimeDelta granularity;
-  GetRefreshIntervalRange(min_interval, max_interval, granularity);
-
-  // The screen supports any update rate between the minimum and maximum refresh
-  // intervals if granularity is 0.
-  if (granularity.is_zero()) {
-    return interval;
-  }
-
-  auto multiplier = std::round((interval - min_interval) / granularity);
-  base::TimeDelta target_interval = min_interval + granularity * multiplier;
-
-  if (target_interval <= min_interval) {
-    return min_interval;
-  }
-  if (target_interval >= max_interval) {
-    return max_interval;
-  }
-
-  return target_interval;
+  // No support for dynamic refresh range for now. Just return the minimum
+  // interval instead of using screen.maximumRefreshInterval and
+  // screen.displayUpdateGranularity.
+  max_interval = min_interval;
+  granularity = min_interval;
 }
 
 // static
@@ -237,14 +153,6 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplayOnCurrentThread(
 
     // Pause CADisplaylink callback until a request for start.
     objc_state->display_link.paused = YES;
-
-    // Set the default refresh rate
-    float refresh_rate = 1.0 / screen.minimumRefreshInterval;
-
-    objc_state->display_link.preferredFrameRateRange =
-        CAFrameRateRange{.minimum = refresh_rate,
-                         .maximum = refresh_rate,
-                         .preferred = refresh_rate};
 
     // This display link interface requires the task executor of the current
     // thread (CrGpuMain or VizCompositorThread) to run with
