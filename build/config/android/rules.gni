@@ -1567,7 +1567,7 @@ if (!is_robolectric && enable_java_templates) {
         "--input-zips=@FileArg($_rebased_build_config:dist_classpath)",
       ]
 
-      _excludes = []
+      _excludes = [ "module-info.class" ]
       if (defined(invoker.jar_excluded_patterns)) {
         _excludes += invoker.jar_excluded_patterns
       }
