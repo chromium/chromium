@@ -172,13 +172,13 @@ bool ParseBinaryListAccountsData(const std::string& data,
     ListedAccount listed_account;
     listed_account.email = CanonicalizeEmail(account.display_email());
     listed_account.gaia_id = GaiaId(account.obfuscated_id());
-    listed_account.valid = (
-        // Assume the account is valid if unspecified for backcompat.
-        account.has_valid_session() ? account.valid_session() : true);
+    // Assume the account is valid if unspecified for backcompat.
+    listed_account.valid =
+        !account.has_valid_session() || account.valid_session();
     listed_account.signed_out =
-        (account.has_signed_out() ? account.signed_out() : false);
+        account.has_signed_out() && account.signed_out();
     listed_account.verified =
-        (account.has_is_verified() ? account.is_verified() : true);
+        !account.has_is_verified() || account.is_verified();
     listed_account.raw_email = account.display_email();
     if (accounts) {
       accounts->push_back(std::move(listed_account));

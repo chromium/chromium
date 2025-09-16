@@ -621,9 +621,8 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
       std::unique_ptr<net::CanonicalCookie> cookie =
           net::CanonicalCookie::CreateSanitizedCookie(
               resolution_url, *name, *value, *domain, path ? *path : "/",
-              time_now, expiration_time, time_now,
-              is_secure ? *is_secure : false,
-              is_http_only ? *is_http_only : false,
+              time_now, expiration_time, time_now, (is_secure && *is_secure),
+              (is_http_only && *is_http_only),
               net::StringToCookieSameSite(same_site ? *same_site : "").first,
               net::COOKIE_PRIORITY_DEFAULT,
               /* partition_key */ std::nullopt, /*status=*/nullptr);
