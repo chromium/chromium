@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareParams;
 
@@ -66,7 +67,7 @@ public interface ShareDelegate {
      * @param shareDirectly If this share should be sent directly to the last used share target.
      * @param shareOrigin Where the share originated.
      */
-    void share(Tab currentTab, boolean shareDirectly, @ShareOrigin int shareOrigin);
+    void share(@Nullable Tab currentTab, boolean shareDirectly, @ShareOrigin int shareOrigin);
 
     /** Check if the custom share sheet is enabled. */
     boolean isSharingHubEnabled();

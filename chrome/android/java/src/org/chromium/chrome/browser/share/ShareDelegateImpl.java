@@ -180,22 +180,23 @@ public class ShareDelegateImpl implements ShareDelegate {
 
     // ShareDelegate implementation.
     @Override
-    public void share(Tab currentTab, boolean shareDirectly, @ShareOrigin int shareOrigin) {
+    public void share(
+            @Nullable Tab currentTab, boolean shareDirectly, @ShareOrigin int shareOrigin) {
         mShareStartTime = System.currentTimeMillis();
         onShareSelected(currentTab, shareOrigin, shareDirectly);
     }
 
     /**
-     * Triggered when the share menu item is selected.
-     * This creates and shows a share intent picker dialog or starts a share intent directly.
+     * Triggered when the share menu item is selected. This creates and shows a share intent picker
+     * dialog or starts a share intent directly.
      *
      * @param currentTab The current tab.
      * @param shareOrigin Where the share originated.
      * @param shareDirectly Whether it should share directly with the activity that was most
-     * recently used to share.
+     *     recently used to share.
      */
     private void onShareSelected(
-            Tab currentTab, @ShareOrigin int shareOrigin, boolean shareDirectly) {
+            @Nullable Tab currentTab, @ShareOrigin int shareOrigin, boolean shareDirectly) {
         if (currentTab == null) return;
 
         triggerShare(currentTab, shareOrigin, shareDirectly);
