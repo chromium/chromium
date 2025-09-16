@@ -17,6 +17,8 @@ source_set("web_navigation") {
     "web_navigation_api_constants.h",
     "web_navigation_api_helpers.cc",
     "web_navigation_api_helpers.h",
+    "web_navigation_tab_observer.cc",
+    "web_navigation_tab_observer.h",
   ]
 
   public_deps = [
