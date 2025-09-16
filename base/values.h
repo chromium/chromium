@@ -279,6 +279,10 @@ class BASE_EXPORT GSL_OWNER DictValue {
   // Returns the number of entries in this dictionary.
   size_t size() const;
 
+  // Increase the capacity of the backing container, but does not change the
+  // size. Assume all existing iterators will be invalidated.
+  void reserve(size_t capacity);
+
   // Returns an iterator to the first entry in this dictionary.
   iterator begin();
   const_iterator begin() const;
@@ -357,6 +361,10 @@ class BASE_EXPORT GSL_OWNER DictValue {
   Value* Set(std::string_view key, BlobStorage&& value) &;
   Value* Set(std::string_view key, DictValue&& value) &;
   Value* Set(std::string_view key, ListValue&& value) &;
+
+  // Same as above, but more efficient if the new key is greater than all
+  // pre-existing keys in the dictionary.
+  Value* Set_HintAtEnd(std::string_view key, Value&& value) &;
 
   // Rvalue overrides of the `Set` methods, which allow you to construct
   // a `Value::Dict` builder-style:

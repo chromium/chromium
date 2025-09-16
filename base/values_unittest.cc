@@ -1232,6 +1232,26 @@ TEST(ValuesTest, RvalueSet) {
   EXPECT_EQ(dict, expected);
 }
 
+TEST(ValuesTest, DictSetHintAtEnd) {
+  // Set values with keys not all in order, to validate correctness for both the
+  // "hint was correct" and "hint was incorrect" cases.
+  Value::Dict dict;
+  dict.Set_HintAtEnd("a", Value("a"));
+  dict.Set_HintAtEnd("b", Value("b"));
+  dict.Set_HintAtEnd("c", Value("c"));
+  dict.Set_HintAtEnd("e", Value("e"));
+  dict.Set_HintAtEnd("d", Value("d"));
+
+  Value::Dict expected;
+  expected.Set("a", Value("a"));
+  expected.Set("b", Value("b"));
+  expected.Set("c", Value("c"));
+  expected.Set("e", Value("e"));
+  expected.Set("d", Value("d"));
+
+  EXPECT_EQ(dict, expected);
+}
+
 TEST(ValuesTest, FindPath) {
   // Construct a dictionary path {root}.foo.bar = 123
   Value::Dict foo;
