@@ -12,8 +12,20 @@
 #import "ui/base/clipboard/clipboard_metadata.h"
 
 class ProfileIOS;
+class GURL;
 
 namespace data_controls {
+
+// Enum representing the decision made by Data Controls for a copy operation.
+enum class CopyDecision {
+  // The copy is allowed, and the data can be copied as-is.
+  kAllow,
+  // The copy is allowed, but the data should be marked as controlled by the
+  // policy.
+  kAllowAndProtect,
+  // The copy is blocked.
+  kBlock,
+};
 
 // Callback used with the `IsPasteAllowedByPolicy()` method.  If the
 // paste is not allowed, the paste action will be intercepted.  Otherwise, the
@@ -21,11 +33,8 @@ namespace data_controls {
 using IsClipboardPasteAllowedCallbackIOS = base::OnceCallback<void()>;
 
 // Callback used with the `IsCopyAllowedByPolicy()` method.
-// If the copy is allowed, the actual data is expected to be copied. Otherwise,
-// `replacement_data` should be written in plaintext to the clipboard.
 using IsClipboardCopyAllowedCallbackIOS =
-    base::OnceCallback<void(const ui::ClipboardFormatType& type,
-                            std::optional<std::u16string> replacement_data)>();
+    base::OnceCallback<void(CopyDecision)>;
 
 // This function checks if a paste is allowed to proceed according to the
 // following policies:
@@ -47,18 +56,13 @@ void IsPasteAllowedByPolicy(
     IsClipboardPasteAllowedCallbackIOS callback);
 
 // This function checks if data copied from a browser tab is allowed to be
-// written to the OS clipboard according to the following policy:
+// written to the clipboard according to the following policy:
 // - DataControlsRules
-//
-// If the copy is not allowed, `callback` is called with a replacement string
-// that should instead be put into the OS clipboard.
-void IsCopyAllowedByPolicy(
-    const ActionContext& action_context,
-    const ui::ClipboardMetadata& metadata,
-    ProfileIOS* source_profile,  // Can be null if the source isn't Chrome
-    ProfileIOS* destination_profile,
-    web::WebState* webState,
-    IsClipboardCopyAllowedCallbackIOS callback);
+void IsCopyAllowedByPolicy(const GURL& source_url,
+                           const ui::ClipboardMetadata& metadata,
+                           ProfileIOS* source_profile,  // Must be non-null.
+                           web::WebState* webState,
+                           IsClipboardCopyAllowedCallbackIOS callback);
 
 }  // namespace data_controls
 

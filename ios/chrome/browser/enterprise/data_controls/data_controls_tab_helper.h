@@ -6,7 +6,11 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DATA_CONTROLS_TAB_HELPER_H_
 
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/enterprise/data_controls/clipboard_utils.h"
 #import "ios/web/public/lazy_web_state_user_data.h"
+#import "url/gurl.h"
 
 namespace web {
 class WebState;
@@ -40,6 +44,16 @@ class DataControlsTabHelper
  private:
   friend class web::LazyWebStateUserData<DataControlsTabHelper>;
   explicit DataControlsTabHelper(web::WebState* web_state);
+
+  void OnCopyAllowed(const GURL& source_url,
+                     base::OnceCallback<void(bool)> callback,
+                     CopyDecision decision);
+
+  // Unowned pointer to the WebState owning `this`. `web_state_` will always
+  // outlive `this`.
+  raw_ptr<web::WebState> web_state_;
+
+  base::WeakPtrFactory<DataControlsTabHelper> weak_factory_{this};
 };
 
 }  // namespace data_controls
