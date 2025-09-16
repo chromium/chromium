@@ -59,7 +59,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
   const UserEventSpecifics specifics = CreateTestEvent(base::Time());
-  event_service->RecordUserEvent(specifics);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(specifics));
   EXPECT_TRUE(ExpectUserEvents({specifics}));
 }
 
@@ -74,7 +75,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetrySequential) {
 
   GetFakeServer()->OverrideResponseType(
       base::BindRepeating(&BounceType, CommitResponse::TRANSIENT_ERROR));
-  event_service->RecordUserEvent(specifics1);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(specifics1));
 
   // This will block until we hit a TRANSIENT_ERROR, at which point we will
   // regain control and can switch back to SUCCESS. Note that the fake server
@@ -97,7 +99,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetrySequential) {
 
   // Only record |specifics2| after |specifics1| was successful to avoid race
   // conditions.
-  event_service->RecordUserEvent(specifics2);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(specifics2));
   EXPECT_TRUE(ExpectUserEvents({specifics1, specifics2}));
 }
 
@@ -134,8 +137,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetryParallel) {
         return CommitResponse::SUCCESS;
       }));
 
-  event_service->RecordUserEvent(specifics2);
-  event_service->RecordUserEvent(specifics1);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(specifics2));
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(specifics1));
 
   // We can't use only ExpectUserEvents() here because the entity that got the
   // transient error is still considered committed by the fake server.
@@ -157,7 +162,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
 
-  event_service->RecordUserEvent(test_event1);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(test_event1));
 
   // Wait until the first events is committed before disabling sync,
   // because disabled kHistory also disables user event sync, dropping all
@@ -166,10 +172,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
   ASSERT_TRUE(
       GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
 
-  event_service->RecordUserEvent(test_event2);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(test_event2));
   ASSERT_TRUE(
       GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kHistory));
-  event_service->RecordUserEvent(test_event3);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(test_event3));
 
   // No |test_event2| because it was recorded while history was disabled.
   EXPECT_TRUE(ExpectUserEvents({test_event1, test_event3}));
@@ -184,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
 
-  event_service->RecordUserEvent(specifics);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(specifics));
 
   // UserSelectableType::kTabs shouldn't affect UserEvents in any way.
   EXPECT_TRUE(ExpectUserEvents({specifics}));
@@ -199,11 +208,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Encryption) {
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
-  event_service->RecordUserEvent(test_event1);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(test_event1));
   EXPECT_TRUE(ExpectUserEvents({test_event1}));
   GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("passphrase");
   ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
-  event_service->RecordUserEvent(test_event2);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(test_event2));
 
   // Just checking that we don't see test_event2 isn't very convincing yet,
   // because it may simply not have reached the server yet. So let's send
@@ -229,7 +240,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest,
 
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
-  event_service->RecordUserEvent(test_event);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(test_event));
 
   // Clear the "Sync paused" state again.
   GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
@@ -262,7 +274,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoQuotaApplied) {
   for (int i = 0; i < 2525; i++) {
     const UserEventSpecifics specifics =
         CreateTestEvent(zero + base::Milliseconds(i));
-    event_service->RecordUserEvent(specifics);
+    event_service->RecordUserEvent(
+        std::make_unique<UserEventSpecifics>(specifics));
     expected_specifics.push_back(specifics);
   }
   EXPECT_TRUE(ExpectUserEvents(expected_specifics));
@@ -272,7 +285,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoQuotaApplied) {
   // Adding another entity again triggers sync immediately (as there's no
   // quota).
   const UserEventSpecifics specifics = CreateTestEvent(zero + base::Seconds(3));
-  event_service->RecordUserEvent(specifics);
+  event_service->RecordUserEvent(
+      std::make_unique<UserEventSpecifics>(specifics));
   expected_specifics.push_back(specifics);
   EXPECT_TRUE(ExpectUserEvents(expected_specifics));
 

@@ -114,11 +114,6 @@ void UserEventServiceImpl::RecordUserEvent(
   bridge_->RecordUserEvent(std::move(specifics));
 }
 
-void UserEventServiceImpl::RecordUserEvent(
-    const UserEventSpecifics& specifics) {
-  RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics));
-}
-
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 UserEventServiceImpl::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();

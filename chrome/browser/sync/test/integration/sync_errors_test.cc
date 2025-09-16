@@ -352,7 +352,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
   const sync_pb::UserEventSpecifics specifics =
       CreateTestEvent(base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(kUserEventTimeUsec)));
-  event_service->RecordUserEvent(specifics);
+  event_service->RecordUserEvent(
+      std::make_unique<sync_pb::UserEventSpecifics>(specifics));
 
   // Wait for a commit message containing the user event. However the commit
   // request will fail.

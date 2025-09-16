@@ -25,7 +25,6 @@ class NoOpUserEventService : public UserEventService {
   // UserEventService implementation.
   void RecordUserEvent(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics) override;
-  void RecordUserEvent(const sync_pb::UserEventSpecifics& specifics) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 };

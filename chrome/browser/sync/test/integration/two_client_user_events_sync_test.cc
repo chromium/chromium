@@ -66,8 +66,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientUserEventsSyncTest,
   // starting up sync because the user has custom passphrase setup.
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
-  event_service->RecordUserEvent(user_events_helper::CreateTestEvent(
-      base::Time() + base::Microseconds(1)));
+  event_service->RecordUserEvent(
+      std::make_unique<sync_pb::UserEventSpecifics>(
+          user_events_helper::CreateTestEvent(
+              base::Time() + base::Microseconds(1))));
 
   // Set up sync on the second client.
   ASSERT_TRUE(GetClient(kDecryptingClientId)->SetupSyncNoWaitForCompletion());
