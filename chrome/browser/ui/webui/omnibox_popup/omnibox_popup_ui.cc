@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -57,43 +58,18 @@ WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxPopupUI)
 void OmniboxPopupUI::BindInterface(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
-  // Extract SessionID from URL to select the omnibox that initiated page load.
-  const GURL& url = host->GetWebUI()->GetWebContents()->GetLastCommittedURL();
-  SessionID id = SessionID::InvalidValue();
-  if (url.is_valid() && url.has_query()) {
-    std::string_view spec(url.query_piece());
-    url::Component query, key, value;
-    query.len = static_cast<int>(spec.size());
-    while (url::ExtractQueryKeyValue(spec, &query, &key, &value)) {
-      if (key.is_nonempty() && value.is_nonempty()) {
-        const std::string_view key_piece = spec.substr(key.begin, key.len);
-        constexpr char kSessionIdKey[] = "session_id";
-        if (key_piece == kSessionIdKey) {
-          const std::string_view value_piece =
-              spec.substr(value.begin, value.len);
-          int value_int = 0;
-          if (base::StringToInt(value_piece, &value_int)) {
-            id = SessionID::FromSerializedValue(value_int);
-          }
-          break;
-        }
-      }
-    }
-  }
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::GetOrCreateForWebContents(
+          web_ui()->GetWebContents())
+          ->get_omnibox_controller();
+  CHECK(omnibox_controller);
 
-  if (id.is_valid()) {
-    if (Browser* browser = chrome::FindBrowserWithID(id)) {
-      OmniboxController* controller =
-          browser->window()->GetLocationBar()->GetOmniboxView()->controller();
-      MetricsReporterService* metrics_reporter_service =
-          MetricsReporterService::GetFromWebContents(
-              web_ui()->GetWebContents());
-      handler_ = std::make_unique<RealboxHandler>(
-          std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
-          web_ui()->GetWebContents(),
-          metrics_reporter_service->metrics_reporter(), controller);
-    }
-  }
+  MetricsReporterService* metrics_reporter_service =
+      MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
+  handler_ = std::make_unique<RealboxHandler>(
+      std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
+      web_ui()->GetWebContents(), metrics_reporter_service->metrics_reporter(),
+      omnibox_controller);
 }
 
 void OmniboxPopupUI::BindInterface(
