@@ -24,6 +24,7 @@ class WebContents;
 }  // namespace content
 
 namespace ui {
+class ElementIdentifier;
 class TrackedElement;
 }
 
@@ -57,6 +58,8 @@ class SplitTabHighlightController : public OmniboxTabHelper::Observer,
   void OnWidgetDestroyed(views::Widget* widget) override;
 
  private:
+  void AddShowHideElementSubscriptions(
+      ui::ElementIdentifier element_identifier);
   void OnActiveTabChange(BrowserWindowInterface* browser_window_interface);
   void OnTabWillDetach(tabs::TabInterface* tab_interface,
                        tabs::TabInterface::DetachReason reason);
@@ -72,6 +75,7 @@ class SplitTabHighlightController : public OmniboxTabHelper::Observer,
   bool is_page_info_bubble_showing_ = false;
   bool is_omnibox_popup_showing_ = false;
   bool is_device_chooser_bubble_showing_ = false;
+  bool is_file_access_bubble_showing_ = false;
   std::vector<base::CallbackListSubscription> browser_scoped_subscriptions_;
   base::CallbackListSubscription tab_will_detach_subscription_;
   base::CallbackListSubscription tab_will_discard_subscription_;

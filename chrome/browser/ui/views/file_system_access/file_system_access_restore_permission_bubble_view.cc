@@ -14,13 +14,18 @@
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    FileSystemAccessRestorePermissionBubbleView,
+    kFileSystemAccessBubbleElementIdentifier);
 FileSystemAccessRestorePermissionBubbleView::
     FileSystemAccessRestorePermissionBubbleView(
         const std::u16string window_title,
@@ -40,6 +45,8 @@ FileSystemAccessRestorePermissionBubbleView::
   set_close_on_deactivate(false);
   set_fixed_width(layout_provider->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+  SetProperty(views::kElementIdentifierKey,
+              kFileSystemAccessBubbleElementIdentifier);
   // To prevent permissions being accepted accidentally, and as a security
   // measure against crbug.com/619429, permission prompts should not be accepted
   // as the default action.
