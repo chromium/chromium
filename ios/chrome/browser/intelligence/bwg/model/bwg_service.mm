@@ -121,11 +121,16 @@ void BwgService::CheckGeminiEnterpriseEligibility() {
     return;
   }
 
-  ios::provider::CheckGeminiEligibility(auth_service_, ^(BOOL eligible) {
-    is_disabled_by_gemini_policy_ = !eligible;
-  });
+  ios::provider::CheckGeminiEligibility(
+      auth_service_, base::CallbackToBlock(
+                         base::BindOnce(&BwgService::OnGeminiEligibilityResult,
+                                        weak_ptr_factory_.GetWeakPtr())));
 }
 
 void BwgService::ClearConsentPref() {
   pref_service_->ClearPref(prefs::kIOSBwgConsent);
+}
+
+void BwgService::OnGeminiEligibilityResult(bool eligible) {
+  is_disabled_by_gemini_policy_ = !eligible;
 }

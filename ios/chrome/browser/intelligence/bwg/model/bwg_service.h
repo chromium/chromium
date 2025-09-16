@@ -66,6 +66,9 @@ class BwgService : public KeyedService,
   // Clears the Gemini consent profile pref.
   void ClearConsentPref();
 
+  // Invoked when the eligibility check is done.
+  void OnGeminiEligibilityResult(bool eligible);
+
   // Weak pointer factory.
   base::WeakPtrFactory<BwgService> weak_ptr_factory_{this};
 };
