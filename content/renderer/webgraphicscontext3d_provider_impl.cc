@@ -69,7 +69,10 @@ bool WebGraphicsContext3DProviderImpl::IsContextLost() {
 }
 
 GrDirectContext* WebGraphicsContext3DProviderImpl::GetGrContext() {
-  return provider_->GrContext();
+  // Non-OOP-R is no longer supported, and ContextProviderCommandBuffer does
+  // not hold a GrDirectContext.
+  // TODO(crbug.com/391648152): Eliminate this method entirely.
+  return nullptr;
 }
 
 const gpu::Capabilities& WebGraphicsContext3DProviderImpl::GetCapabilities()
