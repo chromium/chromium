@@ -76,37 +76,6 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   return button;
 }
 
-// Set the tile for a pill button, with its down arrow.
-void SetPillButtonTitle(UIButton* pill_button, int string_id) {
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  NSDictionary* textAttributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc]
-          initWithString:l10n_util::GetNSString(string_id)
-              attributes:textAttributes];
-  // Use `ceilf()` when calculating the icon's bounds to ensure the
-  // button's content height does not shrink by fractional points, as the
-  // attributed string's actual height is slightly smaller than the
-  // assigned height.
-  NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
-  attachment.image = [[UIImage imageNamed:@"read_more_arrow"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  CGFloat height = ceilf(attributedString.size.height);
-  CGFloat capHeight = ceilf(font.capHeight);
-  CGFloat horizontalOffset =
-      base::i18n::IsRTL() ? -1.f * kMoreArrowMargin : kMoreArrowMargin;
-  CGFloat verticalOffset = (capHeight - height) / 2.f;
-  attachment.bounds =
-      CGRectMake(horizontalOffset, verticalOffset, height, height);
-  [attributedString
-      appendAttributedString:[NSAttributedString
-                                 attributedStringWithAttachment:attachment]];
-
-  UIButtonConfiguration* buttonConfiguration = pill_button.configuration;
-  buttonConfiguration.attributedTitle = attributedString;
-  pill_button.configuration = buttonConfiguration;
-}
-
 // Creates a "Set as Default" button. The button is returned as disabled.
 ChromeButton* CreateSetAsDefaultButton() {
   ChromeButton* button = PrimaryActionButton();
@@ -121,19 +90,13 @@ ChromeButton* CreateSetAsDefaultButton() {
 }
 
 // Create a more pill button.
-UIButton* CreateMorePillButton() {
-  UIButton* morePillButton = PrimaryActionButton();
-  morePillButton.layer.cornerRadius = kMorePillButtonCornerRadius;
-  morePillButton.layer.masksToBounds = YES;
-  UIButtonConfiguration* configuration = morePillButton.configuration;
-  configuration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kMorePillButtonHorizontalPadding, kMorePillButtonVerticalPadding,
-      kMorePillButtonHorizontalPadding, kMorePillButtonVerticalPadding);
-  morePillButton.configuration = configuration;
-  SetPillButtonTitle(morePillButton, IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON);
-  morePillButton.accessibilityContainerType =
+ChromeButton* CreateMorePillButton() {
+  ChromeButton* more_pill_button = PrimaryActionButton();
+  more_pill_button.layer.cornerRadius = kMorePillButtonCornerRadius;
+  more_pill_button.layer.masksToBounds = YES;
+  more_pill_button.accessibilityContainerType =
       UIAccessibilityContainerTypeSemanticGroup;
-  return morePillButton;
+  return more_pill_button;
 }
 
 // Returns the `y` value from the `localReference` in the coordinator of
@@ -212,7 +175,9 @@ CGFloat GetSubtitleMarginDistance() {
   // If the user already scroll onces to the button, the button will be hidden.
   // By default the title is "More". As soon as the user selects a search engine
   // the title is changed to "Continue" (the button action is the same).
-  UIButton* _moreOrContinueButton;
+  ChromeButton* _moreOrContinueButton;
+  // String ID for `_moreOrContinueButton`.
+  int _moreOrContinueButtonTitleStringID;
   // Container to display the "Set as Default" button in the scroll view.
   // Related to `_inlineSetAsDefaultButton`. This container is used in
   // the animation to transition to `_floatingSetAsDefaultButtonContainer`.
@@ -437,7 +402,9 @@ CGFloat GetSubtitleMarginDistance() {
   // Add "More" pill button.
   // Needs to be the last element added to the view, so it is always above all
   // other elements.
+  _moreOrContinueButtonTitleStringID = IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON;
   _moreOrContinueButton = CreateMorePillButton();
+  [self updateMoreOrContinueButtonIfNeeded];
   _moreOrContinueButton.translatesAutoresizingMaskIntoConstraints = NO;
   [view addSubview:_moreOrContinueButton];
   _moreOrContinueButton.accessibilityIdentifier =
@@ -705,8 +672,9 @@ CGFloat GetSubtitleMarginDistance() {
   } else {
     // After selecting a search engine, needs to scroll down to see all
     // search engines before tapping on the "Set as Default" button.
-    SetPillButtonTitle(_moreOrContinueButton,
-                       IDS_SEARCH_ENGINE_CHOICE_CONTINUE_BUTTON);
+    _moreOrContinueButtonTitleStringID =
+        IDS_SEARCH_ENGINE_CHOICE_CONTINUE_BUTTON;
+    [self updateMoreOrContinueButtonIfNeeded];
     _moreOrContinueButton.accessibilityIdentifier =
         kSearchEngineContinueButtonIdentifier;
   }
@@ -1048,9 +1016,9 @@ CGFloat GetSubtitleMarginDistance() {
   // properly scaled.
   UIFontTextStyle textStyle = GetTitleLabelFontTextStyle(self);
   _titleLabel.font = GetFRETitleFont(textStyle);
-  // TODO(crbug.com/445341113): Need to adjust `_moreOrContinueButton` size.
   UpdateButtonToMatchPrimaryAction(_inlineSetAsDefaultButton);
   UpdateButtonToMatchPrimaryAction(_floatingSetAsDefaultButton);
+  [self updateMoreOrContinueButtonIfNeeded];
   _subtitleMarginLayoutConstraint.constant = GetSubtitleMarginDistance();
   // Update the SetAsDefault button once the layout changes take effect to have
   // the right measurements to evaluate the scroll position.
@@ -1061,6 +1029,50 @@ CGFloat GetSubtitleMarginDistance() {
   // Adjust the inset vertical scroller since floating container size might have
   // be updated.
   [self adjustInsetVerticalScroller];
+}
+
+// Updates `_moreOrContinueButton` if needed. This method updates the title,
+// the font, the internal margins based on the current system font, and
+// `_moreOrContinueButtonTitleStringID`.
+- (void)updateMoreOrContinueButtonIfNeeded {
+  if (!_moreOrContinueButton) {
+    // The button doesn't exist.
+    return;
+  }
+  CHECK(_moreOrContinueButtonTitleStringID);
+  UpdateButtonToMatchPrimaryAction(_moreOrContinueButton);
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  NSDictionary* textAttributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:l10n_util::GetNSString(
+                             _moreOrContinueButtonTitleStringID)
+              attributes:textAttributes];
+  // Use `ceilf()` when calculating the icon's bounds to ensure the
+  // button's content height does not shrink by fractional points, as the
+  // attributed string's actual height is slightly smaller than the
+  // assigned height.
+  NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
+  attachment.image = [[UIImage imageNamed:@"read_more_arrow"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  CGFloat height = ceilf(attributedString.size.height);
+  CGFloat cap_height = ceilf(font.capHeight);
+  CGFloat horizontal_offset =
+      kMoreArrowMargin * (base::i18n::IsRTL() ? -1.f : 1.f);
+  CGFloat vertical_offset = (cap_height - height) / 2.f;
+  attachment.bounds =
+      CGRectMake(horizontal_offset, vertical_offset, height, height);
+  [attributedString
+      appendAttributedString:[NSAttributedString
+                                 attributedStringWithAttachment:attachment]];
+
+  UIButtonConfiguration* buttonConfiguration =
+      _moreOrContinueButton.configuration;
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kMorePillButtonHorizontalPadding, kMorePillButtonVerticalPadding,
+      kMorePillButtonHorizontalPadding, kMorePillButtonVerticalPadding);
+  buttonConfiguration.attributedTitle = attributedString;
+  _moreOrContinueButton.configuration = buttonConfiguration;
 }
 
 #pragma mark - UITextViewDelegate
