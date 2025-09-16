@@ -48,8 +48,8 @@ def _unsplit_version(version: tuple[int, ...]) -> str:
 # writing, mid-August 2025) that is capable of emitting a compatibility `.icns`
 # file.
 _ACTOOL_26B4_VERSION = _split_version('24112')
-# The latest `actool` version as of writing, mid-August 2025.
-_ACTOOL_26B6_VERSION = _split_version('24123.1')
+# The `actool` version of Xcode 26.0.
+_ACTOOL_26_VERSION = _split_version('24127')
 
 
 class CompatibilityExpectations:
@@ -97,7 +97,7 @@ def _verify_actool_version() -> CompatibilityExpectations:
 
     if version == _ACTOOL_26B4_VERSION:
         compatibility_expectations.icns_expected = True
-    elif version <= _ACTOOL_26B6_VERSION:
+    elif version <= _ACTOOL_26_VERSION:
         print(
             '⚠️  Compatibility warning: the active version of `actool` will '
             'not emit an\n`.icns` file. If an `.icns` file is required, use '
