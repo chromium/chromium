@@ -748,7 +748,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetEntities({test::GetFlightReservationEntityInstance()});
   SetForm({NAME_FULL, FLIGHT_RESERVATION_TICKET_NUMBER});
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              SuggestionsAre(HasLabel(u"Flight reservation · MUC–BEY")));
+              SuggestionsAre(HasLabel(u"Flight · MUC–BEY")));
 }
 
 }  // namespace
