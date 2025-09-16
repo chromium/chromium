@@ -49,7 +49,7 @@ UIImage* ResizedAvatar(UIImage* image) {
 void StoreAvatarToDisk(NSURL* identity_file, UIImage* avatar) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  CHECK(avatar, base::NotFatalUntil::M141);
+  CHECK(avatar);
   UIImage* resized_avatar = ResizedAvatar(avatar);
   NSData* png_data = UIImagePNGRepresentation(resized_avatar);
   if (png_data) {
