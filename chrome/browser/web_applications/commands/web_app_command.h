@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/internal/command_internal.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace content {
@@ -193,8 +194,10 @@ class WebAppCommand : public internal::CommandWithLock<LockType> {
         "result",
         base::ToString(std::tie<CallbackArgs&...>(args_for_callback...)));
     metadata->Set("completion_location", base::ToString(location));
-    metadata->Set("completed_at",
-                  base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
+    if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
+      metadata->Set("completed_at", base::TimeFormatTimeOfDayWithMilliseconds(
+                                        base::Time::Now()));
+    }
 
     // Note: `BindOnce` should correctly handle copying any ref or move
     // arguments internally. This allows the callback arguments to contain ref

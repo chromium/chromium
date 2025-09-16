@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/common/chrome_features.h"
 
 namespace web_app::internal {
 namespace {
@@ -74,10 +75,12 @@ void CommandBase::SetScheduledLocation(base::PassKey<WebAppCommandManager>,
 
 void CommandBase::SetScheduledAt(base::PassKey<WebAppCommandManager>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(command_sequence_checker_);
-  GetMutableDebugValue()
-      .EnsureDict("!metadata")
-      ->Set("scheduled_at",
-            base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
+  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
+    GetMutableDebugValue()
+        .EnsureDict("!metadata")
+        ->Set("scheduled_at",
+              base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
+  }
 }
 
 void CommandBase::SetCommandManager(base::PassKey<WebAppCommandManager>,
@@ -104,8 +107,11 @@ void CommandBase::SetStarted() {
   started_ = true;
   auto* metadata = GetMutableDebugValue().EnsureDict("!metadata");
   metadata->Set("started", true);
-  metadata->Set("started_at",
-                base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
+
+  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
+    metadata->Set("started_at",
+                  base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
+  }
 }
 
 void CommandBase::CompleteAndSelfDestructInternal(

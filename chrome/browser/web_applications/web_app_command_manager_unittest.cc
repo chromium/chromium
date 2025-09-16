@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_observer_test_utils.h"
@@ -507,6 +509,8 @@ TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
 }
 
 TEST_F(WebAppCommandManagerTest, ToDebugValue) {
+  base::test::ScopedFeatureList features{features::kRecordWebAppDebugInfo};
+
   base::test::TestFuture<void> on_command_complete;
   manager().ScheduleCommand(
       std::make_unique<internal::CallbackCommand<AppLock>>(
