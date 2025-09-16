@@ -42,12 +42,12 @@ class HomeBackgroundImageService : public KeyedService,
   // Requests an asynchronous fetch of all ios ntp background collections and
   // their images. This method calls `FetchCollectionsImagesInternal` under the
   // hood.
-  void FetchCollectionsImages(CollectionsImagesCallback callback);
+  virtual void FetchCollectionsImages(CollectionsImagesCallback callback);
 
   // Requests an asynchronous fetch of the default ios ntp background
   // collection and its images. This method calls
   // `FetchCollectionsImagesInternal` under the hood.
-  void FetchDefaultCollectionImages(CollectionsImagesCallback callback);
+  virtual void FetchDefaultCollectionImages(CollectionsImagesCallback callback);
 
  private:
   // Callback for when collection images info is received.

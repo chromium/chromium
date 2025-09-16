@@ -7,6 +7,7 @@
 
 #import <string>
 
+#import "base/base64.h"
 #import "base/containers/lru_cache.h"
 #import "base/memory/raw_ref.h"
 #import "base/observer_list.h"

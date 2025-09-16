@@ -47,22 +47,41 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "home_background_customization_service_unittest.mm",
     "home_background_image_service_unittest.mm",
     "user_uploaded_image_manager_unittest.mm",
   ]
 
   deps = [
     ":model",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/application_locale_storage",
+    "//components/prefs:test_support",
     "//components/search",
+    "//components/sync/protocol:protocol_gen",
     "//components/themes",
     "//components/version_info",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//services/network:test_support",
     "//services/network/public/cpp:cpp_base",
     "//testing/gtest",
     "//ui/base",
     "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_home_background_image_service.h",
+    "fake_home_background_image_service.mm",
+  ]
+
+  deps = [
+    ":model",
+    "//base",
   ]
 }
