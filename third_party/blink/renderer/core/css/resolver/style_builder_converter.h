@@ -223,6 +223,8 @@ class StyleBuilderConverter {
   static StyleHyphenateLimitChars ConvertHyphenateLimitChars(
       StyleResolverState&,
       const CSSValue&);
+  static StyleInterestDelay ConvertInterestDelayValue(const StyleResolverState&,
+                                                      const CSSValue&);
   template <typename T>
   static T ConvertLineWidth(StyleResolverState&, const CSSValue&);
   static int ConvertBorderWidth(const StyleResolverState&, const CSSValue&);

@@ -226,6 +226,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/style_interest_delay.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_href.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -11450,7 +11451,10 @@ void Element::ScheduleInterestGainedTask() {
   if (!style) {
     return;
   }
-  float show_delay_seconds = style->InterestShowDelay();
+  StyleInterestDelay show_delay = style->InterestShowDelay();
+  float show_delay_seconds = show_delay.IsNormal()
+                                 ? kDefaultInterestShowDelaySeconds
+                                 : show_delay.DelaySeconds();
   // If the value is infinite or NaN, don't schedule showing interest.
   if (!std::isfinite(show_delay_seconds)) {
     return;
@@ -11479,7 +11483,11 @@ void Element::ScheduleInterestLostTask() {
   if (!style) {
     return;
   }
-  float hide_delay_seconds = style->InterestHideDelay();
+
+  StyleInterestDelay hide_delay = style->InterestHideDelay();
+  float hide_delay_seconds = hide_delay.IsNormal()
+                                 ? kDefaultInterestHideDelaySeconds
+                                 : hide_delay.DelaySeconds();
   // If the value is infinite or NaN, don't schedule losing interest.
   if (!std::isfinite(hide_delay_seconds)) {
     return;

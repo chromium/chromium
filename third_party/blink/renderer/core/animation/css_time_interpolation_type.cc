@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/style/style_interest_delay.h"
 
 namespace blink {
 
@@ -63,10 +64,20 @@ std::optional<double> CSSTimeInterpolationType::GetSeconds(
     const CSSPropertyID& property,
     const ComputedStyle& style) {
   switch (property) {
-    case CSSPropertyID::kInterestShowDelay:
-      return style.InterestShowDelay();
-    case CSSPropertyID::kInterestHideDelay:
-      return style.InterestHideDelay();
+    case CSSPropertyID::kInterestShowDelay: {
+      StyleInterestDelay value = style.InterestShowDelay();
+      if (value.IsNormal()) {
+        return kDefaultInterestShowDelaySeconds;
+      }
+      return value.DelaySeconds();
+    }
+    case CSSPropertyID::kInterestHideDelay: {
+      StyleInterestDelay value = style.InterestHideDelay();
+      if (value.IsNormal()) {
+        return kDefaultInterestHideDelaySeconds;
+      }
+      return value.DelaySeconds();
+    }
     default:
       NOTREACHED();
   }
@@ -117,10 +128,10 @@ void CSSTimeInterpolationType::ApplyStandardPropertyValue(
       ClampTime(property, To<InterpolableNumber>(interpolable_value).Value());
   switch (property) {
     case CSSPropertyID::kInterestShowDelay:
-      builder.SetInterestShowDelay(clamped_seconds);
+      builder.SetInterestShowDelay(StyleInterestDelay(clamped_seconds));
       break;
     case CSSPropertyID::kInterestHideDelay:
-      builder.SetInterestHideDelay(clamped_seconds);
+      builder.SetInterestHideDelay(StyleInterestDelay(clamped_seconds));
       break;
     default:
       NOTREACHED();

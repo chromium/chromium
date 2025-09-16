@@ -89,6 +89,7 @@ ALIGNMENT_ORDER = [
     'FitText',
     'TabSize',
     'float',
+    'StyleInterestDelay',
     # Aligns like int
     'cc::ScrollSnapType',
     'cc::ScrollSnapAlign',

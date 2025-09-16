@@ -21,8 +21,26 @@ test_shorthand_value('interest-delay', '450ms', {
   'interest-show-delay': '450ms',
   'interest-hide-delay': '450ms'
 });
+test_shorthand_value('interest-delay', 'normal', {
+  'interest-show-delay': 'normal',
+  'interest-hide-delay': 'normal'
+});
+test_shorthand_value('interest-delay', 'normal normal', {
+  'interest-show-delay': 'normal',
+  'interest-hide-delay': 'normal'
+});
+test_shorthand_value('interest-delay', 'normal 0.23s', {
+  'interest-show-delay': 'normal',
+  'interest-hide-delay': '0.23s'
+});
+test_shorthand_value('interest-delay', '0.23s normal', {
+  'interest-show-delay': '0.23s',
+  'interest-hide-delay': 'normal'
+});
 
 test_invalid_value('interest-delay', '');
 test_invalid_value('interest-delay', '0');
 test_invalid_value('interest-delay', '0.23s 0.23s 0.23s');
+test_invalid_value('interest-delay', 'normal normal normal');
+test_invalid_value('interest-delay', '0.23s normal normal');
 </script>
