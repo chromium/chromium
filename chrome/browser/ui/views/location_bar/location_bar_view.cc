@@ -67,6 +67,8 @@
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
@@ -85,6 +87,7 @@
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_features.h"
@@ -308,6 +311,20 @@ void LocationBarView::Init() {
       /*location_bar_view=*/this, font_list);
   omnibox_view_ = AddChildView(std::move(omnibox_view));
   omnibox_view_->Init();
+
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
+    omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
+        /*omnibox_view=*/omnibox_view_, omnibox_view_->controller(),
+        /*location_bar_view=*/this);
+  } else {
+    omnibox_popup_view_ = std::make_unique<OmniboxPopupViewViews>(
+        /*omnibox_view=*/omnibox_view_, omnibox_view_->controller(),
+        /*location_bar_view=*/this);
+  }
+  popup_view_opened_subscription_ =
+      omnibox_popup_view_->AddOpenListener(base::BindRepeating(
+          &LocationBarView::OnPopupOpened, base::Unretained(this)));
+
   // LocationBarView directs mouse button events from
   // |omnibox_additional_text_view_| to |omnibox_view_| so that e.g., clicking
   // the former will focus the latter. In order to receive |ShowContextMenu()|
@@ -507,6 +524,16 @@ void LocationBarView::Init() {
 
 bool LocationBarView::IsInitialized() const {
   return is_initialized_;
+}
+
+void LocationBarView::OnPopupOpened() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // It's not great for promos to overlap the omnibox if the user opens the
+  // drop-down after showing the promo. This especially causes issues on Mac and
+  // Linux due to z-order/rendering issues, see crbug.com/1225046 and
+  // crbug.com/332769403 for examples.
+  BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(this);
+#endif
 }
 
 int LocationBarView::GetBorderRadius() const {
@@ -1401,8 +1428,7 @@ OmniboxPopupView* LocationBarView::GetOmniboxPopupView() {
 }
 
 const OmniboxPopupView* LocationBarView::GetOmniboxPopupView() const {
-  DCHECK(omnibox_view_ && omnibox_view_->model());
-  return omnibox_view_->model()->get_popup_view();
+  return omnibox_popup_view_.get();
 }
 
 void LocationBarView::OnPageInfoBubbleClosed(

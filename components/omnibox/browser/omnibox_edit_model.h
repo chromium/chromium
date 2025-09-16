@@ -70,8 +70,6 @@ class OmniboxEditModel {
   OmniboxEditModel& operator=(const OmniboxEditModel&) = delete;
 
   void set_popup_view(OmniboxPopupView* popup_view);
-  OmniboxPopupView* get_popup_view() { return popup_view_; }
-  const OmniboxPopupView* get_popup_view() const { return popup_view_; }
 
   metrics::OmniboxEventProto::PageClassification GetPageClassification() const;
 

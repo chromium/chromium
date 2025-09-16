@@ -136,6 +136,9 @@ class LocationBarView
   // be called when the receiving instance is attached to a view container.
   bool IsInitialized() const;
 
+  // Called when the popup view becomes visible.
+  void OnPopupOpened();
+
   // Returns a background that paints an (optionally stroked) rounded rect with
   // the given color.
   std::unique_ptr<views::Background> CreateRoundRectBackground(
@@ -289,6 +292,9 @@ class LocationBarView
 
   SkColor GetBackgroundColorForTesting() const { return background_color_; }
 
+  OmniboxPopupView* GetOmniboxPopupView();
+  const OmniboxPopupView* GetOmniboxPopupView() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SecurityIndicatorTest, CheckIndicatorText);
   FRIEND_TEST_ALL_PREFIXES(TouchLocationBarViewBrowserTest,
@@ -335,10 +341,6 @@ class LocationBarView
 
   // Returns true if a keyword is selected in the model.
   bool ShouldShowKeywordBubble() const;
-
-  // Gets the OmniboxPopupView associated with the model in |omnibox_view_|.
-  OmniboxPopupView* GetOmniboxPopupView();
-  const OmniboxPopupView* GetOmniboxPopupView() const;
 
   // Called when the page info bubble is closed.
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
@@ -458,6 +460,10 @@ class LocationBarView
   // The omnibox view where the user types and the current page URL is displayed
   // when user input is not in progress.
   raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
+
+  // Owns either an OmniboxPopupViewViews or an OmniboxPopupViewWebUI.
+  std::unique_ptr<OmniboxPopupView> omnibox_popup_view_;
+  base::CallbackListSubscription popup_view_opened_subscription_;
 
   // Our delegate.
   raw_ptr<Delegate> delegate_;

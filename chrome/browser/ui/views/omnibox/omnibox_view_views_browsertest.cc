@@ -798,7 +798,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   match.description = u"Google";
   match.allowed_to_be_default_match = true;
 
-  OmniboxPopupView* popup_view = omnibox_view_views->GetPopupViewForTesting();
+  OmniboxPopupView* popup_view =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetLocationBarView()
+          ->GetOmniboxPopupView();
   ui::AXNodeData popup_node_data_1;
   popup_view->GetPopupAccessibleNodeData(&popup_node_data_1);
   EXPECT_FALSE(popup_node_data_1.HasState(ax::mojom::State::kExpanded));

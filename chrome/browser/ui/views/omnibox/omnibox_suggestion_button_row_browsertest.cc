@@ -126,7 +126,9 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
 
   bool VerifyUi() override {
     OmniboxPopupView* popup_view =
-        GetOmniboxViewViews()->GetPopupViewForTesting();
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetLocationBarView()
+            ->GetOmniboxPopupView();
     OmniboxEditModel* model = GetOmniboxViewViews()->model();
 
     model->SetPopupSelection(

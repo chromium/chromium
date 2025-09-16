@@ -1763,7 +1763,7 @@ void OmniboxEditModel::ResetPopupToInitialState() {
   SetPopupSelection(
       OmniboxPopupSelection(new_line, OmniboxPopupSelection::NORMAL),
       /*reset_to_default=*/true);
-  get_popup_view()->OnDragCanceled();
+  popup_view_->OnDragCanceled();
 }
 
 OmniboxPopupSelection OmniboxEditModel::GetPopupSelection() const {

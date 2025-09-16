@@ -55,7 +55,8 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
   OmniboxController* controller() { return omnibox_view()->controller(); }
   OmniboxEditModel* edit_model() { return omnibox_view()->model(); }
   OmniboxPopupViewViews* popup_view() {
-    return static_cast<OmniboxPopupViewViews*>(edit_model()->get_popup_view());
+    return static_cast<OmniboxPopupViewViews*>(
+        location_bar()->GetOmniboxPopupView());
   }
 
   SkColor GetSelectedColor(Browser* browser) {

@@ -110,10 +110,8 @@ OmniboxNotOpenPrecondition::~OmniboxNotOpenPrecondition() = default;
 user_education::FeaturePromoResult
 OmniboxNotOpenPrecondition::CheckPrecondition(
     ui::UnownedTypedDataCollection&) const {
-  const OmniboxPopupView* const popup = browser_view_->GetLocationBarView()
-                                            ->GetOmniboxView()
-                                            ->model()
-                                            ->get_popup_view();
+  const OmniboxPopupView* const popup =
+      browser_view_->GetLocationBarView()->GetOmniboxPopupView();
   return popup && popup->IsOpen()
              ? user_education::FeaturePromoResult::kBlockedByUi
              : user_education::FeaturePromoResult::Success();
