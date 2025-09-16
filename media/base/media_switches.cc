@@ -1085,8 +1085,7 @@ BASE_FEATURE(kLimitConcurrentDecoderInstances,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use SequencedTaskRunner for VideoEncodeAccelerator
-BASE_FEATURE(kUSeSequencedTaskRunnerForVEA,
-             "UseSequencedTaskRunnerForVEA",
+BASE_FEATURE(kUseSequencedTaskRunnerForVEA,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if defined(ARCH_CPU_ARM_FAMILY)

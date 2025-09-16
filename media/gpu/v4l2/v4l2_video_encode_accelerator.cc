@@ -123,7 +123,7 @@ std::optional<VideoFrameLayout> AsMultiPlanarLayout(
 }
 
 scoped_refptr<base::SequencedTaskRunner> CreateEncoderTaskRunner() {
-  if (base::FeatureList::IsEnabled(kUSeSequencedTaskRunnerForVEA)) {
+  if (base::FeatureList::IsEnabled(kUseSequencedTaskRunnerForVEA)) {
     return base::ThreadPool::CreateSequencedTaskRunner(
         {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
          base::MayBlock()});
