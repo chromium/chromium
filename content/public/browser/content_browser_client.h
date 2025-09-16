@@ -1796,7 +1796,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Defines flags that can be passed to PreSpawnChild.
   enum ChildSpawnFlags {
     kChildSpawnFlagNone = 0,
-    kChildSpawnFlagRendererCodeIntegrity = 1 << 0,
   };
 
   // Defines flags that can be passed to GetAppContainerSidForSandboxType.
@@ -1841,10 +1840,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // should override this with their own unique name to ensure security of the
   // network service data.
   virtual std::wstring GetLPACCapabilityNameForNetworkService();
-
-  // Returns whether renderer code integrity is enabled.
-  // This is called on the UI thread.
-  virtual bool IsRendererCodeIntegrityEnabled();
 
   // Performs a fast and orderly shutdown of the browser. If present,
   // `control_type` is a CTRL_* value from a Windows console control handler;

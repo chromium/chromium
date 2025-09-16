@@ -54,13 +54,6 @@ BASE_FEATURE(kRendererAppContainer, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWinSboxNetworkServiceSandboxIsLPAC,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, always launch the renderer process with Code Integrity Guard
-// enabled, regardless of the local policy configuration. If disabled, then
-// policy is respected. This acts as an emergency "off switch" for the
-// deprecation of the RendererCodeIntegrityEnabled policy.
-BASE_FEATURE(kWinSboxForceRendererCodeIntegrity,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, modifies the child's PEB to stop further application of
 // appcompat in the child. Does not affect the browser or unsandboxed
 // processes. The feature has no effect for WOW (32bit on 64bit) installs.

@@ -5283,8 +5283,7 @@ bool ChromeContentBrowserClient::PreSpawnChild(
 
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kRenderer:
-      enforce_code_integrity =
-          (flags & ChildSpawnFlags::kChildSpawnFlagRendererCodeIntegrity);
+      enforce_code_integrity = true;
       break;
     case sandbox::mojom::Sandbox::kNetwork:
       enforce_code_integrity = base::FeatureList::IsEnabled(
@@ -5344,23 +5343,6 @@ bool ChromeContentBrowserClient::PreSpawnChild(
   }
 #endif  // !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
   return true;
-}
-
-bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {
-  // Emergency 'on switch' to re-enable the policy if force-disabling it causes
-  // issues.
-  if (base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxForceRendererCodeIntegrity)) {
-    return true;
-  }
-
-  PrefService* local_state = g_browser_process->local_state();
-
-  // If kWinSboxForceRendererCodeIntegrity is set to disabled, then code
-  // integrity defaults to enabled, unless specifically overridden by a policy
-  // controlled pref being set to false.
-  return !local_state->HasPrefPath(prefs::kRendererCodeIntegrityEnabled) ||
-         local_state->GetBoolean(prefs::kRendererCodeIntegrityEnabled);
 }
 
 // Note: Only use sparingly to add Chrome specific sandbox functionality here.

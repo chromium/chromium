@@ -3595,10 +3595,6 @@ inline constexpr char kWebShareVisitedTargets[] =
     "profile.web_share.visited_targets";
 
 #if BUILDFLAG(IS_WIN)
-// A boolean value, controlling whether Chrome renderer processes have the CIG
-// mitigation enabled.
-inline constexpr char kRendererCodeIntegrityEnabled[] =
-    "renderer_code_integrity_enabled";
 
 inline constexpr char kRestrictCoreSharingOnRenderer[] =
     "restrict_core_sharing_on_renderer";

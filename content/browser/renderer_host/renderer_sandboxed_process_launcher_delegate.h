@@ -51,7 +51,6 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
   bool RestrictCoreSharing() override;
 
  private:
-  const bool renderer_code_integrity_enabled_;
   const bool renderer_app_container_disabled_;
   const bool is_pdf_renderer_ = false;
   const bool restrict_core_sharing_ = false;

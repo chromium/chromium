@@ -1056,10 +1056,6 @@ std::wstring ContentBrowserClient::GetLPACCapabilityNameForNetworkService() {
   return std::wstring(L"lpacContentNetworkService");
 }
 
-bool ContentBrowserClient::IsRendererCodeIntegrityEnabled() {
-  return false;
-}
-
 bool ContentBrowserClient::ShouldEnableAudioProcessHighPriority() {
   // TODO(crbug.com/40242320): Delete this method when the
   // kAudioProcessHighPriorityEnabled enterprise policy is deprecated.

@@ -596,7 +596,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsAppContainerDisabled(sandbox::mojom::Sandbox sandbox_type) override;
   std::wstring GetLPACCapabilityNameForNetworkService() override;
   bool IsUtilityCetCompatible(const std::string& utility_sub_type) override;
-  bool IsRendererCodeIntegrityEnabled() override;
   void SessionEnding(std::optional<DWORD> control_type) override;
   bool ShouldEnableAudioProcessHighPriority() override;
   bool ShouldRestrictCoreSharingOnRenderer() override;

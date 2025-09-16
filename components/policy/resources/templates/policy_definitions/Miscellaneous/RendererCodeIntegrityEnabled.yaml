@@ -24,7 +24,7 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.win:78-
+- chrome.win:78-117
 tags:
 - system-security
 type: main
