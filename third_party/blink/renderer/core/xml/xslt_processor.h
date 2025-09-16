@@ -45,22 +45,12 @@ class XSLTProcessor final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  using PassKey = base::PassKey<XSLTProcessor>;
   static XSLTProcessor* Create(Document& document) {
-    return MakeGarbageCollected<XSLTProcessor>(document);
+    return MakeGarbageCollected<XSLTProcessor>(PassKey(), document);
   }
 
-  explicit XSLTProcessor(Document& document) : document_(&document) {
-    CHECK(RuntimeEnabledFeatures::XSLTEnabled());
-
-    document.domWindow()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            ConsoleMessage::Source::kDeprecation,
-            ConsoleMessage::Level::kWarning,
-            "crbug.com/435623334: This page uses XSLT, which being considered "
-            "for removal from the web. If that happens, it is possible that "
-            "this page will need to be updated to maintain functionality."),
-        /*discard_duplicates=*/true);
-  }
+  XSLTProcessor(PassKey, Document&);
 
   ~XSLTProcessor() override;
 
