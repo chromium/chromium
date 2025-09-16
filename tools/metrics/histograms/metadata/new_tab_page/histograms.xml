@@ -2181,6 +2181,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.TabGroups.ClickTabGroupIndex" units="index"
+    expires_after="2026-12-31">
+  <owner>temao@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the position of the tab group that was clicked on the NTP Tab Groups
+    module.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.TabGroups.CreateNewTabGroup{ExperimentalState}"
+    units="count" expires_after="2026-12-31">
+  <owner>temao@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records clicks on the Create New Tab Group button from {ExperimentalState}
+    in the Tab Groups module.
+  </summary>
+  <token key="ExperimentalState">
+    <variant name=""/>
+    <variant name=".SteadyState"/>
+    <variant name=".ZeroState"/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.TabResumption.ClickIndex" units="index"
     expires_after="2026-01-18">
   <owner>mfacey@google.com</owner>
