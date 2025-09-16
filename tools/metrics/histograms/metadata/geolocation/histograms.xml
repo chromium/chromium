@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.PublicIpAddressGeolocator.ClientId"
-    enum="GeolocationClientId" expires_after="2025-09-28">
+    enum="GeolocationClientId" expires_after="2026-09-28">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -347,7 +347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.SystemGeolocationSourceWin.CheckAccessError"
-    enum="Hresult" expires_after="2025-09-28">
+    enum="Hresult" expires_after="2026-09-28">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -358,7 +358,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Geolocation.SystemGeolocationSourceWin.CreateAppCapabilityError"
-    enum="Hresult" expires_after="2025-09-28">
+    enum="Hresult" expires_after="2026-09-28">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -380,7 +380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.SystemGeolocationSourceWin.LaunchSettingsResult"
-    enum="Hresult" expires_after="2025-09-28">
+    enum="Hresult" expires_after="2026-09-28">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -415,7 +415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.SystemGeolocationSourceWin.RequestAccessResult"
-    enum="Hresult" expires_after="2025-09-28">
+    enum="Hresult" expires_after="2026-09-28">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
