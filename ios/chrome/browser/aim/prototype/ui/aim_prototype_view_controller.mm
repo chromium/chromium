@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item_cell.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_animation_context_provider.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
+#import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -31,12 +32,6 @@ const CGFloat kInputPlateCornerRadius = 24.0f;
 const float kInputPlateShadowOpacity = 0.2f;
 /// The shadow radius for the input plate container.
 const CGFloat kInputPlateShadowRadius = 20.0f;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-/// The size of the logo image view.
-const CGFloat kLogoImageSize = 24.0f;
-/// The spacing between the logo and the text view.
-const CGFloat kLogoTextViewSpacing = 6.0f;
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS
 /// The spacing between items in the carousel.
 const CGFloat kCarouselItemSpacing = 12.0f;
 /// The height of the carousel view.
@@ -78,6 +73,9 @@ const CGFloat kGlowEffectWidth = 4.0f;
 /// Whether the AI mode is enabled.
 @property(nonatomic, assign) BOOL AIModeEnabled;
 
+/// Edit view contained in `_omniboxContainer`.
+@property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
+
 @end
 
 @implementation AIMPrototypeViewController {
@@ -99,11 +97,25 @@ const CGFloat kGlowEffectWidth = 4.0f;
   UIButton* _aimButton;
   /// The glow effect around the input plate container.
   UIView<GlowEffect>* _glowEffectView;
+
+  /// Container for the omnibox.
+  UIView* _omniboxContainer;
+  /// Container for the omnibox popup.
+  UIView* _omniboxPopupContainer;
 }
 
 /// AIMPrototypeAnimationContextProvider
 @synthesize inputPlateViewForAnimation = _inputPlateContainerView;
 @synthesize textViewForAnimation = _textView;
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _omniboxContainer = [[UIView alloc] init];
+    _omniboxPopupContainer = [[UIView alloc] init];
+  }
+  return self;
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -141,102 +153,21 @@ const CGFloat kGlowEffectWidth = 4.0f;
     AddSameConstraints(_inputPlateContainerView, _glowEffectView);
   }
 
-  // Text view
-  _textView = [[UITextView alloc] init];
-  _textView.translatesAutoresizingMaskIntoConstraints = NO;
-  _textView.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  _textView.backgroundColor = UIColor.clearColor;
-  _textView.delegate = self;
-  _textView.scrollEnabled = NO;
-  _textView.autocapitalizationType = UITextAutocapitalizationTypeNone;
-  _textView.autocorrectionType = UITextAutocorrectionTypeNo;
-  _textView.spellCheckingType = UITextSpellCheckingTypeNo;
-  _textView.contentInsetAdjustmentBehavior =
-      UIScrollViewContentInsetAdjustmentNever;
-  _textView.returnKeyType = UIReturnKeyGo;
-  _textView.enablesReturnKeyAutomatically = YES;
+  _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view insertSubview:_omniboxPopupContainer
+              belowSubview:_inputPlateContainerView];
 
-  // Calculate the initial height of the text view using `sizeThatFits:`. This
-  // ensures the initial height is calculated using the exact same logic as the
-  // dynamic resizing, which prevents a "jump" when the first character is
-  // entered.
-  CGFloat initialHeight =
-      [_textView
-          sizeThatFits:CGSizeMake(_textView.frame.size.width, CGFLOAT_MAX)]
-          .height;
-  _textViewHeightConstraint =
-      [_textView.heightAnchor constraintEqualToConstant:initialHeight];
-  _textViewHeightConstraint.active = YES;
-
-  // Container view for the text view and logo.
-  UIView* textViewContainer = [[UIView alloc] init];
-  textViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
-
-  // The placeholder is added to the container behind the text view. Its
-  // baseline provides a stable anchor for the logo, solving the issue of the
-  // text view's baseline being unavailable when there is no text.
-  _placeholderLabel = [[UILabel alloc] init];
-  _placeholderLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  // TODO(crbug.com/40280872): Localize this string.
-  _placeholderLabel.text = @"Ask anything";
-  _placeholderLabel.font = _textView.font;
-  _placeholderLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  [textViewContainer addSubview:_placeholderLabel];
-  [textViewContainer addSubview:_textView];
-
-  // Align placeholder with the text view's content area by constraining it
-  // directly to the text view's frame and then adding the internal insets.
-  UIEdgeInsets textInsets = _textView.textContainerInset;
-  CGFloat linePadding = _textView.textContainer.lineFragmentPadding;
   [NSLayoutConstraint activateConstraints:@[
-    [_placeholderLabel.topAnchor constraintEqualToAnchor:_textView.topAnchor
-                                                constant:textInsets.top],
-    [_placeholderLabel.leadingAnchor
-        constraintEqualToAnchor:_textView.leadingAnchor
-                       constant:textInsets.left + linePadding],
+    [_omniboxPopupContainer.topAnchor
+        constraintEqualToAnchor:closeButton.bottomAnchor],
+    [_omniboxPopupContainer.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [_omniboxPopupContainer.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [_omniboxPopupContainer.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
   ]];
-
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  UIImageView* logoImageView = [[UIImageView alloc]
-      initWithImage:MakeSymbolMulticolor(CustomSymbolWithPointSize(
-                        kGoogleIconSymbol, kSymbolActionPointSize))];
-  logoImageView.contentMode = UIViewContentModeCenter;
-  logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  [textViewContainer addSubview:logoImageView];
-
-  // Layout logo and text view within the container.
-  [NSLayoutConstraint activateConstraints:@[
-    [logoImageView.leadingAnchor
-        constraintEqualToAnchor:textViewContainer.leadingAnchor],
-    // Align to the placeholder's vertical center, which is stable and
-    // represents the center of the first line of text.
-    [logoImageView.centerYAnchor
-        constraintEqualToAnchor:_placeholderLabel.centerYAnchor],
-    [logoImageView.widthAnchor constraintEqualToConstant:kLogoImageSize],
-    [logoImageView.heightAnchor constraintEqualToConstant:kLogoImageSize],
-
-    [_textView.leadingAnchor
-        constraintEqualToAnchor:logoImageView.trailingAnchor
-                       constant:kLogoTextViewSpacing],
-    [_textView.trailingAnchor
-        constraintEqualToAnchor:textViewContainer.trailingAnchor],
-    [_textView.topAnchor constraintEqualToAnchor:textViewContainer.topAnchor],
-    [_textView.bottomAnchor
-        constraintEqualToAnchor:textViewContainer.bottomAnchor],
-  ]];
-#else
-  // If no logo, text view fills the container.
-  [NSLayoutConstraint activateConstraints:@[
-    [_textView.leadingAnchor
-        constraintEqualToAnchor:textViewContainer.leadingAnchor],
-    [_textView.trailingAnchor
-        constraintEqualToAnchor:textViewContainer.trailingAnchor],
-    [_textView.topAnchor constraintEqualToAnchor:textViewContainer.topAnchor],
-    [_textView.bottomAnchor
-        constraintEqualToAnchor:textViewContainer.bottomAnchor],
-  ]];
-#endif
 
   // Carousel view
   UICollectionViewFlowLayout* layout =
@@ -347,7 +278,7 @@ const CGFloat kGlowEffectWidth = 4.0f;
 
   // Main vertical stack view
   _inputPlateStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    textViewContainer, _carouselView, buttonsStackView
+    _omniboxContainer, _carouselView, buttonsStackView
   ]];
   _inputPlateStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
@@ -389,6 +320,40 @@ const CGFloat kGlowEffectWidth = 4.0f;
         constraintEqualToAnchor:_inputPlateContainerView.trailingAnchor
                        constant:-kInputPlateStackViewTrailingPadding],
   ]];
+}
+
+#pragma mark - Public
+
+- (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
+  _editView = editView;
+  _editView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_omniboxContainer addSubview:editView];
+  AddSameConstraints(_editView, _omniboxContainer);
+}
+
+#pragma mark - OmniboxPopupPresenterDelegate
+
+- (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {
+  return _omniboxPopupContainer;
+}
+
+- (UIViewController*)popupParentViewControllerForPresenter:
+    (OmniboxPopupPresenter*)presenter {
+  return self;
+}
+
+- (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter {
+  return [UIColor colorNamed:kPrimaryBackgroundColor];
+}
+
+- (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter {
+  return nil;
+}
+
+- (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter {
+}
+
+- (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
 }
 
 #pragma mark - AIMPrototypeConsumer

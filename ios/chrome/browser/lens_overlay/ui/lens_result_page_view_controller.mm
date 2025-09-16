@@ -400,6 +400,7 @@ const CGFloat kGrabberTopPadding = 5;
     [_progressBar setHidden:YES animated:YES completion:nil];
   }
 }
+
 #pragma mark - OmniboxPopupPresenterDelegate
 
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {

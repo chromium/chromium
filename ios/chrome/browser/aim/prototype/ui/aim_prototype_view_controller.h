@@ -9,9 +9,12 @@
 
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_animation_context_provider.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_consumer.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 
 @protocol AIMPrototypeMutator;
 @class AIMPrototypeViewController;
+@protocol TextFieldViewContaining;
 
 // Delegate for the AIM prototype view controller.
 @protocol AIMPrototypeViewControllerDelegate
@@ -32,10 +35,14 @@
 // View controller for the AIM prototype.
 @interface AIMPrototypeViewController
     : UIViewController <AIMPrototypeAnimationContextProvider,
-                        AIMPrototypeConsumer>
+                        AIMPrototypeConsumer,
+                        OmniboxPopupPresenterDelegate>
 
 @property(nonatomic, weak) id<AIMPrototypeViewControllerDelegate> delegate;
 @property(nonatomic, weak) id<AIMPrototypeMutator> mutator;
+
+/// Sets the omnibox edit view.
+- (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
 
 @end
 

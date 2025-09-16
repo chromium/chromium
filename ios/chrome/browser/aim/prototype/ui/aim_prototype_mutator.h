@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-// Mutator for the AIM prototype.
+/// Mutator for the AIM prototype.
 @protocol AIMPrototypeMutator
 
 /// Sends `text` to start a query.
