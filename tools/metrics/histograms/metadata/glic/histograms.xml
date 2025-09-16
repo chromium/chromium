@@ -127,7 +127,7 @@ chromium-metrics-reviews@google.com.
     <variant name="GetModelQualityClientId"/>
     <variant name="GetOsMicrophonePermissionStatus"/>
     <variant name="GetUserProfileInfo"/>
-    <variant name="GetZeroStateSuggestions"/>
+    <variant name="GetZeroStateSuggestionsAndSubscribe"/>
     <variant name="GetZeroStateSuggestionsForFocusedTab"/>
     <variant name="JournalClear"/>
     <variant name="JournalRecordFeedback"/>
