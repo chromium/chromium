@@ -28,6 +28,8 @@ const SAVE_TO_DRIVE_CONSUMER_MANAGE_STORAGE_URL: string =
 
 const SAVE_TO_DRIVE_DASHER_MANAGE_STORAGE_URL: string =
     'https://drive.google.com/drive/quota';
+
+const SAVE_TO_DRIVE_DRIVE_URL: string = 'https://drive.google.com';
 // </if>
 
 export interface DocumentDimensionsMessageData {
@@ -161,5 +163,13 @@ export function getSaveToDriveManageStorageUrl(
       SAVE_TO_DRIVE_CONSUMER_MANAGE_STORAGE_URL;
 
   return getChooserRequiredUrl(accountEmail, redirectUrl);
+}
+
+export function getSaveToDriveOpenInDriveUrl(
+    accountEmail: string, driveItemId: string): string {
+  const url = new URL(SAVE_TO_DRIVE_DRIVE_URL);
+  url.searchParams.set('action', 'locate');
+  url.searchParams.set('id', driveItemId);
+  return getChooserRequiredUrl(accountEmail, url.href);
 }
 // </if> enable_pdf_save_to_drive

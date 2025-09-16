@@ -77,7 +77,7 @@ import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
 import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 // <if expr="enable_pdf_save_to_drive">
-import {getSaveToDriveManageStorageUrl} from './pdf_viewer_utils.js';
+import {getSaveToDriveManageStorageUrl, getSaveToDriveOpenInDriveUrl} from './pdf_viewer_utils.js';
 // </if> enable_pdf_save_to_drive
 import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents, verifyPdfHeader} from './pdf_viewer_utils.js';
 // clang-format on
@@ -1348,12 +1348,21 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             WindowOpenDisposition.NEW_FOREGROUND_TAB);
         // TODO(crbug.com/427449996): Add testing for this case.
         break;
+      case SaveToDriveBubbleRequestType.OPEN_IN_DRIVE:
+        assert(this.saveToDriveProgress_.accountEmail);
+        assert(this.saveToDriveProgress_.driveItemId);
+        this.handleNavigate_(
+            getSaveToDriveOpenInDriveUrl(
+                this.saveToDriveProgress_.accountEmail,
+                this.saveToDriveProgress_.driveItemId),
+            WindowOpenDisposition.NEW_FOREGROUND_TAB);
+        // TODO(crbug.com/427449996): Add testing for this case.
+        break;
       case SaveToDriveBubbleRequestType.RETRY:
         PdfViewerPrivateProxyImpl.getInstance().saveToDrive(
             this.saveToDriveRequestType_);
         break;
       default:
-        // TODO(crbug.com/427449996): Implement the save PDF to drive logics.
         console.warn(
             'Saving to Drive bubble action is not implemented yet.', e.detail);
         break;
