@@ -26627,6 +26627,24 @@
             ]
         }
     ],
+    "WebAuthenticationNewRefreshFlow": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAuthenticationNewRefreshFlow"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebContentsDiscard": [
         {
             "platforms": [
