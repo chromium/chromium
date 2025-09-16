@@ -23,6 +23,11 @@ class ConvertingAudioFifo;
 using OpusEncoderDeleterType = void (*)(OpusEncoder* encoder_ptr);
 using OwnedOpusEncoder = std::unique_ptr<OpusEncoder, OpusEncoderDeleterType>;
 
+using OpusRepacketizerDeleterType =
+    void (*)(OpusRepacketizer* repacketizer_ptr);
+using OwnedOpusRepacketizer =
+    std::unique_ptr<OpusRepacketizer, OpusRepacketizerDeleterType>;
+
 // Performs Opus encoding of the input audio. The input audio is converted to a
 // a format suitable for Opus before it is passed to the libopus encoder
 // instance to do the actual encoding.
@@ -53,6 +58,8 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   void DoEncode(const AudioBus* audio_bus);
 
   void DrainFifoOutput();
+
+  void EmitEncodedBuffer(size_t encoded_data_size);
 
   CodecDescription PrepareExtraData();
 
@@ -101,6 +108,34 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
 
   // True if the next output needs to have extra_data in it, only happens once.
   bool need_to_emit_extra_data_ = true;
+
+  // For bundling several opus frames into a single packet.
+  OwnedOpusRepacketizer opus_repacketizer_;
+
+  // Counts the total number of packets (also known as Opus frames) in the
+  // repacketizer. Resets to zero every time we Emit an EncodedAudioBuffer. We
+  // manually count the packets rather than use the convenience method
+  // opus_repacketizer_get_nb_frames() due to how it measures frames. For
+  // example, it can correctly deduce 5ms as two 2.5ms frames, but will not
+  // count in 40ms or 60ms frames. It uses 20ms in these cases, requiring us to
+  // track the total packets ourselves.
+  size_t accumulated_packets_in_repacketizer_ = 0;
+
+  // This value is the number of intermediate durations that will fit in the
+  // final duration.
+  size_t max_packets_in_repacketizer_ = 1;
+
+  // This is the frame duration calculated from the input params opus options.
+  base::TimeDelta final_frame_duration_;
+
+  // We add silence until we emit an encoded buffer to guarantee all audio has
+  // been encoded.
+  bool waiting_for_output_ = false;
+
+  // If using `opus_repacketizer_`, this contains the size of smaller packets to
+  // be concatenated into a large one of size |final_frame_duration_|.
+  // Otherwise unused.
+  size_t intermediate_frame_count_ = 0;
 };
 
 }  // namespace media
