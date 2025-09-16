@@ -123,6 +123,7 @@ gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
 
   gfx::Rect visible_box_in_viewport_coords = ToEnclosingRect(object_rect);
 
+#if DCHECK_IS_ON() && !defined(OFFICIAL_BUILD)
   // The visible bounding box should always have non-negative coordinates since
   // it's relative to the viewport. Negative coordinates would indicate a bug
   // in the coordinate transformation.
@@ -132,6 +133,7 @@ gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
   DCHECK_GE(visible_box_in_viewport_coords.y(), 0)
       << "Visible bounding box should be viewport-relative with y >= 0, got: "
       << visible_box_in_viewport_coords.ToString() << " for object: " << object;
+#endif
 
   return visible_box_in_viewport_coords;
 }
@@ -202,7 +204,7 @@ void ComputeFragmentBoundingBoxes(
 // differences
 // 2. Floating-point to integer conversions can introduce small rounding errors
 // 3. CSS transforms can cause complex geometric relationships
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() && !defined(OFFICIAL_BUILD)
 void ValidateBoundingBoxes(const gfx::Rect& outer_box_in_absolute_coords,
                            const gfx::Rect& visible_box_in_viewport_coords,
                            const LayoutObject& object) {
@@ -1555,7 +1557,8 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
   geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
 
   // Validate the relationship between outer and visible bounding boxes
-#if DCHECK_IS_ON()
+  // TODO(aleventhal): restore for Canary builds.
+#if DCHECK_IS_ON() && !defined(OFFICIAL_BUILD)
   ValidateBoundingBoxes(geometry.outer_bounding_box,
                         geometry.visible_bounding_box, object);
 #endif
