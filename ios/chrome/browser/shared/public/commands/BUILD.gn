@@ -123,7 +123,7 @@ source_set("commands") {
     "//base",
     "//components/browsing_data/core",
     "//components/password_manager/core/browser",
-    "//components/plus_addresses",
+    "//components/plus_addresses/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/browsing_data/model:model_remove_mask",
     "//ios/chrome/browser/bubble/public",

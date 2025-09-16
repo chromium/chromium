@@ -6,10 +6,10 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/affiliations/core/browser/affiliation_utils.h"
+#import "components/plus_addresses/core/browser/fake_plus_address_service.h"
 #import "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #import "components/plus_addresses/core/browser/plus_address_types.h"
 #import "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
-#import "components/plus_addresses/fake_plus_address_service.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

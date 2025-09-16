@@ -56,7 +56,7 @@ specific_include_rules = {
    "+components/feature_engagement/public/feature_activation.h",
    "+components/password_manager/core/browser/sharing/fake_recipients_fetcher.h",
    "+components/password_manager/ios",
-   "+components/plus_addresses/fake_plus_address_service.h",
+   "+components/plus_addresses/core/browser/fake_plus_address_service.h",
    "+components/saved_tab_groups",
    "+components/signin/internal/identity_manager",
   ],

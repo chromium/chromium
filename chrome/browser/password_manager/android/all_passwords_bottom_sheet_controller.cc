@@ -20,7 +20,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/native_ui_types.h"
 

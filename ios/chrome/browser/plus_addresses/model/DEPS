@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/plus_addresses",
+  "+components/plus_addresses/core/browser",
   "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/signin/model",

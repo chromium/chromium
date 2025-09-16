@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_IMPL_H_
-#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_IMPL_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SERVICE_IMPL_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SERVICE_IMPL_H_
 
 #include <memory>
 #include <optional>
@@ -16,13 +16,13 @@
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
-#include "components/plus_addresses/affiliations/plus_address_affiliation_match_helper.h"
+#include "components/plus_addresses/core/browser/affiliations/plus_address_affiliation_match_helper.h"
 #include "components/plus_addresses/core/browser/metrics/plus_address_submission_logger.h"
 #include "components/plus_addresses/core/browser/plus_address_cache.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
-#include "components/plus_addresses/plus_address_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -244,4 +244,4 @@ class PlusAddressServiceImpl : public PlusAddressService,
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_SERVICE_IMPL_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_SERVICE_IMPL_H_

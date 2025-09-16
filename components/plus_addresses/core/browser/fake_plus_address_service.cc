@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/fake_plus_address_service.h"
+#include "components/plus_addresses/core/browser/fake_plus_address_service.h"
 
 #include <optional>
 #include <string>

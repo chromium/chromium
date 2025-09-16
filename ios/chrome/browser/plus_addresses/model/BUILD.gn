@@ -12,7 +12,7 @@ source_set("model") {
   deps = [
     "//base",
     "//components/affiliations/core/browser:affiliations",
-    "//components/plus_addresses",
+    "//components/plus_addresses/core/browser",
     "//components/plus_addresses/core/browser/settings",
     "//components/variations/service",
     "//ios/chrome/app:tests_hook",

@@ -341,7 +341,7 @@ source_set("eg2_tests") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
-    "//components/plus_addresses:test_support",
+    "//components/plus_addresses/core/browser:test_support",
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/common:features",
     "//components/strings",

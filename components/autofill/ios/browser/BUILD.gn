@@ -57,7 +57,7 @@ source_set("browser") {
     "//components/autofill/ios/form_util:form_handler_feature",
     "//components/autofill/ios/form_util:form_util_feature",
     "//components/feature_engagement/public",
-    "//components/plus_addresses",
+    "//components/plus_addresses/core/browser",
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/prefs",
     "//components/prefs/ios",

@@ -1,7 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "components/plus_addresses/plus_address_service_impl.h"
+#include "components/plus_addresses/core/browser/plus_address_service_impl.h"
 
 #include <memory>
 #include <string>
@@ -39,6 +39,7 @@
 #include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_jit_allocator.h"
 #include "components/plus_addresses/core/browser/plus_address_preallocator.h"
+#include "components/plus_addresses/core/browser/plus_address_suggestion_generator.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/browser/plus_address_ui_utils.h"
 #include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
@@ -46,7 +47,6 @@
 #include "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/core/common/plus_address_prefs.h"
-#include "components/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"

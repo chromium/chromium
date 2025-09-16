@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_AFFILIATIONS_PLUS_ADDRESS_AFFILIATION_SOURCE_ADAPTER_H_
-#define COMPONENTS_PLUS_ADDRESSES_AFFILIATIONS_PLUS_ADDRESS_AFFILIATION_SOURCE_ADAPTER_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_AFFILIATIONS_PLUS_ADDRESS_AFFILIATION_SOURCE_ADAPTER_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_AFFILIATIONS_PLUS_ADDRESS_AFFILIATION_SOURCE_ADAPTER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/affiliations/core/browser/affiliation_source.h"
-#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
 
 namespace plus_addresses {
 
@@ -46,4 +46,4 @@ class PlusAddressAffiliationSourceAdapter
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_AFFILIATIONS_PLUS_ADDRESS_AFFILIATION_SOURCE_ADAPTER_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_AFFILIATIONS_PLUS_ADDRESS_AFFILIATION_SOURCE_ADAPTER_H_

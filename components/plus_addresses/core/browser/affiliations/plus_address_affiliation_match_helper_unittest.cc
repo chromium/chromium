@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/affiliations/plus_address_affiliation_match_helper.h"
+#include "components/plus_addresses/core/browser/affiliations/plus_address_affiliation_match_helper.h"
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -13,12 +13,12 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/plus_addresses/core/browser/mock_plus_address_http_client.h"
+#include "components/plus_addresses/core/browser/plus_address_service_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_test_environment.h"
 #include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/browser/settings/fake_plus_address_setting_service.h"
 #include "components/plus_addresses/core/common/features.h"
-#include "components/plus_addresses/plus_address_service_impl.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

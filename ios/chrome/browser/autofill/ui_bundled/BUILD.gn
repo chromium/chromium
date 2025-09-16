@@ -29,7 +29,7 @@ source_set("coordinator") {
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/common",
     "//components/password_manager/ios",
-    "//components/plus_addresses",
+    "//components/plus_addresses/core/browser",
     "//components/prefs",
     "//components/security_state/ios",
     "//components/strings",

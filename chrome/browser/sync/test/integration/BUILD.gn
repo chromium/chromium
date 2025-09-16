@@ -34,7 +34,7 @@ source_set("sync_integration_tests_impl") {
     "//components/commerce/core:feature_list",
     "//components/data_sharing/public",
     "//components/password_manager/core/browser/sharing",
-    "//components/plus_addresses:test_support",
+    "//components/plus_addresses/core/browser:test_support",
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/browser/webdata",
     "//components/reading_list/core:test_support",

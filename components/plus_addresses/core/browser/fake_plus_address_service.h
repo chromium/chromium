@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_FAKE_PLUS_ADDRESS_SERVICE_H_
-#define COMPONENTS_PLUS_ADDRESSES_FAKE_PLUS_ADDRESS_SERVICE_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_FAKE_PLUS_ADDRESS_SERVICE_H_
+#define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_FAKE_PLUS_ADDRESS_SERVICE_H_
 
 #include <optional>
 #include <string>
@@ -12,8 +12,8 @@
 
 #include "base/functional/callback.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "components/plus_addresses/plus_address_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses {
@@ -192,4 +192,4 @@ class FakePlusAddressService : public PlusAddressService {
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_FAKE_PLUS_ADDRESS_SERVICE_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_FAKE_PLUS_ADDRESS_SERVICE_H_

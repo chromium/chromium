@@ -65,6 +65,10 @@ source_set("parsing") {
 
 source_set("browser") {
   sources = [
+    "affiliations/plus_address_affiliation_match_helper.cc",
+    "affiliations/plus_address_affiliation_match_helper.h",
+    "affiliations/plus_address_affiliation_source_adapter.cc",
+    "affiliations/plus_address_affiliation_source_adapter.h",
     "plus_address_allocator.h",
     "plus_address_cache.cc",
     "plus_address_cache.h",
@@ -75,25 +79,45 @@ source_set("browser") {
     "plus_address_jit_allocator.h",
     "plus_address_preallocator.cc",
     "plus_address_preallocator.h",
+    "plus_address_service.h",
+    "plus_address_service_impl.cc",
+    "plus_address_service_impl.h",
+    "plus_address_suggestion_generator.cc",
+    "plus_address_suggestion_generator.h",
     "plus_address_ui_utils.cc",
     "plus_address_ui_utils.h",
   ]
   deps = [
+    ":blocklist_data",
+    ":hats_utils",
     ":parsing",
     "//components/affiliations/core/browser:affiliations",
     "//components/feature_engagement/public",
     "//components/plus_addresses/core/browser/metrics",
+    "//components/plus_addresses/core/browser/metrics:submission_logger",
+    "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/browser/settings",
-    "//components/plus_addresses/core/common:features",
+    "//components/plus_addresses/core/browser/webdata",
     "//components/plus_addresses/core/common:prefs",
     "//components/signin/public/identity_manager",
+    "//components/strings:components_strings_grit",
     "//components/url_formatter",
     "//net",
     "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//ui/base",
   ]
   public_deps = [
+    ":types",
     "//base",
-    "//components/plus_addresses/core/browser:types",
+    "//components/autofill/core/browser",
+    "//components/keyed_service/core",
+
+    # While not strictly public by .h file inclusion, this is a temporary move
+    # of features.h out of sources. Allowing those depending on
+    # :browser to also depend on its features to reduce churn.
+    "//components/plus_addresses/core/common:features",
+    "//third_party/abseil-cpp:absl",
     "//url",
   ]
 }
@@ -106,25 +130,40 @@ buildflag_header("plus_addresses_buildflags") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "affiliations/plus_address_affiliation_match_helper_unittest.cc",
+    "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
     "plus_address_blocklist_data_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
     "plus_address_parsing_utils_unittest.cc",
     "plus_address_preallocator_unittest.cc",
+    "plus_address_service_impl_unittest.cc",
+    "plus_address_suggestion_generator_unittest.cc",
   ]
 
   deps = [
     ":blocklist_data",
+    ":browser",
+    ":hats_utils",
     ":parsing",
     ":test_support",
     "//base/test:test_support",
     "//components/affiliations/core/browser:affiliations",
+    "//components/affiliations/core/browser:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/feature_engagement/public",
+    "//components/os_crypt/async/browser:test_support",
     "//components/plus_addresses/core/browser/metrics",
+    "//components/plus_addresses/core/browser/resources/strings",
+    "//components/plus_addresses/core/browser/settings:test_support",
+    "//components/plus_addresses/core/browser/webdata",
     "//components/plus_addresses/core/common:features",
     "//components/plus_addresses/core/common:prefs",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
-    "//testing/gmock",
   ]
 }
 
@@ -133,6 +172,8 @@ static_library("test_support") {
   sources = [
     "fake_plus_address_allocator.cc",
     "fake_plus_address_allocator.h",
+    "fake_plus_address_service.cc",
+    "fake_plus_address_service.h",
     "mock_plus_address_http_client.cc",
     "mock_plus_address_http_client.h",
     "plus_address_http_client_impl_test_api.h",
@@ -142,19 +183,22 @@ static_library("test_support") {
     "plus_address_test_utils.h",
   ]
   deps = [
+    ":hats_utils",
     "//base",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/feature_engagement/public",
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/common:prefs",
     "//components/strings:components_strings_grit",
     "//net:test_support",
-    "//services/network:test_support",
     "//testing/gmock",
   ]
   public_deps = [
     ":browser",
+    ":types",
     "//components/affiliations/core/browser:test_support",
     "//components/plus_addresses/core/browser/settings:test_support",
     "//components/prefs:test_support",

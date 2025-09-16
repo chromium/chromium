@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
+#include "components/plus_addresses/core/browser/affiliations/plus_address_affiliation_source_adapter.h"
 
 #include "base/containers/span.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "components/plus_addresses/plus_address_service.h"
 
 namespace plus_addresses {
 namespace {

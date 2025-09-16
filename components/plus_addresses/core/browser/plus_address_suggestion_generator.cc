@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_suggestion_generator.h"
+#include "components/plus_addresses/core/browser/plus_address_suggestion_generator.h"
 
 #include <string>
 #include <utility>
@@ -21,10 +21,10 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/browser/plus_address_allocator.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/core/common/features.h"
-#include "components/plus_addresses/plus_address_service.h"
 #include "net/http/http_status_code.h"
 #include "ui/base/l10n/l10n_util.h"
 

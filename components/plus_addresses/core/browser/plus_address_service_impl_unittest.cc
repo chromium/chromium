@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_service_impl.h"
+#include "components/plus_addresses/core/browser/plus_address_service_impl.h"
 
 #include <optional>
 #include <string>
@@ -48,6 +48,7 @@
 #include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
 #include "components/plus_addresses/core/browser/plus_address_preallocator.h"
+#include "components/plus_addresses/core/browser/plus_address_suggestion_generator.h"
 #include "components/plus_addresses/core/browser/plus_address_test_environment.h"
 #include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
@@ -57,7 +58,6 @@
 #include "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/plus_addresses/core/common/plus_address_prefs.h"
-#include "components/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
