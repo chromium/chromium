@@ -59,14 +59,47 @@ bool ValidateMulticastOptions(ExecutionContext* execution_context,
         "MulticastInDirectSocketsEnabled is not enabled. Go to chrome://flags "
         "to enable it.");
     return false;
-  } else if (!execution_context->IsFeatureEnabled(
-                 network::mojom::blink::PermissionsPolicyFeature::
-                     kMulticastInDirectSockets)) {
-    exception_state.ThrowTypeError(
-        "Cannot use Multicast options if permission policy "
-        "'direct-sockets-multicast' is absent.");
+  }
+
+  if (execution_context->IsWindow() ||
+      execution_context->IsDedicatedWorkerGlobalScope()) {
+    if (!execution_context->IsFeatureEnabled(
+            network::mojom::blink::PermissionsPolicyFeature::
+                kMulticastInDirectSockets)) {
+      exception_state.ThrowTypeError(
+          "Cannot use Multicast options if permission policy "
+          "'direct-sockets-multicast' is absent.");
+      return false;
+    }
+  } else if (!execution_context->IsServiceWorkerGlobalScope() &&
+             !execution_context->IsSharedWorkerGlobalScope()) {
+    // TODO(crbug.com/393539884): Add permission policy check for service and
+    // shared worker.
     return false;
   }
+
+  return true;
+}
+
+bool IsMulticastAllowed(ExecutionContext* execution_context) {
+  if (!RuntimeEnabledFeatures::MulticastInDirectSocketsEnabled()) {
+    return false;
+  }
+
+  if (execution_context->IsWindow() ||
+      execution_context->IsDedicatedWorkerGlobalScope()) {
+    if (!execution_context->IsFeatureEnabled(
+            network::mojom::blink::PermissionsPolicyFeature::
+                kMulticastInDirectSockets)) {
+      return false;
+    }
+  } else if (!execution_context->IsServiceWorkerGlobalScope() &&
+             !execution_context->IsSharedWorkerGlobalScope()) {
+    // TODO(crbug.com/393539884): Add permission policy check for service and
+    // shared worker.
+    return false;
+  }
+
   return true;
 }
 
@@ -427,10 +460,7 @@ void UDPSocket::FinishOpen(
     open_info->setLocalPort(local_addr->port());
 
     if (mode == network::mojom::RestrictedUDPSocketMode::BOUND &&
-        RuntimeEnabledFeatures::MulticastInDirectSocketsEnabled() &&
-        GetExecutionContext()->IsFeatureEnabled(
-            network::mojom::blink::PermissionsPolicyFeature::
-                kMulticastInDirectSockets)) {
+        IsMulticastAllowed(GetExecutionContext())) {
       multicast_controller_ = MakeGarbageCollected<MulticastController>(
           GetExecutionContext(), udp_socket_.Get());
       open_info->setMulticastController(multicast_controller_.Get());

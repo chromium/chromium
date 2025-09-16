@@ -114,6 +114,16 @@ constexpr std::string_view kTcpReadWriteScript = R"(
   });
 )";
 
+constexpr std::string_view kMulticastJoinLeaveGroup = R"(
+  (async () => {
+    const socket = new UDPSocket({ localAddress: $1 });
+    const { multicastController } = await socket.opened;
+
+    await multicastController.joinGroup($2);
+    await multicastController.leaveGroup($2);
+  })();
+)";
+
 constexpr std::string_view kUdpConnectedReadWriteScript = R"(
   new Promise(async (resolve, reject) => {
     try {
@@ -786,9 +796,16 @@ class IsolatedWebAppSharedWorkerApiTest
     });
   )";
 
+  IsolatedWebAppSharedWorkerApiTest() {
+    features_.InitWithFeatures({blink::features::kDirectSocketsInSharedWorkers,
+                                blink::features::kMulticastInDirectSockets},
+                               {});
+  }
+
   content::RenderFrameHost* InstallAndOpenIsolatedWebAppWithSharedWorkerScript(
       std::string_view shared_worker_script,
-      bool with_pna = false) {
+      bool with_pna = false,
+      bool with_multicast = false) {
     using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
 
     auto manifest_builder =
@@ -798,6 +815,10 @@ class IsolatedWebAppSharedWorkerApiTest
       manifest_builder.AddPermissionsPolicyWildcard(
           PermissionsPolicyFeature::kDirectSocketsPrivate);
     }
+    if (with_multicast) {
+      manifest_builder.AddPermissionsPolicyWildcard(
+          PermissionsPolicyFeature::kMulticastInDirectSockets);
+    }
     auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
                    .AddJs("/shared_worker.js", shared_worker_script)
                    .BuildBundle();
@@ -806,8 +827,7 @@ class IsolatedWebAppSharedWorkerApiTest
   }
 
  private:
-  base::test::ScopedFeatureList features_{
-      blink::features::kDirectSocketsInSharedWorkers};
+  base::test::ScopedFeatureList features_;
 };
 
 class IsolatedWebAppServiceWorkerApiTest
@@ -844,9 +864,16 @@ class IsolatedWebAppServiceWorkerApiTest
     });
   )";
 
+  IsolatedWebAppServiceWorkerApiTest() {
+    features_.InitWithFeatures({blink::features::kDirectSocketsInServiceWorkers,
+                                blink::features::kMulticastInDirectSockets},
+                               {});
+  }
+
   content::RenderFrameHost* InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
       std::string_view service_worker_script,
-      bool with_pna = false) {
+      bool with_pna = false,
+      bool with_multicast = false) {
     using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
 
     auto manifest_builder =
@@ -856,6 +883,10 @@ class IsolatedWebAppServiceWorkerApiTest
       manifest_builder.AddPermissionsPolicyWildcard(
           PermissionsPolicyFeature::kDirectSocketsPrivate);
     }
+    if (with_multicast) {
+      manifest_builder.AddPermissionsPolicyWildcard(
+          PermissionsPolicyFeature::kMulticastInDirectSockets);
+    }
     auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
                    .AddJs("/service_worker.js", service_worker_script)
                    .BuildBundle();
@@ -864,8 +895,7 @@ class IsolatedWebAppServiceWorkerApiTest
   }
 
  private:
-  base::test::ScopedFeatureList features_{
-      blink::features::kDirectSocketsInServiceWorkers};
+  base::test::ScopedFeatureList features_;
 };
 
 template <typename T>
@@ -1108,6 +1138,18 @@ IN_PROC_BROWSER_TEST_F(
       ErrorIs(testing::HasSubstr("Cannot read properties of undefined")));
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
+                       MulticastJoinLeaveGroup) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
+
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(
+                                    kMulticastJoinLeaveGroup,
+                                    net::IPAddress::IPv4AllZeros().ToString(),
+                                    kMulticastAddress)),
+              IsOk());
+}
+
 // TODO(crbug.com/443716695): Fails on mac-rel bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_UdpSocketMulticastExchange DISABLED_UdpSocketMulticastExchange
@@ -1247,6 +1289,35 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
       base::StringPrintf(kServiceWorkerScriptTemplate,
                          content::JsReplace(kUdpBoundReadWriteScript, kHostname,
                                             test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+          service_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
+                       MulticastJoinLeaveGroup) {
+  const std::string shared_worker_script = base::StringPrintf(
+      kSharedWorkerScriptTemplate,
+      content::JsReplace(kMulticastJoinLeaveGroup,
+                         net::IPAddress::IPv4AllZeros().ToString(),
+                         kMulticastAddress));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
+                       MulticastJoinLeaveGroup) {
+  const std::string service_worker_script = base::StringPrintf(
+      kServiceWorkerScriptTemplate,
+      content::JsReplace(kMulticastJoinLeaveGroup,
+                         net::IPAddress::IPv4AllZeros().ToString(),
+                         kMulticastAddress));
 
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebAppWithServiceWorkerScript(

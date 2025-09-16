@@ -169,13 +169,18 @@ bool IsMulticastAllowed(const Context& context) {
                                kMulticastInDirectSockets);
                      },
                      [](base::WeakPtr<SharedWorkerHost> shared_worker) {
-                       // TODO(crbug.com/398934282): add shared worker support.
-                       return false;
+                       // No need to check flag DirectSocketsInSharedWorker,
+                       // since it was checked already
+                       // TODO(crbug.com/393539884): Add permissions policy
+                       // check.
+                       return true;
                      },
                      [](base::WeakPtr<ServiceWorkerVersion> service_worker) {
-                       // TODO(crbug.com/398934282): add dedicated worker
-                       // support.
-                       return false;
+                       // No need to check flag DirectSocketsInServiceWorker,
+                       // since it was checked already.
+                       // TODO(crbug.com/393539884): Add permissions policy
+                       // check.
+                       return true;
                      }},
       context);
 }
