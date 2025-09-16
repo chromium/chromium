@@ -38,17 +38,20 @@ SVGLengthList* SVGLengthList::Clone() const {
 }
 
 template <typename CharType>
-SVGParsingError SVGLengthList::ParseInternal(const CharType* ptr,
-                                             const CharType* end) {
-  const CharType* list_start = ptr;
-  while (ptr < end) {
-    const CharType* start = ptr;
+SVGParsingError SVGLengthList::ParseInternal(
+    const base::span<const CharType> chars) {
+  for (size_t position = 0; position < chars.size();
+       position = SkipOptionalSVGSpacesOrDelimiter(chars, position)) {
+    size_t start = position;
     // TODO(shanmuga.m): Enable calc for SVGLengthList
-    while (ptr < end && *ptr != ',' && !IsHTMLSpace<CharType>(*ptr))
-      UNSAFE_TODO(ptr++);
-    if (ptr == start)
+    while (position < chars.size() && chars[position] != ',' &&
+           !IsHTMLSpace<CharType>(chars[position])) {
+      ++position;
+    }
+    if (position == start) {
       break;
-    String value_string(UNSAFE_TODO(base::span(start, ptr)));
+    }
+    String value_string(chars.subspan(start, position - start));
     if (value_string.empty())
       break;
 
@@ -56,9 +59,8 @@ SVGParsingError SVGLengthList::ParseInternal(const CharType* ptr,
     SVGParsingError length_parse_status =
         length->SetValueAsString(value_string);
     if (length_parse_status != SVGParseStatus::kNoError)
-      return length_parse_status.OffsetWith(start - list_start);
+      return length_parse_status.OffsetWith(start);
     Append(length);
-    SkipOptionalSVGSpacesOrDelimiter(ptr, end);
   }
   return SVGParseStatus::kNoError;
 }
@@ -69,9 +71,8 @@ SVGParsingError SVGLengthList::SetValueAsString(const String& value) {
   if (value.empty())
     return SVGParseStatus::kNoError;
 
-  return VisitCharacters(value, [&](auto chars) {
-    return ParseInternal(chars.data(), chars.data() + chars.size());
-  });
+  return VisitCharacters(value,
+                         [&](auto chars) { return ParseInternal(chars); });
 }
 
 void SVGLengthList::Add(const SVGPropertyBase* other,

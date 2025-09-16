@@ -85,24 +85,6 @@ constexpr inline bool SkipOptionalSVGSpaces(base::span<const CharType>& span) {
   return result;
 }
 
-// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
-// usage.
-template <typename CharType>
-inline bool SkipOptionalSVGSpacesOrDelimiter(const CharType*& ptr,
-                                             const CharType* end,
-                                             char delimiter = ',') {
-  if (ptr < end && !IsHTMLSpace<CharType>(*ptr) && *ptr != delimiter) {
-    return false;
-  }
-  if (SkipOptionalSVGSpaces(ptr, end)) {
-    if (*ptr == delimiter) {
-      UNSAFE_TODO(ptr++);
-      SkipOptionalSVGSpaces(ptr, end);
-    }
-  }
-  return ptr < end;
-}
-
 // Skips optional spaces and an optional delimiter (a comma, by default).
 // This is used for parsing separators in lists of values in SVG attributes.
 //
