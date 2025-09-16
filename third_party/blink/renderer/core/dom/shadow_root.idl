@@ -52,7 +52,7 @@ interface ShadowRoot : DocumentFragment {
     // When the host element is the target of an IDREF attribute like
     // aria-activedescendant, the reference resolves to the referenceTarget.
     // See https://crbug.com/346835896
-    [RuntimeEnabled=ShadowRootReferenceTarget] attribute DOMString referenceTarget;
+    [RuntimeEnabled=ShadowRootReferenceTarget] attribute DOMString? referenceTarget;
 
     [RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe((TrustedHTML or DOMString) string);
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe((TrustedHTML or DOMString) html, SetHTMLUnsafeOptions options);
