@@ -1577,9 +1577,18 @@ InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
 
       const ShapeResult* shape_result = item.TextShapeResult();
       DCHECK(shape_result);
-      const ShapeResultView& shape_result_view = *ShapeResultView::Create(
-          shape_result, current.text_offset, item.EndOffset());
-      LayoutUnit width = shape_result_view.SnappedWidth().ClampNegativeToZero();
+      LayoutUnit width = shape_result->SnappedWidth().ClampNegativeToZero();
+      if (current.text_offset != item.StartOffset()) {
+        // When subpixel positioning is enabled, a ShapeResultView from the
+        // start to an offset, plus another from the offset to the end, don't
+        // necessarily add up to the same width as the original ShapeResult.
+        // In this case, the view that was added into the line was up to
+        // `current.text_offset`, so we subtract that width.
+        const ShapeResultView& shape_result_view = *ShapeResultView::Create(
+            shape_result, item.StartOffset(), current.text_offset);
+        width =
+            (width - shape_result_view.SnappedWidth()).ClampNegativeToZero();
+      }
       remaining_width -= width;
       switch (item.EndCollapseType()) {
         case InlineItem::kNotCollapsible:

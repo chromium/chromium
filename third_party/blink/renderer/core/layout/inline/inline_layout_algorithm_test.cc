@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 
 namespace blink {
 namespace {
@@ -1010,9 +1012,9 @@ foo
 }
 
 TEST_F(InlineLayoutAlgorithmTest, BidiControlsInLineClampedLines) {
-  if (!RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled()) {
-    return;
-  }
+  ScopedCSSLineClampLineBreakingEllipsisForTest
+      enable_line_breaking_ellipsis_for_test(true);
+
   SetBodyInnerHTML(R"HTML(
 <div style="line-clamp: 1; font: monospace; width: 7ch;">
     <bdi>Line 1
@@ -1025,6 +1027,45 @@ TEST_F(InlineLayoutAlgorithmTest, BidiControlsInLineClampedLines) {
   // fit in the ellipsis line if it didn't have the ellipsis.
 
   // This test passes if no crashes.
+}
+
+TEST_F(InlineLayoutAlgorithmTest, LineClampAndMaxContent) {
+  ScopedCSSLineClampLineBreakingEllipsisForTest
+      enable_line_breaking_ellipsis_for_test(true);
+  ScopedWebTestMode web_test_mode(false);
+
+  LoadFontFromFile(GetFrame(), blink::test::CoreTestDataPath("Revalia.woff"),
+                   AtomicString("Revalia"));
+
+  SetBodyInnerHTML(R"HTML(
+<style>
+  #test {
+    font: 20px Revalia;
+    width: max-content;
+    line-clamp: 1;
+
+    /* The bug that this test tests was only present with subpixel positioning.
+     * In Linux content_shell, it seems like subpixel positioning is enabled by
+     * default, but in unit tests it needs this property as well as disabling
+     * WebTestMode. */
+    text-rendering: geometricPrecision;
+  }
+</style>
+
+<!-- This bug happens only for some specific string and font combinations. -->
+<div id="test">sfd sdof jkl</div>
+)HTML");
+
+  // If there are no forced line breaks, `width: max-content` should leave
+  // enough space for the content to fit in one line without the line-clamp
+  // ellipsis, so the content should not clamp. But with subpixel positioning,
+  // this might not be the case.
+  LayoutBlockFlow* test =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
+
+  InlineCursor cursor(*test);
+  cursor.MoveToLastLogicalLeaf();
+  EXPECT_FALSE(cursor.Current().IsEllipsis());
 }
 
 }  // namespace
