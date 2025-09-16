@@ -508,10 +508,13 @@ export class PluginController implements ContentController {
 
   /**
    * Requests suggested filename for saving the current document.
+   * @param requestType The type of the request, only used for testing.
    */
-  getSuggestedFileName(): Promise<{fileName: string}> {
+  getSuggestedFileName(requestType: SaveRequestType):
+      Promise<{fileName: string, bypassSaveFileForTesting?: boolean}> {
     return this.postMessageWithReply_({
       type: 'getSuggestedFileName',
+      saveRequestTypeForTesting: requestType,
     });
   }
 

@@ -20,6 +20,18 @@ function getDownloadControls() {
   return getRequiredElement(viewerToolbar, 'viewer-download-controls');
 }
 
+function getFirstSaveMessageName(): string {
+  return loadTimeData.getBoolean('pdfGetSaveDataInBlocks') ?
+      'getSuggestedFileName' :
+      'save';
+}
+
+function getSaveRequestType(message: any): SaveRequestType {
+  return loadTimeData.getBoolean('pdfGetSaveDataInBlocks') ?
+      message.saveRequestTypeForTesting :
+      message.saveRequestType;
+}
+
 // Test saving with annotations. The download control's action menu should be
 // opened.
 async function testSaveWithAnnotations() {
@@ -28,7 +40,8 @@ async function testSaveWithAnnotations() {
 
   // The download menu should be shown.
   await eventToPromise('save-menu-shown-for-testing', downloadControls);
-  chrome.test.assertTrue(mockPlugin.findMessage('save') === undefined);
+  chrome.test.assertTrue(
+      mockPlugin.findMessage(getFirstSaveMessageName()) === undefined);
   chrome.test.assertTrue(actionMenu.open);
 
   const onSave = eventToPromise('save', viewer);
@@ -40,9 +53,10 @@ async function testSaveWithAnnotations() {
 
   // A message should be sent to the plugin to save as annotated.
   await onSave;
-  const saveMessage = mockPlugin.findMessage('save');
+  const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
   chrome.test.assertTrue(saveMessage !== undefined);
-  chrome.test.assertEq(saveMessage.saveRequestType, SaveRequestType.ANNOTATION);
+  chrome.test.assertEq(
+      getSaveRequestType(saveMessage), SaveRequestType.ANNOTATION);
   chrome.test.assertFalse(actionMenu.open);
 }
 
@@ -66,9 +80,10 @@ chrome.test.runTests([
 
     // A message should be sent to the plugin to save as original.
     await eventToPromise('save', viewer);
-    const saveMessage = mockPlugin.findMessage('save');
+    const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
-    chrome.test.assertEq(saveMessage.saveRequestType, SaveRequestType.ORIGINAL);
+    chrome.test.assertEq(
+        getSaveRequestType(saveMessage), SaveRequestType.ORIGINAL);
     chrome.test.assertFalse(actionMenu.open);
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.SAVE_ORIGINAL_ONLY, 1);
@@ -110,7 +125,8 @@ chrome.test.runTests([
 
     // The download menu should be shown.
     await eventToPromise('save-menu-shown-for-testing', downloadControls);
-    chrome.test.assertTrue(mockPlugin.findMessage('save') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage(getFirstSaveMessageName()) === undefined);
     chrome.test.assertTrue(actionMenu.open);
 
     const onSave = eventToPromise('save', viewer);
@@ -122,9 +138,10 @@ chrome.test.runTests([
 
     // A message should be sent to the plugin to save as annotated.
     await onSave;
-    const saveMessage = mockPlugin.findMessage('save');
+    const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
-    chrome.test.assertEq(saveMessage.saveRequestType, SaveRequestType.ORIGINAL);
+    chrome.test.assertEq(
+        getSaveRequestType(saveMessage), SaveRequestType.ORIGINAL);
     chrome.test.assertFalse(actionMenu.open);
     mockMetricsPrivate.assertCount(UserAction.SAVE_ORIGINAL, 1);
     chrome.test.succeed();
@@ -184,9 +201,10 @@ chrome.test.runTests([
 
     // A message should be sent to the plugin to save as original.
     await eventToPromise('save', viewer);
-    const saveMessage = mockPlugin.findMessage('save');
+    const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
-    chrome.test.assertEq(saveMessage.saveRequestType, SaveRequestType.ORIGINAL);
+    chrome.test.assertEq(
+        getSaveRequestType(saveMessage), SaveRequestType.ORIGINAL);
     chrome.test.assertFalse(actionMenu.open);
     mockMetricsPrivate.assertCount(UserAction.SAVE_ORIGINAL_ONLY, 1);
     chrome.test.succeed();
@@ -212,7 +230,8 @@ chrome.test.runTests([
 
     // The download menu should be shown.
     await eventToPromise('save-menu-shown-for-testing', downloadControls);
-    chrome.test.assertTrue(mockPlugin.findMessage('save') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage(getFirstSaveMessageName()) === undefined);
     chrome.test.assertTrue(actionMenu.open);
     chrome.test.succeed();
   },
@@ -248,9 +267,10 @@ chrome.test.runTests([
 
     // A message should be sent to the plugin to save as original.
     await eventToPromise('save', viewer);
-    const saveMessage = mockPlugin.findMessage('save');
+    const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
-    chrome.test.assertEq(saveMessage.saveRequestType, SaveRequestType.ORIGINAL);
+    chrome.test.assertEq(
+        getSaveRequestType(saveMessage), SaveRequestType.ORIGINAL);
     chrome.test.assertFalse(actionMenu.open);
     mockMetricsPrivate.assertCount(UserAction.SAVE_ORIGINAL_ONLY, 1);
     chrome.test.succeed();
@@ -284,9 +304,10 @@ chrome.test.runTests([
 
     // A message should be sent to the plugin to save as original.
     await eventToPromise('save', viewer);
-    const saveMessage = mockPlugin.findMessage('save');
+    const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
-    chrome.test.assertEq(saveMessage.saveRequestType, SaveRequestType.ORIGINAL);
+    chrome.test.assertEq(
+        getSaveRequestType(saveMessage), SaveRequestType.ORIGINAL);
     chrome.test.assertFalse(actionMenu.open);
     chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.SAVE_ORIGINAL_ONLY, 1);
@@ -322,8 +343,8 @@ chrome.test.runTests([
     // Textbox is closed and annotation is committed.
     chrome.test.assertFalse(isVisible(textbox));
     // The finishTextAnnotation message should have been sent before save.
-    const saveIndex =
-        mockPlugin.messages.findIndex(message => message.type === 'save');
+    const saveIndex = mockPlugin.messages.findIndex(
+        message => message.type === getFirstSaveMessageName());
     const setTextIndex = mockPlugin.messages.findIndex(
         message => message.type === 'finishTextAnnotation');
     chrome.test.assertFalse(setTextIndex === -1);
@@ -365,9 +386,10 @@ chrome.test.runTests([
 
     // A message should be sent to the plugin to save as original.
     await eventToPromise('save', viewer);
-    const saveMessage = mockPlugin.findMessage('save');
+    const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
-    chrome.test.assertEq(saveMessage.saveRequestType, SaveRequestType.ORIGINAL);
+    chrome.test.assertEq(
+        getSaveRequestType(saveMessage), SaveRequestType.ORIGINAL);
     chrome.test.assertFalse(actionMenu.open);
     mockMetricsPrivate.assertCount(UserAction.SAVE_ORIGINAL_ONLY, 1);
     chrome.test.succeed();

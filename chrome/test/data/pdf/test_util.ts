@@ -563,6 +563,10 @@ export function setupTestMockPluginForInk(): MockPdfPluginElement {
   mockPlugin.setMessageReply('getAllTextAnnotations', {
     annotations: [],
   });
+  mockPlugin.setMessageReply('getSuggestedFileName', {
+    fileName: 'test.pdf',
+    bypassSaveFileForTesting: true,
+  });
   return mockPlugin;
 }
 

@@ -1582,13 +1582,23 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // fetched based on the selected type.
     assert(this.pluginController_.isActive);
 
-    const nameResult = await this.pluginController_.getSuggestedFileName();
+    // Request type is only passed for testing purposes.
+    const nameResult =
+        await this.pluginController_.getSuggestedFileName(requestType);
 
     // Make sure file extension is .pdf, avoids dangerous extensions.
     let fileName = nameResult.fileName;
     if (!fileName.toLowerCase().endsWith('.pdf')) {
       fileName = fileName + '.pdf';
     }
+
+    // <if expr="enable_pdf_ink2">
+    if (nameResult.bypassSaveFileForTesting) {
+      // Only set by the mock plugin.
+      this.onSaveSuccessful_(requestType);
+      return;
+    }
+    // </if>
 
     try {
       let writable: FileSystemWritableFileStream|null;
