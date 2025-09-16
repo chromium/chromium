@@ -1482,10 +1482,11 @@ GTEST_BENCHMARKS = {
         'enga@chromium.org', 'Dawn',
         'https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md'
     ),
-    'tint_benchmark':
-    BenchmarkMetadata(
-        'jrprice@google.com, dsinclair@chromium.org', 'Dawn>Tint',
-        'https://dawn.googlesource.com/dawn/+/HEAD/docs/tint/benchmark.md'),
+    # (crbug.com/445456830) temporarily disabled
+    # 'tint_benchmark':
+    # BenchmarkMetadata(
+    #     'jrprice@google.com, dsinclair@chromium.org', 'Dawn>Tint',
+    #     'https://dawn.googlesource.com/dawn/+/HEAD/docs/tint/benchmark.md'),
 }
 
 RESOURCE_SIZES_METADATA = BenchmarkMetadata(

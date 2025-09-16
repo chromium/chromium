@@ -3020,10 +3020,6 @@
         "name": "load_library_perf_tests/_gtest_"
     },
     {
-        "duration": "180.0",
-        "name": "tint_benchmark/_gtest_"
-    },
-    {
         "duration": "330.0",
         "name": "dawn_perf_tests/_gtest_"
     },

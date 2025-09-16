@@ -2720,10 +2720,6 @@
         "name": "views_perftests/_gtest_"
     },
     {
-        "duration": "180.0",
-        "name": "tint_benchmark/_gtest_"
-    },
-    {
         "duration": "125.0",
         "name": "components_perftests/_gtest_"
     },

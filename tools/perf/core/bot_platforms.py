@@ -667,7 +667,7 @@ _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/40562709): Add views_perftests.
     _base_perftests(200),
     _load_library_perf_tests(),
-    _tint_benchmark(),
+    # (crbug.com/445456830) temporarily disabled _tint_benchmark(),
     _tracing_perftests(5),
 ])
 _LINUX_R350_BENCHMARK_CONFIGS = PerfSuite(
@@ -683,7 +683,7 @@ _MAC_INTEL_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 _MAC_INTEL_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
     _dawn_perf_tests(330),
-    _tint_benchmark(),
+    # (crbug.com/445456830) temporarily disabled _tint_benchmark(),
     _views_perftests(),
     _load_library_perf_tests(),
 ])
@@ -726,7 +726,7 @@ _MAC_M1_PRO_BENCHMARK_CONFIGS = PerfSuite([
 _MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
     _dawn_perf_tests(330),
-    _tint_benchmark(),
+    # (crbug.com/445456830) temporarily disabled _tint_benchmark(),
     _views_perftests(),
 ])
 _MAC_M2_PRO_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
@@ -768,7 +768,7 @@ _WIN_11_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(200),
     _components_perftests(125),
     _dawn_perf_tests(600),
-    _tint_benchmark(),
+    # (crbug.com/445456830) temporarily disabled _tint_benchmark(),
     _views_perftests(),
 ])
 _WIN_ARM64_BENCHMARK_CONFIGS = PerfSuite([
