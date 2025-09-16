@@ -1474,6 +1474,8 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidComposeplateHideIncognitoButton =
             newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "hide_incognito_button", false);
 
+    public static final BooleanCachedFeatureParam sAndroidComposeplateV2Enabled =
+            newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "v2_enabled", false);
     public static final BooleanCachedFeatureParam sAndroidBottomToolbarDefaultToTop =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_TOOLBAR, "default_to_top", true);
 
@@ -1825,6 +1827,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomToolbarDefaultToTop,
                     sAndroidComposeplateHideIncognitoButton,
                     sAndroidComposeplateSkipLocaleCheck,
+                    sAndroidComposeplateV2Enabled,
                     sAndroidThemeModuleForceDependencies,
                     sAndroidThemeResourceProviderForceLight,
                     sBackgroundThreadPoolFieldTrialConfig,

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.composeplate;
 
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.INCOGNITO_CLICK_LISTENER;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_INCOGNITO_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_VISIBLE;
@@ -24,18 +25,28 @@ public class ComposeplateViewBinder {
         if (IS_VISIBLE == propertyKey) {
             view.setVisibility(model.get(IS_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (IS_INCOGNITO_BUTTON_VISIBLE == propertyKey) {
-            ImageView incognitoButton = view.findViewById(R.id.incognito_button);
+            View incognitoButton = view.findViewById(R.id.incognito_button);
             incognitoButton.setVisibility(
                     model.get(IS_INCOGNITO_BUTTON_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (VOICE_SEARCH_CLICK_LISTENER == propertyKey) {
             ImageView voiceSearchButton = view.findViewById(R.id.voice_search_button);
-            voiceSearchButton.setOnClickListener(model.get(VOICE_SEARCH_CLICK_LISTENER));
+            if (voiceSearchButton != null) {
+                voiceSearchButton.setOnClickListener(model.get(VOICE_SEARCH_CLICK_LISTENER));
+            }
         } else if (LENS_CLICK_LISTENER == propertyKey) {
             ImageView lensButton = view.findViewById(R.id.lens_camera_button);
-            lensButton.setOnClickListener(model.get(LENS_CLICK_LISTENER));
+            if (lensButton != null) {
+                lensButton.setOnClickListener(model.get(LENS_CLICK_LISTENER));
+            }
         } else if (INCOGNITO_CLICK_LISTENER == propertyKey) {
-            ImageView incognitoButton = view.findViewById(R.id.incognito_button);
+            View incognitoButton = view.findViewById(R.id.incognito_button);
             incognitoButton.setOnClickListener(model.get(INCOGNITO_CLICK_LISTENER));
+        } else if (COMPOSEPLATE_BUTTON_CLICK_LISTENER == propertyKey) {
+            View composeplateButton = view.findViewById(R.id.composeplate_button);
+            if (composeplateButton != null) {
+                composeplateButton.setOnClickListener(
+                        model.get(COMPOSEPLATE_BUTTON_CLICK_LISTENER));
+            }
         } else {
             assert false : "Unhandled property detected in ComposeplateViewBinder!";
         }

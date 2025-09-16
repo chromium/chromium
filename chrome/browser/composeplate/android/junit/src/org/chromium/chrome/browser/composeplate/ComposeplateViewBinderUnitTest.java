@@ -34,6 +34,7 @@ public class ComposeplateViewBinderUnitTest {
     @Mock private ImageView mVoiceSearchButtonView;
     @Mock private ImageView mLensButtonView;
     @Mock private ImageView mIncognitoButtonView;
+    @Mock private View mComposeplateButtonView;
     @Mock private OnClickListener mOnClickListener;
 
     private PropertyModel mPropertyModel;
@@ -72,5 +73,13 @@ public class ComposeplateViewBinderUnitTest {
         when(mView.findViewById(eq(R.id.incognito_button))).thenReturn(mIncognitoButtonView);
         mPropertyModel.set(ComposeplateProperties.INCOGNITO_CLICK_LISTENER, mOnClickListener);
         verify(mIncognitoButtonView).setOnClickListener(eq(mOnClickListener));
+    }
+
+    @Test
+    public void testSetComposeplateButtonClickListener() {
+        when(mView.findViewById(eq(R.id.composeplate_button))).thenReturn(mComposeplateButtonView);
+        mPropertyModel.set(
+                ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER, mOnClickListener);
+        verify(mComposeplateButtonView).setOnClickListener(eq(mOnClickListener));
     }
 }

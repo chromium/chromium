@@ -446,6 +446,10 @@ found in the LICENSE file.
         <item name="android:textColorHint">@macro/ntp_search_box_hint</item>
     </style>
 
+    <style name="TextAppearance.ComposeplateTextMedium" parent="TextAppearance.TextMediumThick">
+        <item name="android:textColorHint">@macro/ntp_search_box_hint</item>
+    </style>
+
     <style name="TextAppearance.SearchBoxText.Widget">
         <item name="android:textColorHint">@macro/default_text_color_secondary</item>
     </style>

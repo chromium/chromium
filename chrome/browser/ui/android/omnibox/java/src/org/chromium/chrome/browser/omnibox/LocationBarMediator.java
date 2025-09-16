@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -205,6 +206,7 @@ class LocationBarMediator
     private boolean mIsUrlFocusChangeInProgress;
     private final boolean mIsTablet;
     private boolean mIsComposeplateEnabled;
+    private boolean mIsComposeplateV2Enabled;
     private boolean mShouldShowLensButtonWhenUnfocused;
     private boolean mShouldShowMicButtonWhenUnfocused;
     // Whether the microphone and bookmark buttons should be shown in the tablet location bar. These
@@ -713,7 +715,7 @@ class LocationBarMediator
     /* package */ void updateButtonVisibility() {
         updateDeleteButtonVisibility();
         updateInstallButtonVisibility();
-        if (!mIsComposeplateEnabled) {
+        if (!mIsComposeplateEnabled || mIsComposeplateV2Enabled) {
             updateMicButtonVisibility();
             updateLensButtonVisibility();
         } else {
@@ -1173,6 +1175,9 @@ class LocationBarMediator
         if (profile == null || !mNativeInitialized) return;
 
         mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet, profile);
+        mIsComposeplateV2Enabled =
+                mIsComposeplateEnabled
+                        && ChromeFeatureList.sAndroidComposeplateV2Enabled.getValue();
         assumeNonNull(mOmniboxPrerender);
         mOmniboxPrerender.initializeForProfile(profile);
 
@@ -1877,7 +1882,7 @@ class LocationBarMediator
         mLocationBarLayout.setMicButtonTint(tint);
         mLocationBarLayout.setLensButtonTint(tint);
         mLocationBarLayout.setInstallButtonTint(tint);
-        if (mIsComposeplateEnabled) {
+        if (mIsComposeplateEnabled && !mIsComposeplateV2Enabled) {
             mLocationBarLayout.setComposeplateButtonTint(tint);
         }
     }

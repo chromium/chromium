@@ -37,6 +37,23 @@ public class ComposeplateCoordinator {
     }
 
     /**
+     * Sets the visibility of the composeplate for V1 variations.
+     *
+     * @param visible Whether the composeplate should be visible.
+     * @param isCurrentPage whether the New Tab Page is the current page displayed to the user.
+     */
+    public void setVisibilityV1(boolean visible, boolean isCurrentPage) {
+        if (isCurrentPage && visible != mModel.get(ComposeplateProperties.IS_VISIBLE)) {
+            ComposeplateMetricsUtils.recordComposeplateImpression(visible);
+        }
+
+        mModel.set(ComposeplateProperties.IS_VISIBLE, visible);
+        mModel.set(
+                ComposeplateProperties.IS_INCOGNITO_BUTTON_VISIBLE,
+                visible && !mHideIncognitoButton);
+    }
+
+    /**
      * Sets the visibility of the composeplate.
      *
      * @param visible Whether the composeplate should be visible.
@@ -48,9 +65,6 @@ public class ComposeplateCoordinator {
         }
 
         mModel.set(ComposeplateProperties.IS_VISIBLE, visible);
-        mModel.set(
-                ComposeplateProperties.IS_INCOGNITO_BUTTON_VISIBLE,
-                visible && !mHideIncognitoButton);
     }
 
     /**
@@ -92,6 +106,20 @@ public class ComposeplateCoordinator {
     }
 
     /**
+     * Sets the click listener for the composeplate button.
+     *
+     * @param composeplateButtonClickListener The click listener for the composeplate button.
+     */
+    public void setComposeplateButtonClickListener(
+            View.OnClickListener composeplateButtonClickListener) {
+        mModel.set(
+                ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER,
+                createEnhancedClickListener(
+                        composeplateButtonClickListener,
+                        ModuleTypeOnStartAndNtp.COMPOSEPLATE_BUTTON));
+    }
+
+    /**
      * Wraps the given {@link View.OnClickListener} to record the click metric before invoking the
      * original listener.
      *
@@ -112,6 +140,7 @@ public class ComposeplateCoordinator {
         mModel.set(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER, null);
         mModel.set(ComposeplateProperties.LENS_CLICK_LISTENER, null);
         mModel.set(ComposeplateProperties.INCOGNITO_CLICK_LISTENER, null);
+        mModel.set(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER, null);
     }
 
     public PropertyModel getModelForTesting() {

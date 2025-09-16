@@ -25,12 +25,16 @@ interface ComposeplateProperties {
     WritableObjectPropertyKey<View.OnClickListener> INCOGNITO_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    WritableObjectPropertyKey<View.OnClickListener> COMPOSEPLATE_BUTTON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
                 IS_INCOGNITO_BUTTON_VISIBLE,
                 VOICE_SEARCH_CLICK_LISTENER,
                 LENS_CLICK_LISTENER,
-                INCOGNITO_CLICK_LISTENER
+                INCOGNITO_CLICK_LISTENER,
+                COMPOSEPLATE_BUTTON_CLICK_LISTENER
             };
 }

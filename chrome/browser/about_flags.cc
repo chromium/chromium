@@ -2939,12 +2939,16 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
       std::size(kAndroidAppIntegrationModule_ForceCardShown_NonPixel),
       nullptr}};
 
+const FeatureEntry::FeatureParam kAndroidComposeplate_V2Enabled[] = {
+    {"v2_enabled", "true"}};
 const FeatureEntry::FeatureParam kAndroidComposeplate_HideIncognitoButton[] = {
     {"hide_incognito_button", "true"}};
 const FeatureEntry::FeatureParam kAndroidComposeplate_SkipLocaleCheck[] = {
     {"skip_locale_check", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidComposeplateVariations[] = {
+    {"V2 enabled", kAndroidComposeplate_V2Enabled,
+     std::size(kAndroidComposeplate_V2Enabled), nullptr},
     {"Hide incognito button", kAndroidComposeplate_HideIncognitoButton,
      std::size(kAndroidComposeplate_HideIncognitoButton), nullptr},
     {"Skip locale check", kAndroidComposeplate_SkipLocaleCheck,
