@@ -4455,6 +4455,11 @@ views::View* BrowserView::CreateMacOverlayView() {
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.is_overlay = true;
+    // Add kTranslucent attributes to prevent the system from adding
+    // NSSheetEffectDimmingView to the overlay window when the browser displays
+    // a sheet dialog, which would cause the overlay area to appear with a
+    // darker dimming color on macOS.
+    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.name = "mac-fullscreen-overlay";
     OverlayWidget* overlay_widget = new OverlayWidget(GetWidget());
 
