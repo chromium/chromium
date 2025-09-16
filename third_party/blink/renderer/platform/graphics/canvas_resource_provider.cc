@@ -497,6 +497,98 @@ void CanvasResourceProviderSharedImage::EndWriteAccess() {
   current_resource_has_write_access_ = false;
 }
 
+void CanvasResourceProviderSharedImage::WillDrawInternal(
+    bool write_to_local_texture) {
+  DCHECK(resource_);
+
+  if (IsGpuContextLost()) {
+    return;
+  }
+
+  // Since the resource will be updated, the cached snapshot is no longer
+  // valid. Note that it is important to release this reference here to not
+  // trigger copy-on-write below from the resource ref in the snapshot.
+  // Note that this is valid for single buffered mode also, since while the
+  // resource/mailbox remains the same, the snapshot needs an updated sync
+  // token for these writes.
+  cached_snapshot_.reset();
+
+  // Determine if a copy is needed for accelerated resources. This could be
+  // for one of two reasons: (1) copy-on-write is required, or (2) the
+  // SharedImage usages with which this provider should create resources has
+  // changed since this resource was created (this can occur, for example,
+  // when a client requests the backing ClientSharedImage with a specific
+  // required set of usages for an external write). Note that for
+  // unaccelerated resources, neither of these apply: writes to the
+  // SharedImage are deferred to ProduceCanvasResource and hence
+  // copy-on-write is never needed here, and the set of SharedImage usages
+  // doesn't change over the lifetime of the provider.
+  if (is_accelerated_ && (ShouldReplaceTargetBuffer(cached_content_id_) ||
+                          !IsResourceUsable(resource_.get()))) {
+    cached_content_id_ = PaintImage::kInvalidContentId;
+    DCHECK(!current_resource_has_write_access_)
+        << "Write access must be released before sharing the resource";
+
+    auto old_resource = std::move(resource_);
+    auto* old_resource_shared_image =
+        static_cast<CanvasResourceSharedImage*>(old_resource.get());
+
+    if (!IsResourceUsable(old_resource.get())) {
+      // If this resource has become unusable, all cached resources have also
+      // become unusable. Drop them to ensure that a new usable resource gets
+      // created in the below call to NewOrRecycledResource().
+      ClearUnusedResources();
+    }
+    resource_ = NewOrRecycledResource();
+    DCHECK(IsResourceUsable(resource_.get()));
+
+    if (!use_oop_rasterization_) {
+      TearDownSkSurface();
+    }
+
+    if (mode_ == SkSurface::kRetain_ContentChangeMode) {
+      auto old_mailbox =
+          old_resource_shared_image->GetClientSharedImage()->mailbox();
+      auto mailbox = resource()->GetClientSharedImage()->mailbox();
+
+      RasterInterface()->CopySharedImage(old_mailbox, mailbox, 0, 0, 0, 0,
+                                         Size().width(), Size().height());
+    } else if (use_oop_rasterization_) {
+      // If we're not copying over the previous contents, we need to ensure
+      // that the image is cleared on the next BeginRasterCHROMIUM.
+      is_cleared_ = false;
+    }
+
+    // In non-OOPR mode we need to update the client side SkSurface with the
+    // copied texture. Recreating SkSurface here matches the GPU process
+    // behaviour that will happen in OOPR mode.
+    if (!use_oop_rasterization_) {
+      EnsureWriteAccess();
+      GetSkSurface();
+    }
+    UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
+                          mode_ == SkSurface::kRetain_ContentChangeMode);
+    mode_ = SkSurface::kRetain_ContentChangeMode;
+  }
+
+  if (write_to_local_texture) {
+    EnsureWriteAccess();
+  } else {
+    EndWriteAccess();
+  }
+
+  if (resource()) {
+    resource()->WillDraw();
+  }
+}
+
+void CanvasResourceProviderSharedImage::WillDraw() {
+  if (is_software_) {
+    return;
+  }
+  WillDrawInternal(true);
+}
+
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
 class CanvasResourceProviderSharedImageImpl
@@ -855,95 +947,6 @@ class CanvasResourceProviderSharedImageImpl
     DCHECK(cached_snapshot_);
     DCHECK(!current_resource_has_write_access_);
     return cached_snapshot_;
-  }
-
-  void WillDrawInternal(bool write_to_local_texture) {
-    DCHECK(resource_);
-
-    if (IsGpuContextLost())
-      return;
-
-    // Since the resource will be updated, the cached snapshot is no longer
-    // valid. Note that it is important to release this reference here to not
-    // trigger copy-on-write below from the resource ref in the snapshot.
-    // Note that this is valid for single buffered mode also, since while the
-    // resource/mailbox remains the same, the snapshot needs an updated sync
-    // token for these writes.
-    cached_snapshot_.reset();
-
-    // Determine if a copy is needed for accelerated resources. This could be
-    // for one of two reasons: (1) copy-on-write is required, or (2) the
-    // SharedImage usages with which this provider should create resources has
-    // changed since this resource was created (this can occur, for example,
-    // when a client requests the backing ClientSharedImage with a specific
-    // required set of usages for an external write). Note that for
-    // unaccelerated resources, neither of these apply: writes to the
-    // SharedImage are deferred to ProduceCanvasResource and hence
-    // copy-on-write is never needed here, and the set of SharedImage usages
-    // doesn't change over the lifetime of the provider.
-    if (is_accelerated_ && (ShouldReplaceTargetBuffer(cached_content_id_) ||
-                            !IsResourceUsable(resource_.get()))) {
-      cached_content_id_ = PaintImage::kInvalidContentId;
-      DCHECK(!current_resource_has_write_access_)
-          << "Write access must be released before sharing the resource";
-
-      auto old_resource = std::move(resource_);
-      auto* old_resource_shared_image =
-          static_cast<CanvasResourceSharedImage*>(old_resource.get());
-
-      if (!IsResourceUsable(old_resource.get())) {
-        // If this resource has become unusable, all cached resources have also
-        // become unusable. Drop them to ensure that a new usable resource gets
-        // created in the below call to NewOrRecycledResource().
-        ClearUnusedResources();
-      }
-      resource_ = NewOrRecycledResource();
-      DCHECK(IsResourceUsable(resource_.get()));
-
-      if (!use_oop_rasterization_) {
-        TearDownSkSurface();
-      }
-
-      if (mode_ == SkSurface::kRetain_ContentChangeMode) {
-        auto old_mailbox =
-            old_resource_shared_image->GetClientSharedImage()->mailbox();
-        auto mailbox = resource()->GetClientSharedImage()->mailbox();
-
-        RasterInterface()->CopySharedImage(old_mailbox, mailbox, 0, 0, 0, 0,
-                                           Size().width(), Size().height());
-      } else if (use_oop_rasterization_) {
-        // If we're not copying over the previous contents, we need to ensure
-        // that the image is cleared on the next BeginRasterCHROMIUM.
-        is_cleared_ = false;
-      }
-
-      // In non-OOPR mode we need to update the client side SkSurface with the
-      // copied texture. Recreating SkSurface here matches the GPU process
-      // behaviour that will happen in OOPR mode.
-      if (!use_oop_rasterization_) {
-        EnsureWriteAccess();
-        GetSkSurface();
-      }
-      UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
-                            mode_ == SkSurface::kRetain_ContentChangeMode);
-      mode_ = SkSurface::kRetain_ContentChangeMode;
-    }
-
-    if (write_to_local_texture)
-      EnsureWriteAccess();
-    else
-      EndWriteAccess();
-
-    if (resource()) {
-      resource()->WillDraw();
-    }
-  }
-
-  void WillDraw() override {
-    if (is_software_) {
-      return;
-    }
-    WillDrawInternal(true);
   }
 
   void RasterRecord(cc::PaintRecord last_recording) override {

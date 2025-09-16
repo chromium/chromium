@@ -639,6 +639,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void EnsureWriteAccess();
   void EndWriteAccess();
   void FlushGrContext();
+  void WillDrawInternal(bool write_to_local_texture);
+  void WillDraw() override;
 
  private:
   // `viz::ContextLostObserver` implementation.
