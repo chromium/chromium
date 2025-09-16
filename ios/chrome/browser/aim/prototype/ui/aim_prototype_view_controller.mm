@@ -7,8 +7,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/unguessable_token.h"
 #import "build/branding_buildflags.h"
-#import "ios/chrome/browser/aim/prototype/ui/aim_image_cell.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_input_item_cell.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_animation_context_provider.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -18,8 +18,8 @@
 #import "ios/public/provider/chrome/browser/glow_effect/glow_effect_api.h"
 
 namespace {
-/// The reuse identifier for the image cells in the carousel.
-NSString* const kImageCellReuseIdentifier = @"AIMImageCell";
+/// The reuse identifier for the input item cells in the carousel.
+NSString* const kItemCellReuseIdentifier = @"AIMInputItemCell";
 /// The maximum number of lines for the text view before it starts scrolling.
 const int kMaxLines = 5;
 /// The identifier for the main section of the collection view.
@@ -37,12 +37,10 @@ const CGFloat kLogoImageSize = 24.0f;
 /// The spacing between the logo and the text view.
 const CGFloat kLogoTextViewSpacing = 6.0f;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS
-/// The size of the items in the carousel.
-const CGFloat kCarouselItemSize = 48.0f;
 /// The spacing between items in the carousel.
 const CGFloat kCarouselItemSpacing = 12.0f;
 /// The height of the carousel view.
-const CGFloat kCarouselHeight = 48.0f;
+const CGFloat kCarouselHeight = 70.0f;
 /// The height of the AIM mode button.
 const CGFloat kAIMButtonHeight = 32.0f;
 /// The width of the AIM mode button.
@@ -244,15 +242,15 @@ const CGFloat kGlowEffectWidth = 4.0f;
   UICollectionViewFlowLayout* layout =
       [[UICollectionViewFlowLayout alloc] init];
   layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-  layout.itemSize = CGSizeMake(kCarouselItemSize, kCarouselItemSize);
+  layout.estimatedItemSize = UICollectionViewFlowLayoutAutomaticSize;
   layout.minimumLineSpacing = kCarouselItemSpacing;
   _carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                      collectionViewLayout:layout];
   _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
   _carouselView.hidden = YES;
   _carouselView.backgroundColor = UIColor.clearColor;
-  [_carouselView registerClass:[AIMImageCell class]
-      forCellWithReuseIdentifier:kImageCellReuseIdentifier];
+  [_carouselView registerClass:[AIMInputItemCell class]
+      forCellWithReuseIdentifier:kItemCellReuseIdentifier];
   _dataSource = [self createDataSource];
   _carouselView.dataSource = _dataSource;
   [_carouselView.heightAnchor constraintEqualToConstant:kCarouselHeight]
@@ -518,9 +516,9 @@ const CGFloat kGlowEffectWidth = 4.0f;
                 cellProvider:^UICollectionViewCell*(
                     UICollectionView* collectionView, NSIndexPath* indexPath,
                     AIMInputItem* item) {
-                  AIMImageCell* cell = (AIMImageCell*)[collectionView
+                  AIMInputItemCell* cell = (AIMInputItemCell*)[collectionView
                       dequeueReusableCellWithReuseIdentifier:
-                          kImageCellReuseIdentifier
+                          kItemCellReuseIdentifier
                                                 forIndexPath:indexPath];
                   [cell configureWithItem:item];
                   return cell;

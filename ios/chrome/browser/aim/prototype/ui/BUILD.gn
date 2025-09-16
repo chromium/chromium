@@ -4,10 +4,10 @@
 
 source_set("ui") {
   sources = [
-    "aim_image_cell.h",
-    "aim_image_cell.mm",
     "aim_input_item.h",
     "aim_input_item.mm",
+    "aim_input_item_cell.h",
+    "aim_input_item_cell.mm",
     "aim_input_item_view.h",
     "aim_input_item_view.mm",
     "aim_prototype_animation_context_provider.h",
