@@ -38,10 +38,10 @@ dictionary CanvasElementHitTestRegion {
 
 // https://html.spec.whatwg.org/C/canvas.html#htmlcanvaselement
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLCanvasElement : HTMLElement
 {
+    [HTMLConstructor] constructor();
     // Note: Due to dependecies on modules, getContext is defined in a partial
     // interface in html_canvas_element_module.idl
 
