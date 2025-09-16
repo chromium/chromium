@@ -48,7 +48,7 @@ const bigLocales = {
     timeZone: "America/Mexico_City",
     currency: "MXN",
   },
-  // es-419 is Spanish Latin America and the Caribbean. Using the same timezone
+  // es-419 is Spanish in Latin America and the Caribbean. Use the same timezone
   // as above to make differences easier to spot.
   "es-419": {
     timeZone: "America/Mexico_City",
@@ -219,9 +219,8 @@ const bigLocales = {
 
 // Additional locales where changes might be risky.
 const extraLocales = {
-  // Dutch and Polish  are in the top 15 of several of the lists on this page:
+  // Dutch and Polish are in the top 15 of several of the lists on this page:
   // https://en.wikipedia.org/wiki/Languages_used_on_the_Internet
-  // Malay isn't included in the Ethnologue
   "nl": {
     timeZone: "Europe/Amsterdam",
     currency: "EUR",
