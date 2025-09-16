@@ -22,6 +22,8 @@
 #include "base/android/background_thread_pool_field_trial.h"
 #endif
 
+
+#if BUILDFLAG(IS_ANDROID)
 // On Android, `pthread_mutexattr_setprotocol()` is only defined in bionic
 // starting with API level 28. Make it a weak import, so that we can compile.
 extern "C" {
@@ -29,6 +31,7 @@ int __attribute__((weak)) pthread_mutexattr_setprotocol(
     pthread_mutexattr_t* _Nonnull __attr,
     int __protocol);
 }
+#endif
 
 namespace base {
 
