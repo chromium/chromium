@@ -347,6 +347,9 @@ found in the LICENSE file.
 
     <!-- Settings dimensions -->
     <dimen name="settings_wide_display_min_padding">16dp</dimen>
+    <dimen name="settings_min_multi_column_screen_width">840dp</dimen>
+    <dimen name="settings_narrow_header_width">360dp</dimen>
+    <dimen name="settings_wide_header_width">412dp</dimen>
 
     <!-- Sharing Hub dimensions -->
     <dimen name="sharing_hub_preview_icon_padding">12dp</dimen>

@@ -137,10 +137,14 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
 
+    // Refers the instance only when SettingsMultiColumn is enabled.
+    private @Nullable MultiColumnSettings mMultiColumnSettings;
+
     // Used to manage and show new intents;
     private IntentRequestTracker mIntentRequestTracker;
 
     private static final String MAIN_FRAGMENT_TAG = "settings_main";
+    public static final String MULTI_COLUMN_FRAGMENT_TAG = "multi_column_settings";
 
     private final Map<Fragment, SettingsItemBackgroundDecoration> mItemDecorations =
             new HashMap<>();
@@ -242,7 +246,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 // disabled for development.
                 // TODO(crbug.com/404074032): Implement them back.
                 var transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.content, new MultiColumnSettings());
+                mMultiColumnSettings = new MultiColumnSettings();
+                transaction.replace(R.id.content, mMultiColumnSettings, MULTI_COLUMN_FRAGMENT_TAG);
                 transaction.commit();
             } else {
                 Fragment fragment = instantiateMainFragment(getIntent());
@@ -491,6 +496,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @VisibleForTesting
     public @Nullable Fragment getMainFragment() {
         return getSupportFragmentManager().findFragmentById(R.id.content);
+    }
+
+    /** Returns the MultiColumnSettings if it is running in SettingsMultiColumn mode. */
+    @VisibleForTesting
+    @Nullable MultiColumnSettings getMultiColumnSettings() {
+        return mMultiColumnSettings;
     }
 
     /**
