@@ -18,10 +18,6 @@ from util import jar_utils
 from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
-_SRC_PATH = pathlib.Path(build_utils.DIR_SOURCE_ROOT).resolve()
-sys.path.insert(1, str(_SRC_PATH / 'build/gn_ast'))
-from gn_editor import NO_VALID_GN_STR
-
 
 def _ShouldIgnoreDep(dep_name: str):
   if 'gen.base_module.R' in dep_name:
@@ -68,7 +64,6 @@ def _EnsureDirectClasspathIsComplete(
     full_classpath_jars: List[str],
     full_classpath_gn_targets: List[str],
     warnings_as_errors: bool,
-    auto_add_deps: bool,
 ):
   logging.info('Parsing %d direct classpath jars', len(sdk_classpath_jars))
   sdk_classpath_deps = set()
@@ -115,17 +110,13 @@ def _EnsureDirectClasspathIsComplete(
   if missing_class_to_caller:
     _ProcessMissingDirectClasspathDeps(missing_class_to_caller, dep_to_target,
                                        gn_target, output_dir,
-                                       warnings_as_errors, auto_add_deps)
+                                       warnings_as_errors)
 
 
-def _ProcessMissingDirectClasspathDeps(
-    missing_class_to_caller: Dict[str, str],
-    dep_to_target: Dict[str, Set[str]],
-    gn_target: str,
-    output_dir: str,
-    warnings_as_errors: bool,
-    auto_add_deps: bool,
-):
+def _ProcessMissingDirectClasspathDeps(missing_class_to_caller: Dict[str, str],
+                                       dep_to_target: Dict[str, Set[str]],
+                                       gn_target: str, output_dir: str,
+                                       warnings_as_errors: bool):
   potential_targets_to_missing_classes: Dict[
       Tuple, List[str]] = collections.defaultdict(list)
   for missing_class in missing_class_to_caller:
@@ -139,36 +130,9 @@ def _ProcessMissingDirectClasspathDeps(
   cmd = dep_utils.CreateAddDepsCommand(gn_target,
                                        sorted(deps_to_add_programatically))
 
-  if not auto_add_deps:
-    _PrintAndMaybeExit(potential_targets_to_missing_classes,
-                       missing_class_to_caller, gn_target, warnings_as_errors,
-                       cmd)
-  else:
-    failed = False
-    try:
-      stdout = build_utils.CheckOutput(cmd,
-                                       cwd=build_utils.DIR_SOURCE_ROOT,
-                                       fail_on_output=warnings_as_errors)
-      if f'Unable to find {gn_target}' in stdout:
-        # This can happen if a target's deps are stored in a variable instead
-        # of a list and then simply assigned: `deps = deps_variable`. These
-        # need to be manually added to the `deps_variable`.
-        failed = True
-    except build_utils.CalledProcessError as e:
-      if NO_VALID_GN_STR in e.output:
-        failed = True
-      else:
-        raise
-
-    build_file_path = dep_utils.GnTargetToBuildFilePath(gn_target)
-    if failed:
-      print(f'Unable to auto-add missing dep(s) to {build_file_path}.')
-      _PrintAndMaybeExit(potential_targets_to_missing_classes,
-                         missing_class_to_caller, gn_target, warnings_as_errors)
-    else:
-      gn_target_name = gn_target.split(':', 1)[-1]
-      print(f'Successfully updated "{gn_target_name}" in {build_file_path} '
-            f'with missing direct deps: {deps_to_add_programatically}')
+  _PrintAndMaybeExit(potential_targets_to_missing_classes,
+                     missing_class_to_caller, gn_target, warnings_as_errors,
+                     cmd)
 
 
 def _DisambiguateMissingDeps(
@@ -263,11 +227,6 @@ def main(argv):
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
-  parser.add_argument(
-      '--auto-add-deps',
-      action='store_true',
-      help='Attempt to automatically add missing deps to the corresponding '
-      'BUILD.gn file.')
   args = parser.parse_args(argv)
 
   args.sdk_classpath_jars = action_helpers.parse_gn_list(
@@ -302,8 +261,7 @@ def main(argv):
       direct_classpath_jars=args.direct_classpath_jars,
       full_classpath_jars=args.full_classpath_jars,
       full_classpath_gn_targets=args.full_classpath_gn_targets,
-      warnings_as_errors=args.warnings_as_errors,
-      auto_add_deps=args.auto_add_deps)
+      warnings_as_errors=args.warnings_as_errors)
   logging.info('Check completed.')
 
   server_utils.MaybeTouch(args.stamp)

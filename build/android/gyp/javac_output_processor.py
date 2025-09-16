@@ -115,7 +115,8 @@ class JavacOutputProcessor:
                                            sorted(missing_targets))
       yield f'    {shlex.join(cmd)}\n '  # Extra space necessary for new line.
     elif not self._unresolvable_classes:
-      yield yellow('Hint:') + ' Rebuild with --offline to show missing deps.'
+      yield yellow('Hint:') + (
+          ' Rebuild with -config no-remote-javac to show missing deps.')
 
   def _ElaborateLinesForUnknownSymbol(self, lines):
     """ Elaborates passed-in javac output for unresolved symbols.
