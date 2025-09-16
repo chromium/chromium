@@ -22,6 +22,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Rational;
 import android.util.Size;
 import android.view.View;
@@ -43,6 +45,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -54,6 +57,7 @@ import org.chromium.components.thinwebview.CompositorViewFactory;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.overlay_window.PlaybackState;
+import org.chromium.media.MediaFeatures;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
@@ -95,6 +99,10 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private static final float MAX_ASPECT_RATIO = 2.39f;
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
 
+    // The time window after which a dismissal of the PiP window is no longer considered "quick".
+    // TODO(crbug.com/421606013): add pip watch time metrics and fine tune this threshold.
+    private static final int QUICK_DISMISSAL_THRESHOLD_MS = 10000;
+
     // The token and corresponding raw pointer to the native side.
     private UnguessableToken mNativeToken;
     private long mNativeOverlayWindowAndroid;
@@ -113,6 +121,10 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private @Nullable MediaSessionBroadcastReceiver mMediaSessionReceiver;
 
     @VisibleForTesting MediaActionButtonsManager mMediaActionsButtonsManager;
+
+    // Handler and runnable for the quick dismissal timer.
+    private @Nullable Handler mQuickDismissalHandler;
+    private @Nullable Runnable mQuickDismissalRunnable;
 
     /** A helper class for managing media action buttons in PictureInPicture window. */
     @VisibleForTesting
@@ -648,6 +660,16 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         mMediaActionsButtonsManager = new MediaActionButtonsManager();
 
+        // A timer detects "quick dismissals"—when a user closes the PiP window shortly after it
+        // opens. This signals that the user may not want auto-PiP for the site, and the event is
+        // passed to the native side to help determine if an embargo should be applied.
+        if (ChromeFeatureList.isEnabled(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)) {
+            mQuickDismissalHandler = new Handler(Looper.getMainLooper());
+            mQuickDismissalRunnable = () -> mQuickDismissalRunnable = null;
+            mQuickDismissalHandler.postDelayed(
+                    mQuickDismissalRunnable, QUICK_DISMISSAL_THRESHOLD_MS);
+        }
+
         mNativeOverlayWindowAndroid =
                 PictureInPictureActivityJni.get()
                         .onActivityStart(mNativeToken, this, getWindowAndroid());
@@ -698,6 +720,18 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     @SuppressWarnings("NullAway")
     private void onExitPictureInPicture(boolean closeByNative) {
+        if (mQuickDismissalHandler != null && mQuickDismissalRunnable != null) {
+            mQuickDismissalHandler.removeCallbacks(mQuickDismissalRunnable);
+            mQuickDismissalRunnable = null;
+
+            // If this was a quick dismissal, notify the native side. We must check that the
+            // native window still exists, as this cleanup path can be called after the native
+            // side has been destroyed.
+            if (mNativeOverlayWindowAndroid != 0) {
+                PictureInPictureActivityJni.get().onQuickDismissal(mNativeOverlayWindowAndroid);
+            }
+        }
+
         if (!closeByNative && mNativeOverlayWindowAndroid != 0) {
             PictureInPictureActivityJni.get().destroyStartedByJava(mNativeOverlayWindowAndroid);
         }
@@ -877,6 +911,13 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         return mCompositorView == null ? null : mCompositorView.getView();
     }
 
+    public void expireQuickDismissalTimerForTesting() {
+        if (mQuickDismissalHandler != null && mQuickDismissalRunnable != null) {
+            mQuickDismissalHandler.removeCallbacks(mQuickDismissalRunnable);
+            mQuickDismissalRunnable = null;
+        }
+    }
+
     @NativeMethods
     public interface Natives {
         long onActivityStart(
@@ -907,5 +948,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         void onViewSizeChanged(long nativeOverlayWindowAndroid, int width, int height);
 
         void onBackToTab(long nativeOverlayWindowAndroid);
+
+        void onQuickDismissal(long nativeOverlayWindowAndroid);
     }
 }

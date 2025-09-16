@@ -12,6 +12,7 @@
 #include "cc/slim/surface_layer.h"
 #include "chrome/android/chrome_jni_headers/PictureInPictureActivity_jni.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "components/thin_webview/compositor_view.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
@@ -297,6 +298,20 @@ void OverlayWindowAndroid::OnBackToTab(JNIEnv* env) {
   } else {
     controller_->FocusInitiator();
     Hide();
+  }
+}
+
+void OverlayWindowAndroid::OnQuickDismissal(JNIEnv* env) {
+  auto* web_contents = controller_->GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  auto* helper = AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  // Verify that the dismissal is for an auto-PiP session, not a user-initiated
+  // one, before triggering the embargo logic.
+  if (helper && helper->IsInAutoPictureInPicture()) {
+    helper->OnQuickDismissal();
   }
 }
 

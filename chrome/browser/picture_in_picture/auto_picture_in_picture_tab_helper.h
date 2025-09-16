@@ -162,6 +162,11 @@ class AutoPictureInPictureTabHelper
   }
 
 #if BUILDFLAG(IS_ANDROID)
+  // Called from Java when the user closes the PiP window soon after it opened.
+  void OnQuickDismissal();
+
+  int GetDismissCountForTesting(const GURL& url);
+
   // Overrides the media engagement check for testing. This is necessary for
   // Android JNI tests where mocking MediaEngagementService is difficult due
   // to framework initialization order complexities.

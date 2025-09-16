@@ -785,6 +785,36 @@ AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+void AutoPictureInPictureTabHelper::OnQuickDismissal() {
+  // A "quick dismissal" is when the user closes the PiP window shortly after it
+  // appeared. This is a signal that they may not want auto-PiP for this site.
+  // We only count dismissals if the tab is not active, to avoid counting cases
+  // where the PiP window is automatically closed when switching back to the
+  // tab.
+  if (!is_tab_activated_ && auto_blocker_) {
+    // Set `dismissed_prompt_was_quiet` to false for now as the dismissal count
+    // threshold is only 1(vs 3) for quiet UI permission prompts, which might be
+    // too stringent for auto-pip.
+    // TODO(crbug.com/421606013): confirm the dismissal count threshold with
+    // privacy reviewer.
+    auto_blocker_->RecordDismissAndEmbargo(
+        web_contents()->GetLastCommittedURL(),
+        ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+        /*dismissed_prompt_was_quiet=*/false);
+  }
+}
+
+int AutoPictureInPictureTabHelper::GetDismissCountForTesting(const GURL& url) {
+  if (!auto_blocker_) {
+    return 0;
+  }
+  return static_cast<permissions::PermissionDecisionAutoBlocker*>(
+             auto_blocker_.get())
+      ->GetDismissCount(url, ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void AutoPictureInPictureTabHelper::OnUserClosedWindow() {
 #if !BUILDFLAG(IS_ANDROID)
   if (!auto_pip_setting_helper_) {

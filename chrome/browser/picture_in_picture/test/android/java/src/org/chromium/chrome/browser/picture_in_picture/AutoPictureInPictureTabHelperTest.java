@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.picture_in_picture;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -17,7 +18,6 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,7 +29,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -118,33 +117,12 @@ public class AutoPictureInPictureTabHelperTest {
         fulfillVideoPlaybackConditions(webContents);
 
         // Switch away from the tab. This should trigger auto-PiP.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            newTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
-
-        // Wait for the tab switch to complete.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Tab currentTab = mActivity.getTabModelSelector().getCurrentTab();
-                    return currentTab != null && currentTab.getId() == newTab.getId();
-                },
-                "Tab switch did not complete.");
-
+        switchToTab(newTab);
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, true, "Did not enter auto-PiP after tab hidden.");
 
         // Return to the tab. This should exit auto-PiP.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            originalTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
+        switchToTab(originalTab);
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Did not exit auto-PiP after tab shown.");
     }
@@ -158,41 +136,8 @@ public class AutoPictureInPictureTabHelperTest {
                 AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
                         webContents));
 
-        // Create a new tab in the background to switch to later.
         Tab originalTab = mPage.getTab();
-        Tab newTab = createNewTabInBackground(originalTab);
-
-        fulfillVideoPlaybackConditions(webContents);
-
-        // Switch away from the tab. This should trigger auto-PiP.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            newTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
-
-        // Wait for the tab switch to complete.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Tab currentTab = mActivity.getTabModelSelector().getCurrentTab();
-                    return currentTab != null && currentTab.getId() == newTab.getId();
-                },
-                "Tab switch did not complete.");
-
-        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
-                webContents, true, "Did not enter auto-PiP after tab hidden.");
-
-        // Get the PiP activity.
-        PictureInPictureActivity pipActivity = getPictureInPictureActivity();
-        assertNotNull("PictureInPictureActivity not found.", pipActivity);
-
-        // Wait for the activity to actually enter PiP mode.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(pipActivity.isInPictureInPictureMode(), Matchers.is(true));
-                });
+        PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
 
         // Simulate clicking the "back to tab" button.
         ThreadUtils.runOnUiThreadBlocking(
@@ -202,11 +147,7 @@ public class AutoPictureInPictureTabHelperTest {
                 });
 
         // Wait for the PictureInPictureActivity to be destroyed.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            pipActivity == null || pipActivity.isDestroyed(), Matchers.is(true));
-                });
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
 
         // Now that the activity is gone, verify the C++ state.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
@@ -232,13 +173,7 @@ public class AutoPictureInPictureTabHelperTest {
         fulfillVideoPlaybackConditions(webContents);
 
         // Switch away from the tab.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            newTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
+        switchToTab(newTab);
 
         // Since the site did not register for auto-pip, it should not enter.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
@@ -263,13 +198,7 @@ public class AutoPictureInPictureTabHelperTest {
         AutoPictureInPictureTabHelperTestUtils.setHasAudioFocusForTesting(webContents, true);
 
         // Switch away from the tab.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            newTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
+        switchToTab(newTab);
 
         // Should not enter auto-PiP without playback.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
@@ -295,13 +224,7 @@ public class AutoPictureInPictureTabHelperTest {
         DOMUtils.waitForMediaPauseBeforeEnd(webContents, VIDEO_ID);
 
         // Switch away from the tab.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            newTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
+        switchToTab(newTab);
 
         // Should not enter auto-PiP when paused.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
@@ -331,13 +254,7 @@ public class AutoPictureInPictureTabHelperTest {
         Tab newTab = createNewTabInBackground(originalTab);
 
         // Switch away from the tab.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            newTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
+        switchToTab(newTab);
 
         // The PiP window should still be open.
         AutoPictureInPictureTabHelperTestUtils.waitForPictureInPictureVideoState(
@@ -346,13 +263,7 @@ public class AutoPictureInPictureTabHelperTest {
                 webContents, false, "Should not trigger auto-PiP with existing PiP.");
 
         // Switch back to the original tab.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            originalTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
+        switchToTab(originalTab);
 
         // The PiP window should still be open.
         AutoPictureInPictureTabHelperTestUtils.waitForPictureInPictureVideoState(
@@ -377,13 +288,7 @@ public class AutoPictureInPictureTabHelperTest {
         fulfillVideoPlaybackConditions(webContents);
 
         // Switch away from the tab.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            newTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
+        switchToTab(newTab);
 
         // Should not enter auto-PiP on an insecure context.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
@@ -413,17 +318,106 @@ public class AutoPictureInPictureTabHelperTest {
         fulfillVideoPlaybackConditions(webContents);
 
         // Switch away from the tab.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            newTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
+        switchToTab(newTab);
 
         // Should not enter auto-PiP when the permission is blocked.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Should not enter auto-PiP when permission is blocked.");
+    }
+
+    @Test
+    @MediumTest
+    public void testQuickDismissalIncrementsDismissCount() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        String url = mActivityTestRule.getTestServer().getURL(AUTO_PIP_VIDEO_PAGE);
+        Tab originalTab = mPage.getTab();
+
+        // Verify the initial dismiss count is 0.
+        assertEquals(
+                "Initial dismiss count should be 0.",
+                0,
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
+
+        PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
+
+        // Immediately close the PiP window to simulate a quick dismissal.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Configuration config = pipActivity.getResources().getConfiguration();
+                    pipActivity.onPictureInPictureModeChanged(false, config);
+                });
+
+        // Wait for the PiP activity to be destroyed.
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
+
+        // Verify that the dismiss count is now 1.
+        assertEquals(
+                "Dismiss count should be 1 after a quick dismissal.",
+                1,
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
+    }
+
+    @Test
+    @MediumTest
+    public void testSwitchingBackToTabDoesNotIncrementDismissCount() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        String url = mActivityTestRule.getTestServer().getURL(AUTO_PIP_VIDEO_PAGE);
+        Tab originalTab = mPage.getTab();
+
+        // Verify the initial dismiss count is 0.
+        assertEquals(
+                "Initial dismiss count should be 0.",
+                0,
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
+
+        PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
+
+        // Switch back to the original tab, which should auto-close the PiP window.
+        switchToTab(originalTab);
+
+        // Wait for the PiP activity to be destroyed.
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
+
+        // Verify that the dismiss count is still 0.
+        assertEquals(
+                "Dismiss count should not be incremented when manually switching back to the tab.",
+                0,
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
+    }
+
+    @Test
+    @MediumTest
+    public void testClosingAfterTimerExpiresDoesNotIncrementDismissCount() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        String url = mActivityTestRule.getTestServer().getURL(AUTO_PIP_VIDEO_PAGE);
+        Tab originalTab = mPage.getTab();
+
+        // Verify the initial dismiss count is 0.
+        assertEquals(
+                "Initial dismiss count should be 0.",
+                0,
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
+
+        PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
+
+        // Manually expire the timer.
+        ThreadUtils.runOnUiThreadBlocking(pipActivity::expireQuickDismissalTimerForTesting);
+
+        // Close the PiP window.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Configuration config = pipActivity.getResources().getConfiguration();
+                    pipActivity.onPictureInPictureModeChanged(false, config);
+                });
+
+        // Wait for the PiP activity to be destroyed.
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
+
+        // Verify that the dismiss count is still 0.
+        assertEquals(
+                "Dismiss count should not be incremented after the timer expires.",
+                0,
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
     }
 
     /**
@@ -476,6 +470,49 @@ public class AutoPictureInPictureTabHelperTest {
                                     TabLaunchType.FROM_LONGPRESS_BACKGROUND,
                                     parentTab);
                 });
+    }
+
+    /**
+     * Switches to the given tab and waits for the tab switch to complete.
+     *
+     * @param tab The tab to switch to.
+     */
+    private void switchToTab(Tab tab) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelUtils.selectTabById(
+                            mActivity.getTabModelSelector(),
+                            tab.getId(),
+                            TabSelectionType.FROM_USER);
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab currentTab = mActivity.getTabModelSelector().getCurrentTab();
+                    return currentTab != null && currentTab.getId() == tab.getId();
+                },
+                "Tab switch did not complete.");
+    }
+
+    /**
+     * Triggers auto-PiP and waits for the {@link PictureInPictureActivity} to be created.
+     *
+     * @param webContents The WebContents on which to trigger auto-PiP.
+     * @param originalTab The tab to switch away from.
+     * @return The created {@link PictureInPictureActivity}.
+     * @throws TimeoutException if the conditions to trigger auto-PiP are not met.
+     */
+    private PictureInPictureActivity enterAutoPip(WebContents webContents, Tab originalTab)
+            throws TimeoutException {
+        Tab newTab = createNewTabInBackground(originalTab);
+        fulfillVideoPlaybackConditions(webContents);
+        switchToTab(newTab);
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, true, "Did not enter auto-PiP after tab hidden.");
+
+        PictureInPictureActivity pipActivity = getPictureInPictureActivity();
+        assertNotNull("PictureInPictureActivity not found.", pipActivity);
+        CriteriaHelper.pollUiThread(pipActivity::isInPictureInPictureMode);
+        return pipActivity;
     }
 
     /**

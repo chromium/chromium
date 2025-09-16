@@ -16,6 +16,7 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /** Utility class for testing AutoPictureInPictureTabHelper C++ logic via JNI. */
 @JNINamespace("picture_in_picture")
@@ -136,6 +137,20 @@ public class AutoPictureInPictureTabHelperTestUtils {
         CriteriaHelper.pollUiThread(() -> info.getContentSetting(profile) == value);
     }
 
+    /**
+     * Gets the number of times the auto-pip dismiss prompt has been shown for the given URL.
+     *
+     * @param webContents The WebContents to check.
+     * @param url The URL to check.
+     * @return The number of times the dismiss prompt has been shown.
+     */
+    public static int getDismissCountForTesting(WebContents webContents, String url) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        AutoPictureInPictureTabHelperTestUtilsJni.get()
+                                .getDismissCountForTesting(webContents, new GURL(url)));
+    }
+
     @NativeMethods
     interface Natives {
         void initializeForTesting(@JniType("content::WebContents*") WebContents webContents);
@@ -153,5 +168,9 @@ public class AutoPictureInPictureTabHelperTestUtils {
 
         void setHasAudioFocusForTesting(
                 @JniType("content::WebContents*") WebContents webContents, boolean hasFocus);
+
+        int getDismissCountForTesting(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("GURL") GURL url);
     }
 }

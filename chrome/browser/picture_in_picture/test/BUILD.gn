@@ -53,6 +53,7 @@ android_library("test_support_java") {
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/jni_zero:jni_zero_java",
+    "//url:url_java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]

@@ -6,6 +6,7 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/picture_in_picture/test/jni_headers/AutoPictureInPictureTabHelperTestUtils_jni.h"
@@ -61,6 +62,16 @@ void JNI_AutoPictureInPictureTabHelperTestUtils_SetHasAudioFocusForTesting(
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
   tab_helper->set_has_audio_focus_for_testing(has_focus);
+}
+
+jint JNI_AutoPictureInPictureTabHelperTestUtils_GetDismissCountForTesting(
+    JNIEnv* env,
+    content::WebContents* web_contents,
+    GURL& url) {
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  CHECK(tab_helper);
+  return tab_helper->GetDismissCountForTesting(url);
 }
 
 }  // namespace picture_in_picture
