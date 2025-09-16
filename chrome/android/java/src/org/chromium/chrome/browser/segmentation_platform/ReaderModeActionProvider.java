@@ -168,28 +168,28 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
     @Override
     public void onActionShown(@Nullable Tab tab, @AdaptiveToolbarButtonVariant int action) {
-        if (action != AdaptiveToolbarButtonVariant.READER_MODE || tab == null || tab.isLoading()) {
-            return;
-        }
-
+        if (action != AdaptiveToolbarButtonVariant.READER_MODE || tab == null) return;
         // When on a distilled page, don't count the action as shown and return immediately.
         if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
                 && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
             return;
         }
+        // Always notify the rate limiter that the action was shown to ensure the rate limiting
+        // logic is applied.
+        ReaderModeActionRateLimiter.getInstance().onActionShown();
 
         new Handler(Looper.getMainLooper())
                 .postDelayed(
                         () -> {
-                            if (tab.isDestroyed()) return;
-
+                            if (tab.isLoading() || tab.isDestroyed()) {
+                                return;
+                            }
                             ReaderModeManager readerModeManager =
                                     tab.getUserDataHost()
                                             .getUserData(ReaderModeManager.USER_DATA_KEY);
                             if (readerModeManager != null) {
                                 readerModeManager.onContextualPageActionShown(
                                         mButtonVisibilitySupplier);
-                                ReaderModeActionRateLimiter.getInstance().onActionShown();
                             }
                         },
                         /* delayMillis= */ 500);
