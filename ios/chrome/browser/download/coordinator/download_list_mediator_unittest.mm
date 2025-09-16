@@ -4,19 +4,30 @@
 
 #import "ios/chrome/browser/download/coordinator/download_list_mediator.h"
 
+#import <UIKit/UIKit.h>
+
+#import <algorithm>
 #import <memory>
+#import <set>
 #import <string>
 #import <vector>
 
+#import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
+#import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/download/model/download_filter_util.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_observer.h"
+#import "ios/chrome/browser/download/model/download_record_observer_bridge.h"
 #import "ios/chrome/browser/download/model/download_record_service.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_consumer.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/download/download_task.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -30,6 +41,12 @@ class MockDownloadRecordService : public DownloadRecordService {
  public:
   MockDownloadRecordService() = default;
   ~MockDownloadRecordService() override = default;
+
+  // Import callback types from the base class
+  using DownloadRecordsCallback =
+      DownloadRecordService::DownloadRecordsCallback;
+  using DownloadRecordCallback = DownloadRecordService::DownloadRecordCallback;
+  using CompletionCallback = DownloadRecordService::CompletionCallback;
 
   // Creates records directly for testing purposes.
   void CreateRecordsForTesting() {
@@ -115,6 +132,50 @@ class MockDownloadRecordService : public DownloadRecordService {
     observers_.erase(observer);
   }
 
+  size_t GetRecordCount() const { return stored_records_.size(); }
+
+  // Public methods for testing access to internal state.
+  void AddRecordForTesting(const DownloadRecord& record) {
+    stored_records_.push_back(record);
+    for (auto* observer : observers_) {
+      observer->OnDownloadAdded(record);
+    }
+  }
+
+  void TriggerUpdateForTesting(const DownloadRecord& record) {
+    // First update the stored record
+    auto it =
+        std::find_if(stored_records_.begin(), stored_records_.end(),
+                     [&record](const DownloadRecord& stored_record) {
+                       return stored_record.download_id == record.download_id;
+                     });
+
+    if (it != stored_records_.end()) {
+      *it = record;  // Update the existing record
+    }
+
+    // Then notify observers
+    for (auto* observer : observers_) {
+      observer->OnDownloadUpdated(record);
+    }
+  }
+
+  void RemoveRecordForTesting(const std::string& download_id) {
+    // Remove record from stored_records_
+    auto it = std::find_if(stored_records_.begin(), stored_records_.end(),
+                           [&download_id](const DownloadRecord& record) {
+                             return record.download_id == download_id;
+                           });
+
+    if (it != stored_records_.end()) {
+      stored_records_.erase(it);
+      std::vector<std::string_view> removed_ids = {download_id};
+      for (auto* observer : observers_) {
+        observer->OnDownloadsRemoved(removed_ids);
+      }
+    }
+  }
+
  private:
   std::vector<DownloadRecord> stored_records_;
   std::set<DownloadRecordObserver*> observers_;
@@ -195,7 +256,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
         EXPECT_TRUE([items[0].downloadID isEqualToString:@"1"]);
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kPDF];
   [mock_consumer_ verify];
@@ -208,7 +268,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
         EXPECT_TRUE([items[0].downloadID isEqualToString:@"2"]);
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kImage];
   [mock_consumer_ verify];
@@ -221,7 +280,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
         EXPECT_TRUE([items[0].downloadID isEqualToString:@"3"]);
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kVideo];
   [mock_consumer_ verify];
@@ -234,7 +292,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
         EXPECT_TRUE([items[0].downloadID isEqualToString:@"4"]);
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kAudio];
   [mock_consumer_ verify];
@@ -247,7 +304,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
         EXPECT_TRUE([items[0].downloadID isEqualToString:@"5"]);
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kDocument];
   [mock_consumer_ verify];
@@ -260,7 +316,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
         EXPECT_TRUE([items[0].downloadID isEqualToString:@"6"]);
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kOther];
   [mock_consumer_ verify];
@@ -280,7 +335,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
         EXPECT_TRUE([expectedIDs isEqualToSet:actualIDs]);
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kAll];
   [mock_consumer_ verify];
@@ -298,7 +352,6 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
         capturedItems = items;
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithKeyword:@"document"];
   [mock_consumer_ verify];
@@ -322,7 +375,6 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
         capturedItems = items;
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithKeyword:@"mp"];
   [mock_consumer_ verify];
@@ -346,7 +398,6 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
         capturedItems = items;
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithKeyword:@"nonexistent"];
   [mock_consumer_ verify];
@@ -360,7 +411,6 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
         capturedItems = items;
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithKeyword:@""];
   [mock_consumer_ verify];
@@ -374,7 +424,6 @@ TEST_F(DownloadListMediatorTest, TestCombinedFilterAndSearch) {
 
   // First apply PDF filter.
   [[mock_consumer_ expect] setDownloadListItems:[OCMArg any]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kPDF];
   [mock_consumer_ verify];
@@ -387,7 +436,6 @@ TEST_F(DownloadListMediatorTest, TestCombinedFilterAndSearch) {
         capturedItems = items;
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithKeyword:@"document"];
   [mock_consumer_ verify];
@@ -402,10 +450,118 @@ TEST_F(DownloadListMediatorTest, TestCombinedFilterAndSearch) {
         capturedItems = items;
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
   [mediator_ filterRecordsWithKeyword:@"image"];
   [mock_consumer_ verify];
 
   EXPECT_EQ(capturedItems.count, 0U);
+}
+
+// Test adding a new download record through mock service.
+TEST_F(DownloadListMediatorTest, TestDownloadRecordWasAdded) {
+  // Connect mediator to enable observer notifications.
+  [mediator_ connect];
+
+  // Create a new download record and add it through the service.
+  DownloadRecord newRecord;
+  newRecord.download_id = "7";
+  newRecord.original_url = "https://testsite.org/newfile.pdf";
+  newRecord.mime_type = "application/pdf";
+  newRecord.file_name = "newfile.pdf";
+  newRecord.created_time = base::Time::Now();
+
+  // Set up expectation for consumer update when record is added.
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        // Should have more than original 6 records
+        EXPECT_GT(items.count, 6U);
+        return YES;
+      }]];
+
+  // Add record through mock service - this will trigger observer notification.
+  mock_service_->AddRecordForTesting(newRecord);
+
+  [mock_consumer_ verify];
+}
+
+// Test updating an existing download record through mock service.
+TEST_F(DownloadListMediatorTest, TestDownloadRecordWasUpdated) {
+  // Connect mediator to enable observer notifications.
+  [mediator_ connect];
+
+  // Create an updated record for testing.
+  DownloadRecord updatedRecord;
+  updatedRecord.download_id = "1";
+  updatedRecord.original_url = "https://testsite.org/document.pdf";
+  updatedRecord.mime_type = "application/pdf";
+  updatedRecord.file_name = "updated_document.pdf";
+  updatedRecord.created_time = base::Time::Now();
+
+  // Set up expectation for consumer update when record is updated.
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        // Should still have records after update
+        EXPECT_GT(items.count, 0U);
+        return YES;
+      }]];
+
+  // Update record through mock service which will trigger observer
+  // notification.
+  mock_service_->TriggerUpdateForTesting(updatedRecord);
+
+  [mock_consumer_ verify];
+}
+
+// Test removing download records through mock service.
+TEST_F(DownloadListMediatorTest, TestDownloadsWereRemovedWithIDs) {
+  // Connect mediator to enable observer notifications.
+  [mediator_ connect];
+
+  // Set up expectation for consumer update when records are removed.
+  // Note: Observer notifications do not show loading state
+  // (loadDownloadRecordsWithLoading:NO)
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        // Should have fewer records after removal
+        EXPECT_LT(items.count, 6U);
+        return YES;
+      }]];
+
+  // Remove record through mock service which will trigger observer
+  // notification.
+  mock_service_->RemoveRecordForTesting("1");
+
+  [mock_consumer_ verify];
+}
+
+// Test application state handling when app becomes active.
+TEST_F(DownloadListMediatorTest, TestApplicationDidBecomeActive) {
+  // Connect the mediator to enable state handling.
+  [mediator_ connect];
+
+  // Simulate app going to background first.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillResignActiveNotification
+                    object:nil];
+
+  // Set up expectation for sync operation when app becomes active.
+  [[mock_consumer_ expect] setLoadingState:YES];
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        // Should have the expected number of records after sync
+        EXPECT_EQ(items.count, 6U);
+        return YES;
+      }]];
+  [[mock_consumer_ expect] setLoadingState:NO];
+
+  // Simulate app coming back to foreground.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidBecomeActiveNotification
+                    object:nil];
+
+  [mock_consumer_ verify];
 }

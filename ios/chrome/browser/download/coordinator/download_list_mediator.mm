@@ -125,26 +125,7 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
 #pragma mark - DownloadListMutator
 
 - (void)loadDownloadRecords {
-  CHECK(_isReady);
-
-  [self.consumer setLoadingState:YES];
-
-  // Clear cache since we're reloading all data.
-  [self invalidateSearchCache];
-
-  __weak __typeof__(self) weakSelf = self;
-  _downloadRecordService->GetAllDownloadsAsync(
-      base::BindOnce(^(std::vector<DownloadRecord> records) {
-        __strong __typeof__(weakSelf) strongSelf = weakSelf;
-        strongSelf.allRecords = std::move(records);
-        std::vector<DownloadRecord> recordsToDisplay =
-            [strongSelf applyFilterWithTypeAndKeyword:strongSelf.allRecords];
-
-        // Update cache.
-        strongSelf.filteredRecordsCache = recordsToDisplay;
-
-        [strongSelf setDownloadListItems:recordsToDisplay];
-      }));
+  [self loadDownloadRecordsWithLoading:YES];
 }
 
 - (void)syncRecordsIfNeeded {
@@ -152,16 +133,8 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
 
   // Implement logic to sync records with the file system in a future iteration.
 
-  // Clear cache during sync since data may have changed.
-  [self invalidateSearchCache];
-
-  std::vector<DownloadRecord> recordsToDisplay =
-      [self applyFilterWithTypeAndKeyword:self.allRecords];
-
-  // Update cache.
-  self.filteredRecordsCache = recordsToDisplay;
-
-  [self setDownloadListItems:recordsToDisplay];
+  // For sync operation, show loading indicator
+  [self loadDownloadRecordsWithLoading:YES];
 }
 
 - (void)filterRecordsWithType:(DownloadFilterType)type {
@@ -171,8 +144,6 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
 
   // Clear search cache when filter type changes.
   [self invalidateSearchCache];
-
-  [self.consumer setLoadingState:YES];
 
   std::vector<DownloadRecord> filteredRecords =
       [self applyFilterWithTypeAndKeyword:self.allRecords];
@@ -239,6 +210,34 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
 
 #pragma mark - Private Methods
 
+// Loads download records with optional loading indicator.
+- (void)loadDownloadRecordsWithLoading:(BOOL)showLoading {
+  CHECK(_isReady);
+
+  if (showLoading) {
+    [self.consumer setLoadingState:YES];
+  }
+
+  // Clear cache since we're reloading all data.
+  [self invalidateSearchCache];
+
+  __weak __typeof__(self) weakSelf = self;
+  _downloadRecordService->GetAllDownloadsAsync(
+      base::BindOnce(^(std::vector<DownloadRecord> records) {
+        __strong __typeof__(weakSelf) strongSelf = weakSelf;
+        strongSelf.allRecords = std::move(records);
+        std::vector<DownloadRecord> recordsToDisplay =
+            [strongSelf applyFilterWithTypeAndKeyword:strongSelf.allRecords];
+
+        // Update cache.
+        strongSelf.filteredRecordsCache = recordsToDisplay;
+        if (showLoading) {
+          [strongSelf.consumer setLoadingState:NO];
+        }
+        [strongSelf setDownloadListItems:recordsToDisplay];
+      }));
+}
+
 // Applies the current filter type and keyword to the given records.
 - (std::vector<DownloadRecord>)applyFilterWithTypeAndKeyword:
     (const std::vector<DownloadRecord>&)records {
@@ -264,7 +263,7 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
 
 // Updates the consumer with the current download records.
 - (void)updateConsumer {
-  [self loadDownloadRecords];
+  [self loadDownloadRecordsWithLoading:NO];
 }
 
 // Handles the application did become active notification.
@@ -291,7 +290,6 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
     [items addObject:item];
   }
   [self.consumer setDownloadListItems:items.copy];
-  [self.consumer setLoadingState:NO];
   [self.consumer setEmptyState:(items.count == 0)];
 }
 
