@@ -284,13 +284,15 @@
   _identityManager = nullptr;
   _syncService = nullptr;
   _identityManagerObserverBridge.reset();
+  _authServiceObserverBridge.reset();
 
   [super stop];
   self.started = NO;
 }
 
 - (void)dealloc {
-  DCHECK(!self.mediator);
+  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+  CHECK(!self.mediator, base::NotFatalUntil::M145);
 }
 
 #pragma mark - ReadingListListViewControllerAudience
