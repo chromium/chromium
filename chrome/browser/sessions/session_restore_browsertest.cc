@@ -19,8 +19,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -324,6 +326,14 @@ class SessionRestoreTest : public InProcessBrowserTest {
       fake_memory_pressure_monitor_.SetAndNotifyMemoryPressure(
           base::MemoryPressureMonitor::MemoryPressureLevel::
               MEMORY_PRESSURE_LEVEL_CRITICAL);
+      // Wait for async memory notifications to be delivered to Performance
+      // Manager on the main thread.
+      // TODO(crbug.com/436324601): Remove once memory pressure notifications
+      // are synchronous.
+      base::RunLoop run_loop;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, run_loop.QuitClosure());
+      run_loop.Run();
     }
     restore_observer.Wait();
 
@@ -1524,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, StartupPagesWithExistingPages) {
             browser()->tab_strip_model()->GetWebContentsAt(2)->GetURL());
 }
 
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoMemoryPressureLoadsAllTabs) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, LoadsAllTabs) {
   // Add several tabs to the browser. Restart the browser and check that all
   // tabs got loaded properly.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1535,7 +1545,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoMemoryPressureLoadsAllTabs) {
       browser(), GURL(url::kAboutBlankURL),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  Browser* restored = QuitBrowserAndRestore(browser(), GURL(), true);
+  Browser* restored = QuitBrowserAndRestore(browser());
   TabStripModel* tab_strip_model = restored->tab_strip_model();
 
   ASSERT_EQ(1u, active_browser_list_->size());
@@ -1545,33 +1555,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoMemoryPressureLoadsAllTabs) {
   ASSERT_TRUE(tab_strip_model->GetWebContentsAt(0)->GetRenderWidgetHostView() &&
               tab_strip_model->GetWebContentsAt(1)->GetRenderWidgetHostView() &&
               tab_strip_model->GetWebContentsAt(2)->GetRenderWidgetHostView());
-}
-
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MemoryPressureLoadsNotAllTabs) {
-  // Add several tabs to the browser. Restart the browser and check that all
-  // tabs got loaded properly.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  // Restore the brwoser, but instead of directly waiting, we issue a critical
-  // memory pressure event and finish then the loading.
-  Browser* restored = QuitBrowserAndRestore(browser(), GURL(), false);
-
-  TabStripModel* tab_strip_model = restored->tab_strip_model();
-
-  ASSERT_EQ(1u, active_browser_list_->size());
-
-  ASSERT_EQ(3, tab_strip_model->count());
-  // At least one of the render widgets should not be initialized yet.
-  ASSERT_FALSE(
-      tab_strip_model->GetWebContentsAt(0)->GetRenderWidgetHostView() &&
-      tab_strip_model->GetWebContentsAt(1)->GetRenderWidgetHostView() &&
-      tab_strip_model->GetWebContentsAt(2)->GetRenderWidgetHostView());
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWebUI) {
@@ -3249,17 +3232,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithIncompleteFileTest, LogsReadError) {
   }
 }
 
-// TODO(crbug.com/41488859): Test fails on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SameDocumentNavigationWithNothingCommittedAfterRestore \
-  DISABLED_SameDocumentNavigationWithNothingCommittedAfterRestore
-#else
-#define MAYBE_SameDocumentNavigationWithNothingCommittedAfterRestore \
-  SameDocumentNavigationWithNothingCommittedAfterRestore
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SessionRestoreTest,
-    MAYBE_SameDocumentNavigationWithNothingCommittedAfterRestore) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
+                       SameDocumentNavigationWithNothingCommittedAfterRestore) {
   // The test sets this closure before each navigation to /sometimes-slow in
   // order to control the response for that navigation.
   content::SlowHttpResponse::GotRequestCallback got_slow_request;
@@ -3340,17 +3314,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(nav_observer.was_same_document());
 }
 
-// TODO(crbug.com/41488859): Test fails on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore \
-  DISABLED_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore
-#else
-#define MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore \
-  SameDocumentHistoryNavigationWithNothingCommittedAfterRestore
-#endif
 IN_PROC_BROWSER_TEST_F(
     SessionRestoreTest,
-    MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore) {
+    SameDocumentHistoryNavigationWithNothingCommittedAfterRestore) {
   // The test sets this closure before each navigation to /sometimes-slow in
   // order to control the response for that navigation.
   content::SlowHttpResponse::GotRequestCallback got_slow_request;
