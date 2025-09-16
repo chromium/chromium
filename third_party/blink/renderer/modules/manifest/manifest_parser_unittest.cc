@@ -3671,6 +3671,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
   {
     base::test::ScopedFeatureList inner_feature_list(
         blink::features::kWebAppEnableScopeExtensionsBySite);
+    // Valid wildcard format.
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
@@ -3685,6 +3686,28 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
                     ->IsSameOriginWith(scope_extensions[0]->origin.get()));
     ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse origin with wildcard with feature disabled.
+  {
+    base::test::ScopedFeatureList inner_feature_list;
+    inner_feature_list.InitAndDisableFeature(
+        blink::features::kWebAppEnableScopeExtensionsBySite);
+    // Valid wildcard format.
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "origin", "origin": "https://*.foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://*.foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
   }
 
   // Parse invalid origin wildcard format.
