@@ -27667,51 +27667,6 @@
             ]
         }
     ],
-    "WebViewQuicConnectionTimeout": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_100s",
-                    "params": {
-                        "WebViewQuicConnectionTimeoutSeconds": "100"
-                    },
-                    "enable_features": [
-                        "WebViewQuicConnectionTimeout"
-                    ]
-                },
-                {
-                    "name": "Enabled_200s",
-                    "params": {
-                        "WebViewQuicConnectionTimeoutSeconds": "200"
-                    },
-                    "enable_features": [
-                        "WebViewQuicConnectionTimeout"
-                    ]
-                },
-                {
-                    "name": "Enabled_300s",
-                    "params": {
-                        "WebViewQuicConnectionTimeoutSeconds": "300"
-                    },
-                    "enable_features": [
-                        "WebViewQuicConnectionTimeout"
-                    ]
-                },
-                {
-                    "name": "Enabled_400s",
-                    "params": {
-                        "WebViewQuicConnectionTimeoutSeconds": "400"
-                    },
-                    "enable_features": [
-                        "WebViewQuicConnectionTimeout"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewRecordAppCacheHistograms": [
         {
             "platforms": [
