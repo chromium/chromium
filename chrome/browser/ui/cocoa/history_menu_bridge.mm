@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/grit/components_scaled_resources.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -73,12 +72,6 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
   if (auto* profile_manager = g_browser_process->profile_manager()) {
     profile_manager_observation_.Observe(profile_manager);
   }
-
-  // Set the static icons in the menu.
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  NSMenuItem* full_history_item = [HistoryMenu() itemWithTag:IDC_SHOW_HISTORY];
-  [full_history_item
-      setImage:rb.GetNativeImageNamed(IDR_HISTORY_FAVICON).ToNSImage()];
 
   // Set the visibility of menu items according to profile type.
   // "Recently Visited", "Recently Closed" and "Show Full History" sections
@@ -123,6 +116,7 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     }
   }
 
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   default_favicon_ = rb.GetNativeImageNamed(IDR_DEFAULT_FAVICON).ToNSImage();
 
   [HistoryMenu() setDelegate:controller_];

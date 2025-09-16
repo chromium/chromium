@@ -385,6 +385,8 @@ NSMenuItem* BuildHistoryMenu(NSApplication* nsapp,
                   .remove_if(is_pwa),
               Item(IDS_HISTORY_SHOWFULLHISTORY_LINK)
                   .command_id(IDC_SHOW_HISTORY)
+                  .sf_symbol(
+                      @"clock.arrow.trianglehead.counterclockwise.rotate.90")
                   .remove_if(is_pwa),
           })
           .Build();
