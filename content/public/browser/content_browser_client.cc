@@ -184,7 +184,7 @@ bool ContentBrowserClient::ShouldUseProcessPerSite(
 }
 
 bool ContentBrowserClient::
-    ShouldReuseExistingProcessForNewMainFrameSiteInstance(
+    ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
         BrowserContext* browser_context,
         const GURL& site_instance_original_url) {
   DCHECK(browser_context);
