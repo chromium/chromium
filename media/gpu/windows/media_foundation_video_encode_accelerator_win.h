@@ -303,6 +303,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Vendor of the active video encoder.
   DriverVendor vendor_ = DriverVendor::kOther;
+  std::string hardware_encoder_name_;
 
   // Group of picture length for encoded output stream, indicates the
   // distance between two key frames.

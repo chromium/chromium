@@ -25,6 +25,8 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/native_library.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -473,7 +475,9 @@ EncoderStatus MediaFoundationVideoEncodeAccelerator::Initialize(
     resolution.Transpose();
   }
 
-  encoder_info_.implementation_name = "MediaFoundationVideoEncodeAccelerator";
+  encoder_info_.implementation_name =
+      base::StringPrintf("MediaFoundationVideoEncodeAccelerator (%s)",
+                         hardware_encoder_name_.c_str());
   // Currently, MFVEA does not support odd resolution well. The implementation
   // here reports alignment of 2 in the EncoderInfo, together with simulcast
   // layers applied.
@@ -1276,8 +1280,13 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
       UINT32 name_length;
       activate_->GetAllocatedString(MFT_FRIENDLY_NAME_Attribute, &friendly_name,
                                     &name_length);
-      DVLOG(3) << "Selected asynchronous hardware encoder's friendly name: "
-               << friendly_name;
+      std::string friendly_name_str;
+      if (base::WideToUTF8(friendly_name.get(), name_length,
+                           &friendly_name_str)) {
+        hardware_encoder_name_ = std::move(friendly_name_str);
+      } else {
+        hardware_encoder_name_ = "Unknown MFT";
+      }
       // Encoder is successfully activated.
       break;
     } else {
