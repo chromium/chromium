@@ -139,12 +139,6 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
-<action name="AboutFlags_disable-pnacl">
-  <obsolete>This flag no longer exists.</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
 <action name="AboutFlags_disable-print-preview">
   <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
@@ -206,36 +200,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="AboutFlags_enable-nacl">
-  <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
-<action name="AboutFlags_enable-nacl-debug">
-  <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
-<action name="AboutFlags_enable-nacl-exception-handling">
-  <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
 <action name="AboutFlags_enable-native-cups">
   <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
   <owner>skau@chromium.org</owner>
   <description>
     Records if native cups printing is enabled in chrome://flags
   </description>
-</action>
-
-<action name="AboutFlags_enable-pnacl">
-  <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="AboutFlags_enable-pointer-events">
@@ -339,24 +309,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AboutFlags_my-special-feature">
-  <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
-<action name="AboutFlags_nacl-debug-mask">
-  <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
-<action name="AboutFlags_nacl-gdb">
-  <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
-<action name="AboutFlags_nacl-gdb-script">
   <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -48110,11 +48062,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ViewAboutFlash">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
-<action name="ViewAboutNaCl">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>

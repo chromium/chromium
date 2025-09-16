@@ -4036,11 +4036,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "enable-nacl",
-    "owners": [ "dschuff@chromium.org", "native-client-dev@googlegroups.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-navigation-capture-refactor-android",
     "owners": [ "muratori@google.org", "lt-web-apps-team@google.com" ],
     "expiry_milestone": 150
