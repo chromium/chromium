@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+
 #include "base/test/values_test_util.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui_handler.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"

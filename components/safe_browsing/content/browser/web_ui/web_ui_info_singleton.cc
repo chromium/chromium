@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui_handler.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "content/public/browser/browser_context.h"
 

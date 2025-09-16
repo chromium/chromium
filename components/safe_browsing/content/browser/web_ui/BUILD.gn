@@ -8,6 +8,8 @@ static_library("web_ui") {
   sources = [
     "safe_browsing_ui.cc",
     "safe_browsing_ui.h",
+    "safe_browsing_ui_handler.cc",
+    "safe_browsing_ui_handler.h",
     "web_ui_info_singleton.cc",
     "web_ui_info_singleton.h",
   ]
