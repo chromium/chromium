@@ -955,8 +955,9 @@ int BrowserViewLayout::GetMinWebContentsWidth() const {
 bool BrowserViewLayout::IsImmersiveModeEnabledWithoutToolbar() const {
   return delegate_->GetImmersiveModeController()->IsEnabled()
 #if BUILDFLAG(IS_MAC)
-         &&
-         !fullscreen_utils::IsAlwaysShowToolbarEnabled(browser_view_->browser())
+         && (!fullscreen_utils::IsAlwaysShowToolbarEnabled(
+                 browser_view_->browser()) ||
+             fullscreen_utils::IsInContentFullscreen(browser_view_->browser()))
 #endif
       ;
 }
