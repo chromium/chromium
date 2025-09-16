@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../settings_page/settings_subpage.js';
+
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
 import {getTemplate} from './security_page_v2.html.js';
@@ -25,7 +28,8 @@ export interface SettingsSecurityPageV2Element {
   };
 }
 
-const SettingsSecurityPageV2ElementBase = PrefsMixin(PolymerElement);
+const SettingsSecurityPageV2ElementBase =
+    SettingsViewMixin(PrefsMixin(PolymerElement));
 
 export class SettingsSecurityPageV2Element extends
     SettingsSecurityPageV2ElementBase {
@@ -45,6 +49,11 @@ export class SettingsSecurityPageV2Element extends
         value: SecuritySettingsBundleSetting,
       },
     };
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

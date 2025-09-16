@@ -89,6 +89,11 @@ export class SettingsPrivacyPageIndexElement extends
         value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
       },
 
+      enableBundledSecuritySettings_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableBundledSecuritySettings'),
+      },
+
       enableFederatedIdentityApiContentSetting_: {
         type: Boolean,
         value: () => {
@@ -210,6 +215,7 @@ export class SettingsPrivacyPageIndexElement extends
   declare private showPrivacyGuidePromo_: boolean;
   declare private autoPictureInPictureEnabled_: boolean;
   declare private capturedSurfaceControlEnabled_: boolean;
+  declare private enableBundledSecuritySettings_: boolean;
   declare private enableFederatedIdentityApiContentSetting_: boolean;
   declare private enableExperimentalWebPlatformFeatures_: boolean;
   declare private enableHandTrackingContentSetting_: boolean;

@@ -113,14 +113,33 @@
     </template>
   </template>
 
+  <template is="dom-if" if="[[!enableBundledSecuritySettings_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SECURITY, currentRoute, inSearchMode)]]">
+      <settings-security-page slot="view"
+          id="security" data-parent-view-id="old" prefs="{{prefs}}"
+          route-path$="[[routes_.SECURITY.path]]">
+      </settings-security-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[enableBundledSecuritySettings_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SECURITY, currentRoute, inSearchMode)]]">
+      <settings-security-page-v2 slot="view"
+          id="security" data-parent-view-id="old" prefs="{{prefs}}"
+          route-path$="[[routes_.SECURITY.path]]">
+      </settings-security-page-v2>
+    </template>
+  </template>
+
   <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
     <template is="dom-if" if="[[renderView_(
         routes_.SECURITY_KEYS, currentRoute, inSearchMode)]]">
-      <settings-subpage slot="view" id="securityKeys"
-          data-parent-view-id="old" page-title="$i18n{securityKeysTitle}"
-          route-path$="[[routes_.SECURITY_KEYS.path]]">
-        <security-keys-subpage></security-keys-subpage>
-      </settings-subpage>
+      <security-keys-subpage slot="view" id="securityKeys"
+        data-parent-view-id="old"
+        route-path$="[[routes_.SECURITY_KEYS.path]]">
+      </security-keys-subpage>
     </template>
   </template>
 

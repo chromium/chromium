@@ -68,15 +68,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       toFocus.focus();
     };
 
-    const focusInSecurityPage = (selector: string) => {
-      const toFocus =
-          this.shadowRoot!.querySelector('settings-privacy-page')!.shadowRoot!
-              .querySelector<HTMLElement>('settings-security-page')!.shadowRoot!
-              .querySelector<HTMLElement>(selector);
-      assert(toFocus);
-      toFocus.focus();
-    };
-
     if (routes.COOKIES) {
       map.set(
           routes.COOKIES.path,
@@ -96,10 +87,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
           focusInPrivacyPage.bind(this, '#privacySandboxLinkRow'));
     }
 
-    if (routes.SECURITY_KEYS) {
+    if (routes.SECURITY) {
       map.set(
-          routes.SECURITY_KEYS.path,
-          focusInSecurityPage.bind(this, '#securityKeysSubpageTrigger'));
+          routes.SECURITY.path,
+          focusInPrivacyPage.bind(this, '#securityLinkRow'));
     }
 
     if (routes.SITE_SETTINGS) {

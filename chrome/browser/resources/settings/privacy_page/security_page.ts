@@ -11,6 +11,7 @@ import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../privacy_page/secure_dns.js';
 import '../icons.html.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 
@@ -29,7 +30,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import type {FocusConfig} from '../focus_config.js';
 import {HatsBrowserProxyImpl, SecurityPageInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
@@ -37,6 +37,7 @@ import {MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInterac
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 import type {SiteSettingsPrefsBrowserProxy} from '../site_settings/site_settings_prefs_browser_proxy.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
@@ -80,8 +81,9 @@ export interface SettingsSecurityPageElement {
   };
 }
 
-const SettingsSecurityPageElementBase = HelpBubbleMixin(RouteObserverMixin(
-    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement)))));
+const SettingsSecurityPageElementBase =
+    HelpBubbleMixin(RouteObserverMixin(SettingsViewMixin(
+        WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))))));
 
 export class SettingsSecurityPageElement extends
     SettingsSecurityPageElementBase {
@@ -164,11 +166,6 @@ export class SettingsSecurityPageElement extends
         },
       },
 
-      focusConfig: {
-        type: Object,
-        observer: 'focusConfigChanged_',
-      },
-
       enableHashPrefixRealTimeLookups_: {
         type: Boolean,
         value() {
@@ -222,7 +219,6 @@ export class SettingsSecurityPageElement extends
   // </if>
 
   declare private enableSecurityKeysSubpage_: boolean;
-  declare focusConfig: FocusConfig;
   declare private showDisableSafebrowsingDialog_: boolean;
   declare private enableHashPrefixRealTimeLookups_: boolean;
   declare private httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[];
@@ -242,20 +238,6 @@ export class SettingsSecurityPageElement extends
       MetricsBrowserProxyImpl.getInstance();
   private siteBrowserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
-
-  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
-    assert(!oldConfig);
-
-    if (routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER) {
-      this.focusConfig.set(
-          routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER.path, () => {
-            const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
-                '#javascriptOptimizerSettingLink');
-            assert(toFocus);
-            focusWithoutInk(toFocus);
-          });
-    }
-  }
 
   override ready() {
     super.ready();
@@ -300,7 +282,9 @@ export class SettingsSecurityPageElement extends
   /**
    * RouteObserverMixin
    */
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route, oldRoute?: Route) {
+    super.currentRouteChanged(route, oldRoute);
+
     if (route !== routes.SECURITY) {
       // If the user navigates to other settings page from security page, call
       // onBeforeUnload_ method to check if the security page survey should be
@@ -629,6 +613,27 @@ export class SettingsSecurityPageElement extends
     this.metricsBrowserProxy_.recordAction(
         confirmed ? 'SafeBrowsing.Settings.DisableSafeBrowsingDialogConfirmed' :
                     'SafeBrowsing.Settings.DisableSafeBrowsingDialogDenied');
+  }
+
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    const map = new Map([
+      [
+        routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER.path,
+        '#javascriptOptimizerSettingLink',
+      ],
+    ]);
+
+    if (routes.SECURITY_KEYS) {
+      map.set(routes.SECURITY_KEYS.path, '#securityKeysSubpageTrigger');
+    }
+
+    return map;
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

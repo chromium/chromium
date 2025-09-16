@@ -1324,12 +1324,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
           "runMochaSuite('DeleteBrowsingDataRevampDisabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
-                       BundledSecuritySettingsDisabled) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('BundledSecuritySettingsDisabled')");
-}
-
 class SettingsNotificationsPageTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

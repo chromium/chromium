@@ -7,6 +7,7 @@
  * containing operations on security keys.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import './security_keys_credential_management_dialog.js';
 import './security_keys_bio_enroll_dialog.js';
@@ -18,6 +19,7 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './security_keys_subpage.html.js';
 
@@ -28,7 +30,9 @@ export interface SecurityKeysSubpageElement {
   };
 }
 
-export class SecurityKeysSubpageElement extends PolymerElement {
+const SecurityKeysSubpageElementBase = SettingsViewMixin(PolymerElement);
+
+export class SecurityKeysSubpageElement extends SecurityKeysSubpageElementBase {
   static get is() {
     return 'security-keys-subpage';
   }
@@ -115,6 +119,11 @@ export class SecurityKeysSubpageElement extends PolymerElement {
         this.shadowRoot!.querySelector<HTMLElement>('#bioEnrollButton');
     assert(toFocus);
     focusWithoutInk(toFocus);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

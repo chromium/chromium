@@ -1,18 +1,22 @@
-<h1 class="cr-title-text">Bundled Security Settings</h1>
-<settings-radio-group id="bundlesRadioGroup"
-    pref="{{prefs.generated.security_settings_bundle}}"
-    selectable-elements="cr-radio-button, settings-collapse-radio-button">
-  <!-- TODO(crbug.com/423878094): Replace hardcoded strings. -->
-  <settings-collapse-radio-button id="securitySettingsBundleEnhanced"
-      name="[[securitySettingsBundleSettingEnum_.ENHANCED]]"
-      pref="[[prefs.generated.security_settings_bundle]]"
-      label="Enhanced Bundle"
-      no-automatic-collapse>
-  </settings-collapse-radio-button>
-  <settings-collapse-radio-button id="securitySettingsBundleStandard"
-      name="[[securitySettingsBundleSettingEnum_.STANDARD]]"
-      pref="[[prefs.generated.security_settings_bundle]]"
-      label="Standard Bundle"
-      no-automatic-collapse>
-  </settings-collapse-radio-button>
-</settings-radio-group>
+<settings-subpage page-title="$i18n{securityPageTitle}"
+    learn-more-url="$i18n{safeBrowsingHelpCenterURL}"
+    route-path$="[[routePath]]">
+  <h1 class="cr-title-text">Bundled Security Settings</h1>
+  <settings-radio-group id="bundlesRadioGroup"
+      pref="{{prefs.generated.security_settings_bundle}}"
+      selectable-elements="cr-radio-button, settings-collapse-radio-button">
+    <!-- TODO(crbug.com/423878094): Replace hardcoded strings. -->
+    <settings-collapse-radio-button id="securitySettingsBundleEnhanced"
+        name="[[securitySettingsBundleSettingEnum_.ENHANCED]]"
+        pref="[[prefs.generated.security_settings_bundle]]"
+        label="Enhanced Bundle"
+        no-automatic-collapse>
+    </settings-collapse-radio-button>
+    <settings-collapse-radio-button id="securitySettingsBundleStandard"
+        name="[[securitySettingsBundleSettingEnum_.STANDARD]]"
+        pref="[[prefs.generated.security_settings_bundle]]"
+        label="Standard Bundle"
+        no-automatic-collapse>
+    </settings-collapse-radio-button>
+  </settings-radio-group>
+</settings-subpage>

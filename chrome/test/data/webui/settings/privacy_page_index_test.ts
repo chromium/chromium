@@ -29,6 +29,7 @@ suite('PrivacyPageIndex', function() {
         {
           autoPictureInPictureEnabled: false,
           capturedSurfaceControlEnabled: false,
+          enableBundledSecuritySettings: false,
           enableExperimentalWebPlatformFeatures: false,
           enableFederatedIdentityApiContentSetting: false,
           enableHandTrackingContentSetting: false,
@@ -112,7 +113,11 @@ suite('PrivacyPageIndex', function() {
           viewId: 'safetyHub',
           parentViewId: 'safetyHubEntryPoint',
         },
-        {route: routes.SECURITY, viewId: 'old'},
+        {
+          route: routes.SECURITY,
+          viewId: 'security',
+          parentViewId: 'old',
+        },
       ];
 
       for (const routeInfo of routesToVisit) {
@@ -202,6 +207,26 @@ suite('PrivacyPageIndex', function() {
         await testViewsForRoute(
             routeInfo.route, [routeInfo.viewId], routeInfo.parentViewId);
       }
+    });
+
+    // TODO(crbug.com/417690232): Delete once kBundledSecuritySettings is
+    // launched.
+    test('RoutingSecurityV2', async function() {
+      assertFalse(loadTimeData.getBoolean('enableBundledSecuritySettings'));
+
+      // Case where old UI should exist.
+      await createPrivacyPageIndex();
+      await testViewsForRoute(routes.SECURITY, ['security'], 'old');
+      assertTrue(!!index.shadowRoot!.querySelector('settings-security-page'));
+      assertFalse(
+          !!index.shadowRoot!.querySelector('settings-security-page-v2'));
+
+      // Case where new UI should exist.
+      await createPrivacyPageIndex({enableBundledSecuritySettings: true});
+      await testViewsForRoute(routes.SECURITY, ['security'], 'old');
+      assertFalse(!!index.shadowRoot!.querySelector('settings-security-page'));
+      assertTrue(
+          !!index.shadowRoot!.querySelector('settings-security-page-v2'));
     });
 
     test('RoutingSecurityKeys', async function() {

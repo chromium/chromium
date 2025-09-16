@@ -110,10 +110,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value() {
           const map = new Map();
 
-          if (routes.SECURITY) {
-            map.set(routes.SECURITY.path, '#securityLinkRow');
-          }
-
           if (routes.PRIVACY_GUIDE) {
             map.set(routes.PRIVACY_GUIDE.path, '#privacyGuideLinkRow');
           }
@@ -154,11 +150,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('enableIncognitoTrackingProtections'),
       },
 
-      enableBundledSecuritySettings_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableBundledSecuritySettings'),
-      },
-
       // The label of the confirmation toast that is displayed after deletion
       // from 'Delete Browsing data' is completed.
       dbdDeletionConfirmationToastLabel_: {
@@ -190,7 +181,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
   declare private enableIncognitoTrackingProtections_: boolean;
-  declare private enableBundledSecuritySettings_: boolean;
   declare private dbdDeletionConfirmationToastLabel_: string;
   declare private shouldShowDbdDeletionConfirmationToast_: boolean;
 
@@ -337,6 +327,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'incognitoTrackingProtections':
         triggerId = 'incognitoTrackingProtectionsLinkRow';
         break;
+      case 'security':
       case 'securityKeys':
         triggerId = 'securityLinkRow';
         break;

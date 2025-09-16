@@ -117,18 +117,12 @@ suite('PrivacyPage', function() {
     assertEquals('test', toast.textContent!.trim());
   });
 
-  // TODO(crbug.com/417690232): Update once its kBundledSecuritySettings is
-  // launched.
+  // Test that clicking on the security page row navigates to
+  // chrome://settings/security
   test('onSecurityPageClick', function() {
-    // Click on the security page row that takes us to
-    // chrome://settings/security
     page.$.securityLinkRow.click();
     flush();
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
-
-    // Make sure that the new UI is visible and the old UI is not.
-    assertTrue(!!page.shadowRoot!.querySelector('settings-security-page-v2'));
-    assertFalse(!!page.shadowRoot!.querySelector('settings-security-page'));
   });
 
   test('privacySandboxRestricted', function() {
@@ -802,37 +796,5 @@ suite('DeleteBrowsingDataRevampDisabled', () => {
     const dialog =
         page.shadowRoot!.querySelector('settings-clear-browsing-data-dialog');
     assertTrue(!!dialog);
-  });
-});
-
-// TODO(crbug.com/417690232): Remove once kBundledSecuritySettings is launched.
-suite('BundledSecuritySettingsDisabled', () => {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    loadTimeData.overrideValues({
-      enableBundledSecuritySettings: false,
-    });
-    resetRouterForTesting();
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
-
-  test('renderOriginalSecurityPage', function() {
-    assertFalse(!!page.shadowRoot!.querySelector('settings-security-page'));
-    page.$.securityLinkRow.click();
-    flush();
-
-    assertTrue(!!page.shadowRoot!.querySelector('settings-security-page'));
   });
 });

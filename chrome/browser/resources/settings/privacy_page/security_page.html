@@ -1,76 +1,78 @@
-    <style include="cr-shared-style settings-shared settings-columned-section">
+  <style include="cr-shared-style settings-shared settings-columned-section">
+    #safeBrowsingSection {
+      padding: 0 var(--cr-section-padding);
+    }
 
-      #safeBrowsingSection {
-        padding: 0 var(--cr-section-padding);
-      }
+    .bullet-line {
+      align-items: center;
+      display: flex;
+      min-height: var(--cr-section-min-height);
+    }
 
-      .bullet-line {
-        align-items: center;
-        display: flex;
-        min-height: var(--cr-section-min-height);
-      }
+    .bullet-line > div {
+      padding-inline-start: var(--cr-radio-button-size);
+    }
 
-      .bullet-line > div {
-        padding-inline-start: var(--cr-radio-button-size);
-      }
+    settings-collapse-radio-button:not(:first-of-type) {
+      --settings-collapse-separator-line: var(--cr-separator-line);
+    }
 
-      settings-collapse-radio-button:not(:first-of-type) {
-        --settings-collapse-separator-line: var(--cr-separator-line);
-      }
+    settings-collapse-radio-button[hidden] + settings-collapse-radio-button {
+        --settings-collapse-separator-line: 0;
+    }
 
-      settings-collapse-radio-button[hidden] + settings-collapse-radio-button {
-          --settings-collapse-separator-line: 0;
-      }
+    settings-collapse-radio-button .bullet-line:last-child {
+      padding-bottom: 12px;
+    }
 
-      settings-collapse-radio-button .bullet-line:last-child {
-        padding-bottom: 12px;
-      }
+    settings-toggle-button {
+      padding-inline-end: 0;
+      padding-inline-start: 0;
+    }
 
-      settings-toggle-button {
-        padding-inline-end: 0;
-        padding-inline-start: 0;
-      }
+    settings-toggle-button:not([disabled]) {
+      pointer-events: all;
+    }
 
-      settings-toggle-button:not([disabled]) {
-        pointer-events: all;
-      }
+    #safeBrowsingEnhanced .bullet-line:last-of-type {
+      padding-bottom: 12px;
+    }
 
-      #safeBrowsingEnhanced .bullet-line:last-of-type {
-        padding-bottom: 12px;
-      }
+    #safeBrowsingEnhanced {
+      --cr-radio-button-unchecked-ripple-color:
+          var(--cr-radio-button-checked-ripple-color);
+    }
 
-      #safeBrowsingEnhanced {
-        --cr-radio-button-unchecked-ripple-color:
-            var(--cr-radio-button-checked-ripple-color);
-      }
+    #secureConnectionsSection h2 {
+      padding: 24px var(--cr-section-padding) 8px;
+    }
 
-      #secureConnectionsSection h2 {
-        padding: 24px var(--cr-section-padding) 8px;
-      }
+    #httpsOnlyModeToggle,
+    #passwordsLeakToggle {
+      padding: 0 var(--cr-section-padding);
+    }
 
-      #httpsOnlyModeToggle,
-      #passwordsLeakToggle {
-        padding: 0 var(--cr-section-padding);
-      }
+    #httpsFirstModeToggle {
+      margin-top: 8px;
+    }
 
-      #httpsFirstModeToggle {
-        margin-top: 8px;
-      }
+    #httpsFirstModeRadioGroup {
+      width: 100%;
+    }
 
-      #httpsFirstModeRadioGroup {
-        width: 100%;
-      }
+    #httpsFirstModeRadioGroup .list-item {
+      padding-inline-end: 20px;
+      padding-inline-start: 20px;
+    }
 
-      #httpsFirstModeRadioGroup .list-item {
-        padding-inline-end: 20px;
-        padding-inline-start: 20px;
-      }
-
-      #learnMoreLabelContainer {
-        padding-bottom: 12px;
-        pointer-events: auto;
-      }
-    </style>
+    #learnMoreLabelContainer {
+      padding-bottom: 12px;
+      pointer-events: auto;
+    }
+  </style>
+  <settings-subpage page-title="$i18n{securityPageTitle}"
+      learn-more-url="$i18n{safeBrowsingHelpCenterURL}"
+      route-path$="[[routePath]]">
     <div id="safeBrowsingSection">
       <h2 class="cr-title-text">$i18n{safeBrowsingSectionLabel}</h2>
       <settings-radio-group id="safeBrowsingRadioGroup" no-set-pref
@@ -304,3 +306,4 @@
           on-close="onDisableSafebrowsingDialogClose_">
       </settings-simple-confirmation-dialog>
     </template>
+  </settings-subpage>
