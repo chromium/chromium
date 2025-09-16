@@ -1122,6 +1122,32 @@ void Transaction::NotifyOfIdbInternalsRelevantChange() {
 }
 
 void Transaction::TimeoutFired() {
+  // Histograms to diagnose memory leak crbug.com/381086791.
+  // TODO(crbug.com/381086791): Remove after the leak is fixed.
+  base::UmaHistogramEnumeration("IndexedDB.TransactionTimeout.Mode", mode_);
+  base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.Used", used_);
+  base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.CommitPending",
+                            is_commit_pending_);
+  base::UmaHistogramCounts100("IndexedDB.TransactionTimeout.NumPendingTasks",
+                              task_queue_.size());
+  base::UmaHistogramCounts100(
+      "IndexedDB.TransactionTimeout.NumPendingPreemptiveTasks",
+      preemptive_task_queue_.size());
+  base::UmaHistogramCounts10000(
+      "IndexedDB.TransactionTimeout.NumTransactionsInDB",
+      database_->GetNumTransactionsAcrossAllConnections());
+
+  const bool has_connection = (connection_.get() != nullptr);
+  base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.HasConnection",
+                            has_connection);
+  if (has_connection) {
+    base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.Connected",
+                              connection_->IsConnected());
+    base::UmaHistogramCounts10000(
+        "IndexedDB.TransactionTimeout.NumTransactionsInConnection",
+        connection_->transactions().size());
+  }
+
   if (!IsTransactionBlockingOtherClients(/*consider_priority=*/true)) {
     return;
   }

@@ -284,6 +284,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
     void push(Operation task) { queue_.push(std::move(task)); }
     Operation pop();
     void clear();
+    size_t size() const { return queue_.size(); }
 
    private:
     base::queue<Operation> queue_;

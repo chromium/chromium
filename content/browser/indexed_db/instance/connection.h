@@ -224,6 +224,8 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
     return bucket_context_handle_.bucket_context();
   }
 
+  void RecordCreateTransactionHistograms(blink::mojom::IDBTransactionMode mode);
+
   const int32_t id_;
 
   // Keeps the factory for this bucket alive.

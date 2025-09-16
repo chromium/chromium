@@ -92,6 +92,8 @@ class CONTENT_EXPORT Database {
 
   const list_set<Connection*>& connections() const { return connections_; }
 
+  size_t GetNumTransactionsAcrossAllConnections() const;
+
   Status RunTasks();
   void RegisterAndScheduleTransaction(Transaction* transaction);
 

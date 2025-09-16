@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="IndexedDBTransactionMode">
+  <variant name="ReadOnly"/>
+  <variant name="ReadWrite"/>
+  <variant name="VersionChange"/>
+</variants>
+
 <variants name="InterestGroupStorageProtoType">
   <variant name="AdProtos" summary="AdProtos"/>
   <variant name="BiddingAndAuctionServerKeyProtos"
@@ -344,6 +350,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.Create{Mode}Transaction.DBExists" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether the associated database exists. Recorded everytime a {Mode}
+    transaction is created. Will be used to diagnose crbug.com/381086791.
+    Specifically, we'll assses whether the number of clients who get high values
+    for these histograms is similar to the number of clients who hit transaction
+    timeouts.
+  </summary>
+  <token key="Mode" variants="IndexedDBTransactionMode"/>
+</histogram>
+
+<histogram name="IndexedDB.Create{Mode}Transaction.NumTransactionsInConnection"
+    units="transactions" expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of transactions that already exist on the same connection. Recorded
+    everytime a {Mode} transaction is created. Will be used to diagnose
+    crbug.com/381086791. Specifically, we'll assses whether the number of
+    clients who get high values for these histograms is similar to the number of
+    clients who hit transaction timeouts.
+  </summary>
+  <token key="Mode" variants="IndexedDBTransactionMode"/>
+</histogram>
+
+<histogram name="IndexedDB.Create{Mode}Transaction.NumTransactionsInDatabase"
+    units="transactions" expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of transactions that already exist on the same database. Recorded
+    everytime a {Mode} transaction is created, if the associated database
+    exists. Will be used to diagnose crbug.com/381086791. Specifically, we'll
+    assses whether the number of clients who get high values for these
+    histograms is similar to the number of clients who hit transaction timeouts.
+  </summary>
+  <token key="Mode" variants="IndexedDBTransactionMode"/>
+</histogram>
+
 <histogram name="IndexedDB.GetUnacquirableLocksLongTimes" units="ms"
     expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>
@@ -515,6 +563,112 @@ chromium-metrics-reviews@google.com.
     PartitionedLockManager when Connection::RemoveTransaction() takes over 2ms
     to complete. This is intended to facilitate tracking down performance
     issues. See crbug.com/384476946
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.TransactionTimeout.CommitPending" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether an IndexedDB transaction has a commit pending. Recorded every time
+    the 20 seconds inactivity timeout is hit for a transaction. Will be used to
+    diagnose crbug.com/381086791.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.TransactionTimeout.HasConnection" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether an IndexedDB transaction is associated with an existing connection.
+    Recorded every time the 20 seconds inactivity timeout is hit for a
+    transaction. Will be used to diagnose crbug.com/381086791.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.TransactionTimeout.IsConnected" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether the connection to which an IndexedDB transaction is associated is
+    connected. Recorded every time the 20 seconds inactivity timeout is hit for
+    a transaction, if it is associated with an existing connection. Will be used
+    to diagnose crbug.com/381086791.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.TransactionTimeout.Mode" enum="IDBTransactionMode"
+    expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The mode of an IndexedDB transaction. Recorded every time the 20 seconds
+    inactivity timeout is hit for a transaction. Will be used to diagnose
+    crbug.com/381086791.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.TransactionTimeout.NumPendingPreemptiveTasks"
+    units="tasks" expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of pending preemptive tasks for an IndexedDB transaction. Recorded
+    every time the 20 seconds inactivity timeout is hit for a transaction. Will
+    be used to diagnose crbug.com/381086791. In theory, this should be 0,
+    otherwise the timeout timer wouldn't be running. It would be valuable
+    information to detect that it can be non-zero.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.TransactionTimeout.NumPendingTasks" units="tasks"
+    expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of pending non-preemptive tasks for an IndexedDB transaction.
+    Recorded every time the 20 seconds inactivity timeout is hit for a
+    transaction. Will be used to diagnose crbug.com/381086791. In theory, this
+    should be 0, otherwise the timeout timer wouldn't be running. It would be
+    valuable information to detect that it can be non-zero.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.TransactionTimeout.NumTransactionsInConnection"
+    units="transactions" expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of transactions associated with the same connection as an IndexedDB
+    transaction. Recorded every time the 20 seconds inactivity timeout is hit
+    for a transaction. Will be used to diagnose crbug.com/381086791. We suspect
+    that this can be very high.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.TransactionTimeout.NumTransactionsInDB"
+    units="transactions" expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of transactions associated with the same database as an IndexedDB
+    transaction. Recorded every time the 20 seconds inactivity timeout is hit
+    for a transaction. Will be used to diagnose crbug.com/381086791. We suspect
+    that this can be very high.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.TransactionTimeout.Used" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether a task was ever scheduled for an IndexedDB transaction. Recorded
+    every time the 20 seconds inactivity timeout is hit for a transaction. Will
+    be used to diagnose crbug.com/381086791.
   </summary>
 </histogram>
 

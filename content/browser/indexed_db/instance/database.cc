@@ -395,6 +395,14 @@ Status Database::RunTasks() {
   return Status::OK();
 }
 
+size_t Database::GetNumTransactionsAcrossAllConnections() const {
+  size_t num_transactions = 0;
+  for (auto& connection : connections_) {
+    num_transactions += connection->transactions().size();
+  }
+  return num_transactions;
+}
+
 Status Database::ForceCloseAndRunTasks(const std::string& message) {
   if (!bucket_context_->ShouldUseSqlite()) {
     DCHECK(!force_closing_);

@@ -45,6 +45,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-data-view.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 using blink::IndexedDBIndexKeys;
@@ -122,6 +123,9 @@ Transaction* Connection::CreateVersionChangeTransaction(
     std::unique_ptr<BackingStore::Transaction> backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
+
+  RecordCreateTransactionHistograms(
+      blink::mojom::IDBTransactionMode::VersionChange);
   return (transactions_[id] = std::make_unique<Transaction>(
               id, this, scope, blink::mojom::IDBTransactionMode::VersionChange,
               blink::mojom::IDBTransactionDurability::Strict,
@@ -301,6 +305,7 @@ void Connection::CreateTransaction(
     }
   }
 
+  RecordCreateTransactionHistograms(mode);
   std::set<int64_t> scope(object_store_ids.begin(), object_store_ids.end());
   Transaction* transaction =
       (transactions_[transaction_id] = std::make_unique<Transaction>(
@@ -889,6 +894,40 @@ bool Connection::IsHoldingLocks(
                     lock_ids, existing_transaction.second->lock_ids())
                     .empty();
       });
+}
+
+void Connection::RecordCreateTransactionHistograms(
+    blink::mojom::IDBTransactionMode mode) {
+  // Histograms to diagnose memory leak crbug.com/381086791.
+  // TODO(crbug.com/381086791): Remove after the leak is fixed.
+
+  std::string_view mode_name;
+  switch (mode) {
+    case blink::mojom::IDBTransactionMode::ReadOnly:
+      mode_name = "ReadOnly";
+      break;
+    case blink::mojom::IDBTransactionMode::ReadWrite:
+      mode_name = "ReadWrite";
+      break;
+    case blink::mojom::IDBTransactionMode::VersionChange:
+      mode_name = "VersionChange";
+      break;
+  }
+
+  base::UmaHistogramCounts10000(
+      base::StrCat({"IndexedDB.Create", mode_name,
+                    "Transaction.NumTransactionsInConnection"}),
+      transactions_.size());
+  const bool db_exists = database_.get() != nullptr;
+  base::UmaHistogramBoolean(
+      base::StrCat({"IndexedDB.Create", mode_name, "Transaction.DBExists"}),
+      db_exists);
+  if (db_exists) {
+    base::UmaHistogramCounts10000(
+        base::StrCat({"IndexedDB.Create", mode_name,
+                      "Transaction.NumTransactionsInDatabase"}),
+        database_->GetNumTransactionsAcrossAllConnections());
+  }
 }
 
 }  // namespace content::indexed_db

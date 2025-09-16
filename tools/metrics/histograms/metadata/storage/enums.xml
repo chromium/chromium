@@ -247,6 +247,16 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Mac, error when starting the FSEvents event stream"/>
 </enum>
 
+<!-- LINT.IfChange(IDBTransactionMode) -->
+
+<enum name="IDBTransactionMode">
+  <int value="0" label="ReadOnly"/>
+  <int value="1" label="ReadWrite"/>
+  <int value="2" label="VersionChange"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/indexeddb/indexeddb.mojom:IDBTransactionMode) -->
+
 <enum name="ImportantSitesReason">
   <int value="0" label="Engagement"/>
   <int value="1" label="Durable"/>
