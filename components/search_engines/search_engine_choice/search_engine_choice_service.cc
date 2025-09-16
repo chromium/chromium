@@ -40,6 +40,7 @@
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_choice/buildflags.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -327,6 +328,11 @@ bool IsChoiceImported(const ChoiceCompletionMetadata& completion_metadata,
 bool AccountCanMakeChoiceScreenChoice(
     const regional_capabilities::ChoiceScreenEligibilityConfig& config,
     const signin::IdentityManager& identity_manager) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kChoiceScreenEligibilityCheckAccountCapabilities)) {
+    return true;
+  }
+
 #if BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
   if (config.managed_users_can_be_eligible) {
     return true;

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
 #include "components/country_codes/country_codes.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_switches.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/policy/policy_constants.h"
@@ -619,6 +620,21 @@ TEST_F(SearchEngineChoiceEligibilityOverriddenProgramSettingsTest,
   EXPECT_EQ(
       GetDynamicConditions(),
       IfSupported(SearchEngineChoiceScreenConditions::kAccountNotEligible));
+}
+
+TEST_F(SearchEngineChoiceEligibilityOverriddenProgramSettingsTest,
+       ManagedUsersCannotBeEligible_FeatureDisabled_Eligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kChoiceScreenEligibilityCheckAccountCapabilities);
+
+  SetProgram(kSettingsManagedUsersCannotBeEligible);
+  SignIn(/*can_make_choice_capability=*/signin::Tribool::kFalse);
+
+  EXPECT_EQ(GetStaticConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
+  EXPECT_EQ(GetDynamicConditions(),
+            IfSupported(SearchEngineChoiceScreenConditions::kEligible));
 }
 #endif  // BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
 
