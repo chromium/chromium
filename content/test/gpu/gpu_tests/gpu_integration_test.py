@@ -360,9 +360,9 @@ class GpuIntegrationTest(
       # TODO(crbug.com/40763608): Remove this once the bug is resolved.
       browser_args.append('--double-buffer-compositing')
 
-      # Increase GPU watchdog timeout to 60 seconds to avoid flake when
-      # running in emulator on bots.
-      browser_args.append('--gpu-watchdog-timeout-seconds=60')
+      # Increase GPU watchdog timeout to 300 seconds to avoid flake when
+      # running on the emulators or less performant devices on bots.
+      browser_args.append('--gpu-watchdog-timeout-seconds=300')
 
       # Force device scale factor to avoid dependency on
       browser_args.append('--force-device-scale-factor=1.71875')
