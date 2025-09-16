@@ -20,10 +20,12 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
 /** Displays the data provided by the {@link AccessorySheetViewBinder}. */
+@NullMarked
 class AccessorySheetView extends LinearLayout {
     private ViewPager mViewPager;
     private FrameLayout mFrameLayout;
@@ -31,7 +33,7 @@ class AccessorySheetView extends LinearLayout {
     private ImageView mKeyboardToggle;
     private TextView mSheetTitle;
 
-    /** Constructor for inflating from XML. */
+    /** Constructor for inflating from XML which is why it must be public. */
     public AccessorySheetView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

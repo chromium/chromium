@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -15,10 +16,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
- * This model holds all view state of the accessory sheet.
- * It is updated by the {@link AccessorySheetMediator} and emits notification on which observers
- * like the view binder react.
+ * This model holds all view state of the accessory sheet. It is updated by the {@link
+ * AccessorySheetMediator} and emits notification on which observers like the view binder react.
  */
+@NullMarked
 class AccessorySheetProperties {
     static final ReadableObjectPropertyKey<ListModel<Tab>> TABS = new ReadableObjectPropertyKey<>();
     static final WritableIntPropertyKey ACTIVE_TAB_INDEX =

@@ -9,10 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -21,9 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This {@link PagerAdapter} renders an observable list of {@link Tab}s into a
- * {@link ViewPager}. It instantiates the tab views based on the layout they provide.
+ * This {@link PagerAdapter} renders an observable list of {@link Tab}s into a {@link ViewPager}. It
+ * instantiates the tab views based on the layout they provide.
  */
+@NullMarked
 class AccessoryPagerAdapter extends PagerAdapter
         implements ListModelChangeProcessor.ViewBinder<ListModel<Tab>, ViewPager, Void> {
     private final ListModel<Tab> mTabList;
@@ -31,9 +33,10 @@ class AccessoryPagerAdapter extends PagerAdapter
 
     /**
      * Creates the PagerAdapter that populates a ViewPager based on a held list of tabs.
+     *
      * @param tabList The list that contains the tabs to instantiate.
      */
-    public AccessoryPagerAdapter(ListModel<Tab> tabList) {
+    AccessoryPagerAdapter(ListModel<Tab> tabList) {
         mTabList = tabList;
         mViews = new HashMap<>(mTabList.size());
     }
@@ -103,7 +106,7 @@ class AccessoryPagerAdapter extends PagerAdapter
 
     @Override
     public void onItemsChanged(
-            ListModel<Tab> model, ViewPager view, int index, int count, Void payload) {
+            ListModel<Tab> model, ViewPager view, int index, int count, @Nullable Void payload) {
         notifyDataSetChanged();
     }
 }

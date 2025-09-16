@@ -19,11 +19,12 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.STYLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
@@ -62,6 +63,7 @@ import java.util.function.Supplier;
  * passwords) and lets the model know of these actions and which callback to trigger when selecting
  * them.
  */
+@NullMarked
 class KeyboardAccessoryMediator
         implements PropertyObservable.PropertyObserver<PropertyKey>,
                 Provider.Observer<Action[]>,
@@ -393,7 +395,7 @@ class KeyboardAccessoryMediator
         return mModel;
     }
 
-    private static String getFeatureBySuggestionId(AutofillSuggestion suggestion) {
+    private static @Nullable String getFeatureBySuggestionId(AutofillSuggestion suggestion) {
         // If the suggestion has an explicit IPH feature defined, prefer that over the default IPH
         // features.
         if (suggestion.getFeatureForIph() != null && !suggestion.getFeatureForIph().isEmpty()) {

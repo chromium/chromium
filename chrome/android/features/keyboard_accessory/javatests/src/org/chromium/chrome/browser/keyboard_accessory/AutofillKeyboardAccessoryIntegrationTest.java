@@ -228,17 +228,18 @@ public class AutofillKeyboardAccessoryIntegrationTest {
             performOnRecyclerViewNthItem(
                     withId(R.id.bar_items_view),
                     i,
-                    createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+                    createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED, false));
             onView(withId(R.id.keyboard_accessory)).check(matches(isDisplayed()));
             performOnRecyclerViewNthItem(
                     withId(R.id.bar_items_view),
                     i,
-                    createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
+                    createClickActionWithFlags(
+                            MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED, false));
             onView(withId(R.id.keyboard_accessory)).check(matches(isDisplayed()));
         }
 
         // Close the accessory by clicking on one of the suggestions.
-        onView(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)).perform(click());
+        onView(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
         mHelper.waitForKeyboardAccessoryToDisappear();
         histogramExpectation.assertExpected();
     }
