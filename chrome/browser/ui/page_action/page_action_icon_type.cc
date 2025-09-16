@@ -48,6 +48,8 @@ const base::FeatureParam<bool>* GetPageActionMigrationParam(
       return &features::kPageActionsMigrationAutofillMandatoryReauth;
     case PageActionIconType::kClickToCall:
       return &features::kPageActionsMigrationClickToCall;
+    case PageActionIconType::kSharingHub:
+      return &features::kPageActionsMigrationSharingHub;
     default:
       return nullptr;
   }
