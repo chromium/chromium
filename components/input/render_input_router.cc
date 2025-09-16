@@ -614,13 +614,17 @@ void RenderInputRouter::SendGestureEventWithLatencyInfo(
   const blink::WebGestureEvent& gesture_event = gesture_with_latency.event;
   if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
     DCHECK(
-        !is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
+        !is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())])
+        << "kGestureScrollBegin should not be sent again when "
+        << gesture_event.SourceDevice() << " is in gesture scroll";
     is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
         true;
   } else if (gesture_event.GetType() ==
              WebInputEvent::Type::kGestureScrollEnd) {
     DCHECK(
-        is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
+        is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())])
+        << "kGestureScrollEnd should not be sent when "
+        << gesture_event.SourceDevice() << " is not in gesture scroll";
     is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
         false;
     is_in_touchpad_gesture_fling_ = false;
@@ -638,8 +642,10 @@ void RenderInputRouter::SendGestureEventWithLatencyInfo(
 
       is_in_touchpad_gesture_fling_ = true;
     } else {
-      DCHECK(is_in_gesture_scroll_[static_cast<int>(
-          gesture_event.SourceDevice())]);
+      DCHECK(
+          is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())])
+          << "kGestureFlingStart should not be sent when "
+          << gesture_event.SourceDevice() << " is not in gesture scroll";
 
       // The FlingController handles GFS with touchscreen source and sends GSU
       // events with inertial state to the renderer to progress the fling.
