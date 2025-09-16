@@ -34,8 +34,8 @@ function getWindowIdFromTextInput(domElementId) {
 }
 
 function getWindowUpdateInfo() {
-    const option =
-        document.getElementById("update_window_options_select").value;
+    const option = document.querySelector(
+        'input[name="update_window_option"]:checked').value;
 
     switch (option) {
         case "focused_true":
