@@ -988,10 +988,16 @@ void CompositorFrameReporter::StartStage(
 
 void CompositorFrameReporter::SetTreesInVizBranchTime(
     base::TimeTicks timestamp) {
-  // Expect timestamps to always have value because they should be created when
-  // activate time is set.
-  DCHECK(trees_in_viz_timestamps_.has_value());
-  trees_in_viz_timestamps_->trees_in_viz_branch_time_ = timestamp;
+  // We expect trees_in_viz_timestamps_to be set most of the time because the
+  // reporter is expected to move through the activate stage prior to
+  // the TreesInViz branch point.
+  // TODO(crbug.com/445500514): Sometimes, activation stage does not occur
+  // because the CFR represents a partial update and in this case we make a new
+  // TreesInVizTimestamps value.
+  TreesInVizTimestamps timestamps =
+      trees_in_viz_timestamps_.value_or(TreesInVizTimestamps{});
+  timestamps.trees_in_viz_branch_time_ = timestamp;
+  trees_in_viz_timestamps_ = timestamps;
 }
 
 void CompositorFrameReporter::StartStageUpdateDisplayTree(
@@ -1119,6 +1125,8 @@ void CompositorFrameReporter::TerminateReporter() {
   if (base::FeatureList::IsEnabled(features::kTreesInViz) &&
       !processed_trees_in_viz_breakdown_ &&
       trees_in_viz_timestamps_.has_value()) {
+    // TODO(crbug.com/445500514): Should be possible to report breakdowns for
+    // partial updates.
     processed_trees_in_viz_breakdown_ =
         std::make_unique<ProcessedTreesInVizBreakdown>(
             trees_in_viz_timestamps_->trees_in_viz_activate_time_,
