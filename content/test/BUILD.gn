@@ -3426,15 +3426,19 @@ test("content_unittests") {
     if (!is_android && !is_ios) {
       deps += [
         "//content/common:buildflags",
-        "//media/capture:test_support",
         "//third_party/libyuv",
         "//third_party/webrtc_overrides:webrtc_component",
       ]
       sources += [
-        "../browser/media/capture/desktop_capture_device_unittest.cc",
         "../browser/media/captured_surface_controller_permission_manager_unittest.cc",
         "../browser/media/captured_surface_controller_unittest.cc",
       ]
+    }
+
+    if (!is_ios) {
+      deps += [ "//media/capture:test_support" ]
+      sources +=
+          [ "../browser/media/capture/desktop_capture_device_unittest.cc" ]
     }
   }
 
