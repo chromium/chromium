@@ -576,6 +576,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   }
 
   void NotifyTexParamsModified(const CanvasResource* resource) override;
+  scoped_refptr<CanvasResource> ProduceCanvasResource(
+      FlushReason reason) override;
 
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();

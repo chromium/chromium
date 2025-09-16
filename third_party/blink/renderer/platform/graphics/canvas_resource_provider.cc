@@ -672,6 +672,76 @@ bool CanvasResourceProviderSharedImage::OverwriteImage(
   return true;
 }
 
+scoped_refptr<CanvasResource>
+CanvasResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
+  TRACE_EVENT0("blink",
+               "CanvasResourceProviderSharedImage::ProduceCanvasResource");
+  if (is_software_) {
+    DCHECK(GetSkSurface());
+    scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
+    if (!output_resource) {
+      return nullptr;
+    }
+
+    // Getting the high entropy canvas operations should be done before
+    // flushing the canvas as flushing discards the recording (including the
+    // associated HighEntropyCanvasOpTypes).
+    HighEntropyCanvasOpType high_entropy_canvas_op_types =
+        GetRecorderHighEntropyCanvasOpTypes();
+    if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
+                                                IsAccelerated())) {
+      output_resource->SetHighEntropyCanvasOpTypes(
+          high_entropy_canvas_op_types);
+    }
+    FlushCanvas(reason);
+
+    // Note that the resource *must* be a CanvasResourceSharedImage as this
+    // class creates CanvasResourceSharedImage instances exclusively.
+    static_cast<CanvasResourceSharedImage*>(output_resource.get())
+        ->UploadSoftwareRenderingResults(GetSkSurface());
+
+    return output_resource;
+  }
+
+  if (IsGpuContextLost()) {
+    return nullptr;
+  }
+
+  // Getting the high entropy canvas operations should be done before
+  // flushing the canvas as flushing discards the recording (including the
+  // associated HighEntropyCanvasOpTypes).
+  HighEntropyCanvasOpType high_entropy_canvas_op_types =
+      GetRecorderHighEntropyCanvasOpTypes();
+  FlushCanvas(reason);
+  // Its important to end read access and ref the resource before the WillDraw
+  // call below. Since it relies on resource ref-count to trigger
+  // copy-on-write and asserts that we only have write access when the
+  // provider has the only ref to the resource, to ensure there are no other
+  // readers.
+  EndWriteAccess();
+  if (!resource_) {
+    return nullptr;
+  }
+  scoped_refptr<CanvasResource> resource = resource_;
+  if (ContextProviderWrapper()
+          ->ContextProvider()
+          .GetCapabilities()
+          .disable_2d_canvas_copy_on_write) {
+    // A readback operation may alter the texture parameters, which may affect
+    // the compositor's behavior. Therefore, we must trigger copy-on-write
+    // even though we are not technically writing to the texture, only to its
+    // parameters. This issue is Android-WebView specific: crbug.com/585250.
+    WillDraw();
+    resource->GetSyncToken();
+  }
+
+  if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
+                                              IsAccelerated())) {
+    resource->SetHighEntropyCanvasOpTypes(high_entropy_canvas_op_types);
+  }
+  return resource;
+}
+
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
 class CanvasResourceProviderSharedImageImpl
@@ -837,75 +907,6 @@ class CanvasResourceProviderSharedImageImpl
   }
 
  protected:
-  scoped_refptr<CanvasResource> ProduceCanvasResource(
-      FlushReason reason) override {
-    TRACE_EVENT0("blink",
-                 "CanvasResourceProviderSharedImage::ProduceCanvasResource");
-    if (is_software_) {
-      DCHECK(GetSkSurface());
-      scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
-      if (!output_resource) {
-        return nullptr;
-      }
-
-      // Getting the high entropy canvas operations should be done before
-      // flushing the canvas as flushing discards the recording (including the
-      // associated HighEntropyCanvasOpTypes).
-      HighEntropyCanvasOpType high_entropy_canvas_op_types =
-          GetRecorderHighEntropyCanvasOpTypes();
-      if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
-                                                  IsAccelerated())) {
-        output_resource->SetHighEntropyCanvasOpTypes(
-            high_entropy_canvas_op_types);
-      }
-      FlushCanvas(reason);
-
-      // Note that the resource *must* be a CanvasResourceSharedImage as this
-      // class creates CanvasResourceSharedImage instances exclusively.
-      static_cast<CanvasResourceSharedImage*>(output_resource.get())
-          ->UploadSoftwareRenderingResults(GetSkSurface());
-
-      return output_resource;
-    }
-
-    if (IsGpuContextLost())
-      return nullptr;
-
-    // Getting the high entropy canvas operations should be done before
-    // flushing the canvas as flushing discards the recording (including the
-    // associated HighEntropyCanvasOpTypes).
-    HighEntropyCanvasOpType high_entropy_canvas_op_types =
-        GetRecorderHighEntropyCanvasOpTypes();
-    FlushCanvas(reason);
-    // Its important to end read access and ref the resource before the WillDraw
-    // call below. Since it relies on resource ref-count to trigger
-    // copy-on-write and asserts that we only have write access when the
-    // provider has the only ref to the resource, to ensure there are no other
-    // readers.
-    EndWriteAccess();
-    if (!resource_) {
-      return nullptr;
-    }
-    scoped_refptr<CanvasResource> resource = resource_;
-    if (ContextProviderWrapper()
-            ->ContextProvider()
-            .GetCapabilities()
-            .disable_2d_canvas_copy_on_write) {
-      // A readback operation may alter the texture parameters, which may affect
-      // the compositor's behavior. Therefore, we must trigger copy-on-write
-      // even though we are not technically writing to the texture, only to its
-      // parameters. This issue is Android-WebView specific: crbug.com/585250.
-      WillDraw();
-      resource->GetSyncToken();
-    }
-
-    if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
-                                                IsAccelerated())) {
-      resource->SetHighEntropyCanvasOpTypes(high_entropy_canvas_op_types);
-    }
-    return resource;
-  }
-
   scoped_refptr<StaticBitmapImage> Snapshot(
       FlushReason reason,
       ImageOrientation orientation) override {
