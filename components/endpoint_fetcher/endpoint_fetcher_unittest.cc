@@ -290,6 +290,31 @@ TEST_F(EndpointFetcherTest, FetchNonJsonResponse) {
   run_loop.Run();
 }
 
+TEST_F(EndpointFetcherTest, FetchPutResponse) {
+  SignIn();
+  SetMockResponse(GURL(kEndpoint), kExpectedResponse, kJsonMimeType,
+                  net::HTTP_OK, net::OK);
+
+  auto fetcher = GetNonOAuthEndpointFetcherWithParams(
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kPut,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
+          .SetUrl(GURL(kEndpoint))
+          .SetAuthType(AuthType::NO_AUTH)
+          .Build());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(endpoint_fetcher_callback(),
+              Run(Pointee(AllOf(
+                  Field(&EndpointResponse::response, kExpectedResponse),
+                  Field(&EndpointResponse::http_status_code, net::HTTP_OK),
+                  Field(&EndpointResponse::error_type, std::nullopt)))))
+      .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
+        run_loop.Quit();
+      });
+  fetcher.Fetch(endpoint_fetcher_callback().Get());
+  run_loop.Run();
+}
+
 TEST_F(EndpointFetcherTest, TestCredentialsModeUnspecified) {
   EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(std::nullopt);
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,

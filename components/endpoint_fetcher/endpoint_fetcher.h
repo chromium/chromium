@@ -60,6 +60,7 @@ enum class HttpMethod {
   kGet = 0,
   kPost = 1,
   kDelete = 2,
+  kPut = 3,
 };
 
 enum AuthType {

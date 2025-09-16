@@ -41,6 +41,8 @@ std::string GetHttpMethodString(const HttpMethod& http_method) {
       return "POST";
     case HttpMethod::kDelete:
       return "DELETE";
+    case HttpMethod::kPut:
+      return "PUT";
     default:
       DCHECK(0) << base::StringPrintf("Unknown HttpMethod %d\n",
                                       static_cast<int>(http_method));
@@ -55,6 +57,8 @@ HttpMethod GetHttpMethod(const std::string& http_method_string) {
     return HttpMethod::kPost;
   } else if (http_method_string == "DELETE") {
     return HttpMethod::kDelete;
+  } else if (http_method_string == "PUT") {
+    return HttpMethod::kPut;
   }
   return HttpMethod::kUndefined;
 }
@@ -315,8 +319,10 @@ void EndpointFetcher::PerformHttpRequest(
   }
 
   // Add Content-Type header if post data is present.
-  if (request_params_.http_method() == HttpMethod::kPost &&
-      request_params_.post_data()) {
+  bool has_body_content = (request_params_.http_method() == HttpMethod::kPost ||
+                           request_params_.http_method() == HttpMethod::kPut) &&
+                          request_params_.post_data();
+  if (has_body_content) {
     resource_request->headers.SetHeader(kContentTypeKey,
                                         request_params_.content_type());
   }
@@ -355,8 +361,7 @@ void EndpointFetcher::PerformHttpRequest(
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), request_params_.annotation_tag());
 
-  if (request_params_.http_method() == HttpMethod::kPost &&
-      request_params_.post_data()) {
+  if (has_body_content) {
     simple_url_loader_->AttachStringForUpload(
         request_params_.post_data().value(), request_params_.content_type());
   }
