@@ -9,7 +9,10 @@
 #include "base/notreached.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
