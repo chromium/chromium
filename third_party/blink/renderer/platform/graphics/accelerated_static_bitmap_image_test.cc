@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -64,8 +65,10 @@ scoped_refptr<StaticBitmapImage> CreateBitmap(
 class AcceleratedStaticBitmapImageTest : public Test {
  public:
   void SetUp() override {
-    context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(context_provider_.get());
+    context_provider_ = viz::TestContextProvider::CreateRaster();
+    context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
+        true);
+    InitializeSharedGpuContextRaster(context_provider_.get());
   }
   void TearDown() override {
     SharedGpuContext::Reset();
