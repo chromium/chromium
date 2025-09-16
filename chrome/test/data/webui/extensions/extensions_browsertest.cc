@@ -639,14 +639,11 @@ class CrExtensionsManagerTestWithIdQueryParam
   }
 };
 
-// TODO(crbug.com/439447730): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
                        UrlNavigationToDetails) {
   InstallPrerequisites();
   RunTestCase("UrlNavigationToDetails");
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Disabled as flaky. TODO(crbug.com/40719203): Enable this test.
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
