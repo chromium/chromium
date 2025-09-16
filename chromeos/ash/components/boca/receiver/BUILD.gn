@@ -17,6 +17,8 @@ static_library("receiver") {
     "register_receiver_request.h",
     "start_kiosk_receiver_request.cc",
     "start_kiosk_receiver_request.h",
+    "update_kiosk_receiver_state_request.cc",
+    "update_kiosk_receiver_state_request.h",
   ]
 
   deps = [
@@ -56,6 +58,7 @@ source_set("unit_tests") {
     "kiosk_receiver_parser_unittest.cc",
     "register_receiver_request_unittest.cc",
     "start_kiosk_receiver_request_unittest.cc",
+    "update_kiosk_receiver_state_request_unittest.cc",
   ]
 
   deps = [
