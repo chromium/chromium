@@ -76,13 +76,17 @@ mojom::FontFamily DistilledPagePrefs::GetFontFamily() {
 }
 
 void DistilledPagePrefs::SetUserPrefTheme(mojom::Theme new_theme) {
+  if (static_cast<mojom::Theme>(pref_service_->GetInteger(prefs::kTheme)) ==
+      new_theme) {
+    return;
+  }
   pref_service_->SetInteger(prefs::kTheme, static_cast<int32_t>(new_theme));
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeTheme,
-                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DistilledPagePrefs::SetDefaultTheme(mojom::Theme default_theme) {
+  if (default_theme_ == default_theme) {
+    return;
+  }
   default_theme_ = default_theme;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeTheme,
@@ -94,7 +98,7 @@ mojom::Theme DistilledPagePrefs::GetTheme() {
   if (pref_service_->FindPreference(prefs::kTheme)->HasUserSetting()) {
     theme = static_cast<mojom::Theme>(pref_service_->GetInteger(prefs::kTheme));
   } else {
-    theme = default_theme_.value_or(mojom::Theme::kLight);
+    theme = default_theme_;
   }
   if (mojom::IsKnownEnumValue(theme))
     return theme;

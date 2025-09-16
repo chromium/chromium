@@ -580,6 +580,7 @@ TEST_F(ReaderModeTabHelperTest, MAYBE_TestEligibleContentIsDisplayed) {
   FlushMetrics();
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kReaderShown, 1)));
+  histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 }
 
 // Tests that distillation that takes longer than the expected timeout will

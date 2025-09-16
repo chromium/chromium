@@ -71,7 +71,7 @@ class DistilledPagePrefs {
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;
 
-  std::optional<mojom::Theme> default_theme_;
+  mojom::Theme default_theme_ = mojom::Theme::kLight;
 
   base::WeakPtrFactory<DistilledPagePrefs> weak_ptr_factory_{this};
 };
