@@ -39,6 +39,8 @@ const DeepQuery kModulesV2Wrapper = {"ntp-app", "ntp-modules", "#container",
                                      "ntp-module-wrapper"};
 const DeepQuery kMicrosoftAuthIframe = {"ntp-app", "#microsoftAuth"};
 const DeepQuery kTabGroupsModule = {"ntp-app", "ntp-modules", "ntp-tab-groups"};
+const DeepQuery kTabGroupsModuleContainer = {
+    "ntp-app", "ntp-modules", "ntp-tab-groups", "#tabGroupsContainer"};
 const DeepQuery kCreateNewTabGroup = {
     "ntp-app", "ntp-modules", "ntp-tab-groups", ".create-new-tab-group"};
 const DeepQuery kFirstTabGroup = {"ntp-app", "ntp-modules", "ntp-tab-groups",
@@ -582,4 +584,55 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
       Do([&]() {
         ASSERT_NE(BrowserList::GetInstance()->GetLastActive(), browser());
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
+                       FilterActiveTabGroup) {
+  RunTestSequence(
+      // Set up two tab groups:
+      // Group 1 contains one tab at index 0.
+      // Group 2 contains two tabs at indices 1 and 2.
+      Do([&]() {
+        browser()->tab_strip_model()->AddToNewGroup({0});
+        ASSERT_TRUE(AddTabAtIndex(1, GURL(url::kAboutBlankURL),
+                                  ui::PAGE_TRANSITION_TYPED));
+        ASSERT_TRUE(AddTabAtIndex(2, GURL(url::kAboutBlankURL),
+                                  ui::PAGE_TRANSITION_TYPED));
+        browser()->tab_strip_model()->AddToNewGroup({1, 2});
+      }),
+
+      // Verify that there are two tab groups and three tabs total.
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 2),
+      CheckResult([&]() { return GetTabCount(browser()); }, 3),
+
+      // Activate the tab in group 1 and navigate to chrome://newtab/.
+      Do([&]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
+      LoadNewTabPage(), WaitForElementToRender(kTabGroupsModule),
+
+      // Verify that only one tab group is shown (i.e., the group that doesn't
+      // include the currently active tab).
+      CheckJsResultAt(kNewTabPageElementId, kTabGroupsModuleContainer,
+                      "el => el.querySelectorAll('.tab-group').length", 1),
+      CheckJsResultAt(kNewTabPageElementId, kFirstTabGroup,
+                      "el => "
+                      "el.querySelector('.tab-group-title').textContent.trim()."
+                      "toLowerCase()",
+                      "2 tabs"));
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
+                       FilterActiveTabGroup_ModuleNotShown) {
+  RunTestSequence(
+      // Set up a tab group containing one tab at index 0.
+      Do([&]() { browser()->tab_strip_model()->AddToNewGroup({0}); }),
+
+      // Verify that there is 1 tab group and 1 tab total.
+      CheckResult([&]() { return GetTabGroupCount(browser()); }, 1),
+      CheckResult([&]() { return GetTabCount(browser()); }, 1),
+
+      // Navigate the current tab to chrome://newtab/.
+      LoadNewTabPage(),
+
+      // Verify that the tab groups module is not visible.
+      EnsureNotPresent(kNewTabPageElementId, kTabGroupsModule));
 }

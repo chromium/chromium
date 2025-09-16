@@ -13,7 +13,6 @@ import './icon_container.js';
 
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -77,6 +76,7 @@ export class ModuleElement extends ModuleElementBase {
   accessor ariaLabels: Map<string, string> = new Map();
   accessor tabGroups: TabGroup[] = [];
   accessor showInfoDialog: boolean = false;
+  showZeroState: boolean = false;
 
   private handler_: PageHandlerRemote;
 
@@ -141,11 +141,6 @@ export class ModuleElement extends ModuleElementBase {
     ];
   }
 
-  protected shouldShowZeroStateCard_(): boolean {
-    return loadTimeData.getBoolean('tabGroupsModuleZeroStateEnabled') &&
-        this.tabGroups.length === 0;
-  }
-
   protected getTabGroups_(): TabGroup[] {
     return this.tabGroups.slice(0, MAX_TAB_GROUPS);
   }
@@ -188,7 +183,7 @@ export class ModuleElement extends ModuleElementBase {
 customElements.define(ModuleElement.is, ModuleElement);
 
 async function createElement(): Promise<ModuleElement|null> {
-  const {tabGroups} =
+  const {tabGroups, showZeroState} =
       await TabGroupsProxyImpl.getInstance().handler.getTabGroups();
 
   if (!tabGroups) {
@@ -196,14 +191,14 @@ async function createElement(): Promise<ModuleElement|null> {
     return null;
   }
 
-  if (!loadTimeData.getBoolean('tabGroupsModuleZeroStateEnabled') &&
-      tabGroups.length === 0) {
+  if (!showZeroState && tabGroups.length === 0) {
     // If zero-state is disabled and there are no groups, skip rendering module.
     return null;
   }
 
   const element = new ModuleElement();
   element.tabGroups = tabGroups;
+  element.showZeroState = showZeroState;
   return element;
 }
 

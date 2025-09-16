@@ -11,6 +11,10 @@
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -262,6 +266,15 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*mock_device_info_sync_service_, GetDeviceInfoTracker())
         .WillByDefault(testing::Return(mock_device_info_tracker_.get()));
 
+    webui::SetBrowserWindowInterface(web_contents(),
+                                     &mock_browser_window_interface_);
+    test_tab_strip_model_delegate_.SetBrowserWindowInterface(
+        &mock_browser_window_interface_);
+    tab_strip_model_ = std::make_unique<TabStripModel>(
+        &test_tab_strip_model_delegate_, profile());
+    ON_CALL(mock_browser_window_interface_, GetTabStripModel())
+        .WillByDefault(testing::Return(tab_strip_model_.get()));
+
     handler_ = std::make_unique<TabGroupsPageHandler>(
         mojo::PendingReceiver<ntp::tab_groups::mojom::PageHandler>(),
         web_contents());
@@ -279,6 +292,7 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
     mock_device_info_sync_service_ = nullptr;
     mock_device_info_tracker_.reset();
     handler_.reset();
+    tab_strip_model_.reset();
     mock_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -292,7 +306,7 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
     base::RunLoop wait_loop;
     handler_->GetTabGroups(base::BindOnce(
         [](base::OnceClosure stop_waiting, TabGroupsOptional* tab_groups,
-           TabGroupsOptional tab_groups_arg) {
+           TabGroupsOptional tab_groups_arg, bool show_zero_state) {
           *tab_groups = std::move(tab_groups_arg);
           std::move(stop_waiting).Run();
         },
@@ -389,9 +403,13 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
   MockDeviceInfoTracker* mock_device_info_tracker() {
     return mock_device_info_tracker_.get();
   }
+  TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
 
  private:
   raw_ptr<tab_groups::MockTabGroupSyncService> mock_service_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
+  TestTabStripModelDelegate test_tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
   mojo::PendingRemote<ntp::tab_groups::mojom::PageHandler> page_handler_remote_;
   std::unique_ptr<TabGroupsPageHandler> handler_;
 
@@ -424,7 +442,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_WithDeviceInfo) {
   ON_CALL(*mock_device_info_tracker(), GetDeviceInfo(kCacheGuid))
       .WillByDefault(testing::Return(device_info.get()));
   EXPECT_CALL(*service(), ReadAllGroups())
-      .WillOnce(testing::Return(groups_ptr));
+      .WillRepeatedly(testing::Return(groups_ptr));
 
   auto result = RunGetTabGroups();
   ASSERT_TRUE(result.has_value());
@@ -452,7 +470,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_DeviceInfoNotFound) {
   ON_CALL(*mock_device_info_tracker(), GetDeviceInfo(kUnknownCacheGuid))
       .WillByDefault(testing::Return(nullptr));
   EXPECT_CALL(*service(), ReadAllGroups())
-      .WillOnce(testing::Return(groups_ptr));
+      .WillRepeatedly(testing::Return(groups_ptr));
 
   auto result = RunGetTabGroups();
   ASSERT_TRUE(result.has_value());
@@ -476,7 +494,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_NoCacheGuid) {
 
   EXPECT_CALL(*mock_device_info_tracker(), GetDeviceInfo(testing::_)).Times(0);
   EXPECT_CALL(*service(), ReadAllGroups())
-      .WillOnce(testing::Return(groups_ptr));
+      .WillRepeatedly(testing::Return(groups_ptr));
 
   auto result = RunGetTabGroups();
   ASSERT_TRUE(result.has_value());
@@ -507,7 +525,7 @@ TEST_F(TabGroupsPageHandlerTest,
   EXPECT_CALL(*mock_device_info_tracker(), GetDeviceInfo(kLocalCacheGuid))
       .Times(0);
   EXPECT_CALL(*service(), ReadAllGroups())
-      .WillOnce(testing::Return(groups_ptr));
+      .WillRepeatedly(testing::Return(groups_ptr));
 
   auto result = RunGetTabGroups();
 
@@ -522,7 +540,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_Empty) {
       ntp_features::kNtpTabGroupsModule, {});
 
   EXPECT_CALL(*service(), ReadAllGroups())
-      .WillOnce(
+      .WillRepeatedly(
           testing::Return(std::vector<const tab_groups::SavedTabGroup*>{}));
 
   auto result = RunGetTabGroups();
@@ -562,7 +580,7 @@ TEST_F(TabGroupsPageHandlerTest,
   }
 
   EXPECT_CALL(*service(), ReadAllGroups())
-      .WillOnce(testing::Return(groups_ptr));
+      .WillRepeatedly(testing::Return(groups_ptr));
 
   auto result = RunGetTabGroups();
   ASSERT_TRUE(result.has_value());
@@ -580,7 +598,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups) {
       {{ntp_features::kNtpTabGroupsModuleMaxGroupCountParam.name, "4"}});
 
   EXPECT_CALL(*service(), ReadAllGroups())
-      .WillOnce(testing::Return(saved_tab_groups()));
+      .WillRepeatedly(testing::Return(saved_tab_groups()));
 
   auto groups = RunGetTabGroups();
   ASSERT_TRUE(groups.has_value());
