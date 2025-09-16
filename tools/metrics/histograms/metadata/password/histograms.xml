@@ -1219,7 +1219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ClassificationCorrectness.CurrentPassword"
-    enum="PasswordManagerClassificationCorrectness" expires_after="2026-01-11">
+    enum="PasswordManagerClassificationCorrectness" expires_after="2026-03-15">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@google.com</owner>
   <summary>

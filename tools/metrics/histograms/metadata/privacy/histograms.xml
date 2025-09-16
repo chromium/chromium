@@ -794,7 +794,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.ActSurvey.Status"
-    enum="PrivacySandboxActSurveyStatus" expires_after="2026-01-11">
+    enum="PrivacySandboxActSurveyStatus" expires_after="2026-03-15">
   <owner>kjarosz@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>

@@ -1019,7 +1019,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.{NetworkType}.ConnectionResult.{Filtering}"
-    enum="ShillConnectResult" expires_after="2026-01-14">
+    enum="ShillConnectResult" expires_after="2026-03-15">
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -5034,7 +5034,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2.Duration"
-    units="microseconds" expires_after="2026-01-11">
+    units="microseconds" expires_after="2026-03-15">
   <owner>olivier@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <summary>

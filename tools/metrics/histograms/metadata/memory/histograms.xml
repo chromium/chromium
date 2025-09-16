@@ -1297,7 +1297,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Memory.Experimental.Browser2.Custom{ProcessMemoryAllocatorCustom2}"
-    units="bytes" expires_after="2026-01-10">
+    units="bytes" expires_after="2026-03-15">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
