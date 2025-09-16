@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
@@ -78,12 +79,13 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #endif
 
 namespace autofill {
+
+class TestAutofillClient;
 
 // This class is for easier writing of tests. There are two instances of the
 // template:
@@ -742,27 +744,42 @@ class TestAutofillClientTemplate : public T {
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };
 
-// Base class for TestAutofillClientTemplate to derive from so that the
-// AutofillDriverFactory is initialized before the members of
-// TestAutofillClientTemplate. This initialization order mimics that of
-// ContentAutofillClient and AndroidAutofillClient / ChromeAutofillClient.
+// Base class of TestAutofillClient. Its sole purpose is to initialize the
+// TestAutofillDriverFactory before the other members of a TestAutofillClient.
+//
+// We want that because that's how it works for ContentAutofillClient and
+// AutofillClientIOS.
+//
+// We achieve this by subclassing as follows:
+// 1. TestAutofillClient         derives from
+// 2. TestAutofillClientTemplate derives from
+// 3. TestAutofillClientBase     derives from
+// 4. AutofillClient
 class TestAutofillClientBase : public AutofillClient {
  public:
-  AutofillDriverFactory& GetAutofillDriverFactory() override;
+  TestAutofillDriverFactory& GetAutofillDriverFactory() override;
 
  protected:
-  // Instantiation should only happen through TestAutofillClient.
-  TestAutofillClientBase();
+  explicit TestAutofillClientBase(base::PassKey<TestAutofillClient>);
+  ~TestAutofillClientBase() override;
 
  private:
-  AutofillDriverFactory autofill_driver_factory_;
+  TestAutofillDriverFactory autofill_driver_factory_;
 };
 
-// A simple `AutofillClient` for tests. Consider `TestContentAutofillClient` as
-// an alternative for tests where the content layer is visible.
+// A simple `AutofillClient` for tests. Consider using
+// `TestContentAutofillClient` and `TestAutofillClientIOS` where possible.
 //
 // Consider using TestAutofillClientInjector, especially in browser tests.
-using TestAutofillClient = TestAutofillClientTemplate<TestAutofillClientBase>;
+//
+// On destruction, it destroys all TestAutofillDrivers of its
+// TestAutofillDriverFactory.
+class TestAutofillClient
+    : public TestAutofillClientTemplate<TestAutofillClientBase> {
+ public:
+  TestAutofillClient();
+  ~TestAutofillClient() override;
+};
 
 }  // namespace autofill
 
