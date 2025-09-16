@@ -22,8 +22,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 
-#include <algorithm>
-
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -81,10 +79,10 @@ inline bool SkipOptionalSVGSpaces(const base::span<const CharType> chars,
 
 template <typename CharType>
 constexpr inline bool SkipOptionalSVGSpaces(base::span<const CharType>& span) {
-  auto iter = std::ranges::find_if(
-      span, [](const CharType c) { return !IsHTMLSpace<CharType>(c); });
-  span = span.subspan(static_cast<size_t>(iter - span.begin()));
-  return !span.empty();
+  size_t position = 0;
+  const bool result = SkipOptionalSVGSpaces(span, position);
+  span = span.subspan(position);
+  return result;
 }
 
 // DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
@@ -133,14 +131,8 @@ template <typename CharType>
 constexpr inline bool SkipOptionalSVGSpacesOrDelimiter(
     base::span<const CharType>& span,
     char delimiter = ',') {
-  if (!span.empty() && !IsHTMLSpace<CharType>(span[0]) &&
-      span[0] != delimiter) {
-    return false;
-  }
-  if (SkipOptionalSVGSpaces(span) && span[0] == delimiter) {
-    span = span.template subspan<1u>();
-    SkipOptionalSVGSpaces(span);
-  }
+  const size_t position = SkipOptionalSVGSpacesOrDelimiter(span, 0, delimiter);
+  span = span.subspan(position);
   return !span.empty();
 }
 
