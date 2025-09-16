@@ -34,7 +34,7 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
   void MoveCollection(const NodeId& id, const Position& position) override;
   mojom::ContainerPtr GetTabStripTopology() override;
   std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
-      const tabs::TabCollection::Handle& collection_handle) override;
+      const tabs::TabCollection::Handle& collection_handle) const override;
   void UpdateTabGroupVisuals(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
@@ -44,6 +44,10 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
       int index) const override;
   tabs::TabCollectionHandle GetCollectionHandleForTabGroupId(
       tab_groups::TabGroupId group_id) const override;
+  tabs_api::Position GetPositionForAbsoluteIndex(
+      int absolute_index) const override;
+  InsertionParams CalculateInsertionParams(
+      const std::optional<tabs_api::Position>& pos) const override;
 
  private:
   raw_ptr<ToyTabStrip> tab_strip_;

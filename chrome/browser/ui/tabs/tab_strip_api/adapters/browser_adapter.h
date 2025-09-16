@@ -18,7 +18,9 @@ class BrowserAdapter {
 
   // TabHandle could potentially be null to indicate that tab creation.
   virtual tabs::TabHandle AddTabAt(const GURL& url,
-                                   std::optional<int> index) = 0;
+                                   std::optional<int> index,
+                                   std::optional<tab_groups::TabGroupId> group,
+                                   bool pinned) = 0;
 };
 
 }  // namespace tabs_api

@@ -22,7 +22,7 @@ mojom::OnTabsCreatedEventPtr ToEvent(
   auto event = mojom::OnTabsCreatedEvent::New();
   for (auto& content : insert.contents) {
     auto tab_created = tabs_api::mojom::TabCreatedContainer::New();
-    auto pos = tabs_api::Position(content.index);
+    auto pos = adapter->GetPositionForAbsoluteIndex(content.index);
     tab_created->position = std::move(pos);
     auto renderer_data = adapter->GetTabRendererData(content.index);
     const ui::ColorProvider& provider = adapter->GetColorProvider();

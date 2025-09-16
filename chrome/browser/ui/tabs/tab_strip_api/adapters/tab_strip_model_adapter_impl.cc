@@ -175,7 +175,7 @@ tabs_api::mojom::ContainerPtr TabStripModelAdapterImpl::GetTabStripTopology() {
 
 std::optional<const tab_groups::TabGroupId>
 TabStripModelAdapterImpl::FindGroupIdFor(
-    const tabs::TabCollection::Handle& collection_handle) {
+    const tabs::TabCollection::Handle& collection_handle) const {
   return tab_strip_model_->FindGroupIdFor(
       collection_handle, base::PassKey<TabStripModelAdapterImpl>());
 }
@@ -222,6 +222,64 @@ TabStripModelAdapterImpl::GetCollectionHandleForTabGroupId(
   const TabGroup* tab_group =
       tab_strip_model_->group_model()->GetTabGroup(group_id);
   return tab_group->GetCollectionHandle();
+}
+
+tabs_api::Position TabStripModelAdapterImpl::GetPositionForAbsoluteIndex(
+    int absolute_index) const {
+  const auto tab_group_id = GetTabGroupForTab(absolute_index);
+  int relative_index =
+      absolute_index - tab_strip_model_->IndexOfFirstNonPinnedTab();
+  std::optional<tabs_api::NodeId> parent_id =
+      NodeId::FromTabCollectionHandle(GetUnpinnedTabsCollectionHandle());
+
+  if (absolute_index < tab_strip_model_->IndexOfFirstNonPinnedTab()) {
+    relative_index = absolute_index;
+    parent_id =
+        NodeId::FromTabCollectionHandle(GetPinnedTabsCollectionHandle());
+  } else if (tab_group_id.has_value()) {
+    const TabGroup* tab_group =
+        tab_strip_model_->group_model()->GetTabGroup(tab_group_id.value());
+    relative_index = absolute_index - tab_group->ListTabs().start();
+    parent_id = NodeId::FromTabCollectionHandle(
+        GetCollectionHandleForTabGroupId(tab_group_id.value()));
+  }
+
+  return tabs_api::Position(relative_index, parent_id);
+}
+
+InsertionParams TabStripModelAdapterImpl::CalculateInsertionParams(
+    const std::optional<tabs_api::Position>& pos) const {
+  tabs_api::InsertionParams params;
+  if (pos.has_value()) {
+    params.index = pos->index();
+    const std::optional<tabs_api::NodeId>& parent_id = pos->parent_id();
+    if (parent_id.has_value()) {
+      if (parent_id.value() ==
+          NodeId::FromTabCollectionHandle(GetPinnedTabsCollectionHandle())) {
+        params.pinned = true;
+      } else {
+        std::optional<tabs::TabCollectionHandle> collection_handle =
+            parent_id.value().ToTabCollectionHandle();
+        if (collection_handle.has_value()) {
+          params.group_id = FindGroupIdFor(collection_handle.value());
+        }
+      }
+    }
+  }
+
+  return params;
+}
+
+tabs::TabCollectionHandle
+TabStripModelAdapterImpl::GetPinnedTabsCollectionHandle() const {
+  return tab_strip_model_->GetPinnedTabsCollectionHandle(
+      base::PassKey<TabStripModelAdapterImpl>());
+}
+
+tabs::TabCollectionHandle
+TabStripModelAdapterImpl::GetUnpinnedTabsCollectionHandle() const {
+  return tab_strip_model_->GetUnpinnedTabsCollectionHandle(
+      base::PassKey<TabStripModelAdapterImpl>());
 }
 
 }  // namespace tabs_api

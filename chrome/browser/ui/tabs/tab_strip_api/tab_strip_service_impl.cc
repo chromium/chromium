@@ -158,14 +158,10 @@ mojom::TabStripService::CreateTabAtResult TabStripServiceImpl::CreateTabAt(
   if (url.has_value()) {
     target_url = url.value();
   }
-  std::optional<int> index;
-  if (pos.has_value()) {
-    // TODO(crbug.com/409086859): Does not use the parent_id yet. Currently only
-    // inserts in the unpinned collection.
-    index = pos->index();
-  }
-
-  auto tab_handle = browser_adapter_->AddTabAt(target_url, index);
+  tabs_api::InsertionParams params =
+      tab_strip_model_adapter_->CalculateInsertionParams(pos);
+  auto tab_handle = browser_adapter_->AddTabAt(target_url, params.index,
+                                               params.group_id, params.pinned);
   if (tab_handle == tabs::TabHandle::Null()) {
     // Missing content can happen for a number of reasons. i.e. If the profile
     // is shutting down or if navigation requests are blocked due to some

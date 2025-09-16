@@ -59,6 +59,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
       auto tab_id = tab->id;
       tabs.emplace(std::string(tab_id.Id()), std::move(tab));
     }
+    tab_created_events.push_back(event.Clone());
   }
 
   void OnTabsClosed(tabs_api::mojom::OnTabsClosedEventPtr& event) {
@@ -126,6 +127,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
 
   std::vector<tabs_api::mojom::OnNodeMovedEventPtr> move_events;
   std::vector<tabs_api::mojom::OnCollectionCreatedEventPtr> created_events;
+  std::vector<tabs_api::mojom::OnTabsCreatedEventPtr> tab_created_events;
 
   std::map<std::string, tabs_api::mojom::TabPtr> tabs;
 };
@@ -299,6 +301,98 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
   ASSERT_EQ(base::NumberToString(handle.raw_value()), result.value()->id.Id());
   // Assert that newly created tabs are also activated.
   ASSERT_EQ(model->GetActiveTab()->GetHandle(), handle);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
+                       CreateTabEventInCollection) {
+  auto observation = SetUpObservation();
+  TabStripModel* model = GetTabStripModel();
+
+  auto get_snapshot_collection_ids = [&]() {
+    tabs_api::NodeId pinned_id;
+    tabs_api::NodeId unpinned_id;
+    base::RunLoop run_loop;
+    observation->remote->GetTabs(
+        base::BindLambdaForTesting([&](TabStripService::GetTabsResult result) {
+          auto root_container = std::move(result.value()->tab_strip);
+
+          auto maybe_pinned = FindContainer(
+              *root_container, tabs_api::mojom::Data::Tag::kPinnedTabs);
+          pinned_id = maybe_pinned.value();
+
+          auto maybe_unpinned = FindContainer(
+              *root_container, tabs_api::mojom::Data::Tag::kUnpinnedTabs);
+          unpinned_id = maybe_unpinned.value();
+
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return std::make_pair(pinned_id, unpinned_id);
+  };
+  std::optional<GURL> url("http://example.com/");
+  auto [pinned_node_id, unpinned_node_id] = get_snapshot_collection_ids();
+  // Test creating a tab in the pinned collection
+  base::RunLoop pinned_create_loop;
+  observation->remote->CreateTabAt(
+      tabs_api::Position(0, pinned_node_id), url,
+      base::BindLambdaForTesting(
+          [&](TabStripService::CreateTabAtResult result) {
+            ASSERT_TRUE(result.has_value());
+            pinned_create_loop.Quit();
+          }));
+  pinned_create_loop.Run();
+  observation->receiver.FlushForTesting();
+  ASSERT_EQ(model->count(), 2);
+  ASSERT_TRUE(model->IsTabPinned(0));
+  ASSERT_EQ(1u, observation->client.tab_created_events.size());
+
+  const auto& pinned_event = observation->client.tab_created_events.back();
+  ASSERT_EQ(1u, pinned_event->tabs.size());
+  EXPECT_EQ(pinned_node_id, pinned_event->tabs[0]->position.parent_id());
+  EXPECT_EQ(0u, pinned_event->tabs[0]->position.index());
+
+  // Test creating the tab in an unpinned collection.
+  base::RunLoop unpinned_create_loop;
+  observation->remote->CreateTabAt(
+      tabs_api::Position(0, unpinned_node_id), url,
+      base::BindLambdaForTesting(
+          [&](TabStripService::CreateTabAtResult result) {
+            ASSERT_TRUE(result.has_value());
+            unpinned_create_loop.Quit();
+          }));
+  unpinned_create_loop.Run();
+  observation->receiver.FlushForTesting();
+
+  ASSERT_EQ(model->count(), 3);
+  ASSERT_EQ(2u, observation->client.tab_created_events.size());
+  const auto& unpinned_event = observation->client.tab_created_events.back();
+  ASSERT_EQ(1u, unpinned_event->tabs.size());
+  EXPECT_EQ(unpinned_node_id, unpinned_event->tabs[0]->position.parent_id());
+  EXPECT_EQ(0u, unpinned_event->tabs[0]->position.index());
+
+  // Test creating the tab within a tab group collection.
+  const tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
+  const TabGroup* group = model->group_model()->GetTabGroup(group_id);
+  const tabs_api::NodeId group_node_id(
+      tabs_api::NodeId::Type::kCollection,
+      base::NumberToString(group->GetCollectionHandle().raw_value()));
+  base::RunLoop group_create_loop;
+  observation->remote->CreateTabAt(
+      tabs_api::Position(0, group_node_id), url,
+      base::BindLambdaForTesting(
+          [&](TabStripService::CreateTabAtResult result) {
+            ASSERT_TRUE(result.has_value());
+            group_create_loop.Quit();
+          }));
+  group_create_loop.Run();
+  observation->receiver.FlushForTesting();
+
+  ASSERT_EQ(model->count(), 4);
+  ASSERT_EQ(3u, observation->client.tab_created_events.size());
+  const auto& group_event = observation->client.tab_created_events.back();
+  ASSERT_EQ(1u, group_event->tabs.size());
+  EXPECT_EQ(group_node_id, group_event->tabs[0]->position.parent_id());
+  EXPECT_EQ(0u, group_event->tabs[0]->position.index());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {

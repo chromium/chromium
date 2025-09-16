@@ -18,6 +18,12 @@ namespace converters {
 struct TabStates;
 }  // namespace converters
 
+struct InsertionParams {
+  std::optional<int> index;
+  std::optional<tab_groups::TabGroupId> group_id;
+  bool pinned = false;
+};
+
 // Tab strip has a large API service that is difficult to implement under test.
 // We only need a subset of the API, so an adapter is used to proxy those
 // methods. This makes it easier to swap in a fake for test.
@@ -39,7 +45,7 @@ class TabStripModelAdapter {
   virtual void MoveCollection(const NodeId& id, const Position& position) = 0;
   virtual mojom::ContainerPtr GetTabStripTopology() = 0;
   virtual std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
-      const tabs::TabCollection::Handle& collection_handle) = 0;
+      const tabs::TabCollection::Handle& collection_handle) const = 0;
   virtual void UpdateTabGroupVisuals(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) = 0;
@@ -50,6 +56,10 @@ class TabStripModelAdapter {
       int index) const = 0;
   virtual tabs::TabCollectionHandle GetCollectionHandleForTabGroupId(
       tab_groups::TabGroupId group_id) const = 0;
+  virtual tabs_api::Position GetPositionForAbsoluteIndex(
+      int absolute_index) const = 0;
+  virtual InsertionParams CalculateInsertionParams(
+      const std::optional<tabs_api::Position>& pos) const = 0;
 };
 
 }  // namespace tabs_api

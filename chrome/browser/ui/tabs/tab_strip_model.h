@@ -723,6 +723,11 @@ class TabStripModel {
       const tabs::TabCollection::Handle& collection_handle,
       base::PassKey<tabs_api::TabStripModelAdapterImpl>) const;
 
+  tabs::TabCollectionHandle GetPinnedTabsCollectionHandle(
+      base::PassKey<tabs_api::TabStripModelAdapterImpl>) const;
+  tabs::TabCollectionHandle GetUnpinnedTabsCollectionHandle(
+      base::PassKey<tabs_api::TabStripModelAdapterImpl>) const;
+
   // View API //////////////////////////////////////////////////////////////////
 
   // Context menu functions. Tab groups uses command ids following CommandLast
