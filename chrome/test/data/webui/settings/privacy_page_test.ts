@@ -20,7 +20,6 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 
 const redesignedPages: Route[] = [
-  routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
   routes.SITE_SETTINGS_HANDLERS,
   routes.SITE_SETTINGS_NOTIFICATIONS,
   routes.SITE_SETTINGS_PDF_DOCUMENTS,

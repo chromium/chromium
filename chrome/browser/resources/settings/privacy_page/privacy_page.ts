@@ -105,18 +105,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
       },
 
-      /**
-       * Whether the File System Access Persistent Permissions UI should be
-       * displayed.
-       */
-      showPersistentPermissions_: {
-        type: Boolean,
-        readOnly: true,
-        value: function() {
-          return loadTimeData.getBoolean('showPersistentPermissions');
-        },
-      },
-
       focusConfig_: {
         type: Object,
         value() {
@@ -186,7 +174,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   declare private isGuest_: boolean;
-  declare private showPersistentPermissions_: boolean;
   declare private showClearBrowsingDataDialog_: boolean;
   declare private showPrivacyGuideDialog_: boolean;
   declare private enableDeleteBrowsingDataRevamp_: boolean;

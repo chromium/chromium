@@ -206,6 +206,7 @@ build_webui("build") {
     "site_settings/clipboard_page.ts",
     "site_settings/edit_exception_dialog.ts",
     "site_settings/federated_identity_api_page.ts",
+    "site_settings/filesystem_page.ts",
     "site_settings/file_system_site_details.ts",
     "site_settings/file_system_site_entry_item.ts",
     "site_settings/file_system_site_entry.ts",
