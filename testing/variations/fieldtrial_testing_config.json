@@ -12870,6 +12870,33 @@
             ]
         }
     ],
+    "IOSDefaultBrowserPromoMagicStackCard": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_TapToDeviceSettings",
+                    "params": {
+                        "DefaultBrowserMagicStackIosVariationType": "1"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserMagicStackIos"
+                    ]
+                },
+                {
+                    "name": "Enabled_TapToInAppSettings",
+                    "params": {
+                        "DefaultBrowserMagicStackIosVariationType": "2"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserMagicStackIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDefaultBrowserPromoPropensityStudy": [
         {
             "platforms": [
