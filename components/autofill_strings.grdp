@@ -803,9 +803,6 @@
   <message name="IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to explicitly create a redress number. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome. Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
     Add redress number
   </message>
-  <message name="IDS_AUTOFILL_AI_ADD_FLIGHT_RESERVATION_ENTITY" translateable="false">
-    Add flight reservation
-  </message>
 
   <!-- Edit entity strings -->
   <message name="IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
@@ -845,9 +842,6 @@
   </message>
   <message name="IDS_AUTOFILL_AI_DELETE_REDRESS_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to delete a redress number. The user opened this dialog by choosing 'Delete' from the more options menu.  Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
     Delete redress number
-  </message>
-  <message name="IDS_AUTOFILL_AI_DELETE_FLIGHT_RESERVATION_ENTITY" translateable="false">
-    Delete flight reservation
   </message>
 
   <!-- Attributes of the driver's license entity -->
