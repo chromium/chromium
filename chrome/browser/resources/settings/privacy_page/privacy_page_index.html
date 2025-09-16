@@ -166,7 +166,8 @@
 
   <template is="dom-if" if="[[autoPictureInPictureEnabled_]]">
     <template is="dom-if" if="[[renderView_(
-        routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, currentRoute, inSearchMode)]]">
+        routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, currentRoute,
+        inSearchMode)]]">
       <settings-auto-picture-in-picture-page slot="view"
           id="siteSettingsAutoPictureInPicture" data-parent-view-id="old"
           route-path$="[[routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE.path]]">
@@ -212,7 +213,8 @@
 
   <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
     <template is="dom-if" if="[[renderView_(
-        routes_.SITE_SETTINGS_BLUETOOTH_SCANNING, currentRoute, inSearchMode)]]">
+        routes_.SITE_SETTINGS_BLUETOOTH_SCANNING, currentRoute,
+        inSearchMode)]]">
       <settings-bluetooth-scanning-page slot="view"
           id="siteSettingsBluetoothScanning" data-parent-view-id="old"
           route-path$="[[routes_.SITE_SETTINGS_BLUETOOTH_SCANNING.path]]">
@@ -231,7 +233,8 @@
 
   <template is="dom-if" if="[[capturedSurfaceControlEnabled_]]">
     <template is="dom-if" if="[[renderView_(
-        routes_.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL, currentRoute, inSearchMode)]]">
+        routes_.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL, currentRoute,
+        inSearchMode)]]">
       <settings-captured-surface-control-page slot="view"
           id="siteSettingsCapturedSurfaceControl" data-parent-view-id="old"
           route-path$="[[routes_.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL.path]]">
@@ -249,12 +252,34 @@
 
   <template is="dom-if" if="[[enableFederatedIdentityApiContentSetting_]]">
     <template is="dom-if" if="[[renderView_(
-        routes_.SITE_SETTINGS_FEDERATED_IDENTITY_API, currentRoute, inSearchMode)]]">
+        routes_.SITE_SETTINGS_FEDERATED_IDENTITY_API, currentRoute,
+        inSearchMode)]]">
       <settings-federated-identity-api-page slot="view"
           id="siteSettingsFederatedIdentityApi"
           route-path$="[[routes_.SITE_SETTINGS_FEDERATED_IDENTITY_API.path]]"
           data-parent-view-id="old">
       </settings-federated-identity-api-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_FILE_SYSTEM_WRITE, currentRoute, inSearchMode)]]">
+    <settings-filesystem-page slot="view"
+        id="siteSettingsFilesystemWrite"
+        route-path$="[[routes_.SITE_SETTINGS_FILE_SYSTEM_WRITE.path]]"
+        data-parent-view-id="old">
+    </settings-filesystem-page>
+  </template>
+
+  <template is="dom-if" if="[[showPersistentPermissions_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS, currentRoute,
+        inSearchMode)]]">
+      <file-system-site-details slot="view"
+          id="siteSettingsFilesystemWriteDetails"
+          route-path$="[[routes_.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS.path]]"
+          data-parent-view-id="old">
+      </file-system-site-details>
     </template>
   </template>
 

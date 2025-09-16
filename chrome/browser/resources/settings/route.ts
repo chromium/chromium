@@ -192,8 +192,12 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
       r.SITE_SETTINGS.createChild('windowManagement');
   r.SITE_SETTINGS_WINDOW_MANAGEMENT.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_FILE_SYSTEM_WRITE = r.SITE_SETTINGS.createChild('filesystem');
-  r.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS =
-      r.SITE_SETTINGS_FILE_SYSTEM_WRITE.createChild('siteDetails');
+  r.SITE_SETTINGS_FILE_SYSTEM_WRITE.hasMigratedToPlugin = true;
+  if (loadTimeData.getBoolean('showPersistentPermissions')) {
+    r.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS =
+        r.SITE_SETTINGS_FILE_SYSTEM_WRITE.createChild('siteDetails');
+    r.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS.hasMigratedToPlugin = true;
+  }
   r.SITE_SETTINGS_LOCAL_FONTS = r.SITE_SETTINGS.createChild('localFonts');
   r.SITE_SETTINGS_LOCAL_FONTS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_STORAGE_ACCESS = r.SITE_SETTINGS.createChild('storageAccess');

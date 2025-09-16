@@ -189,6 +189,12 @@ export class SettingsPrivacyPageIndexElement extends
         readOnly: true,
         value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
       },
+
+      showPersistentPermissions_: {
+        type: Boolean,
+        readOnly: true,
+        value: () => loadTimeData.getBoolean('showPersistentPermissions'),
+      },
     };
   }
 
@@ -221,6 +227,7 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enableWebPrintingContentSetting_: boolean;
   declare private isAdPrivacyAvailable_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
+  declare private showPersistentPermissions_: boolean;
 
   private pendingViewSwitching_: PromiseResolver<void> = new PromiseResolver();
   private privacyGuidePromoWasShown_: boolean;

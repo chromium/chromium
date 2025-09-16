@@ -300,6 +300,11 @@ suite('PrivacyPageIndex', function() {
           parentViewId: 'old',
         },
         {
+          route: routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
+          viewId: 'siteSettingsFilesystemWrite',
+          parentViewId: 'old',
+        },
+        {
           route: routes.SITE_SETTINGS_IDLE_DETECTION,
           viewId: 'siteSettingsIdleDetection',
           parentViewId: 'old',

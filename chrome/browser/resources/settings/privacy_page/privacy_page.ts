@@ -355,6 +355,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsCapturedSurfaceControl':
       case 'siteSettingsClipboard':
       case 'siteSettingsFederatedIdentityApi':
+      case 'siteSettingsFilesystemWrite':
+      case 'siteSettingsFilesystemWriteDetails':
       case 'siteSettingsHandlers':
       case 'siteSettingsHandTracking':
       case 'siteSettingsHidDevices':
