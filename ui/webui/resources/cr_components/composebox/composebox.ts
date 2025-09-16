@@ -21,6 +21,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile} from './common.js';
 import {getCss} from './composebox.css.js';
@@ -422,6 +423,7 @@ export class ComposeboxElement extends I18nMixinLit
                                                    null,
           type: file.type,
           status: FileUploadStatus.kNotUploaded,
+          url: null,
         };
         this.files_ = new Map([...this.files_.entries(), [token, attachment]]);
 
@@ -435,7 +437,8 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.input.focus();
   }
 
-  protected async addTabContext_(e: CustomEvent<{id: number, title: string}>) {
+  protected async addTabContext_(
+      e: CustomEvent<{id: number, title: string, url: Url}>) {
     const {token} = await this.pageHandler_.addTabContext(e.detail.id);
 
     const attachment: ComposeboxFile = {
@@ -444,6 +447,7 @@ export class ComposeboxElement extends I18nMixinLit
       objectUrl: null,
       type: 'tab',
       status: FileUploadStatus.kNotUploaded,
+      url: e.detail.url,
     };
     this.files_ = new Map([...this.files_.entries(), [token, attachment]]);
   }

@@ -55,7 +55,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
 
     // Assert one image file.
     const thumbnail =
-        fileThumbnailElement.shadowRoot.querySelector('.pdf-title');
+        fileThumbnailElement.shadowRoot.querySelector('#pdfTitle');
     assertTrue(!!thumbnail);
     assertEquals(thumbnail.tagName, 'P');
     assertEquals(thumbnail.textContent, fileThumbnailElement.file.name);
