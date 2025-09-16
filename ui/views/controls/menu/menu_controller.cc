@@ -2836,11 +2836,16 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
             item->actual_menu_position() == MenuPosition::kAboveBounds) {
           // menu_size is expected to include not just the content size
           // but also the (border and shadow) insets, which can go offscreen.
-          max_height =
+          // When anchor_bounds is above or below monitor_bounds, max_height
+          // calculation will be larger than monitor+insets. To prevent
+          // std::clamp crashing due to y_max < y_min, std::min with current
+          // max_height.
+          max_height = std::min(
+              max_height,
               std::max(anchor_bounds.y() - monitor_bounds.y(),
                        monitor_bounds.bottom() - anchor_bounds.bottom()) -
-              (is_bubble_menu ? 0 : menu_config.touchable_anchor_offset) +
-              border_insets.height();
+                  (is_bubble_menu ? 0 : menu_config.touchable_anchor_offset) +
+                  border_insets.height());
         }
       }
       // The menu should always have a non-empty available area.
