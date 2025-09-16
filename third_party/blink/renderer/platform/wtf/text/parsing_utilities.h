@@ -51,6 +51,15 @@ bool SkipExactly(base::span<const CharType> chars,
   return false;
 }
 
+template <typename CharType>
+bool SkipExactly(base::span<const CharType>& chars, CharType c) {
+  if (!chars.empty() && chars.front() == c) {
+    chars = chars.template subspan<1u>();
+    return true;
+  }
+  return false;
+}
+
 template <typename CharType, bool predicate(CharType)>
 bool SkipExactly(base::span<const CharType> chars, size_t& position) {
   if (position < chars.size() && predicate(chars[position])) {

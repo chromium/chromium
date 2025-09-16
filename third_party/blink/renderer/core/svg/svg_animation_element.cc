@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
 namespace blink {
 
@@ -121,33 +122,34 @@ fail:
 }
 
 template <typename CharType>
-static bool ParseKeySplinesInternal(const CharType* ptr,
-                                    const CharType* end,
+static bool ParseKeySplinesInternal(base::span<const CharType> span,
                                     Vector<gfx::CubicBezier>& result) {
-  SkipOptionalSVGSpaces(ptr, end);
+  SkipOptionalSVGSpaces(span);
 
-  while (ptr < end) {
+  while (!span.empty()) {
     float cp1x = 0;
-    if (!ParseNumber(ptr, end, cp1x))
+    if (!ParseNumber(span, cp1x)) {
       return false;
+    }
 
     float cp1y = 0;
-    if (!ParseNumber(ptr, end, cp1y))
+    if (!ParseNumber(span, cp1y)) {
       return false;
+    }
 
     float cp2x = 0;
-    if (!ParseNumber(ptr, end, cp2x))
+    if (!ParseNumber(span, cp2x)) {
       return false;
+    }
 
     float cp2y = 0;
-    if (!ParseNumber(ptr, end, cp2y, kDisallowWhitespace))
+    if (!ParseNumber(span, cp2y, kDisallowWhitespace)) {
       return false;
+    }
 
-    SkipOptionalSVGSpaces(ptr, end);
-
-    if (ptr < end && *ptr == ';')
-      UNSAFE_TODO(ptr++);
-    SkipOptionalSVGSpaces(ptr, end);
+    SkipOptionalSVGSpaces(span);
+    SkipExactly<CharType>(span, ';');
+    SkipOptionalSVGSpaces(span);
 
     // The values of cpx1 cpy1 cpx2 cpy2 must all be in the range 0 to 1.
     if (!IsInZeroToOneRange(cp1x) || !IsInZeroToOneRange(cp1y) ||
@@ -157,7 +159,7 @@ static bool ParseKeySplinesInternal(const CharType* ptr,
     result.push_back(gfx::CubicBezier(cp1x, cp1y, cp2x, cp2y));
   }
 
-  return ptr == end;
+  return span.empty();
 }
 
 static bool ParseKeySplines(const String& string,
@@ -166,8 +168,7 @@ static bool ParseKeySplines(const String& string,
   if (string.empty())
     return true;
   bool parsed = VisitCharacters(string, [&](auto chars) {
-    return ParseKeySplinesInternal(chars.data(), chars.data() + chars.size(),
-                                   result);
+    return ParseKeySplinesInternal(chars, result);
   });
   if (!parsed) {
     result.clear();
