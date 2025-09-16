@@ -54,7 +54,7 @@ bool CanTryPolicyRegistration(std::optional<base::Time> last_failure_time) {
   }
 
   return base::Time::Now() - last_failure_time.value() >
-         switches::kPolicyRegistrationRetryDelay.Get();
+         switches::kPolicyDisclaimerRegistrationRetryDelay.Get();
 }
 
 }  // namespace

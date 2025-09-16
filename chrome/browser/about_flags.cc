@@ -4910,6 +4910,38 @@ const FeatureEntry::FeatureVariation kPolicyRegistrationDelayVariations[] = {
      std::size(kPolicyRegistrationDelay24h), nullptr},
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const FeatureEntry::FeatureParam kPolicyDisclaimerRegistrationRetryDelay2m[] = {
+    {"PolicyDisclaimerRegistrationRetryDelay", "2m"}};
+const FeatureEntry::FeatureParam kPolicyDisclaimerRegistrationRetryDelay1h[] = {
+    {"PolicyDisclaimerRegistrationRetryDelay", "1h"}};
+const FeatureEntry::FeatureParam kPolicyDisclaimerRegistrationRetryDelay6h[] = {
+    {"PolicyDisclaimerRegistrationRetryDelay", "6h"}};
+const FeatureEntry::FeatureParam kPolicyDisclaimerRegistrationRetryDelay12h[] =
+    {{"PolicyDisclaimerRegistrationRetryDelay", "12h"}};
+const FeatureEntry::FeatureParam kPolicyDisclaimerRegistrationRetryDelay24h[] =
+    {{"PolicyDisclaimerRegistrationRetryDelay", "24h"}};
+
+const FeatureEntry::FeatureVariation
+    kPolicyDisclaimerRegistrationRetryDelayVariations[] = {
+        {"Enabled - Retry every 2 minutes",
+         kPolicyDisclaimerRegistrationRetryDelay2m,
+         std::size(kPolicyDisclaimerRegistrationRetryDelay2m), nullptr},
+        {"Enabled - Retry every 1 hour",
+         kPolicyDisclaimerRegistrationRetryDelay1h,
+         std::size(kPolicyDisclaimerRegistrationRetryDelay1h), nullptr},
+        {"Enabled - Retry every 6 hours",
+         kPolicyDisclaimerRegistrationRetryDelay6h,
+         std::size(kPolicyDisclaimerRegistrationRetryDelay6h), nullptr},
+        {"Enabled - Retry every 12 hours",
+         kPolicyDisclaimerRegistrationRetryDelay12h,
+         std::size(kPolicyDisclaimerRegistrationRetryDelay12h), nullptr},
+        {"Enabled - Retry every 24 hours",
+         kPolicyDisclaimerRegistrationRetryDelay24h,
+         std::size(kPolicyDisclaimerRegistrationRetryDelay24h), nullptr},
+};
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13073,7 +13105,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enforce-management-disclaimer",
      flag_descriptions::kEnforceManagementDisclaimerName,
      flag_descriptions::kEnforceManagementDisclaimerDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(switches::kEnforceManagementDisclaimer)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         switches::kEnforceManagementDisclaimer,
+         kPolicyDisclaimerRegistrationRetryDelayVariations,
+         "PolicyDisclaimerRegistrationRetryDelayVariations")},
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

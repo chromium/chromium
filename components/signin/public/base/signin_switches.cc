@@ -300,9 +300,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kEnforceManagementDisclaimer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The delay between policy registration retry.
-const base::FeatureParam<base::TimeDelta> kPolicyRegistrationRetryDelay{
-    &kEnforceManagementDisclaimer, "policy_registration_retry_delay",
-    base::Hours(8)};
+const base::FeatureParam<base::TimeDelta>
+    kPolicyDisclaimerRegistrationRetryDelay{
+        &kEnforceManagementDisclaimer, "PolicyDisclaimerRegistrationRetryDelay",
+        base::Hours(8)};
 #endif
 
 #if BUILDFLAG(IS_WIN)

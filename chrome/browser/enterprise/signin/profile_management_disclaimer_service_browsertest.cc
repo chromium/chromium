@@ -796,7 +796,8 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
 
   // Move the time to pass the retry delay.
   SetMockTime(base::Time::Now() +
-              switches::kPolicyRegistrationRetryDelay.Get() + base::Seconds(1));
+              switches::kPolicyDisclaimerRegistrationRetryDelay.Get() +
+              base::Seconds(1));
 
   // Here the registration should be retried since the delay passed with the
   // good dm token and client id. The disclaimer should be shown.
