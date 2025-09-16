@@ -13,10 +13,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
+#include "content/browser/indexed_db/instance/backing_store_util.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 #include "content/browser/indexed_db/status.h"
 #include "sql/meta_table.h"
@@ -236,6 +238,8 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
     ASSERT_TRUE(value.has_value());
     EXPECT_EQ(value.value().bits, kValue.bits);
 
+    base::DictValue contents_before_corruption = DumpDatabase(*db);
+
     // Close the database and then corrupt it.
     db.reset();
     const base::FilePath db_path = GetDatabasePath(kDbName);
@@ -265,6 +269,8 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
       // time the connection is destroyed, as the database is empty.
       ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*db));
       recovered_value = read_value();
+#else
+      EXPECT_EQ(DumpDatabase(*db), contents_before_corruption);
 #endif
 
       // Read works because the DB was recovered (or, on Fuchsia, was deleted,

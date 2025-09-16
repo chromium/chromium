@@ -139,6 +139,8 @@ source_set("unit_tests") {
     "instance/backing_store_test_base.cc",
     "instance/backing_store_test_base.h",
     "instance/backing_store_unittest.cc",
+    "instance/backing_store_util.cc",
+    "instance/backing_store_util.h",
     "instance/bucket_context_unittest.cc",
     "instance/database_unittest.cc",
     "instance/fake_transaction.cc",

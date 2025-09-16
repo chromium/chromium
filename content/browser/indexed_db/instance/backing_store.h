@@ -68,7 +68,7 @@ class BackingStore {
     virtual ~Database() = default;
 
     // Memory-cached metadata for this database.
-    virtual const blink::IndexedDBDatabaseMetadata& GetMetadata() = 0;
+    virtual const blink::IndexedDBDatabaseMetadata& GetMetadata() const = 0;
 
     // Generates the lock ID key for the given object store. Not called on
     // SQLite backing stores.

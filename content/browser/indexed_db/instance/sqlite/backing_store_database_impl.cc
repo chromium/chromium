@@ -19,8 +19,8 @@ BackingStoreDatabaseImpl::~BackingStoreDatabaseImpl() {
   DatabaseConnection::Release(std::move(db_));
 }
 
-const blink::IndexedDBDatabaseMetadata&
-BackingStoreDatabaseImpl::GetMetadata() {
+const blink::IndexedDBDatabaseMetadata& BackingStoreDatabaseImpl::GetMetadata()
+    const {
   return db_->metadata();
 }
 

@@ -4000,7 +4000,8 @@ std::string BackingStore::Database::GetObjectStoreLockIdKey(
   return std::string(chars.begin(), chars.end());
 }
 
-const blink::IndexedDBDatabaseMetadata& BackingStore::Database::GetMetadata() {
+const blink::IndexedDBDatabaseMetadata& BackingStore::Database::GetMetadata()
+    const {
   return metadata_;
 }
 
