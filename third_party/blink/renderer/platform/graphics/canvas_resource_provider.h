@@ -634,6 +634,11 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   const CanvasResourceSharedImage* resource() const {
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
+  bool ShouldReplaceTargetBuffer(
+      PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
+  void EnsureWriteAccess();
+  void EndWriteAccess();
+  void FlushGrContext();
 
  private:
   // `viz::ContextLostObserver` implementation.

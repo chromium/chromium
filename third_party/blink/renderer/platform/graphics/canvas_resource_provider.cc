@@ -385,6 +385,118 @@ void CanvasResourceProviderSharedImage::ClearOldUnusedResources() {
   MaybePostUnusedResourcesReclaimTask();
 }
 
+bool CanvasResourceProviderSharedImage::ShouldReplaceTargetBuffer(
+    PaintImage::ContentId content_id) {
+  // If the canvas is single buffered, concurrent read/writes to the resource
+  // are allowed. Note that we ignore the resource lost case as well since
+  // that only indicates that we did not get a sync token for read/write
+  // synchronization which is not a requirement for single buffered canvas.
+  if (IsSingleBuffered()) {
+    return false;
+  }
+
+  // If the resource was lost, we can not use it for writes again.
+  if (resource()->IsLost()) {
+    return true;
+  }
+
+  // We have the only ref to the resource which implies there are no active
+  // readers.
+  if (resource_->HasOneRef()) {
+    return false;
+  }
+
+  // Its possible to have deferred work in skia which uses this resource. Try
+  // flushing once to see if that releases the read refs. We can avoid a copy
+  // by queuing this work before writing to this resource.
+  if (is_accelerated_) {
+    // Another context may have a read reference to this resource. Flush the
+    // deferred queue in that context so that we don't need to copy.
+    GetFlushForImageListener()->NotifyFlushForImage(content_id);
+
+    if (!use_oop_rasterization_) {
+      skgpu::ganesh::FlushAndSubmit(surface_);
+    }
+  }
+
+  return !resource_->HasOneRef();
+}
+
+void CanvasResourceProviderSharedImage::FlushGrContext() {
+  DCHECK(is_accelerated_);
+
+  // The resource may have been imported and used in skia. Make sure any
+  // operations using this resource are flushed to the underlying context.
+  // Note that its not sufficient to flush the SkSurface here since it will
+  // only perform a GrContext flush if that SkSurface has any pending ops. And
+  // this resource may be written to or read from skia without using the
+  // SkSurface here.
+  if (IsGpuContextLost()) {
+    return;
+  }
+  GetGrContext()->flushAndSubmit();
+}
+
+void CanvasResourceProviderSharedImage::EnsureWriteAccess() {
+  DCHECK(resource_);
+  // In software mode, we don't need write access to the resource during
+  // drawing since it is executed on cpu memory managed by skia. We ensure
+  // exclusive access to the resource when the results are copied onto the
+  // GMB in EndWriteAccess.
+  DCHECK(resource_->HasOneRef() || IsSingleBuffered() || !is_accelerated_)
+      << "Write access requires exclusive access to the resource";
+  DCHECK(!resource()->is_cross_thread())
+      << "Write access is only allowed on the owning thread";
+
+  if (current_resource_has_write_access_ || IsGpuContextLost()) {
+    return;
+  }
+
+  if (is_accelerated_ && !use_oop_rasterization_) {
+    resource()->BeginWriteAccess();
+  }
+
+  // For the non-accelerated path, we don't need a texture for writes since
+  // its on the CPU, but we set this bit to know whether the GMB needs to be
+  // updated.
+  current_resource_has_write_access_ = true;
+}
+
+void CanvasResourceProviderSharedImage::EndWriteAccess() {
+  DCHECK(!resource()->is_cross_thread());
+
+  if (!current_resource_has_write_access_ || IsGpuContextLost()) {
+    return;
+  }
+
+  if (is_accelerated_) {
+    // We reset |mode_| here since the draw commands which overwrite the
+    // complete canvas must have been flushed at this point without triggering
+    // copy-on-write.
+    mode_ = SkSurface::kRetain_ContentChangeMode;
+
+    if (!use_oop_rasterization_) {
+      // Issue any skia work using this resource before releasing write
+      // access.
+      FlushGrContext();
+      resource()->EndWriteAccess();
+    }
+  } else {
+    // Currently we never use OOP raster when the resource is not accelerated
+    // so we check that assumption here.
+    DCHECK(!use_oop_rasterization_);
+    if (ShouldReplaceTargetBuffer()) {
+      resource_ = NewOrRecycledResource();
+    }
+    if (!resource() || !GetSkSurface()) {
+      return;
+    }
+    resource()->UploadSoftwareRenderingResults(GetSkSurface());
+  }
+
+  current_resource_has_write_access_ = false;
+}
+
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
 class CanvasResourceProviderSharedImageImpl
@@ -847,40 +959,6 @@ class CanvasResourceProviderSharedImageImpl
     resource()->GetSyncToken();
   }
 
-  bool ShouldReplaceTargetBuffer(
-      PaintImage::ContentId content_id = PaintImage::kInvalidContentId) {
-    // If the canvas is single buffered, concurrent read/writes to the resource
-    // are allowed. Note that we ignore the resource lost case as well since
-    // that only indicates that we did not get a sync token for read/write
-    // synchronization which is not a requirement for single buffered canvas.
-    if (IsSingleBuffered())
-      return false;
-
-    // If the resource was lost, we can not use it for writes again.
-    if (resource()->IsLost())
-      return true;
-
-    // We have the only ref to the resource which implies there are no active
-    // readers.
-    if (resource_->HasOneRef())
-      return false;
-
-    // Its possible to have deferred work in skia which uses this resource. Try
-    // flushing once to see if that releases the read refs. We can avoid a copy
-    // by queuing this work before writing to this resource.
-    if (is_accelerated_) {
-      // Another context may have a read reference to this resource. Flush the
-      // deferred queue in that context so that we don't need to copy.
-      GetFlushForImageListener()->NotifyFlushForImage(content_id);
-
-      if (!use_oop_rasterization_) {
-        skgpu::ganesh::FlushAndSubmit(surface_);
-      }
-    }
-
-    return !resource_->HasOneRef();
-  }
-
   sk_sp<SkSurface> CreateSkSurface() const override {
     TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateSkSurface");
     if (is_software_) {
@@ -911,77 +989,6 @@ class CanvasResourceProviderSharedImageImpl
     DCHECK(is_accelerated_);
 
     return resource()->CreateGrTexture();
-  }
-
-  void FlushGrContext() {
-    DCHECK(is_accelerated_);
-
-    // The resource may have been imported and used in skia. Make sure any
-    // operations using this resource are flushed to the underlying context.
-    // Note that its not sufficient to flush the SkSurface here since it will
-    // only perform a GrContext flush if that SkSurface has any pending ops. And
-    // this resource may be written to or read from skia without using the
-    // SkSurface here.
-    if (IsGpuContextLost())
-      return;
-    GetGrContext()->flushAndSubmit();
-  }
-
-  void EnsureWriteAccess() {
-    DCHECK(resource_);
-    // In software mode, we don't need write access to the resource during
-    // drawing since it is executed on cpu memory managed by skia. We ensure
-    // exclusive access to the resource when the results are copied onto the
-    // GMB in EndWriteAccess.
-    DCHECK(resource_->HasOneRef() || IsSingleBuffered() || !is_accelerated_)
-        << "Write access requires exclusive access to the resource";
-    DCHECK(!resource()->is_cross_thread())
-        << "Write access is only allowed on the owning thread";
-
-    if (current_resource_has_write_access_ || IsGpuContextLost())
-      return;
-
-    if (is_accelerated_ && !use_oop_rasterization_) {
-      resource()->BeginWriteAccess();
-    }
-
-    // For the non-accelerated path, we don't need a texture for writes since
-    // its on the CPU, but we set this bit to know whether the GMB needs to be
-    // updated.
-    current_resource_has_write_access_ = true;
-  }
-
-  void EndWriteAccess() {
-    DCHECK(!resource()->is_cross_thread());
-
-    if (!current_resource_has_write_access_ || IsGpuContextLost())
-      return;
-
-    if (is_accelerated_) {
-      // We reset |mode_| here since the draw commands which overwrite the
-      // complete canvas must have been flushed at this point without triggering
-      // copy-on-write.
-      mode_ = SkSurface::kRetain_ContentChangeMode;
-
-      if (!use_oop_rasterization_) {
-        // Issue any skia work using this resource before releasing write
-        // access.
-        FlushGrContext();
-        resource()->EndWriteAccess();
-      }
-    } else {
-      // Currently we never use OOP raster when the resource is not accelerated
-      // so we check that assumption here.
-      DCHECK(!use_oop_rasterization_);
-      if (ShouldReplaceTargetBuffer())
-        resource_ = NewOrRecycledResource();
-      if (!resource() || !GetSkSurface()) {
-        return;
-      }
-      resource()->UploadSoftwareRenderingResults(GetSkSurface());
-    }
-
-    current_resource_has_write_access_ = false;
   }
 
   // For WebGpu RecyclableCanvasResource.
