@@ -12,8 +12,6 @@ static_library("multi_user") {
     "multi_user_util.h",
     "multi_user_window_manager_browser_adaptor.cc",
     "multi_user_window_manager_browser_adaptor.h",
-    "multi_user_window_manager_helper.cc",
-    "multi_user_window_manager_helper.h",
   ]
 
   public_deps = [

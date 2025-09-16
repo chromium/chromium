@@ -43,7 +43,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
@@ -262,16 +261,9 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
     // Primary user log-in.
     LogInUser(ids[0]);
 
-    // After the primary user log-in, (and before any more user log-ins),
-    // create MultiUserWindowManagerBrowserAdaptor instance held by
-    // MultiUserWindowManagerHelper and initializes for the primary user,
-    // mirroring the timing of the initialization in the production.
-    // TODO(crbug.com/425160398): This should be simplified for the bug fix.
-    ::MultiUserWindowManagerHelper::CreateInstanceForTest();
-
     for (const AccountId& account_id : ids.subspan(1u)) {
       LogInUser(account_id);
-      ::MultiUserWindowManagerHelper::GetInstance()->AddUser(account_id);
+      multi_user_window_manager_browser_adaptor_->AddUser(account_id);
     }
   }
 
@@ -348,9 +340,10 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
   std::unique_ptr<ash::UserLoginPermissionTracker>
       user_login_permission_tracker_;
 
-  // Owned by |user_manager_enabler_|.
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<MultiUserWindowManagerBrowserAdaptor>
+      multi_user_window_manager_browser_adaptor_;
 
   // The maximized window manager (if enabled).
   std::unique_ptr<TabletModeWindowManager> tablet_mode_window_manager_;
@@ -379,6 +372,10 @@ void MultiUserWindowManagerBrowserAdaptorTest::SetUp() {
   profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());
+
+  multi_user_window_manager_browser_adaptor_ =
+      std::make_unique<MultiUserWindowManagerBrowserAdaptor>(
+          ash::Shell::Get()->multi_user_window_manager());
 }
 
 void MultiUserWindowManagerBrowserAdaptorTest::SetUpForThisManyWindows(
@@ -434,7 +431,7 @@ void MultiUserWindowManagerBrowserAdaptorTest::TearDown() {
     windows_.erase(windows_.begin());
   }
 
-  ::MultiUserWindowManagerHelper::DeleteInstance();
+  multi_user_window_manager_browser_adaptor_.reset();
   for (Profile* profile :
        profile_manager_->profile_manager()->GetLoadedProfiles()) {
     const AccountId* account_id = ash::AnnotatedAccountId::Get(profile);

@@ -99,6 +99,7 @@ void BrowserWithTestWindowTest::SetUp() {
     ash_init.auto_create_prefs_services = false;
 
     ash_test_helper_->SetUp(std::move(ash_init));
+    OnAshTestHelperCreated();
   }
 #endif
 
@@ -341,6 +342,8 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+void BrowserWithTestWindowTest::OnAshTestHelperCreated() {}
+
 void BrowserWithTestWindowTest::LogIn(std::string_view email,
                                       const GaiaId& gaia_id) {
   const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);

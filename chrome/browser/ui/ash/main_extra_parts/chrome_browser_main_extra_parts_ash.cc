@@ -78,7 +78,7 @@
 #include "chrome/browser/ui/ash/login/oobe_dialog_util_impl.h"
 #include "chrome/browser/ui/ash/management_disclosure/management_disclosure_client_impl.h"
 #include "chrome/browser/ui/ash/media_client/media_client_impl.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_browser_adaptor.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
@@ -199,10 +199,6 @@ ChromeBrowserMainExtraPartsAsh::~ChromeBrowserMainExtraPartsAsh() {
   g_instance = nullptr;
 }
 
-void ChromeBrowserMainExtraPartsAsh::PreCreateMainMessageLoop() {
-  user_profile_loaded_observer_ = std::make_unique<UserProfileLoadedObserver>();
-}
-
 void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   if (base::FeatureList::IsEnabled(arc::kEnableArcIdleManager) ||
       base::FeatureList::IsEnabled(arc::kVmmSwapPolicy)) {
@@ -256,16 +252,21 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
                      // after message loops stops.
                      base::Unretained(session_manager::SessionManager::Get())));
   if (ash::MultiUserWindowManagerImpl::IsEnabled()) {
-    MultiUserWindowManagerHelper::CreateInstance();
+    multi_user_window_manager_browser_adaptor_ =
+        std::make_unique<ash::MultiUserWindowManagerBrowserAdaptor>(
+            ash::Shell::Get()->multi_user_window_manager());
   }
   // Note: BrowserRestoreObserver needs to be instantiated after
-  // MultiUserWindowManagerHelper.
-  // Both MultiUserWindowManagerBrowserAdaptor held by
-  // MultiUserWindowManagerHelper and BrowserRestoreObserver register themselves
-  // as BrowserListObserver, and the order is critical, because the code we run
-  // as a part of BrowserRestoreObserver on Browser creation depends on the data
-  // that is annotated by the MultProfileSupport.
+  // MultiUserWindowManagerBrowserAdaptor.
+  // Both MultiUserWindowManagerBrowserAdaptor and BrowserRestoreObserver
+  // register themselves as BrowserListObserver, and the order is critical,
+  // because the code we run as a part of BrowserRestoreObserver on Browser
+  // creation depends on the data that is annotated by the
+  // MultiUserWindowManagerBrowserAdaptor.
   browser_restore_observer_ = std::make_unique<ash::BrowserRestoreObserver>();
+
+  user_profile_loaded_observer_ = std::make_unique<UserProfileLoadedObserver>(
+      multi_user_window_manager_browser_adaptor_.get());
 
   screen_orientation_delegate_ =
       std::make_unique<ScreenOrientationDelegateChromeos>();
@@ -591,10 +592,9 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // AppListClientImpl indirectly holds WebContents for answer card and
   // needs to be released before destroying the profile.
   app_list_client_.reset();
+  user_profile_loaded_observer_.reset();
   browser_restore_observer_.reset();
-  if (MultiUserWindowManagerHelper::GetInstance()) {
-    MultiUserWindowManagerHelper::DeleteInstance();
-  }
+  multi_user_window_manager_browser_adaptor_.reset();
   ash_shell_init_.reset();
 
   // These instances must be destructed after `ash_shell_init_`.
@@ -613,7 +613,6 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
     ash::NetworkConnect::Shutdown();
   }
   network_connect_delegate_.reset();
-  user_profile_loaded_observer_.reset();
   arc_window_watcher_.reset();
 }
 
@@ -624,7 +623,11 @@ void ChromeBrowserMainExtraPartsAsh::ResetChromeNewWindowClientForTesting() {
 class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
     : public session_manager::SessionManagerObserver {
  public:
-  UserProfileLoadedObserver() {
+  explicit UserProfileLoadedObserver(
+      ash::MultiUserWindowManagerBrowserAdaptor*
+          multi_user_window_manager_browser_adaptor)
+      : multi_user_window_manager_browser_adaptor_(
+            multi_user_window_manager_browser_adaptor) {
     session_observation_.Observe(session_manager::SessionManager::Get());
   }
 
@@ -645,8 +648,8 @@ class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
       ash::SyncErrorNotifierFactory::GetForProfile(profile);
     }
 
-    if (auto* instance = MultiUserWindowManagerHelper::GetInstance()) {
-      instance->AddUser(account_id);
+    if (multi_user_window_manager_browser_adaptor_) {
+      multi_user_window_manager_browser_adaptor_->AddUser(account_id);
     }
     if (ChromeShelfController::instance()) {
       ChromeShelfController::instance()->OnUserProfileReadyToSwitch(profile);
@@ -654,6 +657,9 @@ class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
   }
 
  private:
+  const raw_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
+      multi_user_window_manager_browser_adaptor_;
+
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};

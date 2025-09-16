@@ -77,7 +77,7 @@ bool DoesBrowserMatchProfile(Browser& browser,
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Get the profile on which the window is currently shown.
-  // MultiUserWindowManagerHelper might be NULL under test scenario.
+  // ash::Shell might be NULL under test scenario.
   // TODO(crbug.com/427889779): Consider to drop this check.
   if (ash::Shell::HasInstance()) {
     ash::MultiUserWindowManager* const multi_user_window_manager =

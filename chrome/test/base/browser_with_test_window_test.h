@@ -173,6 +173,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   ash::KioskCryptohomeRemover* kiosk_cryptohome_remover() {
     return kiosk_cryptohome_remover_.get();
   }
+  virtual void OnAshTestHelperCreated();
 #endif
 
   // The context to help determine desktop type when creating new Widgets.

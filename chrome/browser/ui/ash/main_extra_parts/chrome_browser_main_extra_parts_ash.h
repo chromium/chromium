@@ -20,10 +20,12 @@ class ActiveSessionFingerprintClient;
 class BrowserRestoreObserver;
 class InSessionAuthTokenProviderImpl;
 class MagicBoostStateAsh;
+class MultiUserWindowManagerBrowserAdaptor;
 class NetworkPortalNotificationController;
 class NetworkPortalSigninController;
 class OobeDialogUtil;
 class PeripheralsAppDelegateImpl;
+class VideoConferenceManagerAsh;
 class VideoConferenceTrayController;
 
 namespace boca {
@@ -87,10 +89,6 @@ class VpnListForwarder;
 class WallpaperAsh;
 class WallpaperControllerClientImpl;
 
-namespace ash {
-class VideoConferenceManagerAsh;
-}  // namespace ash
-
 namespace internal {
 class ChromeShelfControllerInitializer;
 }
@@ -113,7 +111,6 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   ~ChromeBrowserMainExtraPartsAsh() override;
 
   // Overridden from ChromeBrowserMainExtraParts:
-  void PreCreateMainMessageLoop() override;
   void PreProfileInit() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
   void PostBrowserStart() override;
@@ -146,6 +143,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       accessibility_controller_client_;
   std::unique_ptr<AppListClientImpl> app_list_client_;
   std::unique_ptr<ChromeNewWindowClient> chrome_new_window_client_;
+  std::unique_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
+      multi_user_window_manager_browser_adaptor_;
   std::unique_ptr<ash::BrowserRestoreObserver> browser_restore_observer_;
   std::unique_ptr<ash::ArcWindowWatcher> arc_window_watcher_;
   std::unique_ptr<ArcOpenUrlDelegateImpl> arc_open_url_delegate_impl_;

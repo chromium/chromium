@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_browser_adaptor.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -74,13 +73,15 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
     window_.reset(CreateTestWindowInShellWithId(0));
     window_->Show();
 
-    MultiUserWindowManagerHelper::CreateInstanceForTest();
-    MultiUserWindowManagerHelper::GetInstance()->AddUser(kAccountId1);
+    multi_user_window_manager_browser_adaptor_ =
+        std::make_unique<MultiUserWindowManagerBrowserAdaptor>(
+            ash::Shell::Get()->multi_user_window_manager());
+    multi_user_window_manager_browser_adaptor_->AddUser(kAccountId1);
   }
 
   void TearDown() override {
     window_.reset();
-    MultiUserWindowManagerHelper::DeleteInstance();
+    multi_user_window_manager_browser_adaptor_.reset();
     ChromeAshTestBase::TearDown();
     for (Profile* profile :
          testing_profile_manager_->profile_manager()->GetLoadedProfiles()) {
@@ -109,6 +110,8 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
  private:
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  std::unique_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
+      multi_user_window_manager_browser_adaptor_;
 
   // A window which can be used for testing.
   std::unique_ptr<aura::Window> window_;
