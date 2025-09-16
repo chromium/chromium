@@ -384,13 +384,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
 
     @Override
     public void removeFlyoutWindows(int clearFromIndex) {
-        if (clearFromIndex >= mDialogs.size()) {
-            return;
-        }
+        assert clearFromIndex < mDialogs.size();
 
         for (int i = clearFromIndex; i < mDialogs.size(); i++) {
             mDialogs.get(i).second.dismiss();
         }
+
         mDialogs.subList(clearFromIndex, mDialogs.size()).clear();
         mListViews.subList(clearFromIndex, mListViews.size()).clear();
     }

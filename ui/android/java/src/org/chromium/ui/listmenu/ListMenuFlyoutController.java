@@ -186,8 +186,11 @@ public class ListMenuFlyoutController<T> {
             // We want to keep the direct child open if the hover is still on the same child.
             ListItem parentItemOfCurrentFlyoutPopup = dialogs.get(levelOfHoveredItem + 1).first;
             keepChildWindow = item == parentItemOfCurrentFlyoutPopup;
-            mFlyoutHandler.removeFlyoutWindows(
-                    keepChildWindow ? levelOfHoveredItem + 2 : levelOfHoveredItem + 1);
+
+            int clearFromIndex = keepChildWindow ? levelOfHoveredItem + 2 : levelOfHoveredItem + 1;
+            if (clearFromIndex < dialogs.size()) {
+                mFlyoutHandler.removeFlyoutWindows(clearFromIndex);
+            }
         }
 
         // Create a new child popup if the item has submenu and we removed the child window.
