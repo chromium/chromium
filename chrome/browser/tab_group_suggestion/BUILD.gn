@@ -93,6 +93,8 @@ if (is_android) {
     sources = [
       "android/junit/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsPromotionMediatorUnitTest.java",
       "android/junit/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionEventObserverUnitTest.java",
+      "android/junit/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionMetricsServiceUnitTest.java",
+      "android/junit/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionMetricsTrackerUnitTest.java",
       "android/junit/src/org/chromium/chrome/browser/tab_group_suggestion/toolbar/GroupSuggestionsButtonControllerImplUnitTest.java",
     ]
 
@@ -100,13 +102,16 @@ if (is_android) {
       ":java",
       ":toolbar_java",
       "//base:base_java",
+      "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//base:callback_java",
       "//base:supplier_java",
+      "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/hub:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
+      "//chrome/browser/tabwindow:java",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/embedder_support/android:util_java",
       "//components/visited_url_ranking/public:public_java",
