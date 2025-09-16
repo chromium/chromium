@@ -330,6 +330,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Nullable private final List<String> mTrustedWebActivityAdditionalOrigins;
     @Nullable private Set<Origin> mAllTrustedWebActivityOrigins;
     @Nullable private final TrustedWebActivityDisplayMode mTrustedWebActivityDisplayMode;
+    private final List<TrustedWebActivityDisplayMode> mTrustedWebActivityDisplayOverrideMode;
     @Nullable private String mUrlToLoad;
 
     private final boolean mEnableUrlBarHiding;
@@ -634,6 +635,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         // until native is loaded.
 
         mTrustedWebActivityDisplayMode = resolveTwaDisplayMode();
+        mTrustedWebActivityDisplayOverrideMode = resolveTwaDisplayOverrideMode();
 
         int intentVisibilityState =
                 IntentUtils.safeGetIntExtra(
@@ -1034,11 +1036,31 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
     }
 
+    private List<TrustedWebActivityDisplayMode> resolveTwaDisplayOverrideMode() {
+        // display-override, if present and containing a supported mode, takes precedence over
+        // display-mode.
+        List<Bundle> displayOverrideBundle =
+                IntentUtils.getParcelableArrayListExtra(
+                        mIntent, TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_OVERRIDE);
+        List<TrustedWebActivityDisplayMode> displayOverride = new ArrayList<>();
+        if (displayOverrideBundle != null) {
+            for (Bundle b : displayOverrideBundle) {
+                try {
+                    displayOverride.add(TrustedWebActivityDisplayMode.fromBundle(b));
+                } catch (Throwable e) {
+                    // If the given value isn't a valid display mode, skip it.
+                }
+            }
+        }
+        return displayOverride;
+    }
+
     /**
      * Returns the {@link ScreenOrientationLockType} which matches {@link ScreenOrientation}.
+     *
      * @param orientation {@link ScreenOrientation}
      * @return The matching ScreenOrientationLockType. {@link ScreenOrientationLockType#DEFAULT} if
-     *         there is no match.
+     *     there is no match.
      */
     private static int convertOrientationType(@ScreenOrientation.LockType int orientation) {
         switch (orientation) {
@@ -1454,6 +1476,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return mTrustedWebActivityDisplayMode;
     }
 
+    public List<TrustedWebActivityDisplayMode> getProvidedTwaDisplayOverrideMode() {
+        return mTrustedWebActivityDisplayOverrideMode;
+    }
+
     @Override
     @Nullable
     public List<String> getTrustedWebActivityAdditionalOrigins() {
@@ -1753,8 +1779,47 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 && mUiType == CustomTabsUiType.DEFAULT;
     }
 
+    private static boolean isDisplayModeSupported(
+            TrustedWebActivityDisplayMode displayMode, boolean isDisplayOverride) {
+        if (displayMode == null) {
+            return false;
+        }
+        if (displayMode instanceof TrustedWebActivityDisplayMode.ImmersiveMode) {
+            return true;
+        }
+        if (displayMode instanceof TrustedWebActivityDisplayMode.BrowserMode) {
+            return !isDisplayOverride;
+        }
+        if (WebAppHeaderUtils.isMinimalUiFlagEnabled()
+                && displayMode instanceof TrustedWebActivityDisplayMode.MinimalUiMode) {
+            return true;
+        }
+
+        if (WebAppHeaderUtils.isWindowControlsOverlayFlagEnabled()
+                && displayMode instanceof TrustedWebActivityDisplayMode.WindowControlsOverlayMode) {
+            return isDisplayOverride;
+        }
+
+        return false;
+    }
+
     private @DisplayMode.EnumType int resolveDisplayMode() {
-        TrustedWebActivityDisplayMode displayMode = getProvidedTwaDisplayMode();
+        TrustedWebActivityDisplayMode displayMode = null;
+
+        List<TrustedWebActivityDisplayMode> displayOverride = getProvidedTwaDisplayOverrideMode();
+        for (TrustedWebActivityDisplayMode override : displayOverride) {
+            if (isDisplayModeSupported(override, /* isDisplayOverride= */ true)) {
+                displayMode = override;
+                break;
+            }
+        }
+
+        if (displayMode == null
+                && isDisplayModeSupported(
+                        getProvidedTwaDisplayMode(), /* isDisplayOverride= */ false)) {
+            displayMode = getProvidedTwaDisplayMode();
+        }
+
         if (displayMode == null) {
             return DisplayMode.STANDALONE;
         }
@@ -1772,6 +1837,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         || displayMode instanceof TrustedWebActivityDisplayMode.BrowserMode;
         if (WebAppHeaderUtils.isMinimalUiFlagEnabled() && shouldUseMinimalUi) {
             return DisplayMode.MINIMAL_UI;
+        }
+
+        if (WebAppHeaderUtils.isWindowControlsOverlayFlagEnabled()
+                && displayMode instanceof TrustedWebActivityDisplayMode.WindowControlsOverlayMode) {
+            return DisplayMode.WINDOW_CONTROLS_OVERLAY;
         }
 
         return DisplayMode.STANDALONE;

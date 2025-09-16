@@ -121,6 +121,31 @@ public class WebAppHeaderUtils {
     }
 
     /**
+     * Checks whether window controls overlay is enabled. This includes checking feature flag and
+     * type of web app that's running right now.
+     *
+     * @param intentDataProvider contains intent data related to the current browser service.
+     * @return true when window controls overla flag is enabled and currently running a TWA,
+     *     otherwise false.
+     */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public static boolean isWindowControlsOverlayEnabled(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        @DisplayMode.EnumType int displayMode = intentDataProvider.getResolvedDisplayMode();
+
+        return intentDataProvider.isTrustedWebActivity()
+                && displayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY
+                && isWindowControlsOverlayFlagEnabled();
+    }
+
+    /** Checks whether the window controls overlay feature flag is enabled. */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public static boolean isWindowControlsOverlayFlagEnabled() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                && ChromeFeatureList.sAndroidWindowControlsOverlay.isEnabled();
+    }
+
+    /**
      * Provides layout id of the webapp header.
      *
      * @return webapp header layout resource id.
