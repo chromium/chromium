@@ -175,6 +175,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ntp/ui_bundled/incognito",
     "//ios/chrome/browser/omnibox/model/placeholder_service",
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",

@@ -1180,7 +1180,8 @@ CGFloat SpaceBetweenModules() {
 
 // Whether the quick actions button row is visible.
 - (BOOL)quickActionsVisible {
-  return _isAIMAllowed && ShouldShowQuickActionsRow();
+  return _isAIMAllowed && ShouldShowQuickActionsRow() &&
+         !self.incognitoDisabled;
 }
 
 // Returns YES if scroll should be skipped when focusing the omnibox.
