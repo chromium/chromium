@@ -1202,10 +1202,10 @@ TEST_F(RawPtrTest, SetLookupUsesGetForComparison) {
                   .wrap_raw_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,
                   .get_for_extraction_cnt = 0,
-                  // 2 items to compare to => 4 calls.
-                  .get_for_comparison_cnt = 4,
-                  // 1 element to compare to => 2 calls.
-                  .wrapped_ptr_less_cnt = 2,
+                  // 2 comparisons => 2 spaceship operator calls.
+                  .get_for_comparison_cnt = 2,
+                  // The comparisons above can be reused
+                  .wrapped_ptr_less_cnt = 0,
               }),
               CountersMatch());
 
@@ -1229,10 +1229,10 @@ TEST_F(RawPtrTest, SetLookupUsesGetForComparison) {
                   .wrap_raw_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,
                   .get_for_extraction_cnt = 0,
-                  // 2 comparisons => 4 extractions.
-                  .get_for_comparison_cnt = 4,
-                  // 2 items to compare to => 4 calls.
-                  .wrapped_ptr_less_cnt = 2,
+                  // 2 comparisons => 2 spaceship operator calls.
+                  .get_for_comparison_cnt = 2,
+                  // The comparisons above can be reused.
+                  .wrapped_ptr_less_cnt = 0,
               }),
               CountersMatch());
 }
