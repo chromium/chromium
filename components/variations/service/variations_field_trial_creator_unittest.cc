@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/build_time.h"
 #include "base/command_line.h"
@@ -24,8 +25,8 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -65,6 +66,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/variations/seed_response.h"
@@ -125,10 +127,9 @@ VariationsSeed CreateTestSeed() {
   return seed;
 }
 
-// Returns a test seed that contains a single study,
-// "UMA-Uniformity-Trial-10-Percent", which has a single experiment, "abc", with
-// probability weight 100. The study references the 100% slot of a LIMITED
-// entropy layer. The LIMITED layer created will use 0 bit of entropy.
+// Returns a seed with a single permanent-consistency study. The study is
+// constrained to all slots of a 100-slot limited-entropy-mode layer, and the
+// study's single group has an experiment ID. 0 bits of entropy are consumed.
 VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
   VariationsSeed seed;
   seed.set_serial_number(kTestSeedSerialNumber);
@@ -150,7 +151,8 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
 
   auto* experiment = study->add_experiment();
   experiment->set_name(kTestSeedExperimentName);
-  experiment->set_probability_weight(kTestSeedExperimentProbability);
+  experiment->set_probability_weight(1);
+  experiment->set_google_web_experiment_id(111);
 
   auto* layer_member_reference = study->mutable_layer();
   layer_member_reference->set_layer_id(1);
@@ -488,6 +490,27 @@ class FieldTrialCreatorTest : public ::testing::Test {
 
   const base::FilePath seed_file_path() const {
     return user_data_dir_path().AppendASCII("VariationsSeedV1");
+  }
+
+  // Writes the given latest seed to its seed file and to Local State.
+  // Does the necessary setup for allowing empty seed signatures for test
+  // purposes.
+  void SetUpLatestSeedAndEmptySignature(const VariationsSeed& seed) {
+    std::string serialized_seed = seed.SerializeAsString();
+    std::string compressed_seed;
+    compression::GzipCompress(serialized_seed, &compressed_seed);
+
+    // Write the seed for the seed file experiment's treatment-group clients.
+    CHECK(base::WriteFile(seed_file_path(), compressed_seed));
+
+    // Write the seed for the seed file experiment's control-group clients.
+    local_state()->SetString(prefs::kVariationsCompressedSeed,
+                             base::Base64Encode(compressed_seed));
+
+    // Allows and writes an empty signature for the test seed.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kAcceptEmptySeedSignatureForTesting);
+    local_state()->SetString(prefs::kVariationsSeedSignature, "");
   }
 
  private:
@@ -1643,66 +1666,64 @@ TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsClearsDeletedProfiles) {
   field_trial_creator.GetGoogleGroupsFromPrefs();
 }
 
-struct LimitedEntropyProcessingTestCase {
+struct SeedWithLimitedLayerTestParams {
   std::string test_name;
   VariationsSeed seed;
-
-  bool is_seed_rejection_expected;
-  bool is_limited_study_active;
+  bool apply_seed;
 };
 
-class LimitedEntropyProcessingTest
+class LimitedLayerFieldTrialCreatorTest
     : public FieldTrialCreatorTest,
-      public ::testing::WithParamInterface<LimitedEntropyProcessingTestCase> {};
+      public ::testing::WithParamInterface<SeedWithLimitedLayerTestParams> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    FieldTrialCreatorTest,
-    LimitedEntropyProcessingTest,
+    ,
+    LimitedLayerFieldTrialCreatorTest,
     ::testing::Values(
-        LimitedEntropyProcessingTestCase{
-            .test_name = "ShouldProcessLimitedLayer",
+        SeedWithLimitedLayerTestParams{
+            .test_name = "ApplySeedWithLimitedLayer",
             .seed = CreateTestSeedWithLimitedEntropyLayer(),
-            .is_seed_rejection_expected = false,
-            .is_limited_study_active = true},
-        LimitedEntropyProcessingTestCase{
-            .test_name = "ShouldRejectSeedWithExcessiveEntropyUse",
+            .apply_seed = true},
+        SeedWithLimitedLayerTestParams{
+            .test_name = "RejectSeedWithExcessiveEntropyUseInLimitedLayer",
             .seed =
                 CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy(),
-            .is_seed_rejection_expected = true,
-            .is_limited_study_active = false}),
-    [](const ::testing::TestParamInfo<LimitedEntropyProcessingTestCase>& info) {
+            .apply_seed = false}),
+    [](const ::testing::TestParamInfo<SeedWithLimitedLayerTestParams>& info) {
       return info.param.test_name;
     });
 
-TEST_P(LimitedEntropyProcessingTest,
-       RandomizeLimitedEntropyStudyOrRejectTheSeed) {
-  const LimitedEntropyProcessingTestCase test_case = GetParam();
+TEST_P(LimitedLayerFieldTrialCreatorTest, SetUpFieldTrials) {
+  // First, do some seed-related setup.
+  SeedWithLimitedLayerTestParams params = GetParam();
+  SetUpLatestSeedAndEmptySignature(params.seed);
 
-  auto encoded_and_compressed = GZipAndB64EncodeToHexString(test_case.seed);
-  local_state()->SetString(prefs::kVariationsCompressedSeed,
-                           encoded_and_compressed);
-
-  // Allows and writes an empty signature for the test seed.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kAcceptEmptySeedSignatureForTesting);
-  local_state()->SetString(prefs::kVariationsSeedSignature, "");
-
-  // Sets up dependencies and mocks.
+  // Second, create a real VariationsFieldTrialCreator.
   TestVariationsServiceClient variations_service_client;
-  auto seed_store = CreateSeedStore(local_state(), seed_file_path());
+  std::unique_ptr<VariationsSeedStore> seed_store =
+      CreateSeedStore(local_state(), seed_file_path());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider());
+
+  // Third, create the FieldTrialList.
   metrics::TestEnabledStateProvider enabled_state_provider(
       /*consent=*/true,
       /*enabled=*/true);
-  auto metrics_state_manager = metrics::MetricsStateManager::Create(
-      local_state(), &enabled_state_provider, std::wstring(), base::FilePath());
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
+      metrics::MetricsStateManager::Create(local_state(),
+                                           &enabled_state_provider,
+                                           std::wstring(), base::FilePath());
   metrics_state_manager->InstantiateFieldTrialList();
+
+  // Next, set up a few more classes before calling the function under test.
   PlatformFieldTrials platform_field_trials;
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  base::HistogramTester histogram_tester;
 
-  EXPECT_NE(
-      test_case.is_seed_rejection_expected,
+  ASSERT_FALSE(base::FieldTrialList::TrialExists(kTestLimitedLayerStudyName));
+
+  // Call the function under test.
+  EXPECT_EQ(
       field_trial_creator.SetUpFieldTrials(
           /*variation_ids=*/{},
           /*command_line_variation_ids=*/std::string(),
@@ -1711,11 +1732,17 @@ TEST_P(LimitedEntropyProcessingTest,
           &platform_field_trials, &safe_seed_manager,
           /*add_entropy_source_to_variations_ids=*/true,
           *metrics_state_manager->CreateEntropyProviders(
-              /*enable_limited_entropy_mode=*/true)));
+              /*enable_limited_entropy_mode=*/true)),
+      params.apply_seed);
 
-  // Verifies that the limited entropy test study is randomized.
-  EXPECT_EQ(test_case.is_limited_study_active,
-            base::FieldTrialList::TrialExists(kTestLimitedLayerStudyName));
+  EXPECT_EQ(base::FieldTrialList::TrialExists(kTestLimitedLayerStudyName),
+            params.apply_seed);
+
+  SeedUsage expected_seed_usage =
+      params.apply_seed ? SeedUsage::kRegularSeedUsed
+                        : SeedUsage::kMisconfiguredRegularSeedNotUsed;
+  histogram_tester.ExpectUniqueSample("Variations.SeedUsage",
+                                      expected_seed_usage, 1);
 }
 
 // Test feature names prefixed with __ to avoid collision with real features.

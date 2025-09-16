@@ -690,13 +690,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedUsage" enum="VariationsSeedUsage"
-    expires_after="2026-01-18">
+    expires_after="2026-09-10">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Captures details about Chrome's attempt to use a VariationsSeed, e.g.
     whether Chrome used a safe seed. Recorded once during Chrome startup after
     attempting to load a seed and before field trials are created.
+
+    This metric is not accurate between M123 and M141, inclusively. In these
+    milestones, the buckets for applying regular or safe seeds may be emitted to
+    even though the seed is later dropped due to misconfiguration.
   </summary>
 </histogram>
 

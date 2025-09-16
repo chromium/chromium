@@ -715,9 +715,6 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
                          : SeedUsage::kRegularSeedForFutureMilestoneNotUsed);
     return CreateTrialsResult{.applied_seed = false};
   }
-  RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
-                                             : SeedUsage::kRegularSeedUsed);
-  SetSeedVersion(seed.version());
 
   VariationsLayers layers(seed, entropy_providers);
 
@@ -735,8 +732,14 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
   const MisconfiguredEntropyResult result =
       SeedHasMisconfiguredEntropy(*client_state, seed);
   if (result.is_misconfigured) {
+    RecordVariationsSeedUsage(
+        run_in_safe_mode ? SeedUsage::kMisconfiguredSafeSeedNotUsed
+                         : SeedUsage::kMisconfiguredRegularSeedNotUsed);
     return CreateTrialsResult{.applied_seed = false};
   }
+  SetSeedVersion(seed.version());
+  RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
+                                             : SeedUsage::kRegularSeedUsed);
 
   // Note that passing base::Unretained(this) below is safe because the callback
   // is executed synchronously. It is not possible to pass UIStringOverrider
