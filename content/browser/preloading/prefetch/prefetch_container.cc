@@ -38,12 +38,17 @@
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_util.h"
@@ -51,8 +56,10 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -228,6 +235,22 @@ GetPrefetchResponseCompletedCallbackForTesting() {
       PrefetchContainer::PrefetchResponseCompletedCallbackForTesting>
       prefetch_response_completed_callback_for_testing;
   return *prefetch_response_completed_callback_for_testing;
+}
+
+void AddAwAdditionalHeaders(net::HttpRequestHeaders& request_headers,
+                            const net::HttpRequestHeaders& additional_headers) {
+  // Ignore "User-Agent" override by `additional_headers` if UA override fix are
+  // enabled.
+  // TODO(crbug.com/383779480): Add tests.
+  if (base::FeatureList::IsEnabled(
+          features::kPreloadingRespectUserAgentOverride)) {
+    net::HttpRequestHeaders additional_headers_without_ua = additional_headers;
+    additional_headers_without_ua.RemoveHeader(
+        net::HttpRequestHeaders::kUserAgent);
+    request_headers.MergeFrom(additional_headers_without_ua);
+  } else {
+    request_headers.MergeFrom(additional_headers);
+  }
 }
 
 }  // namespace
@@ -1287,7 +1310,8 @@ void PrefetchContainer::MakeResourceRequest() {
   // not be visible outside of the network context.
   resource_request->load_flags = net::LOAD_PREFETCH;
 
-  resource_request->headers.MergeFrom(request().additional_headers());
+  AddAwAdditionalHeaders(resource_request->headers,
+                         request().additional_headers());
 
   CHECK(request().browser_context());
   resource_request->headers.SetHeader(
@@ -1361,6 +1385,42 @@ const GURL& PrefetchContainer::GetURL() const {
 const std::optional<net::HttpNoVarySearchData>&
 PrefetchContainer::GetNoVarySearchHint() const {
   return request().no_vary_search_hint();
+}
+
+bool PrefetchContainer::ShouldApplyUserAgentOverride(
+    const GURL& request_url) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kPreloadingRespectUserAgentOverride)) {
+    return false;
+  }
+
+  WebContents* referring_web_contents =
+      request().referring_web_contents().get();
+  if (!referring_web_contents) {
+    return false;
+  }
+  // The empty `ua_string_override` means no registered UA overrides.
+  if (const blink::UserAgentOverride& ua_override =
+          referring_web_contents->GetUserAgentOverride();
+      ua_override.ua_string_override.empty()) {
+    return false;
+  }
+  raw_ptr<WebContentsDelegate> delegate = referring_web_contents->GetDelegate();
+  NavigationController::UserAgentOverrideOption option =
+      delegate ? delegate->ShouldOverrideUserAgentForPrerender2(request_url)
+               : NavigationController::UA_OVERRIDE_INHERIT;
+  // Use the primary main frame of initiator's WebContents to guess if we should
+  // apply UA overrides in this prefetch request. Note that this decision is
+  // independent with that of policy checking on ClientHints headers. This is an
+  // estimation, i.e., can lead to wrong choices in some cases (e.g., where the
+  // prefetched result is used in prerender for another WebContents).
+  // TODO(crbug.com/444065296): Update this comment after the header comparison
+  // between prefetch and prerender is implemented.
+  auto* render_frame_host = referring_web_contents->GetPrimaryMainFrame();
+  CHECK(render_frame_host);
+  auto& nav_controller = static_cast<NavigationControllerImpl&>(
+      render_frame_host->GetController());
+  return nav_controller.ShouldOverrideUserAgentInNextNavigation(option);
 }
 
 void PrefetchContainer::AddClientHintsHeaders(

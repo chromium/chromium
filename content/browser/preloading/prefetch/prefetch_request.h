@@ -187,6 +187,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       std::optional<PrefetchPriority> priority,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
+      base::WeakPtr<WebContents> referring_web_contents,
       bool is_javascript_enabled,
       const blink::mojom::Referrer& initial_referrer,
       const std::optional<url::Origin>& referring_origin,
@@ -218,6 +219,9 @@ class CONTENT_EXPORT PrefetchRequest final {
   }
   const std::optional<url::Origin>& referring_origin() const {
     return referring_origin_;
+  }
+  const base::WeakPtr<WebContents>& referring_web_contents() const {
+    return referring_web_contents_;
   }
   BrowserContext* browser_context() const { return browser_context_.get(); }
 
@@ -298,6 +302,12 @@ class CONTENT_EXPORT PrefetchRequest final {
   // RenderFrameHost's LastCommittedOrigin. For browser-initiated prefetch, this
   // is sometimes explicitly passed via ctor.
   const std::optional<url::Origin> referring_origin_;
+
+  // The initiator WebContents used for the source of some headers, e.g.,
+  // User-Agent. This is unavailable in browser initiated prefetch that is not
+  // associated with WebContents. This is for an initial guess and shouldn't be
+  // used without a plan for the header validation (crbug.com/444065296).
+  base::WeakPtr<WebContents> referring_web_contents_;
 
   // The |BrowserContext| in which this is being run.
   const base::WeakPtr<BrowserContext> browser_context_;

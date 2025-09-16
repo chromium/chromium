@@ -571,6 +571,12 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetTriggeringOutcomeAndFailureReasonFromStatus(
       PrefetchStatus new_prefetch_status);
 
+  // Returns if WebContents-level UA overrides should be applied for a prefetch
+  // request for `request_url`. Note that not only the User-Agent header but
+  // also Client-Hints headers are affected by the UA overrides.
+  // The returned value is for an initial guess and shouldn't be used without a
+  // plan for the header validation (crbug.com/444065296).
+  bool ShouldApplyUserAgentOverride(const GURL& request_url) const;
   // Add client hints headers to a request bound for |origin|.
   void AddClientHintsHeaders(const url::Origin& origin,
                              net::HttpRequestHeaders* request_headers);

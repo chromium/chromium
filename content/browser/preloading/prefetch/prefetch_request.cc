@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
@@ -64,6 +65,7 @@ PrefetchRequest::PrefetchRequest(
     std::optional<PrefetchPriority> priority,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
+    base::WeakPtr<WebContents> referring_web_contents,
     bool is_javascript_enabled,
     const blink::mojom::Referrer& initial_referrer,
     const std::optional<url::Origin>& referring_origin,
@@ -86,6 +88,7 @@ PrefetchRequest::PrefetchRequest(
       is_javascript_enabled_(is_javascript_enabled),
       initial_referrer_(initial_referrer),
       referring_origin_(referring_origin),
+      referring_web_contents_(std::move(referring_web_contents)),
       browser_context_(std::move(browser_context)),
       speculation_rules_tags_(std::move(speculation_rules_tags)),
       additional_headers_(additional_headers),
@@ -132,6 +135,8 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateRendererInitiated(
       std::move(no_vary_search_hint), std::move(priority),
       std::move(preload_pipeline_info), std::move(attempt),
       WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
+          ->GetWeakPtr(),
+      WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
           ->GetOrCreateWebPreferences()
           .javascript_enabled,
       referrer, referring_render_frame_host.GetLastCommittedOrigin(),
@@ -165,6 +170,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateBrowserInitiated(
       PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
       std::move(no_vary_search_hint), std::move(priority),
       std::move(preload_pipeline_info), std::move(attempt),
+      referring_web_contents.GetWeakPtr(),
       referring_web_contents.GetOrCreateWebPreferences().javascript_enabled,
       referrer, referring_origin,
       referring_web_contents.GetBrowserContext()->GetWeakPtr(),
@@ -203,9 +209,11 @@ PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
       std::move(no_vary_search_hint), std::move(priority),
       PreloadPipelineInfo::Create(
           /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
-      std::move(attempt), javascript_enabled, referrer, referring_origin,
+      std::move(attempt), /*referring_web_contents=*/nullptr,
+      javascript_enabled, referrer, referring_origin,
       browser_context->GetWeakPtr(),
-      /*speculation_rules_tags=*/std::nullopt, additional_headers, ttl,
+      /*speculation_rules_tags=*/
+      std::nullopt, additional_headers, ttl,
       /*holdback_status_override=*/PreloadingHoldbackStatus::kUnspecified,
       should_append_variations_header, should_disable_block_until_head_timeout,
       PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
