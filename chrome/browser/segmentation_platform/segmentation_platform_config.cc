@@ -30,6 +30,7 @@
 #include "components/segmentation_platform/embedder/default_model/search_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/tab_resumption_ranker.h"
+#include "components/segmentation_platform/embedder/default_model/tips_notifications_ranker.h"
 #include "components/segmentation_platform/embedder/default_model/url_visit_resumption_ranker.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_home_module_backend.h"
 #include "components/segmentation_platform/internal/config_parser.h"
@@ -176,6 +177,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(MetricsClustering::GetConfig());
   configs.emplace_back(FedCmUserModel::GetConfig());
   configs.emplace_back(ChromeUserEngagement::GetConfig());
+  configs.emplace_back(TipsNotificationsRanker::GetConfig());
 
   if (home_modules_card_registry) {
     configs.emplace_back(home_modules::EphemeralHomeModuleBackend::GetConfig(

@@ -46,6 +46,8 @@ static_library("default_model") {
     "shopping_user_model.h",
     "tab_resumption_ranker.cc",
     "tab_resumption_ranker.h",
+    "tips_notifications_ranker.cc",
+    "tips_notifications_ranker.h",
     "url_visit_resumption_ranker.cc",
     "url_visit_resumption_ranker.h",
   ]
@@ -111,6 +113,7 @@ source_set("unit_tests") {
     "search_user_model_unittest.cc",
     "shopping_user_model_unittest.cc",
     "tab_resumption_ranker_unittest.cc",
+    "tips_notifications_ranker_unittest.cc",
     "url_visit_resumption_ranker_unittest.cc",
   ]
 

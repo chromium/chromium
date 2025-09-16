@@ -300,4 +300,8 @@ constexpr base::FeatureParam<int> kMaxDefaultBrowserMagicStackIosImpressions{
     "max_default_browser_magic_stack_ios_impressions",
     /*default_value=*/6};
 
+BASE_FEATURE(kSegmentationPlatformTipsNotificationsRanker,
+             "SegmentationPlatformTipsNotificationsRanker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace segmentation_platform::features

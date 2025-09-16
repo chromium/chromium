@@ -120,6 +120,9 @@ const char kIosDefaultBrowserPromoShowLabel[] = "ShowIosDefaultBrowserPromo";
 const char kFedCmUserKey[] = "fedcm_user";
 const char kFedCmUserUmaName[] = "FedCmUser";
 
+const char kTipsNotificationsRankerKey[] = "tips_notifications_ranker";
+const char kTipsNotificationsRankerUmaName[] = "TipsNotificationsRanker";
+
 // SEGMENTATION_CLIENT_KEYS_END
 
 // Please keep the UMA names for keys in sync with SegmentationKey variant in
@@ -277,6 +280,12 @@ const char kFedCmPerImpressionClickthroughRate[] =
     "per_impression_clickthrough_rate";
 const char kFedCmLikelyToSignin[] = "likely_to_signin";
 const char kFedCmLikelyInsufficientData[] = "likely_insufficient_data";
+
+// Labels for tips notifications ranker.
+const char kEnhancedSafeBrowsing[] = "EnhancedSafeBrowsing";
+const char kQuickDelete[] = "QuickDelete";
+const char kGoogleLens[] = "GoogleLens";
+const char kBottomOmnibox[] = "BottomOmnibox";
 
 }  // namespace segmentation_platform
 

@@ -203,6 +203,9 @@ BASE_DECLARE_FEATURE(kDefaultBrowserMagicStackIos);
 // card should be hidden.
 extern const base::FeatureParam<int> kMaxDefaultBrowserMagicStackIosImpressions;
 
+// Feature flag for enabling the tips notifications ranker.
+BASE_DECLARE_FEATURE(kSegmentationPlatformTipsNotificationsRanker);
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

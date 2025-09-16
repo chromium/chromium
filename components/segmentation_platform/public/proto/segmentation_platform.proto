@@ -119,4 +119,6 @@ enum SegmentId {
   EPHEMERAL_HOME_MODULE_BACKEND_TEST = 1012;
   // Default model used for tracking metrics for Chrome user engagement.
   CHROME_USER_ENGAGEMENT = 1014;
+  // Target for tips notifications ranker.
+  OPTIMIZATION_TARGET_SEGMENTATION_TIPS_NOTIFICATIONS_RANKER = 1015;
 };

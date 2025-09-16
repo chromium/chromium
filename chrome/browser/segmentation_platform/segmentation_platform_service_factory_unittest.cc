@@ -122,7 +122,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformURLVisitResumptionRanker, {}},
          {features::kSegmentationPlatformEphemeralCardRanker, {}},
          {features::kSegmentationSurveyPage, {}},
-         {features::kSegmentationPlatformFedCmUser, {}}},
+         {features::kSegmentationPlatformFedCmUser, {}},
+         {features::kSegmentationPlatformTipsNotificationsRanker, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -682,6 +683,18 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestFedCmUserModel) {
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>(1, "FedCmUserLoud"));
+}
+
+TEST_F(SegmentationPlatformServiceFactoryTest, TestTipsNotificationsRanker) {
+  InitService();
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  ExpectGetClassificationResult(
+      segmentation_platform::kTipsNotificationsRankerKey, prediction_options,
+      nullptr,
+      /*expected_status=*/PredictionStatus::kSucceeded,
+      /*expected_labels=*/std::nullopt);
 }
 
 }  // namespace
