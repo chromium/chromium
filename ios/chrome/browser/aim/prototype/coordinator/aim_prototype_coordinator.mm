@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_entrypoint.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_mediator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -81,10 +82,13 @@
           VariationsClientServiceFactory::GetForProfile(self.profile),
           /*send_lns_surface=*/false);
 
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
   _mediator = [[AIMPrototypeMediator alloc]
       initWithUrlLoadingBrowserAgent:urlLoadingBrowserAgent
            composeboxQueryController:std::move(composeboxQueryController)
-                        webStateList:self.browser->GetWebStateList()];
+                        webStateList:self.browser->GetWebStateList()
+                       faviconLoader:faviconLoader];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;

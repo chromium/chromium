@@ -37,6 +37,9 @@ enum class AIMInputItemType {
 @property(nonatomic, assign, readonly) const base::UnguessableToken& token;
 // The preview image for this item.
 @property(nonatomic, strong) UIImage* previewImage;
+// The icon image for this item. Only set for kAIMInputItemTypeFile and
+// kAIMInputItemTypeTab types.
+@property(nonatomic, strong) UIImage* leadingIconImage;
 // The title for this item.
 @property(nonatomic, copy) NSString* title;
 // The subtitle for this item.

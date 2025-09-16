@@ -18,6 +18,7 @@
 class ComposeboxQueryControllerIOS;
 @class AIMPrototypeMediator;
 class UrlLoadingBrowserAgent;
+class FaviconLoader;
 class GURL;
 class WebStateList;
 
@@ -40,7 +41,8 @@ class WebStateList;
                      composeboxQueryController:
                          (std::unique_ptr<ComposeboxQueryControllerIOS>)
                              composeboxQueryController
-                                  webStateList:(WebStateList*)webStateList;
+                                  webStateList:(WebStateList*)webStateList
+                                 faviconLoader:(FaviconLoader*)faviconLoader;
 
 - (void)disconnect;
 

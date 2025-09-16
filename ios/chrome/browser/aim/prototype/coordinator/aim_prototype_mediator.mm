@@ -27,16 +27,19 @@
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/aim/prototype/public/features.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/NSString+Chromium.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "ui/base/page_transition_types.h"
+#import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
 
 namespace {
@@ -124,6 +127,8 @@ CreateInputDataFromAnnotatedPageContent(
   raw_ptr<WebStateList> _webStateList;
   // A page context wrapper used to extract annotated page content (APC).
   PageContextWrapper* _pageContextWrapper;
+  // The favicon loader.
+  raw_ptr<FaviconLoader> _faviconLoader;
 }
 
 - (instancetype)initWithUrlLoadingBrowserAgent:
@@ -131,7 +136,8 @@ CreateInputDataFromAnnotatedPageContent(
                      composeboxQueryController:
                          (std::unique_ptr<ComposeboxQueryControllerIOS>)
                              composeboxQueryController
-                                  webStateList:(WebStateList*)webStateList {
+                                  webStateList:(WebStateList*)webStateList
+                                 faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super init];
   if (self) {
     _items = [NSMutableArray array];
@@ -142,6 +148,7 @@ CreateInputDataFromAnnotatedPageContent(
             self, _composeboxQueryController.get());
     _composeboxQueryController->NotifySessionStarted();
     _webStateList = webStateList;
+    _faviconLoader = faviconLoader;
   }
   return self;
 }
@@ -149,6 +156,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)disconnect {
   _composeboxQueryController->NotifySessionAbandoned();
   _urlLoadingBrowserAgent = nullptr;
+  _faviconLoader = nullptr;
   _composeboxQueryController.reset();
   _composeboxObserverBridge.reset();
 }
@@ -313,6 +321,21 @@ CreateInputDataFromAnnotatedPageContent(
   }
 }
 
+// Handles the loaded favicon `image` for the item with the given `token`.
+- (void)didLoadFaviconIcon:(UIImage*)faviconImage
+          forItemWithToken:(const base::UnguessableToken&)token {
+  AIMInputItem* item = [self itemForToken:token];
+  if (!item) {
+    return;
+  }
+
+  // Update the item's leading icon with the latest fetched favicon.
+  if (faviconImage && faviconImage != item.leadingIconImage) {
+    item.leadingIconImage = faviconImage;
+    [self.consumer updateState:item.state forItemWithToken:item.token];
+  }
+}
+
 // Handles the loaded full `image` for the item with the given `token`.
 - (void)didLoadFullImage:(UIImage*)image
         forItemWithToken:(const base::UnguessableToken&)token {
@@ -437,6 +460,19 @@ CreateInputDataFromAnnotatedPageContent(
           webState);
 
   __weak __typeof(self) weakSelf = self;
+
+  /// Based on the favicon loader API, this callback could be called twice.
+  auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
+    if (attributes.faviconImage) {
+      [weakSelf didLoadFaviconIcon:attributes.faviconImage
+                  forItemWithToken:token];
+    }
+  };
+
+  _faviconLoader->FaviconForPageUrl(
+      webState->GetVisibleURL(), gfx::kFaviconSize, gfx::kFaviconSize,
+      /*fallback_to_google_server=*/true, faviconLoadedBlock);
+
   SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
       ^(UIImage* image) {
         [weakSelf didRetrieveColorSnapshot:image

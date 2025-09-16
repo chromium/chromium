@@ -62,7 +62,7 @@ const CGFloat kPreviewImageSize = 40.0;
       _leadingIconImageView.image =
           DefaultSymbolWithPointSize(kDocSymbol, kLeadingIconSize);
     } else {
-      _leadingIconImageView.image = item.previewImage;
+      _leadingIconImageView.image = item.leadingIconImage;
     }
     _titleLabel.text = item.title;
     _subtitleLabel.text = item.subtitle;
