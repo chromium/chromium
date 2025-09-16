@@ -195,6 +195,12 @@ void GrabViewSnapshot(gfx::NativeView view,
     }
   }
 
+  // On macOS 26, the CGWindowList API is not supported for snapshots - in
+  // existing tests, no screenshot is returned when using the CGWindowList API.
+  if (base::mac::MacOSVersion() >= 26'00'00) {
+    api = SnapshotAPI::kNewAPI;
+  }
+
   if (@available(macOS 14.4, *)) {
     if (api == SnapshotAPI::kNewAPI) {
       GrabViewSnapshotScreenCaptureKitImpl(view, source_rect,
