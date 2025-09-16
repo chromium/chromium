@@ -32,12 +32,12 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
@@ -944,7 +944,7 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTestBase
   }
 
   const GURL kEd25519AppOriginUrl = GURL(
-      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+      base::StrCat({webapps::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                     kTestEd25519WebBundleId}));
 
   bool is_dev_mode_bundle_;

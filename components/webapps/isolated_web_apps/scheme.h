@@ -11,8 +11,6 @@ namespace webapps {
 
 // The isolated-app: scheme is used for Isolated Web Apps. A public explainer
 // can be found here: https://github.com/reillyeon/isolated-web-apps
-// TODO(crbug.com/431980377): Replace occurences of chrome::kIsolatedAppScheme
-// with webapps::kIsolatedAppScheme.
 inline constexpr char kIsolatedAppScheme[] = "isolated-app";
 inline constexpr char16_t kIsolatedAppSchemeUtf16[] = u"isolated-app";
 

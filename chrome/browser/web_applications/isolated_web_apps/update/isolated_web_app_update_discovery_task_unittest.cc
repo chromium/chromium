@@ -35,10 +35,10 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
@@ -151,7 +151,7 @@ class IsolatedWebAppUpdateDiscoveryTaskTest : public WebAppTest {
   UpdateChannel beta_update_channel_ = UpdateChannel::Create("beta").value();
 
   IsolatedWebAppUrlInfo dummy_url_info_ = *IsolatedWebAppUrlInfo::Create(GURL(
-      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+      base::StrCat({webapps::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                     test::GetDefaultEd25519WebBundleId().id(),
                     "/.well-known/_generated_install_page.html"})));
 };
