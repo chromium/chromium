@@ -507,9 +507,13 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
 
   if (mini_toolbar_) {
     // |mini_toolbar_| should be offset in the bottom right corner, overlapping
-    // the outline.
+    // the outline. Shrink the available space by corner radius to ensure we
+    // have space to draw it at the corners.
+    views::SizeBounds available_space(width, height);
+    available_space.Enlarge(-ContentsContainerOutline::kCornerRadius,
+                            -ContentsContainerOutline::kCornerRadius);
     gfx::Size mini_toolbar_size =
-        mini_toolbar_->GetPreferredSize(views::SizeBounds(width, height));
+        mini_toolbar_->GetPreferredSize(available_space);
     const int offset_x = width - mini_toolbar_size.width();
     const int offset_y = height - mini_toolbar_size.height();
     const gfx::Rect mini_toolbar_rect =
