@@ -62,19 +62,18 @@ void ArcAuthContext::Prepare(PrepareCallback callback) {
 
 std::unique_ptr<signin::AccessTokenFetcher>
 ArcAuthContext::CreateAccessTokenFetcher(
-    const std::string& consumer_name,
-    const signin::ScopeSet& scopes,
+    const signin::OAuthConsumerId consumer_id,
     signin::AccessTokenFetcher::TokenCallback callback) {
   DCHECK(identity_manager_->HasAccountWithRefreshToken(account_id_));
   return identity_manager_->CreateAccessTokenFetcherForAccount(
-      account_id_, consumer_name, scopes, std::move(callback),
+      account_id_, consumer_id, std::move(callback),
       signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
 void ArcAuthContext::RemoveAccessTokenFromCache(
-    const signin::ScopeSet& scopes,
+    const signin::OAuthConsumerId consumer_id,
     const std::string& access_token) {
-  identity_manager_->RemoveAccessTokenFromCache(account_id_, scopes,
+  identity_manager_->RemoveAccessTokenFromCache(account_id_, consumer_id,
                                                 access_token);
 }
 

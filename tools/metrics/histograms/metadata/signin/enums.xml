@@ -743,6 +743,7 @@ chromium-metrics-reviews@google.com.
   <int value="52" label="Promotion Eligibility Checker"/>
   <int value="53" label="Password Manager Leak Detection"/>
   <int value="54" label="Android Management Client"/>
+  <int value="55" label="Arc Background Auth Code Fetcher"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

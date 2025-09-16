@@ -67,7 +67,8 @@ enum class OAuthConsumerId {
   kPromotionEligibilityChecker = 52,
   kPasswordManagerLeakDetection = 53,
   kAndroidManagementClient = 54,
-  kMaxValue = kAndroidManagementClient,
+  kArcBackgroundAuthCodeFetcher = 55,
+  kMaxValue = kArcBackgroundAuthCodeFetcher,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

@@ -82,6 +82,8 @@ constexpr char kPromotionEligibilityCheckerName[] =
 constexpr char kPasswordManagerLeakDetectionName[] =
     "password_manager_leak_detection";
 constexpr char kAndroidManagementClientName[] = "android_management_client";
+constexpr char kArcBackgroundAuthCodeFetcherName[] =
+    "arc_background_auth_code_fetcher";
 
 }  // namespace
 
@@ -344,6 +346,10 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
           /*name=*/kAndroidManagementClientName,
           /*scopes=*/{GaiaConstants::kDeviceManagementServiceOAuth,
                       GaiaConstants::kGoogleUserInfoEmail});
+    case OAuthConsumerId::kArcBackgroundAuthCodeFetcher:
+      return OAuthConsumer(
+          /*name=*/kArcBackgroundAuthCodeFetcherName,
+          /*scopes=*/{GaiaConstants::kOAuth1LoginScope});
   }
   NOTREACHED();
 }
