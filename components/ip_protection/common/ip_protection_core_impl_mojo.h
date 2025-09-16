@@ -63,6 +63,11 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
   void IsIpProtectionEnabledForTesting(
       ip_protection::mojom::CoreControl::IsIpProtectionEnabledForTestingCallback
           callback) override;
+  void GetAuthTokenForTesting(
+      ProxyLayer proxy_layer,
+      const std::string& geo_id,
+      ip_protection::mojom::CoreControl::GetAuthTokenForTestingCallback
+          callback) override;
 
  private:
   IpProtectionCoreImplMojo(

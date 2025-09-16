@@ -211,6 +211,15 @@ void IpProtectionCoreImplMojo::IsIpProtectionEnabledForTesting(
   std::move(callback).Run(is_ip_protection_enabled());
 }
 
+void IpProtectionCoreImplMojo::GetAuthTokenForTesting(
+    ProxyLayer proxy_layer,
+    const std::string& geo_id,
+    ip_protection::mojom::CoreControl::GetAuthTokenForTestingCallback
+        callback) {
+  std::move(callback).Run(
+      IpProtectionCoreImpl::GetAuthTokenForTesting(proxy_layer, geo_id));
+}
+
 void IpProtectionCoreImplMojo::OnIpProtectionConfigAvailableForTesting(
     VerifyIpProtectionCoreHostForTestingCallback callback) {
   auto* ipp_token_manager_impl = static_cast<IpProtectionTokenManagerImpl*>(

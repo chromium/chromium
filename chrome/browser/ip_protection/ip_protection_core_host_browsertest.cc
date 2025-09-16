@@ -13,10 +13,10 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -306,6 +306,64 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
   ASSERT_TRUE(second_attempt_result);
   EXPECT_EQ(second_attempt_result->token, token);
   EXPECT_LT(second_attempt_result->expiration, expiration);
+}
+
+IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
+                       ReturnAndRecycleTokens) {
+  IpProtectionCoreHost* host =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  auto* prev_control = host->last_remote_for_testing();
+  ASSERT_TRUE(host);
+  const GeoHint geo_hint = {.country_code = "US",
+                            .iso_region = "US-CA",
+                            .city_name = "MOUNTAIN VIEW"};
+  const std::string token = "orphan-token";
+
+  // Start a first Incognito session, populate the token cache, and then
+  // destroy the session. The interceptor is scoped to this session and will be
+  // destroyed with it, ensuring that the second session uses the recycled
+  // token.
+  {
+    Profile* incognito_profile =
+        GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    auto* incognito_ipp_control = host->last_remote_for_testing();
+    EXPECT_NE(incognito_ipp_control, prev_control);
+
+    base::Time expiration = base::Time::Now() + base::Hours(1);
+    auto interceptor = std::make_unique<IpProtectionCoreHostInterceptor>(
+        host, token, expiration, geo_hint);
+
+    base::test::TestFuture<std::optional<BlindSignedAuthToken>,
+                           std::optional<base::Time>>
+        future;
+    incognito_ipp_control->VerifyIpProtectionCoreHostForTesting(
+        future.GetCallback());
+    ASSERT_TRUE(future.Get<0>().has_value());
+
+    // Finish the first Incognito session, and flush the pending RecycleTokens
+    // call from the network service.
+    GetProfile()->DestroyOffTheRecordProfile(incognito_profile);
+    host->receivers_for_testing().FlushForTesting();
+  }
+
+  // Start a second Incognito session.
+  Profile* incognito_profile =
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  auto* incognito_ipp_control = host->last_remote_for_testing();
+
+  // Verify that the orphaned token from the first session is now in the second
+  // session's token cache.
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> get_token_future;
+  incognito_ipp_control->GetAuthTokenForTesting(
+      ip_protection::ProxyLayer::kProxyA,
+      ip_protection::GetGeoIdFromGeoHint(geo_hint),
+      get_token_future.GetCallback());
+  auto cached_token = get_token_future.Get();
+  ASSERT_TRUE(cached_token.has_value());
+  EXPECT_EQ(cached_token->token, token);
+
+  // Clean up the second incognito profile.
+  GetProfile()->DestroyOffTheRecordProfile(incognito_profile);
 }
 
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,

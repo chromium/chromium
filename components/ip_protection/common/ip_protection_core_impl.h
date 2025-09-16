@@ -85,6 +85,9 @@ class IpProtectionCoreImpl
   IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
       ProxyLayer proxy_layer);
   IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting();
+  std::optional<BlindSignedAuthToken> GetAuthTokenForTesting(
+      ProxyLayer proxy_layer,
+      const std::string& geo_id);
 
   std::optional<std::string> GetProbabilisticRevealToken(
       const GURL& url,
