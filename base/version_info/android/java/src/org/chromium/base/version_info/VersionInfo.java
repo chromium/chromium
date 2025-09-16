@@ -48,6 +48,22 @@ public class VersionInfo {
     }
 
     /**
+     * Returns a string equivalent of the current channel, independent of whether the build
+     * is branded or not and without any additional modifiers.
+     * @return The channel string.
+     */
+    public static String getChannelString() {
+        // This is called by internal clients to get info about the Chrome build channel.
+        return switch (VersionConstants.CHANNEL) {
+            case Channel.STABLE -> "stable";
+            case Channel.BETA -> "beta";
+            case Channel.DEV -> "dev";
+            case Channel.CANARY -> "canary";
+            default -> "default";
+        };
+    }
+
+    /**
      * @return Whether this is an official (i.e. non-development) build.
      */
     public static boolean isOfficialBuild() {
