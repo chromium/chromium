@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2"
-    units="ms" expires_after="2025-10-26">
+    units="ms" expires_after="2026-03-15">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1205,7 +1205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.CreationTime" units="ms"
-    expires_after="2025-10-26">
+    expires_after="2026-03-15">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1226,7 +1226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.MigrationTime" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2026-03-15">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1295,7 +1295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TimeFromConversionToReportSend" units="hours"
-    expires_after="2025-10-12">
+    expires_after="2026-03-15">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
