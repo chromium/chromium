@@ -44,6 +44,42 @@ namespace {
       });
 }
 
+// Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
+// scroll.
+GREYElementInteraction* ElementInteractionWithGreyMatcher(
+    id<GREYMatcher> matcher,
+    id<GREYMatcher> scrollViewMatcher) {
+  // Needs to scroll slowly to make sure to not miss a cell if it is not
+  // currently on the screen. It should not be bigger than the visible part
+  // of the collection view.
+  const CGFloat kPixelsToScroll = 300;
+  id<GREYAction> searchAction =
+      grey_scrollInDirection(kGREYDirectionDown, kPixelsToScroll);
+  return [[EarlGrey selectElementWithMatcher:matcher]
+         usingSearchAction:searchAction
+      onElementWithMatcher:scrollViewMatcher];
+}
+
+// Opens privacy safe browsing settings.
+void OpenPrivacySafeBrowsingSettings() {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
+  [ChromeEarlGreyUI
+      tapPrivacyMenuButton:ButtonWithAccessibilityLabelId(
+                               IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE)];
+}
+
+// Opens "i" button for a specific cell identifier.
+void PressInfoButtonForCell(NSString* cellId) {
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_ancestor(grey_accessibilityID(cellId)),
+                                   grey_accessibilityID(
+                                       kTableViewCellInfoButtonViewId),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+}
+
 }  // namespace
 
 // Integration tests using the Privacy Safe Browsing settings screen.
@@ -79,11 +115,11 @@ namespace {
 }
 
 - (void)testOpenPrivacySafeBrowsingSettings {
-  [self openPrivacySafeBrowsingSettings];
+  OpenPrivacySafeBrowsingSettings();
 }
 
 - (void)testEachSafeBrowsingOption {
-  [self openPrivacySafeBrowsingSettings];
+  OpenPrivacySafeBrowsingSettings();
 
   // Presses each of the Safe Browsing options.
   [[EarlGrey
@@ -124,13 +160,13 @@ namespace {
 }
 
 - (void)testPrivacySafeBrowsingDoneButton {
-  [self openPrivacySafeBrowsingSettings];
+  OpenPrivacySafeBrowsingSettings();
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 }
 
 - (void)testPrivacySafeBrowsingSwipeDown {
-  [self openPrivacySafeBrowsingSettings];
+  OpenPrivacySafeBrowsingSettings();
 
   // Check that Privacy Safe Browsing TableView is presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -159,7 +195,7 @@ namespace {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
-  [self openPrivacySafeBrowsingSettings];
+  OpenPrivacySafeBrowsingSettings();
 
   // Open privacy safe browsing settings on second window and select enhanced
   // protection.
@@ -167,7 +203,7 @@ namespace {
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
-  [self openPrivacySafeBrowsingSettings];
+  OpenPrivacySafeBrowsingSettings();
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kSettingsSafeBrowsingEnhancedProtectionCellId)]
@@ -191,96 +227,70 @@ namespace {
 // Tests that Enhanced Protection page can be navigated to and populated
 // correctly.
 - (void)testEnhancedProtectionSettingsPage {
-  [self openPrivacySafeBrowsingSettings];
-  [self pressInfoButtonForCell:kSettingsSafeBrowsingEnhancedProtectionCellId];
+  OpenPrivacySafeBrowsingSettings();
+  PressInfoButtonForCell(kSettingsSafeBrowsingEnhancedProtectionCellId);
 
   // Check that headers and footer exist.
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(
-                 kSafeBrowsingEnhancedProtectionTableViewFirstHeaderId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(
+          kSafeBrowsingEnhancedProtectionTableViewFirstHeaderId),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(
-                 kSafeBrowsingEnhancedProtectionTableViewSecondHeaderId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(
+          kSafeBrowsingEnhancedProtectionTableViewSecondHeaderId),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
 
   // Check that rows exist
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(kSafeBrowsingEnhancedProtectionDataCellId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionDataCellId),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(kSafeBrowsingEnhancedProtectionDownloadCellId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionDownloadCellId),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(kSafeBrowsingEnhancedProtectionLinkCellId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionLinkCellId),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
 
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(kSafeBrowsingEnhancedProtectionAccountCellId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionAccountCellId),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
-  [[self
-      elementInteractionWithGreyMatcher:
-          grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewFooterId)
-                      scrollViewMatcher:
-                          grey_accessibilityID(
-                              kSafeBrowsingEnhancedProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewFooterId),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
 
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(kSafeBrowsingEnhancedProtectionGIconCellId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionGIconCellId),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(kSafeBrowsingEnhancedProtectionGlobeCellId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionGlobeCellId),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(kSafeBrowsingEnhancedProtectionKeyCellId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionKeyCellId),
+      grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
 }
 
 // Tests that Standard Protection page can be navigated to and populated
 // correctly.
 - (void)testStandardProtectionSettingsPage {
-  [self openPrivacySafeBrowsingSettings];
-  [self pressInfoButtonForCell:kSettingsSafeBrowsingStandardProtectionCellId];
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(
-                 kSafeBrowsingStandardProtectionPasswordLeakCellId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingStandardProtectionTableViewId)]
+  OpenPrivacySafeBrowsingSettings();
+  PressInfoButtonForCell(kSettingsSafeBrowsingStandardProtectionCellId);
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingStandardProtectionPasswordLeakCellId),
+      grey_accessibilityID(kSafeBrowsingStandardProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
-  [[self elementInteractionWithGreyMatcher:
-             grey_accessibilityID(kSafeBrowsingExtendedReportingCellId)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingStandardProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingExtendedReportingCellId),
+      grey_accessibilityID(kSafeBrowsingStandardProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
 }
 
@@ -298,7 +308,7 @@ namespace {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   // Open Privacy Safe Browsing settings.
-  [self openPrivacySafeBrowsingSettings];
+  OpenPrivacySafeBrowsingSettings();
 
   // Check that Safe Browsing is enabled, and toggle it off.
   GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnhanced],
@@ -308,35 +318,31 @@ namespace {
   [self turnOffSafeBrowsing];
 
   // Open Standard Protection menu.
-  [self pressInfoButtonForCell:kSettingsSafeBrowsingStandardProtectionCellId];
+  PressInfoButtonForCell(kSettingsSafeBrowsingStandardProtectionCellId);
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kSafeBrowsingStandardProtectionTableViewId)]
       assertWithMatcher:grey_notNil()];
 
   // Check that the password leak check toggle is both toggled off and disabled.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::TableViewSwitchCell(
-                 kSafeBrowsingStandardProtectionPasswordLeakCellId,
-                 /*is_toggled_on=*/NO,
-                 /*enabled=*/NO)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingStandardProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      chrome_test_util::TableViewSwitchCell(
+          kSafeBrowsingStandardProtectionPasswordLeakCellId,
+          /*is_toggled_on=*/NO,
+          /*enabled=*/NO),
+      grey_accessibilityID(kSafeBrowsingStandardProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
 
   // Toggle Safe Browsing on.
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnabled];
 
   // Check that the password leak check toggle is enabled, and toggle it off.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::TableViewSwitchCell(
-                 kSafeBrowsingStandardProtectionPasswordLeakCellId,
-                 /*is_toggled_on=*/YES,
-                 /*enabled=*/YES)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingStandardProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      chrome_test_util::TableViewSwitchCell(
+          kSafeBrowsingStandardProtectionPasswordLeakCellId,
+          /*is_toggled_on=*/YES,
+          /*enabled=*/YES),
+      grey_accessibilityID(kSafeBrowsingStandardProtectionTableViewId))
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
   // Check the underlying pref value.
@@ -346,14 +352,12 @@ namespace {
       @"Failed to toggle-off password leak checks");
 
   // Toggle password leak check detection back on.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::TableViewSwitchCell(
-                 kSafeBrowsingStandardProtectionPasswordLeakCellId,
-                 /*is_toggled_on=*/NO,
-                 /*enabled=*/YES)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingStandardProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      chrome_test_util::TableViewSwitchCell(
+          kSafeBrowsingStandardProtectionPasswordLeakCellId,
+          /*is_toggled_on=*/NO,
+          /*enabled=*/YES),
+      grey_accessibilityID(kSafeBrowsingStandardProtectionTableViewId))
       performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Check the underlying pref value.
@@ -374,7 +378,7 @@ namespace {
        forUserPref:password_manager::prefs::kPasswordLeakDetectionEnabled];
 
   // Open Privacy Safe Browsing settings.
-  [self openPrivacySafeBrowsingSettings];
+  OpenPrivacySafeBrowsingSettings();
 
   // Check that Safe Browsing is enabled, and toggle it off.
   GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnhanced],
@@ -384,31 +388,27 @@ namespace {
   [self turnOffSafeBrowsing];
 
   // Enter Standard Protection settings page.
-  [self pressInfoButtonForCell:kSettingsSafeBrowsingStandardProtectionCellId];
+  PressInfoButtonForCell(kSettingsSafeBrowsingStandardProtectionCellId);
 
   // Check that the password leak check toggle is both toggled off and disabled.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::TableViewSwitchCell(
-                 kSafeBrowsingStandardProtectionPasswordLeakCellId,
-                 /*is_toggled_on=*/NO,
-                 /*enabled=*/NO)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingStandardProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      chrome_test_util::TableViewSwitchCell(
+          kSafeBrowsingStandardProtectionPasswordLeakCellId,
+          /*is_toggled_on=*/NO,
+          /*enabled=*/NO),
+      grey_accessibilityID(kSafeBrowsingStandardProtectionTableViewId))
       assertWithMatcher:grey_notNil()];
 
   // Toggle Safe Browsing on.
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnabled];
 
   // Check that the password leak check toggle is enabled, and toggle it off.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::TableViewSwitchCell(
-                 kSafeBrowsingStandardProtectionPasswordLeakCellId,
-                 /*is_toggled_on=*/YES,
-                 /*enabled=*/YES)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingStandardProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      chrome_test_util::TableViewSwitchCell(
+          kSafeBrowsingStandardProtectionPasswordLeakCellId,
+          /*is_toggled_on=*/YES,
+          /*enabled=*/YES),
+      grey_accessibilityID(kSafeBrowsingStandardProtectionTableViewId))
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
   // Check the underlying pref value.
@@ -418,14 +418,12 @@ namespace {
       @"Failed to toggle-off password leak checks");
 
   // Toggle password leak check detection back on.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::TableViewSwitchCell(
-                 kSafeBrowsingStandardProtectionPasswordLeakCellId,
-                 /*is_toggled_on=*/NO,
-                 /*enabled=*/YES)
-                         scrollViewMatcher:
-                             grey_accessibilityID(
-                                 kSafeBrowsingStandardProtectionTableViewId)]
+  [ElementInteractionWithGreyMatcher(
+      chrome_test_util::TableViewSwitchCell(
+          kSafeBrowsingStandardProtectionPasswordLeakCellId,
+          /*is_toggled_on=*/NO,
+          /*enabled=*/YES),
+      grey_accessibilityID(kSafeBrowsingStandardProtectionTableViewId))
       performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Check the underlying pref value.
@@ -436,26 +434,6 @@ namespace {
 }
 
 #pragma mark - Helpers
-
-// Opens privacy safe browsing settings.
-- (void)openPrivacySafeBrowsingSettings {
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
-  [ChromeEarlGreyUI
-      tapPrivacyMenuButton:ButtonWithAccessibilityLabelId(
-                               IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE)];
-}
-
-// Opens "i" button for a specific cell identifier.
-- (void)pressInfoButtonForCell:(NSString*)cellId {
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_ancestor(grey_accessibilityID(cellId)),
-                                   grey_accessibilityID(
-                                       kTableViewCellInfoButtonViewId),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-}
 
 // Taps "No Protection" and then the "Turn Off" Button on pop-up.
 - (void)turnOffSafeBrowsing {
@@ -476,20 +454,48 @@ namespace {
                   @"Failed to toggle-off Standard Safe Browsing");
 }
 
-// Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
-// scroll.
-- (GREYElementInteraction*)
-    elementInteractionWithGreyMatcher:(id<GREYMatcher>)matcher
-                    scrollViewMatcher:(id<GREYMatcher>)scrollViewMatcher {
-  // Needs to scroll slowly to make sure to not miss a cell if it is not
-  // currently on the screen. It should not be bigger than the visible part
-  // of the collection view.
-  const CGFloat kPixelsToScroll = 300;
-  id<GREYAction> searchAction =
-      grey_scrollInDirection(kGREYDirectionDown, kPixelsToScroll);
-  return [[EarlGrey selectElementWithMatcher:matcher]
-         usingSearchAction:searchAction
-      onElementWithMatcher:scrollViewMatcher];
+@end
+
+@interface SafeBrowsingExtendedReportingDeprecationDisabled : ChromeTestCase
+@end
+@implementation SafeBrowsingExtendedReportingDeprecationDisabled
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(
+      safe_browsing::kExtendedReportingRemovePrefDependencyIos);
+  // TODO (crbug.com/1285974) Remove when bug is resolved.
+  config.features_disabled.push_back(kNewOverflowMenu);
+  return config;
 }
 
+- (void)testSBERCellIsPresent {
+  OpenPrivacySafeBrowsingSettings();
+  PressInfoButtonForCell(kSettingsSafeBrowsingStandardProtectionCellId);
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingExtendedReportingCellId),
+      grey_accessibilityID(kSafeBrowsingStandardProtectionTableViewId))
+      assertWithMatcher:grey_notNil()];
+}
+@end
+
+@interface SafeBrowsingExtendedReportingDeprecationEnabled : ChromeTestCase
+@end
+@implementation SafeBrowsingExtendedReportingDeprecationEnabled
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      safe_browsing::kExtendedReportingRemovePrefDependencyIos);
+  // TODO (crbug.com/1285974) Remove when bug is resolved.
+  config.features_disabled.push_back(kNewOverflowMenu);
+  return config;
+}
+
+- (void)testSBERCellIsRemoved {
+  OpenPrivacySafeBrowsingSettings();
+  PressInfoButtonForCell(kSettingsSafeBrowsingStandardProtectionCellId);
+  [ElementInteractionWithGreyMatcher(
+      grey_accessibilityID(kSafeBrowsingExtendedReportingCellId),
+      grey_accessibilityID(kSafeBrowsingStandardProtectionTableViewId))
+      assertWithMatcher:grey_nil()];
+}
 @end

@@ -171,6 +171,10 @@ BASE_FEATURE(kEsbAsASyncedSetting,
 BASE_FEATURE(kExtendedReportingRemovePrefDependency,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtendedReportingRemovePrefDependencyIos,
+             "ExtendedReportingRemovePrefDependencyIos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionTelemetryConfiguration,
              "SafeBrowsingExtensionTelemetryConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);

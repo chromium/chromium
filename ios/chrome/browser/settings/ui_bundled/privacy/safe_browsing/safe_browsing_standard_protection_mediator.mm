@@ -125,10 +125,12 @@ const CGFloat kSymbolSize = 20;
         initWithPrefService:userPrefService
                    prefName:prefs::kSafeBrowsingEnabled];
     _safeBrowsingStandardProtectionPreference.observer = self;
-    _safeBrowsingExtendedReportingPreference = [[PrefBackedBoolean alloc]
-        initWithPrefService:userPrefService
-                   prefName:prefs::kSafeBrowsingScoutReportingEnabled];
-    _safeBrowsingExtendedReportingPreference.observer = self;
+    if (!safe_browsing::IsExtendedReportingDeprecated()) {
+      _safeBrowsingExtendedReportingPreference = [[PrefBackedBoolean alloc]
+          initWithPrefService:userPrefService
+                     prefName:prefs::kSafeBrowsingScoutReportingEnabled];
+      _safeBrowsingExtendedReportingPreference.observer = self;
+    }
     _passwordLeakCheckPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:password_manager::prefs::
@@ -142,7 +144,9 @@ const CGFloat kSymbolSize = 20;
   _identityManagerObserver = nil;
   [_safeBrowsingEnhancedProtectionPreference stop];
   [_safeBrowsingStandardProtectionPreference stop];
-  [_safeBrowsingExtendedReportingPreference stop];
+  if (!safe_browsing::IsExtendedReportingDeprecated()) {
+    [_safeBrowsingExtendedReportingPreference stop];
+  }
   [_passwordLeakCheckPreference stop];
 }
 
@@ -151,32 +155,34 @@ const CGFloat kSymbolSize = 20;
 - (ItemArray)safeBrowsingStandardProtectionItems {
   if (!_safeBrowsingStandardProtectionItems) {
     NSMutableArray* items = [NSMutableArray array];
-    if (self.userPrefService->IsManagedPreference(
-            prefs::kSafeBrowsingEnabled)) {
-      TableViewInfoButtonItem* safeBrowsingManagedExtendedReportingItem = [self
-          tableViewInfoButtonItemType:
-              ItemTypeSafeBrowsingManagedExtendedReporting
-                         textStringID:
-                             IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE
-                       detailStringID:
-                           IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_SUMMARY
-                               status:
-                                   self.safeBrowsingStandardProtectionPreference
-                                       .value];
-      [items addObject:safeBrowsingManagedExtendedReportingItem];
-    } else {
-      SyncSwitchItem* safeBrowsingExtendedReportingItem = [self
-          switchItemWithItemType:ItemTypeSafeBrowsingExtendedReporting
-                    textStringID:
-                        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE
-                  detailStringID:
-                      IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_SUMMARY
-                    defaultState:safe_browsing::IsExtendedReportingEnabled(
-                                     *self.userPrefService)
-                         enabled:self.inSafeBrowsingStandardProtection];
-      safeBrowsingExtendedReportingItem.accessibilityIdentifier =
-          kSafeBrowsingExtendedReportingCellId;
-      [items addObject:safeBrowsingExtendedReportingItem];
+    if (!safe_browsing::IsExtendedReportingDeprecated()) {
+      if (self.userPrefService->IsManagedPreference(
+              prefs::kSafeBrowsingEnabled)) {
+        TableViewInfoButtonItem* safeBrowsingManagedExtendedReportingItem = [self
+            tableViewInfoButtonItemType:
+                ItemTypeSafeBrowsingManagedExtendedReporting
+                           textStringID:
+                               IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE
+                         detailStringID:
+                             IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_SUMMARY
+                                 status:
+                                     self.safeBrowsingStandardProtectionPreference
+                                         .value];
+        [items addObject:safeBrowsingManagedExtendedReportingItem];
+      } else {
+        SyncSwitchItem* safeBrowsingExtendedReportingItem = [self
+            switchItemWithItemType:ItemTypeSafeBrowsingExtendedReporting
+                      textStringID:
+                          IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE
+                    detailStringID:
+                        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_SUMMARY
+                      defaultState:safe_browsing::IsExtendedReportingEnabled(
+                                       *self.userPrefService)
+                           enabled:self.inSafeBrowsingStandardProtection];
+        safeBrowsingExtendedReportingItem.accessibilityIdentifier =
+            kSafeBrowsingExtendedReportingCellId;
+        [items addObject:safeBrowsingExtendedReportingItem];
+      }
     }
     [items addObject:self.passwordLeakCheckItem];
 

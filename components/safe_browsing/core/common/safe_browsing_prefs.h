@@ -557,6 +557,9 @@ bool MatchesPasswordProtectionChangePasswordURL(const GURL& url,
 // Helper function to match a |target_url| against |url_list|.
 bool MatchesURLList(const GURL& target_url, const std::vector<GURL>& url_list);
 
+// Helper function to check whether Extended Reporting is deprecated.
+bool IsExtendedReportingDeprecated();
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFE_BROWSING_PREFS_H_
