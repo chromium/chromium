@@ -189,9 +189,16 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
   CHECK_LE(static_cast<uint32_t>((width * plane.pixel_stride).ValueOrDie()),
            static_cast<uint32_t>(plane.row_stride.ValueOrDie()));
   CHECK_LE(static_cast<uint32_t>(offset.ValueOrDie()), span.size_bytes());
-  CHECK_LE(
-      static_cast<uint32_t>((offset + height * plane.row_stride).ValueOrDie()),
-      span.size());
+  // In the case that we have a crop rectangle, width will definitely be less
+  // than row_stride, so only look at the number of actual pixels for the last
+  // row. Also, even if there is no crop, it's conceptually possible for
+  // row_stride to be larger than width*pixel_stride but for the buffer not to
+  // be large enough to include the difference between row_stride and
+  // width*pixel_stride at the end.
+  CHECK_LE(static_cast<uint32_t>((offset + (height - 1) * plane.row_stride +
+                                  width * plane.pixel_stride)
+                                     .ValueOrDie()),
+           span.size_bytes());
 
   // TODO(crbug.com/352187279): Extract to `SharedMemory` instead of copying if
   // possible, or, use `ScreenCaptureFrameQueue` and `ResolutionTracker` to
