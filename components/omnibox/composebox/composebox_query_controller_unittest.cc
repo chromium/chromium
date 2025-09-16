@@ -768,6 +768,7 @@ TEST_F(ComposeboxQueryControllerTest,
   input_data->context_input = std::vector<lens::ContextualInput>();
   input_data->page_url = page_url;
   input_data->page_title = page_title;
+  input_data->pdf_current_page = 1;
   input_data->context_input->push_back(
       lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
   SkBitmap bitmap;
@@ -838,6 +839,10 @@ TEST_F(ComposeboxQueryControllerTest,
                 .image_metadata()
                 .height(),
             100);
+  EXPECT_EQ(viewport_upload_request->objects_request()
+                .viewport_request_context()
+                .pdf_page_number(),
+            1);
   // Check that the vsrid matches that for a pdf upload with viewport.
   EXPECT_EQ(controller()
                 .GetFileInfo(file_token)
