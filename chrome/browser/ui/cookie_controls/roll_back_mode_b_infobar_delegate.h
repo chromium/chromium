@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_COOKIE_CONTROLS_ROLL_BACK_MODE_B_INFOBAR_DELEGATE_H_
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
 
 namespace infobars {
 class ContentInfoBarManager;
@@ -18,7 +19,11 @@ class RollBackModeBInfoBarDelegate : public ConfirmInfoBarDelegate {
   RollBackModeBInfoBarDelegate& operator=(const RollBackModeBInfoBarDelegate&) =
       delete;
 
-  static void Create(infobars::ContentInfoBarManager* infobar_manager);
+  // Creates a `RollBackModeBInfoBarDelegate` and adds it to `infobar_manager`.
+  // Returns a pointer to the infobar if it was successfully added (or nullptr
+  // if not).
+  static infobars::InfoBar* Create(
+      infobars::ContentInfoBarManager* infobar_manager);
 
  private:
   RollBackModeBInfoBarDelegate();

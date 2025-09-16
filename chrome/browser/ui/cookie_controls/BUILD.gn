@@ -9,7 +9,10 @@ source_set("cookie_controls") {
   public_deps = []
 
   if (!is_android) {
-    sources += [ "roll_back_mode_b_infobar_delegate.h" ]
+    sources += [
+      "roll_back_mode_b_infobar_controller.h",
+      "roll_back_mode_b_infobar_delegate.h",
+    ]
     public_deps += [
       "//base",
       "//chrome/browser/infobars",
@@ -23,12 +26,16 @@ source_set("impl") {
   deps = []
 
   if (!is_android) {
-    sources += [ "roll_back_mode_b_infobar_delegate.cc" ]
+    sources += [
+      "roll_back_mode_b_infobar_controller.cc",
+      "roll_back_mode_b_infobar_delegate.cc",
+    ]
     deps += [
       ":cookie_controls",
       "//base",
       "//chrome/common",
       "//components/infobars/content",
+      "//components/privacy_sandbox:tracking_protection_prefs",
       "//components/strings:components_strings",
       "//components/vector_icons",
       "//content/public/common",
@@ -58,10 +65,29 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    sources += [ "roll_back_mode_b_infobar_delegate_unittest.cc" ]
+    sources += [
+      "roll_back_mode_b_infobar_controller_unittest.cc",
+      "roll_back_mode_b_infobar_delegate_unittest.cc",
+    ]
     deps += [
       ":cookie_controls",
       "//components/infobars/core",
+      "//components/privacy_sandbox:tracking_protection_prefs",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "roll_back_mode_b_infobar_controller_browsertest.cc" ]
+    deps = [
+      "//chrome/browser",
+      "//chrome/test:test_support",
+      "//components/infobars/content",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:tracking_protection_prefs",
     ]
   }
 }

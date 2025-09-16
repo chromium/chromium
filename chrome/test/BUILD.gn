@@ -3980,6 +3980,7 @@ if (!is_android) {
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui:browser_tab_strip",
+      "//chrome/browser/ui/cookie_controls:browser_tests",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords/bubble_controllers",

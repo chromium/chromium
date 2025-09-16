@@ -14,9 +14,9 @@
 #include "ui/gfx/text_constants.h"
 
 // static
-void RollBackModeBInfoBarDelegate::Create(
+infobars::InfoBar* RollBackModeBInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
-  infobar_manager->AddInfoBar(
+  return infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new RollBackModeBInfoBarDelegate())));
 }

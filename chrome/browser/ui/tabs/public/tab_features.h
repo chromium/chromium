@@ -25,6 +25,7 @@ class PinnedTranslateActionListener;
 class Profile;
 class PwaInstallPageActionController;
 class ReadAnythingSidePanelController;
+class RollBackModeBInfoBarController;
 class SidePanelRegistry;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
@@ -437,6 +438,9 @@ class TabFeatures {
 
   std::unique_ptr<lens::TabContextualizationController>
       tab_contextualization_controller_;
+
+  std::unique_ptr<RollBackModeBInfoBarController>
+      roll_back_mode_b_infobar_controller_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
