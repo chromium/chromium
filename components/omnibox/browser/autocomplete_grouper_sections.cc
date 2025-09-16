@@ -649,9 +649,9 @@ DesktopComposeboxZpsSection::DesktopComposeboxZpsSection(
           max_suggestions,
           {
               Group(max_suggestions,
-                    {{omnibox::GROUP_MIA_RECOMMENDATIONS, max_aim_suggestions},
-                     {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA,
+                    {{omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
                       max_aim_suggestions},
+                     {omnibox::GROUP_MIA_RECOMMENDATIONS, max_aim_suggestions},
                      {omnibox::GROUP_CONTEXTUAL_SEARCH,
                       max_contextual_suggestions}}),
           },
