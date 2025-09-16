@@ -4753,7 +4753,7 @@
     },
     {
       name: "SvgEnableTextDecorationCssStyling",
-      status: "stable",
+      status: "experimental",
     },
     {
       // Enables loading of external SVG resource documents for the 'clip-path',
