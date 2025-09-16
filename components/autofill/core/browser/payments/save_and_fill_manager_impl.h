@@ -145,6 +145,9 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
 
   FillCardCallback fill_card_callback_;
 
+  // The supported card BIN ranges for card upload.
+  std::vector<std::pair<int, int>> supported_card_bin_ranges_;
+
   // Boolean value indicates whether the upload Save and Fill dialog has been
   // accepted.
   bool upload_save_and_fill_dialog_accepted_ = false;

@@ -251,6 +251,7 @@ void SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard(
       return;
     }
     upload_details_.context_token = context_token;
+    supported_card_bin_ranges_ = std::move(supported_card_bin_ranges);
     OfferUploadSaveAndFill(parsed_legal_message_lines);
   } else {
     // If the pre-flight call fails, fall back to offering local Save and
@@ -329,6 +330,30 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
       }
       PopulateCreditCardInfo(upload_details_.card,
                              user_provided_card_save_and_fill_details);
+      if (!supported_card_bin_ranges_.empty() &&
+          !payments::IsCreditCardNumberSupported(upload_details_.card.number(),
+                                                 supported_card_bin_ranges_)) {
+        // The card's BIN is not supported for upload save. Fallback to a local
+        // save.
+        autofill_metrics::LogCreditCardUploadRanLocalSaveFallbackMetric(
+            /*new_local_card_added=*/payments_autofill_client()
+                ->GetPaymentsDataManager()
+                .SaveCardLocallyIfNew(upload_details_.card));
+
+        payments_autofill_client()->HideCreditCardSaveAndFillDialog();
+
+        if (fill_card_callback_) {
+          std::move(fill_card_callback_).Run(upload_details_.card);
+        }
+        // Invoke feedback bubble. No callback needed (virtual card enrollment
+        // is not eligible for card saved via the Save and Fill flow).
+        payments_autofill_client()->CreditCardUploadCompleted(
+            PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+            /*on_confirmation_closed_callback=*/std::nullopt);
+
+        Reset();
+        return;
+      }
       // If risk data has already been loaded, send the request now. Otherwise,
       // continue to wait and let OnDidLoadRiskData handle it.
       if (!upload_details_.risk_data.empty()) {
@@ -408,6 +433,7 @@ void SaveAndFillManagerImpl::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   upload_details_ = payments::UploadCardRequestDetails();
   fill_card_callback_.Reset();
+  supported_card_bin_ranges_.clear();
   upload_save_and_fill_dialog_accepted_ = false;
   save_and_fill_suggestion_offered_ = false;
   save_and_fill_suggestion_selected_ = false;
