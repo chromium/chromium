@@ -985,8 +985,7 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
     }
   }
 
-  std::map<std::pair<DeviceInfo::FormFactor, DeviceInfo::OsType>, int>
-      device_count_by_type;
+  std::map<DeviceInfo::FormFactor, int> device_count_by_form_factor;
   for (const auto& [type, events] : relevant_events) {
     int max_overlapping = 0;
     int overlapping = 0;
@@ -995,13 +994,8 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
       DCHECK_LE(0, overlapping);
       max_overlapping = std::max(max_overlapping, overlapping);
     }
-    device_count_by_type[type] = max_overlapping;
     DCHECK_EQ(overlapping, 0);
-  }
-
-  std::map<DeviceInfo::FormFactor, int> device_count_by_form_factor;
-  for (const auto& [type, counts] : device_count_by_type) {
-    device_count_by_form_factor[type.first] += counts;
+    device_count_by_form_factor[type.first] += max_overlapping;
   }
 
   return device_count_by_form_factor;
