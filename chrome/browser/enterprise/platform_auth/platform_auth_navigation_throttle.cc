@@ -60,22 +60,14 @@ const char* PlatformAuthNavigationThrottle::GetNameForLogging() {
 content::NavigationThrottle::ThrottleCheckResult
 PlatformAuthNavigationThrottle::FetchHeaders() {
   fetch_headers_callback_ran_ = false;
-
-  // `PlatformAuthProviderManager` may be in the middle of an asynchronous state
-  // change, such as becoming disabled or updating its supported IdP origins, in
-  // which case the auth data fetch may still succeed.
-  if (!PlatformAuthProviderManager::GetInstance().IsEnabledFor(
-          navigation_handle()->GetURL())) {
-    return content::NavigationThrottle::PROCEED;
-  }
-
   PlatformAuthProviderManager::GetInstance().GetData(
       navigation_handle()->GetURL(),
       base::BindOnce(&PlatformAuthNavigationThrottle::FetchHeadersCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // If the header fetch callback already ran it likely means that headers could
-  // not be fetched and `PlatformAuthProviderManager::GetData()` returned
+  // not be fetched or the auth manager is not enabled for the current URL. In
+  // either case,`PlatformAuthProviderManager::GetData()` returned
   // synchronously, so no need to defer.
   if (fetch_headers_callback_ran_) {
     return content::NavigationThrottle::PROCEED;
@@ -87,6 +79,8 @@ PlatformAuthNavigationThrottle::FetchHeaders() {
 
 void PlatformAuthNavigationThrottle::FetchHeadersCallback(
     net::HttpRequestHeaders auth_headers) {
+  DCHECK(attached_headers_.empty());
+  attached_headers_.reserve(auth_headers.GetHeaderVector().size());
   net::HttpRequestHeaders::Iterator it(auth_headers);
   while (it.GetNext()) {
     attached_headers_.push_back(it.name());
