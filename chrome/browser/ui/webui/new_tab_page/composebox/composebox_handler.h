@@ -84,7 +84,6 @@ class ComposeboxHandler
       const std::optional<FileUploadErrorType>& error_type) override;
 
   // searchbox::mojom::PageHandler:
-  void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
   void ExecuteAction(uint8_t line,
                      uint8_t action_index,
                      const GURL& url,

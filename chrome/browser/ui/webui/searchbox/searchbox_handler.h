@@ -67,6 +67,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       uint8_t line,
       const GURL& url,
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
+  void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);

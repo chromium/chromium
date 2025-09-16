@@ -4,6 +4,7 @@
 
 import './composebox_match.js';
 
+import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -117,6 +118,13 @@ export class ComposeboxDropdownElement extends CrLitElement {
    */
   protected isLastMatch_(index: number): boolean {
     return index === this.result?.matches?.length! - 1;
+  }
+
+  protected computeAriaLabel_(match: AutocompleteMatch): string {
+    if (!match) {
+      return '';
+    }
+    return mojoString16ToString(match.a11yLabel);
   }
 }
 

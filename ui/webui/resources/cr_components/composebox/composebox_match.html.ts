@@ -19,6 +19,14 @@ export function getHtml(this: ComposeboxMatchElement) {
   <div id="textContainer">
     ${this.computeContents_()}
   </div>
+  <cr-icon-button id="remove" class="action-icon icon-clear"
+    aria-label="${this.computeRemoveButtonAriaLabel_()}"
+    @click="${this.onRemoveButtonClick_}"
+    @mousedown="${this.onRemoveButtonMouseDown_}"
+    title="${this.removeButtonTitle_}"
+    ?hidden="${!this.match.supportsDeletion}"
+    tabindex="2">
+  </cr-icon-button>
 </div>
   <!--_html_template_end_-->`;
   // clang-format on

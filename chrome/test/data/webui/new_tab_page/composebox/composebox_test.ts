@@ -838,6 +838,67 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
   });
 
+  test('delete button removes match', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    const matches = [
+      createSearchMatch(),
+      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16(''),
+          matches,
+          suggestionGroupsMap: {},
+        }));
+
+    assertTrue(await areMatchesShowing());
+
+    const matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
+        'ntp-composebox-match');
+    assertEquals(2, matchEls.length);
+    const matchEl = matchEls[0];
+    assertTrue(!!matchEl);
+
+    const matchIndex = 0;
+    const destinationUrl = {url: 'http://google.com'};
+    matchEl.matchIndex = matchIndex;
+    matchEl.match.destinationUrl = destinationUrl;
+
+    // By pressing 'Enter' on the button.
+    const keydownEvent = (new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      key: 'Enter',
+    }));
+    assertTrue(!!matchEl.$.remove);
+    matchEl.$.remove.dispatchEvent(keydownEvent);
+    assertTrue(keydownEvent.defaultPrevented);
+    const keydownArgs =
+        await searchboxHandler.whenCalled('deleteAutocompleteMatch');
+    await microtasksFinished();
+    assertEquals(matchIndex, keydownArgs[0]);
+    assertEquals(destinationUrl, keydownArgs[1]);
+    assertEquals(1, searchboxHandler.getCallCount('deleteAutocompleteMatch'));
+    // Pressing the 'Enter' button doesn't accidentally trigger navigation.
+    assertEquals(0, handler.getCallCount('submitQuery'));
+    searchboxHandler.reset();
+    handler.reset();
+
+    matchEl.$.remove.click();
+    const clickArgs =
+        await searchboxHandler.whenCalled('deleteAutocompleteMatch');
+    await microtasksFinished();
+    assertEquals(matchIndex, clickArgs[0]);
+    assertEquals(destinationUrl, clickArgs[1]);
+    assertEquals(1, searchboxHandler.getCallCount('deleteAutocompleteMatch'));
+    // Clicking the button doesn't accidentally trigger navigation.
+    assertEquals(0, handler.getCallCount('submitQuery'));
+  });
+
   suite('Context menu', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({

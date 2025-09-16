@@ -864,6 +864,17 @@ void SearchboxHandler::OnNavigationLikely(
   }
 }
 
+void SearchboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match || !match->SupportsDeletion()) {
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
+    return;
+  }
+  omnibox_controller()->StopAutocomplete(/*clear_result=*/false);
+  autocomplete_controller()->DeleteMatch(*match);
+}
+
 void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
                                        bool default_match_changed) {
   if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("ResultChanged")) {
