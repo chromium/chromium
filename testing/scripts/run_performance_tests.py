@@ -45,6 +45,7 @@ import json
 import logging
 import os
 import pathlib
+import shlex
 import shutil
 import sys
 import time
@@ -737,6 +738,7 @@ class CrossbenchTest(object):
       'speedometer_3.1': 'third_party/speedometer/v3.1',
       'speedometer_3.0': 'third_party/speedometer/v3.0',
       'speedometer_3': 'third_party/speedometer/v3.1',
+      'sp3': 'third_party/speedometer/v3.1',
       'speedometer_2.1': 'third_party/speedometer/v2.1',
       'speedometer_2.0': 'third_party/speedometer/v2.0',
       'speedometer_2': 'third_party/speedometer/v2.1',
@@ -776,6 +778,10 @@ class CrossbenchTest(object):
         default=False,
         help='Connect to test device over TCP (used on Android desktop)')
     parser.add_argument('--device', help='The device to connect to')
+    parser.add_argument(
+        '--extra-browser-args',
+        dest='extra_browser_args_as_string',
+        help='Additional arguments to pass to the browser when it starts')
     self.cb_options, self.options.passthrough_args = parser.parse_known_args(
         self.options.passthrough_args)
 
@@ -918,13 +924,14 @@ class CrossbenchTest(object):
     return default_args
 
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
-    # Note: benchmark_args must be at the end of the list, as it may
-    # contain '--' followed by arguments that are passed directly to Chrome.
-    # Such arguments must be at the end of crossbench command line to work.
+    extra_browser_args = []
+    if self.cb_options.extra_browser_args_as_string:
+      extra_browser_args = ['--'] + shlex.split(
+          self.cb_options.extra_browser_args_as_string, posix=(not IsWindows()))
     return (['vpython3', '-Xutf8'] + [self.options.executable] + [benchmark] +
             ['--env-validation=throw'] + [self.OUTDIR % working_dir] +
             [self.browser] + self.driver_path_arg + self.network + self.env +
-            self._get_default_args() + benchmark_args)
+            self._get_default_args() + benchmark_args + extra_browser_args)
 
   def execute_benchmark(self,
                         benchmark,

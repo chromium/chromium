@@ -422,7 +422,7 @@ def _speedometer3_a11y_crossbench(estimated_runtime=60, arguments=()):
   # benchmark as _speedometer3_crossbench, but since the benchmark name is used
   # as the dict key inside the shard maps, we can't pass 'speedometer_3' to
   # CrossbenchConfig constructor. We work around this by using alias 'sp3'.
-  arguments += ('--', '--force-renderer-accessibility')
+  arguments += ('--extra-browser-args=--force-renderer-accessibility', )
   return CrossbenchConfig('speedometer3.a11y.crossbench',
                           'sp3',
                           estimated_runtime=estimated_runtime,

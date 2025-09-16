@@ -39,8 +39,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -74,8 +73,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -115,8 +113,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -153,8 +150,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -197,8 +193,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -237,8 +232,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -288,8 +282,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -327,8 +320,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -358,8 +350,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -392,8 +383,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             },
             "motionmark_1.3": {
@@ -426,8 +416,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -465,8 +454,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             },
             "speedometer_2": {
@@ -497,8 +485,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -525,8 +512,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -553,8 +539,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -581,8 +566,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -609,8 +593,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -648,8 +631,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -679,8 +661,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
@@ -720,8 +701,7 @@
             "sp3": {
                 "display_name": "speedometer3.a11y.crossbench",
                 "arguments": [
-                    "--",
-                    "--force-renderer-accessibility"
+                    "--extra-browser-args=--force-renderer-accessibility"
                 ]
             }
         }
