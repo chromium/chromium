@@ -53,14 +53,12 @@ TEST_F(CrossPlatformPromosServiceTest, RecordActiveDay_AddNewDay) {
 }
 
 // Tests that multiple app foregrounds doesn't add duplicate days.
-// TODO(crbug.com/444748798): Re-enable this test.
-TEST_F(CrossPlatformPromosServiceTest,
-       DISABLED_RecordActiveDay_AddDuplicateDay) {
-  SimulateAppForegrounded();
+TEST_F(CrossPlatformPromosServiceTest, RecordActiveDay_AddDuplicateDay) {
   base::Time now = task_environment_.GetMockClock()->Now();
   base::Time tomorrow = (now + base::Days(1)).LocalMidnight();
-  base::TimeDelta remaining = (tomorrow - now);
-  task_environment_.FastForwardBy(remaining / 2);
+  task_environment_.FastForwardBy(tomorrow - now);
+  SimulateAppForegrounded();
+  task_environment_.FastForwardBy(base::Hours(1));
   SimulateAppForegrounded();
   const base::Value::List& active_days =
       prefs_->GetList(prefs::kCrossPlatformPromosActiveDays);
