@@ -85,9 +85,17 @@ class CssSelectorFragmentAnchorTest : public SimTest {
   }
 
   bool IsElementOutlined(const Element& element) {
-    const CSSValue* value =
+    const CSSValue* width_value =
         GetResolvedValue(CSSPropertyID::kOutlineWidth, element);
-    return "0px" != value->CssText();
+    const CSSValue* style_value =
+        GetResolvedValue(CSSPropertyID::kOutlineStyle, element);
+    // The resolved value of `outline-width` is now independent of the
+    // `outline-style`, so we need to check both properties.
+    //
+    // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2628447227
+    return width_value->CssText() != "0px" &&
+           style_value->CssText() != "none" &&
+           style_value->CssText() != "hidden";
   }
 
   const String CircleSVG() {

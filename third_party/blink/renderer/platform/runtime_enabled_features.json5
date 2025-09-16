@@ -1712,6 +1712,11 @@
       public: true,
       status: "experimental",
     },
+    {
+      // https://crbug.com/393631108
+      name: "DecoupleResolvedColumnRuleWidthFromStyle",
+      status: "experimental",
+    },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.
