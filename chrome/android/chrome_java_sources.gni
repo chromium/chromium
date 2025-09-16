@@ -920,6 +920,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettings.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/CctHandler.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/ChromeTrackingProtectionDelegate.java",
+  "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandbox3pcdRollbackMessageController.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyController.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarController.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarLimiter.java",

@@ -215,6 +215,7 @@ android_resources("java_resources") {
     "java/res/drawable-night/privacy_sandbox_interests_illustration.xml",
     "java/res/drawable-night/privacy_sandbox_notice_eea_illustration.xml",
     "java/res/drawable-night/privacy_sandbox_notice_logo.xml",
+    "java/res/drawable/cookie_24dp.xml",
     "java/res/drawable/fade_bottom.xml",
     "java/res/drawable/ic_arrow_back.xml",
     "java/res/drawable/ic_arrow_down.xml",

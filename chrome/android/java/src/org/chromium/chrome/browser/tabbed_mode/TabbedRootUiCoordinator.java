@@ -125,6 +125,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandbox3pcdRollbackMessageController;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
 import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
@@ -1674,6 +1675,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private boolean maybeShowRequiredPromptsAndPromos(Profile profile, boolean intentWithEffect) {
         if (ChoiceDialogCoordinator.maybeShow(
                 mActivity, mModalDialogManagerSupplier.get(), mActivityLifecycleDispatcher)) {
+            return true;
+        }
+
+        if (PrivacySandbox3pcdRollbackMessageController.maybeShow(
+                mActivity, profile, mMessageDispatcher)) {
             return true;
         }
 
