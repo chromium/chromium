@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
+import static org.chromium.components.permissions.PermissionsAndroidFeatureList.sApproximateGeolocationPermission;
 
 import android.content.ComponentName;
 
@@ -12,6 +13,7 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
 /**
@@ -32,7 +34,11 @@ public class LocationPermissionUpdater {
      * location permission to what it was before any client app was installed.
      */
     static void onClientAppUninstalled(Origin origin) {
-        InstalledWebappPermissionManager.resetStoredPermission(origin, getGeolocationType());
+        InstalledWebappPermissionManager.resetStoredPermission(
+                origin,
+                sApproximateGeolocationPermission.isEnabled()
+                        ? ContentSettingsType.GEOLOCATION_WITH_OPTIONS
+                        : ContentSettingsType.GEOLOCATION);
     }
 
     /**
