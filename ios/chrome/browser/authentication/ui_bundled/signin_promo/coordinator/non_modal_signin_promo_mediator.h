@@ -15,6 +15,11 @@ namespace feature_engagement {
 class Tracker;
 }
 
+namespace signin {
+// Returns whether it is possible to start a sign-in.
+bool SigninIsPossible(AuthenticationService* auth_service);
+}  // namespace signin
+
 enum class SignInPromoType;
 
 @class NonModalSignInPromoMediator;
