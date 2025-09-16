@@ -182,9 +182,10 @@ class OnTaskSessionManagerBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(https://crbug.com/445300633): Re-enable this test
 IN_PROC_BROWSER_TEST_F(
     OnTaskSessionManagerBrowserTest,
-    ShouldEnforceDomainNavRestrictionOnHomepageOnSessionStart) {
+    DISABLE_ShouldEnforceDomainNavRestrictionOnHomepageOnSessionStart) {
   content::TestNavigationObserver navigation_observer(
       (GURL(kChromeBocaAppUntrustedIndexURL)));
   navigation_observer.StartWatchingNewWebContents();
