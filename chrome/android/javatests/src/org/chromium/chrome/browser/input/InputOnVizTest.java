@@ -138,7 +138,6 @@ public class InputOnVizTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/442663835")
     public void handlesOverscrollsWithInputVizard() throws Exception {
         TabLoadObserver observer = new TabLoadObserver(mActivityTestRule.getActivityTab());
         observer.fullyLoadUrl(mLongHtmlTestPageUri);
