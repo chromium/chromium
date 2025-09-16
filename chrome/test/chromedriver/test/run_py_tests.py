@@ -8836,7 +8836,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     expected_titles = [''] + ['iframes' for _ in range(0, 10)]
     self.assertListEqual(expected_titles, sorted(titles))
 
-  def testInsecureSertificatesNotAllowed(self):
+  def testInsecureCertificatesNotAllowed(self):
     driver = self.CreateDriver(
         web_socket_url=True,
         accept_insecure_certs=False)
@@ -8849,7 +8849,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
                                 'net::ERR_CERT_AUTHORITY_INVALID'):
       self.navigateTo(conn, self.GetHttpsUrlForFile('/%s.html' % page_name))
 
-  def testInsecureSertificatesAllowed(self):
+  def testInsecureCertificatesAllowed(self):
     driver = self.CreateDriver(
         web_socket_url=True,
         accept_insecure_certs=True)
