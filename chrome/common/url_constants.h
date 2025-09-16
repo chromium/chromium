@@ -145,11 +145,6 @@ inline constexpr char kChromeOsHelpViaWebUIURL[] =
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// The isolated-app: scheme is used for Isolated Web Apps. A public explainer
-// can be found here: https://github.com/reillyeon/isolated-web-apps
-inline constexpr char kIsolatedAppScheme[] = "isolated-app";
-inline constexpr char16_t kIsolatedAppSchemeUtf16[] = u"isolated-app";
-
 // The chrome-native: scheme is used show pages rendered with platform specific
 // widgets instead of using HTML.
 inline constexpr char kChromeNativeScheme[] = "chrome-native";
