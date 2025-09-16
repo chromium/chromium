@@ -37,10 +37,6 @@ bool BeginFrameSourceIOS::WantsAnimateOnlyBeginFrames() const {
   return false;
 }
 
-bool BeginFrameSourceIOS::IsRoot() const {
-  return true;
-}
-
 mojo::PendingAssociatedRemote<viz::mojom::ExternalBeginFrameControllerClient>
 BeginFrameSourceIOS::CreateExternalBeginFrameControllerClient() {
   mojo::PendingAssociatedRemote<viz::mojom::ExternalBeginFrameControllerClient>
