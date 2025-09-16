@@ -591,6 +591,13 @@ void RenderWidgetHostViewMac::Focus() {
 
   base::AutoReset<bool> is_getting_focus_bit(&is_getting_focus_, true);
   ns_view_->MakeFirstResponder();
+
+  // Check if running with no associated NSWindow and force focus change
+  // propagation. This occurs while running headless and causes problems with
+  // RenderDocument. See more details here: http://crbug.com/444244102.
+  if (IsHeadless()) {
+    OnFirstResponderChanged(/*is_first_responder=*/true);
+  }
 }
 
 bool RenderWidgetHostViewMac::HasFocus() {
