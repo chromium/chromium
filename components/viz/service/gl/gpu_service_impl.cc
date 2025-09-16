@@ -132,6 +132,7 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
 #endif  // BUILDFLAG(IS_OZONE)
 
 namespace viz {
@@ -1282,10 +1283,20 @@ bool GpuServiceImpl::IsGMBNV12Supported() {
     return false;
   }
 
-  return shared_image_manager()->CanCreateNativePixmap(
-      buffer_format, buffer_usage,
-      vulkan_context_provider() ? vulkan_context_provider()->GetDeviceQueue()
-                                : nullptr);
+  auto size = gfx::Size(2, 2);
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->CreateNativePixmap(gpu::kNullSurfaceHandle,
+                               vulkan_context_provider()
+                                   ? vulkan_context_provider()->GetDeviceQueue()
+                                   : nullptr,
+                               size, buffer_format, buffer_usage, size);
+  if (!pixmap.get() || pixmap->ExportHandle().planes.empty()) {
+    return false;
+  }
+
+  return true;
 }
 #endif
 

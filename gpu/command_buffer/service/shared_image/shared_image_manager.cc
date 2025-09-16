@@ -40,11 +40,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-#include "gpu/ipc/common/surface_handle.h"
-#include "ui/ozone/public/surface_factory_ozone.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
 #endif
@@ -773,24 +768,5 @@ bool SharedImageManager::SupportsScanoutImages() {
   return false;
 #endif
 }
-
-#if BUILDFLAG(IS_LINUX)
-bool SharedImageManager::CanCreateNativePixmap(
-    gfx::BufferFormat buffer_format,
-    gfx::BufferUsage buffer_usage,
-    gpu::VulkanDeviceQueue* device_queue) {
-  auto size = gfx::Size(2, 2);
-  scoped_refptr<gfx::NativePixmap> pixmap =
-      ui::OzonePlatform::GetInstance()
-          ->GetSurfaceFactoryOzone()
-          ->CreateNativePixmap(gpu::kNullSurfaceHandle, device_queue, size,
-                               buffer_format, buffer_usage, size);
-  if (!pixmap.get() || pixmap->ExportHandle().planes.empty()) {
-    return false;
-  }
-
-  return true;
-}
-#endif
 
 }  // namespace gpu
