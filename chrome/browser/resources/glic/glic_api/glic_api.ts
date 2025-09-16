@@ -338,8 +338,6 @@ export declare interface GlicBrowserHost {
   closePanelAndShutdown?(): void;
 
   /**
-   * @deprecated The panel will only maintain the detached state.
-   *
    * Requests that the web client's panel be attached to a browser window.
    * If attachment fails, the panel's state will not be updated. getPanelState
    * can be used to monitor whether attachment is successful.
@@ -347,8 +345,6 @@ export declare interface GlicBrowserHost {
   attachPanel?(): void;
 
   /**
-   * @deprecated The panel will only maintain the detached state.
-   *
    * Requests that the web client's panel be detached from a browser window
    * (floats free).
    */
@@ -362,8 +358,6 @@ export declare interface GlicBrowserHost {
   showProfilePicker?(): void;
 
   /**
-   * @deprecated The panel will only maintain the detached state.
-   *
    * Returns the state of the panel.
    */
   getPanelState?(): ObservableValue<PanelState>;
@@ -379,8 +373,6 @@ export declare interface GlicBrowserHost {
   panelActive(): ObservableValue<boolean>;
 
   /**
-   * @deprecated The panel will only maintain the detached state.
-   *
    * Whether the panel can be attached. This is true if there is a browser
    * window suitable for attachment. This state is only meaningful when the
    * panel is in the detached state, and should be not be considered otherwise
@@ -926,8 +918,6 @@ export declare interface OpenPanelInfo {
 }
 
 /**
- * @deprecated The panel will only maintain the detached state.
- *
  * A panel can be in one of these three states.
  */
 export enum PanelStateKind {
@@ -944,8 +934,6 @@ export enum PanelStateKind {
 }
 
 /**
- * @deprecated The panel will only maintain the detached state.
- *
  * Information of how the panel is being presented/configured.
  */
 export declare interface PanelState {
@@ -966,8 +954,6 @@ export declare interface PanelState {
  */
 export declare interface PanelOpeningData {
   /**
-   * @deprecated The panel will only maintain the detached state.
-   *
    * The state of the panel as it's being opened.
    */
   panelState?: PanelState;
