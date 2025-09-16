@@ -174,7 +174,7 @@ class CONTENT_EXPORT PrefetchContainer {
   const network::ResourceRequest* GetResourceRequest() const {
     return resource_request_.get();
   }
-  void MakeResourceRequest(const net::HttpRequestHeaders& additional_headers);
+  void MakeResourceRequest();
 
   // Updates |referrer_| after a redirect.
   void UpdateReferrer(

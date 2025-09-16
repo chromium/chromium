@@ -40,6 +40,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/client_hints.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
@@ -1206,8 +1207,7 @@ bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
          request().prefetch_type().IsProxyRequiredWhenCrossOrigin();
 }
 
-void PrefetchContainer::MakeResourceRequest(
-    const net::HttpRequestHeaders& additional_headers) {
+void PrefetchContainer::MakeResourceRequest() {
   // |AddRedirectHop| updates this request later on. Anything here that should
   // be changed on redirect should happen there.
 
@@ -1288,7 +1288,12 @@ void PrefetchContainer::MakeResourceRequest(
   resource_request->load_flags = net::LOAD_PREFETCH;
 
   resource_request->headers.MergeFrom(request().additional_headers());
-  resource_request->headers.MergeFrom(additional_headers);
+
+  CHECK(request().browser_context());
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAccept,
+      FrameAcceptHeaderValue(/*allow_sxg_responses=*/true,
+                             request().browser_context()));
   if (!base::FeatureList::IsEnabled(
           blink::features::kRemovePurposeHeaderForPrefetch)) {
     resource_request->headers.SetHeader(blink::kPurposeHeaderName,

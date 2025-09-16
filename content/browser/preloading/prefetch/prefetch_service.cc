@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -39,7 +40,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/preloading.h"
@@ -1595,11 +1595,7 @@ bool PrefetchService::StartSinglePrefetch(
         PrefetchStatus::kPrefetchNotFinishedInTime);
   }
 
-  net::HttpRequestHeaders additional_headers;
-  additional_headers.SetHeader(
-      net::HttpRequestHeaders::kAccept,
-      FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, browser_context_));
-  prefetch_container->MakeResourceRequest(additional_headers);
+  prefetch_container->MakeResourceRequest();
 
   prefetch_container->NotifyPrefetchRequestWillBeSent(
       /*redirect_head=*/nullptr);
