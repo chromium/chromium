@@ -53,6 +53,7 @@
 #include "extensions/browser/ui_util.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/browser/warning_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/command.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
@@ -80,6 +81,8 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

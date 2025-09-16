@@ -17,6 +17,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/warning_service_factory.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/clipboard/file_info.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -24,6 +25,8 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

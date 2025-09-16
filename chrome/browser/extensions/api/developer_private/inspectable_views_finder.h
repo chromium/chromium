@@ -9,6 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/developer_private.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 class GURL;
