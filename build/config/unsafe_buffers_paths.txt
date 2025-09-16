@@ -4,10 +4,13 @@
 
 # See `docs/unsafe_buffers.md`.
 
-# Checks to enable
+# Checks to enable.
 .buffers,libc
 
-# Directories to exempt from checks
+# Path to source root from the directory containing this file.
+$../../
+
+# Directories to exempt from checks, relative to source root.
 -base/third_party/
 -codelabs/  # Examples, keep simple.
 -chrome/browser/platform_experience/win/
