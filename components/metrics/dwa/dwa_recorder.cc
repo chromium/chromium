@@ -45,34 +45,8 @@ void PopulateFieldTrialsForDwaEvent(
   }
 }
 
-// Takes |raw_entries_metrics|, a vector of metric_hash to metric_value maps,
-// and returns it as a vector of EntryMetrics as defined in
-// deidentified_web_analytics.proto.
-std::vector<::dwa::DeidentifiedWebAnalyticsEvent::ContentMetric::EntryMetrics>
-TransformEntriesMetrics(
-    const std::vector<base::flat_map<uint64_t, int64_t>>& raw_entries_metrics) {
-  std::vector<::dwa::DeidentifiedWebAnalyticsEvent::ContentMetric::EntryMetrics>
-      entries_metrics;
-  entries_metrics.reserve(raw_entries_metrics.size());
-
-  for (const auto& raw_entry_metrics : raw_entries_metrics) {
-    ::dwa::DeidentifiedWebAnalyticsEvent::ContentMetric::EntryMetrics
-        entry_metric;
-    for (const auto& [metric_hash, metric_value] : raw_entry_metrics) {
-      ::dwa::DeidentifiedWebAnalyticsEvent::ContentMetric::EntryMetrics::Metric*
-          metric = entry_metric.add_metric();
-      metric->set_name_hash(metric_hash);
-      metric->set_value(metric_value);
-    }
-    entries_metrics.push_back(std::move(entry_metric));
-  }
-
-  return entries_metrics;
-}
-
-// Takes a vector of entries, aggregates them, and then returns a vector of
-// dwa events. The contents of |entries| are moved in this function and
-// should not be used after.
+// Takes a vector of `entries`, and then returns a vector of dwa events. The
+// vector of `entries` should not be used after.
 std::vector<::dwa::DeidentifiedWebAnalyticsEvent> BuildDwaEvents(
     const std::vector<::metrics::dwa::mojom::DwaEntryPtr>& entries) {
   base::FieldTrial::ActiveGroups active_groups;
@@ -84,45 +58,21 @@ std::vector<::dwa::DeidentifiedWebAnalyticsEvent> BuildDwaEvents(
         std::make_pair(active_group.trial_name, active_group.group_name));
   }
 
-  // Maps {event_hash: {content_hash: vector<metrics>}}.
-  std::unordered_map<
-      uint64_t, std::unordered_map<
-                    uint64_t, std::vector<base::flat_map<uint64_t, int64_t>>>>
-      dwa_events_aggregation;
-  // Maps {event_hash: vector<field_trials>}.
-  std::unordered_map<uint64_t, base::flat_map<std::string, bool>>
-      dwa_events_field_trials;
-
-  for (const auto& entry : entries) {
-    dwa_events_aggregation[entry->event_hash][entry->content_hash].push_back(
-        std::move(entry->metrics));
-    dwa_events_field_trials.try_emplace(entry->event_hash,
-                                        std::move(entry->studies_of_interest));
-  }
-
   std::vector<::dwa::DeidentifiedWebAnalyticsEvent> dwa_events;
 
-  for (const auto& [event_hash, content_and_metrics] : dwa_events_aggregation) {
+  for (const auto& entry : entries) {
     ::dwa::DeidentifiedWebAnalyticsEvent event;
 
-    event.set_event_hash(event_hash);
-    for (const auto& [content_hash, raw_entries_metrics] :
-         content_and_metrics) {
-      ::dwa::DeidentifiedWebAnalyticsEvent::ContentMetric* content_metric =
-          event.add_content_metrics();
-      content_metric->set_content_type(::dwa::DeidentifiedWebAnalyticsEvent::
-                                           ContentMetric::CONTENT_TYPE_URL);
-      content_metric->set_content_hash(content_hash);
+    event.set_event_hash(entry->event_hash);
+    event.set_content_hash(entry->content_hash);
 
-      std::vector<
-          ::dwa::DeidentifiedWebAnalyticsEvent::ContentMetric::EntryMetrics>
-          entries_metrics = TransformEntriesMetrics(raw_entries_metrics);
-      content_metric->mutable_metrics()->Add(
-          std::make_move_iterator(entries_metrics.begin()),
-          std::make_move_iterator(entries_metrics.end()));
+    for (const auto& [metric_hash, metric_value] : entry->metrics) {
+      auto* dwa_event_metric = event.add_metric();
+      dwa_event_metric->set_name_hash(metric_hash);
+      dwa_event_metric->set_value(metric_value);
     }
 
-    PopulateFieldTrialsForDwaEvent(dwa_events_field_trials[event_hash],
+    PopulateFieldTrialsForDwaEvent(entry->studies_of_interest,
                                    active_field_trial_groups, event);
 
     dwa_events.push_back(std::move(event));

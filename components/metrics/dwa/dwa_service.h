@@ -109,9 +109,6 @@ class DwaService {
   // `dwa_event.content_metrics.content_hash` builds the second k-anonymity
   // bucket because we want to confirm that the subresource's eTLD+1 is a domain
   // with which a substantial number of users have interacted with.
-  // TODO(crbug.com/418025635): After we remove client-side aggregation of DWA
-  // events, we should also include `content_hash` as a k-anonymity bucket. This
-  // should be completed prior to 100% rollout of private metrics.
   static std::vector<uint64_t> BuildKAnonymityBuckets(
       const ::dwa::DeidentifiedWebAnalyticsEvent& dwa_event);
 

@@ -368,6 +368,7 @@ std::vector<uint64_t> DwaService::BuildKAnonymityBuckets(
                         base::NumberToString(dwa_event.event_hash()),
                         base::NumberToString(field_trials_hash.value())},
                        "-")));
+  k_anonymity_buckets.push_back(dwa_event.content_hash());
   return k_anonymity_buckets;
 }
 

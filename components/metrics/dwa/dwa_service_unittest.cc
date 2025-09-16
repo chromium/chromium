@@ -285,8 +285,9 @@ TEST_F(DwaServiceTest, BuildsKAnonymityBuckets) {
   auto k_anonymity_buckets =
       DwaService::BuildKAnonymityBuckets(dwa_events.at(0));
   EXPECT_FALSE(k_anonymity_buckets.empty());
-  ASSERT_EQ(k_anonymity_buckets.size(), 1u);
-  auto previous_bucket_value = k_anonymity_buckets.at(0);
+  ASSERT_EQ(k_anonymity_buckets.size(), 2u);
+  auto previous_bucket_value_0 = k_anonymity_buckets.at(0);
+  auto previous_bucket_value_1 = k_anonymity_buckets.at(1);
 
   // Records another test metric and validate the two vector of
   // k_anonymity_buckets values match.
@@ -299,8 +300,9 @@ TEST_F(DwaServiceTest, BuildsKAnonymityBuckets) {
 
   k_anonymity_buckets = DwaService::BuildKAnonymityBuckets(dwa_events.at(0));
   EXPECT_FALSE(k_anonymity_buckets.empty());
-  ASSERT_EQ(k_anonymity_buckets.size(), 1u);
-  ASSERT_EQ(previous_bucket_value, k_anonymity_buckets.at(0));
+  ASSERT_EQ(k_anonymity_buckets.size(), 2u);
+  ASSERT_EQ(previous_bucket_value_0, k_anonymity_buckets.at(0));
+  ASSERT_EQ(previous_bucket_value_1, k_anonymity_buckets.at(1));
 }
 
 TEST_F(DwaServiceTest, ValidateEncryptionPublicKey) {
