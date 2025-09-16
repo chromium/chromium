@@ -206,7 +206,12 @@ bool AwaitWebAppQuiescence(
     SyncTest* test = sync_datatype_helper::test();
     bool is_sync_on = true;
     for (SyncServiceImplHarness* client : test->GetSyncClients()) {
-      is_sync_on = is_sync_on && client->service()->IsSyncFeatureActive();
+      syncer::SyncService::TransportState transport_state =
+          client->service()->GetTransportState();
+      is_sync_on =
+          is_sync_on &&
+          (transport_state == syncer::SyncService::TransportState::ACTIVE ||
+           transport_state == syncer::SyncService::TransportState::CONFIGURING);
     }
     if (is_sync_on) {
       if (!test->AwaitQuiescence())

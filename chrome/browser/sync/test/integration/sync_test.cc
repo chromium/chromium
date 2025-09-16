@@ -160,6 +160,23 @@ int GetNumClients(SyncTest::TestType test_type) {
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& stream, SyncTestMode sync_test_mode) {
+  stream << SyncTestModeAsString(sync_test_mode);
+  return stream;
+}
+
+std::string SyncTestModeAsString(SyncTestMode sync_test_mode) {
+  switch (sync_test_mode) {
+    case SyncTestMode::kSignInOnly:
+      return "SignInOnly";
+    case SyncTestMode::kSyncTheFeature_WithSyncToSignin:
+      return "SyncTheFeature_WithSyncToSignin";
+    case SyncTestMode::kSyncTheFeature_WithoutSyncToSignin:
+      return "SyncTheFeature_WithoutSyncToSignin";
+  }
+  NOTREACHED();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class SyncTest::ClosedBrowserObserver : public BrowserListObserver {
  public:
@@ -182,6 +199,14 @@ class SyncTest::ClosedBrowserObserver : public BrowserListObserver {
   OnBrowserRemovedCallback browser_remove_callback_;
 };
 #endif
+
+// static
+SyncTest::SetupSyncMode SyncTest::GetSetupSyncMode(
+    SyncTestMode sync_test_mode) {
+  return sync_test_mode == SyncTestMode::kSignInOnly
+             ? SyncTest::kSyncTransportModeOnly
+             : SyncTest::kSyncTheFeature;
+}
 
 SyncTest::SyncTest(TestType test_type)
     : test_type_(test_type),
@@ -620,8 +645,9 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
 }
 
-bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
-                                 SyncTestAccount account) {
+bool SyncTest::SetupSyncInternal(SyncWaitCondition wait_condition,
+                                 SyncTestAccount account,
+                                 SetupSyncMode setup_mode) {
   // Create sync profiles and clients if they haven't already been created.
   if (profiles_.empty()) {
     if (!SetupClients()) {
@@ -645,9 +671,18 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     SyncServiceImplHarness* client = GetClient(client_index);
     DVLOG(1) << "Setting up " << client_index << " client";
-    if (!client->SetupSyncNoWaitForCompletion(account)) {
-      ADD_FAILURE() << "SetupSync() failed.";
-      return false;
+
+    if (setup_mode == kSyncTransportModeOnly) {
+      if (!client->SignInPrimaryAccount(account) ||
+          !client->AwaitEngineInitialization()) {
+        ADD_FAILURE() << "SetupSync() failed.";
+        return false;
+      }
+    } else {
+      if (!client->SetupSyncNoWaitForCompletion(account)) {
+        ADD_FAILURE() << "SetupSync() failed.";
+        return false;
+      }
     }
 
     if (TestUsesSelfNotifications()) {
@@ -669,13 +704,20 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
     // happening sequentially in two clients, otherwise both clients can upload
     // their data simultaneously, e.g. resulting in duplicates (most prominent
     // for bookmarks).
-    switch (setup_mode) {
+    switch (wait_condition) {
       case NO_WAITING:
         break;
       case WAIT_FOR_SYNC_SETUP_TO_COMPLETE:
-        if (!client->AwaitSyncSetupCompletion()) {
-          ADD_FAILURE() << "AwaitSyncSetupCompletion() failed";
-          return false;
+        if (setup_mode == kSyncTransportModeOnly) {
+          if (!client->AwaitSyncTransportActive()) {
+            ADD_FAILURE() << "AwaitSyncTransportActive() failed";
+            return false;
+          }
+        } else {
+          if (!client->AwaitSyncSetupCompletion()) {
+            ADD_FAILURE() << "AwaitSyncSetupCompletion() failed";
+            return false;
+          }
         }
         if (!client->AwaitInvalidationsStatus(/*expected_status=*/true)) {
           ADD_FAILURE() << "AwaitInvalidationsStatus() failed";
@@ -683,9 +725,16 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
         }
         break;
       case WAIT_FOR_COMMITS_TO_COMPLETE:
-        if (!client->AwaitSyncSetupCompletion()) {
-          ADD_FAILURE() << "AwaitSyncSetupCompletion() failed";
-          return false;
+        if (setup_mode == kSyncTransportModeOnly) {
+          if (!client->AwaitSyncTransportActive()) {
+            ADD_FAILURE() << "AwaitSyncTransportActive() failed";
+            return false;
+          }
+        } else {
+          if (!client->AwaitSyncSetupCompletion()) {
+            ADD_FAILURE() << "AwaitSyncSetupCompletion() failed";
+            return false;
+          }
         }
         if (!client->AwaitInvalidationsStatus(/*expected_status=*/true)) {
           ADD_FAILURE() << "AwaitInvalidationsStatus() failed";
@@ -705,11 +754,15 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
   return true;
 }
 
-bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
-  return SetupSync(SyncTestAccount::kDefaultAccount, setup_mode);
+bool SyncTest::SetupSync(SyncWaitCondition wait_condition,
+                         SetupSyncMode setup_mode) {
+  return SetupSync(SyncTestAccount::kDefaultAccount, wait_condition,
+                   setup_mode);
 }
 
-bool SyncTest::SetupSync(SyncTestAccount account, SetupSyncMode setup_mode) {
+bool SyncTest::SetupSync(SyncTestAccount account,
+                         SyncWaitCondition wait_condition,
+                         SetupSyncMode setup_mode) {
 #if BUILDFLAG(IS_ANDROID)
   // For Android, currently the framework only supports one client.
   // The client uses the default profile.
@@ -719,7 +772,7 @@ bool SyncTest::SetupSync(SyncTestAccount account, SetupSyncMode setup_mode) {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  if (!SetupSyncInternal(setup_mode, account)) {
+  if (!SetupSyncInternal(wait_condition, account, setup_mode)) {
     return false;
   }
 
@@ -730,7 +783,7 @@ bool SyncTest::SetupSync(SyncTestAccount account, SetupSyncMode setup_mode) {
   // Tests that don't use self-notifications can't await quiescence.  They'll
   // have to find their own way of waiting for an initial state if they really
   // need such guarantees.
-  if (setup_mode != NO_WAITING && TestUsesSelfNotifications()) {
+  if (wait_condition != NO_WAITING && TestUsesSelfNotifications()) {
     if (!AwaitQuiescence()) {
       ADD_FAILURE() << "AwaitQuiescence() failed.";
       return false;
@@ -1051,7 +1104,11 @@ bool SyncTest::WaitForAsyncChangesToBeCommitted(size_t profile_index) const {
     // Session to be committed to prevent unexpected commit requests during
     // test. It shouldn't be called when custom passphrase is enabled because
     // SessionHierarchyMatchChecker doesn't support custom passphrases.
-    if (!SessionHierarchyMatchChecker(
+    if (GetSyncService(profile_index)
+            ->GetUserSettings()
+            ->GetSelectedTypes()
+            .Has(syncer::UserSelectableType::kTabs) &&
+        !SessionHierarchyMatchChecker(
              fake_server::SessionsHierarchy({{url::kAboutBlankURL}}),
              GetSyncService(profile_index), GetFakeServer())
              .Wait()) {
