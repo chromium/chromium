@@ -12,11 +12,16 @@
 namespace base {
 
 using KeyType = int64_t;
-using ValueType = std::string;
+using ValueType = const char*;
 
 constexpr KeyType kTestKey = 4;
+constexpr ValueType kTestValue = "TEST";
+constexpr KeyType kTestKey2 = 8;
+constexpr ValueType kTestValue2 = "OTHER";
+static_assert(kTestKey != kTestKey2, "Would not exercise maps correctly");
+static_assert(kTestValue != kTestValue2, "Would not exercise maps correctly");
+
 constexpr KeyType kUnusedKey = 8;
-const ValueType kTestValue = "TEST";
 
 namespace {}  // namespace
 
@@ -33,8 +38,26 @@ TEST_P(VariantMapTest, Insertion) {
 
   map[kTestKey] = kTestValue;
   EXPECT_EQ(map.size(), 1);
-
   EXPECT_EQ(map[kTestKey], kTestValue);
+
+  map.insert({kTestKey2, kTestValue2});
+  EXPECT_EQ(map.size(), 2);
+  EXPECT_EQ(map[kTestKey2], kTestValue2);
+}
+
+TEST_P(VariantMapTest, Empty) {
+  VariantMap<KeyType, ValueType> map(GetParam());
+  EXPECT_TRUE(map.empty());
+  map[kTestKey] = kTestValue;
+  EXPECT_FALSE(map.empty());
+}
+
+TEST_P(VariantMapTest, Clear) {
+  VariantMap<KeyType, ValueType> map(GetParam());
+  map[kTestKey] = kTestValue;
+  EXPECT_FALSE(map.empty());
+  map.clear();
+  EXPECT_TRUE(map.empty());
 }
 
 TEST_P(VariantMapTest, Find) {

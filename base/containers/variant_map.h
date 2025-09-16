@@ -22,6 +22,11 @@ class SubprocessMetricsProvider;
 namespace mojo {
 template <typename ContextType>
 class BinderMapWithContext;
+
+class ReceiverSetState;
+
+template <typename ReceiverType, typename ContextType>
+class ReceiverSetBase;
 }
 
 namespace base {
@@ -50,6 +55,8 @@ enum class MapType {
 // 1) No specific entry ordering
 // 2) No iterator stability through modifications
 // 3) No storage stability through modifications
+//
+// TODO(crbug.com/433462519): Remove this entire class by M145.
 template <typename Key, typename Value>
 class VariantMap {
  public:
@@ -130,17 +137,32 @@ class VariantMap {
 
   // Protected by PassKey because not intended for general use but only
   // experimenting.
-  // TODO(crbug.com/433462519): Remove this entire class by M145.
   template <typename ContextType>
   explicit VariantMap(
       base::PassKey<mojo::BinderMapWithContext<ContextType>> passkey)
       : VariantMap() {}
 
+  template <typename ReceiverType, typename ContextType>
+  explicit VariantMap(
+      base::PassKey<mojo::ReceiverSetBase<ReceiverType, ContextType>> passkey)
+      : VariantMap() {}
+
   explicit VariantMap(base::PassKey<metrics::SubprocessMetricsProvider> passkey)
+      : VariantMap() {}
+
+  explicit VariantMap(base::PassKey<mojo::ReceiverSetState> passkey)
       : VariantMap() {}
 
   size_t size() const {
     return std::visit([](const auto& map) { return map.size(); }, data_);
+  }
+
+  bool empty() const {
+    return std::visit([](const auto& map) { return map.empty(); }, data_);
+  }
+
+  void clear() {
+    return std::visit([](auto& map) { return map.clear(); }, data_);
   }
 
   Value& operator[](const Key& key) {
@@ -162,6 +184,15 @@ class VariantMap {
     return std::visit(
         [&](auto& map) {
           auto result = map.try_emplace(std::forward<Args>(args)...);
+          return std::make_pair(iterator(result.first), result.second);
+        },
+        data_);
+  }
+
+  std::pair<iterator, bool> insert(value_type&& value) {
+    return std::visit(
+        [&](auto& map) {
+          auto result = map.insert(std::move(value));
           return std::make_pair(iterator(result.first), result.second);
         },
         data_);
@@ -211,6 +242,8 @@ class VariantMap {
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Insertion);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Find);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Iteration);
+  FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Empty);
+  FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Clear);
 
   using Map = std::variant<StdMapVariant, FlatHashMapVariant>;
 

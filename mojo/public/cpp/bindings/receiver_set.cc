@@ -73,7 +73,7 @@ void ReceiverSetState::Entry::OnDisconnect(uint32_t custom_reason_code,
   state_.OnDisconnect(id_, custom_reason_code, description);
 }
 
-ReceiverSetState::ReceiverSetState() = default;
+ReceiverSetState::ReceiverSetState() : entries_(PassKey()) {}
 
 ReceiverSetState::~ReceiverSetState() = default;
 
