@@ -24,6 +24,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -42,6 +44,7 @@ import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.WebPaymentsWebDataService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
@@ -147,6 +150,15 @@ public class AndroidPaymentAppFinderTest
     @Override
     public void onPaymentAppCreationError(
             String errorMessage, @AppCreationFailureReason int errorReason) {}
+
+    // PaymentAppFactoryDelegate implementation.
+    @Override
+    public boolean prefsCanMakePayment() {
+        WebContents webContents = getWebContents();
+        return webContents != null
+                && UserPrefs.get(Profile.fromWebContents(webContents))
+                        .getBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED);
+    }
 
     // PaymentAppFactoryDelegate implementation.
     @Override
