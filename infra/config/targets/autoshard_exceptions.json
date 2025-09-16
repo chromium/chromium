@@ -1,10 +1,6 @@
 {
     "chromium.android": {
         "android-10-x86-rel": {
-            "chrome_public_test_apk": {
-                "shards": 93,
-                "try_builder": "android-x86-rel"
-            },
             "webview_trichrome_cts_tests full_mode": {
                 "shards": 3,
                 "try_builder": "android-x86-rel"
@@ -17,26 +13,16 @@
             }
         },
         "android-15-x64-rel": {
+            "android_browsertests": {
+                "shards": 10,
+                "try_builder": "android-x64-rel"
+            },
             "chrome_public_test_apk": {
                 "shards": 56,
                 "try_builder": "android-x64-rel"
             },
-            "chrome_public_unit_test_apk": {
-                "shards": 3,
-                "try_builder": "android-x64-rel"
-            },
             "components_browsertests": {
                 "shards": 455,
-                "try_builder": "android-x64-rel"
-            }
-        },
-        "android-16-x64-rel": {
-            "android_browsertests": {
-                "shards": 18,
-                "try_builder": "android-x64-rel"
-            },
-            "android_sync_integration_tests": {
-                "shards": 3,
                 "try_builder": "android-x64-rel"
             }
         },
@@ -66,7 +52,7 @@
     "chromium.android.desktop": {
         "android-desktop-x64-rel-15-tests": {
             "android_browsertests": {
-                "shards": 117,
+                "shards": 72,
                 "try_builder": "android-desktop-x64-rel"
             },
             "unit_tests": {
@@ -210,7 +196,7 @@
                 "try_builder": "linux_chromium_tsan_rel_ng"
             },
             "components_unittests": {
-                "shards": 5,
+                "shards": 4,
                 "try_builder": "linux_chromium_tsan_rel_ng"
             },
             "content_browsertests": {
