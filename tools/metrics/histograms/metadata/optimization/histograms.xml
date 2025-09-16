@@ -1448,7 +1448,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.ExecutionThreadTimeMicroseconds.{OptimizationTarget}"
-    units="microseconds" expires_after="2025-10-26">
+    units="microseconds" expires_after="2026-10-26">
   <owner>wittman@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
