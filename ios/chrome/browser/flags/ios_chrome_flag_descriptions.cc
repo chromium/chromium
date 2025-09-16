@@ -779,6 +779,11 @@ const char kIOSOmniboxAimServerEligibilityEnName[] =
 const char kIOSOmniboxAimServerEligibilityEnDescription[] =
     "Enable AIM server eligibility checks for EN locales.";
 
+const char kIOSOmniboxUseTextViewName[] = "AIM Omnibox use text view";
+const char kIOSOmniboxUseTextViewDescription[] =
+    "When enabled, the omnibox presented by AIM uses a multiline text view "
+    "instead of a text field.";
+
 const char kIOSOneTapMiniMapRemoveSectionBreaksName[] =
     "Remove section break for address detection.";
 const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[] =

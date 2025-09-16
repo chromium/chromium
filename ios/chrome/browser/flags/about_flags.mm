@@ -2944,9 +2944,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"hide-toolbars-in-overflow-menu",
      flag_descriptions::kHideToolbarsInOverflowMenuName,
      flag_descriptions::kHideToolbarsInOverflowMenuDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kHideToolbarsInOverflowMenu),
-    },
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kHideToolbarsInOverflowMenu)},
+    {"aim-multiline-omnibox", flag_descriptions::kIOSOmniboxUseTextViewName,
+     flag_descriptions::kIOSOmniboxUseTextViewDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSOmniboxUseTextView)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

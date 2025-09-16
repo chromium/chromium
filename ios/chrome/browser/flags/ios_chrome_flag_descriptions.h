@@ -444,6 +444,9 @@ extern const char kIOSOmniboxAimServerEligibilityDescription[];
 extern const char kIOSOmniboxAimServerEligibilityEnName[];
 extern const char kIOSOmniboxAimServerEligibilityEnDescription[];
 
+extern const char kIOSOmniboxUseTextViewName[];
+extern const char kIOSOmniboxUseTextViewDescription[];
+
 extern const char kIOSOneTapMiniMapRemoveSectionBreaksName[];
 extern const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[];
 

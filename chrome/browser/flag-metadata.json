@@ -94,6 +94,11 @@
     "expiry_milestone": 139
   },
   {
+    "name": "aim-multiline-omnibox",
+    "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "aim-prototype-devtools",
     "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],
     "expiry_milestone": 145
