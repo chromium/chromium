@@ -9122,9 +9122,6 @@ crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/cs
 crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/parsing/background-clip-valid.html [ Failure ]
 crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/parsing/background-computed.html [ Failure ]
 
-# Gardener 2024-08-23
-crbug.com/361671577 [ Linux ] fast/forms/validationMessage.html [ Failure Pass ]
-
 # Flaky on Linux
 crbug.com/336354179 [ Linux ] http/tests/origin_trials/valid-token-window-open-meta-enabled.html [ Failure Pass ]
 
