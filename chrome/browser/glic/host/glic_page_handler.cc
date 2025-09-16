@@ -630,6 +630,10 @@ class GlicWebClientHandler
             actor_service->AddTaskStateChangedCallback(base::BindRepeating(
                 &GlicWebClientHandler::NotifyActorTaskStateChanged,
                 base::Unretained(this)));
+        // CallbackListSubscription prevents these callbacks from being invoked
+        // when this object is destructed.
+        // TODO(crbug.com/445224605): Right now this code assumes that
+        //   ActorKeyedService only owns a single Execution engine instance.
         request_to_show_credential_selection_dialog_subscription_ =
             actor_service
                 ->AddRequestToShowCredentialSelectionDialogSubscriberCallback(
@@ -637,6 +641,12 @@ class GlicWebClientHandler
                         &GlicWebClientHandler::
                             RequestToShowCredentialSelectionDialog,
                         base::Unretained(this)));
+        request_to_show_user_confirmation_dialog_subscription_ =
+            actor_service
+                ->AddRequestToShowUserConfirmationDialogSubscriberCallback(
+                    base::BindRepeating(&GlicWebClientHandler::
+                                            RequestToShowUserConfirmationDialog,
+                                        base::Unretained(this)));
       }
     }
 
@@ -1387,6 +1397,7 @@ class GlicWebClientHandler
     pinned_tabs_changed_subscription_ = {};
     pinned_tab_data_changed_subscription_ = {};
     request_to_show_credential_selection_dialog_subscription_ = {};
+    request_to_show_user_confirmation_dialog_subscription_ = {};
     browser_attach_observation_.reset();
     glic_service_->zero_state_suggestions_manager().Reset();
   }
@@ -1510,6 +1521,27 @@ class GlicWebClientHandler
         std::move(dialog_request), std::move(on_credential_selected));
   }
 
+  void RequestToShowUserConfirmationDialog(
+      const std::optional<url::Origin>& navigation_origin,
+      const std::optional<int32_t> download_id,
+      actor::ActorKeyedService::UserConfirmationDialogCallback callback) {
+    actor::webui::mojom::UserConfirmationDialogPayloadPtr payload = nullptr;
+    if (navigation_origin) {
+      payload = actor::webui::mojom::UserConfirmationDialogPayload::
+          NewNavigationOrigin(*navigation_origin);
+    } else if (download_id) {
+      payload =
+          actor::webui::mojom::UserConfirmationDialogPayload::NewDownloadId(
+              *download_id);
+    } else {
+      NOTREACHED();
+    }
+    web_client_->RequestToShowUserConfirmationDialog(
+        actor::webui::mojom::UserConfirmationDialogRequest::New(
+            std::move(payload)),
+        std::move(callback));
+  }
+
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;
@@ -1528,6 +1560,8 @@ class GlicWebClientHandler
   base::CallbackListSubscription actor_task_state_changed_subscription_;
   base::CallbackListSubscription
       request_to_show_credential_selection_dialog_subscription_;
+  base::CallbackListSubscription
+      request_to_show_user_confirmation_dialog_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;

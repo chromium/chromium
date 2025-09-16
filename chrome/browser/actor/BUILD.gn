@@ -315,6 +315,7 @@ source_set("interactive_ui_tests") {
   ]
   if (enable_glic) {
     sources = [
+      "execution_engine_confirmation_dialog_interactive_ui_test.cc",
       "tools/attempt_login_tool_interactive_ui_test.cc",
       "tools/select_tool_interactive_ui_test.cc",
     ]

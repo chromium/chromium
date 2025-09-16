@@ -15,7 +15,7 @@ import {AlphaType} from '//resources/mojo/skia/public/mojom/image_info.mojom-web
 import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from '../actor_webui.mojom-webui.js';
+import type {SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, UserConfirmationDialogErrorReason as UserConfirmationDialogErrorReasonMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from '../actor_webui.mojom-webui.js';
 import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
 import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
@@ -30,7 +30,7 @@ import {OneShotTimer} from '../timer.js';
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
-import type {AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
+import type {AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, HOST_REQUEST_TYPES, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 export enum WebClientState {
@@ -366,6 +366,17 @@ class WebClientImpl implements WebClientInterface {
         {request: selectCredentialDialogRequestToClient(request)});
     return {
       response: selectCredentialDialogResponseToMojo(clientResponse.response),
+    };
+  }
+
+  async requestToShowUserConfirmationDialog(
+      request: UserConfirmationDialogRequestMojo):
+      Promise<{response: UserConfirmationDialogResponseMojo}> {
+    const clientResponse = await this.sender.requestWithResponse(
+        'glicWebClientRequestToShowConfirmationDialog',
+        {request: userConfirmationDialogRequestToClient(request)});
+    return {
+      response: userConfirmationDialogResponseToMojo(clientResponse.response),
     };
   }
 }
@@ -1956,5 +1967,34 @@ function selectCredentialDialogRequestToClient(
   return {
     ...request,
     icons,
+  };
+}
+
+function userConfirmationDialogRequestToClient(
+    request: UserConfirmationDialogRequestMojo):
+    UserConfirmationDialogRequestPrivate {
+  return {
+    navigationOrigin: request.payload.navigationOrigin ?
+        originToClient(request.payload.navigationOrigin) :
+        undefined,
+    downloadId: typeof request.payload.downloadId === 'number' ?
+        request.payload.downloadId :
+        undefined,
+  };
+}
+
+function userConfirmationDialogResponseToMojo(
+    response: UserConfirmationDialogResponsePrivate):
+    UserConfirmationDialogResponseMojo {
+  if (response.errorReason) {
+    return {
+      result: {
+        errorReason: response.errorReason as number as
+            UserConfirmationDialogErrorReasonMojo,
+      },
+    };
+  }
+  return {
+    result: {permissionGranted: response.permissionGranted},
   };
 }

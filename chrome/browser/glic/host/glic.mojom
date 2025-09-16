@@ -995,6 +995,13 @@ interface WebClient {
   RequestToShowCredentialSelectionDialog(
     actor.webui.mojom.SelectCredentialDialogRequest request)
       => (actor.webui.mojom.SelectCredentialDialogResponse response);
+
+  // Requests the web client to show a dialog for deterministic user
+  // confirmation. This should occur when Chrome detects the actor
+  // engaging in security-sensitive operations that require user permission.
+  RequestToShowUserConfirmationDialog(
+    actor.webui.mojom.UserConfirmationDialogRequest request)
+      => (actor.webui.mojom.UserConfirmationDialogResponse response);
 };
 
 // Information extracted from a tab.

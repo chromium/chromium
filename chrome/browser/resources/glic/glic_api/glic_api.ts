@@ -701,6 +701,22 @@ export declare interface GlicBrowserHost {
    */
   selectCredentialDialogRequestHandler?
       (): Observable<SelectCredentialDialogRequest>;
+
+  /**
+   * Returns an observable that emits when the browser wants the web client to
+   * show a user confirmation dialog.
+   *
+   * NOTE:
+   * - The browser will only request one dialog at a time. We might have to
+   * support concurrent PerformActions() in the future. The plan is to
+   * sequence the requests.
+   * - Currently the browser won't cancel the request. The task that issues the
+   * request will yield and wait for the response, or fail the task when it
+   * times out. The web client must also observe `getActorTaskState()` to clean
+   * up the UI elements when the task is no longer active.
+   */
+  selectUserConfirmationDialogRequestHandler?
+      (): Observable<UserConfirmationDialogRequest>;
 }
 /** Fields of interest from the system settings page. */
 export type OsPermissionType = 'media'|'geolocation';
@@ -1833,6 +1849,24 @@ export declare interface SelectCredentialDialogResponse {
   selectedCredentialId?: number;
 }
 
+export declare interface UserConfirmationDialogRequest {
+  // These fields form a union type, only 1 must be set.
+  // Origin to request the actor navigate to.
+  navigationOrigin?: string;
+  // ID of download the actor is asking to execute.
+  downloadId?: number;
+  // End of union fields.
+
+  // The WebClient must call this function to respond back to the browser when
+  // the dialog is closed.
+  onDialogClosed(result: {response: UserConfirmationDialogResponse}): void;
+}
+
+export declare interface UserConfirmationDialogResponse {
+  // The verdict of the user confirmation dialog.
+  permissionGranted: boolean;
+}
+
 //
 // Types used in presubmit check.
 //
@@ -1870,6 +1904,8 @@ export interface BackwardsCompatibleTypes {
   tabContextOptions: TabContextOptions;
   tabContextResult: TabContextResult;
   tabData: TabData;
+  userConfirmationDialogRequest: UserConfirmationDialogRequest;
+  userConfirmationDialogResponse: UserConfirmationDialogResponse;
   userProfileInfo: UserProfileInfo;
   webClient: GlicWebClient;
   webPageData: WebPageData;

@@ -115,6 +115,19 @@ class ExecutionEngine : public ToolDelegate {
   void OnCredentialSelected(
       webui::mojom::SelectCredentialDialogResponsePtr response);
 
+  using UserConfirmationDialogCallback = base::OnceCallback<void(
+      webui::mojom::UserConfirmationDialogResponsePtr response)>;
+
+  void PromptToConfirmCrossOriginNavigation(
+      const url::Origin& navigation_origin,
+      UserConfirmationDialogCallback callback);
+  void PromptToConfirmDownload(int32_t download_id,
+                               UserConfirmationDialogCallback callback);
+
+  // Callback for when the user responds to a confirmation dialog.
+  void OnUserConfirmation(
+      webui::mojom::UserConfirmationDialogResponsePtr response);
+
   static std::string StateToString(State state);
 
   bool ShouldGateNavigation(content::NavigationHandle& navigation_handle);
@@ -156,6 +169,11 @@ class ExecutionEngine : public ToolDelegate {
 
   void CompleteActions(mojom::ActionResultPtr result,
                        std::optional<size_t> action_index);
+
+  void PromptUserForConfirmationInternal(
+      const std::optional<url::Origin>& navigation_origin,
+      const std::optional<int32_t> download_url,
+      UserConfirmationDialogCallback callback);
 
   // Returns the next action that will be started when ExecuteNextAction is
   // reached.
@@ -203,6 +221,8 @@ class ExecutionEngine : public ToolDelegate {
   std::set<url::Origin> allowed_navigation_origins_;
 
   ToolDelegate::CredentialSelectedCallback credential_selected_callback_;
+
+  UserConfirmationDialogCallback user_confirmation_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

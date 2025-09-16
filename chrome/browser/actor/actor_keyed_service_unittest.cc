@@ -58,6 +58,9 @@ class ActorKeyedServiceTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
+ protected:
+  base::CallbackListSubscription user_confirmation_dialog_subscription_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;

@@ -5,6 +5,7 @@
 module actor.webui.mojom;
 
 import "skia/public/mojom/bitmap.mojom";
+import "url/mojom/origin.mojom";
 
 //
 // Place the mojom struct that is required by the WebUI in this file.
@@ -70,4 +71,37 @@ struct SelectCredentialDialogResponse {
   // The ID of the selected credential. Null if the user closed the UI without
   // making a selection.
   int32? selected_credential_id;
+};
+
+
+// Contains information about the confirmation request
+// that also encodes what type of request is being sent.
+union UserConfirmationDialogPayload {
+  url.mojom.Origin navigation_origin;
+  int32 download_id;
+};
+
+struct UserConfirmationDialogRequest {
+  UserConfirmationDialogPayload payload;
+};
+
+// Contains result of user confirmation dialog request.
+// Either a boolean indicating user decision, or an error.
+union UserConfirmationDialogResult {
+  bool permission_granted;
+  UserConfirmationDialogErrorReason error_reason;
+};
+
+struct UserConfirmationDialogResponse {
+  UserConfirmationDialogResult result;
+};
+
+[Extensible]
+enum UserConfirmationDialogErrorReason {
+  // The hosting WebUI received the request, but the web client has not
+  // subscribed to the request yet. We couldn't show the dialog in this case.
+  [Default] kDialogPromiseNoSubscriber = 0,
+  // The task requested a new user confirmation dialog before the current
+  // one completed.
+  kPreemptedByNewRequest = 1,
 };

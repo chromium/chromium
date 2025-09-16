@@ -779,6 +779,7 @@ mojom("actor_webui_mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
+    "//url/mojom:url_mojom_origin",
   ]
 }
 

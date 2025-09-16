@@ -147,6 +147,28 @@ class ActorKeyedService : public KeyedService {
       TaskId request_task_id,
       webui::mojom::SelectCredentialDialogResponsePtr response);
 
+  using UserConfirmationDialogCallback = base::RepeatingCallback<void(
+      webui::mojom::UserConfirmationDialogResponsePtr)>;
+  using RequestToShowUserConfirmationDialogSubscriberCallback =
+      base::RepeatingCallback<void(const std::optional<url::Origin>&,
+                                   const std::optional<int32_t>,
+                                   UserConfirmationDialogCallback)>;
+
+  base::CallbackListSubscription
+  AddRequestToShowUserConfirmationDialogSubscriberCallback(
+      RequestToShowUserConfirmationDialogSubscriberCallback callback);
+
+  // Notifies the subscribers that the browser is requesting user confirmation
+  // for the actor to continue.
+  void NotifyRequestToShowUserConfirmationDialog(
+      TaskId task_id,
+      const std::optional<url::Origin>& navigation_origin,
+      const std::optional<int32_t> download_id);
+
+  void OnUserConfirmationDialogDecision(
+      TaskId request_task_id,
+      webui::mojom::UserConfirmationDialogResponsePtr response);
+
   // Returns the acting task for web_contents. Returns nullptr if acting task
   // does not exist.
   const ActorTask* GetActingActorTaskForWebContents(
@@ -180,6 +202,10 @@ class ActorKeyedService : public KeyedService {
   base::RepeatingCallbackList<
       RequestToShowCredentialSelectionDialogSubscriberCallback::RunType>
       request_to_show_credential_selection_dialog_callback_list_;
+
+  base::RepeatingCallbackList<
+      RequestToShowUserConfirmationDialogSubscriberCallback::RunType>
+      request_to_show_user_confirmation_dialog_callback_list_;
 
   // Owns this.
   raw_ptr<Profile> profile_;

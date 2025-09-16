@@ -391,6 +391,77 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
   EXPECT_FALSE(browser_client().external_protocol_result().value());
 }
 
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
+                       PromptToConfirmCrossOriginNavigation) {
+  ActorKeyedService* actor_service = actor_keyed_service();
+  auto navigation_origin = url::Origin::Create(GURL("https://www.example.com"));
+
+  // Mocking IPC for browsertest.
+  // We will run it with a test response from the web client in a UI test.
+  base::CallbackListSubscription user_confirmation_dialog_subscription =
+      actor_service->AddRequestToShowUserConfirmationDialogSubscriberCallback(
+          base::BindLambdaForTesting(
+              [&](const std::optional<url::Origin>& got_navigation_origin,
+                  const std::optional<int32_t> got_download_id,
+                  ActorKeyedService::UserConfirmationDialogCallback callback) {
+                // Verify the request is what the IPC expects.
+                EXPECT_TRUE(got_navigation_origin);
+                EXPECT_EQ(got_navigation_origin, navigation_origin);
+                EXPECT_FALSE(got_download_id);
+                // Send a mock IPC response.
+                std::move(callback).Run(
+                    webui::mojom::UserConfirmationDialogResponse::New(
+                        webui::mojom::UserConfirmationDialogResult::
+                            NewPermissionGranted(true)));
+              }));
+
+  base::test::TestFuture<webui::mojom::UserConfirmationDialogResponsePtr>
+      future;
+  actor_task().GetExecutionEngine()->PromptToConfirmCrossOriginNavigation(
+      navigation_origin, future.GetCallback());
+
+  // Verify response was forwarded to the callback correctly.
+  auto response = future.Take();
+  EXPECT_FALSE(response->result->is_error_reason());
+  EXPECT_TRUE(response->result->is_permission_granted());
+  EXPECT_TRUE(response->result->get_permission_granted());
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, PromptToConfirmDownload) {
+  ActorKeyedService* actor_service = actor_keyed_service();
+  int32_t download_id = 123;
+
+  // Mocking IPC for browsertest.
+  // We will run it with a test response from the web client in a UI test.
+  base::CallbackListSubscription user_confirmation_dialog_subscription =
+      actor_service->AddRequestToShowUserConfirmationDialogSubscriberCallback(
+          base::BindLambdaForTesting(
+              [&](const std::optional<url::Origin>& got_navigation_origin,
+                  const std::optional<int32_t> got_download_id,
+                  ActorKeyedService::UserConfirmationDialogCallback callback) {
+                // Verify the request is what the IPC expects.
+                EXPECT_FALSE(got_navigation_origin);
+                EXPECT_TRUE(got_download_id);
+                EXPECT_EQ(got_download_id, download_id);
+                // Send a mock IPC response.
+                std::move(callback).Run(
+                    webui::mojom::UserConfirmationDialogResponse::New(
+                        webui::mojom::UserConfirmationDialogResult::
+                            NewPermissionGranted(true)));
+              }));
+
+  base::test::TestFuture<webui::mojom::UserConfirmationDialogResponsePtr>
+      future;
+  actor_task().GetExecutionEngine()->PromptToConfirmDownload(
+      download_id, future.GetCallback());
+
+  // Verify response was forwarded to the callback correctly.
+  auto response = future.Take();
+  EXPECT_FALSE(response->result->is_error_reason());
+  EXPECT_TRUE(response->result->is_permission_granted());
+  EXPECT_TRUE(response->result->get_permission_granted());
+}
+
 class ExecutionEngineOriginGatingBrowserTest
     : public ExecutionEngineBrowserTest,
       public testing::WithParamInterface<bool> {

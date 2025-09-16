@@ -531,6 +531,42 @@ void ExecutionEngine::OnCredentialSelected(
   }
 }
 
+void ExecutionEngine::PromptToConfirmCrossOriginNavigation(
+    const url::Origin& navigation_origin,
+    ExecutionEngine::UserConfirmationDialogCallback callback) {
+  PromptUserForConfirmationInternal(
+      navigation_origin, /*download_url=*/std::nullopt, std::move(callback));
+}
+
+void ExecutionEngine::PromptToConfirmDownload(
+    int32_t download_id,
+    ExecutionEngine::UserConfirmationDialogCallback callback) {
+  PromptUserForConfirmationInternal(/*navigation_origin=*/std::nullopt,
+                                    download_id, std::move(callback));
+}
+
+void ExecutionEngine::PromptUserForConfirmationInternal(
+    const std::optional<url::Origin>& navigation_origin,
+    const std::optional<int32_t> download_id,
+    ExecutionEngine::UserConfirmationDialogCallback callback) {
+  if (user_confirmation_callback_) {
+    std::move(user_confirmation_callback_)
+        .Run(webui::mojom::UserConfirmationDialogResponse::New(
+            webui::mojom::UserConfirmationDialogResult::NewErrorReason(
+                webui::mojom::UserConfirmationDialogErrorReason::
+                    kPreemptedByNewRequest)));
+  }
+  user_confirmation_callback_ = std::move(callback);
+  ActorKeyedService::Get(profile_)->NotifyRequestToShowUserConfirmationDialog(
+      task_->id(), navigation_origin, download_id);
+}
+
+void ExecutionEngine::OnUserConfirmation(
+    webui::mojom::UserConfirmationDialogResponsePtr response) {
+  CHECK(user_confirmation_callback_);
+  std::move(user_confirmation_callback_).Run(std::move(response));
+}
+
 const ToolRequest& ExecutionEngine::GetNextAction() const {
   CHECK_LT(next_action_index_, action_sequence_.size());
   return *action_sequence_.at(next_action_index_).get();

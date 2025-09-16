@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AnnotatedPageData, ChromeVersion, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AnnotatedPageData, ChromeVersion, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -599,6 +599,15 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientRequestToShowConfirmationDialog: {
+    request: {
+      request: UserConfirmationDialogRequestPrivate,
+    },
+    response: {
+      response: UserConfirmationDialogResponsePrivate,
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 
@@ -850,6 +859,23 @@ export enum SelectCredentialDialogErrorReason {
 export declare interface SelectCredentialDialogResponsePrivate extends
     SelectCredentialDialogResponse {
   errorReason?: SelectCredentialDialogErrorReason;
+}
+
+export declare interface UserConfirmationDialogRequestPrivate extends
+    Omit<UserConfirmationDialogRequest, 'onDialogClosed'> {}
+
+export enum UserConfirmationDialogErrorReason {
+  // The hosting WebUI received the request, but the web client has not
+  // subscribed to the request yet. We couldn't show the dialog in this case.
+  DIALOG_PROMISE_NO_SUBSCRIBER = 0,
+  // The task requested a new user confirmation dialog before the current
+  // one completed.
+  PREEMPTED_BY_NEW_REQUEST = 1,
+}
+
+export declare interface UserConfirmationDialogResponsePrivate extends
+    UserConfirmationDialogResponse {
+  errorReason?: UserConfirmationDialogErrorReason;
 }
 
 export class ErrorWithReasonImpl<T extends keyof ErrorReasonTypes> extends Error
