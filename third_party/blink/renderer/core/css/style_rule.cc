@@ -300,70 +300,6 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
   NOTREACHED();
 }
 
-StyleRuleBase* StyleRuleBase::Copy() const {
-  switch (GetType()) {
-    case kStyle:
-      return To<StyleRule>(this)->Copy();
-    case kPage:
-      return To<StyleRulePage>(this)->Copy();
-    case kPageMargin:
-      return To<StyleRulePageMargin>(this)->Copy();
-    case kProperty:
-      return To<StyleRuleProperty>(this)->Copy();
-    case kRoute:
-      return To<StyleRuleRoute>(this)->Copy();
-    case kFontFace:
-      return To<StyleRuleFontFace>(this)->Copy();
-    case kFontPaletteValues:
-      return To<StyleRuleFontPaletteValues>(this)->Copy();
-    case kFontFeatureValues:
-      return To<StyleRuleFontFeatureValues>(this)->Copy();
-    case kFontFeature:
-      return To<StyleRuleFontFeature>(this)->Copy();
-    case kMedia:
-      return To<StyleRuleMedia>(this)->Copy();
-    case kNestedDeclarations:
-      return To<StyleRuleNestedDeclarations>(this)->Copy();
-    case kFunctionDeclarations:
-      return To<StyleRuleFunctionDeclarations>(this)->Copy();
-    case kScope:
-      return To<StyleRuleScope>(this)->Copy();
-    case kSupports:
-      return To<StyleRuleSupports>(this)->Copy();
-    case kImport:
-      // FIXME: Copy import rules.
-      NOTREACHED();
-    case kKeyframes:
-      return To<StyleRuleKeyframes>(this)->Copy();
-    case kLayerBlock:
-      return To<StyleRuleLayerBlock>(this)->Copy();
-    case kLayerStatement:
-      return To<StyleRuleLayerStatement>(this)->Copy();
-    case kNamespace:
-      return To<StyleRuleNamespace>(this)->Copy();
-    case kCharset:
-    case kKeyframe:
-    case kMixin:
-    case kApplyMixin:
-    case kContents:
-    case kCustomMedia:
-      NOTREACHED();
-    case kContainer:
-      return To<StyleRuleContainer>(this)->Copy();
-    case kCounterStyle:
-      return To<StyleRuleCounterStyle>(this)->Copy();
-    case kStartingStyle:
-      return To<StyleRuleStartingStyle>(this)->Copy();
-    case kViewTransition:
-      return To<StyleRuleViewTransition>(this)->Copy();
-    case kPositionTry:
-      return To<StyleRulePositionTry>(this)->Copy();
-    case kFunction:
-      return To<StyleRuleFunction>(this)->Copy();
-  }
-  NOTREACHED();
-}
-
 CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
                                            CSSStyleSheet* parent_sheet,
                                            CSSRule* parent_rule,
@@ -541,26 +477,6 @@ const CSSPropertyValueSet& StyleRule::Properties() const {
   return *properties_;
 }
 
-StyleRule::StyleRule(const StyleRule& other, size_t flattened_size)
-    : StyleRuleBase(kStyle), properties_(other.Properties().MutableCopy()) {
-  for (unsigned i = 0; i < flattened_size; ++i) {
-    UNSAFE_TODO(new (&SelectorArray()[i])
-                    CSSSelector(other.SelectorArray()[i]));
-  }
-  if (other.child_rules_ != nullptr) {
-    // Since we are getting copied, we also need to copy any child rules
-    // so that both old and new can be freely mutated. This also
-    // parses them eagerly (see comment in StyleSheetContents'
-    // copy constructor).
-    child_rules_ =
-        MakeGarbageCollected<GCedHeapVector<Member<StyleRuleBase>>>();
-    child_rules_->ReserveInitialCapacity(other.child_rules_->size());
-    for (const StyleRuleBase* child_rule : *other.child_rules_) {
-      child_rules_->push_back(child_rule->Copy());
-    }
-  }
-}
-
 StyleRule::~StyleRule() {
   // Clean up any RareData that the selectors may be owning.
   CSSSelector* selector = SelectorArray();
@@ -625,43 +541,36 @@ void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
 
 namespace {
 
-bool RenestRules(const HeapVector<Member<StyleRuleBase>>& old_rules,
-                 StyleRule* new_parent,
-                 HeapVector<Member<StyleRuleBase>>& result) {
-  bool renested_any = false;
+HeapVector<Member<StyleRuleBase>> CloneRules(
+    const HeapVector<Member<StyleRuleBase>>& old_rules,
+    StyleRule* new_parent) {
+  HeapVector<Member<StyleRuleBase>> result;
   for (StyleRuleBase* old_rule : old_rules) {
-    StyleRuleBase* renested = old_rule->Renest(new_parent);
-    renested_any |= (old_rule != renested);
-    result.push_back(renested);
+    result.push_back(old_rule->Clone(new_parent));
   }
-  return renested_any;
+  return result;
 }
 
 template <typename T>
-StyleRuleBase* RenestGroupRule(T* group_rule, StyleRule* new_parent) {
-  HeapVector<Member<StyleRuleBase>> new_child_rules;
-  if (!RenestRules(group_rule->ChildRules(), new_parent, new_child_rules)) {
-    return group_rule;
-  }
-  return MakeGarbageCollected<T>(*group_rule, std::move(new_child_rules));
+StyleRuleBase* CloneGroupRule(T* group_rule, StyleRule* new_parent) {
+  return MakeGarbageCollected<T>(
+      *group_rule, CloneRules(group_rule->ChildRules(), new_parent));
 }
 
 }  // namespace
 
-StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
+StyleRuleBase* StyleRuleBase::Clone(StyleRule* new_parent) {
   switch (GetType()) {
     case kStyle: {
       HeapVector<CSSSelector> selectors;
-      if (!CSSSelectorList::Renest(To<StyleRule>(this)->FirstSelector(),
-                                   new_parent, selectors)) {
-        return this;
-      }
+      CSSSelectorList::Renest(To<StyleRule>(this)->FirstSelector(), new_parent,
+                              selectors);
       auto* new_rule = StyleRule::Create(
           selectors, To<StyleRule>(this)->Properties().ImmutableCopyIfNeeded());
       if (GCedHeapVector<Member<StyleRuleBase>>* child_rules =
               To<StyleRule>(this)->ChildRules()) {
         for (StyleRuleBase* child_rule : *child_rules) {
-          new_rule->AddChildRule(child_rule->Renest(new_rule));
+          new_rule->AddChildRule(child_rule->Clone(new_rule));
         }
       }
       return new_rule;
@@ -669,40 +578,37 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
     case kScope: {
       const StyleScope* old_style_scope =
           &To<StyleRuleScope>(this)->GetStyleScope();
-      const StyleScope* new_style_scope = old_style_scope->Renest(new_parent);
-      if (old_style_scope == new_style_scope) {
-        return this;
-      }
+      const StyleScope* new_style_scope = old_style_scope->Clone(new_parent);
       CHECK(new_style_scope);
-      HeapVector<Member<StyleRuleBase>> new_child_rules;
-      RenestRules(To<StyleRuleScope>(this)->ChildRules(),
-                  new_style_scope->RuleForNesting(), new_child_rules);
-      // Note that `new_child_rules` is usable here even if `RenestRules`
-      // returned false.
+      HeapVector<Member<StyleRuleBase>> new_child_rules =
+          CloneRules(To<StyleRuleScope>(this)->ChildRules(),
+                     new_style_scope->RuleForNesting());
       return MakeGarbageCollected<StyleRuleScope>(*new_style_scope,
                                                   std::move(new_child_rules));
     }
     case kLayerBlock:
-      return RenestGroupRule(To<StyleRuleLayerBlock>(this), new_parent);
-    case kContainer:
-      return RenestGroupRule(To<StyleRuleContainer>(this), new_parent);
-    case kMedia:
-      return RenestGroupRule(To<StyleRuleMedia>(this), new_parent);
-    case kRoute:
-      return RenestGroupRule(To<StyleRuleRoute>(this), new_parent);
-    case kSupports:
-      return RenestGroupRule(To<StyleRuleSupports>(this), new_parent);
-    case kStartingStyle: {
-      HeapVector<Member<StyleRuleBase>> result;
-      if (!RenestRules(To<StyleRuleStartingStyle>(this)->ChildRules(),
-                       new_parent, result)) {
-        return this;
-      }
-      return MakeGarbageCollected<StyleRuleStartingStyle>(std::move(result));
+      return CloneGroupRule(To<StyleRuleLayerBlock>(this), new_parent);
+    case kContainer: {
+      StyleRuleContainer* container_rule = To<StyleRuleContainer>(this);
+      return MakeGarbageCollected<StyleRuleContainer>(
+          *MakeGarbageCollected<ContainerQuery>(
+              container_rule->GetContainerQuery()),
+          CloneRules(container_rule->ChildRules(), new_parent));
     }
-    case kPage:
-      // Can not contain style rules.
-      return this;
+    case kMedia:
+      return CloneGroupRule(To<StyleRuleMedia>(this), new_parent);
+    case kRoute:
+      return CloneGroupRule(To<StyleRuleRoute>(this), new_parent);
+    case kSupports:
+      return CloneGroupRule(To<StyleRuleSupports>(this), new_parent);
+    case kStartingStyle:
+      return CloneGroupRule(To<StyleRuleStartingStyle>(this), new_parent);
+    case kPage: {
+      return MakeGarbageCollected<StyleRulePage>(
+          To<StyleRulePage>(this)->SelectorList()->Renest(new_parent),
+          To<StyleRulePage>(this)->Properties().ImmutableCopyIfNeeded(),
+          CloneRules(To<StyleRulePage>(this)->ChildRules(), new_parent));
+    }
     case kMixin:
     case kApplyMixin:
     case kContents:
@@ -732,27 +638,63 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
           nested_declarations_rule->NestingType(), new_inner_rule);
     }
     case kFunctionDeclarations:
-    case kFunction:
-      // Can not contain style rules.
-      return this;
-    case kPageMargin:
+      return MakeGarbageCollected<StyleRuleFunctionDeclarations>(
+          To<StyleRuleFunctionDeclarations>(*this));
+    case kFunction: {
+      StyleRuleFunction* function_rule = To<StyleRuleFunction>(this);
+      HeapVector<Member<StyleRuleBase>> result =
+          CloneRules(function_rule->ChildRules(), new_parent);
+      return MakeGarbageCollected<StyleRuleFunction>(
+          function_rule->Name(), function_rule->GetParameters(),
+          std::move(result), function_rule->GetReturnType());
+    }
     case kProperty:
+      return MakeGarbageCollected<StyleRuleProperty>(
+          To<StyleRuleProperty>(*this));
+    case kPageMargin:
+      return MakeGarbageCollected<StyleRulePageMargin>(
+          To<StyleRulePageMargin>(*this));
     case kFontFace:
+      return MakeGarbageCollected<StyleRuleFontFace>(
+          To<StyleRuleFontFace>(*this));
     case kFontPaletteValues:
+      return MakeGarbageCollected<StyleRuleFontPaletteValues>(
+          To<StyleRuleFontPaletteValues>(*this));
     case kFontFeatureValues:
+      return MakeGarbageCollected<StyleRuleFontFeatureValues>(
+          To<StyleRuleFontFeatureValues>(*this));
     case kFontFeature:
+      return MakeGarbageCollected<StyleRuleFontFeature>(
+          To<StyleRuleFontFeature>(*this));
     case kImport:
+      return MakeGarbageCollected<StyleRuleImport>(To<StyleRuleImport>(*this));
     case kKeyframes:
+      return MakeGarbageCollected<StyleRuleKeyframes>(
+          To<StyleRuleKeyframes>(*this));
     case kLayerStatement:
+      return MakeGarbageCollected<StyleRuleLayerStatement>(
+          To<StyleRuleLayerStatement>(*this));
     case kNamespace:
+      return MakeGarbageCollected<StyleRuleNamespace>(
+          To<StyleRuleNamespace>(*this));
     case kCounterStyle:
+      return MakeGarbageCollected<StyleRuleCounterStyle>(
+          To<StyleRuleCounterStyle>(*this));
     case kKeyframe:
+      return MakeGarbageCollected<StyleRuleKeyframe>(
+          To<StyleRuleKeyframe>(*this));
     case kCharset:
+      return MakeGarbageCollected<StyleRuleCharset>(
+          To<StyleRuleCharset>(*this));
     case kViewTransition:
+      return MakeGarbageCollected<StyleRuleViewTransition>(
+          To<StyleRuleViewTransition>(*this));
     case kPositionTry:
+      return MakeGarbageCollected<StyleRulePositionTry>(
+          To<StyleRulePositionTry>(*this));
     case kCustomMedia:
-      // Cannot have any child rules.
-      return this;
+      return MakeGarbageCollected<StyleRuleCustomMedia>(
+          To<StyleRuleCustomMedia>(*this));
   }
 }
 
@@ -825,10 +767,6 @@ StyleRuleScope::StyleRuleScope(const StyleScope& style_scope,
                                HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleGroup(kScope, std::move(rules)), style_scope_(&style_scope) {}
 
-StyleRuleScope::StyleRuleScope(const StyleRuleScope& other)
-    : StyleRuleGroup(other),
-      style_scope_(MakeGarbageCollected<StyleScope>(*other.style_scope_)) {}
-
 void StyleRuleScope::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(style_scope_);
   StyleRuleGroup::TraceAfterDispatch(visitor);
@@ -837,13 +775,6 @@ void StyleRuleScope::TraceAfterDispatch(blink::Visitor* visitor) const {
 StyleRuleGroup::StyleRuleGroup(RuleType type,
                                HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleBase(type), child_rules_(std::move(rules)) {}
-
-StyleRuleGroup::StyleRuleGroup(const StyleRuleGroup& group_rule)
-    : StyleRuleBase(group_rule), child_rules_(group_rule.child_rules_.size()) {
-  for (unsigned i = 0; i < child_rules_.size(); ++i) {
-    child_rules_[i] = group_rule.child_rules_[i]->Copy();
-  }
-}
 
 void StyleRuleGroup::WrapperInsertRule(CSSStyleSheet* parent_sheet,
                                        unsigned index,
@@ -885,9 +816,6 @@ StyleRuleLayerBlock::StyleRuleLayerBlock(
     HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleGroup(kLayerBlock, std::move(rules)), name_(std::move(name)) {}
 
-StyleRuleLayerBlock::StyleRuleLayerBlock(const StyleRuleLayerBlock& other) =
-    default;
-
 StyleRuleLayerBlock::StyleRuleLayerBlock(
     const StyleRuleLayerBlock& other,
     HeapVector<Member<StyleRuleBase>> rules)
@@ -920,17 +848,12 @@ Vector<String> StyleRuleLayerStatement::GetNamesAsStrings() const {
   return result;
 }
 
-StyleRulePage::StyleRulePage(CSSSelectorList* selector_list,
+StyleRulePage::StyleRulePage(const CSSSelectorList* selector_list,
                              CSSPropertyValueSet* properties,
                              HeapVector<Member<StyleRuleBase>> child_rules)
     : StyleRuleGroup(kPage, std::move(child_rules)),
       properties_(properties),
       selector_list_(selector_list) {}
-
-StyleRulePage::StyleRulePage(const StyleRulePage& page_rule)
-    : StyleRuleGroup(page_rule),
-      properties_(page_rule.properties_->MutableCopy()),
-      selector_list_(page_rule.selector_list_->Copy()) {}
 
 MutableCSSPropertyValueSet& StyleRulePage::MutableProperties() {
   if (!properties_->IsMutable()) {
@@ -976,9 +899,6 @@ StyleRuleCondition::StyleRuleCondition(RuleType type,
                                        HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleGroup(type, std::move(rules)), condition_text_(condition_text) {}
 
-StyleRuleCondition::StyleRuleCondition(
-    const StyleRuleCondition& condition_rule) = default;
-
 StyleRuleMedia::StyleRuleMedia(const MediaQuerySet* media,
                                HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleCondition(kMedia, std::move(rules)), media_queries_(media) {}
@@ -997,10 +917,6 @@ StyleRuleSupports::StyleRuleSupports(const String& condition_text,
                                      HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleCondition(kSupports, condition_text, std::move(rules)),
       condition_is_supported_(condition_is_supported) {}
-
-StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& supports_rule)
-    : StyleRuleCondition(supports_rule),
-      condition_is_supported_(supports_rule.condition_is_supported_) {}
 
 StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& other,
                                      HeapVector<Member<StyleRuleBase>> rules)
@@ -1027,13 +943,6 @@ StyleRuleContainer::StyleRuleContainer(ContainerQuery& container_query,
                          container_query.ToString(),
                          std::move(rules)),
       container_query_(&container_query) {}
-
-StyleRuleContainer::StyleRuleContainer(const StyleRuleContainer& container_rule)
-    : StyleRuleCondition(container_rule) {
-  DCHECK(container_rule.container_query_);
-  container_query_ =
-      MakeGarbageCollected<ContainerQuery>(*container_rule.container_query_);
-}
 
 StyleRuleContainer::StyleRuleContainer(const StyleRuleContainer& other,
                                        HeapVector<Member<StyleRuleBase>> rules)

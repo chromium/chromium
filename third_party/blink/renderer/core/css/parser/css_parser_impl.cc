@@ -2431,7 +2431,7 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   // the selectors (and will be kept alive by them), it doesn't actually
   // contain the child rules and isn't used for anything anymore. Once
   // a mixin is actually used (in @apply), we clone all the rules and call
-  // Renest(), which changes all the parent references to @apply's parent.
+  // Clone(), which changes all the parent references to @apply's parent.
   fake_parent_rule->EnsureChildRules();
   return MakeGarbageCollected<StyleRuleMixin>(
       name, std::move(*parameters),

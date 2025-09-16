@@ -150,6 +150,7 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   // Returns a re-nested selector list (see CSSSelector::Renest),
   // or `this` if no re-nested was required.
   CSSSelectorList* Renest(StyleRule* new_parent);
+  const CSSSelectorList* Renest(StyleRule* new_parent) const;
 
   CSSSelectorList(const CSSSelectorList&) = delete;
   CSSSelectorList& operator=(const CSSSelectorList&) = delete;

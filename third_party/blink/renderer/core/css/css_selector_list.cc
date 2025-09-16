@@ -138,6 +138,14 @@ CSSSelectorList* CSSSelectorList::Renest(StyleRule* new_parent) {
   return this;
 }
 
+const CSSSelectorList* CSSSelectorList::Renest(StyleRule* new_parent) const {
+  HeapVector<CSSSelector> selectors;
+  if (IsValid() && Renest(First(), new_parent, selectors)) {
+    return AdoptSelectorVector(selectors);
+  }
+  return this;
+}
+
 String CSSSelectorList::SelectorsText(const CSSSelector* first) {
   StringBuilder result;
 
