@@ -13,6 +13,7 @@
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -42,7 +43,9 @@ class AutofillAiSaveStrikeDatabaseByHost;
 // their own EntityDataManager instance, they use the same underlying database.
 // Therefore, it is the responsibility of the callers to ensure that no data
 // from an incognito session is persisted unintentionally.
-class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
+class EntityDataManager : public KeyedService,
+                          public AutofillWebDataServiceObserverOnUISequence,
+                          history::HistoryServiceObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -88,6 +91,9 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
   base::optional_ref<const EntityInstance> GetEntityInstance(
       const EntityInstance::EntityId& guid) const LIFETIME_BOUND;
 
+  // AutofillWebDataServiceObserver:
+  void OnAutofillChangedBySync(syncer::DataType data_type) override;
+
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService*,
                           const history::DeletionInfo& deletion_info) override;
@@ -122,6 +128,10 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
   // The result of the last successful LoadEntities() query.
   // All entries are identifiable by their EntityInstance::guid().
   base::flat_set<EntityInstance, EntityInstance::CompareByGuid> entities_;
+
+  base::ScopedObservation<AutofillWebDataService,
+                          AutofillWebDataServiceObserverOnUISequence>
+      webdata_service_observation_{this};
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};

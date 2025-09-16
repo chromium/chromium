@@ -12,9 +12,24 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/sync/base/data_type.h"
 #include "components/webdata/common/web_data_results.h"
 
 namespace autofill {
+
+namespace {
+
+// Returns true if any of the features that use wallet public passes are
+// enabled.
+bool WalletPublicPassesEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillAiWalletFlightReservation) ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillAiWalletVehicleRegistration);
+}
+
+}  // namespace
 
 EntityDataManager::EntityDataManager(
     const PrefService* pref_service,
@@ -24,6 +39,9 @@ EntityDataManager::EntityDataManager(
     strike_database::StrikeDatabaseBase* strike_database)
     : webdata_service_(std::move(webdata_service)) {
   CHECK(webdata_service_);
+  if (WalletPublicPassesEnabled()) {
+    webdata_service_observation_.Observe(webdata_service_.get());
+  }
   LoadEntities();
   if (history_service) {
     history_service_observation_.Observe(history_service);
@@ -130,6 +148,12 @@ base::optional_ref<EntityInstance> EntityDataManager::GetMutableEntityInstance(
     return std::nullopt;
   }
   return *it;
+}
+
+void EntityDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
+  if (data_type == syncer::AUTOFILL_VALUABLE && WalletPublicPassesEnabled()) {
+    LoadEntities();
+  }
 }
 
 void EntityDataManager::OnHistoryDeletions(

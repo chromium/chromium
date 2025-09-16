@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -53,15 +54,20 @@ class MockEntityDataManagerObserver : public EntityDataManager::Observer {
 // Test fixture for the asynchronous database operations in EntityDataManager.
 class EntityDataManagerTest : public testing::Test {
  public:
-  EntityDataManagerTest() = default;
+  EntityDataManagerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAutofillAiWithDataSchema,
+         features::kAutofillAiWalletFlightReservation,
+         features::kAutofillAiWalletVehicleRegistration},
+        {});
+  }
 
   AutofillWebDataServiceTestHelper& helper() { return helper_; }
 
   TestAutofillClient& client() { return client_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillAiWithDataSchema};
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   AutofillWebDataServiceTestHelper helper_{std::make_unique<EntityTable>()};
@@ -266,6 +272,62 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, GetEntityInstance) {
   EXPECT_EQ(entity_data_manager().GetEntityInstance(
                 EntityInstance::EntityId(base::Uuid::GenerateRandomV4())),
             std::nullopt);
+}
+
+// Tests that a change notification for AUTOFILL_VALUABLE from sync triggers a
+// reload of entities.
+TEST_F(EntityDataManagerTest_InitiallyEmpty, OnAutofillValuableChangedBySync) {
+  MockEntityDataManagerObserver observer;
+  base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&entity_data_manager());
+
+  // 1. Add an entity directly to the DB to simulate a sync change.
+  EntityInstance vh = test::GetVehicleEntityInstance();
+  helper().autofill_webdata_service()->AddOrUpdateEntityInstance(
+      vh, base::DoNothing());
+
+  // The EDM's cache is not updated yet.
+  EXPECT_THAT(GetEntityInstances(), IsEmpty());
+
+  // 2. Trigger the sync notification.
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(1);
+  helper().autofill_webdata_service()->GetAutofillBackend(
+      base::BindOnce([](AutofillWebDataBackend* backend) {
+        backend->NotifyOnAutofillChangedBySync(
+            syncer::DataType::AUTOFILL_VALUABLE);
+      }));
+  helper().WaitUntilIdle();
+  // 3. Verify that the cache is reloaded.
+  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(vh));
+}
+
+// Tests that a change notification for other data types does not trigger a
+// reload.
+TEST_F(EntityDataManagerTest_InitiallyEmpty, OnOtherDataTypeChangedBySync) {
+  MockEntityDataManagerObserver observer;
+  base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&entity_data_manager());
+
+  // 1. Add an entity directly to the DB.
+  EntityInstance vh = test::GetVehicleEntityInstance();
+  helper().autofill_webdata_service()->AddOrUpdateEntityInstance(
+      vh, base::DoNothing());
+
+  // The EDM's cache is not updated yet.
+  EXPECT_THAT(GetEntityInstances(), IsEmpty());
+
+  // 2. Trigger the sync notification for a different data type.
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(0);
+  helper().autofill_webdata_service()->GetAutofillBackend(
+      base::BindOnce([](AutofillWebDataBackend* backend) {
+        backend->NotifyOnAutofillChangedBySync(
+            syncer::DataType::AUTOFILL_PROFILE);
+      }));
+  helper().WaitUntilIdle();
+  // 3. Verify that the cache is NOT reloaded.
+  EXPECT_THAT(GetEntityInstances(), IsEmpty());
 }
 
 }  // namespace
