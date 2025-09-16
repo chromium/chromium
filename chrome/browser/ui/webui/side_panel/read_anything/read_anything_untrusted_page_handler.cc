@@ -532,6 +532,7 @@ void ReadAnythingUntrustedPageHandler::OnExtensionReady(
   if (extension->id() != extensionId) {
     return;
   }
+  VLOG(1) << "TTS component extension ready";
   page_->OnTtsEngineInstalled();
 }
 #endif

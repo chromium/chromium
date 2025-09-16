@@ -2050,6 +2050,7 @@ void ReadAnythingAppController::OnDeviceLocked() {
 }
 #else
 void ReadAnythingAppController::OnTtsEngineInstalled() {
+  VLOG(1) << "OnTtsEngineInstalled";
   ExecuteJavaScript("chrome.readingMode.onTtsEngineInstalled()");
 }
 #endif
