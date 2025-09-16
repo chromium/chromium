@@ -317,11 +317,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   friend class NativeThemeAuraTest;
   friend class NativeThemeBaseTest;
 
-  SkRect AlignSliderTrack(const gfx::Rect& slider_rect,
-                          const NativeTheme::SliderExtraParams& slider,
-                          bool is_value,
-                          float thickness) const;
-
   gfx::RectF GetArrowRect(const gfx::Rect& rect) const;
 
   SkColor ControlsBackgroundColorForState(

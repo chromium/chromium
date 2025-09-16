@@ -79,6 +79,38 @@ SkColor CustomAccentColorForState(const SkColor& color,
   return color_utils::HSLToSkColor(hsl, SkColorGetA(color));
 }
 
+SkRect AlignSliderTrack(const gfx::Rect& slider_rect,
+                        const NativeTheme::SliderExtraParams& extra_params,
+                        bool is_value,
+                        float thickness) {
+  const gfx::RectF r(slider_rect);
+  const gfx::PointF center = r.CenterPoint();
+  const float half_track_thickness = thickness / 2;
+
+  if (extra_params.vertical) {
+    const float top = is_value && extra_params.right_to_left
+                          ? r.y() + extra_params.thumb_y + half_track_thickness
+                          : r.y();
+    const float bottom =
+        is_value && !extra_params.right_to_left
+            ? r.y() + extra_params.thumb_y + half_track_thickness
+            : r.bottom();
+    return SkRect::MakeLTRB(
+        std::max(r.x(), center.x() - half_track_thickness), top,
+        std::min(r.right(), center.x() + half_track_thickness), bottom);
+  }
+
+  const float left = is_value && extra_params.right_to_left
+                         ? r.x() + extra_params.thumb_x + half_track_thickness
+                         : r.x();
+  const float right = is_value && !extra_params.right_to_left
+                          ? r.x() + extra_params.thumb_x + half_track_thickness
+                          : r.right();
+  return SkRect::MakeLTRB(
+      left, std::max(r.y(), center.y() - half_track_thickness), right,
+      std::min(r.bottom(), center.y() + half_track_thickness));
+}
+
 }  // namespace
 
 gfx::Size NativeThemeBase::GetPartSize(Part part,
@@ -1104,39 +1136,6 @@ void NativeThemeBase::PaintTextField(cc::PaintCanvas* canvas,
     border_flags.setStrokeWidth(border_width);
     canvas->drawRoundRect(bounds, radius, radius, border_flags);
   }
-}
-
-SkRect NativeThemeBase::AlignSliderTrack(
-    const gfx::Rect& slider_rect,
-    const NativeTheme::SliderExtraParams& extra_params,
-    bool is_value,
-    float thickness) const {
-  const gfx::RectF r(slider_rect);
-  const gfx::PointF center = r.CenterPoint();
-  const float half_track_thickness = thickness / 2;
-
-  if (extra_params.vertical) {
-    const float top = is_value && extra_params.right_to_left
-                          ? r.y() + extra_params.thumb_y + half_track_thickness
-                          : r.y();
-    const float bottom =
-        is_value && !extra_params.right_to_left
-            ? r.y() + extra_params.thumb_y + half_track_thickness
-            : r.bottom();
-    return SkRect::MakeLTRB(
-        std::max(r.x(), center.x() - half_track_thickness), top,
-        std::min(r.right(), center.x() + half_track_thickness), bottom);
-  }
-
-  const float left = is_value && extra_params.right_to_left
-                         ? r.x() + extra_params.thumb_x + half_track_thickness
-                         : r.x();
-  const float right = is_value && !extra_params.right_to_left
-                          ? r.x() + extra_params.thumb_x + half_track_thickness
-                          : r.right();
-  return SkRect::MakeLTRB(
-      left, std::max(r.y(), center.y() - half_track_thickness), right,
-      std::min(r.bottom(), center.y() + half_track_thickness));
 }
 
 gfx::RectF NativeThemeBase::GetArrowRect(const gfx::Rect& rect) const {

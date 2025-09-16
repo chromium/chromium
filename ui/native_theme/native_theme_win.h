@@ -19,8 +19,6 @@
 #include "ui/gfx/win/singleton_hwnd.h"
 #include "ui/native_theme/native_theme.h"
 
-class SkCanvas;
-
 namespace ui {
 
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
@@ -66,22 +64,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
  private:
   friend class base::NoDestructor<NativeThemeWin>;
 
-  enum ThemeName {
-    BUTTON,
-    LIST,
-    MENU,
-    MENULIST,
-    SCROLLBAR,
-    STATUS,
-    TAB,
-    TEXTFIELD,
-    TRACKBAR,
-    WINDOW,
-    PROGRESS,
-    SPIN,
-    LAST
-  };
-
   bool IsUsingHighContrastThemeInternal() const;
   void CloseHandlesInternal();
 
@@ -94,118 +76,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   // Update the locally cached set of system colors.
   void UpdateSystemColors();
 
-  // Painting functions that paint to PaintCanvas.
-  void PaintMenuSeparator(cc::PaintCanvas* canvas,
-                          const ColorProvider* color_provider,
-                          const MenuSeparatorExtraParams& extra_params) const;
-  void PaintMenuGutter(cc::PaintCanvas* canvas,
-                       const ColorProvider* color_provider,
-                       const gfx::Rect& rect) const;
-  void PaintMenuBackground(cc::PaintCanvas* canvas,
-                           const ColorProvider* color_provider,
-                           const gfx::Rect& rect) const;
-
-  // Paint directly to canvas' HDC.
-  void PaintDirect(SkCanvas* destination_canvas,
-                   HDC hdc,
-                   Part part,
-                   State state,
-                   const gfx::Rect& rect,
-                   const ExtraParams& extra_params) const;
-
-  // Create a temporary HDC, paint to that, clean up the alpha values in the
-  // temporary HDC, and then blit the result to canvas.  This is to work around
-  // the fact that Windows XP and some classic themes give bogus alpha values.
-  void PaintIndirect(cc::PaintCanvas* destination_canvas,
-                     Part part,
-                     State state,
-                     const gfx::Rect& rect,
-                     const ExtraParams& extra_params) const;
-
-  // Various helpers to paint specific parts.
-  void PaintButtonClassic(HDC hdc,
-                          Part part,
-                          State state,
-                          RECT* rect,
-                          const ButtonExtraParams& extra_params) const;
-  void PaintLeftMenuArrowThemed(HDC hdc,
-                                HANDLE handle,
-                                int part_id,
-                                int state_id,
-                                const gfx::Rect& rect) const;
-  void PaintScrollbarArrowClassic(HDC hdc,
-                                  Part part,
-                                  State state,
-                                  RECT* rect) const;
-  void PaintScrollbarTrackClassic(
-      SkCanvas* canvas,
-      HDC hdc,
-      RECT* rect,
-      const ScrollbarTrackExtraParams& extra_params) const;
-  void PaintHorizontalTrackbarThumbClassic(
-      SkCanvas* canvas,
-      HDC hdc,
-      const RECT& rect,
-      const TrackbarExtraParams& extra_params) const;
-  void PaintProgressBarOverlayThemed(
-      HDC hdc,
-      HANDLE handle,
-      RECT* bar_rect,
-      RECT* value_rect,
-      const ProgressBarExtraParams& extra_params) const;
-  void PaintTextFieldThemed(HDC hdc,
-                            HANDLE handle,
-                            HBRUSH bg_brush,
-                            int part_id,
-                            int state_id,
-                            RECT* rect,
-                            const TextFieldExtraParams& extra_params) const;
-  void PaintTextFieldClassic(HDC hdc,
-                             HBRUSH bg_brush,
-                             RECT* rect,
-                             const TextFieldExtraParams& extra_params) const;
-
-  // Paints a theme part, with support for scene scaling in high-DPI mode.
-  // |theme| is the theme handle. |hdc| is the handle for the device context.
-  // |part_id| is the identifier for the part (e.g. thumb gripper). |state_id|
-  // is the identifier for the rendering state of the part (e.g. hover). |rect|
-  // is the bounds for rendering, expressed in logical coordinates.
-  void PaintScaledTheme(HANDLE theme,
-                        HDC hdc,
-                        int part_id,
-                        int state_id,
-                        const gfx::Rect& rect) const;
-
-  // Get the windows theme name/part/state.  These three helper functions are
-  // used only by GetPartSize(), as each of the corresponding PaintXXX()
-  // methods do further validation of the part and state that is required for
-  // getting the size.
-  static ThemeName GetThemeName(Part part);
-  static int GetWindowsPart(Part part,
-                            State state,
-                            const ExtraParams& extra_params);
-  static int GetWindowsState(Part part,
-                             State state,
-                             const ExtraParams& extra_params);
-
-  void PaintFrameControl(HDC hdc,
-                         const gfx::Rect& rect,
-                         UINT type,
-                         UINT state,
-                         bool is_selected,
-                         State control_state) const;
-
-  // Returns a handle to the theme data.
-  HANDLE GetThemeHandle(ThemeName theme_name) const;
-
   void RegisterThemeRegkeyObserver();
   void UpdateDarkModeStatus();
 
   // Dark Mode registry key.
   base::win::RegKey hkcu_themes_regkey_;
-
-  // A cache of open theme handles.
-  mutable HANDLE theme_handles_[LAST];
 
   // Color/high contrast mode change observer.
   base::CallbackListSubscription hwnd_subscription_ =
