@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HangWatcher.{ProcessType}.UncoveredStartupTime" units="ms"
-    expires_after="2026-01-11">
+    expires_after="2026-03-15">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

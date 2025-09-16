@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.CoralService.EmbeddingEngine.ModelLoaded"
-    enum="BooleanLoaded" expires_after="2025-11-19">
+    enum="BooleanLoaded" expires_after="2026-03-15">
   <owner>hcyang@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -517,7 +517,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Platform.CoralService.TitleGenerationEngine.LengthInCharacters"
-    units="characters" expires_after="2025-11-19">
+    units="characters" expires_after="2026-03-15">
   <owner>hcyang@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -833,7 +833,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Collection.Allowed"
     enum="Platform.FbPreprocessor.CollectionAllowedStatus"
-    expires_after="2026-01-11">
+    expires_after="2026-03-15">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -845,7 +845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Output.Number"
-    units="count" expires_after="2026-01-11">
+    units="count" expires_after="2026-03-15">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1054,7 +1054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexPageFlipFlakes2" units="flakes"
-    expires_after="2025-12-06">
+    expires_after="2026-03-15">
   <owner>andrebraga@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1966,7 +1966,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.DlcUninstallResult"
-    enum="ModemfwdDlcUninstallResult" expires_after="2026-01-11">
+    enum="ModemfwdDlcUninstallResult" expires_after="2026-03-15">
   <owner>andrewlassalle@google.com</owner>
   <owner>ujjwalpande@google.com</owner>
   <summary>
@@ -1997,7 +1997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.FWUpdateLocation"
-    enum="ModemfwdFWUpdateLocation" expires_after="2026-01-11">
+    enum="ModemfwdFWUpdateLocation" expires_after="2026-03-15">
   <owner>andrewlassalle@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

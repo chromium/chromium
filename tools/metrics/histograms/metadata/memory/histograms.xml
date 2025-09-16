@@ -1345,7 +1345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Browser2{ProcessMemoryAllocator2}"
-    units="MB" expires_after="2026-01-10">
+    units="MB" expires_after="2026-03-15">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
@@ -1408,7 +1408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Extension2{ProcessMemoryAllocator2}"
-    units="MB" expires_after="2026-01-10">
+    units="MB" expires_after="2026-03-15">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
@@ -1562,7 +1562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.NetworkService2{ProcessMemoryAllocator2}"
-    units="MiB" expires_after="2026-01-10">
+    units="MiB" expires_after="2026-03-15">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

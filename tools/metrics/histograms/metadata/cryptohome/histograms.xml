@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DownloadsBindMountMigration.{Operation}"
-    enum="PopularOSErrno" expires_after="2026-01-11">
+    enum="PopularOSErrno" expires_after="2026-03-15">
   <owner>wenbojie@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DownloadsBindMountMigrationStatus"
-    enum="CryptohomeDownloadsMigrationStatus" expires_after="2026-01-11">
+    enum="CryptohomeDownloadsMigrationStatus" expires_after="2026-03-15">
   <owner>wenbojie@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

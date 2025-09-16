@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.GroupDBInitSuccess" enum="BooleanSuccess"
-    expires_after="2026-01-11">
+    expires_after="2026-03-15">
   <owner>mmoskvitin@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.Intent.{Progress}" enum="DataSharingIntentType"
-    expires_after="2026-01-11">
+    expires_after="2026-03-15">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>

@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.SetEncryptionKeysForSecurityDomain{ProfileType}"
-    enum="SecurityDomainId" expires_after="2026-01-11">
+    enum="SecurityDomainId" expires_after="2026-03-15">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
