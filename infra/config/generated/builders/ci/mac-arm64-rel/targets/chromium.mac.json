@@ -1616,6 +1616,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/chromedriver:chromedriver_replay_unittests",
+        "module_scheme": "single",
         "name": "chromedriver_replay_unittests",
         "swarming": {
           "dimensions": {
@@ -1638,6 +1639,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//components:components_perftests",
+        "module_scheme": "flat",
         "name": "components_perftests",
         "swarming": {
           "dimensions": {
@@ -1731,6 +1733,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/installer/mac:mac_signing_tests",
+        "module_scheme": "pyunit",
         "name": "mac_signing_tests",
         "swarming": {
           "dimensions": {
@@ -1818,6 +1821,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//ui/views:views_perftests",
+        "module_scheme": "single",
         "name": "views_perftests",
         "swarming": {
           "dimensions": {
@@ -3421,6 +3425,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/chromedriver:chromedriver_replay_unittests",
+        "module_scheme": "single",
         "name": "chromedriver_replay_unittests",
         "swarming": {
           "dimensions": {
@@ -3444,6 +3449,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//components:components_perftests",
+        "module_scheme": "flat",
         "name": "components_perftests",
         "swarming": {
           "dimensions": {
@@ -3541,6 +3547,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/installer/mac:mac_signing_tests",
+        "module_scheme": "pyunit",
         "name": "mac_signing_tests",
         "swarming": {
           "dimensions": {
@@ -3632,6 +3639,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//ui/views:views_perftests",
+        "module_scheme": "single",
         "name": "views_perftests",
         "swarming": {
           "dimensions": {
@@ -5291,6 +5299,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/chromedriver:chromedriver_replay_unittests",
+        "module_scheme": "single",
         "name": "chromedriver_replay_unittests",
         "swarming": {
           "dimensions": {
@@ -5314,6 +5323,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//components:components_perftests",
+        "module_scheme": "flat",
         "name": "components_perftests",
         "swarming": {
           "dimensions": {
@@ -5411,6 +5421,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/installer/mac:mac_signing_tests",
+        "module_scheme": "pyunit",
         "name": "mac_signing_tests",
         "swarming": {
           "dimensions": {
@@ -5502,6 +5513,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//ui/views:views_perftests",
+        "module_scheme": "single",
         "name": "views_perftests",
         "swarming": {
           "dimensions": {
@@ -7495,6 +7507,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/chromedriver:chromedriver_replay_unittests",
+        "module_scheme": "single",
         "name": "chromedriver_replay_unittests",
         "swarming": {
           "dimensions": {
@@ -7523,6 +7536,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//components:components_perftests",
+        "module_scheme": "flat",
         "name": "components_perftests",
         "swarming": {
           "dimensions": {
@@ -7661,6 +7675,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/installer/mac:mac_signing_tests",
+        "module_scheme": "pyunit",
         "name": "mac_signing_tests",
         "swarming": {
           "dimensions": {
@@ -7804,6 +7819,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//ui/views:views_perftests",
+        "module_scheme": "single",
         "name": "views_perftests",
         "swarming": {
           "dimensions": {

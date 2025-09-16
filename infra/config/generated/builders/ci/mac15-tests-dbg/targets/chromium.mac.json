@@ -1641,6 +1641,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//ui/views:views_perftests",
+        "module_scheme": "single",
         "name": "views_perftests",
         "swarming": {
           "dimensions": {

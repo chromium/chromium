@@ -110,6 +110,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//build/rust/tests:build_rust_tests",
+        "module_scheme": "flat",
         "name": "build_rust_tests",
         "swarming": {
           "dimensions": {

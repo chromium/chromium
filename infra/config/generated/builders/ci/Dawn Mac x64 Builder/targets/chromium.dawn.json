@@ -240,6 +240,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//third_party/dawn/src/dawn/tests:dawn_perf_tests",
+        "module_scheme": "single",
         "name": "dawn_perf_tests",
         "swarming": {
           "dimensions": {
@@ -821,6 +822,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//third_party/dawn/src/dawn/tests:dawn_perf_tests",
+        "module_scheme": "single",
         "name": "dawn_perf_tests",
         "swarming": {
           "dimensions": {
@@ -1389,6 +1391,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//third_party/dawn/src/dawn/tests:dawn_perf_tests",
+        "module_scheme": "single",
         "name": "dawn_perf_tests",
         "swarming": {
           "dimensions": {
@@ -1953,6 +1956,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//third_party/dawn/src/dawn/tests:dawn_perf_tests",
+        "module_scheme": "single",
         "name": "dawn_perf_tests",
         "swarming": {
           "dimensions": {

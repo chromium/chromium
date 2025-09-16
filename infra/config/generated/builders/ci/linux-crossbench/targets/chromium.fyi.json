@@ -6,6 +6,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:crossbench_smoketests",
+        "module_scheme": "single",
         "name": "crossbench_smoketests",
         "swarming": {
           "dimensions": {

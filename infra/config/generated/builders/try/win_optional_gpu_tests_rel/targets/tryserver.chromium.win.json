@@ -339,6 +339,7 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//gpu:command_buffer_perftests",
+        "module_scheme": "single",
         "name": "passthrough_command_buffer_perftests 10de:2184",
         "swarming": {
           "dimensions": {

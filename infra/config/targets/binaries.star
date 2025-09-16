@@ -555,6 +555,7 @@ targets.binaries.console_test_launcher(
 targets.binaries.generated_script(
     name = "chrome_private_code_test",
     label = "//chrome:chrome_private_code_test",
+    module_scheme = "single",
 )
 
 targets.binaries.console_test_launcher(
@@ -713,6 +714,7 @@ targets.binaries.script(
     script = "//chrome/test/chromedriver/log_replay/client_replay_unittest.py",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "single",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -751,6 +753,7 @@ targets.binaries.script(
             "--smoke-test-mode",
         ],
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -784,6 +787,7 @@ targets.binaries.script(
             "--smoke-test-mode",
         ],
     ),
+    module_scheme = "flat",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -955,6 +959,7 @@ targets.binaries.generated_script(
         "--fileserver",
         "--luci-chromium",
     ],
+    module_scheme = "single",
 )
 
 targets.binaries.console_test_launcher(
@@ -991,6 +996,7 @@ targets.binaries.script(
             "--smoke-test-mode",
         ],
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -1196,6 +1202,7 @@ targets.binaries.generated_script(
             "--upload-skia-json",
         ],
     ),
+    module_scheme = "flat",
 )
 
 targets.binaries.console_test_launcher(
@@ -1559,6 +1566,7 @@ targets.binaries.generated_script(
     label = "//chrome/installer/mac:mac_signing_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "pyunit",
 )
 
 targets.binaries.generated_script(
@@ -1619,6 +1627,7 @@ targets.binaries.script(
         "../../chrome/test/mini_installer/run_mini_installer_tests.py",
         "--output-dir=${ISOLATED_OUTDIR}",
     ],
+    module_scheme = "flat",
 )
 
 targets.binaries.console_test_launcher(
@@ -1753,6 +1762,7 @@ targets.binaries.generated_script(
     label = "//build/rust/tests:build_rust_tests",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "flat",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -2530,6 +2540,7 @@ targets.binaries.script(
             "--smoke-test-mode",
         ],
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -2587,6 +2598,7 @@ targets.binaries.script(
             "--upload-skia-json",
         ],
     ),
+    module_scheme = "flat",
 )
 
 targets.binaries.script(

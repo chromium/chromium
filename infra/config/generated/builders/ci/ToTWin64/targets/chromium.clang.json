@@ -68,6 +68,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/mini_installer:mini_installer_tests",
+        "module_scheme": "flat",
         "name": "mini_installer_tests",
         "swarming": {
           "dimensions": {
