@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/test_card_unmask_prompt_waiter.h"
 
 #include "base/test/scoped_run_loop_timeout.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_prompt_view_tester.h"
 
 namespace autofill {
