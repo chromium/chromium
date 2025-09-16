@@ -23,10 +23,10 @@
 
 class LocationBarView;
 class OmniboxController;
-class OmniboxRowView;
-class OmniboxRowGroupedView;
 class OmniboxHeaderView;
 class OmniboxResultView;
+class OmniboxRowGroupedView;
+class OmniboxRowView;
 class OmniboxViewViews;
 struct AutocompleteMatch;
 
@@ -40,7 +40,7 @@ class OmniboxPopupViewViews : public views::View,
   OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
                         OmniboxController* controller,
                         LocationBarView* location_bar_view);
-  explicit OmniboxPopupViewViews(const OmniboxPopupViewViews&) = delete;
+  OmniboxPopupViewViews(const OmniboxPopupViewViews&) = delete;
   OmniboxPopupViewViews& operator=(const OmniboxPopupViewViews&) = delete;
   ~OmniboxPopupViewViews() override;
 
@@ -89,16 +89,17 @@ class OmniboxPopupViewViews : public views::View,
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 
  protected:
-  FRIEND_TEST_ALL_PREFIXES(OmniboxRowGroupedViewBrowserTest,
-                           AnimationAndGrouping);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupSuggestionGroupHeadersTest,
+                           ShowSuggestionGroupHeadersByPageContext);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, ClickOmnibox);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, DeleteSuggestion);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, SpaceEntersKeywordMode);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupSuggestionGroupHeadersTest,
-                           ShowSuggestionGroupHeadersByPageContext);
-  friend class OmniboxRowGroupedViewBrowserTest;
+  FRIEND_TEST_ALL_PREFIXES(OmniboxRowGroupedViewBrowserTest,
+                           AnimationAndGrouping);
   friend class OmniboxPopupViewViewsTest;
+  friend class OmniboxRowGroupedViewBrowserTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
+
   class AutocompletePopupWidget;
 
   // Returns the target popup bounds in screen coordinates based on the bounds
@@ -153,14 +154,14 @@ class OmniboxPopupViewViews : public views::View,
   std::optional<base::TimeTicks> popup_create_start_time_;
 
   // The edit view that invokes us. May be nullptr in tests.
-  raw_ptr<OmniboxViewViews> omnibox_view_;
+  const raw_ptr<OmniboxViewViews> omnibox_view_;
 
   // The location bar view that owns |omnibox_view_|. May be nullptr in tests.
-  raw_ptr<LocationBarView> location_bar_view_;
+  const raw_ptr<LocationBarView> location_bar_view_;
 
   // A view that groups together contextual search row views for a joint
   // animation.
-  raw_ptr<OmniboxRowGroupedView> contextual_group_view_;
+  raw_ptr<OmniboxRowGroupedView> contextual_group_view_ = nullptr;
 
   // The row views that are children of this view or children of subviews of
   // this view like `row_group_view_`.

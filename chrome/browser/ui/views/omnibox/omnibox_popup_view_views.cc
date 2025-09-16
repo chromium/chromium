@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -227,12 +228,10 @@ OmniboxPopupViewViews::~OmniboxPopupViewViews() {
 gfx::Image OmniboxPopupViewViews::GetMatchIcon(
     const AutocompleteMatch& match,
     SkColor vector_icon_color) const {
-  bool dark_mode = false;
   auto* color_provider = GetColorProvider();
-  if (color_provider) {
-    dark_mode = color_utils::IsDark(
-        color_provider->GetColor(kColorOmniboxResultsBackground));
-  }
+  bool dark_mode =
+      color_provider && color_utils::IsDark(color_provider->GetColor(
+                            kColorOmniboxResultsBackground));
   return model()->GetMatchIcon(match, vector_icon_color, dark_mode);
 }
 
@@ -324,6 +323,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 
     // If the popup is currently closed, we need to create it.
     popup_create_start_time_ = base::TimeTicks::Now();
+    // Self-deleting. See comment for `popup_` in the header.
     popup_ = (new AutocompletePopupWidget(popup_parent))->AsWeakPtr();
     popup_->InitOmniboxPopup(popup_parent);
     // Third-party software such as DigitalPersona identity verification can
@@ -345,7 +345,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
   // Update the match cached by each row, in the process of doing so make sure
   // we have enough row views.
   const size_t result_size = autocomplete_controller->result().size();
-  std::u16string previous_row_header = u"";
+  std::u16string previous_row_header;
 
   // Contextual search suggestions will be grouped into a single subview for a
   // joint animation if the feature is enabled.
@@ -356,8 +356,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
   // hierarchy.
   row_views_.clear();
 
-  const int contextual_group_view_count =
-      contextual_group_view_ != nullptr ? 1 : 0;
+  const int contextual_group_view_count = contextual_group_view_ ? 1 : 0;
   for (size_t i = 0; i < result_size; ++i) {
     // Create child views lazily.  Since especially the first result view may
     // be expensive to create due to loading font data, this saves time and
@@ -447,12 +446,12 @@ void OmniboxPopupViewViews::GetPopupAccessibleNodeData(
 
 std::u16string_view OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
     size_t line) const {
-  if (const OmniboxResultView* result_view = result_view_at(line)) {
-    return static_cast<const views::LabelButton*>(
-               result_view->GetActiveAuxiliaryButtonForAccessibility())
-        ->GetText();
+  const OmniboxResultView* result_view = result_view_at(line);
+  if (!result_view) {
+    return std::u16string_view();
   }
-  return std::u16string_view();
+  const auto* button = result_view->GetActiveAuxiliaryButtonForAccessibility();
+  return static_cast<const views::LabelButton*>(button)->GetText();
 }
 
 bool OmniboxPopupViewViews::OnMouseDragged(const ui::MouseEvent& event) {
@@ -557,12 +556,11 @@ void OmniboxPopupViewViews::OnWidgetDestroying(views::Widget* widget) {
 }
 
 gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
-  int popup_height = 0;
-  const auto* autocomplete_controller = controller()->autocomplete_controller();
-  DCHECK_GE(children().size(), autocomplete_controller->result().size());
-  popup_height = std::accumulate(
-      children().cbegin(),
-      children().cbegin() + autocomplete_controller->result().size(), 0,
+  const size_t result_size =
+      controller()->autocomplete_controller()->result().size();
+  auto children_span = base::span(children()).first(result_size);
+  int popup_height = std::accumulate(
+      children_span.begin(), children_span.end(), 0,
       [](int height, const views::View* v) {
         return v->GetVisible() ? height + v->GetPreferredSize().height()
                                : height;
@@ -581,11 +579,10 @@ gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
     // toolbelt or not. The toolbelt doesn't have an icon or image on the left
     // like a regular suggestion nor a big background highlight like an IPH
     // suggestion so it doesn't require as much space.
-    const size_t last_result_index =
-        autocomplete_controller->result().size() - 1;
-    int kExtraBottomPadding =
+    const size_t last_result_index = result_size - 1;
+    int extra_bottom_padding =
         GetMatchAtIndex(last_result_index).IsToolbelt() ? 2 : 8;
-    popup_height += kExtraBottomPadding;
+    popup_height += extra_bottom_padding;
   }
 
   // Add enough space on the top and bottom so it looks like there is the same
@@ -605,11 +602,7 @@ gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
 }
 
 OmniboxHeaderView* OmniboxPopupViewViews::header_view_at(size_t i) {
-  if (i >= row_views_.size()) {
-    return nullptr;
-  }
-
-  return row_views_[i]->header_view();
+  return i < row_views_.size() ? row_views_[i]->header_view() : nullptr;
 }
 
 OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) {
@@ -617,11 +610,7 @@ OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) {
 }
 
 const OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) const {
-  if (i >= row_views_.size()) {
-    return nullptr;
-  }
-
-  return row_views_[i]->result_view();
+  return i < row_views_.size() ? row_views_[i]->result_view() : nullptr;
 }
 
 bool OmniboxPopupViewViews::HasMatchAt(size_t index) const {
@@ -642,9 +631,7 @@ size_t OmniboxPopupViewViews::GetIndexForPoint(const gfx::Point& point) const {
   // Iterate through all the row views that correspond to current matches.
   // `row_views_` contains all the `OmniboxRowView` instances, regardless of
   // whether they are direct children or hosted in `contextual_group_view_`.
-  DCHECK_LE(nb_match, row_views_.size());
-  for (size_t i = 0; i < nb_match; ++i) {
-    OmniboxRowView* row_view = row_views_[i];
+  for (OmniboxRowView* row_view : base::span(row_views_).first(nb_match)) {
     // Only consider visible rows.
     if (row_view->GetVisible()) {
       gfx::Point point_in_child_coords(point);
@@ -752,7 +739,7 @@ void OmniboxPopupViewViews::UpdateContextualSuggestionsGroup(
   }
 
   size_t current_row_index = 0;
-  std::u16string previous_row_header = u"";
+  std::u16string previous_row_header;
   for (size_t match_index = match_start_index; match_index < result_size;
        match_index++) {
     // A row view should have been created for each match.
@@ -775,10 +762,10 @@ void OmniboxPopupViewViews::UpdateContextualSuggestionsGroup(
     current_row_index++;
   }
 
-  // Hide surplus row views.
-  for (auto i = contextual_group_view_->children().begin() + current_row_index;
-       i != contextual_group_view_->children().end(); ++i) {
-    (*i)->SetVisible(false);
+  auto surplus_row_views =
+      base::span(contextual_group_view_->children()).subspan(current_row_index);
+  for (auto& row_view : surplus_row_views) {
+    row_view->SetVisible(false);
   }
 
   contextual_group_view_->SetVisible(true);
