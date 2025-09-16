@@ -517,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.DebugReport.HttpResponseOrNetErrorCodeEventLevel"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-10-26">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-02-04">
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
