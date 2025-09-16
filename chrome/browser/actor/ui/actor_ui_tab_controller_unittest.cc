@@ -12,8 +12,8 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
-#include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_overlay_view_controller.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller_factory.h"
@@ -107,7 +107,7 @@ class ActorUiTabControllerTest : public testing::Test {
         container_overlay_view_pairs;
     container_overlay_view_pairs.emplace_back(
         container_web_view_.get(), container_view_for_window_controller_.get());
-    window_controller_ = std::make_unique<ActorOverlayWindowController>(
+    window_controller_ = std::make_unique<ActorUiWindowController>(
         &mock_browser_window_interface_, container_overlay_view_pairs);
 
     border_view_controller_ = std::make_unique<ActorBorderViewController>(
@@ -181,7 +181,7 @@ class ActorUiTabControllerTest : public testing::Test {
   MockTabInterface mock_tab_;
   MockBrowserWindowInterface mock_browser_window_interface_;
   std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
-  std::unique_ptr<ActorOverlayWindowController> window_controller_;
+  std::unique_ptr<ActorUiWindowController> window_controller_;
   std::unique_ptr<views::WebView> container_web_view_;
   std::unique_ptr<views::View> container_view_for_window_controller_;
   TestTabStripModelDelegate delegate_;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_WINDOW_CONTROLLER_H_
-#define CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_WINDOW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_UI_WINDOW_CONTROLLER_H_
+#define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_WINDOW_CONTROLLER_H_
 
 #include <memory>
 #include <vector>
@@ -30,14 +30,14 @@ namespace actor::ui {
 // Manages the actor overlay for a single contents container (e.g., a single
 // tab's content area). In split-view mode, there will be multiple instances of
 // this class, one for each content area.
-class ActorOverlayContentsContainerController {
+class ActorUiContentsContainerController {
  public:
-  explicit ActorOverlayContentsContainerController(
+  explicit ActorUiContentsContainerController(
       views::WebView* contents_container_view,
       views::View* actor_overlay_view_container);
-  ~ActorOverlayContentsContainerController();
+  ~ActorUiContentsContainerController();
 
-  static ActorOverlayContentsContainerController* From(
+  static ActorUiContentsContainerController* From(
       tabs::TabInterface* tab_interface);
 
   // Adds a child WebView to the overlay container, transferring ownership of
@@ -66,33 +66,32 @@ class ActorOverlayContentsContainerController {
 
 // Manages the actor overlay for a browser window. This controller is
 // responsible for creating and managing the
-// `ActorOverlayContentsContainerController`s for each content area in the
+// `ActorUiContentsContainerController`s for each content area in the
 // window.
-class ActorOverlayWindowController {
+class ActorUiWindowController {
  public:
-  DECLARE_USER_DATA(ActorOverlayWindowController);
+  DECLARE_USER_DATA(ActorUiWindowController);
 
-  explicit ActorOverlayWindowController(
+  explicit ActorUiWindowController(
       BrowserWindowInterface* browser_window_interface,
       std::vector<std::pair<views::WebView*, views::View*>>
           container_overlay_view_pairs);
-  ~ActorOverlayWindowController();
+  ~ActorUiWindowController();
 
-  static ActorOverlayWindowController* From(
+  static ActorUiWindowController* From(
       BrowserWindowInterface* browser_window_interface);
 
-  actor::ui::ActorOverlayContentsContainerController*
-  GetControllerForWebContents(content::WebContents* web_contents);
+  actor::ui::ActorUiContentsContainerController* GetControllerForWebContents(
+      content::WebContents* web_contents);
 
  private:
   // Vector of all owned ContentsContainerControllers: One for each content
   // area..
-  std::vector<
-      std::unique_ptr<actor::ui::ActorOverlayContentsContainerController>>
+  std::vector<std::unique_ptr<actor::ui::ActorUiContentsContainerController>>
       contents_container_controllers_;
   // The `BrowserWindowInterface` that owns this controller.
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
-  ::ui::ScopedUnownedUserData<ActorOverlayWindowController> scoped_data_holder_;
+  ::ui::ScopedUnownedUserData<ActorUiWindowController> scoped_data_holder_;
 };
 
-#endif  // CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_WINDOW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ACTOR_UI_ACTOR_UI_WINDOW_CONTROLLER_H_

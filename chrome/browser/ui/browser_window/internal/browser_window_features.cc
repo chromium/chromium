@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
-#include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
+#include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -636,8 +636,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             contents_container->contents_view(),
             contents_container->actor_overlay_view());
       }
-      actor_overlay_window_controller_ =
-          GetUserDataFactory().CreateInstance<ActorOverlayWindowController>(
+      actor_ui_window_controller_ =
+          GetUserDataFactory().CreateInstance<ActorUiWindowController>(
               *browser_, browser_, std::move(container_overlay_view_pairs));
     }
 
@@ -686,7 +686,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   toast_service_.reset();
   extension_window_controller_.reset();
   actor_border_view_controller_.reset();
-  actor_overlay_window_controller_.reset();
+  actor_ui_window_controller_.reset();
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic_button_controller_.reset();

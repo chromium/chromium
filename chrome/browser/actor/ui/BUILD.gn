@@ -24,8 +24,6 @@ source_set("ui") {
     "actor_overlay_ui.h",
     "actor_overlay_view_controller.cc",
     "actor_overlay_view_controller.h",
-    "actor_overlay_window_controller.cc",
-    "actor_overlay_window_controller.h",
     "actor_ui_metrics.cc",
     "actor_ui_metrics.h",
     "actor_ui_state_manager.cc",
@@ -37,6 +35,8 @@ source_set("ui") {
     "actor_ui_tab_controller.h",
     "actor_ui_tab_controller_interface.cc",
     "actor_ui_tab_controller_interface.h",
+    "actor_ui_window_controller.cc",
+    "actor_ui_window_controller.h",
     "handoff_button_controller.cc",
     "handoff_button_controller.h",
   ]

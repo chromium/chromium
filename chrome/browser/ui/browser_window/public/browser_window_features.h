@@ -24,7 +24,7 @@ class GlicActorTaskIconController;
 }  // namespace tabs
 #endif
 
-class ActorOverlayWindowController;
+class ActorUiWindowController;
 
 class ActorBorderViewController;
 class BookmarkBarController;
@@ -576,8 +576,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
 #endif
 
-  std::unique_ptr<ActorOverlayWindowController>
-      actor_overlay_window_controller_;
+  std::unique_ptr<ActorUiWindowController> actor_ui_window_controller_;
 
   std::unique_ptr<ActorBorderViewController> actor_border_view_controller_;
 

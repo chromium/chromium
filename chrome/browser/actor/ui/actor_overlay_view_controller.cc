@@ -4,9 +4,9 @@
 
 #include "chrome/browser/actor/ui/actor_overlay_view_controller.h"
 
-#include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -74,7 +74,7 @@ void ActorOverlayViewController::UpdateState(const ActorOverlayState& state,
 }
 
 // TODO(crbug.com/436662421): Clean up the null checks for
-// actor_overlay_window_controller_. These were added to prevent crashes in test
+// actor_ui_window_controller_. These were added to prevent crashes in test
 // scenarios where a controller is null. Once those tests are cleaned up, all
 // the null checks on if the window controller / web_views in this file can be
 // removed and we can assume they should be available with a CHECK again.
@@ -87,7 +87,7 @@ void ActorOverlayViewController::AttachManagedWebViewToWindowController() {
     return;
   }
 
-  auto* contents_controller = ActorOverlayContentsContainerController::From(
+  auto* contents_controller = ActorUiContentsContainerController::From(
       base::to_address(tab_interface_));
   // No contents container controller to use.
   if (!contents_controller) {

@@ -9,8 +9,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
-#include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -209,13 +209,13 @@ bool ActorUiTabController::ComputeActorOverlayVisibility() {
 
 bool ActorUiTabController::ComputeHandoffButtonVisibility() {
   // TODO(crbug.com/436662421): Clean up this null check for
-  // ActorOverlayWindowController. The GetImmersiveModeController call is done
+  // ActorUiWindowController. The GetImmersiveModeController call is done
   // on the BrowserView, which causes crashes in test scenarios where the
   // BrowserView is not properly created in test environments. To ensure a
-  // BrowserView exists, we can check if ActorOverlayWindowController has been
+  // BrowserView exists, we can check if ActorUiWindowController has been
   // created, since its creation relies on a valid BrowserView. Once those tests
   // are cleaned up, this null checks on the window controller can be removed.
-  if (!ActorOverlayWindowController::From(tab_->GetBrowserWindowInterface())) {
+  if (!ActorUiWindowController::From(tab_->GetBrowserWindowInterface())) {
     return false;
   }
   InitializeImmersiveModeObserver();

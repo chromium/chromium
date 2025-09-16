@@ -19,7 +19,7 @@ class WebView;
 
 namespace actor::ui {
 
-class ActorOverlayContentsContainerController;
+class ActorUiContentsContainerController;
 
 // Manages the browser-side UI and lifecycle of the Actor Overlay for a specific
 // tab. This controller implements mojom::ActorOverlayPageHandler to receive
@@ -103,8 +103,8 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
 
   // The controller for the contents container that this overlay is associated
   // with. This is used to show and hide the overlay WebView.
-  raw_ptr<ActorOverlayContentsContainerController>
-      contents_container_controller_ = nullptr;
+  raw_ptr<ActorUiContentsContainerController> contents_container_controller_ =
+      nullptr;
 
   // A unique_ptr that holds ownership of the views::WebView when it is detached
   // from the browser's views hierarchy (e.g., when a tab is dragged out of a
