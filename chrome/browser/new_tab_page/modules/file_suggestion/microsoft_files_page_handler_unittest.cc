@@ -341,10 +341,6 @@ TEST_F(MicrosoftFilesPageHandlerTestForTrending,
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
-
-  histogram_tester().ExpectBucketCount(
-      kRequestResultHistogramName, MicrosoftFilesRequestResult::kContentError,
-      1);
   histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 1, 1);
 }
 
@@ -627,7 +623,7 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
        RecentFileNotCreatedWithMissingData) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
 
-  // `lastModifiedDateTime` is missing.
+  // `webUrl` is missing.
   std::string response = base::StringPrintf(
       R"({
   "responses" : [
@@ -638,7 +634,6 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
         {
           "id": "1",
           "name": "File 1",
-          "webUrl": "https://foo.com/file1.docx",
           "file": {
             "mimeType": "application/vnd.)"
       R"(openxmlformats-officedocument.wordprocessingml.document"
@@ -678,10 +673,6 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
-
-  histogram_tester().ExpectBucketCount(
-      kRequestResultHistogramName, MicrosoftFilesRequestResult::kContentError,
-      1);
   histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 1, 1);
 }
 
@@ -729,10 +720,6 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
-
-  histogram_tester().ExpectBucketCount(
-      kRequestResultHistogramName, MicrosoftFilesRequestResult::kContentError,
-      1);
   histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 1, 1);
 }
 
@@ -1236,6 +1223,84 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, FilterOlderFiles) {
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
+}
+
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, SkipFileWithMissingFields) {
+  base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
+  // `webUrl` is missing for the first recent file.
+  std::string response = base::StringPrintf(
+      R"({
+  "responses" : [
+    {
+      "id": "recent",
+      "body": {
+        "value": [
+        {
+          "id": "1",
+          "name": "File 1",
+          "file": {
+            "mimeType": "application/vnd.)"
+      R"(openxmlformats-officedocument.wordprocessingml.document"
+          },
+          "fileSystemInfo": {
+            "lastAccessedDateTime": "%s"
+          },
+          "remoteItem": {
+            "shared": {
+              "sharedDateTime": "%s",
+              "sharedBy": {
+                "user": {
+                  "displayName": "User 1"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "2",
+          "webUrl": "https://www.url.com",
+          "name": "File 1",
+          "file": {
+            "mimeType": "application/vnd.)"
+      R"(openxmlformats-officedocument.wordprocessingml.document"
+          },
+          "fileSystemInfo": {
+            "lastAccessedDateTime": "%s"
+          },
+          "remoteItem": {
+            "shared": {
+              "sharedDateTime": "%s",
+              "sharedBy": {
+                "user": {
+                  "displayName": "User 1"
+                }
+              }
+            }
+          }
+        }
+        ]
+      }
+    },
+    {
+      "id": "shared",
+      "body": {
+        "value": []
+      }
+    }
+  ]
+  })",
+      GetTimeNowAsString(), GetTimeNowAsString(), GetTimeNowAsString(),
+      GetTimeNowAsString());
+
+  handler().GetFiles(future.GetCallback());
+
+  test_url_loader_factory().SimulateResponseForPendingRequest(kBatchRequestUrl,
+                                                              response);
+  const std::vector<file_suggestion::mojom::FilePtr>& suggestions =
+      future.Get();
+
+  // Only file suggestions with all necessary fields should be created.
+  EXPECT_EQ(suggestions.size(), 1u);
 }
 
 TEST_F(MicrosoftFilesPageHandlerTestForCombinedSuggestions,

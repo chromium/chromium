@@ -164,7 +164,7 @@ const char kNonInsightsRequestBody[] =
     "id": "shared",
     "method": "GET",
     "url": "/me/drive/sharedWithMe?$select=id,name,webUrl,file,)"
-    R"(lastModifiedDateTime,remoteItem&$orderBy=lastModifiedDateTime+desc"
+    R"(remoteItem&$orderBy=lastModifiedDateTime+desc"
   }]})";
 
 const char kNonInsightsFakeData[] =
@@ -565,8 +565,7 @@ MicrosoftFilesPageHandler::GetTrendingFiles(base::Value::Dict result) {
         "resourceVisualization.mediaType");
 
     if (!id || !title || !url || !mime_type) {
-      request_result_ = MicrosoftFilesRequestResult::kContentError;
-      return std::vector<file_suggestion::mojom::FilePtr>();
+      continue;
     }
 
     std::string file_extension =
@@ -636,8 +635,6 @@ MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
     const std::string* last_opened_time_str =
         suggestion_dict.FindStringByDottedPath(
             "fileSystemInfo.lastAccessedDateTime");
-    const std::string* last_modified_time_str =
-        suggestion_dict.FindString("lastModifiedDateTime");
     const std::string* shared_by = suggestion_dict.FindStringByDottedPath(
         "remoteItem.shared.sharedBy.user.displayName");
     const std::string* shared_time_str = suggestion_dict.FindStringByDottedPath(
@@ -664,11 +661,8 @@ MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
             : shared_by && shared_time_str &&
                   base::Time::FromUTCString(shared_time_str->c_str(),
                                             &sort_time);
-    if (!id || !title || !item_url || !last_modified_time_str ||
-        !suggestion_has_formatted_time) {
-      request_result_ = MicrosoftFilesRequestResult::kContentError;
-      return std::vector<
-          std::pair<base::Time, file_suggestion::mojom::FilePtr>>();
+    if (!id || !title || !item_url || !suggestion_has_formatted_time) {
+      continue;
     }
 
     std::string file_extension =
