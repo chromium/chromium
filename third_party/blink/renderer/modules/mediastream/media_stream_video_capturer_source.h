@@ -92,11 +92,11 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   void ApplySubCaptureTarget(
       media::mojom::blink::SubCaptureTargetType type,
       const base::Token& sub_capture_target,
-      uint32_t sub_capture_target_version,
+      uint32_t sub_capture_version,
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
           callback) override;
   media::CaptureVersion GetCaptureVersion() const override;
-  std::optional<uint32_t> GetNextSubCaptureTargetVersion() override;
+  std::optional<media::CaptureVersion> GetNextCaptureVersion() override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
 
   // Method to bind as VideoCaptureRunningCallbackCB in

@@ -89,10 +89,10 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   void GetSettings(MediaStreamTrackPlatform::Settings& settings) const override;
   MediaStreamTrackPlatform::VideoFrameStats GetVideoFrameStats() const override;
   MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() override;
-  // TODO(crbug.com/394794490): Use CaptureVersion.
-  void AddCaptureVersionCallback(uint32_t sub_capture_version,
+  void AddCaptureVersionCallback(media::CaptureVersion capture_version,
                                  base::OnceClosure callback) override;
-  void RemoveCaptureVersionCallback(uint32_t sub_capture_version) override;
+  void RemoveCaptureVersionCallback(
+      media::CaptureVersion capture_version) override;
 
   // Add |sink| to receive state changes on the main render thread and video
   // frames in the |callback| method on the video task runner.

@@ -175,12 +175,12 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   //   is observed.
   // - A message is received guaranteeing that all subsequent frames will
   //   satisfy this property.
-  // TODO(crbug.com/394794490): Use CaptureVersion, not the sub-capture version.
-  virtual void AddCaptureVersionCallback(uint32_t sub_capture_version,
+  virtual void AddCaptureVersionCallback(media::CaptureVersion capture_version,
                                          base::OnceClosure callback) {}
 
   // Removes the callback that was associated with this |capture_version|.
-  virtual void RemoveCaptureVersionCallback(uint32_t sub_capture_version) {}
+  virtual void RemoveCaptureVersionCallback(
+      media::CaptureVersion capture_version) {}
 
   bool is_local_track() const { return is_local_track_; }
 

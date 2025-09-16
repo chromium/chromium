@@ -137,9 +137,10 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
 
-  EXPECT_CALL(*media_stream_video_source, GetNextSubCaptureTargetVersion)
+  EXPECT_CALL(*media_stream_video_source, GetNextCaptureVersion)
       .Times(1)
-      .WillOnce(Return(std::optional<uint32_t>(1)));
+      .WillOnce(Return(std::make_optional<media::CaptureVersion>(
+          /*source=*/0, /*sub_capture=*/1)));
 
   EXPECT_CALL(*media_stream_video_source,
               ApplySubCaptureTarget(type_, GUIDToToken(valid_id), _, _))
@@ -157,8 +158,8 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   const auto promise = ApplySubCaptureTarget(
       v8_scope, *track, String(valid_id.AsLowercaseString()));
 
-  track->OnSubCaptureVersionObservedForTesting(
-      /*sub_capture_version=*/1);
+  track->OnCaptureVersionObservedForTesting(
+      media::CaptureVersion(/*source=*/0, /*sub_capture=*/1));
 
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
   script_promise_tester.WaitUntilSettled();
@@ -177,9 +178,10 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
 
-  EXPECT_CALL(*media_stream_video_source, GetNextSubCaptureTargetVersion)
+  EXPECT_CALL(*media_stream_video_source, GetNextCaptureVersion)
       .Times(1)
-      .WillOnce(Return(std::optional<uint32_t>(1)));
+      .WillOnce(Return(std::make_optional<media::CaptureVersion>(
+          /*source=*/0, /*sub_capture=*/1)));
 
   EXPECT_CALL(*media_stream_video_source,
               ApplySubCaptureTarget(type_, GUIDToToken(valid_id), _, _))
@@ -197,8 +199,8 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   const auto promise = ApplySubCaptureTarget(
       v8_scope, *track, String(valid_id.AsLowercaseString()));
 
-  track->OnSubCaptureVersionObservedForTesting(
-      /*sub_capture_version=*/1);
+  track->OnCaptureVersionObservedForTesting(
+      media::CaptureVersion(/*source=*/0, /*sub_capture=*/1));
 
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
   script_promise_tester.WaitUntilSettled();
@@ -211,7 +213,7 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
 
 TEST_P(
     BrowserCaptureMediaStreamTrackTest,
-    ApplySubCaptureTargetRejectsIfSourceReturnsNulloptForNextSubCaptureTargetVersion) {
+    ApplySubCaptureTargetRejectsIfSourceReturnsNulloptForNextCaptureVersion) {
   V8TestingScope v8_scope;
 
   const base::Uuid valid_id = base::Uuid::GenerateRandomV4();
@@ -219,7 +221,7 @@ TEST_P(
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
 
-  EXPECT_CALL(*media_stream_video_source, GetNextSubCaptureTargetVersion)
+  EXPECT_CALL(*media_stream_video_source, GetNextCaptureVersion)
       .Times(1)
       .WillOnce(Return(std::nullopt));
 

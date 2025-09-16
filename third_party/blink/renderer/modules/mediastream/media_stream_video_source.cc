@@ -554,8 +554,8 @@ media::CaptureVersion MediaStreamVideoSource::GetCaptureVersion() const {
   return media::CaptureVersion();
 }
 
-std::optional<uint32_t>
-MediaStreamVideoSource::GetNextSubCaptureTargetVersion() {
+std::optional<media::CaptureVersion>
+MediaStreamVideoSource::GetNextCaptureVersion() {
   return std::nullopt;
 }
 

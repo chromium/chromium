@@ -41,8 +41,10 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
           uint32_t,
           base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));
   MOCK_METHOD(media::CaptureVersion, GetCaptureVersion, (), (const, override));
-  // TODO(crbug.com/394794490): Remove in favor of GetNextCaptureVersion().
-  MOCK_METHOD0(GetNextSubCaptureTargetVersion, std::optional<uint32_t>());
+  MOCK_METHOD(std::optional<media::CaptureVersion>,
+              GetNextCaptureVersion,
+              (),
+              (override));
 
   // Simulate that the underlying source start successfully.
   void StartMockedSource();

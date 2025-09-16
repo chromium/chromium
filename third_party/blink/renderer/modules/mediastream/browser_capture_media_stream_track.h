@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace blink {
 
@@ -33,10 +34,11 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
 
   void Trace(Visitor*) const override;
 
-  // Allows tests to invoke OnSubCaptureVersionObserved() directly, since
+  // Allows tests to invoke OnCaptureVersionObserved() directly, since
   // triggering it via mocks would be prohibitively difficult.
-  void OnSubCaptureVersionObservedForTesting(uint32_t sub_capture_version) {
-    OnSubCaptureVersionObserved(sub_capture_version);
+  void OnCaptureVersionObservedForTesting(
+      media::CaptureVersion capture_version) {
+    OnCaptureVersionObserved(capture_version);
   }
 
   ScriptPromise<IDLUndefined> cropTo(ScriptState*,
@@ -85,46 +87,45 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
                                                   IDLUndefined>>
         promise_resolver;
     std::optional<media::mojom::ApplySubCaptureTargetResult> result;
-    bool sub_capture_version_observed = false;
+    bool capture_version_observed = false;
   };
 
-  // TODO(crbug.com/394794490): Change the key type to CropVersion and rename.
-  using SubCaptureTargetVersionToPromiseInfoMap =
-      HeapHashMap<uint32_t,
-                  Member<BrowserCaptureMediaStreamTrack::PromiseInfo>>;
-  using PromiseMapIterator = SubCaptureTargetVersionToPromiseInfoMap::iterator;
+  using SubCaptureVersionToPromiseInfoMap =
+      HeapHashMap<media::CaptureVersion,
+                  Member<PromiseInfo>,
+                  TwoFieldsHashTraits<media::CaptureVersion,
+                                      &media::CaptureVersion::source,
+                                      &media::CaptureVersion::sub_capture>>;
+  using PromiseMapIterator = SubCaptureVersionToPromiseInfoMap::iterator;
 
   // Each cropTo() or restrictTo() call is associated with a unique
-  // |sub_capture_version| which identifies this specific invocation.
+  // `capture_version` which identifies this specific invocation.
   // When the browser process responds with the result of the invocation,
   // it triggers a call to OnResultFromBrowserProcess() with that
-  // |sub_capture_version|.
-  // TODO(crbug.com/394794490): Use the CropVersion.
+  // `capture_version`.
   void OnResultFromBrowserProcess(
-      uint32_t sub_capture_version,
+      media::CaptureVersion capture_version,
       media::mojom::ApplySubCaptureTargetResult result);
 
-  // OnSubCaptureVersionObserved() is posted as a callback, bound to a
-  // unique |sub_capture_version|. This callback be invoked when the
-  // first frame is observed which is associated with that
-  // |sub_capture_version|.
-  // TODO(crbug.com/1266378): The Promise should also be resolved if a
-  // a barrier event is observed. (That is, although no frame is delivered,
-  // there is a guarantee that all future frames will be of this version
-  // or later. This would happen if cropping a muted track, for instance.)
-  void OnSubCaptureVersionObserved(uint32_t sub_capture_version);
+  // OnCaptureVersionObserved() is posted as a callback, bound to a
+  // unique `capture_version`. This callback be invoked when either:
+  // - The first frame is observed which is associated with `capture_version`.
+  // - A frame with an even newer `capture_version` is observed.
+  // - A message is received guaranteeing that all subsequent frames will
+  //   have `capture_version` or newer. (E.g. if cropping is applied correctly
+  //   but there is no frame to produce yet.)
+  void OnCaptureVersionObserved(media::CaptureVersion capture_version);
 
-  // The Promise that cropTo() issued is resolved when both conditions
-  // are fulfulled:
+  // The Promise that cropTo() or restrictTo() issued are resolved when
+  // both conditions are fulfulled:
   // 1. OnResultFromBrowserProcess(kSuccess) called.
-  // 2. OnSubCaptureVersionObserved() called for the associated
-  // |sub_capture_version|.
+  // 2. OnCaptureVersionObserved() called for the associated `capture_version`.
   //
   // The order of fulfillment does not matter.
   //
   // The Promise is rejected if OnResultFromBrowserProcess() is called with
   // an error value.
-  void MaybeFinalizeCropPromise(PromiseMapIterator iter);
+  void MaybeFinalizeSubCapturePromise(PromiseMapIterator iter);
 
   // Each time cropTo() is called on a given track, its sub-capture version
   // increments. Associate each Promise with its sub-capture version, so that
@@ -136,9 +137,7 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
   //
   // Note that frames before the first call to cropTo() will be associated
   // with a version of 0, both here and in Viz.
-  //
-  // TODO(crbug.com/394794490): Use the CaptureTargetVersion as the key.
-  HeapHashMap<uint32_t, Member<PromiseInfo>> pending_promises_;
+  SubCaptureVersionToPromiseInfoMap pending_promises_;
 };
 
 }  // namespace blink

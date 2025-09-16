@@ -229,12 +229,12 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
     return promise;
   }
 
-  // TODO(crbug.com/1332628): Instead of using GetNextSubCaptureTargetVersion(),
+  // TODO(crbug.com/40227755): Instead of using GetNextCaptureVersion(),
   // move the ownership of the Promises from this->pending_promises_ into
   // native_source.
-  const std::optional<uint32_t> optional_sub_capture_version =
-      native_source->GetNextSubCaptureTargetVersion();
-  if (!optional_sub_capture_version.has_value()) {
+  const std::optional<media::CaptureVersion> optional_capture_version =
+      native_source->GetNextCaptureVersion();
+  if (!optional_capture_version.has_value()) {
     resolver->Reject<DOMException>(
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kOperationError,
@@ -242,66 +242,60 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
         ApplySubCaptureTargetResult::kInvalidTarget);
     return promise;
   }
-  const uint32_t sub_capture_version = optional_sub_capture_version.value();
 
-  pending_promises_.Set(sub_capture_version,
+  const media::CaptureVersion capture_version = *optional_capture_version;
+
+  pending_promises_.Set(capture_version,
                         MakeGarbageCollected<PromiseInfo>(resolver));
 
   // Register for a one-off notification when the first frame cropped
   // to the new crop-target is observed.
-  //
-  // TODO(crbug.com/394794490): Pass the CaptureVersion to
-  // OnSubCaptureVersionObserved and rename it to OnCaptureVersionObserved.
   native_track->AddCaptureVersionCallback(
-      sub_capture_version,
-      BindOnce(&BrowserCaptureMediaStreamTrack::OnSubCaptureVersionObserved,
-               WrapWeakPersistent(this), sub_capture_version));
+      capture_version,
+      BindOnce(&BrowserCaptureMediaStreamTrack::OnCaptureVersionObserved,
+               WrapWeakPersistent(this), capture_version));
 
   native_source->ApplySubCaptureTarget(
-      type, token.value(), sub_capture_version,
+      type, token.value(), capture_version.sub_capture,
       BindOnce(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
-               WrapWeakPersistent(this), sub_capture_version));
+               WrapWeakPersistent(this), capture_version));
 
   return promise;
 }
 
 void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
-    uint32_t sub_capture_version,
+    media::CaptureVersion capture_version,
     media::mojom::ApplySubCaptureTargetResult result) {
   DCHECK(IsMainThread());
-  DCHECK_GT(sub_capture_version, 0u);
 
-  const auto iter = pending_promises_.find(sub_capture_version);
+  const PromiseMapIterator iter = pending_promises_.find(capture_version);
   if (iter == pending_promises_.end()) {
     return;
   }
-  PromiseInfo* const info = iter->value;
 
-  DCHECK(!info->result.has_value()) << "Invoked twice.";
+  PromiseInfo* const info = iter->value;
+  CHECK(!info->result.has_value()) << "Invoked twice.";
   info->result = result;
-
-  MaybeFinalizeCropPromise(iter);
+  MaybeFinalizeSubCapturePromise(iter);
 }
 
-void BrowserCaptureMediaStreamTrack::OnSubCaptureVersionObserved(
-    uint32_t sub_capture_version) {
+void BrowserCaptureMediaStreamTrack::OnCaptureVersionObserved(
+    media::CaptureVersion capture_version) {
   DCHECK(IsMainThread());
-  DCHECK_GT(sub_capture_version, 0u);
 
-  const auto iter = pending_promises_.find(sub_capture_version);
+  const PromiseMapIterator iter = pending_promises_.find(capture_version);
   if (iter == pending_promises_.end()) {
     return;
   }
+
   PromiseInfo* const info = iter->value;
-
-  DCHECK(!info->sub_capture_version_observed) << "Invoked twice.";
-  info->sub_capture_version_observed = true;
-
-  MaybeFinalizeCropPromise(iter);
+  CHECK(!info->capture_version_observed) << "Invoked twice.";
+  info->capture_version_observed = true;
+  MaybeFinalizeSubCapturePromise(iter);
 }
 
-void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
-    BrowserCaptureMediaStreamTrack::PromiseMapIterator iter) {
+void BrowserCaptureMediaStreamTrack::MaybeFinalizeSubCapturePromise(
+    PromiseMapIterator iter) {
   DCHECK(IsMainThread());
   CHECK_NE(iter, pending_promises_.end());
 
@@ -316,7 +310,7 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
   // Failure can be reported immediately, but success is only reported once
   // the new capture-version is observed.
   if (result == media::mojom::ApplySubCaptureTargetResult::kSuccess &&
-      !info->sub_capture_version_observed) {
+      !info->capture_version_observed) {
     return;
   }
 

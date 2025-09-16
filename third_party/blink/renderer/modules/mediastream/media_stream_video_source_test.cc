@@ -1102,4 +1102,12 @@ TEST_F(MediaStreamVideoSourceTest, ConfiguredFrameRate) {
   EXPECT_EQ(settings.frame_rate, kSourceFrameRate - 1);
 }
 
+TEST_F(MediaStreamVideoSourceTest, GetCaptureVersionDefaultImplementation) {
+  EXPECT_EQ(source()->GetCaptureVersion(), media::CaptureVersion());
+}
+
+TEST_F(MediaStreamVideoSourceTest, GetNextCaptureVersionDefaultImplementation) {
+  EXPECT_EQ(source()->GetNextCaptureVersion(), std::nullopt);
+}
+
 }  // namespace blink
