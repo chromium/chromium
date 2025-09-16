@@ -19,17 +19,28 @@ enum class AIMInputItemState {
   kError,
 };
 
+// Enum for the aim input item type.
+enum class AIMInputItemType {
+  kAIMInputItemTypeImage,
+  kAIMInputItemTypeFile,
+  kAIMInputItemTypeTab,
+};
+
 // Data object for an item in the AIM input.
 @interface AIMInputItem : NSObject <NSCopying>
 
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithAimInputItemType:(AIMInputItemType)type
+    NS_DESIGNATED_INITIALIZER;
+
 // The file token for this item, which also serves as its unique identifier.
-@property(nonatomic, assign, readonly) const base::UnguessableToken& fileToken;
+@property(nonatomic, assign, readonly) const base::UnguessableToken& token;
 // The preview image for this item.
 @property(nonatomic, strong) UIImage* previewImage;
 // The current state of the item.
 @property(nonatomic, assign) AIMInputItemState state;
-
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+// The type of the input item.
+@property(nonatomic, assign) AIMInputItemType type;
 
 @end
 

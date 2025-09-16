@@ -410,7 +410,7 @@ const CGFloat kGlowEffectWidth = 4.0f;
       _dataSource.snapshot;
   AIMInputItem* itemToUpdate;
   for (AIMInputItem* item in currentSnapshot.itemIdentifiers) {
-    if (item.fileToken == token) {
+    if (item.token == token) {
       itemToUpdate = item;
       break;
     }

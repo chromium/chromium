@@ -8,20 +8,21 @@
 #import "base/unguessable_token.h"
 
 @implementation AIMInputItem {
-  base::UnguessableToken _fileToken;
+  base::UnguessableToken _token;
 }
 
-- (instancetype)init {
+- (instancetype)initWithAimInputItemType:(AIMInputItemType)type {
   self = [super init];
   if (self) {
-    _fileToken = base::UnguessableToken::Create();
+    _token = base::UnguessableToken::Create();
     _state = AIMInputItemState::kLoading;
+    _type = type;
   }
   return self;
 }
 
-- (const base::UnguessableToken&)fileToken {
-  return _fileToken;
+- (const base::UnguessableToken&)token {
+  return _token;
 }
 
 - (BOOL)isEqual:(id)other {
@@ -32,11 +33,11 @@
     return NO;
   }
   AIMInputItem* otherItem = (AIMInputItem*)other;
-  return _fileToken == otherItem->_fileToken;
+  return _token == otherItem->_token;
 }
 
 - (NSUInteger)hash {
-  return base::UnguessableTokenHash()(_fileToken);
+  return base::UnguessableTokenHash()(_token);
 }
 
 - (id)copyWithZone:(NSZone*)zone {
@@ -44,9 +45,10 @@
   if (copy) {
     // This is a shallow copy, but it's all that's needed for the diffable
     // data source. The UnguessableToken is copied by value.
-    copy->_fileToken = _fileToken;
+    copy->_token = _token;
     copy.previewImage = self.previewImage;
     copy.state = self.state;
+    copy.type = self.type;
   }
   return copy;
 }

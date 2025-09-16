@@ -158,10 +158,11 @@ CreateInputDataFromAnnotatedPageContent(
     return;
   }
 
-  AIMInputItem* item = [[AIMInputItem alloc] init];
+  AIMInputItem* item = [[AIMInputItem alloc]
+      initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeImage];
   [_items addObject:item];
   [self.consumer setItems:_items];
-  const base::UnguessableToken& token = item.fileToken;
+  const base::UnguessableToken& token = item.token;
 
   __weak __typeof(self) weakSelf = self;
   // Load the preview image.
@@ -186,10 +187,11 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)processPDFFileURL:(GURL)PDFFileURL {
-  AIMInputItem* item = [[AIMInputItem alloc] init];
+  AIMInputItem* item = [[AIMInputItem alloc]
+      initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeFile];
   [_items addObject:item];
   [self.consumer setItems:_items];
-  const base::UnguessableToken& token = item.fileToken;
+  const base::UnguessableToken& token = item.token;
 
   // Read the data in the background then call `onDataReadForItem`.
   __weak __typeof(self) weakSelf = self;
@@ -283,7 +285,7 @@ CreateInputDataFromAnnotatedPageContent(
       return;
   }
 
-  [self.consumer updateState:item.state forItemWithToken:item.fileToken];
+  [self.consumer updateState:item.state forItemWithToken:item.token];
 }
 
 #pragma mark - LoadQueryCommands
@@ -305,7 +307,7 @@ CreateInputDataFromAnnotatedPageContent(
   // overwriting the full-res image if it arrives first.
   if (previewImage && !item.previewImage) {
     item.previewImage = previewImage;
-    [self.consumer updateState:item.state forItemWithToken:item.fileToken];
+    [self.consumer updateState:item.state forItemWithToken:item.token];
   }
 }
 
@@ -319,7 +321,7 @@ CreateInputDataFromAnnotatedPageContent(
 
   if (!image) {
     item.state = AIMInputItemState::kError;
-    [self.consumer updateState:item.state forItemWithToken:item.fileToken];
+    [self.consumer updateState:item.state forItemWithToken:item.token];
     return;
   }
 
@@ -341,7 +343,7 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   item.state = AIMInputItemState::kUploading;
-  [self.consumer updateState:item.state forItemWithToken:item.fileToken];
+  [self.consumer updateState:item.state forItemWithToken:item.token];
 
   if (!item.previewImage) {
     item.previewImage = image;
@@ -393,13 +395,13 @@ CreateInputDataFromAnnotatedPageContent(
   image_options.compression_quality = 80;
 
   _composeboxQueryController->StartFileUploadFlow(
-      item.fileToken, std::move(input_data), image_options);
+      item.token, std::move(input_data), image_options);
 }
 
 // Returns the item with the given `token` or nil if not found.
 - (AIMInputItem*)itemForToken:(const base::UnguessableToken&)token {
   for (AIMInputItem* item in _items) {
-    if (item.fileToken == token) {
+    if (item.token == token) {
       return item;
     }
   }
@@ -414,10 +416,11 @@ CreateInputDataFromAnnotatedPageContent(
     return;
   }
 
-  AIMInputItem* item = [[AIMInputItem alloc] init];
+  AIMInputItem* item = [[AIMInputItem alloc]
+      initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeTab];
   [_items addObject:item];
   [self.consumer setItems:_items];
-  __block const base::UnguessableToken& token = item.fileToken;
+  __block const base::UnguessableToken& token = item.token;
 
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
       std::move(pageContextResponse.value());
@@ -471,13 +474,13 @@ CreateInputDataFromAnnotatedPageContent(
 
   if (!data) {
     item.state = AIMInputItemState::kError;
-    [self.consumer updateState:item.state forItemWithToken:item.fileToken];
+    [self.consumer updateState:item.state forItemWithToken:item.token];
     return;
   }
 
   // Start the file upload immediately.
   item.state = AIMInputItemState::kUploading;
-  [self.consumer updateState:item.state forItemWithToken:item.fileToken];
+  [self.consumer updateState:item.state forItemWithToken:item.token];
 
   std::unique_ptr<lens::ContextualInputData> inputData =
       std::make_unique<lens::ContextualInputData>();
@@ -491,7 +494,7 @@ CreateInputDataFromAnnotatedPageContent(
   inputData->context_input->push_back(
       lens::ContextualInput(std::move(vectorData), lens::MimeType::kPdf));
   _composeboxQueryController->StartFileUploadFlow(
-      item.fileToken, std::move(inputData), std::nullopt);
+      item.token, std::move(inputData), std::nullopt);
 
   // Concurrently, generate a preview for the UI.
   __weak __typeof(self) weakSelf = self;
