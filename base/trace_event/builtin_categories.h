@@ -193,6 +193,10 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("omnibox"),
     perfetto::Category("oobe"),
     perfetto::Category("openscreen"),
+
+    perfetto::Category("optimization_guide").SetDescription(
+        "Includes events related to processing hints and machine learning "
+        "models by the Optimization Guide component."),
     perfetto::Category("ozone"),
     perfetto::Category("partition_alloc"),
     perfetto::Category("passwords"),

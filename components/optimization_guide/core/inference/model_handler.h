@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
@@ -76,6 +77,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
         "OptimizationGuide.ModelHandler.HandlerCreated." +
             GetStringNameForOptimizationTarget(optimization_target_),
         true);
+
+    TRACE_EVENT("optimization_guide", "ModelHandler::ModelHandler", "target",
+                GetStringNameForOptimizationTarget(optimization_target_));
 
     handler_created_time_ = base::TimeTicks::Now();
 
@@ -231,6 +235,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
               GetStringNameForOptimizationTarget(optimization_target_),
           base::TimeTicks::Now() - *handler_created_time_);
       handler_created_time_ = std::nullopt;
+      TRACE_EVENT("optimization_guide", "ModelHandler::OnModelUpdated",
+                  "target",
+                  GetStringNameForOptimizationTarget(optimization_target_));
     }
 
     model_available_ = model_info.has_value();

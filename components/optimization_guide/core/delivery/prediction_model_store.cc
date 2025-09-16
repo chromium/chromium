@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/delivery/model_store_metadata_entry.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
@@ -239,6 +240,9 @@ void PredictionModelStore::LoadModel(
     PredictionModelLoadedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  TRACE_EVENT("optimization_guide", "PredictionModelStore::LoadModel", "target",
+              GetStringNameForOptimizationTarget(optimization_target));
+
   auto metadata = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
       &*local_state_, optimization_target, model_cache_key);
   if (!metadata) {
@@ -276,6 +280,11 @@ std::unique_ptr<proto::PredictionModel>
 PredictionModelStore::LoadAndVerifyModelInBackgroundThread(
     proto::OptimizationTarget optimization_target,
     const base::FilePath& base_model_dir) {
+  TRACE_EVENT("optimization_guide",
+              "PredictionModelStore::LoadAndVerifyModelInBackgroundThread",
+              "target",
+              GetStringNameForOptimizationTarget(optimization_target));
+
   auto model_info = ParseModelInfoFromFile(
       base_model_dir.Append(GetBaseFileNameForModelInfo()));
   if (!model_info) {
@@ -313,6 +322,11 @@ void PredictionModelStore::OnModelLoaded(
     PredictionModelLoadedCallback callback,
     std::unique_ptr<proto::PredictionModel> model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  TRACE_EVENT("optimization_guide", "PredictionModelStore::OnModelLoaded",
+              "target",
+              GetStringNameForOptimizationTarget(optimization_target));
+
   if (!model) {
     RemoveModel(optimization_target, model_cache_key,
                 PredictionModelStoreModelRemovalReason::kModelLoadFailed);

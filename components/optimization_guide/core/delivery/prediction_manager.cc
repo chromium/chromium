@@ -26,6 +26,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
@@ -170,6 +171,8 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
 void PredictionManager::FetchModels() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  TRACE_EVENT("optimization_guide", "PredictionManager::FetchModels");
+
   // The histogram that gets recorded here is used for integration tests that
   // pass in a model override. For simplicity, we place the recording of this
   // histogram here rather than somewhere else earlier in the session
@@ -289,6 +292,9 @@ void PredictionManager::OnModelsFetched(
     const std::vector<proto::ModelInfo> models_request_info,
     std::unique_ptr<proto::GetModelsResponse> get_models_response_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  TRACE_EVENT("optimization_guide", "PredictionManager::OnModelsFetched");
+
   if (!get_models_response_data) {
     for (const auto& model_info : models_request_info) {
       ModelProviderRegistry::RecordLifecycleState(
@@ -356,6 +362,10 @@ bool PredictionManager::ShouldDownloadNewModel(
 void PredictionManager::StartModelDownload(
     proto::OptimizationTarget optimization_target,
     const GURL& download_url) {
+  TRACE_EVENT("optimization_guide", "PredictionManager::StartModelDownload",
+              "target",
+              GetStringNameForOptimizationTarget(optimization_target));
+
   if (download_url.is_valid()) {
     prediction_model_download_manager_->StartDownload(download_url,
                                                       optimization_target);
@@ -403,6 +413,9 @@ void PredictionManager::UpdatePredictionModels(
     const google::protobuf::RepeatedPtrField<proto::PredictionModel>&
         prediction_models) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  TRACE_EVENT("optimization_guide",
+              "PredictionManager::UpdatePredictionModels");
 
   std::set<proto::OptimizationTarget> received_optimization_targets;
   for (const auto& model : prediction_models) {
@@ -457,6 +470,10 @@ void PredictionManager::OnModelReady(const base::FilePath& base_model_dir,
   DCHECK(model.model_info().has_version() &&
          model.model_info().has_optimization_target());
 
+  TRACE_EVENT("optimization_guide", "PredictionManager::OnModelReady", "target",
+              GetStringNameForOptimizationTarget(
+                  model.model_info().optimization_target()));
+
   auto overrides = PredictionModelOverrides::ParseFromCommandLine(
       base::CommandLine::ForCurrentProcess());
   if (overrides.Get(model.model_info().optimization_target())) {
@@ -494,12 +511,18 @@ void PredictionManager::OnModelReady(const base::FilePath& base_model_dir,
 
 void PredictionManager::OnModelDownloadStarted(
     proto::OptimizationTarget optimization_target) {
+  TRACE_EVENT("optimization_guide", "PredictionManager::OnModelDownloadStarted",
+              "target",
+              GetStringNameForOptimizationTarget(optimization_target));
   ModelProviderRegistry::RecordLifecycleState(
       optimization_target, ModelDeliveryEvent::kModelDownloadStarted);
 }
 
 void PredictionManager::OnModelDownloadFailed(
     proto::OptimizationTarget optimization_target) {
+  TRACE_EVENT("optimization_guide", "PredictionManager::OnModelDownloadFailed",
+              "target",
+              GetStringNameForOptimizationTarget(optimization_target));
   ModelProviderRegistry::RecordLifecycleState(
       optimization_target, ModelDeliveryEvent::kModelDownloadFailure);
 }
@@ -656,6 +679,9 @@ void PredictionManager::RemoveModelFromStore(
 
 bool PredictionManager::ProcessAndStoreLoadedModel(
     const proto::PredictionModel& model) {
+  TRACE_EVENT("optimization_guide",
+              "PredictionManager::ProcessAndStoreLoadedModel");
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!model.model_info().has_optimization_target()) {
     return false;

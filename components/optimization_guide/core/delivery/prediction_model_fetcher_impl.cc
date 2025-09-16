@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -51,6 +52,10 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
     const std::string& locale,
     ModelsFetchedCallback models_fetched_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  TRACE_EVENT(
+      "optimization_guide",
+      "PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels");
 
   if (url_loader_) {
     return false;
@@ -182,6 +187,9 @@ void PredictionModelFetcherImpl::HandleResponse(
 
 void PredictionModelFetcherImpl::OnURLLoadComplete(
     std::unique_ptr<std::string> response_body) {
+  TRACE_EVENT("optimization_guide",
+              "PredictionModelFetcherImpl::OnURLLoadComplete");
+
   int response_code = -1;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
