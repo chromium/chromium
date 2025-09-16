@@ -329,7 +329,8 @@ def list_extensions(
 
 
 def add_extension(extension_name: str, source_extensions_dir: Path,
-                  target_extensions_dir: Path, symlink: bool) -> None:
+                  target_extensions_dir: Path, symlink: bool,
+                  skip_prompt: bool = False) -> None:
     """Adds an extension."""
     source_dir = source_extensions_dir / extension_name
     dest_dir = target_extensions_dir / extension_name
@@ -337,11 +338,12 @@ def add_extension(extension_name: str, source_extensions_dir: Path,
     if dest_dir.exists():
         if not is_up_to_date(extension_name, source_extensions_dir,
                              target_extensions_dir):
-            response = input(
-                f"Extension '{extension_name}' is already installed but out "
-                "of date. Update it? [Y/n] ")
-            if response.lower() == 'n':
-                return
+            if not skip_prompt:
+                response = input(
+                    f"Extension '{extension_name}' is already installed but "
+                    "out of date. Update it? [Y/n] ")
+                if response.lower() == 'n':
+                    return
         else:
             print(f"Extension '{extension_name}' is already installed and up "
                   "to date.")
@@ -429,6 +431,10 @@ def main() -> None:
                             dest='use_global',
                             action='store_true',
                             help='Install to the global extensions directory.')
+    add_parser.add_argument(
+        '--skip-prompt',
+        action='store_true',
+        help='Skip the prompt to update an out of date extension.')
     mode_group = add_parser.add_mutually_exclusive_group()
     mode_group.add_argument(
         '-l',
@@ -521,7 +527,8 @@ def main() -> None:
 
         if args.command == 'add':
             add_extension(extension, source_extensions_dir,
-                          target_extensions_dir, symlink=not args.copy)
+                          target_extensions_dir, symlink=not args.copy,
+                          skip_prompt=args.skip_prompt)
         elif args.command == 'update':
             update_extension(extension, source_extensions_dir,
                              target_extensions_dir)

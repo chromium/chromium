@@ -233,6 +233,22 @@ class InstallTest(fake_filesystem_unittest.TestCase):
             )
             mock_copy.assert_not_called()
 
+    @unittest.mock.patch('builtins.input')
+    @unittest.mock.patch('install.is_up_to_date', return_value=False)
+    def test_add_extension_skip_prompt(self, _, mock_input):
+        """Tests that the skip_prompt flag works correctly."""
+        dest_path = self.target_extensions_dir / 'sample_1'
+        dest_path.mkdir()
+        install.add_extension(
+            'sample_1',
+            self.source_extensions_dir,
+            self.target_extensions_dir,
+            symlink=False,
+            skip_prompt=True,
+        )
+        mock_input.assert_not_called()
+        self.assertFalse(dest_path.is_symlink())
+
     def test_update_extension(self):
         """Tests the update_extension function."""
         # Test updating a non-existent extension
@@ -296,6 +312,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
             self.source_extensions_dir,
             self.global_extension_dir,
             symlink=True,
+            skip_prompt=False,
         )
 
     @unittest.mock.patch('install.get_project_root')
