@@ -561,6 +561,9 @@ void FakeGaia::Initialize() {
   REGISTER_RESPONSE_HANDLER(
       gaia_urls->gaia_url().Resolve(kFakeRemoveLocalAccountPath),
       HandleFakeRemoveLocalAccount);
+
+  REGISTER_RESPONSE_HANDLER(gaia_urls->oauth2_revoke_url(),
+                            HandleOAuth2TokenRevoke);
 }
 
 FakeGaia::RequestHandlerMap::iterator FakeGaia::FindHandlerByPathPrefix(
@@ -610,6 +613,10 @@ std::unique_ptr<net::test_server::HttpResponse> FakeGaia::HandleRequest(
 void FakeGaia::IssueOAuthToken(const std::string& auth_token,
                                const AccessTokenInfo& token_info) {
   access_token_info_map_.insert(std::make_pair(auth_token, token_info));
+}
+
+bool FakeGaia::HasAccessTokenForAuthToken(const std::string& auth_token) const {
+  return access_token_info_map_.contains(auth_token);
 }
 
 void FakeGaia::RegisterSamlUser(const std::string& account_id,
@@ -1095,6 +1102,25 @@ void FakeGaia::HandleGetReAuthProofToken(const HttpRequest& request,
 void FakeGaia::HandleMultilogin(const HttpRequest& request,
                                 BasicHttpResponse* http_response) {
   CHECK(http_response);
+
+  if (configuration_.oauth_multilogin_response_status.has_value()) {
+    switch (*configuration_.oauth_multilogin_response_status) {
+      case OAuthMultiloginResponseStatus::kInvalidInput:
+        FormatJSONResponse(base::Value::Dict().Set("status", "INVALID_INPUT"),
+                           net::HTTP_BAD_REQUEST, http_response);
+        return;
+      case OAuthMultiloginResponseStatus::kError:
+        FormatJSONResponse(base::Value::Dict().Set("status", "ERROR"),
+                           net::HTTP_INTERNAL_SERVER_ERROR, http_response);
+        return;
+      default:
+        // Overriding the status is currently supported for the above two only.
+        NOTREACHED() << "Unsupported OAutMultilogin status override: "
+                     << static_cast<int>(
+                            *configuration_.oauth_multilogin_response_status);
+    }
+  }
+
   if (configuration_.session_sid_cookie.empty() ||
       configuration_.session_lsid_cookie.empty()) {
     http_response->set_code(net::HTTP_BAD_REQUEST);
@@ -1171,6 +1197,28 @@ void FakeGaia::HandleFakeRemoveLocalAccount(
       "Google-Accounts-RemoveLocalAccount",
       base::StringPrintf("obfuscatedid=\"%s\"", gaia_id.ToString().c_str()));
   http_response->set_content("");
+  http_response->set_code(net::HTTP_OK);
+}
+
+void FakeGaia::HandleOAuth2TokenRevoke(
+    const net::test_server::HttpRequest& request,
+    net::test_server::BasicHttpResponse* http_response) {
+  CHECK(http_response);
+
+  static constexpr std::string_view kTokenPrefix = "token=";
+
+  if (!request.content.starts_with(kTokenPrefix)) {
+    http_response->set_code(net::HTTP_BAD_REQUEST);
+    return;
+  }
+
+  const std::string token = request.content.substr(kTokenPrefix.size());
+  if (access_token_info_map_.erase(token) == 0) {
+    FormatJSONResponse(base::Value::Dict().Set("error", "invalid_token"),
+                       net::HTTP_NOT_FOUND, http_response);
+    return;
+  }
+
   http_response->set_code(net::HTTP_OK);
 }
 

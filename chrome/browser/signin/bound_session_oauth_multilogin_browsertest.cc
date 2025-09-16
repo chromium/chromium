@@ -7,12 +7,14 @@
 #include "base/check_deref.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "components/signin/core/browser/test_account_reconcilor_observer.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -31,6 +33,7 @@ using ::testing::Contains;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::SizeIs;
+using ::testing::Values;
 
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
@@ -98,9 +101,13 @@ class BoundSessionOAuthMultiloginTest : public MixinBasedInProcessBrowserTest {
   }
 
   std::vector<uint8_t> GetWrappedKey(
-      unexportable_keys::UnexportableKeyId key_id) {
+      std::optional<unexportable_keys::UnexportableKeyId> key_id =
+          std::nullopt) {
+    if (!key_id.has_value()) {
+      key_id = GenerateNewKey();
+    }
     const unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
-        unexportable_key_service().GetWrappedKey(key_id);
+        unexportable_key_service().GetWrappedKey(*key_id);
     CHECK(wrapped_key.has_value());
     return *wrapped_key;
   }
@@ -186,3 +193,165 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginTest, StartsNewBoundSession) {
       bound_session_cookie_refresh_service().GetBoundSessionThrottlerParams(),
       SizeIs(1));
 }
+
+class BoundSessionOAuthMultiloginPersistentErrorTest
+    : public BoundSessionOAuthMultiloginTest,
+      public testing::WithParamInterface<OAuthMultiloginResponseStatus> {};
+
+IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
+                       RefreshTokensBoundToDifferentKeys) {
+  const std::string email_1 = "user1@gmail.com";
+  const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
+  const std::string refresh_token_1 = "refresh-token-1";
+  const CoreAccountInfo account_info_1 = signin::MakeAccountAvailable(
+      &identity_manager(), signin::AccountAvailabilityOptionsBuilder()
+                               .AsPrimary(signin::ConsentLevel::kSignin)
+                               .WithGaiaId(fake_gaia_id_1)
+                               .WithRefreshToken(refresh_token_1)
+                               .WithRefreshTokenBindingKey(GetWrappedKey())
+                               .Build(email_1));
+  ASSERT_EQ(
+      identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
+      account_info_1);
+  ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
+      account_info_1.account_id));
+
+  const std::string email_2 = "user2@gmail.com";
+  const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
+  const std::string refresh_token_2 = "refresh-token-2";
+  const CoreAccountInfo account_info_2 = signin::MakeAccountAvailable(
+      &identity_manager(), signin::AccountAvailabilityOptionsBuilder()
+                               .WithGaiaId(fake_gaia_id_2)
+                               .WithRefreshToken(refresh_token_2)
+                               .WithRefreshTokenBindingKey(GetWrappedKey())
+                               .Build(email_2));
+  ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
+      account_info_2.account_id));
+
+  ASSERT_FALSE(identity_manager().AllBoundTokensShareSameBindingKey());
+
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
+                                          refresh_token_1);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
+                                          refresh_token_2);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
+
+  // This makes sure that OAML will return `INVALID_INPUT` error. At the same
+  // time, `/ListAccounts` WON'T return accounts, which will trigger OAML -
+  // it simulates similar scenario to cookies being cleared.
+  FakeGaia::Configuration config;
+  config.oauth_multilogin_response_status = GetParam();
+  fake_gaia().SetConfiguration(config);
+
+  signin::TestIdentityManagerObserver identity_manager_observer(
+      &identity_manager());
+
+  TestAccountReconcilorObserver account_reconcilor_observer(
+      AccountReconcilorFactory::GetForProfile(browser()->profile()),
+      /*wait_state=*/signin_metrics::AccountReconcilorState::kOk);
+
+  // Enforce initial `/ListAccounts`.
+  signin::SetFreshnessOfAccountsInGaiaCookie(&identity_manager(),
+                                             /*accounts_are_fresh=*/false);
+
+  // Wait until the reconcilor recovers and reaches the
+  // `signin_metrics::AccountReconcilorState::kOk` state.
+  account_reconcilor_observer.WaitForStateChange();
+
+  // Secondary account(s) are removed.
+  EXPECT_FALSE(
+      identity_manager().HasAccountWithRefreshToken(account_info_2.account_id));
+  // The primary account is put in the error state.
+  EXPECT_TRUE(
+      identity_manager().HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info_1.account_id));
+  EXPECT_EQ(
+      identity_manager_observer
+          .TokenOperationSourceFromErrorStateOfRefreshTokenUpdatedCallback(),
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceAccountReconcilorDelegate_RefreshTokensBoundToDifferentKeys);
+  // Both refresh tokens are revoked.
+  EXPECT_FALSE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
+  EXPECT_FALSE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
+}
+
+IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
+                       RefreshTokensBoundToSameKey) {
+  const std::vector<uint8_t> wrapped_key = GetWrappedKey();
+
+  const std::string email_1 = "user1@gmail.com";
+  const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
+  const std::string refresh_token_1 = "refresh-token-1";
+  const CoreAccountInfo account_info_1 = signin::MakeAccountAvailable(
+      &identity_manager(), signin::AccountAvailabilityOptionsBuilder()
+                               .AsPrimary(signin::ConsentLevel::kSignin)
+                               .WithGaiaId(fake_gaia_id_1)
+                               .WithRefreshToken(refresh_token_1)
+                               .WithRefreshTokenBindingKey(wrapped_key)
+                               .Build(email_1));
+  ASSERT_EQ(
+      identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
+      account_info_1);
+  ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
+      account_info_1.account_id));
+
+  const std::string email_2 = "user2@gmail.com";
+  const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
+  const std::string refresh_token_2 = "refresh-token-2";
+  const CoreAccountInfo account_info_2 = signin::MakeAccountAvailable(
+      &identity_manager(), signin::AccountAvailabilityOptionsBuilder()
+                               .WithGaiaId(fake_gaia_id_2)
+                               .WithRefreshToken(refresh_token_2)
+                               .WithRefreshTokenBindingKey(wrapped_key)
+                               .Build(email_2));
+  ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
+      account_info_2.account_id));
+
+  ASSERT_TRUE(identity_manager().AllBoundTokensShareSameBindingKey());
+
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
+                                          refresh_token_1);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
+                                          refresh_token_2);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
+
+  // This makes sure that OAML will return `INVALID_INPUT` error. At the same
+  // time, `/ListAccounts` WON'T return accounts, which will trigger OAML -
+  // it simulates similar scenario to cookies being cleared.
+  FakeGaia::Configuration config;
+  config.oauth_multilogin_response_status = GetParam();
+  fake_gaia().SetConfiguration(config);
+
+  TestAccountReconcilorObserver observer(
+      AccountReconcilorFactory::GetForProfile(browser()->profile()),
+      /*wait_state=*/signin_metrics::AccountReconcilorState::kError);
+
+  // Enforce initial `/ListAccounts`.
+  signin::SetFreshnessOfAccountsInGaiaCookie(&identity_manager(),
+                                             /*accounts_are_fresh=*/false);
+
+  // Wait until the reconcilor reaches the
+  // `signin_metrics::AccountReconcilorState::kError` state (it can't recover
+  // without a user action).
+  observer.WaitForStateChange();
+
+  // Secondary account(s) are NOT removed.
+  EXPECT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
+      account_info_2.account_id));
+  // The primary account is NOT put in the error state.
+  EXPECT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
+      account_info_1.account_id));
+  EXPECT_FALSE(
+      identity_manager().HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info_1.account_id));
+  // None of the refresh tokens is revoked.
+  EXPECT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
+  EXPECT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         BoundSessionOAuthMultiloginPersistentErrorTest,
+                         Values(OAuthMultiloginResponseStatus::kInvalidInput,
+                                OAuthMultiloginResponseStatus::kError));

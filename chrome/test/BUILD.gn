@@ -4491,7 +4491,10 @@ if (!is_android) {
         "../browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl_browsertest.cc",
         "../browser/signin/bound_session_oauth_multilogin_browsertest.cc",
       ]
-      deps += [ "//components/unexportable_keys:test_support" ]
+      deps += [
+        "//components/signin/core/browser:test_support",
+        "//components/unexportable_keys:test_support",
+      ]
     }
 
     if (is_win || is_linux) {

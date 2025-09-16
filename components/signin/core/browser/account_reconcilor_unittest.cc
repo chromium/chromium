@@ -32,6 +32,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
+#include "components/signin/core/browser/test_account_reconcilor_observer.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
@@ -263,57 +264,6 @@ gaia::ListedAccount ListedAccountFromCookieParams(
   listed_account.verified = params.verified;
   return listed_account;
 }
-
-class TestAccountReconcilorObserver : public AccountReconcilor::Observer {
- public:
-  // If `wait_state` is provided, `WaitForStateChange()` will only return
-  // after the reconcilor reaches the given state.
-  explicit TestAccountReconcilorObserver(
-      AccountReconcilor* reconcilor,
-      std::optional<AccountReconcilorState> wait_state = std::nullopt)
-      : wait_state_(wait_state) {
-    scoped_observation_.Observe(reconcilor);
-  }
-
-  // Waits for the reconcilor to reach the `wait_state_` if provided, otherwise
-  // waits for any state change.
-  void WaitForStateChange() { run_loop_.Run(); }
-
-  // AccountReconcilor::Observer:
-  void OnStateChanged(AccountReconcilorState state) override {
-    if (state == AccountReconcilorState::kRunning) {
-      ++started_count_;
-    }
-    if (state == AccountReconcilorState::kError) {
-      ++error_count_;
-    }
-    if (wait_state_.has_value() && state != *wait_state_) {
-      return;
-    }
-    run_loop_.Quit();
-  }
-
-  void OnBlockReconcile() override { ++blocked_count_; }
-  void OnUnblockReconcile() override { ++unblocked_count_; }
-
-  int started_count() const { return started_count_; }
-  int blocked_count() const { return blocked_count_; }
-  int unblocked_count() const { return unblocked_count_; }
-  int error_count() const { return error_count_; }
-
- private:
-  int started_count_ = 0;
-  int blocked_count_ = 0;
-  int unblocked_count_ = 0;
-  int error_count_ = 0;
-
-  std::optional<AccountReconcilorState> wait_state_;
-
-  base::RunLoop run_loop_;
-
-  base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
-      scoped_observation_{this};
-};
 
 }  // namespace
 

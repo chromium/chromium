@@ -110,6 +110,7 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser",
@@ -151,6 +152,20 @@ source_set("unit_tests") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_account_reconcilor_observer.cc",
+    "test_account_reconcilor_observer.h",
+  ]
+
+  deps = [
+    ":browser",
+    "//components/signin/public/base",
+  ]
 }
 
 if (is_android) {

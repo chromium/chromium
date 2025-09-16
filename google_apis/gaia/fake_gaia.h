@@ -16,6 +16,7 @@
 #include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/oauth_multilogin_result.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
@@ -96,6 +97,15 @@ class FakeGaia {
     // that the existing session should be reused. Otherwise, payload to
     // register the new session will be returned.
     bool reuse_bound_session = false;
+
+    // Overrides the status returned by OAuthMultilogin. If not set, `FakeGaia`
+    // determines the status based on the request parameters.
+    //
+    // NOTE: Currently only supported for
+    // `OAuthMultiloginResponseStatus::kInvalidInput` and
+    // `OAuthMultiloginResponseStatus::kError` statuses.
+    std::optional<OAuthMultiloginResponseStatus>
+        oauth_multilogin_response_status;
   };
 
   struct SyncTrustedVaultKeys {
@@ -173,6 +183,10 @@ class FakeGaia {
   // scope and audience requested by the client need to match the token_info.
   void IssueOAuthToken(const std::string& auth_token,
                        const AccessTokenInfo& token_info);
+
+  // Returns `true` if at least one access token was configured to be returned
+  // for `auth_token` via `IssueOAuthToken()`.
+  bool HasAccessTokenForAuthToken(const std::string& auth_token) const;
 
   // Associates an account id with a SAML IdP redirect endpoint. When a
   // /ServiceLoginAuth request comes in for that user, it will be redirected
@@ -351,6 +365,9 @@ class FakeGaia {
   void HandleMultilogin(const net::test_server::HttpRequest& request,
                         net::test_server::BasicHttpResponse* http_response);
   void HandleFakeRemoveLocalAccount(
+      const net::test_server::HttpRequest& request,
+      net::test_server::BasicHttpResponse* http_response);
+  void HandleOAuth2TokenRevoke(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
 
