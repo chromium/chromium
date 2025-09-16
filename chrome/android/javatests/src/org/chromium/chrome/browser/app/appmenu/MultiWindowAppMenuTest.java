@@ -16,7 +16,6 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -42,7 +41,6 @@ public class MultiWindowAppMenuTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "Flaky on ci/test-tablet builder crbug.com/443035606")
     public void testOpenNewWindow_fromWebPage() {
         WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
         RegularNewTabPageStation pageInSecondWindow =
