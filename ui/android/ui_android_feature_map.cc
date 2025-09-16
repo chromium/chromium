@@ -19,6 +19,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kAndroidUseCorrectDisplayWorkArea,
     &ui::kAndroidUseCorrectWindowBounds,
+    &ui::kAndroidUseDisplayTopology,
     &ui::kAndroidWindowManagementWebApi,
     &ui::kAndroidWindowOcclusion,
     &ui::kCheckIntentCallerPermission,

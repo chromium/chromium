@@ -45,7 +45,7 @@ import java.util.HashSet;
 /** Tests logic in the {@link DisplayAndroidManager} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.S)
-@EnableFeatures({UiAndroidFeatures.ANDROID_WINDOW_MANAGEMENT_WEB_API})
+@EnableFeatures({UiAndroidFeatures.ANDROID_USE_DISPLAY_TOPOLOGY})
 public class DisplayAndroidManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -82,7 +82,7 @@ public class DisplayAndroidManagerTest {
     }
 
     @Test
-    @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_MANAGEMENT_WEB_API})
+    @DisableFeatures({UiAndroidFeatures.ANDROID_USE_DISPLAY_TOPOLOGY})
     public void testDisplayAndroidManager() {
         // Display won't be registered.
         final int firstExternalDisplay = ShadowDisplayManager.addDisplay("");

@@ -6258,6 +6258,13 @@ const char kAndroidUseCorrectDisplayWorkAreaDescription[] =
     "availLeft / availTop / availHeight / availWidth accurately reflect the "
     "accessible content display area.";
 
+const char kAndroidUseDisplayTopologyName[] =
+    "Enable usage of display topology.";
+const char kAndroidUseDisplayTopologyDescription[] =
+    "Enables usage of the display topology API to obtain information about all "
+    "displays. The browser obtains this infromation on startup and uses it for "
+    "Window Management API and better window placement on other screens.";
+
 const char kAndroidUseCorrectWindowBoundsName[] =
     "Use accurate top-level browser window bounds reported by Android.";
 const char kAndroidUseCorrectWindowBoundsDescription[] =
@@ -6273,7 +6280,9 @@ const char kAndroidWindowControlsOverlayDescription[] =
 const char kAndroidWindowManagementWebApiName[] = "Window Management Web API";
 const char kAndroidWindowManagementWebApiDescription[] =
     "Enable Window Management Web API. Websites can obtain information about "
-    "displays and display topology.";
+    "displays and display topology. For proper work "
+    "android-use-display-topology and android-use-correct-display-work-area "
+    "should be enabled.";
 
 const char kAndroidWindowOcclusionName[] =
     "Enable occlusion tracking on Android.";

@@ -51,22 +51,23 @@ public class DisplayAndroidManager {
         // DisplayListener implementation:
         @Override
         public void onDisplayAdded(int sdkDisplayId) {
-            // Ignore display addition if Window Management is enabled. The addition is processed
+            // Ignore display addition if Display Topology is available. The addition is processed
             // inside {@link DisplayAndroidManager#updateDisplayTopology(SparseArray<RectF>
             // newDisplaysAbsoluteCoordinates)} when {@link
             // DisplayTopologyListenerBackend#onDisplayTopologyChanged(SparseArray<RectF>
             // absoluteBounds)} is triggered.
-            // If Window Management is disabled, then DisplayAndroid is added lazily on first use.
+            // If Display Topology is not available, then DisplayAndroid is added lazily on first
+            // use.
         }
 
         @Override
         public void onDisplayRemoved(int sdkDisplayId) {
-            // Ignore display removal if Window Management is enabled. The removal is processed
+            // Ignore display removal if Display Topology is available. The removal is processed
             // inside {@link DisplayAndroidManager#updateDisplayTopology(SparseArray<RectF>
             // newDisplaysAbsoluteCoordinates)} when {@link
             // DisplayTopologyListenerBackend#onDisplayTopologyChanged(SparseArray<RectF>
             // absoluteBounds)} is triggered.
-            if (!isWindowManagementEnabled()) {
+            if (!isDisplayTopologyAvailable()) {
                 removeDisplay(sdkDisplayId);
             }
         }
@@ -192,7 +193,7 @@ public class DisplayAndroidManager {
 
         mMainSdkDisplayId = defaultDisplay.getDisplayId(); // Note this display is never removed.
 
-        if (isWindowManagementEnabled()) {
+        if (isDisplayTopologyAvailable()) {
             mDisplaysAbsoluteCoordinates =
                     assumeNonNull(
                             assumeNonNull(AconfigFlaggedApiDelegate.getInstance())
@@ -220,8 +221,8 @@ public class DisplayAndroidManager {
         }
     }
 
-    /* package */ boolean isWindowManagementEnabled() {
-        return UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()
+    private boolean isDisplayTopologyAvailable() {
+        return UiAndroidFeatureList.sAndroidUseDisplayTopology.isEnabled()
                 && AconfigFlaggedApiDelegate.getInstance() != null
                 && AconfigFlaggedApiDelegate.getInstance()
                         .isDisplayTopologyAvailable(getDisplayManager());
@@ -273,7 +274,7 @@ public class DisplayAndroidManager {
     }
 
     private void removeDisplay(int sdkDisplayId) {
-        if (isWindowManagementEnabled()) {
+        if (isDisplayTopologyAvailable()) {
             mNullDisplayIds.remove(sdkDisplayId);
         }
 

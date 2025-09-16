@@ -421,7 +421,7 @@
       "renkens@google.com",
       "lt-web-apps-team@google.com"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "android-use-correct-window-bounds",
@@ -432,8 +432,20 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-use-display-topology",
+    "owners": [
+      "renkens@google.com",
+      "lt-web-apps-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-web-app-launch-handler",
-    "owners": [ "sselyvon@google.com", "tkachenkoo@google.com", "lt-web-apps-team@google.com" ],
+    "owners": [
+      "sselyvon@google.com",
+      "tkachenkoo@google.com",
+      "lt-web-apps-team@google.com"
+    ],
     "expiry_milestone": 145
   },
   {
@@ -442,7 +454,7 @@
       "renkens@google.com",
       "lt-web-apps-team@google.com"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "android-zoom-indicator",

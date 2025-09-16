@@ -12591,6 +12591,11 @@ const FeatureEntry kFeatureEntries[] = {
          payments::features::kSecurePaymentConfirmationFallback)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"android-use-display-topology",
+     flag_descriptions::kAndroidUseDisplayTopologyName,
+     flag_descriptions::kAndroidUseDisplayTopologyDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ui::kAndroidUseDisplayTopology)},
+
     {"android-window-management-web-api",
      flag_descriptions::kAndroidWindowManagementWebApiName,
      flag_descriptions::kAndroidWindowManagementWebApiDescription, kOsAndroid,

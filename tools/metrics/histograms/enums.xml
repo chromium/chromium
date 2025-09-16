@@ -17403,6 +17403,7 @@ from previous Chrome versions.
   <int value="1191531211" label="RawClipboard:disabled"/>
   <int value="1192302892" label="gesture-typing"/>
   <int value="1192447565" label="SurfaceSyncFullscreenKillswitch:disabled"/>
+  <int value="1192510437" label="AndroidUseDisplayTopology:enabled"/>
   <int value="1192557311"
       label="ReadAnythingReadAloudPhraseHighlighting:disabled"/>
   <int value="1192894768" label="NetworkServiceInProcess2:disabled"/>
@@ -18657,6 +18658,7 @@ from previous Chrome versions.
   <int value="1625988511" label="DurableClientHintsCache:enabled"/>
   <int value="1626258278"
       label="PrivacySandboxProactiveTopicsBlocking:enabled"/>
+  <int value="1626698375" label="AndroidUseDisplayTopology:disabled"/>
   <int value="1626795933" label="CCTTextFragmentLookupApiEnabled:disabled"/>
   <int value="1626824478" label="ExperimentalAppBanners:disabled"/>
   <int value="1627416551" label="ImeInputLogicMozc:disabled"/>

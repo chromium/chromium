@@ -14,6 +14,8 @@ BASE_FEATURE(kAndroidUseCorrectDisplayWorkArea,
 
 BASE_FEATURE(kAndroidUseCorrectWindowBounds, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidUseDisplayTopology, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAndroidWindowManagementWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidWindowOcclusion, base::FEATURE_DISABLED_BY_DEFAULT);

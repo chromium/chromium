@@ -1177,6 +1177,22 @@
             ]
         }
     ],
+    "AndroidUseDisplayTopology": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidUseDisplayTopology"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidUseFrameIntervalDeciderAdaptiveFrameRate": [
         {
             "platforms": [
@@ -1211,7 +1227,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview"
             ],
             "experiments": [
