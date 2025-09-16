@@ -1147,21 +1147,14 @@ TEST_P(RasterInvalidatorTest, EffectReferenceFilterChangeOnEmptyChunk) {
   invalidator_->Generate(chunks, kDefaultLayerOffset, kDefaultLayerBounds,
                          layer_state);
   DisplayItemClientId client_id = chunks.begin()->id.client_id;
-  if (RuntimeEnabledFeatures::EmptyReferenceFilterInvalidationEnabled()) {
-    // The invalidation rect should have the size of the filter bounds and not
-    // the drawable bounds due to the filter's potential to be decomposed.
-    EXPECT_THAT(
-        TrackedRasterInvalidations(),
-        ElementsAre(RasterInvalidationInfo{
-            client_id, artifact.ClientDebugName(client_id),
-            gfx::Rect(-kDefaultLayerOffset.x(), -kDefaultLayerOffset.y(),
-                      filter_bounds.width(), filter_bounds.height()),
-            PaintInvalidationReason::kPaintProperty}));
-  } else {
-    // Should be no invalidations if the fix is disabled (previous buggy
-    // behavior).
-    EXPECT_TRUE(TrackedRasterInvalidations().empty());
-  }
+  // The invalidation rect should have the size of the filter bounds and not the
+  // drawable bounds due to the filter's potential to be decomposed.
+  EXPECT_THAT(TrackedRasterInvalidations(),
+              ElementsAre(RasterInvalidationInfo{
+                  client_id, artifact.ClientDebugName(client_id),
+                  gfx::Rect(-kDefaultLayerOffset.x(), -kDefaultLayerOffset.y(),
+                            filter_bounds.width(), filter_bounds.height()),
+                  PaintInvalidationReason::kPaintProperty}));
 
   FinishCycle(chunks);
 }

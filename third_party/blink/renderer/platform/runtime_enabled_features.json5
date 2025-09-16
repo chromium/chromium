@@ -2020,11 +2020,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/40118302
-      name: "EmptyReferenceFilterInvalidation",
-      status: "stable",
-    },
-    {
       name: "EnforceAnonymityExposure",
       status: "stable",
     },
