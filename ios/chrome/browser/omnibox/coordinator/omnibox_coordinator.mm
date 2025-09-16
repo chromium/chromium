@@ -373,8 +373,12 @@
 #pragma mark - OmniboxMediatorDelegate
 
 - (void)omniboxMediatorDidBeginEditing:(OmniboxMediator*)mediator {
-  if (!self.keyboardAccessoryView &&
-      (!self.searchOnlyUI || experimental_flags::IsOmniboxDebuggingEnabled())) {
+  BOOL showKeyboardAccessory =
+      experimental_flags::IsOmniboxDebuggingEnabled() ||
+      (!self.searchOnlyUI &&
+       _presentationContext != OmniboxPresentationContext::kAIMPrototype);
+
+  if (!self.keyboardAccessoryView && showKeyboardAccessory) {
     TemplateURLService* templateURLService =
         ios::TemplateURLServiceFactory::GetForProfile(self.profile);
     self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
