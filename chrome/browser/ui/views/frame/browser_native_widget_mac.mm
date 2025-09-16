@@ -230,7 +230,8 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       break;
     }
     case IDC_BOOKMARK_ALL_TABS:
-    case IDC_PRINT: {
+    case IDC_PRINT:
+    case IDC_SAVE_PAGE: {
       // Disable these commands when browser window already has an attached
       // sheet.
       result->enable &= ![AppController.sharedController keyWindowIsModal];

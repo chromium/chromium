@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
   ASSERT_FALSE([AppController.sharedController keyWindowIsModal]);
 
   // Retrieve and initialize the menu items for
-  // IDC_BOOKMARK_ALL_TABS / IDC_PRINT.
+  // IDC_BOOKMARK_ALL_TABS / IDC_PRINT / IDC_SAVE_PAGE.
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   NSMenuItem* bookmark_all_tabs_item =
       [[[[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU] submenu]
@@ -161,10 +161,14 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
   NSMenuItem* print_item = [[[[NSApp mainMenu] itemWithTag:IDC_FILE_MENU]
       submenu] itemWithTag:IDC_PRINT];
   ASSERT_TRUE(print_item);
+  NSMenuItem* save_item = [[[[NSApp mainMenu] itemWithTag:IDC_FILE_MENU]
+      submenu] itemWithTag:IDC_SAVE_PAGE];
+  ASSERT_TRUE(save_item);
 
   // These commands should be enabled when the sheet is not attached.
   EXPECT_TRUE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
   EXPECT_TRUE([window validateUserInterfaceItem:print_item]);
+  EXPECT_TRUE([window validateUserInterfaceItem:save_item]);
 
   // Open bookmark sheet dialog.
   auto* bookmark_model =
@@ -183,6 +187,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
   // These commands should be disabled when the sheet is attached.
   EXPECT_FALSE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
   EXPECT_FALSE([window validateUserInterfaceItem:print_item]);
+  EXPECT_FALSE([window validateUserInterfaceItem:save_item]);
 
   // Close the sheet dialog.
   editor_raw->GetWidget()->CloseNow();
@@ -191,4 +196,5 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
   // These commands should be enabled again when the sheet is removed.
   EXPECT_TRUE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
   EXPECT_TRUE([window validateUserInterfaceItem:print_item]);
+  EXPECT_TRUE([window validateUserInterfaceItem:save_item]);
 }
