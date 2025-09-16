@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
@@ -804,7 +805,8 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
     case CSSSelector::kSubSelector:
       return MatchForSubSelector(context, result);
     default: {
-      if (context.pseudo_id != kPseudoIdNone &&
+      if (!RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled() &&
+          context.pseudo_id != kPseudoIdNone &&
           context.pseudo_id != result.dynamic_pseudo) {
         return kSelectorFailsCompletely;
       }
@@ -1045,9 +1047,35 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       }
       return kSelectorFailsAllSiblings;
 
-    case CSSSelector::kPseudoChild:
-      // TODO(crbug.com/444386484): Implement support for this.
-      return kSelectorFailsCompletely;
+    case CSSSelector::kPseudoChild: {
+      // In order to represent a pseudo-element, a context may contain
+      // pseudo_element!=nullptr, or pseudo_id!=kPseudoIdNone, or both.
+      if (context.pseudo_id != kPseudoIdNone) {
+        // This context represents a single "final" would-be pseudo-element
+        // at the end of the (pseudo-)element chain. Because we only support
+        // one of these, the parent context is simply the same context with
+        // `pseudo_id` reset.
+        next_context.pseudo_id = kPseudoIdNone;
+        next_context.pseudo_element = context.pseudo_element;
+      } else {
+        DCHECK(context.pseudo_element);
+        // Move to originating element, which may be another pseudo-element.
+        next_context.pseudo_id = kPseudoIdNone;
+        Element* originating_element =
+            To<PseudoElement>(*context.pseudo_element).parentElement();
+        next_context.pseudo_element =
+            DynamicTo<PseudoElement>(originating_element);
+        // If `context.pseudo_element`'s parent was *not* a PseudoElement
+        // (i.e. we reached the end of the pseudo-element-chain),
+        // then `next_context.pseudo_element` will be nullptr here.
+        // That's fine, because `context.element` already contains
+        // the originating element, and becomes the next element we match
+        // against.
+        DCHECK(next_context.pseudo_element ||
+               next_context.element == originating_element);
+      }
+      return MatchSelector(next_context, result);
+    }
     case CSSSelector::kUAShadow: {
       // Note: context.tree_scope should be non-null unless we're checking user
       // or UA origin rules, or VTT rules.  (We could CHECK() this if it
@@ -1291,6 +1319,21 @@ static bool AnyAttributeMatches(Element& element,
   return false;
 }
 
+namespace {
+
+Element& GetCandidateElement(
+    const SelectorChecker::SelectorCheckingContext& context,
+    SelectorChecker::MatchResult& result) {
+  if (RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled()) {
+    DCHECK_EQ(kPseudoIdNone, context.pseudo_id);
+    DCHECK(context.element);
+    return context.pseudo_element ? *context.pseudo_element : *context.element;
+  }
+  return context.GetElementForMatching(result.pseudo_ancestor_index);
+}
+
+}  // namespace
+
 ALWAYS_INLINE bool SelectorChecker::CheckOne(
     const SelectorCheckingContext& context,
     MatchResult& result) const {
@@ -1323,6 +1366,18 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
     }
     if (RuntimeEnabledFeatures::CSSNegatedFeaturelessEnabled()) {
       return MatchShadowHost(context, result) == kFeaturelessMatches;
+    }
+  }
+  if (RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled()) {
+    if (context.pseudo_id != kPseudoIdNone) {
+      // This is really a match against a would-be pseudo-element that doesn't
+      // actually exist as a PseudoElement object.
+      return CheckVirtualPseudo(context, result);
+    } else if (context.pseudo_element) {
+      if (selector.Match() != CSSSelector::kPseudoElement &&
+          selector.Match() != CSSSelector::kPseudoClass) {
+        return false;
+      }
     }
   }
 
@@ -2079,8 +2134,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
 
 bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                                        MatchResult& result) const {
-  Element& element =
-      context.GetElementForMatching(result.pseudo_ancestor_index);
+  Element& element = GetCandidateElement(context, result);
   const CSSSelector& selector = *context.selector;
   bool force_pseudo_state = false;
 
@@ -2960,8 +3014,8 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
   if (pseudo_id != kPseudoIdNone && pseudo_id <= kLastPublicPseudoId) {
     result.DescendToNextPseudoElement();
   }
-  Element& element =
-      context.GetElementForMatching(result.pseudo_ancestor_index);
+
+  Element& element = GetCandidateElement(context, result);
 
   if (context.in_nested_complex_selector) {
     // This would normally be rejected parse-time, but can happen
@@ -3139,6 +3193,18 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       [[fallthrough]];
     default:
       DCHECK_NE(mode_, kQueryingRules);
+      if (RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled()) {
+        DCHECK_EQ(kPseudoIdNone, context.pseudo_id);
+        // TODO(crbug.com/444386484): Support all pseudo-elements.
+        switch (selector.GetPseudoType()) {
+          case CSSSelector::kPseudoBefore:
+          case CSSSelector::kPseudoAfter:
+          case CSSSelector::kPseudoMarker:
+            return element.GetPseudoIdForStyling() == pseudo_id;
+          default:
+            return false;
+        }
+      }
       result.dynamic_pseudo =
           CSSSelector::GetPseudoId(selector.GetPseudoType());
       DCHECK_NE(result.dynamic_pseudo, kPseudoIdNone);
@@ -3352,6 +3418,49 @@ bool SelectorChecker::CheckScrollbarPseudoClass(
              scrollbar_part_ == kForwardTrackPart;
     case CSSSelector::kPseudoCornerPresent:
       return scrollbar_->IsScrollCornerVisible();
+    default:
+      return false;
+  }
+}
+
+// Check a pseudo-class or pseudo-element selector in a context which
+// matches a "would-be" pseudo-element that is not backed by a real
+// blink::PseudoElement (it is "virtual").
+//
+// We use this mode when figuring out the style for pseudo-elements
+// that are simply not possible to create pseudo-elements for (like highlights),
+// or when a JS API call needs the computed style of a pseudo-element that
+// isn't necessary to create for rendering purposes,
+// e.g. getComputedStyle(e, '::before').
+bool SelectorChecker::CheckVirtualPseudo(const SelectorCheckingContext& context,
+                                         MatchResult& result) const {
+  DCHECK(RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled());
+  DCHECK_NE(kPseudoIdNone, context.pseudo_id);
+
+  const CSSSelector& selector = *context.selector;
+
+  switch (selector.Match()) {
+    case CSSSelector::kPseudoClass:
+      // TODO(crbug.com/444386484): Support :is(), :where(), :not().
+      //
+      // All of these should match a virtual kPseudoIdBefore:
+      //
+      //  * :is(::before)
+      //  * :not(:hover):is(::before)
+      //  * :not(::marker):is(::before)
+      //
+      return false;
+    case CSSSelector::kPseudoElement:
+      // TODO(crbug.com/444386484): Support all pseudo-elements.
+      switch (selector.GetPseudoType()) {
+        case CSSSelector::kPseudoBefore:
+        case CSSSelector::kPseudoAfter:
+        case CSSSelector::kPseudoMarker:
+          return context.pseudo_id ==
+                 selector.GetPseudoId(selector.GetPseudoType());
+        default:
+          return false;
+      }
     default:
       return false;
   }

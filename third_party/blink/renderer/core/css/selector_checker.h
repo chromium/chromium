@@ -224,6 +224,12 @@ class CORE_EXPORT SelectorChecker {
 
     AtomicString* pseudo_argument = nullptr;
     // The pseudo-element type of pseudo-element we are matching styles for.
+    //
+    // With the runtime flag CSSLogicalCombinationPseudo enabled, a value
+    // other than kPseudoIdNone represents a "virtual pseudo" that would
+    // exist nested below what the context would otherwise represent.
+    // In other words, pseudo_element=<::before> and pseudo_id=kPseudoMarker
+    // represents a would-be situation of <::before><::marker /></::before>.
     PseudoId pseudo_id = kPseudoIdNone;
     // The last pseudo-element selector we saw. This is not necessarily the
     // pseudo_id above since we may have nested pseudo-elements. Also, this may
@@ -439,6 +445,7 @@ class CORE_EXPORT SelectorChecker {
   bool CheckPseudoElement(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckScrollbarPseudoClass(const SelectorCheckingContext&,
                                  MatchResult&) const;
+  bool CheckVirtualPseudo(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoHost(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoScope(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoNot(const SelectorCheckingContext&, MatchResult&) const;

@@ -8,15 +8,18 @@
 #include <cstdio>
 #include <optional>
 
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -812,6 +815,253 @@ TEST_F(MatchFlagsScopeTest, ScopeLimitNonSubject) {
   )HTML");
   EXPECT_FALSE(AffectedByHover(Outer()));
   EXPECT_FALSE(AffectedByHover(Inner()));
+}
+
+// The pseudo-child tests follow the following rules:
+//
+// A document is loaded with the following HTML:
+//
+//  <div id=a class=b></div>
+//
+// This div is then used as the (ultimate) originating element for a chain
+// of PseudoElements specified by `pseudo_element_chain`. The innermost
+// pseudo-element in that chain is the passed to the ElementResolveContext,
+// and we match `rule` against that context.
+struct PseudoChildMatchTestData {
+  // A chain of pseudo-elements to create, using #a (see above) as the ultimate
+  // originating element.
+  const std::vector<PseudoId> pseudo_element_chain;
+  // The rule to match against the innermost pseudo-element in the above chain.
+  const char* rule;
+  bool expected_match;
+};
+
+PseudoChildMatchTestData pseudo_child_match_data[] = {
+    // clang-format off
+
+    // Basic cases:
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "div::before {}",
+      .expected_match = true,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdAfter },
+      .rule = "div::after {}",
+      .expected_match = true,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdMarker },
+      .rule = "div::marker {}",
+      .expected_match = true,
+    },
+
+    // Nested cases:
+
+    {
+      .pseudo_element_chain = { kPseudoIdBefore, kPseudoIdMarker },
+      .rule = "div::before::marker {}",
+      .expected_match = true,
+    },
+
+    // Universal selector should not match, since nothing is explicitly
+    // matching with ::before. See the new proposed selectors data model:
+    // https://github.com/w3c/csswg-drafts/issues/9702#issuecomment-3250059981
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "* {}",
+      .expected_match = false,
+    },
+
+    // Universal ultimate originating compound:
+    {
+      .pseudo_element_chain = { kPseudoIdBefore, kPseudoIdMarker },
+      .rule = "::before::marker {}",
+      .expected_match = true,
+    },
+
+    // Universal ultimate originating compound (explicit):
+    {
+      .pseudo_element_chain = { kPseudoIdBefore, kPseudoIdMarker },
+      .rule = "*::before::marker {}",
+      .expected_match = true,
+    },
+
+    // Tests below this line are expected to *not* match.
+
+    // Mismatched pseudo-element:
+    {
+      .pseudo_element_chain = { kPseudoIdAfter },
+      .rule = "div::before {}",
+      .expected_match = false,
+    },
+
+    // Pseudo-elements can not match tags, IDs, classes, nor attributes.
+    //
+    // Note: we're using an originating element <div id=a class=b>
+    // for all of these tests. We need to make sure that we're not
+    // actually matching against the originating element when we're
+    // really requesting a match against a pseudo-element.
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "div {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "#a {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ".b {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "[id] {}",
+      .expected_match = false,
+    },
+    // Like the previous four tests, but via :is() this time, plus explicitly
+    // matching ::before.
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before):is(div) {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before):is(#a) {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before):is(.b) {}",
+      .expected_match = false,
+    },
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = ":is(::before):is([id]) {}",
+      .expected_match = false,
+    },
+
+    // No pseudo-element to match ::before. (The before pseudo-element that
+    // we do have attempts to match against ::marker.)
+    {
+      .pseudo_element_chain = { kPseudoIdBefore },
+      .rule = "div::before::marker {}",
+      .expected_match = false,
+    },
+
+    // Non-matching originating pseudo:
+    {
+      .pseudo_element_chain = { kPseudoIdAfter, kPseudoIdMarker },
+      .rule = "div::before::marker {}",
+      .expected_match = false,
+    },
+
+    // Non-matching ultimate originating element:
+    {
+      .pseudo_element_chain = { kPseudoIdBefore, kPseudoIdMarker },
+      .rule = "#noexist::before::marker {}",
+      .expected_match = false,
+    },
+
+    // clang-format on
+};
+
+class PseudoChildMatchTest
+    : public PageTestBase,
+      public testing::WithParamInterface<PseudoChildMatchTestData> {
+ public:
+  void SetUp() override {
+    PageTestBase::SetUp();
+    SetHtmlInnerHTML("<div id=a class=b></div>");
+    originating_element_ = GetDocument().getElementById(AtomicString("a"));
+    CHECK(originating_element_);
+  }
+
+  // Creating a chain of PseudoElements according to `chain`,
+  // using `originating_element_` as the ultimate originating element.
+  // Returns the innermost pseudo-element in the chain, or the originating
+  // element itself, if `chain` is empty.
+  Element* AttachPseudoElementChain(const std::vector<PseudoId>& chain) {
+    Element* leaf = originating_element_.Get();
+    for (PseudoId pseudo_id : chain) {
+      leaf = PseudoElement::Create(/*parent=*/leaf, pseudo_id);
+    }
+    return leaf;
+  }
+
+  bool Match(SelectorChecker::SelectorCheckingContext& context) {
+    SelectorChecker checker(SelectorChecker::kResolvingStyle);
+    return checker.Match(context);
+  }
+
+  Persistent<Element> originating_element_;
+};
+
+INSTANTIATE_TEST_SUITE_P(SelectorChecker,
+                         PseudoChildMatchTest,
+                         testing::ValuesIn(pseudo_child_match_data));
+
+TEST_P(PseudoChildMatchTest, PseudoElementObjects) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+
+  PseudoChildMatchTestData param = GetParam();
+  SCOPED_TRACE(param.rule);
+
+  auto* style_rule = DynamicTo<StyleRule>(
+      css_test_helpers::ParseRule(GetDocument(), param.rule));
+  ASSERT_TRUE(style_rule);
+
+  Element* candidate = AttachPseudoElementChain(param.pseudo_element_chain);
+  ASSERT_TRUE(candidate);
+
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*candidate)};
+  context.selector = style_rule->FirstSelector();
+  ASSERT_TRUE(context.pseudo_element);
+
+  EXPECT_EQ(param.expected_match, Match(context));
+}
+
+// This is a version of the above PseudoElementObjects test, which, instead of
+// creating PseudoElement objects for every item in the pseudo-element chain,
+// only does so for all but the last item. The last PseudoId in the chain
+// is instead set on SelectorCheckingContext::pseudo_id, to simulate
+// "virtual pseudo matching", as described near the implementation of
+// SelectorChecker::CheckVirtualPseudo.
+TEST_P(PseudoChildMatchTest, VirtualPseudo) {
+  ScopedCSSLogicalCombinationPseudoForTest scoped_feature(true);
+
+  PseudoChildMatchTestData param = GetParam();
+  SCOPED_TRACE(param.rule);
+
+  auto* style_rule = DynamicTo<StyleRule>(
+      css_test_helpers::ParseRule(GetDocument(), param.rule));
+  ASSERT_TRUE(style_rule);
+
+  // We won't create a PseudoElement for the rightmost pseudo-element selector.
+  // Instead, we'll simply set SelectorCheckingContext::pseudo_id to simulate
+  // e.g. getComputedStyle(e, '::before') when no before element actually
+  // exists.
+  PseudoId rightmost_pseudo_id = kPseudoIdNone;
+  std::vector<PseudoId> amended_chain = param.pseudo_element_chain;
+  if (!amended_chain.empty()) {
+    rightmost_pseudo_id = amended_chain.back();
+    amended_chain.pop_back();
+  }
+
+  Element* candidate = AttachPseudoElementChain(amended_chain);
+  ASSERT_TRUE(candidate);
+
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*candidate)};
+  context.selector = style_rule->FirstSelector();
+  context.pseudo_id = rightmost_pseudo_id;
+
+  EXPECT_EQ(param.expected_match, Match(context));
 }
 
 class EasySelectorCheckerTest : public PageTestBase {
