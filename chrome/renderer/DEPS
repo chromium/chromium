@@ -52,6 +52,7 @@ include_rules = [
   "+components/pdf/common",
   "+components/pdf/renderer",
   "+components/plugins/renderer",
+  "+components/webapps/isolated_web_apps/scheme.h",
   "+components/printing/common",
   "+components/printing/renderer",
   "+components/search/ntp_features.h",

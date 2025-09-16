@@ -269,6 +269,10 @@ static_library("common_lib") {
     "//components/pdf/common:util",
   ]
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
+
   if (is_android || enable_library_cdms || enable_playready) {
     public_deps += [ "//components/cdm/common" ]
   }
