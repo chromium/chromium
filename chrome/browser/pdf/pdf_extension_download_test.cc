@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -30,10 +31,13 @@
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "extensions/browser/api/file_system/file_system_api.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/views/views_switches.h"
+
+using extensions::FileSystemChooseEntryFunction;
 
 namespace {
 
@@ -218,29 +222,61 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionDownloadTest, BasicUsingDownloadButton) {
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionDownloadTest);
 
-class PDFExtensionSaveInBlocksTest : public base::test::WithFeatureOverride,
-                                     public PDFExtensionTestBase {
+// Params: kPdfOopif, kPdfUseShowSaveFilePicker
+class PDFExtensionSaveInBlocksTest
+    : public PDFExtensionTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  PDFExtensionSaveInBlocksTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+  PDFExtensionSaveInBlocksTest() = default;
+
+  bool IsPdfOopifEnabled() const { return get<0>(GetParam()); }
+  bool IsPdfUseShowSaveFilePickerEnabled() const { return get<1>(GetParam()); }
 
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
     std::vector<base::test::FeatureRefAndParams> enabled =
         PDFExtensionTestBase::GetEnabledFeatures();
     enabled.push_back({chrome_pdf::features::kPdfGetSaveDataInBlocks, {}});
-    // "PdfGetSaveDataInBlocks" needs "PdfUseShowSaveFilePicker".
-    enabled.push_back({chrome_pdf::features::kPdfUseShowSaveFilePicker, {}});
+    if (IsPdfOopifEnabled()) {
+      enabled.push_back({chrome_pdf::features::kPdfOopif, {}});
+    }
+    if (IsPdfUseShowSaveFilePickerEnabled()) {
+      enabled.push_back({chrome_pdf::features::kPdfUseShowSaveFilePicker, {}});
+    }
     return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    std::vector<base::test::FeatureRef> disabled =
+        PDFExtensionTestBase::GetDisabledFeatures();
+    if (!IsPdfOopifEnabled()) {
+      disabled.push_back(chrome_pdf::features::kPdfOopif);
+    }
+    if (!IsPdfUseShowSaveFilePickerEnabled()) {
+      disabled.push_back(chrome_pdf::features::kPdfUseShowSaveFilePicker);
+    }
+
+    return disabled;
   }
 
   // PDFExtensionTestBase:
   void SetUpInProcessBrowserTestFixture() override {
     // Set up the policy provider to allow the file picker to run inside PDF
     // viewer's extension.
-    SetUpPolicyProvider();
-    SetPolicy();
+    if (IsPdfUseShowSaveFilePickerEnabled()) {
+      SetUpPolicyProvider();
+      SetPolicy();
+    }
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  // PDFExtensionTestBase:
+  void TearDownOnMainThread() override {
+    if (!IsPdfUseShowSaveFilePickerEnabled()) {
+      test_options_auto_reset_.reset();
+      test_options_.reset();
+    }
+    PDFExtensionTestBase::TearDownOnMainThread();
   }
 
   void SetUpPolicyProvider() {
@@ -265,8 +301,35 @@ class PDFExtensionSaveInBlocksTest : public base::test::WithFeatureOverride,
     policy_provider_.UpdateChromePolicy(policy_map);
   }
 
+  void SetAutoSelectSavePath(const base::FilePath& save_path) {
+    if (IsPdfUseShowSaveFilePickerEnabled()) {
+      ui::SelectFileDialog::SetFactory(
+          std::make_unique<content::FakeSelectFileDialogFactory>(
+              std::vector<base::FilePath>{save_path}));
+    } else {
+      FileSystemChooseEntryFunction::RegisterTempExternalFileSystemForTest(
+          save_path.BaseName().MaybeAsASCII(), save_path.DirName());
+      save_path_ = save_path;
+      test_options_ =
+          std::make_unique<FileSystemChooseEntryFunction::TestOptions>(
+              FileSystemChooseEntryFunction::TestOptions(
+                  {.path_to_be_picked = &save_path_}));
+      test_options_auto_reset_ = std::make_unique<
+          base::AutoReset<const FileSystemChooseEntryFunction::TestOptions*>>(
+          FileSystemChooseEntryFunction::SetOptionsForTesting(*test_options_));
+    }
+  }
+
  private:
+  // Needed for auto selecting save path with SaveFilePicker.
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+
+  // Needed for auto selecting save path with FileChooser.
+  base::FilePath save_path_;
+  std::unique_ptr<FileSystemChooseEntryFunction::TestOptions> test_options_;
+  std::unique_ptr<
+      base::AutoReset<const FileSystemChooseEntryFunction::TestOptions*>>
+      test_options_auto_reset_;
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksTest, BasicUsingContextMenu) {
@@ -280,10 +343,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksTest, BasicUsingContextMenu) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath save_path = temp_dir.GetPath().AppendASCII("test.pdf");
 
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<content::FakeSelectFileDialogFactory>(
-          std::vector<base::FilePath>{save_path}));
-
+  SetAutoSelectSavePath(save_path);
   SimulateContextMenuSaveAs(extension_host, url);
 
   base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
@@ -306,10 +366,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksTest, BasicUsingDownloadButton) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath save_path = temp_dir.GetPath().AppendASCII("test.pdf");
 
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<content::FakeSelectFileDialogFactory>(
-          std::vector<base::FilePath>{save_path}));
-
+  SetAutoSelectSavePath(save_path);
   TriggerDownloadButton(extension_host);
 
   base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
@@ -320,6 +377,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksTest, BasicUsingDownloadButton) {
                      /*wait_before_compare=*/true);
   ASSERT_TRUE(future.Wait());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFExtensionSaveInBlocksTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 // Tests with an in memory generated PDF larger than `kMaxSaveBufferSize` bytes.
 class PDFExtensionSaveInBlocksLargeFileTest
@@ -355,10 +416,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksLargeFileTest,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath save_path = temp_dir.GetPath().AppendASCII("test.pdf");
 
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<content::FakeSelectFileDialogFactory>(
-          std::vector<base::FilePath>{save_path}));
-
+  SetAutoSelectSavePath(save_path);
   TriggerDownloadButton(extension_host);
 
   base::FilePath expected_path = temp_dir.GetPath().AppendASCII("expected.pdf");
@@ -369,7 +427,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksLargeFileTest,
   ASSERT_TRUE(future.Wait());
 }
 
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionSaveInBlocksTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionSaveInBlocksLargeFileTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFExtensionSaveInBlocksLargeFileTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));

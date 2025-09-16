@@ -46,10 +46,6 @@ void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled);
 // PDF viewer should be used.
 bool IsOopifPdfEnabled();
 
-// Returns whether saving to disk in blocks is enabled. This will be true when
-// both `kPdfGetSaveDataInBlocks` and `kPdfUseShowSaveFilePicker` are enabled.
-bool IsPdfGetSaveDataInBlocksEnabled();
-
 }  // namespace chrome_pdf::features
 
 #endif  // PDF_PDF_FEATURES_H_

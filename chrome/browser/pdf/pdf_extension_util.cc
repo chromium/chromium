@@ -305,7 +305,8 @@ base::Value::Dict GetAdditionalData(content::BrowserContext* context) {
            use_ink2 && chrome_pdf::features::kPdfInk2TextAnnotations.Get());
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
   dict.Set("pdfGetSaveDataInBlocks",
-           chrome_pdf::features::IsPdfGetSaveDataInBlocksEnabled());
+           base::FeatureList::IsEnabled(
+               chrome_pdf::features::kPdfGetSaveDataInBlocks));
   dict.Set("pdfUseShowSaveFilePicker",
            base::FeatureList::IsEnabled(
                chrome_pdf::features::kPdfUseShowSaveFilePicker));

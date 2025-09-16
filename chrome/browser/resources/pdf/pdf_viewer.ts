@@ -1237,21 +1237,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         }
       }
     } else {
-      chrome.fileSystem.chooseEntry(
-          {type: 'saveFile', suggestedName: fileName},
-          (entry?: FileSystemFileEntry) => {
-            if (chrome.runtime.lastError) {
-              if (chrome.runtime.lastError.message !== 'User cancelled') {
-                console.error(
-                    'chrome.fileSystem.chooseEntry failed: ' +
-                    chrome.runtime.lastError.message);
-              }
-              return;
-            }
-            entry!.createWriter((writer: FileWriter) => {
-              writer.write(blob);
-            });
-          });
+      const writer = await this.selectFileAndGetWriter_(fileName);
+      if (writer !== null) {
+        writer.write(blob);
+      }
     }
   }
 
@@ -1449,6 +1438,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * @returns A Writable if successful, otherwise throws an exception.
    */
   private async selectFileAndGetWritable_(suggestedName: string) {
+    assert(this.pdfUseShowSaveFilePicker_);
     const fileHandle = await window.showSaveFilePicker({
       suggestedName: suggestedName,
       types: [{
@@ -1458,6 +1448,52 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     });
 
     return fileHandle.createWritable();
+  }
+
+  /**
+   * Shows deprecated save file picker and returns a FileWriter if successful.
+   * @param suggestedName The default value for the filename.
+   * @returns A FileWriter if successful, otherwise returns null.
+   */
+  private async selectFileAndGetWriter_(suggestedName: string):
+      Promise<FileWriter|null> {
+    assert(!this.pdfUseShowSaveFilePicker_);
+    return new Promise(resolve => {
+      chrome.fileSystem.chooseEntry(
+          {
+            type: 'saveFile',
+            accepts: [{description: '*.pdf', extensions: ['pdf']}],
+            suggestedName: suggestedName,
+          },
+          (entry?: FileSystemFileEntry) => {
+            if (chrome.runtime.lastError) {
+              if (chrome.runtime.lastError.message !== 'User cancelled') {
+                console.error(
+                    'chrome.fileSystem.chooseEntry failed: ' +
+                    chrome.runtime.lastError.message);
+              }
+              resolve(null);
+            }
+            assert(entry);
+            entry.createWriter(writer => {
+              resolve(writer);
+            });
+          });
+    });
+  }
+
+  /**
+   * Writes a blob to a FileWriter, waiting until writing is completed. Throws
+   * an exception on error.
+   * @param writer: The FileWriter into which data is written.
+   * @param blob: The Blob of data to write.
+   */
+  private writeToWriter_(writer: FileWriter, blob: Blob): Promise<void> {
+    return new Promise((resolve, reject) => {
+      writer.onwriteend = () => resolve();
+      writer.onerror = () => reject(writer.error);
+      writer.write(blob);
+    });
   }
 
   /**
@@ -1513,26 +1549,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // Create blob before callback to avoid race condition.
     const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
     if (!this.pdfUseShowSaveFilePicker_) {
-      chrome.fileSystem.chooseEntry(
-          {
-            type: 'saveFile',
-            accepts: [{description: '*.pdf', extensions: ['pdf']}],
-            suggestedName: fileName,
-          },
-          (entry?: FileSystemFileEntry) => {
-            if (chrome.runtime.lastError) {
-              if (chrome.runtime.lastError.message !== 'User cancelled') {
-                console.error(
-                    'chrome.fileSystem.chooseEntry failed: ' +
-                    chrome.runtime.lastError.message);
-              }
-              return;
-            }
-            entry!.createWriter((writer: FileWriter) => {
-              writer.write(blob);
-              this.onSaveSuccessful_(requestType);
-            });
-          });
+      const writer = await this.selectFileAndGetWriter_(fileName);
+      if (writer !== null) {
+        writer.write(blob);
+        this.onSaveSuccessful_(requestType);
+      }
       return;
     }
 
@@ -1569,9 +1590,19 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       fileName = fileName + '.pdf';
     }
 
-    assert(this.pdfUseShowSaveFilePicker_);
     try {
-      const writable = await this.selectFileAndGetWritable_(fileName);
+      let writable: FileSystemWritableFileStream|null;
+      let writer: FileWriter|null;
+      if (this.pdfUseShowSaveFilePicker_) {
+        writable = await this.selectFileAndGetWritable_(fileName);
+        writer = null;
+      } else {
+        writer = await this.selectFileAndGetWriter_(fileName);
+        if (writer === null) {
+          return;
+        }
+        writable = null;
+      }
 
       // Total file size is updated after the first results are received.
       let totalFileSize = 0;
@@ -1602,9 +1633,17 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           assert(result.dataToSave.byteLength === blockSize);
         }
         offset += result.dataToSave.byteLength;
-        await writable.write(result.dataToSave);
+        if (writable !== null) {
+          await writable.write(result.dataToSave);
+        } else {
+          assert(writer !== null);
+          const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
+          await this.writeToWriter_(writer, blob);
+        }
       } while (offset < totalFileSize);
-      await writable.close();
+      if (writable !== null) {
+        await writable.close();
+      }
       this.onSaveSuccessful_(requestType);
     } catch (error: any) {
       this.pluginController_.releaseSaveInBlockBuffers();

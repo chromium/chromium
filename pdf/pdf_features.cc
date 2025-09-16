@@ -72,11 +72,4 @@ bool IsOopifPdfEnabled() {
          base::FeatureList::IsEnabled(kPdfOopif);
 }
 
-// TODO(crbug.com/394111292): Untangle the two features and add required support
-// code for `kPdfGetSaveDataInBlocks` without `kPdfUseShowSaveFilePicker`.
-bool IsPdfGetSaveDataInBlocksEnabled() {
-  return base::FeatureList::IsEnabled(kPdfUseShowSaveFilePicker) &&
-         base::FeatureList::IsEnabled(kPdfGetSaveDataInBlocks);
-}
-
 }  // namespace chrome_pdf::features
