@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import '/shared/settings/prefs/prefs.js';
-import '../basic_page/basic_page.js';
 import '../safety_hub/safety_hub_entry_point.js';
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
@@ -247,7 +246,7 @@ export class SettingsPrivacyPageIndexElement extends
   }
 
   private getDefaultViews_(): string[] {
-    const defaultViews = ['old'];
+    const defaultViews = ['privacy'];
 
     if (this.isPrivacyGuideAvailable) {
       defaultViews.push('privacyGuidePromo');
@@ -296,7 +295,7 @@ export class SettingsPrivacyPageIndexElement extends
         // Handle case where Privacy child route has not migrated to the new
         // architecture.
         if (this.isPrivacyRoute_(route, /*hasMigratedToPlugin*/ false)) {
-          return ['old'];
+          return ['privacy'];
         }
 
         // Nothing to do. Other parent elements are responsible for updating

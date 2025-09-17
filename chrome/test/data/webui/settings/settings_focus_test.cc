@@ -14,10 +14,6 @@ class SettingsFocusTest : public WebUIMochaFocusTest {
   SettingsFocusTest() { set_test_loader_host(chrome::kChromeUISettingsHost); }
 };
 
-IN_PROC_BROWSER_TEST_F(SettingsFocusTest, AnimatedPages) {
-  RunTest("settings/settings_animated_pages_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, AutofillSectionFocus) {
   RunTest("settings/autofill_section_focus_test.js", "mocha.run()");
 }

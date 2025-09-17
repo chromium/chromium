@@ -14,7 +14,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
-import '../settings_page/settings_animated_pages.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
@@ -32,6 +32,8 @@ import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import type {Route} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {CookieControlsMode} from '../site_settings/constants.js';
 
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide/privacy_guide_availability_mixin.js';
@@ -45,8 +47,9 @@ export interface SettingsPrivacyPageElement {
   };
 }
 
-const SettingsPrivacyPageElementBase = PrivacyGuideAvailabilityMixin(
-    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement))));
+const SettingsPrivacyPageElementBase =
+    PrivacyGuideAvailabilityMixin(SettingsViewMixin(
+        RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)))));
 
 export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   static get is() {
@@ -110,7 +113,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  override currentRouteChanged() {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     this.showClearBrowsingDataDialog_ =
         Router.getInstance().getCurrentRoute() === routes.CLEAR_BROWSER_DATA;
     this.showPrivacyGuideDialog_ =
@@ -244,7 +249,41 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.shouldShowDbdDeletionConfirmationToast_ = true;
   }
 
-  getAssociatedControlFor(childViewId: string): HTMLElement {
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    const map = new Map();
+
+    if (routes.COOKIES) {
+      map.set(routes.COOKIES.path, '#thirdPartyCookiesLinkRow');
+    }
+
+    if (routes.INCOGNITO_TRACKING_PROTECTIONS) {
+      map.set(
+          routes.INCOGNITO_TRACKING_PROTECTIONS.path,
+          '#incognitoTrackingProtectionsLinkRow');
+    }
+
+    if (routes.PRIVACY_GUIDE) {
+      map.set(routes.PRIVACY_GUIDE.path, '#privacyGuideLinkRow');
+    }
+
+    if (routes.PRIVACY_SANDBOX) {
+      map.set(routes.PRIVACY_SANDBOX.path, '#privacySandboxLinkRow');
+    }
+
+    if (routes.SECURITY) {
+      map.set(routes.SECURITY.path, '#securityLinkRow');
+    }
+
+    if (routes.SITE_SETTINGS) {
+      map.set(routes.SITE_SETTINGS.path, '#permissionsLinkRow');
+    }
+
+    return map;
+  }
+
+  // SettingsViewMixin implementation.
+  override getAssociatedControlFor(childViewId: string): HTMLElement {
     let triggerId: string|null = null;
     switch (childViewId) {
       case 'cookies':

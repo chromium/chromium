@@ -1,4 +1,5 @@
-    <style include="cr-shared-style cr-hidden-style settings-shared"></style>
+  <style include="cr-shared-style cr-hidden-style settings-shared"></style>
+  <settings-section page-title="$i18n{privacyPageTitle}">
     <template is="dom-if" if="[[showClearBrowsingDataDialog_]]" restamp>
       <template is="dom-if" if="[[!enableDeleteBrowsingDataRevamp_]]" restamp>
         <settings-clear-browsing-data-dialog prefs="{{prefs}}"
@@ -17,68 +18,65 @@
           on-close="onPrivacyGuideDialogClosed_">
       </settings-privacy-guide-dialog>
     </template>
-    <settings-animated-pages id="pages" section="privacy">
-      <div route-path="default">
-        <cr-link-row id="clearBrowsingData"
-            start-icon="cr:delete"
-            label="$i18n{clearBrowsingData}"
-            sub-label="$i18n{clearBrowsingDataDescription}"
-            on-click="onClearBrowsingDataClick_"></cr-link-row>
-        <template is="dom-if" if="[[isPrivacyGuideAvailable]]">
-          <cr-link-row id="privacyGuideLinkRow" class="hr"
-              start-icon="privacy20:signpost"
-              label="$i18n{privacyGuideLabel}"
-              sub-label="$i18n{privacyGuideSublabel}"
-              on-click="onPrivacyGuideClick_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-        <cr-link-row id="thirdPartyCookiesLinkRow"
-            start-icon="privacy:cookie"
-            class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
-            sub-label="[[computeThirdPartyCookiesSublabel_(
-                prefs.profile.cookie_controls_mode.*,
-                prefs.tracking_protection.block_all_3pc_toggle_enabled.*
-                )]]"
-            on-click="onCookiesClick_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-        <template is="dom-if" if="[[enableIncognitoTrackingProtections_]]">
-          <cr-link-row id="incognitoTrackingProtectionsLinkRow" class="hr"
-              start-icon="settings:visibility-off"
-              label="$i18n{incognitoTrackingProtectionsPageEntrypointLabel}"
-              sub-label="$i18n{incognitoTrackingProtectionsPageEntrypointSublabel}"
-              on-click="onIncognitoTrackingProtectionsClick_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-        <template is="dom-if" if=
-            "[[shouldShowAdPrivacy_(
-                isPrivacySandboxRestricted_,
-                isPrivacySandboxRestrictedNoticeEnabled_)]]">
-          <cr-link-row id="privacySandboxLinkRow"
-              start-icon="privacy20:ads-click"
-              class="hr"
-              label="$i18n{adPrivacyLinkRowLabel}"
-              sub-label="[[computeAdPrivacySublabel_(
-                  isPrivacySandboxRestricted_,
-                  isPrivacySandboxRestrictedNoticeEnabled_)]]"
-              on-click="onPrivacySandboxClick_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-        <cr-link-row id="securityLinkRow" start-icon="privacy:lock"
-            class="hr" label="$i18n{securityPageTitle}"
-            sub-label="$i18n{securityPageDescription}"
-            on-click="onSecurityPageClick_"
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <cr-link-row id="permissionsLinkRow" start-icon="privacy:page-info"
-            class="hr" label="$i18n{siteSettings}"
-            sub-label="$i18n{permissionsPageDescription}"
-            on-click="onPermissionsPageClick_"
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <cr-toast id="deleteBrowsingDataToast" duration="5000">
-          <div>[[dbdDeletionConfirmationToastLabel_]]</div>
-        </cr-toast>
-      </div>
-    </settings-animated-pages>
+    <cr-link-row id="clearBrowsingData"
+        start-icon="cr:delete"
+        label="$i18n{clearBrowsingData}"
+        sub-label="$i18n{clearBrowsingDataDescription}"
+        on-click="onClearBrowsingDataClick_"></cr-link-row>
+    <template is="dom-if" if="[[isPrivacyGuideAvailable]]">
+      <cr-link-row id="privacyGuideLinkRow" class="hr"
+          start-icon="privacy20:signpost"
+          label="$i18n{privacyGuideLabel}"
+          sub-label="$i18n{privacyGuideSublabel}"
+          on-click="onPrivacyGuideClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <cr-link-row id="thirdPartyCookiesLinkRow"
+        start-icon="privacy:cookie"
+        class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
+        sub-label="[[computeThirdPartyCookiesSublabel_(
+            prefs.profile.cookie_controls_mode.*,
+            prefs.tracking_protection.block_all_3pc_toggle_enabled.*
+            )]]"
+        on-click="onCookiesClick_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <template is="dom-if" if="[[enableIncognitoTrackingProtections_]]">
+      <cr-link-row id="incognitoTrackingProtectionsLinkRow" class="hr"
+          start-icon="settings:visibility-off"
+          label="$i18n{incognitoTrackingProtectionsPageEntrypointLabel}"
+          sub-label="$i18n{incognitoTrackingProtectionsPageEntrypointSublabel}"
+          on-click="onIncognitoTrackingProtectionsClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <template is="dom-if" if=
+        "[[shouldShowAdPrivacy_(
+            isPrivacySandboxRestricted_,
+            isPrivacySandboxRestrictedNoticeEnabled_)]]">
+      <cr-link-row id="privacySandboxLinkRow"
+          start-icon="privacy20:ads-click"
+          class="hr"
+          label="$i18n{adPrivacyLinkRowLabel}"
+          sub-label="[[computeAdPrivacySublabel_(
+              isPrivacySandboxRestricted_,
+              isPrivacySandboxRestrictedNoticeEnabled_)]]"
+          on-click="onPrivacySandboxClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <cr-link-row id="securityLinkRow" start-icon="privacy:lock"
+        class="hr" label="$i18n{securityPageTitle}"
+        sub-label="$i18n{securityPageDescription}"
+        on-click="onSecurityPageClick_"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    <cr-link-row id="permissionsLinkRow" start-icon="privacy:page-info"
+        class="hr" label="$i18n{siteSettings}"
+        sub-label="$i18n{permissionsPageDescription}"
+        on-click="onPermissionsPageClick_"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    <cr-toast id="deleteBrowsingDataToast" duration="5000">
+      <div>[[dbdDeletionConfirmationToastLabel_]]</div>
+    </cr-toast>
+  </settings-section>

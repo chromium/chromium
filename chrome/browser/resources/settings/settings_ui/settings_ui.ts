@@ -270,8 +270,8 @@ export class SettingsUiElement extends SettingsUiElementBase {
    */
   private onMenuClose_() {
     if (!this.$.drawer.wasCanceled()) {
-      // If a navigation happened, MainPageMixin#currentRouteChanged
-      // handles focusing the corresponding section.
+      // If a navigation happened, SettingsMain handles focusing the
+      // corresponding section.
       return;
     }
 
