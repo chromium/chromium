@@ -99,34 +99,19 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
     [self configureLabelView];
   }
   [self layoutAlertScreen];
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(toggleDarkModeOnTraitChange)];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(toggleDarkModeOnTraitChange)];
-
-    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
-                       withAction:@selector
-                       (toggleConstraintsOnVerticalSizeClassChange)];
-  }
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                     withAction:@selector
+                     (toggleConstraintsOnVerticalSizeClassChange)];
 }
 
 - (void)dismiss {
   [self.whatsNewHandler dismissWhatsNew];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self toggleDarkModeOnTraitChange];
-  [self toggleConstraintsOnVerticalSizeClassChange];
-}
-#endif
 
 #pragma mark - Private
 
