@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
@@ -473,6 +474,12 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       cc::InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents;
 
   double scroll_deadline_ratio_ = 0.333;
+
+  // Used to guard against re-entrant calls to DeliverInputForDeadline.
+  viz::BeginFrameId last_deadline_call_for_frame_id_;
+
+  // Timer to ensure DeliverInputForDeadline is called.
+  base::DeadlineTimer deadline_timer_;
 };
 
 }  // namespace blink

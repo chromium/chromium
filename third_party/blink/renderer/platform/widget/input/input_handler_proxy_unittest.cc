@@ -393,7 +393,8 @@ class InputHandlerProxyEventQueueTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::StrictMock<cc::MockInputHandler> mock_input_handler_;
   testing::StrictMock<MockInputHandlerProxyClient> mock_client_;
   TestInputHandlerProxy input_handler_proxy_;
@@ -1104,6 +1105,60 @@ TEST_P(InputHandlerProxyTest, HitTestTouchEventNonNullTouchAction) {
   EXPECT_TRUE(is_touching_scrolling_layer);
   EXPECT_EQ(allowed_touch_action, cc::TouchAction::kPanUp);
   VERIFY_AND_RESET_MOCKS();
+}
+
+TEST_F(InputHandlerProxyEventQueueTest, DeliverInputForDeadlineIsScheduled) {
+  constexpr float kDeadlineRatio = 0.333;
+  constexpr base::TimeDelta kTimeBetweenEvents = base::Milliseconds(2);
+  constexpr float kSchedulerSlack = 0.75;
+
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.SetNowTicks(base::TimeTicks::Now());
+  SetInputHandlerProxyTickClockForTesting(&tick_clock);
+  input_handler_proxy_.SetScrollEventDispatchMode(
+      cc::InputHandlerClient::ScrollEventDispatchMode::
+          kUseScrollPredictorForDeadline,
+      kDeadlineRatio);
+
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(
+      mock_input_handler_,
+      RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnCompositor))
+      .Times(1);
+
+  // ScrollUpdate should be called twice after regular scroll update gestures
+  // and once after a synthetic prediction.
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(3);
+
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
+  DeliverInputForBeginFrame();
+
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 5);
+  DeliverInputForBeginFrame();
+  auto result = GestureScrollEventPredictionAvailable();
+  EXPECT_FALSE(result);
+
+  // Predictor needs at least 2 ms of delta between events to make a prediction.
+  tick_clock.Advance(kTimeBetweenEvents);
+
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -10);
+  DeliverInputForBeginFrame();
+  result = GestureScrollEventPredictionAvailable();
+  EXPECT_TRUE(result);
+
+  // DeliverInputForBeginFrame will start a timer to run DeliverInputForDeadline
+  // around the deadline ratio.
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+
+  tick_clock.Advance(viz::BeginFrameArgs::DefaultInterval() * kDeadlineRatio *
+                     kSchedulerSlack);
+  task_environment_.FastForwardBy(kTimeBetweenEvents +
+                                  viz::BeginFrameArgs::DefaultInterval() *
+                                      kDeadlineRatio * kSchedulerSlack);
+
+  result = GestureScrollEventPredictionAvailable();
+  EXPECT_TRUE(result);
 }
 
 // Tests that multiple mousedown(s) on scrollbar are handled gracefully and

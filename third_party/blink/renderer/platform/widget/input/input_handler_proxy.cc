@@ -237,7 +237,9 @@ bool ShouldNotDispatchLateInputEvent(
   // There is just potentially increased latency for the remainder of the
   // scroll.
   if (mode != cc::InputHandlerClient::ScrollEventDispatchMode::
-                  kDispatchScrollEventsUntilDeadline) {
+                  kDispatchScrollEventsUntilDeadline &&
+      mode != cc::InputHandlerClient::ScrollEventDispatchMode::
+                  kUseScrollPredictorForDeadline) {
     return false;
   }
   auto frame_time_delta = tick_clock->NowTicks() - args.frame_time;
@@ -1596,12 +1598,28 @@ void InputHandlerProxy::UpdateRootLayerStateForSynchronousInputHandler(
 
 void InputHandlerProxy::DeliverInputForBeginFrame(
     const viz::BeginFrameArgs& args) {
+  if (scroll_event_dispatch_mode_ ==
+      cc::InputHandlerClient::ScrollEventDispatchMode::
+          kUseScrollPredictorForDeadline) {
+    deadline_timer_.Stop();
+
+    // Assume that the scheduler might delay the task execution by ~25%.
+    const float slack_coefficient = 0.25;
+    auto deadline = args.frame_time + args.interval * scroll_deadline_ratio_ *
+                                          (1 - slack_coefficient);
+
+    deadline_timer_.Start(
+        FROM_HERE, deadline,
+        base::BindOnce(&InputHandlerProxy::DeliverInputForDeadline,
+                       base::Unretained(this)),
+        base::subtle::DelayPolicy::kPrecise);
+  }
   current_begin_frame_args_ = args;
   enqueue_scroll_events_ = !compositor_event_queue_->empty();
   // TODO(jonross): This occurs for more than just `BeginFrameArgs::MISSED`.
   // We likely need to cap the number of consecutive times duing which this
-  // occurs. As we could have a slow device that just consistently starts frame
-  // production after the deadline.
+  // occurs. As we could have a slow device that just consistently starts
+  // frame production after the deadline.
   if (enqueue_scroll_events_ &&
       args.type == viz::BeginFrameArgs::BeginFrameArgsType::MISSED &&
       ShouldNotDispatchLateInputEvent(scroll_event_dispatch_mode_,
@@ -1623,8 +1641,9 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
     enqueue_scroll_events_ = true;
   }
 
-  if (!scroll_predictor_)
+  if (!scroll_predictor_) {
     DispatchQueuedInputEvents(true /* frame_aligned */);
+  }
 
   // Resampling GSUs and dispatch queued input events.
   while (HasQueuedEventsReadyForDispatch(true /* frame_aligned */)) {
@@ -1647,7 +1666,15 @@ void InputHandlerProxy::DeliverInputForHighLatencyMode() {
 }
 
 void InputHandlerProxy::DeliverInputForDeadline() {
-  if (scroll_event_dispatch_mode_ !=
+  if (last_deadline_call_for_frame_id_ == current_begin_frame_args_.frame_id) {
+    return;
+  }
+  last_deadline_call_for_frame_id_ = current_begin_frame_args_.frame_id;
+
+  if (ShouldNotDispatchLateInputEvent(scroll_event_dispatch_mode_,
+                                      scroll_deadline_ratio_,
+                                      current_begin_frame_args_, tick_clock_) ||
+      scroll_event_dispatch_mode_ !=
           cc::InputHandlerClient::ScrollEventDispatchMode::
               kUseScrollPredictorForDeadline ||
       enqueue_scroll_events_) {
