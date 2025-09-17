@@ -8,6 +8,8 @@
 
 #include "components/omnibox/browser/test_omnibox_client.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 TestOmniboxEditModel::TestOmniboxEditModel(
     OmniboxController* omnibox_controller,
     OmniboxView* view,

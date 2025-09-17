@@ -12,6 +12,8 @@
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
 #include "ui/gfx/native_ui_types.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 // static
 OmniboxView::State TestOmniboxView::CreateState(std::string text,
                                                 size_t sel_start,

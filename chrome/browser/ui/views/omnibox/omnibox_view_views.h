@@ -39,6 +39,8 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #endif
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 class LocationBarView;
 class OmniboxClient;
 class PageActionIconView;

@@ -248,10 +248,6 @@ static_library("browser") {
     "most_visited_sites_provider.h",
     "omnibox_client.cc",
     "omnibox_client.h",
-    "omnibox_controller.cc",
-    "omnibox_controller.h",
-    "omnibox_edit_model.cc",
-    "omnibox_edit_model.h",
     "omnibox_event_global_tracker.cc",
     "omnibox_event_global_tracker.h",
     "omnibox_field_trial.cc",
@@ -265,16 +261,12 @@ static_library("browser") {
     "omnibox_navigation_observer.h",
     "omnibox_popup_selection.cc",
     "omnibox_popup_selection.h",
-    "omnibox_popup_view.cc",
-    "omnibox_popup_view.h",
     "omnibox_prefs.cc",
     "omnibox_prefs.h",
     "omnibox_text_util.cc",
     "omnibox_text_util.h",
     "omnibox_triggered_feature_service.cc",
     "omnibox_triggered_feature_service.h",
-    "omnibox_view.cc",
-    "omnibox_view.h",
     "on_device_head_model.cc",
     "on_device_head_model.h",
     "on_device_head_provider.cc",
@@ -429,6 +421,16 @@ static_library("browser") {
   }
 
   if (!is_ios) {
+    sources += [
+      "omnibox_controller.cc",
+      "omnibox_controller.h",
+      "omnibox_edit_model.cc",
+      "omnibox_edit_model.h",
+      "omnibox_popup_view.cc",
+      "omnibox_popup_view.h",
+      "omnibox_view.cc",
+      "omnibox_view.h",
+    ]
     deps += [ "//ui/base/clipboard" ]
   }
 
@@ -753,12 +755,6 @@ static_library("test_support") {
     "test_location_bar_model.h",
     "test_omnibox_client.cc",
     "test_omnibox_client.h",
-    "test_omnibox_edit_model.cc",
-    "test_omnibox_edit_model.h",
-    "test_omnibox_popup_view.cc",
-    "test_omnibox_popup_view.h",
-    "test_omnibox_view.cc",
-    "test_omnibox_view.h",
     "test_scheme_classifier.cc",
     "test_scheme_classifier.h",
   ]
@@ -801,6 +797,16 @@ static_library("test_support") {
     ]
   }
 
+  if (!is_ios) {
+    sources += [
+      "test_omnibox_edit_model.cc",
+      "test_omnibox_edit_model.h",
+      "test_omnibox_popup_view.cc",
+      "test_omnibox_popup_view.h",
+      "test_omnibox_view.cc",
+      "test_omnibox_view.h",
+    ]
+  }
   if (toolkit_views) {
     # Needed to get the TOOLKIT_VIEWS define.
     deps += [ "//ui/views" ]
@@ -876,7 +882,6 @@ source_set("unit_tests") {
     "local_history_zero_suggest_provider_unittest.cc",
     "location_bar_model_impl_unittest.cc",
     "most_visited_sites_provider_unittest.cc",
-    "omnibox_controller_unittest.cc",
     "omnibox_field_trial_unittest.cc",
     "omnibox_metrics_provider_unittest.cc",
     "omnibox_popup_selection_unittest.cc",
@@ -973,6 +978,7 @@ source_set("unit_tests") {
     sources += [
       "actions/history_clusters_action_unittest.cc",
       "history_cluster_provider_unittest.cc",
+      "omnibox_controller_unittest.cc",
       "omnibox_edit_model_unittest.cc",
       "omnibox_view_unittest.cc",
     ]

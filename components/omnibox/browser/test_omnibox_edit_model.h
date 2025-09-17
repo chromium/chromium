@@ -11,6 +11,8 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/prefs/testing_pref_service.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 class TestOmniboxEditModel : public OmniboxEditModel {
  public:
   TestOmniboxEditModel(OmniboxController* omnibox_controller,

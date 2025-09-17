@@ -31,6 +31,8 @@
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 class OmniboxController;
 class OmniboxPopupView;
 namespace gfx {
@@ -394,7 +396,7 @@ class OmniboxEditModel {
   // Returns true if the destination URL of the match is bookmarked.
   bool IsStarredMatch(const AutocompleteMatch& match) const;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
   // Gets the icon for the given `match`.
   gfx::Image GetMatchIcon(const AutocompleteMatch& match,
                           SkColor vector_icon_color,

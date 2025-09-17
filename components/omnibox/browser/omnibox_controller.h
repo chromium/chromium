@@ -13,6 +13,8 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 class OmniboxClient;
 class OmniboxView;
 

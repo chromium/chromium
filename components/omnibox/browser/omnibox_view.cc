@@ -29,7 +29,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "url/url_constants.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "ui/gfx/paint_vector_icon.h"
 #endif
@@ -39,9 +39,11 @@
 #include "extensions/common/constants.h"  // nogncheck
 #endif
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 // Return true if the given match uses a vector icon with a background.
 bool HasVectorIconBackground(const AutocompleteMatch& match) {
   return match.type == AutocompleteMatchType::HISTORY_CLUSTER ||
@@ -188,7 +190,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
       HasVectorIconBackground(match) ? color_vectors_with_background : color,
       dip_size);
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void OmniboxView::SetUserText(const std::u16string& text) {
   SetUserText(text, true);

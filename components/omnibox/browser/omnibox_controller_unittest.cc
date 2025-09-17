@@ -15,6 +15,8 @@
 #include "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 class OmniboxControllerTest : public testing::Test {
  protected:
   OmniboxControllerTest() {

@@ -26,6 +26,8 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "ui/gfx/geometry/rect.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 OmniboxController::OmniboxController(
     OmniboxView* view,
     std::unique_ptr<OmniboxClient> client,

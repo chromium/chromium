@@ -10,6 +10,8 @@
 #include "base/functional/callback_forward.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 OmniboxPopupView::OmniboxPopupView(OmniboxController* controller)
     : controller_(controller) {}
 

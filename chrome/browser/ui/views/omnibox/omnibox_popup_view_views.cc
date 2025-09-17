@@ -42,6 +42,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 namespace {
 
 #if BUILDFLAG(IS_WIN)

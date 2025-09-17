@@ -88,7 +88,7 @@
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_util.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -97,6 +97,8 @@
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/vector_icons/vector_icons.h"  // nogncheck
 #endif
+
+static_assert(!BUILDFLAG(IS_IOS));
 
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
@@ -371,14 +373,8 @@ AutocompleteMatch OmniboxEditModel::CurrentMatch(
 bool OmniboxEditModel::ResetDisplayTexts() {
   const std::u16string old_display_text = GetPermanentDisplayText();
   url_for_editing_ = controller_->client()->GetFormattedFullURL();
-#if BUILDFLAG(IS_IOS)
-  // iOS is unusual in that it uses a separate LocationView to show the
-  // LocationBarModel's display-only URL. The actual OmniboxViewIOS widget is
-  // hidden in the defocused state, and always contains the URL for editing.
-  display_text_ = url_for_editing_;
-#else
   display_text_ = controller_->client()->GetURLForDisplay();
-#endif
+
   // When there's new permanent text, and the user isn't interacting with the
   // omnibox, we want to revert the edit to show the new text.  We could simply
   // define "interacting" as "the omnibox has focus", but we still allow updates
@@ -1611,8 +1607,8 @@ bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
   return bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
 }
 
-// Android and iOS have their own platform-specific icon logic.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Android has its own platform-specific icon logic.
+#if !BUILDFLAG(IS_ANDROID)
 gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
                                           SkColor vector_icon_color,
                                           bool dark_mode) const {
@@ -1716,7 +1712,7 @@ gfx::Image OmniboxEditModel::GetMatchIconIfExtension(
              ? extension_icon
              : controller_->client()->GetSizedIcon(extension_icon);
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::u16string OmniboxEditModel::GetSuggestionGroupHeaderText(
     const std::optional<omnibox::GroupId>& suggestion_group_id) const {
@@ -2579,16 +2575,12 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       dropdown_ignored ? fake_single_entry_result
                        : autocomplete_controller()->result(),
       destination_url, is_incognito, input_.IsZeroSuggest(), match.session);
-// Check disabled on iOS as the platform shows a default suggestion on focus
-// (crbug.com/40061502).
-#if !BUILDFLAG(IS_IOS)
   DCHECK(dropdown_ignored ||
          (log.elapsed_time_since_user_first_modified_omnibox >=
           log.elapsed_time_since_last_change_to_default_match))
       << "We should've got the notification that the user modified the "
       << "omnibox text at same time or before the most recent time the "
       << "default match changed.";
-#endif
   log.elapsed_time_since_user_focused_omnibox =
       elapsed_time_since_user_focused_omnibox;
   log.ukm_source_id = controller_->client()->GetUKMSourceId();
@@ -2767,7 +2759,7 @@ void OmniboxEditModel::UpdateFeedbackOnMatch(size_t match_index,
 }
 
 bool OmniboxEditModel::AllowKeywordSpaceTriggering() const {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
   return GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled);
 #else
   return true;

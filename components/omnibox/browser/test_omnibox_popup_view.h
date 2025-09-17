@@ -7,6 +7,8 @@
 
 #include "components/omnibox/browser/omnibox_popup_view.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 // Fake implementation of OmniboxPopupView for use in tests.
 class TestOmniboxPopupView : public OmniboxPopupView {
  public:

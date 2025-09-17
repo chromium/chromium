@@ -27,6 +27,8 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/range/range.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 class OmniboxController;
 class OmniboxEditModel;
 class OmniboxViewMacTest;

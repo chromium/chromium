@@ -21,6 +21,8 @@
 #include "build/build_config.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 class OmniboxController;
 class OmniboxEditModel;
 namespace ui {

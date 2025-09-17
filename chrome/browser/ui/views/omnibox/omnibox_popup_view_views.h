@@ -21,6 +21,8 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 class LocationBarView;
 class OmniboxController;
 class OmniboxHeaderView;

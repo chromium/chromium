@@ -125,6 +125,8 @@
 #include "chrome/browser/browser_process.h"
 #endif
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 namespace {
 
 using ::metrics::OmniboxEventProto;

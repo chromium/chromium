@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/test_omnibox_popup_view.h"
 
+static_assert(!BUILDFLAG(IS_IOS));
+
 bool TestOmniboxPopupView::IsOpen() const {
   return false;
 }
