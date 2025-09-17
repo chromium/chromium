@@ -173,7 +173,7 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to menu_bg_color. */
     public static @ColorInt int getMenuBgColor(Context context) {
-        return ContextCompat.getColor(context, R.color.menu_bg_color);
+        return resolve(R.attr.colorSurfaceBright, context);
     }
 
     /** Returns the background color for a CardView matching default_card_bg_color */

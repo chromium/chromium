@@ -61,5 +61,6 @@ found in the LICENSE file.
     <macro name="circular_progress_outer_circle_progress_color_small">?attr/colorPrimary</macro>
 
     <macro name="default_card_bg_color">?attr/colorSurfaceContainer</macro>
+    <macro name="menu_bg_color">?attr/colorSurfaceBright</macro>
     <!-- LINT.ThenChange(//components/browser_ui/styles/android/java/src/org/chromium/components/browser_ui/styles/SemanticColorUtils.java) -->
 </resources>

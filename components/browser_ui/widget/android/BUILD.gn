@@ -192,7 +192,6 @@ android_resources("java_resources") {
     "java/res/color/context_menu_header_circle_bg_color.xml",
     "java/res/color/home_surface_background_color.xml",
     "java/res/color/home_surface_ui_background_color.xml",
-    "java/res/color/menu_bg_color.xml",
     "java/res/color/menu_chip_background.xml",
     "java/res/color/single_tab_favicon_bg_color.xml",
     "java/res/color/tab_resumption_module_icon_background_color.xml",

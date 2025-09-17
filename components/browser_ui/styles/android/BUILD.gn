@@ -37,7 +37,6 @@ android_resources("java_resources") {
     "java/res/animator/shared_x_axis_open_exit.xml",
     "java/res/color-night/dialog_bg_color.xml",
     "java/res/color-night/drag_handlebar_color_list.xml",
-    "java/res/color-night/menu_bg_color.xml",
     "java/res/color/chip_text_color_secondary_list.xml",
     "java/res/color/color_on_surface_with_alpha_10.xml",
     "java/res/color/color_on_surface_with_alpha_12.xml",
