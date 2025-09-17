@@ -53,13 +53,19 @@ with devil_env.SysPath(
     os.path.join(_DIR_SOURCE_ROOT, 'build', 'android', 'gyp')):
   import bundletool
 
+with devil_env.SysPath(os.path.join(_DIR_SOURCE_ROOT, 'build', 'util')):
+  import android_chrome_version
+
 BASE_MODULE = 'base'
 
 
+def _IsWebView():
+  calling_script_name = os.path.basename(sys.argv[0])
+  return 'webview' in calling_script_name
+
+
 def _Colorize(text, style=''):
-  return (style
-      + text
-      + colorama.Style.RESET_ALL)
+  return style + text + colorama.Style.RESET_ALL
 
 
 def _InstallApk(devices, apk, install_dict):
@@ -1345,8 +1351,7 @@ class _Command:
   def _FindSupportedDevices(self, devices):
     """Returns supported devices and reasons for each not supported one."""
     app_abis = self.apk_helper.GetAbis()
-    calling_script_name = os.path.basename(sys.argv[0])
-    is_webview = 'webview' in calling_script_name
+    is_webview = _IsWebView()
     requires_32_bit = self.apk_helper.Get32BitAbiOverride() == '0xffffffff'
     logging.debug('App supports (requires 32bit: %r, is webview: %r): %r',
                   requires_32_bit, is_webview, app_abis)
@@ -1537,6 +1542,11 @@ class _PackageInfoCommand(_Command):
     print('minSdkVersion: %s' % self.apk_helper.GetMinSdkVersion())
     print('targetSdkVersion: %s' % self.apk_helper.GetTargetSdkVersion())
     print('Supported ABIs: %r' % self.apk_helper.GetAbis())
+    x = android_chrome_version.TranslateVersionCode(str(
+        self.apk_helper.GetVersionCode()),
+                                                    is_webview=_IsWebView())
+    print(f'Decoded versionCode: build_number={x.build_number} '
+          f'patch_number={x.patch_number} sku={x.package_name} abi={x.abi}')
 
 
 class _InstallCommand(_Command):

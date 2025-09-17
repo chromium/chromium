@@ -84,6 +84,7 @@
 ../action_helpers.py
 ../gn_helpers.py
 ../print_python_deps.py
+../util/android_chrome_version.py
 ../zip_helpers.py
 adb_command_line.py
 apk_operations.py
