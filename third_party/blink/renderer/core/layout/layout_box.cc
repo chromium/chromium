@@ -625,6 +625,10 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
       }
       if (will_become_inflow)
         SetIsInLayoutNGInlineFormattingContext(false);
+
+      style_change_context.did_prevent_spanner_descendants =
+          IsInsideMulticol() && !IsSelfValidColumnSpanner() &&
+          ShouldPreventColumnSpannerDescendants();
     }
     // FIXME: This branch runs when !oldStyle, which means that layout was never
     // called so what's the point in invalidating the whole view that we never
@@ -725,6 +729,13 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
         new_style.BackgroundLayers().Clip() !=
             old_style->BackgroundLayers().Clip()) {
       SetNeedsPaintPropertyUpdate();
+    }
+
+    if (style_change_context.did_prevent_spanner_descendants &&
+        !ShouldPreventColumnSpannerDescendants()) {
+      // This object used to prevent column spanner descendants, but that is no
+      // longer the case. Look for new spanners inside.
+      MarkNewColumnSpannersForLayoutIfNeeded();
     }
   }
 
@@ -2945,16 +2956,24 @@ const FragmentData* LayoutBox::FragmentDataFromPhysicalFragment(
   return &FragmentList().at(BoxFragmentIndex(physical_fragment));
 }
 
-bool LayoutBox::IsValidColumnSpanner(const ComputedStyle& style) const {
+bool LayoutBox::IsValidColumnSpannerInTree(const ComputedStyle& style) const {
+  NOT_DESTROYED();
+  if (!Parent() || !IsInsideMulticol() || !IsSelfValidColumnSpanner(style)) {
+    return false;
+  }
+
+  // This looks like a spanner, but if we're inside something unbreakable or
+  // something that establishes a new formatting context, it's not to be treated
+  // as one.
+  return DoesAncestryAllowColumnSpanner(style);
+}
+
+bool LayoutBox::IsSelfValidColumnSpanner(const ComputedStyle& style) const {
   NOT_DESTROYED();
   // Note that this function may be called in many circumstances, such as before
   // it is inserted into the tree, and even as part of calculating the
   // containing block. Be careful.
   if (style.GetColumnSpan() != EColumnSpan::kAll) {
-    return false;
-  }
-
-  if (!Parent() || !IsInsideMulticol()) {
     return false;
   }
 
@@ -2965,35 +2984,83 @@ bool LayoutBox::IsValidColumnSpanner(const ComputedStyle& style) const {
     return false;
   }
 
-  // This looks like a spanner, but if we're inside something unbreakable or
-  // something that establishes a new formatting context, it's not to be treated
-  // as one.
+  return true;
+}
+
+bool LayoutBox::DoesAncestryAllowColumnSpanner(
+    const ComputedStyle& style) const {
+  NOT_DESTROYED();
+  DCHECK(IsInsideMulticol());
   for (const LayoutBox* ancestor = Parent()->EnclosingBox(); ancestor;
        ancestor = ancestor->ContainingBlock()) {
     if (ancestor->IsMulticolContainer()) {
       return true;
     }
-    const auto* ancestor_block_flow = DynamicTo<LayoutBlockFlow>(ancestor);
-    if (!ancestor_block_flow) {
-      // Needs to be in a block-flow container, and not e.g. a table.
+    if (ancestor->ShouldPreventColumnSpannerDescendants()) {
       return false;
     }
-
-    // Make sure that there's nothing about this ancestor that prevents `this`
-    // from becoming a column spanner. We require the ancestor to participate in
-    // the block formatting context established by the multicol container
-    // (i.e. that there are no formatting contexts in-between). Transforms are
-    // also forbidden, since they insist on being in the containing block chain
-    // for everything inside, which will easily conflict with a spanners's need
-    // to have the multicol container as its direct containing block.
-    if (ancestor_block_flow->IsMonolithic() ||
-        ancestor_block_flow->CreatesNewFormattingContext() ||
-        ancestor_block_flow->CanContainFixedPositionObjects()) {
-      return false;
-    }
-    DCHECK(!ancestor->IsColumnSpanAll());
   }
   return false;
+}
+
+bool LayoutBox::ShouldPreventColumnSpannerDescendants() const {
+  NOT_DESTROYED();
+  const auto* block_flow = DynamicTo<LayoutBlockFlow>(this);
+  if (!block_flow) {
+    // Needs to be in a block-flow container, and not e.g. a table.
+    return true;
+  }
+
+  // Make sure that there's nothing about this ancestor that prevents `this`
+  // from becoming a column spanner. We require the ancestor to participate in
+  // the block formatting context established by the multicol container
+  // (i.e. that there are no formatting contexts in-between). Transforms are
+  // also forbidden, since they insist on being in the containing block chain
+  // for everything inside, which will easily conflict with a spanners's need to
+  // have the multicol container as its direct containing block.
+  if (block_flow->IsMonolithic() || block_flow->CreatesNewFormattingContext() ||
+      block_flow->CanContainFixedPositionObjects()) {
+    return true;
+  }
+  DCHECK(!IsColumnSpanAll());
+  return false;
+}
+
+void LayoutBox::MarkNewColumnSpannersForLayoutIfNeeded() {
+  NOT_DESTROYED();
+
+  // This function examines relevant descendants, and its ancestry, but not
+  // itself. It assumes that it itself doesn't prevent descendants from becoming
+  // column spanners.
+  DCHECK(!ShouldPreventColumnSpannerDescendants());
+  DCHECK(!IsSelfValidColumnSpanner());
+  DCHECK(IsInsideMulticol());
+
+  if (IsMulticolContainer()) {
+    return;
+  }
+
+  // First check if we really are inside multicol, and that nothing on the way
+  // prevents descendants from becoming spanners.
+  if (!DoesAncestryAllowColumnSpanner()) {
+    return;
+  }
+
+  // Look for spanner descendants, and mark them for layout.
+  for (LayoutObject* descendant = NextInPreOrder(this); descendant;) {
+    if (auto* box = DynamicTo<LayoutBox>(descendant)) {
+      if (box->IsSelfValidColumnSpanner()) {
+        box->MarkParentForSpannerOrOutOfFlowPositionedChange();
+        descendant = descendant->NextInPreOrderAfterChildren(this);
+        continue;
+      }
+      if (box->ShouldPreventColumnSpannerDescendants()) {
+        descendant = descendant->NextInPreOrderAfterChildren(this);
+        continue;
+      }
+    }
+    descendant = descendant->NextInPreOrder(this);
+  }
 }
 
 void LayoutBox::InflateVisualRectForFilterUnderContainer(

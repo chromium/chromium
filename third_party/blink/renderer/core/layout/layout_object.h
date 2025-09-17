@@ -1695,7 +1695,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // spanner. For one, it needs to be a block-level box that's inside a multicol
   // container, and it also needs to be in the block formatting context
   // established by the columns.
-  virtual bool IsValidColumnSpanner() const {
+  virtual bool IsValidColumnSpannerInTree() const {
     NOT_DESTROYED();
     return false;
   }
@@ -1704,7 +1704,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     // May be called before style is set.
     return Style() && Style()->GetColumnSpan() == EColumnSpan::kAll &&
-           IsValidColumnSpanner();
+           IsValidColumnSpannerInTree();
   }
 
   // We include LayoutButton in this check, because buttons are
@@ -3410,6 +3410,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   struct StyleChangeContext {
     // An object ceased to be floating or out-of-flow.
     bool became_normal_flow = false;
+
+    // An object prevented descendants from becoming column spanners (before
+    // style change).
+    bool did_prevent_spanner_descendants = false;
   };
 
   // Overrides should call the superclass at the end. style_ will be 0 the

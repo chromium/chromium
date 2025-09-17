@@ -729,14 +729,48 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return !PhysicalFragmentCount();
   }
 
-  bool IsValidColumnSpanner() const final {
+  bool IsValidColumnSpannerInTree() const final {
     NOT_DESTROYED();
-    return IsValidColumnSpanner(StyleRef());
+    return IsValidColumnSpannerInTree(StyleRef());
   }
 
   // Provide a ComputedStyle argument, so that this function may be used
   // reliably during style changes.
-  bool IsValidColumnSpanner(const ComputedStyle&) const;
+  bool IsValidColumnSpannerInTree(const ComputedStyle&) const;
+
+  // Return true if this box in itself is a valid column spanner, without
+  // checking the ancestry whether it will actually become one. In order to
+  // return true, `column-span` needs to be `all` and there are also certain
+  // additional requirements to the box itself.
+  bool IsSelfValidColumnSpanner(const ComputedStyle&) const;
+  bool IsSelfValidColumnSpanner() const {
+    NOT_DESTROYED();
+    return IsSelfValidColumnSpanner(StyleRef());
+  }
+
+  // Return true if the ancestry between this box and the nearest multicol
+  // container allows column spanners. Among other things, this box needs to be
+  // in the block formatting context established by the columns, and there may
+  // not be any transforms on the path. Note that this function doesn't care if
+  // this box itself is `column-span:all` or not. It just checks if the ancestry
+  // would allow for spanners at this location.
+  bool DoesAncestryAllowColumnSpanner(const ComputedStyle&) const;
+  bool DoesAncestryAllowColumnSpanner() const {
+    NOT_DESTROYED();
+    return DoesAncestryAllowColumnSpanner(StyleRef());
+  }
+
+  // Return true if this box prevents descendants from becoming column spanners.
+  // This only performs checks on the box itself, and does not care whether or
+  // not the box is inside an ancestry that allows spanners.
+  bool ShouldPreventColumnSpannerDescendants() const;
+
+  // Mark (any) new column spanner descendants for layout. Descendants with
+  // `column-span:all` may have become valid spanners, because this box no
+  // longer prevents them from becoming that (e.g. if a box used to establish a
+  // transform, but not anymore (transforms disqualify descendants from becoming
+  // spanners).
+  void MarkNewColumnSpannersForLayoutIfNeeded();
 
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,

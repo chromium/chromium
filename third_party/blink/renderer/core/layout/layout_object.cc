@@ -3236,8 +3236,8 @@ void LayoutObject::StyleDidChange(
         }
       }
     } else if (IsBox() &&
-               To<LayoutBox>(this)->IsValidColumnSpanner(*old_style) !=
-                   To<LayoutBox>(this)->IsValidColumnSpanner(*style_)) {
+               To<LayoutBox>(this)->IsValidColumnSpannerInTree(*old_style) !=
+                   To<LayoutBox>(this)->IsValidColumnSpannerInTree(*style_)) {
       MarkParentForSpannerOrOutOfFlowPositionedChange();
     }
 
