@@ -3725,7 +3725,7 @@
     {
       // https://crbug.com/404479704
       name: "PointerRawUpdateOnlyInSecureContext",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PositionOutsideTabSpanCheckSiblingNode",
