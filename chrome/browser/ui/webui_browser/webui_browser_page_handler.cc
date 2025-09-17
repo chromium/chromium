@@ -61,6 +61,10 @@ class WebUIBrowserGuestHandler
   }
 
   void CanGoBack(CanGoBackCallback callback) override {
+    if (!web_contents_.get()) {
+      std::move(callback).Run(/*can_go_back=*/false);
+      return;
+    }
     std::move(callback).Run(web_contents_->GetController().CanGoBack());
   }
 
@@ -71,6 +75,10 @@ class WebUIBrowserGuestHandler
   }
 
   void CanGoForward(CanGoForwardCallback callback) override {
+    if (!web_contents_.get()) {
+      std::move(callback).Run(/*can_go_forward=*/false);
+      return;
+    }
     std::move(callback).Run(web_contents_->GetController().CanGoForward());
   }
 
