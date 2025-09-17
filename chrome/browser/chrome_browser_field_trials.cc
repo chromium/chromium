@@ -21,7 +21,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/variations/feature_overrides.h"
@@ -211,11 +210,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/444486763): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(chrome::android::kAndroidTabHighlighting);
-  // Enable by default for desktop platforms, pending a tablet rollout using the
-  // same flag.
-  // TODO(crbug.com/445475304): Remove when tablet rollout is complete.
-  feature_overrides.EnableFeature(feed::kAndroidOpenIncognitoAsWindow);
-  feature_overrides.EnableFeature(chrome::android::kTabStripIncognitoMigration);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
