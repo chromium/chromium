@@ -178,6 +178,8 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "busy_loop_for",
                    base::Milliseconds(2));
 
+BASE_FEATURE(kNoGCOnInput, "NoGCOnInput", base::FEATURE_DISABLED_BY_DEFAULT);
+
 void MaybeSetBusyLoop(raw_ptr<base::MessagePump> message_pump,
                       double scale_factor) {
   if (!message_pump || !base::FeatureList::IsEnabled(kBusyLoopOnRendererMain)) {
@@ -1539,8 +1541,13 @@ RAILMode MainThreadSchedulerImpl::ComputeCurrentRAILMode(
     case UseCase::kCompositorGesture:
     case UseCase::kSynchronizedGesture:
     case UseCase::kMainThreadGesture:
-    case UseCase::kNone:
     case UseCase::kMainThreadCustomInputHandling:
+      // TODO(crbug.com/444705203): Don't ship this as-is. Likely want to
+      // update the RAILModes if we decide to ship.
+      return base::FeatureList::IsEnabled(kNoGCOnInput) ? RAILMode::kLoad
+                                                        : RAILMode::kDefault;
+
+    case UseCase::kNone:
       return RAILMode::kDefault;
 
     case UseCase::kEarlyLoading:
