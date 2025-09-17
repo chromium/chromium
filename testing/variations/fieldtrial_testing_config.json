@@ -868,21 +868,6 @@
             ]
         }
     ],
-    "AndroidPdfSummarization": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidPdfAssistContent"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidRaiseDisplayCriticalThreadPriority": [
         {
             "platforms": [

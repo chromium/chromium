@@ -590,7 +590,7 @@ BASE_FEATURE(kAndroidOmniboxFocusedNewTabPage,
 
 BASE_FEATURE(kAndroidOpenPdfInlineBackport, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidPdfAssistContent, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidPdfAssistContent, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidSettingsContainment, base::FEATURE_DISABLED_BY_DEFAULT);
 
