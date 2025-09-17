@@ -87,7 +87,7 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogFunnelMetrics) {
     SubmitForm(form);
   }
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   // Phase 2: Validate Funnel expectations.
   histogram_tester.ExpectBucketCount("Autofill.Funnel.ParsedAsType.LoyaltyCard",
@@ -172,7 +172,7 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogKeyMetrics) {
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   // Phase 2: Validate KeyMetrics expectations.
   if (user_submitted_form) {
@@ -296,7 +296,7 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 1, 1);
@@ -345,7 +345,7 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 1, 1);
@@ -397,7 +397,7 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, UserAcceptsSuggestion) {
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 1, 1);
@@ -493,7 +493,7 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 1, 1);
@@ -553,7 +553,7 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   SimulateUserChangedField(form_, form_.fields()[1]);
 
   // Don't submit form.
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 0);
@@ -634,7 +634,7 @@ TEST_P(AffiliationTypeKeyMetricsEditTest, Affiliated) {
 
   FillAndSubmitForm(/*selected_suggestion=*/0);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.LoyaltyCard.FillingReadinessAffiliationCategory",
@@ -670,7 +670,7 @@ TEST_P(AffiliationTypeKeyMetricsEditTest, NonAffiliated) {
 
   FillAndSubmitForm(/*selected_suggestion=*/0);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.LoyaltyCard.FillingReadinessAffiliationCategory",
@@ -712,7 +712,7 @@ TEST_P(AffiliationTypeKeyMetricsEditTest, MixedAvailabilityAffiliatedSelected) {
   // Selects the affiliated card.
   FillAndSubmitForm(/*selected_suggestion=*/0);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.LoyaltyCard.FillingReadinessAffiliationCategory",
@@ -757,7 +757,7 @@ TEST_P(AffiliationTypeKeyMetricsEditTest,
   // Selects the non-affiliated card.
   FillAndSubmitForm(/*selected_suggestion=*/1);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LoyaltyCard.FillingReadinessAffiliationCategory",

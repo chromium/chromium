@@ -27,9 +27,10 @@ class ContentAutofillDriverFactoryTestApi
 
   size_t num_drivers() { return factory().driver_map_.size(); }
 
-  // Replaces the existing driver with `new_driver`. An existing driver must
-  // exist. This does not invalidate references. More precisely:
-  //
+  // Replaces the existing driver for `rfh` with `new_driver`. This is a
+  // stealthy operation:
+  // - It does not fire any events.
+  // - It does does not invalidate any references. More precisely:
   //   std::unique_ptr<ContentAutofillDriver>& old_driver = ...;
   //   std::unique_ptr<ContentAutofillDriver> new_driver = ...;
   //   ContentAutofillDriver* new_driver_raw = new_driver.get();
@@ -41,6 +42,17 @@ class ContentAutofillDriverFactoryTestApi
 
   ContentAutofillDriver* DriverForFrame(content::RenderFrameHost* rfh);
   ContentAutofillDriver* GetDriver(content::RenderFrameHost* rfh);
+
+  // Simulates a reset of an active or inactive driver and its manager. The
+  // driver transitions back to its original state after the reset, as in
+  // production code (see `AutofillDriver::LifecycleState`).
+  void Reset(ContentAutofillDriver& driver);
+
+  // TODO(crbug.com/445023368): Remove when SensitiveContentManager's unit test
+  // is removed or doesn't use WebContents anymore.
+  void SetLifecycleStateAndNotifyObservers(
+      ContentAutofillDriver& driver,
+      AutofillDriver::LifecycleState new_state);
 
  private:
   ContentAutofillDriverFactory& factory() {

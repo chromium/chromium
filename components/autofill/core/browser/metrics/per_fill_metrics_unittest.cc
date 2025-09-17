@@ -31,9 +31,7 @@ ACTION_TEMPLATE(SaveArgElementsTo,
 class PerFillMetricsTest : public AutofillMetricsBaseTest,
                            public testing::Test {
  public:
-  void SetUp() override {
-    SetUpHelper();
-  }
+  void SetUp() override { SetUpHelper(); }
 
   void TearDown() override { TearDownHelper(); }
 
@@ -57,7 +55,7 @@ class PerFillMetricsTest : public AutofillMetricsBaseTest,
     // After the call, `filled_fields` will only contain the fields that were
     // autofilled in this call of FillOrPreviewForm (% fields not filled due
     // to the iframe security policy).
-    EXPECT_CALL(*autofill_driver_, ApplyFormAction)
+    EXPECT_CALL(autofill_driver(), ApplyFormAction)
         .WillOnce(DoAll(
             SaveArgElementsTo<2>(&filled_fields),
             Return(base::ToVector(form.fields(), &FormFieldData::global_id))));
@@ -88,7 +86,7 @@ TEST_F(PerFillMetricsTest, FillForm) {
   SeeForm({form});
 
   // Only the first three fields are actually filled.
-  EXPECT_CALL(*autofill_driver_, ApplyFormAction)
+  EXPECT_CALL(autofill_driver(), ApplyFormAction)
       .WillOnce(Return(base::ToVector(base::span(form.fields()).first(3u),
                                       &FormFieldData::global_id)));
   FillForm(form, &autofill_profile);
@@ -185,7 +183,7 @@ TEST_F(PerFillMetricsTest, ModifiedFieldsCount) {
   test_api(form).fields().emplace_back();
 
   // Mock the router not blocking any field for filling.
-  EXPECT_CALL(*autofill_driver_, ApplyFormAction)
+  EXPECT_CALL(autofill_driver(), ApplyFormAction)
       .WillOnce([](mojom::FormActionType action_type,
                    mojom::ActionPersistence action_persistence,
                    base::span<const FormFieldData> data,

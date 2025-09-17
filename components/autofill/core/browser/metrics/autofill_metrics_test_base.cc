@@ -87,7 +87,7 @@ MockAutofillDriver::~MockAutofillDriver() = default;
 TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
     : autofill::TestBrowserAutofillManager(driver) {
   test_api(*this).SetExternalDelegate(
-      std::make_unique<TestAutofillExternalDelegate>(&*this));
+      std::make_unique<TestAutofillExternalDelegate>(this));
   test_api(*this).set_credit_card_access_manager(
       std::make_unique<NiceMock<MockCreditCardAccessManager>>(this));
 }
@@ -123,31 +123,28 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   personal_data().SetPrefService(autofill_client_->GetPrefs());
   personal_data().SetSyncServiceForTest(&sync_service_);
 
-  autofill_driver_ =
-      std::make_unique<MockAutofillDriver>(autofill_client_.get());
-  autofill_driver_->SetLocalFrameToken(test::MakeLocalFrameToken());
-
-  payments::TestPaymentsNetworkInterface* payments_network_interface =
-      new payments::TestPaymentsNetworkInterface(
-          autofill_client_->GetURLLoaderFactory(),
-          autofill_client_->GetIdentityManager(), &personal_data());
+  auto payments_network_interface =
+      std::make_unique<payments::TestPaymentsNetworkInterface>(
+          autofill_client().GetURLLoaderFactory(),
+          autofill_client().GetIdentityManager(), &personal_data());
   payments_autofill_client().set_payments_network_interface(
-      std::unique_ptr<payments::TestPaymentsNetworkInterface>(
-          payments_network_interface));
+      std::move(payments_network_interface));
   test_api(*autofill_client_->GetFormDataImporter())
       .set_credit_card_save_manager(
           std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()));
   payments_autofill_client().set_autofill_offer_manager(
       std::make_unique<AutofillOfferManager>(&paydm()));
 
-  auto browser_autofill_manager =
-      std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
-  autofill_driver_->set_autofill_manager(std::move(browser_autofill_manager));
+  autofill_client().GetAutofillDriverFactory().TakeOwnership(
+      std::make_unique<MockAutofillDriver>(autofill_client_.get()));
+  autofill_driver().set_autofill_manager(
+      std::make_unique<TestBrowserAutofillManager>(&autofill_driver()));
+  autofill_driver().SetLocalFrameToken(test::MakeLocalFrameToken());
 
 #if !BUILDFLAG(IS_IOS)
   test_api(autofill_manager().GetCreditCardAccessManager())
       .set_fido_authenticator(std::make_unique<TestCreditCardFidoAuthenticator>(
-          autofill_driver_.get(), autofill_client_.get()));
+          &autofill_driver(), &autofill_client()));
 #endif
 
   // Initialize the TestPersonalDataManager with some default data.
@@ -163,15 +160,13 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 
 void AutofillMetricsBaseTest::TearDownHelper() {
   test_ukm_recorder().Purge();
-  autofill_driver_.reset();
   autofill_client_.reset();
 }
 
 void AutofillMetricsBaseTest::PurgeUKM() {
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
   test_ukm_recorder().Purge();
-  autofill_driver_->InitializeUKMSources();
+  autofill_driver().InitializeUKMSources();
 }
 
 void AutofillMetricsBaseTest::CreateAmbiguousProfiles() {

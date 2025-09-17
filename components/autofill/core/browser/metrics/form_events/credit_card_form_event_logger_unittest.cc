@@ -1036,8 +1036,7 @@ TEST_F(CreditCardFormEventLoggerTest,
   std::vector<FieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
   autofill_manager().AddSeenForm(form, field_types);
   // Simulate filling a server card suggestion with a duplicate local card.
   base::HistogramTester histogram_tester;
@@ -1087,8 +1086,7 @@ TEST_F(CreditCardFormEventLoggerTest,
   std::vector<FieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
   autofill_manager().AddSeenForm(form, field_types);
   // Simulate filling a server card suggestion with a duplicate local card.
   base::HistogramTester histogram_tester;
@@ -1337,8 +1335,7 @@ TEST_F(CreditCardFormEventLoggerTest,
                                               form.fields().back().global_id());
   SubmitForm(form);
   // Trigger UploadFormDataAsyncCallback.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
       BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1),
@@ -1911,7 +1908,7 @@ TEST_F(CreditCardFormEventLoggerTest, NonSecureCreditCardForm) {
   // Non-https origin.
   GURL frame_origin("http://example_root.com/form.html");
   form.set_main_frame_origin(url::Origin::Create(frame_origin));
-  autofill_driver_->set_url(frame_origin);
+  autofill_driver().set_url(frame_origin);
 
   autofill_manager().AddSeenForm(form, field_types);
 

@@ -281,8 +281,10 @@ class AndroidAutofillProviderTestBase
     return *autofill_client_injector_[web_contents()];
   }
 
-  AutofillDriver& autofill_driver(content::RenderFrameHost* rfh = nullptr) {
-    return android_autofill_manager(rfh).driver();
+  ContentAutofillDriver& autofill_driver(
+      content::RenderFrameHost* rfh = nullptr) {
+    return static_cast<ContentAutofillDriver&>(
+        android_autofill_manager(rfh).driver());
   }
 
   TestAndroidAutofillManager& android_autofill_manager(
@@ -327,6 +329,11 @@ class AndroidAutofillProviderTest : public AndroidAutofillProviderTestBase {
     NavigateAndCommit(GURL("about:blank"));
     FocusWebContentsOnMainFrame();
   }
+
+  void Reset(ContentAutofillDriver& driver) {
+    test_api(autofill_client().GetAutofillDriverFactory())
+        .Reset(autofill_driver());
+  }
 };
 
 // Tests that AndroidAutofillManager keeps track of the predictions it is
@@ -341,8 +348,7 @@ TEST_F(AndroidAutofillProviderTest, HasServerPrediction) {
       android_autofill_manager().has_server_prediction(form.global_id()));
 
   // Resetting removes prediction state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  Reset(autofill_driver());
   EXPECT_FALSE(
       android_autofill_manager().has_server_prediction(form.global_id()));
 }
@@ -789,8 +795,7 @@ TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
       form, form.fields().front());
 
   EXPECT_CALL(provider_bridge(), CancelSession());
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  Reset(autofill_driver());
 }
 
 class AndroidAutofillProviderWithCredManTest
@@ -1039,8 +1044,7 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
       form.global_id());
   android_autofill_manager().SimulateOnAskForValuesToFill(
       form, form.fields().front());
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  Reset(autofill_driver());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       form.global_id());

@@ -84,7 +84,7 @@ TEST_F(CategoryResolvedKeyMetricsTest, NoAutofill) {
       form, form.fields().front().global_id());
   SubmitForm(form);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingAssistanceCategory",
       CategoryResolvedKeyMetricBucket::kNone, 1);
@@ -128,7 +128,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kLocalOrSyncable) {
   }
   SubmitForm(form);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingReadinessCategory",
       CategoryResolvedKeyMetricBucket::kLocalOrSyncable, 1);
@@ -161,7 +161,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountChrome) {
   }
   SubmitForm(form);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingReadinessCategory",
       CategoryResolvedKeyMetricBucket::kAccountChrome, 1);
@@ -195,7 +195,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountNonChrome) {
   }
   SubmitForm(form);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingReadinessCategory",
       CategoryResolvedKeyMetricBucket::kAccountNonChrome, 1);
@@ -229,7 +229,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountHome) {
   }
   SubmitForm(form);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingReadinessCategory",
       CategoryResolvedKeyMetricBucket::kAccountHome, 1);
@@ -262,7 +262,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountWork) {
   }
   SubmitForm(form);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingReadinessCategory",
       CategoryResolvedKeyMetricBucket::kAccountWork, 1);
@@ -295,7 +295,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountNameEmail) {
   }
   SubmitForm(form);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingReadinessCategory",
       CategoryResolvedKeyMetricBucket::kAccountNameEmail, 1);
@@ -343,7 +343,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, Mixed) {
     SimulateUserChangedField(form2, form2.fields().front());
   }
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingReadinessCategory",
       CategoryResolvedKeyMetricBucket::kMixed, 1);
@@ -443,7 +443,7 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   form.set_fields(std::move(form_fields));
 
   SubmitForm(form);
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Autofill.AddressSuggestionOnTypingAcceptance"),
               BucketsAre(base::Bucket(false, 1), base::Bucket(true, 2)));
@@ -523,8 +523,7 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
   autofill_manager().DidShowSuggestions(generated_suggestions, form,
                                         form.fields()[0].global_id(), {});
 
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.HomeAndWork.SuggestionPresent.Home"),
@@ -565,8 +564,7 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
   autofill_manager().DidShowSuggestions(generated_suggestions, form,
                                         form.fields()[0].global_id(), {});
 
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.HomeAndWork.SuggestionPresent.Home"),

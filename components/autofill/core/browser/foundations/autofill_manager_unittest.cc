@@ -10,6 +10,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/containers/to_vector.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -146,22 +147,25 @@ class AutofillManagerTest : public testing::Test {
  public:
   void SetUp() override {
     client_.SetPrefs(test::PrefServiceForTesting());
-    driver_ = std::make_unique<NiceMock<MockAutofillDriver>>(&client_);
-    driver_->set_autofill_manager(
-        std::make_unique<MockAutofillManager>(driver_.get()));
+    auto driver = std::make_unique<NiceMock<MockAutofillDriver>>(&client_);
+    driver->set_autofill_manager(
+        std::make_unique<MockAutofillManager>(driver.get()));
+    client_.GetAutofillDriverFactory().TakeOwnership(std::move(driver));
   }
 
-  void TearDown() override { driver_.reset(); }
+  MockAutofillDriver& driver() {
+    return static_cast<MockAutofillDriver&>(
+        CHECK_DEREF(client_.GetAutofillDriverFactory().driver()));
+  }
 
   MockAutofillManager& manager() {
-    return static_cast<MockAutofillManager&>(driver_->GetAutofillManager());
+    return static_cast<MockAutofillManager&>(driver().GetAutofillManager());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient client_;
-  std::unique_ptr<MockAutofillDriver> driver_;
 };
 
 // The test parameter sets the number of forms to be generated.
@@ -380,13 +384,12 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
               OnAutofillManagerStateChanged(m, kInactive, kPendingReset));
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kPendingReset, kInactive));
-  test_api(client_.GetAutofillDriverFactory()).Reset(*driver_);
+  client_.GetAutofillDriverFactory().Reset(driver());
   EXPECT_CALL(observer, OnAutofillManagerStateChanged(m, kInactive, kActive));
-  test_api(client_.GetAutofillDriverFactory())
-      .SetLifecycleStateAndNotifyObservers(*driver_, kActive);
+  client_.GetAutofillDriverFactory().Activate(driver());
 
   // Test that not changing the LifecycleState does not fire events.
-  test_api(*driver_).SetLifecycleStateAndNotifyObservers(kActive);
+  client_.GetAutofillDriverFactory().Activate(driver());
 
   {
     // Test that even if the vector of new forms is too large, events are still
@@ -531,17 +534,16 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kActive, kPendingDeletion))
       .WillOnce([&] { observation.Reset(); });
-  test_api(*driver_).SetLifecycleStateAndNotifyObservers(kPendingDeletion);
-  driver_.reset();
+  client_.GetAutofillDriverFactory().Delete(driver());
 }
 
 TEST_F(AutofillManagerTest, CanShowAutofillUi) {
-  EXPECT_CALL(*driver_, CanShowAutofillUi).WillOnce(Return(true));
+  EXPECT_CALL(driver(), CanShowAutofillUi).WillOnce(Return(true));
   EXPECT_TRUE(manager().CanShowAutofillUi());
 }
 
 TEST_F(AutofillManagerTest, TriggerFormExtractionInAllFrames) {
-  EXPECT_CALL(*driver_, TriggerFormExtractionInAllFrames);
+  EXPECT_CALL(driver(), TriggerFormExtractionInAllFrames);
   manager().TriggerFormExtractionInAllFrames(base::DoNothing());
 }
 

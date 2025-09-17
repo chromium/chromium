@@ -98,7 +98,7 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).address_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   // Phase 2: Validate Funnel expectations.
   histogram_tester.ExpectBucketCount("Autofill.Funnel.ParsedAsType.Address", 1,
@@ -230,7 +230,7 @@ TEST_F(FormEventLoggerBaseFunnelTest, AblationState) {
 
   SubmitForm(form);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   // Phase 2: Validate Funnel expectations.
   const char* kMetrics[] = {"Autofill.Funnel.ParsedAsType",
@@ -301,7 +301,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).address_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
@@ -345,7 +345,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).address_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 0, 1);
@@ -388,7 +388,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).address_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
@@ -436,7 +436,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).address_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
@@ -488,7 +488,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
 
   FormInteractionsFlowId flow_id =
       test_api(autofill_manager()).address_form_interactions_flow_id();
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 0);
@@ -528,7 +528,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, EmailHeuristicOnlyAcceptance) {
   FillTestProfile(form_);
   SubmitForm(form_);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
   histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 1);
 }
 
@@ -566,7 +566,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, AcceptanceGroupedByFocusedFieldType) {
   DidShowAutofillSuggestions(form_, /*field_index=*/2);
 
   SubmitForm(form_);
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   // Field 0 is recorded as not accepted.
   histogram_tester.ExpectBucketCount(
@@ -633,7 +633,7 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, UserDoesNotAccept) {
   DidShowAutofillSuggestions(form_);
   SubmitForm(form_);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount("Autofill.EmailHeuristicOnlyAcceptance", 0,
                                      1);
@@ -650,7 +650,7 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, UserAccepts) {
   FillTestProfile(form_);
   SubmitForm(form_);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount("Autofill.EmailHeuristicOnlyAcceptance", 1,
                                      1);
@@ -670,7 +670,7 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NoEmailField) {
   FillTestProfile(form_);
   SubmitForm(form_);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
 }
@@ -691,7 +691,7 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, ServerTypeKnown) {
   FillTestProfile(form_);
   SubmitForm(form_);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
 }
@@ -713,7 +713,7 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, FormTagNotRequired) {
   FillTestProfile(form_);
   SubmitForm(form_);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 1);
 }
@@ -736,7 +736,7 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, TooManyFields) {
   FillTestProfile(form_);
   SubmitForm(form_);
 
-  ResetDriverToCommitMetrics();
+  DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
 }
