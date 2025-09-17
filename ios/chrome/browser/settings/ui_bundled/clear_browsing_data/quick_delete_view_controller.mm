@@ -159,13 +159,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   _tableViewHeightConstraint = [_tableView.heightAnchor
       constraintEqualToConstant:_tableView.contentSize.height];
   _tableViewHeightConstraint.active = YES;
-
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateBottomSheetHeight)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateBottomSheetHeight)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -180,21 +177,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // text is bigger then the standard row height.
   [self updateBottomSheetHeight];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  // Update the bottomsheet height when trait collection changed (for example
-  // when the user uses large font).
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self updateBottomSheetHeight];
-  }
-}
-#endif
 
 #pragma mark - ConfirmationAlertActionHandler
 
