@@ -2353,16 +2353,6 @@ BASE_FEATURE(kDeviceActiveClientChurnObservationCheckMembership,
 BASE_FEATURE(kDeviceActiveClientChurnObservationNewDeviceMetadata,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables bug fix for dead keys where there's no input field.
-// When enabled, keys are forwarded without dead key processing when there's no
-// input field.
-BASE_FEATURE(kInputMethodDeadKeyFixForNoInputField,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables bug fix for dead keys.
-// When enabled, dead keys correctly emit the 'Dead' event on key down.
-BASE_FEATURE(kInputMethodDeadKeyFix, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables peripheral customization to be split per device.
 BASE_FEATURE(kPeripheralCustomization, base::FEATURE_ENABLED_BY_DEFAULT);
 

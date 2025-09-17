@@ -1216,7 +1216,6 @@ TEST_F(InputMethodAshKeyEventTest, StopPropagationTest) {
 }
 
 TEST_F(InputMethodAshKeyEventTest, DeadKeyPressTest) {
-  base::test::ScopedFeatureList feature_list(features::kInputMethodDeadKeyFix);
   input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
   input_method_ash_->OnTextInputTypeChanged(this);
 
@@ -1239,8 +1238,6 @@ TEST_F(InputMethodAshKeyEventTest, DeadKeyPressTest) {
 }
 
 TEST_F(InputMethodAshTest, UnhandledDeadKeyForNonTerminalSendsDeadKeys) {
-  base::test::ScopedFeatureList feature_list(features::kInputMethodDeadKeyFix);
-
   for (const GURL& url : {
            GURL("chrome-untrusted://emoji"),
            GURL("chrome://crosh"),
