@@ -165,11 +165,11 @@ void RecordBWGResponseReceived() {
 }
 
 void RecordFREPromoAccept() {
-  base::RecordAction(base::UserMetricsAction("MobileGeminiFREPromoCancel"));
+  base::RecordAction(base::UserMetricsAction("MobileGeminiFREPromoAccept"));
 }
 
 void RecordFREPromoDismiss() {
-  base::RecordAction(base::UserMetricsAction("MobileGeminiFREPromoAccept"));
+  base::RecordAction(base::UserMetricsAction("MobileGeminiFREPromoCancel"));
 }
 
 void RecordFREConsentAccept() {
