@@ -19,6 +19,8 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "base/token.h"
@@ -247,11 +249,14 @@ result.links = linksArray;
   // Use a `BarrierClosure` to ensure all async tasks are completed before
   // executing the overall completion callback. The BarrierClosure will wait
   // until the `pageContextBarrier` callback is itself run
-  // `_asyncTasksToComplete` times.
-  base::RepeatingClosure pageContextBarrier =
-      base::BarrierClosure(_asyncTasksToComplete, base::BindOnce(^{
-                             [weakSelf asyncWorkCompletedForPageContext];
-                           }));
+  // `_asyncTasksToComplete` times, then post the completion handler to execute
+  // on the next loop of the current sequence.
+  base::RepeatingClosure pageContextBarrier = base::BarrierClosure(
+      _asyncTasksToComplete,
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         base::BindOnce(^{
+                           [weakSelf asyncWorkCompletedForPageContext];
+                         })));
 
   // Asynchronous work. *IMPORTANT NOTES*:
   // When adding async tasks below, an accompanying setter should also be
