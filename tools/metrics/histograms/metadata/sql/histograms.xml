@@ -60,6 +60,7 @@ chromium-metrics-reviews@google.com.
   <variant name="MediaLicense" summary="MediaLicense"/>
   <variant name="OfflinePageMetadata" summary="OfflinePageMetadata"/>
   <variant name="OptOutBlacklist" summary="OptOutBlacklist"/>
+  <variant name="PageContentStore" summary="Page Content Store"/>
   <variant name="Passwords" summary="Passwords"/>
   <variant name="PermissionAuditingLogs" summary="PermissionAuditingLogs"/>
   <variant name="PersistentCache" summary="PersistentCache"/>

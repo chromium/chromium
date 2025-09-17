@@ -31,6 +31,8 @@ static_library("core") {
     "page_content_annotations_validator.cc",
     "page_content_annotations_validator.h",
     "page_content_annotator.h",
+    "page_content_store.cc",
+    "page_content_store.h",
   ]
   if (build_with_tflite_lib) {
     sources += [
@@ -68,9 +70,14 @@ static_library("core") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
   ]
+  deps = [
+    "//components/database_utils",
+    "//components/os_crypt/async/browser",
+    "//sql",
+  ]
 
   if (build_with_tflite_lib) {
-    deps = [ "//third_party/tensorflow_models:tflite_custom_ops" ]
+    deps += [ "//third_party/tensorflow_models:tflite_custom_ops" ]
   }
 }
 
@@ -97,6 +104,7 @@ source_set("unit_tests") {
     "page_content_annotation_job_unittest.cc",
     "page_content_annotations_service_unittest.cc",
     "page_content_annotations_validator_unittest.cc",
+    "page_content_store_unittest.cc",
   ]
   if (build_with_tflite_lib) {
     sources += [
