@@ -4,11 +4,6 @@
 //
 // Unit tests for initial preferences related methods.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/initial_preferences.h"
 
 #include <stddef.h>
@@ -114,10 +109,10 @@ TEST_F(InitialPreferencesTest, ParseDistroParams) {
       installer::initial_preferences::kRequireEula,
   };
 
-  for (size_t i = 0; i < std::size(expected_true); ++i) {
+  for (const char* pref_name : expected_true) {
     bool value = false;
-    EXPECT_TRUE(prefs.GetBool(expected_true[i], &value));
-    EXPECT_TRUE(value) << expected_true[i];
+    EXPECT_TRUE(prefs.GetBool(pref_name, &value));
+    EXPECT_TRUE(value) << pref_name;
   }
 
   std::string str_value;
@@ -153,9 +148,9 @@ TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
   };
 
   bool value = false;
-  for (size_t i = 0; i < std::size(expected_bool); ++i) {
-    EXPECT_TRUE(prefs.GetBool(expected_bool[i].name, &value));
-    EXPECT_EQ(value, expected_bool[i].expected_value) << expected_bool[i].name;
+  for (const auto& expected : expected_bool) {
+    EXPECT_TRUE(prefs.GetBool(expected.name, &value));
+    EXPECT_EQ(value, expected.expected_value) << expected.name;
   }
 
   const char* const missing_bools[] = {
@@ -164,8 +159,8 @@ TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
       installer::initial_preferences::kMakeChromeDefaultForUser,
   };
 
-  for (size_t i = 0; i < std::size(missing_bools); ++i) {
-    EXPECT_FALSE(prefs.GetBool(missing_bools[i], &value)) << missing_bools[i];
+  for (const char* missing_bool : missing_bools) {
+    EXPECT_FALSE(prefs.GetBool(missing_bool, &value)) << missing_bool;
   }
 
   std::string str_value;
@@ -370,9 +365,9 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
 
   // Now check that prefs got merged correctly.
   bool value = false;
-  for (size_t i = 0; i < std::size(expected_bool); ++i) {
-    EXPECT_TRUE(prefs.GetBool(expected_bool[i].name, &value));
-    EXPECT_EQ(value, expected_bool[i].expected_value) << expected_bool[i].name;
+  for (const auto& expected : expected_bool) {
+    EXPECT_TRUE(prefs.GetBool(expected.name, &value));
+    EXPECT_EQ(value, expected.expected_value) << expected.name;
   }
 
   // Delete temporary prefs file.
@@ -387,10 +382,9 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
       {installer::initial_preferences::kDoNotLaunchChrome, true},
   };
 
-  for (size_t i = 0; i < std::size(expected_bool2); ++i) {
-    EXPECT_TRUE(prefs2.GetBool(expected_bool2[i].name, &value));
-    EXPECT_EQ(value, expected_bool2[i].expected_value)
-        << expected_bool2[i].name;
+  for (const auto& expected : expected_bool2) {
+    EXPECT_TRUE(prefs2.GetBool(expected.name, &value));
+    EXPECT_EQ(value, expected.expected_value) << expected.name;
   }
 
   EXPECT_FALSE(
