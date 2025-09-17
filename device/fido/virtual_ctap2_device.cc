@@ -907,8 +907,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::CheckUserVerification(
   if (mutable_state()->pin_uv_token_rpid &&
       rp_id != mutable_state()->pin_uv_token_rpid) {
     // Invalidate the PIN token.
-    UNSAFE_TODO(memset(mutable_state()->pin_token, 0xff,
-                       sizeof(mutable_state()->pin_token)));
+    std::ranges::fill(mutable_state()->pin_token, 0xff);
     mutable_state()->pin_uv_token_permissions = 0;
     mutable_state()->pin_uv_token_rpid.reset();
   }
@@ -1623,11 +1622,12 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     }
 
     hmac_salt1.emplace();
-    UNSAFE_TODO(memcpy(hmac_salt1->data(), salts.data(), hmac_salt1->size()));
+    base::span(*hmac_salt1)
+        .copy_from(base::span(salts).first(hmac_salt1->size()));
     if (salts.size() == 64) {
       hmac_salt2.emplace();
-      UNSAFE_TODO(memcpy(hmac_salt2->data(), salts.data() + hmac_salt1->size(),
-                         hmac_salt2->size()));
+      base::span(*hmac_salt2)
+          .copy_from(base::span(salts).subspan(hmac_salt1->size()));
     }
 
     hmac_shared_key = std::move(shared_key);
