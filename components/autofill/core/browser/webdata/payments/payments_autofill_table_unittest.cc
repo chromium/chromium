@@ -833,6 +833,8 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
         CreditCard::CardInfoRetrievalEnrollmentState::
             kRetrievalUnenrolledAndNotEligible);
     inputs[0].set_benefit_source("");
+    inputs[0].set_card_creation_source(
+        CreditCard::CardCreationSource::kCreationSourceChromePayments);
 
     inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b456");
     inputs[1].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
@@ -855,6 +857,8 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
     inputs[1].set_card_info_retrieval_enrollment_state(
         CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
     inputs[1].set_benefit_source(kCurinosCardBenefitSource);
+    inputs[1].set_card_creation_source(
+        CreditCard::CardCreationSource::kCreationSourceNonChromePayments);
 
     // The CVC modification dates are set to `now` during insertion.
     const time_t now = base::Time::Now().ToTimeT();
@@ -925,6 +929,11 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
 
     EXPECT_EQ(u"Fake description", outputs[0]->product_description());
 
+    EXPECT_EQ(CreditCard::CardCreationSource::kCreationSourceChromePayments,
+              outputs[0]->card_creation_source());
+    EXPECT_EQ(CreditCard::CardCreationSource::kCreationSourceNonChromePayments,
+              outputs[1]->card_creation_source());
+
     if (is_cvc_storage_flag_enabled) {
       EXPECT_EQ(inputs[0].cvc(), outputs[0]->cvc());
       EXPECT_EQ(now, outputs[0]->cvc_modification_date().ToTimeT());
@@ -989,6 +998,30 @@ TEST_F(PaymentsAutofillTableTest, SetGetCardInfoEnrollmentStateWithFlagOff) {
             outputs[0]->card_info_retrieval_enrollment_state());
   EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified,
             outputs[1]->card_info_retrieval_enrollment_state());
+}
+
+TEST_F(PaymentsAutofillTableTest, SetGetCardCreationSource) {
+  std::vector<CreditCard> inputs;
+  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
+  inputs[0].set_instrument_id(321);
+  inputs[0].set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceChromePayments);
+
+  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b456");
+  inputs[1].set_instrument_id(123);
+  inputs[1].set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceNonChromePayments);
+
+  test::SetServerCreditCards(&*table_, inputs);
+
+  std::vector<std::unique_ptr<CreditCard>> outputs;
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
+  ASSERT_EQ(inputs.size(), outputs.size());
+
+  EXPECT_EQ(CreditCard::CardCreationSource::kCreationSourceChromePayments,
+            outputs[0]->card_creation_source());
+  EXPECT_EQ(CreditCard::CardCreationSource::kCreationSourceNonChromePayments,
+            outputs[1]->card_creation_source());
 }
 
 TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerCardMetadata) {
@@ -1183,6 +1216,8 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   inputs[0].set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
   inputs[0].set_benefit_source(kAmexCardBenefitSource);
+  inputs[0].set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceChromePayments);
 
   table_->SetServerCardsData(inputs);
 
@@ -1215,6 +1250,8 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
             outputs[0]->card_info_retrieval_enrollment_state());
   EXPECT_EQ(kAmexCardBenefitSource, outputs[0]->benefit_source());
+  EXPECT_EQ(CreditCard::CardCreationSource::kCreationSourceChromePayments,
+            outputs[0]->card_creation_source());
 
   // Make sure no metadata was added.
   std::vector<PaymentsMetadata> metadata;

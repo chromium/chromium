@@ -124,6 +124,14 @@ class VirtualCardUsageData;
 //                      card issuer or a third party platform represented by
 //                      an integer. Converted from CardBenefitSource enum from
 //                      the Chrome Sync response.
+//   card_creation_source
+//                      An enum indicating the source of the card creation.
+//                      kCreationSourceUnspecified is the default value.
+//                      kCreationSourceChromePayments means the card was added
+//                      through Chrome. kCreationSourceNonChromePayments
+//                      indicates the card was added through a non-Chrome
+//                      Payments surface (e.g., YouTube, Play Store, Android
+//                      Autofill).
 // -----------------------------------------------------------------------------
 // server_card_cloud_token_data
 //                      Stores data related to Cloud Primary Account Number
@@ -590,6 +598,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion135AddCardInfoRetrievalEnrollmentState();
   bool MigrateToVersion136AddPaymentInstrumentCreationOptionsTable();
   bool MigrateToVersion141AddCardBenefitSourceColumn();
+  bool MigrateToVersion144AddCardCreationSourceColumn();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.

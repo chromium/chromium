@@ -105,6 +105,7 @@ constexpr std::string_view kProductTermsUrl = "product_terms_url";
 constexpr std::string_view kCardInfoRetrievalEnrollmentState =
     "card_info_retrieval_enrollment_state";
 constexpr std::string_view kCardBenefitSource = "card_benefit_source";
+constexpr std::string_view kCardCreationSource = "card_creation_source";
 
 constexpr std::string_view kServerCardCloudTokenDataTable =
     "server_card_cloud_token_data";
@@ -622,6 +623,9 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 141:
       *update_compatible_version = false;
       return MigrateToVersion141AddCardBenefitSourceColumn();
+    case 144:
+      *update_compatible_version = false;
+      return MigrateToVersion144AddCardCreationSourceColumn();
   }
   return true;
 }
@@ -951,7 +955,8 @@ bool PaymentsAutofillTable::GetServerCreditCards(
                  kProductDescription,
                  kProductTermsUrl,
                  kCardInfoRetrievalEnrollmentState,
-                 kCardBenefitSource},
+                 kCardBenefitSource,
+                 kCardCreationSource},
                 "LEFT OUTER JOIN server_card_metadata AS metadata USING (id)");
   while (s.Step()) {
     int index = 0;
@@ -1001,6 +1006,8 @@ bool PaymentsAutofillTable::GetServerCreditCards(
       index++;
     }
     card->set_benefit_source(ConvertToBenefitSource(s.ColumnInt(index++)));
+    card->set_card_creation_source(
+        static_cast<CreditCard::CardCreationSource>(s.ColumnInt(index++)));
     // Add CVC to the the `card` if the CVC storage flag is enabled.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCvcStorageAndFilling)) {
@@ -1212,7 +1219,7 @@ void PaymentsAutofillTable::SetServerCardsData(
        kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
        kVirtualCardEnrollmentState, kVirtualCardEnrollmentType, kCardArtUrl,
        kProductDescription, kProductTermsUrl, kCardInfoRetrievalEnrollmentState,
-       kCardBenefitSource});
+       kCardBenefitSource, kCardCreationSource});
 
   int index;
   for (const CreditCard& card : credit_cards) {
@@ -1242,6 +1249,8 @@ void PaymentsAutofillTable::SetServerCardsData(
     masked_insert.BindInt(
         index++, static_cast<int>(CreditCard::GetEnumFromBenefitSourceString(
                      card.benefit_source())));
+    masked_insert.BindInt(index++,
+                          static_cast<int>(card.card_creation_source()));
     masked_insert.Run();
     masked_insert.Reset(/*clear_bound_vars=*/true);
   }
@@ -2174,6 +2183,12 @@ bool PaymentsAutofillTable::MigrateToVersion141AddCardBenefitSourceColumn() {
                    "INTEGER DEFAULT 0");
 }
 
+bool PaymentsAutofillTable::MigrateToVersion144AddCardCreationSourceColumn() {
+  return db()->DoesTableExist(kMaskedCreditCardsTable) &&
+         AddColumnIfNotExists(db(), kMaskedCreditCardsTable,
+                              kCardCreationSource, "INTEGER DEFAULT 0");
+}
+
 void PaymentsAutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK_GT(db()->transaction_nesting(), 0);
@@ -2184,7 +2199,7 @@ void PaymentsAutofillTable::AddMaskedCreditCards(
        kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
        kVirtualCardEnrollmentState, kVirtualCardEnrollmentType, kCardArtUrl,
        kProductDescription, kProductTermsUrl, kCardInfoRetrievalEnrollmentState,
-       kCardBenefitSource});
+       kCardBenefitSource, kCardCreationSource});
 
   int index;
   for (const CreditCard& card : credit_cards) {
@@ -2214,6 +2229,8 @@ void PaymentsAutofillTable::AddMaskedCreditCards(
     masked_insert.BindInt(
         index++, static_cast<int>(CreditCard::GetEnumFromBenefitSourceString(
                      card.benefit_source())));
+    masked_insert.BindInt(index++,
+                          static_cast<int>(card.card_creation_source()));
     masked_insert.Run();
     masked_insert.Reset(/*clear_bound_vars=*/true);
 
@@ -2285,7 +2302,8 @@ bool PaymentsAutofillTable::InitMaskedCreditCardsTable() {
        {kVirtualCardEnrollmentType, "INTEGER DEFAULT 0"},
        {kProductTermsUrl, "VARCHAR"},
        {kCardInfoRetrievalEnrollmentState, "INTEGER DEFAULT 0"},
-       {kCardBenefitSource, "INTEGER DEFAULT 0"}});
+       {kCardBenefitSource, "INTEGER DEFAULT 0"},
+       {kCardCreationSource, "INTEGER DEFAULT 0"}});
 }
 
 bool PaymentsAutofillTable::InitMaskedIbansTable() {
