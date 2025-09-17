@@ -506,6 +506,11 @@
       status: "stable",
     },
     {
+      // Switch for https://crbug.com/445371140 which changes the initial value
+      // for position-visibility to 'anchors-visible' per current spec.
+      name: "AnchorsVisibleInitialValue",
+    },
+    {
       name: "AndroidDownloadableFontsMatching",
       base_feature: "none",
       public: true,

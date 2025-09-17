@@ -595,6 +595,13 @@ inline PositionVisibility& operator|=(PositionVisibility& a,
   return a = a | b;
 }
 
+inline PositionVisibility InitialPositionVisibilityKeyword() {
+  if (RuntimeEnabledFeatures::AnchorsVisibleInitialValueEnabled()) {
+    return PositionVisibility::kAnchorsVisible;
+  }
+  return PositionVisibility::kAlways;
+}
+
 enum class FlexWrapMode : uint8_t { kNowrap, kWrap, kWrapReverse };
 
 }  // namespace blink

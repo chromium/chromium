@@ -4892,7 +4892,7 @@
       field_group: "*",
       field_size: 3,
       field_template: "primitive",
-      default_value: "PositionVisibility::kAlways",
+      default_value: "InitialPositionVisibilityKeyword()",
       getter: "GetPositionVisibility",
       type_name: "PositionVisibility",
       converter: "ConvertPositionVisibility",
