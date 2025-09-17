@@ -247,6 +247,15 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   const ViewAndroid* GetTopMostChildForTesting() const;
 
+  void SetIsHitTestEligible(bool is_hit_test_eligible) {
+    is_hit_test_eligible_ = is_hit_test_eligible;
+  }
+
+  // Checks whether the view is eligible for a Check Hit. This checks the
+  // visibility of the view so that we make sure that we do not send a touch
+  // event to a prerendered (and hidden) view.
+  bool IsCheckHitEligible() const;
+
  protected:
   void RemoveAllChildren(bool attached_to_window);
 
@@ -348,6 +357,12 @@ class UI_ANDROID_EXPORT ViewAndroid {
   CopyViewCallback copy_view_callback_;
 
   bool controls_resize_view_ = false;
+
+  // Whether the view is showing. This is used to check if the view is eligible
+  // for a Check Hit.
+  // TODO(crbug.com/442832509): Replace this temporary fix in favor of
+  // a more clean solution by checking the existence of the parent for the view.
+  bool is_hit_test_eligible_ = false;
 };
 
 }  // namespace ui
