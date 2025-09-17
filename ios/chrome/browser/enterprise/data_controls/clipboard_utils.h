@@ -48,7 +48,8 @@ using IsClipboardCopyAllowedCallbackIOS =
 // the warning or not. As such, callers should be careful not to bind data that
 // could become dangling as `callback` is not guaranteed to run synchronously.
 void IsPasteAllowedByPolicy(
-    const ActionContext& action_context,
+    const GURL& source_url,
+    const GURL& destination_url,
     const ui::ClipboardMetadata& metadata,
     ProfileIOS* source_profile,  // Can be null if the source isn't Chrome
     ProfileIOS* destination_profile,

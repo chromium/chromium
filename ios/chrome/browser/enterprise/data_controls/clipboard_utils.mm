@@ -15,7 +15,8 @@
 namespace data_controls {
 
 void IsPasteAllowedByPolicy(
-    const ActionContext& action_context,
+    const GURL& source_url,
+    const GURL& destination_url,
     const ui::ClipboardMetadata& metadata,
     ProfileIOS* source_profile,  // Can be null if the source isn't Chrome
     ProfileIOS* destination_profile,

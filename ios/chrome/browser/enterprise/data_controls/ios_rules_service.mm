@@ -15,18 +15,16 @@ IOSRulesService::IOSRulesService(ProfileIOS* profile)
 
 IOSRulesService::~IOSRulesService() = default;
 
-Verdict IOSRulesService::GetPasteVerdict(
-    const ActionContext& source_context,
-    const ActionContext& destionation_context,
-    ProfileIOS* source_profile,
-    ProfileIOS* destination_profile) {
-  return GetVerdict(
-      Rule::Restriction::kClipboard,
-      {
-          .source = GetAsActionSource(source_context, source_profile),
-          .destination =
-              GetAsActionDestination(destionation_context, destination_profile),
-      });
+Verdict IOSRulesService::GetPasteVerdict(const GURL& source_url,
+                                         const GURL& destionation_url,
+                                         ProfileIOS* source_profile,
+                                         ProfileIOS* destination_profile) {
+  return GetVerdict(Rule::Restriction::kClipboard,
+                    {
+                        .source = GetAsActionSource(source_url, source_profile),
+                        .destination = GetAsActionDestination(
+                            destionation_url, destination_profile),
+                    });
 }
 
 bool IOSRulesService::incognito_profile() const {
@@ -34,24 +32,24 @@ bool IOSRulesService::incognito_profile() const {
 }
 
 ActionSource IOSRulesService::GetAsActionSource(
-    const ActionContext& source_context,
+    const GURL& source_url,
     ProfileIOS* source_profile) const {
   if (!source_profile) {
     return {.os_clipboard = true};
   }
 
   return {
-      .url = source_context.source.url,
+      .url = source_url,
       .incognito = source_profile->IsOffTheRecord(),
       .other_profile = source_profile != profile_,
   };
 }
 
 ActionDestination IOSRulesService::GetAsActionDestination(
-    const ActionContext& destination_context,
+    const GURL& destination_url,
     ProfileIOS* destination_profile) const {
   ActionDestination action_destination;
-  action_destination.url = destination_context.destination.url;
+  action_destination.url = destination_url;
 
   if (destination_profile) {
     action_destination.incognito = destination_profile->IsOffTheRecord();

@@ -40,26 +40,6 @@ class IOSRulesServiceTest : public PlatformTest {
 
   const GURL google_url() const { return GURL("https://google.com"); }
 
-  ActionContext CreateSourceContext(std::optional<GURL> url) {
-    if (url.has_value()) {
-      return {
-          .source = {.url = url.value()},
-      };
-    }
-
-    return {};
-  }
-
-  ActionContext CreateDestionationContext(std::optional<GURL> url) {
-    if (url.has_value()) {
-      return {
-          .destination = {.url = url.value()},
-      };
-    }
-
-    return {};
-  }
-
   void ExpectBlockVerdict(Verdict verdict) const {
     ASSERT_EQ(verdict.level(), Rule::Level::kBlock);
     EXPECT_EQ(verdict.triggered_rules().size(), 1u);
@@ -101,11 +81,10 @@ class IOSRulesServiceTest : public PlatformTest {
 }  // namespace
 
 TEST_F(IOSRulesServiceTest, NoRuleSet) {
-  ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                      ->GetForProfile(profile_)
-                      ->GetPasteVerdict(CreateSourceContext(google_url()),
-                                        CreateDestionationContext(std::nullopt),
-                                        profile_, nullptr));
+  ExpectNoVerdict(
+      IOSRulesServiceFactory::GetInstance()
+          ->GetForProfile(profile_)
+          ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
   ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                       ->GetForProfile(profile_)
                       ->GetCopyToOSClipboardVerdict(
@@ -133,15 +112,11 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt), profile_,
-                              nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
@@ -168,15 +143,11 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
     ExpectWarnVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt), profile_,
-                              nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectWarnVerdict(IOSRulesServiceFactory::GetInstance()
                           ->GetForProfile(profile_)
                           ->GetCopyToOSClipboardVerdict(
@@ -213,15 +184,11 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt), profile_,
-                              nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
@@ -249,15 +216,11 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt), profile_,
-                              nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(profile_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
@@ -282,15 +245,11 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt), profile_,
-                              nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
     ExpectWarnVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(profile_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
@@ -326,15 +285,11 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt), profile_,
-                              nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(profile_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
@@ -358,18 +313,15 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
                                     {"class": "CLIPBOARD", "level": "BLOCK"}
                                   ]
                                 })"});
-    ExpectBlockVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              profile_->GetOffTheRecordProfile(), nullptr));
+    ExpectBlockVerdict(IOSRulesServiceFactory::GetInstance()
+                           ->GetForProfile(profile_)
+                           ->GetPasteVerdict(google_url(), GURL(),
+                                             profile_->GetOffTheRecordProfile(),
+                                             nullptr));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_->GetOffTheRecordProfile())
@@ -399,18 +351,15 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
                                       {"class": "CLIPBOARD", "level": "WARN"}
                                     ]
                                   })"});
-    ExpectWarnVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              profile_->GetOffTheRecordProfile(), nullptr));
+    ExpectWarnVerdict(IOSRulesServiceFactory::GetInstance()
+                          ->GetForProfile(profile_)
+                          ->GetPasteVerdict(google_url(), GURL(),
+                                            profile_->GetOffTheRecordProfile(),
+                                            nullptr));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectWarnVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_->GetOffTheRecordProfile())
@@ -451,18 +400,15 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
                                 {"class": "CLIPBOARD", "level": "WARN"}
                               ]
                             })"});
-    ExpectAllowVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              profile_->GetOffTheRecordProfile(), nullptr));
+    ExpectAllowVerdict(IOSRulesServiceFactory::GetInstance()
+                           ->GetForProfile(profile_)
+                           ->GetPasteVerdict(google_url(), GURL(),
+                                             profile_->GetOffTheRecordProfile(),
+                                             nullptr));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_->GetOffTheRecordProfile())
@@ -497,15 +443,13 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
+            ->GetPasteVerdict(GURL(), google_url(), nullptr,
                               profile_->GetOffTheRecordProfile()));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              profile_->GetOffTheRecordProfile(), nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(profile_)
+                        ->GetPasteVerdict(google_url(), GURL(),
+                                          profile_->GetOffTheRecordProfile(),
+                                          nullptr));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(profile_->GetOffTheRecordProfile())
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
@@ -530,15 +474,13 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
     ExpectWarnVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
+            ->GetPasteVerdict(GURL(), google_url(), nullptr,
                               profile_->GetOffTheRecordProfile()));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              profile_->GetOffTheRecordProfile(), nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(profile_)
+                        ->GetPasteVerdict(google_url(), GURL(),
+                                          profile_->GetOffTheRecordProfile(),
+                                          nullptr));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(profile_->GetOffTheRecordProfile())
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
@@ -574,15 +516,13 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
+            ->GetPasteVerdict(GURL(), google_url(), nullptr,
                               profile_->GetOffTheRecordProfile()));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              profile_->GetOffTheRecordProfile(), nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(profile_)
+                        ->GetPasteVerdict(google_url(), GURL(),
+                                          profile_->GetOffTheRecordProfile(),
+                                          nullptr));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(profile_->GetOffTheRecordProfile())
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
@@ -610,15 +550,11 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              other_profile_, nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              other_profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(other_profile_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
@@ -644,15 +580,11 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
     ExpectWarnVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              other_profile_, nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              other_profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(other_profile_)
                         ->GetCopyToOSClipboardVerdict(
@@ -689,15 +621,11 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              other_profile_, nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              other_profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(other_profile_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
@@ -725,15 +653,11 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              other_profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              other_profile_, nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(other_profile_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
@@ -759,15 +683,11 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
     ExpectWarnVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              other_profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              other_profile_, nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(other_profile_)
                         ->GetCopyToOSClipboardVerdict(
@@ -804,15 +724,11 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(std::nullopt),
-                              CreateDestionationContext(google_url()), nullptr,
-                              other_profile_));
+            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
             ->GetForProfile(profile_)
-            ->GetPasteVerdict(CreateSourceContext(google_url()),
-                              CreateDestionationContext(std::nullopt),
-                              other_profile_, nullptr));
+            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
                         ->GetForProfile(other_profile_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
