@@ -168,6 +168,7 @@ class CollaborationController
     return collaboration_service_.get();
   }
   Flow& flow() { return flow_; }
+  base::Time flow_start_time() const { return flow_start_time_; }
 
   // Called to transition to another state.
   void TransitionTo(StateId state,
@@ -203,6 +204,7 @@ class CollaborationController
       override;
 
  private:
+  base::Time flow_start_time_;
   static constexpr std::array<std::pair<StateId, StateId>, 53>
       kValidTransitions = {{
           // Note: All state transition to kCancel when exiting.

@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
@@ -80,6 +81,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     private long mNativePtr;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable String mSessionId;
+    private long mJoinDialogShownTimeMs;
 
     // Will become null once used in the prepareFlowUI().
     private @Nullable Callback<Runnable> mSwitchToTabSwitcherCallback;
@@ -518,9 +520,10 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                     }
                 };
 
+        mJoinDialogShownTimeMs = SystemClock.elapsedRealtime();
         mSessionId =
                 mDataSharingTabManager.showJoinScreenWithPreview(
-                        mActivity, token, previewData, joinCallback);
+                        mActivity, token, previewData, mJoinDialogShownTimeMs, joinCallback);
 
         mCloseScreenRunnable =
                 () -> {
