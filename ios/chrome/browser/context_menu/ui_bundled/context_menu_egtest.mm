@@ -665,15 +665,8 @@ void RelaunchApp() {
 
 // Checks that "open in new window" shows up on a long press of a url link
 // and that it actually opens in a new window.
-// TODO(crbug.com/441761691): Test is flaky on iPad simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testOpenLinkInNewWindow \
-  FLAKY_testOpenLinkInNewWindow
-#else
-#define MAYBE_testOpenLinkInNewWindow \
-  testOpenLinkInNewWindow
-#endif
-- (void)MAYBE_testOpenLinkInNewWindow {
+// TODO(crbug.com/441761691): Re-enable the test.
+- (void)DISABLED_testOpenLinkInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
