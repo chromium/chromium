@@ -84,12 +84,4 @@ BASE_FEATURE(kWebRtcAV1HWEncode,
 #endif  // BUILDFLAG(IS_WIN)
 );
 
-#if BUILDFLAG(IS_ANDROID)
-// Kill-switch for using 48 kHz as sample rate for Audio Processing Module
-// processing on Android. When enabled, enforces a 16 kHz sample rate for audio
-// processing on Android.
-BASE_FEATURE(kWebRtcApm48kHzSampleRateOnAndroidKillSwitch,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 }  // namespace features
