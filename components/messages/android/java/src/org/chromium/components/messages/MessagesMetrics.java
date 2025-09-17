@@ -364,6 +364,8 @@ public class MessagesMetrics {
                 return "ModeBRollbackMessage";
             case MessageIdentifier.RELOAD_PAGE:
                 return "ReloadPage";
+            case MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT:
+                return "MultiInstanceCreationLimit";
             default:
                 return "Unknown";
         }

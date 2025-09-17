@@ -39,7 +39,6 @@ import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
-import org.chromium.base.FeatureOverrides;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -60,6 +59,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -102,9 +102,12 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -2059,5 +2062,20 @@ public class MultiInstanceManagerApi31UnitTest {
         assertTrue(
                 "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be removed.",
                 (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    public void showInstanceCreationLimitMessage() {
+        var messageDispatcher = mock(MessageDispatcher.class);
+        when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
+
+        mMultiInstanceManager.showInstanceCreationLimitMessage(messageDispatcher);
+
+        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(messageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
+        assertEquals(
+                "Message identifier should match.",
+                MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT,
+                message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
     }
 }

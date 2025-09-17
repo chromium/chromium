@@ -1149,8 +1149,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                         .with(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.ic_chrome)
                         .with(
                                 MessageBannerProperties.PRIMARY_BUTTON_TEXT,
-                                resources.getString(
-                                        R.string.multi_instance_restoration_message_button))
+                                resources.getString(R.string.multi_instance_message_button))
                         .with(
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
@@ -1163,6 +1162,51 @@ public class MultiWindowUtils implements ActivityStateListener {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN, true);
         return true;
+    }
+
+    /**
+     * Creates and shows a message to notify a user that a new window cannot be created because
+     * {@link MultiWindowUtils#getMaxInstances()} activities already exist.
+     *
+     * @param messageDispatcher The {@link MessageDispatcher} to enqueue the message.
+     * @param context The current context.
+     * @param primaryActionRunnable The {@link Runnable} that will be executed when the message
+     *     primary action button is clicked.
+     */
+    public static void showInstanceCreationLimitMessage(
+            @Nullable MessageDispatcher messageDispatcher,
+            Context context,
+            Runnable primaryActionRunnable) {
+        if (messageDispatcher == null) return;
+
+        Resources resources = context.getResources();
+        PropertyModel message =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT)
+                        .with(
+                                MessageBannerProperties.TITLE,
+                                resources.getString(
+                                        R.string.multi_instance_creation_limit_message_title,
+                                        getMaxInstances()))
+                        .with(
+                                MessageBannerProperties.DESCRIPTION,
+                                resources.getString(
+                                        R.string.multi_instance_creation_limit_message_description))
+                        .with(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.ic_chrome)
+                        .with(
+                                MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                resources.getString(R.string.multi_instance_message_button))
+                        .with(
+                                MessageBannerProperties.ON_PRIMARY_ACTION,
+                                () -> {
+                                    primaryActionRunnable.run();
+                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                })
+                        .build();
+
+        messageDispatcher.enqueueWindowScopedMessage(message, false);
     }
 
     public static void setInstanceForTesting(MultiWindowUtils instance) {

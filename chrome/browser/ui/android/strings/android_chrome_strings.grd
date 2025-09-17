@@ -5589,8 +5589,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MULTI_INSTANCE_RESTORATION_MESSAGE_DESCRIPTION" desc="Description of the message shown when the number of persisted instances exceeds the max instance count after an instance limit downgrade.">
         Select manage to see all windows
       </message>
-      <message name="IDS_MULTI_INSTANCE_RESTORATION_MESSAGE_BUTTON" desc="Text on the button that will open the instance switcher dialog.">
+      <message name="IDS_MULTI_INSTANCE_MESSAGE_BUTTON" desc="Text on the button that will open the instance switcher dialog.">
         Manage
+      </message>
+      <message name="IDS_MULTI_INSTANCE_CREATION_LIMIT_MESSAGE_TITLE" desc="Title of the message shown when max instances exist during an attempt to create a new instance.">
+        <ph name="MAX_INSTANCE_COUNT">%1$s<ex>5</ex></ph> window limit reached
+      </message>
+      <message name="IDS_MULTI_INSTANCE_CREATION_LIMIT_MESSAGE_DESCRIPTION" desc="Description of the message shown when max instances exist during an attempt to create a new instance.">
+        Close a window or manage windows
       </message>
 
       <!-- In-Product Help strings -->

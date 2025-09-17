@@ -175,6 +175,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".InstallableAmbientBadge"/>
   <variant name=".MerchantTrust"/>
   <variant name=".ModeBRollbackMessage"/>
+  <variant name=".MultiInstanceCreationLimit"/>
   <variant name=".MultiInstanceRestorationOnDowngradedLimit"/>
   <variant name=".NearOomReduction"/>
   <variant name=".NotificationBlocked"/>

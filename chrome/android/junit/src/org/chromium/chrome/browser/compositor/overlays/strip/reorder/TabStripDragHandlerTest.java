@@ -223,6 +223,7 @@ public class TabStripDragHandlerTest {
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
 
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(mTabBeingDragged);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabModelSelector.getTabGroupModelFilterProvider())
@@ -1295,8 +1296,7 @@ public class TabStripDragHandlerTest {
                 .dragExit(mSourceInstance)
                 .end(false);
 
-        verifyToast(
-                ContextUtils.getApplicationContext().getString(R.string.max_number_of_windows, 5));
+        verify(mSourceMultiInstanceManager).showInstanceCreationLimitMessage(any());
         if (!isGroupDrag) {
             histogramExpectation.assertExpected();
         }

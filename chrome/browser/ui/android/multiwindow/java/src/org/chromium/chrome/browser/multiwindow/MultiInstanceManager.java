@@ -274,6 +274,16 @@ public abstract class MultiInstanceManager {
         return false;
     }
 
+    /**
+     * Shows a message to notify the user that a new window cannot be created because {@link
+     * MultiWindowUtils#getMaxInstances()} activities already exist.
+     *
+     * @param messageDispatcher The {@link MessageDispatcher} to enqueue the instance limit message.
+     */
+    public void showInstanceCreationLimitMessage(@Nullable MessageDispatcher messageDispatcher) {
+        // Not implemented
+    }
+
     public abstract void setCurrentDisplayIdForTesting(int displayId);
 
     public abstract @Nullable DisplayManager.DisplayListener getDisplayListenerForTesting();

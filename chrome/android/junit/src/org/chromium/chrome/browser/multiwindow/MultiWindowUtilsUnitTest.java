@@ -888,7 +888,7 @@ public class MultiWindowUtilsUnitTest {
                 message.getValue().get(MessageBannerProperties.DESCRIPTION));
         Assert.assertEquals(
                 "Message primary button text should match.",
-                resources.getString(R.string.multi_instance_restoration_message_button),
+                resources.getString(R.string.multi_instance_message_button),
                 message.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         Assert.assertEquals(
                 "Message icon resource ID should match.",
@@ -950,6 +950,50 @@ public class MultiWindowUtilsUnitTest {
         assertFalse("Message should not be enqueued.", shown);
 
         verify(messageDispatcher, times(1)).enqueueWindowScopedMessage(any(), anyBoolean());
+    }
+
+    @Test
+    public void testInstanceCreationLimitMessage() {
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        MessageDispatcher messageDispatcher = mock(MessageDispatcher.class);
+        Context context = ApplicationProvider.getApplicationContext();
+        CallbackHelper primaryActionCallbackHelper = new CallbackHelper();
+        int primaryActionClickCount = primaryActionCallbackHelper.getCallCount();
+
+        MultiWindowUtils.showInstanceCreationLimitMessage(
+                messageDispatcher, context, primaryActionCallbackHelper::notifyCalled);
+
+        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(messageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
+
+        Resources resources = context.getResources();
+        Assert.assertEquals(
+                "Message identifier should match.",
+                MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT,
+                message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+        Assert.assertEquals(
+                "Message title should match.",
+                resources.getString(R.string.multi_instance_creation_limit_message_title, 3),
+                message.getValue().get(MessageBannerProperties.TITLE));
+        Assert.assertEquals(
+                "Message description should match.",
+                resources.getString(R.string.multi_instance_creation_limit_message_description),
+                message.getValue().get(MessageBannerProperties.DESCRIPTION));
+        Assert.assertEquals(
+                "Message primary button text should match.",
+                resources.getString(R.string.multi_instance_message_button),
+                message.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+        Assert.assertEquals(
+                "Message icon resource ID should match.",
+                R.drawable.ic_chrome,
+                message.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
+
+        // Simulate and verify primary button click.
+        message.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        assertEquals(
+                "Primary action callback was not called.",
+                primaryActionClickCount + 1,
+                primaryActionCallbackHelper.getCallCount());
     }
 
     @Test

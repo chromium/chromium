@@ -1579,4 +1579,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         return MultiWindowUtils.maybeShowInstanceRestorationMessage(
                 messageDispatcher, mActivity, this::showInstanceSwitcherDialog);
     }
+
+    @Override
+    public void showInstanceCreationLimitMessage(@Nullable MessageDispatcher messageDispatcher) {
+        MultiWindowUtils.showInstanceCreationLimitMessage(
+                messageDispatcher, mActivity, this::showInstanceSwitcherDialog);
+    }
 }
