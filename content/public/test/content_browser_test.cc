@@ -206,6 +206,12 @@ Shell* ContentBrowserTest::CreateOffTheRecordBrowser() {
       GURL(url::kAboutBlankURL), nullptr, gfx::Size());
 }
 
+void ContentBrowserTest::RecreateWindow() {
+  Shell* new_shell = CreateBrowser();
+  shell_->Close();
+  shell_ = new_shell;
+}
+
 std::unique_ptr<TestBrowserContext>
 ContentBrowserTest::CreateTestBrowserContext() {
   base::FilePath user_data_path;

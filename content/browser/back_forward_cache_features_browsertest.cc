@@ -71,6 +71,68 @@ using ::testing::UnorderedElementsAreArray;
 
 using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 
+namespace {
+
+template <typename T>
+struct GetInterfaceFromBinder;
+
+template <typename T, typename Interface>
+struct GetInterfaceFromBinder<void (T::*)(mojo::PendingReceiver<Interface>)> {
+  using type = Interface;
+};
+
+template <typename T>
+class TestReceiverContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  TestReceiverContentBrowserClient() = default;
+  ~TestReceiverContentBrowserClient() override = default;
+
+  using TInterface =
+      typename GetInterfaceFromBinder<decltype(&T::BindReceiver)>::type;
+
+  void RegisterBrowserInterfaceBindersForFrame(
+      content::RenderFrameHost* render_frame_host,
+      mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
+    ContentBrowserTestContentBrowserClient::
+        RegisterBrowserInterfaceBindersForFrame(render_frame_host, map);
+    map->Add<TInterface>(base::BindRepeating(
+        &TestReceiverContentBrowserClient::Bind, weak_factory_.GetWeakPtr()));
+  }
+
+  T& Manager() { return manager_; }
+
+ private:
+  void Bind(content::RenderFrameHost* render_frame_host,
+            mojo::PendingReceiver<TInterface> receiver) {
+    manager_.BindReceiver(std::move(receiver));
+  }
+
+  T manager_;
+  base::WeakPtrFactory<TestReceiverContentBrowserClient<T>> weak_factory_{this};
+};
+
+template <typename T>
+class BackForwardCacheBinderBrowserTest : public BackForwardCacheBrowserTest {
+ protected:
+  using BrowserClient = TestReceiverContentBrowserClient<T>;
+
+  void SetUpOnMainThread() override {
+    BackForwardCacheBrowserTest::SetUpOnMainThread();
+    browser_client_ = std::make_unique<BrowserClient>();
+    // Create a new renderer now that RegisterBrowserInterfaceBindersForFrame
+    // is overridden.
+    RecreateWindow();
+  }
+
+  T& Manager() { return browser_client_->Manager(); }
+
+ private:
+  std::unique_ptr<BrowserClient> browser_client_;
+};
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        PageWithDedicatedWorkerCachedOrNot) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -3359,31 +3421,15 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandlerForUpdateWorker(
 
 class TestVibrationManager : public device::mojom::VibrationManager {
  public:
-  TestVibrationManager() {
-    OverrideVibrationManagerBinderForTesting(base::BindRepeating(
-        &TestVibrationManager::BindVibrationManager, base::Unretained(this)));
-  }
+  TestVibrationManager() = default;
+  ~TestVibrationManager() override = default;
 
-  ~TestVibrationManager() override {
-    OverrideVibrationManagerBinderForTesting(base::NullCallback());
-  }
-
-  void BindVibrationManager(
-      mojo::PendingReceiver<device::mojom::VibrationManager> receiver,
-      mojo::PendingRemote<device::mojom::VibrationManagerListener> listener) {
+  void BindReceiver(
+      mojo::PendingReceiver<device::mojom::VibrationManager> receiver) {
     receiver_.Bind(std::move(receiver));
   }
 
-  bool TriggerVibrate(RenderFrameHostImpl* rfh, int duration) {
-    return EvalJs(rfh, JsReplace("navigator.vibrate($1)", duration))
-        .ExtractBool();
-  }
-
-  bool TriggerShortVibrationSequence(RenderFrameHostImpl* rfh) {
-    return EvalJs(rfh, "navigator.vibrate([10] * 1000)").ExtractBool();
-  }
-
-  bool WaitForCancel() {
+  [[nodiscard]] bool WaitForCancel() {
     run_loop_.Run();
     return IsCancelled();
   }
@@ -3408,25 +3454,38 @@ class TestVibrationManager : public device::mojom::VibrationManager {
   mojo::Receiver<device::mojom::VibrationManager> receiver_{this};
 };
 
+class BackForwardCacheVibrationBrowserTest
+    : public BackForwardCacheBinderBrowserTest<TestVibrationManager> {
+ protected:
+  [[nodiscard]] EvalJsResult TriggerVibrate(RenderFrameHostImpl* rfh,
+                                            int duration) {
+    return EvalJs(rfh, JsReplace("navigator.vibrate($1)", duration));
+  }
+
+  [[nodiscard]] EvalJsResult TriggerShortVibrationSequence(
+      RenderFrameHostImpl* rfh) {
+    return EvalJs(rfh, "navigator.vibrate([10] * 1000)");
+  }
+};
+
 // Tests that vibration stops after the page enters bfcache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheVibrationBrowserTest,
                        VibrationStopsAfterEnteringCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  TestVibrationManager vibration_manager;
 
   // 1) Navigate to a page with a long vibration.
   GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  ASSERT_TRUE(vibration_manager.TriggerVibrate(rfh_a, 10000));
-  EXPECT_FALSE(vibration_manager.IsCancelled());
+  ASSERT_EQ(true, TriggerVibrate(rfh_a, 10000));
+  EXPECT_FALSE(Manager().IsCancelled());
 
   // 2) Navigate away and expect the vibration to be canceled.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
   EXPECT_NE(current_frame_host(), rfh_a);
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-  EXPECT_TRUE(vibration_manager.WaitForCancel());
+  EXPECT_TRUE(Manager().WaitForCancel());
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -3435,24 +3494,23 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Tests that the short vibration sequence on the page stops after it enters
 // bfcache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheVibrationBrowserTest,
                        ShortVibrationSequenceStopsAfterEnteringCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  TestVibrationManager vibration_manager;
 
   // 1) Navigate to a page with a long vibration.
   GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  ASSERT_TRUE(vibration_manager.TriggerShortVibrationSequence(rfh_a));
-  EXPECT_FALSE(vibration_manager.IsCancelled());
+  ASSERT_EQ(true, TriggerShortVibrationSequence(rfh_a));
+  EXPECT_FALSE(Manager().IsCancelled());
 
   // 2) Navigate away and expect the vibration to be canceled.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
   EXPECT_NE(current_frame_host(), rfh_a);
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-  EXPECT_TRUE(vibration_manager.WaitForCancel());
+  EXPECT_TRUE(Manager().WaitForCancel());
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -5067,7 +5125,7 @@ class TestAuthenticator : public blink::mojom::Authenticator {
   TestAuthenticator() = default;
   ~TestAuthenticator() override = default;
 
-  void BindAuthenticator(
+  void BindReceiver(
       mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
     receiver_.Bind(std::move(receiver));
   }
@@ -5115,60 +5173,17 @@ class TestAuthenticator : public blink::mojom::Authenticator {
   mojo::Receiver<blink::mojom::Authenticator> receiver_{this};
 };
 
-class TestAuthenticatorContentBrowserClient
-    : public ContentBrowserTestContentBrowserClient {
- public:
-  TestAuthenticatorContentBrowserClient() = default;
-  ~TestAuthenticatorContentBrowserClient() override = default;
-
-  void RegisterBrowserInterfaceBindersForFrame(
-      content::RenderFrameHost* render_frame_host,
-      mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
-    ContentBrowserTestContentBrowserClient::
-        RegisterBrowserInterfaceBindersForFrame(render_frame_host, map);
-    // Override binding for blink::mojom::Authenticator.
-    map->Add<blink::mojom::Authenticator>(
-        base::BindRepeating(&TestAuthenticatorContentBrowserClient::Bind,
-                            weak_factory_.GetWeakPtr()));
-  }
-
-  void Bind(content::RenderFrameHost* render_frame_host,
-            mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
-    authenticator_.BindAuthenticator(std::move(receiver));
-  }
-
-  void SetBehavior(TestAuthenticatorBehavior behavior) {
-    authenticator_.SetBehavior(behavior);
-  }
-
- private:
-  TestAuthenticator authenticator_;
-  base::WeakPtrFactory<TestAuthenticatorContentBrowserClient> weak_factory_{
-      this};
-};
-
-class BackForwardCacheWebAuthnBrowserTest : public BackForwardCacheBrowserTest {
+class BackForwardCacheWebAuthnBrowserTest
+    : public BackForwardCacheBinderBrowserTest<TestAuthenticator> {
  protected:
   void SetUpOnMainThread() override {
-    BackForwardCacheBrowserTest::SetUpOnMainThread();
-    browser_client_ = std::make_unique<TestAuthenticatorContentBrowserClient>();
+    BackForwardCacheBinderBrowserTest<TestAuthenticator>::SetUpOnMainThread();
     ASSERT_TRUE(CreateHttpsServer()->Start());
-
-    // The default test shell() is created and bound in SetUp.  The
-    // ContentBrowserTestContentBrowserClient requires that
-    // GetShellContentBrowserClientInstances().size() > 1.  Therefore, the only
-    // work around is to either perform an initial navigation or create a new
-    // window.
-    GURL initial_url(https_server()->GetURL("initial.com", "/title1.html"));
-    ASSERT_TRUE(NavigateToURL(shell(), initial_url));
   }
 
   void SetBehavior(TestAuthenticatorBehavior behavior) {
-    browser_client_->SetBehavior(behavior);
+    Manager().SetBehavior(behavior);
   }
-
- private:
-  std::unique_ptr<TestAuthenticatorContentBrowserClient> browser_client_;
 };
 
 // Tests that an ongoing WebAuthn get assertion request disables BFcache.
