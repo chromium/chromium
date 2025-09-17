@@ -138,6 +138,16 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                                          LayoutUnit inline_thickness,
                                          LayoutUnit block_thickness) const;
 
+  // Computes the physical bounding rect for gap decorations ink overflow.
+  //
+  // TODO(samomekarajr): Rename this to ComputeInkOverflowForGaps and remove the
+  // other function during cleanup.
+  PhysicalRect ComputeInkOverflowForGapsOptimized(
+      WritingDirectionMode writing_direction,
+      const PhysicalSize& container_size,
+      LayoutUnit inline_thickness,
+      LayoutUnit block_thickness) const;
+
   ContainerType GetContainerType() const { return container_type_; }
 
   void SetInlineGapSize(LayoutUnit size) { inline_gap_size_ = size; }

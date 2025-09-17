@@ -109,6 +109,34 @@ PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
   return physical_rect;
 }
 
+PhysicalRect GapGeometry::ComputeInkOverflowForGapsOptimized(
+    WritingDirectionMode writing_direction,
+    const PhysicalSize& container_size,
+    LayoutUnit inline_thickness,
+    LayoutUnit block_thickness) const {
+  // One of the two gap lists must be non-empty. If both are empty,
+  // it means there are no gaps in the container, hence we wouldn't have a
+  // gap geometry.
+  CHECK(!main_gaps_.empty() || !cross_gaps_.empty());
+
+  LayoutUnit inline_start = content_inline_start_;
+  LayoutUnit inline_size = content_inline_end_ - content_inline_start_;
+  LayoutUnit block_start = content_block_start_;
+  LayoutUnit block_size = content_block_end_ - content_block_start_;
+
+  // Inflate the bounds to account for the gap decorations thickness.
+  inline_start -= inline_thickness / 2;
+  inline_size += inline_thickness;
+  block_start -= block_thickness / 2;
+  block_size += block_thickness;
+
+  LogicalRect logical_rect(inline_start, block_start, inline_size, block_size);
+  WritingModeConverter converter(writing_direction, container_size);
+  PhysicalRect physical_rect = converter.ToPhysical(logical_rect);
+
+  return physical_rect;
+}
+
 String GapGeometry::ToString(bool verbose) const {
   StringBuilder builder;
   builder << "MainGaps: [";
