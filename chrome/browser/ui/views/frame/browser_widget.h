@@ -80,16 +80,6 @@ class BrowserWidget : public views::Widget,
   // left edge of the window. Used in our Non-Client View's Layout.
   int GetMinimizeButtonOffset() const;
 
-  // Retrieves the bounds in non-client view coordinates for the
-  // TabStripRegionView that contains the TabStrip view.
-  gfx::Rect GetBoundsForTabStripRegion(
-      const gfx::Size& tabstrip_minimum_size) const;
-
-  // Retrieves the maximum bounds in non-client view coordinates for the
-  // WebAppFrameToolbarView that contains Web App controls.
-  gfx::Rect GetBoundsForWebAppFrameToolbar(
-      const gfx::Size& toolbar_preferred_size) const;
-
   // Lays out the window title for a web app within the given available space.
   // Unlike the above GetBounds methods this is not just a method to return the
   // bounds the title should occupy, since different implementations might also

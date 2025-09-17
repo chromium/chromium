@@ -266,6 +266,7 @@ class BrowserView : public BrowserWindow,
   WebUITabStripContainerView* webui_tab_strip() { return webui_tab_strip_; }
 
   // Accessor for the Toolbar.
+  const ToolbarView* toolbar() const { return toolbar_; }
   ToolbarView* toolbar() { return toolbar_; }
 
   // Bookmark bar may be null, for example for pop-ups.
@@ -885,7 +886,9 @@ class BrowserView : public BrowserWindow,
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
   // interface to keep these two classes decoupled and testable.
-  friend class BrowserViewLayoutDelegateImpl;
+  friend class BrowserViewLayoutDelegateImplNew;
+  friend class BrowserViewLayoutDelegateImplOld;
+  friend class BrowserViewLayoutDelegateImplBrowsertest;
   friend class TopControlsSlideControllerTest;
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);

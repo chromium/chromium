@@ -270,9 +270,7 @@ void BrowserFrameViewChromeOS::Init() {
 
 BrowserLayoutParams BrowserFrameViewChromeOS::GetBrowserLayoutParams() const {
   BrowserLayoutParams params;
-  const bool restored = !frame()->IsMaximized() && !frame()->IsFullscreen();
-  const auto top = GetTopInset(restored);
-  params.visual_client_area = gfx::Rect(0, top, width(), height() - top);
+  params.visual_client_area = GetLocalBounds();
   if (profile_indicator_icon_) {
     params.leading_exclusion.content =
         gfx::SizeF(profile_indicator_icon_->bounds().right(),

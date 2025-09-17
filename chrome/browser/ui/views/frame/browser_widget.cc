@@ -232,23 +232,6 @@ int BrowserWidget::GetMinimizeButtonOffset() const {
              : 0;
 }
 
-gfx::Rect BrowserWidget::GetBoundsForTabStripRegion(
-    const gfx::Size& tabstrip_minimum_size) const {
-  // This can be invoked before |browser_frame_view_| has been set.
-  return browser_frame_view_ ? browser_frame_view_->GetBoundsForTabStripRegion(
-                                   tabstrip_minimum_size)
-                             : gfx::Rect();
-}
-
-gfx::Rect BrowserWidget::GetBoundsForWebAppFrameToolbar(
-    const gfx::Size& toolbar_preferred_size) const {
-  // This can be invoked before |browser_frame_view_| has been set.
-  return browser_frame_view_
-             ? browser_frame_view_->GetBoundsForWebAppFrameToolbar(
-                   toolbar_preferred_size)
-             : gfx::Rect();
-}
-
 void BrowserWidget::LayoutWebAppWindowTitle(
     const gfx::Rect& available_space,
     views::Label& window_title_label) const {

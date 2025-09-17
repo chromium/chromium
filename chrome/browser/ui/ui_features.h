@@ -32,6 +32,11 @@ BASE_DECLARE_FEATURE(kCloseOmniboxPopupOnInactiveAreaClick);
 BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// Feature that manages the transition between old and new browser layout.
+BASE_DECLARE_FEATURE(kDesktopNewTopAreaLayoutFeature);
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Controls how extensions show up in the main menu. When enabled, if the

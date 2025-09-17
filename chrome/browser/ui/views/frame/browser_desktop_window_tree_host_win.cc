@@ -24,6 +24,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/browser_window_property_manager_win.h"
@@ -379,7 +380,7 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
   } else {
     // The glass should extend to the bottom of the tabstrip.
     gfx::Rect tabstrip_region_bounds(
-        browser_widget_->GetBoundsForTabStripRegion(
+        browser_widget_->GetFrameView()->GetBoundsForTabStripRegion(
             browser_view_->tab_strip_view()->GetMinimumSize()));
     tabstrip_region_bounds = display::win::GetScreenWin()->DIPToClientRect(
         GetHWND(), tabstrip_region_bounds);

@@ -483,16 +483,20 @@ BrowserFrameViewMac::GetCaptionButtonBounds() const {
     return result;
   }
 
-  // If that doesn't work, fall back to some hard-coded constants.
+  // If that doesn't work, fall back to some hard-coded constants. These will
+  // apply for app windows, since the app is out of process and the caption
+  // buttons can't be retrieved. Note that the app window actually positions its
+  // buttons slightly differently from a standard browser window (it's unclear
+  // why).
   //
   // These are empirically determined; feel free to change them if they're
   // not precise.
   if (@available(macOS 26, *)) {
-    result.bounds = gfx::RectF(12, 11.5f, 62, 18);
-    result.margins = gfx::OutsetsF::VH(11.5f, 12);
+    result.bounds = gfx::RectF(12, 10.5f, 62, 18);
+    result.margins = gfx::OutsetsF::VH(10.5, 12);
   } else {
-    result.bounds = gfx::RectF(20, 12.5f, 54, 16);
-    result.margins = gfx::OutsetsF::VH(12.5f, 20);
+    result.bounds = gfx::RectF(20, 11.5f, 54, 16);
+    result.margins = gfx::OutsetsF::VH(11.5, 20);
   }
 
   return result;

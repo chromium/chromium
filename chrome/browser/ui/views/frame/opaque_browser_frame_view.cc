@@ -242,6 +242,21 @@ void OpaqueBrowserFrameView::InitViews() {
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameView, BrowserFrameView implementation:
 
+BrowserLayoutParams OpaqueBrowserFrameView::GetBrowserLayoutParams() const {
+  BrowserLayoutParams params = BrowserFrameView::GetBrowserLayoutParams();
+  if (ShouldShowWindowIcon() && !CaptionButtonsOnLeadingEdge()) {
+    const auto icon_bounds = GetIconBounds();
+    params.leading_exclusion.content =
+        gfx::SizeF(icon_bounds.right() - params.visual_client_area.x(),
+                   icon_bounds.bottom() - params.visual_client_area.y());
+    params.leading_exclusion.vertical_padding =
+        std::max(0, icon_bounds.y() - params.visual_client_area.y());
+    // There is (for historical reasons) no horizontal padding on the window
+    // icon.
+  }
+  return params;
+}
+
 gfx::Rect OpaqueBrowserFrameView::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_minimum_size) const {
   return layout_->GetBoundsForTabStripRegion(tabstrip_minimum_size, width());
@@ -662,9 +677,23 @@ OpaqueBrowserFrameView::GetCaptionButtonBounds() const {
       bounds.Union(button->bounds());
     }
   }
-  // Opaque browser frame caption buttons tend to be solid rectangles, so there
-  // is no additional padding.
-  return BoundsAndMargins{gfx::RectF(bounds)};
+
+  // Some opaque frames add small margins next to the caption buttons.
+  BoundsAndMargins result{gfx::RectF(bounds)};
+  if (!bounds.IsEmpty()) {
+    const int caption_margin =
+        layout_->GetWindowCaptionSpacing(views::FrameButton::kMinimize,
+                                         /*leading_spacing=*/false,
+                                         /*is_leading_button=*/false);
+    if (CaptionButtonsOnLeadingEdge()) {
+      result.margins = gfx::OutsetsF::TLBR(result.bounds.y(), result.bounds.x(),
+                                           0, caption_margin);
+    } else {
+      result.margins = gfx::OutsetsF::TLBR(result.bounds.y(), caption_margin, 0,
+                                           width() - result.bounds.right());
+    }
+  }
+  return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

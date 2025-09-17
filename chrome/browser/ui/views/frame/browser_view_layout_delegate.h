@@ -24,6 +24,7 @@ class BrowserViewLayoutDelegate {
   virtual bool ShouldDrawTabStrip() const = 0;
   virtual bool GetBorderlessModeEnabled() const = 0;
   virtual gfx::Rect GetBoundsForTabStripRegionInBrowserView() const = 0;
+  virtual gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const = 0;
   virtual gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const = 0;
   virtual int GetTopInsetInBrowserView() const = 0;
   virtual bool IsToolbarVisible() const = 0;

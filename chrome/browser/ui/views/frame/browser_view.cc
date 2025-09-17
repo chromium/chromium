@@ -85,7 +85,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
-#include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
@@ -125,7 +124,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
-#include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
+#include "chrome/browser/ui/views/frame/browser_view_layout_delegate_impl.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
@@ -723,169 +722,6 @@ bool ConvertedHitTest(views::View* src, views::View* dst, gfx::Point* point) {
 }
 
 }  // namespace
-
-///////////////////////////////////////////////////////////////////////////////
-// Delegate implementation for BrowserViewLayout. Usually just forwards calls
-// into BrowserView.
-class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
- public:
-  explicit BrowserViewLayoutDelegateImpl(BrowserView* browser_view)
-      : browser_view_(browser_view) {}
-  BrowserViewLayoutDelegateImpl(const BrowserViewLayoutDelegateImpl&) = delete;
-  BrowserViewLayoutDelegateImpl& operator=(
-      const BrowserViewLayoutDelegateImpl&) = delete;
-  ~BrowserViewLayoutDelegateImpl() override = default;
-
-  bool ShouldDrawTabStrip() const override {
-    return browser_view_->ShouldDrawTabStrip();
-  }
-
-  bool GetBorderlessModeEnabled() const override {
-    return browser_view_->IsBorderlessModeEnabled();
-  }
-
-  gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override {
-    const gfx::Size tabstrip_minimum_size =
-        browser_view_->tab_strip_view()->GetMinimumSize();
-    gfx::RectF bounds_f(browser_view_->frame()->GetBoundsForTabStripRegion(
-        tabstrip_minimum_size));
-    views::View::ConvertRectToTarget(browser_view_->parent(), browser_view_,
-                                     &bounds_f);
-    return gfx::ToEnclosingRect(bounds_f);
-  }
-
-  gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const override {
-    const gfx::Size web_app_frame_toolbar_preferred_size =
-        browser_view_->web_app_frame_toolbar()->GetPreferredSize();
-    gfx::RectF bounds_f(browser_view_->frame()->GetBoundsForWebAppFrameToolbar(
-        web_app_frame_toolbar_preferred_size));
-    views::View::ConvertRectToTarget(browser_view_->parent(), browser_view_,
-                                     &bounds_f);
-    return gfx::ToEnclosingRect(bounds_f);
-  }
-
-  int GetTopInsetInBrowserView() const override {
-    // BrowserView should fill the full window when window controls overlay
-    // is enabled or when immersive fullscreen with tabs is enabled.
-    if (browser_view_->IsWindowControlsOverlayEnabled() ||
-        browser_view_->IsBorderlessModeEnabled()) {
-      return 0;
-    }
-#if BUILDFLAG(IS_MAC)
-    if (browser_view_->UsesImmersiveFullscreenTabbedMode() &&
-        browser_view_->immersive_mode_controller()->IsEnabled()) {
-      return 0;
-    }
-#endif
-
-    return browser_view_->frame()->GetTopInset() - browser_view_->y();
-  }
-
-  bool IsToolbarVisible() const override {
-    return browser_view_->IsToolbarVisible();
-  }
-
-  bool IsBookmarkBarVisible() const override {
-    return browser_view_->IsBookmarkBarVisible();
-  }
-
-  bool IsContentsSeparatorEnabled() const override {
-    // Web app windows manage their own separator.
-    // TODO(crbug.com/40102629): Make PWAs set the visibility of the ToolbarView
-    // based on whether it is visible instead of setting the height to 0px. This
-    // will enable BrowserViewLayout to hide the contents separator on its own
-    // using the same logic used by normal BrowserElementsViews.
-    return !browser_view_->browser()->app_controller();
-  }
-
-  bool IsActiveTabSplit() const override {
-    // Use the model state as this can be called during active tab change
-    // when the multi contents view hasn't been fully setup and this
-    // inconsistency would cause unnecessary re-layout of content view during
-    // tab switch.
-    return browser_view_->browser()->tab_strip_model()->IsActiveTabSplit();
-  }
-
-  const ImmersiveModeController* GetImmersiveModeController() const override {
-    return browser_view_->immersive_mode_controller();
-  }
-
-  ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
-    return browser_view_->exclusive_access_bubble();
-  }
-
-  bool IsTopControlsSlideBehaviorEnabled() const override {
-    return browser_view_->GetTopControlsSlideBehaviorEnabled();
-  }
-
-  float GetTopControlsSlideBehaviorShownRatio() const override {
-    return browser_view_->GetTopControlsSlideBehaviorShownRatio();
-  }
-
-  bool SupportsWindowFeature(Browser::WindowFeature feature) const override {
-    return browser_view_->browser()->SupportsWindowFeature(feature);
-  }
-
-  gfx::NativeView GetHostViewForAnchoring() const override {
-    return browser_view_->GetWidgetForAnchoring()->GetNativeView();
-  }
-
-  bool HasFindBarController() const override {
-    return browser_view_->browser()->GetFeatures().HasFindBarController();
-  }
-
-  void MoveWindowForFindBarIfNecessary() const override {
-    auto* const controller =
-        browser_view_->browser()->GetFeatures().GetFindBarController();
-    return controller->find_bar()->MoveWindowIfNecessary();
-  }
-
-  bool IsWindowControlsOverlayEnabled() const override {
-    return browser_view_->IsWindowControlsOverlayEnabled();
-  }
-
-  void UpdateWindowControlsOverlay(
-      const gfx::Rect& available_titlebar_area) override {
-    content::WebContents* web_contents = browser_view_->GetActiveWebContents();
-    if (!web_contents) {
-      return;
-    }
-
-    // The rect passed to WebContents is directly exposed to websites. In case
-    // of an empty rectangle, this should be exposed as 0,0 0x0 rather than
-    // whatever coordinates might be in rect.
-    web_contents->UpdateWindowControlsOverlay(
-        available_titlebar_area.IsEmpty()
-            ? gfx::Rect()
-            : browser_view_->GetMirroredRect(available_titlebar_area));
-  }
-
-  bool ShouldLayoutTabStrip() const override {
-#if BUILDFLAG(IS_MAC)
-    // The tab strip is hosted in a separate widget in immersive fullscreen on
-    // macOS.
-    if (browser_view_->UsesImmersiveFullscreenTabbedMode() &&
-        browser_view_->immersive_mode_controller()->IsEnabled()) {
-      return false;
-    }
-#endif
-    return true;
-  }
-
-  int GetExtraInfobarOffset() const override {
-#if BUILDFLAG(IS_MAC)
-    if (browser_view_->UsesImmersiveFullscreenMode() &&
-        browser_view_->immersive_mode_controller()->IsEnabled()) {
-      return browser_view_->immersive_mode_controller()
-          ->GetExtraInfobarOffset();
-    }
-#endif
-    return 0;
-  }
-
- private:
-  raw_ptr<BrowserView> browser_view_;
-};
 
 class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
  public:
@@ -5275,7 +5111,7 @@ void BrowserView::AddedToWidget() {
   // Widget and move to the constructor.
   BrowserViewLayout* browser_view_layout =
       SetLayoutManager(std::make_unique<BrowserViewLayout>(
-          std::make_unique<BrowserViewLayoutDelegateImpl>(this), this,
+          BrowserViewLayoutDelegateImplBase::CreateDelegate(*this), this,
           window_scrim_view_, top_container_, web_app_frame_toolbar_,
           web_app_window_title_, tab_strip_region_view_,
           vertical_tab_strip_container_, toolbar_, infobar_container_,

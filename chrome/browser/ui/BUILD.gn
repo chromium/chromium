@@ -3779,6 +3779,8 @@ static_library("ui") {
       "views/frame/browser_view_layout.cc",
       "views/frame/browser_view_layout.h",
       "views/frame/browser_view_layout_delegate.h",
+      "views/frame/browser_view_layout_delegate_impl.cc",
+      "views/frame/browser_view_layout_delegate_impl.h",
       "views/frame/browser_widget.cc",
       "views/frame/browser_widget.h",
       "views/frame/browser_window_factory.cc",

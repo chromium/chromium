@@ -573,18 +573,12 @@ void BrowserViewLayout::LayoutToolbar(gfx::Rect& available_bounds) {
   SetViewVisibility(toolbar_, toolbar_visible);
 
   if (tabs::AreVerticalTabsEnabled() && IsVerticalTabsEnabled()) {
-    // When vertical tabs is enabled, the top element becomes the toolbar.
-    // Because of this, it must now be aware of the location of the caption
-    // buttons. We can reuse the calculation use by the TabStripRegionView to
-    // get this information until we have a way to directly query for the
-    // caption button location directly.
     gfx::Rect toolbar_bounds(
-        delegate_->GetBoundsForTabStripRegionInBrowserView());
+        delegate_->GetBoundsForToolbarInVerticalTabBrowserView());
     toolbar_bounds.set_x(available_bounds.x());
     toolbar_bounds.set_width(toolbar_bounds.width() -
                              BrowserView::kVerticalTabStripWidth);
-    toolbar_->SetBounds(toolbar_bounds.x(), toolbar_bounds.y(),
-                        toolbar_bounds.width(), toolbar_bounds.height());
+    toolbar_->SetBoundsRect(toolbar_bounds);
   } else {
     int height = toolbar_visible ? toolbar_->GetPreferredSize().height() : 0;
     int width = available_bounds.width();
@@ -966,6 +960,12 @@ bool BrowserViewLayout::IsInfobarVisible() const {
   return !infobar_container_->IsEmpty() &&
          (!browser_view_->IsFullscreen() ||
           !infobar_container_->ShouldHideInFullscreen());
+}
+
+void BrowserViewLayout::SetDelegateForTesting(
+    std::unique_ptr<BrowserViewLayoutDelegate> delegate) {
+  delegate_ = std::move(delegate);
+  browser_view_->InvalidateLayout();
 }
 
 bool BrowserViewLayout::IsVerticalTabsEnabled() const {

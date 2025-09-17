@@ -133,8 +133,8 @@ BrowserLayoutParams BrowserFrameView::GetBrowserLayoutParams() const {
   if (caption_bounds.bounds.IsEmpty()) {
     return params;
   }
-  const int caption_height = base::ClampRound(caption_bounds.bounds.bottom()) -
-                             params.visual_client_area.y();
+  const float caption_height =
+      caption_bounds.bounds.bottom() - params.visual_client_area.y();
   if (CaptionButtonsOnLeadingEdge()) {
     params.leading_exclusion.content = gfx::SizeF(
         caption_bounds.bounds.right() - params.visual_client_area.x(),

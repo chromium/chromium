@@ -5061,6 +5061,7 @@ if (!is_android) {
         "../browser/ui/views/frame/browser_frame_view_browsertest.cc",
         "../browser/ui/views/frame/browser_root_view_browsertest.cc",
         "../browser/ui/views/frame/browser_view_browsertest.cc",
+        "../browser/ui/views/frame/browser_view_layout_delegate_impl_browsertest.cc",
         "../browser/ui/views/frame/browser_widget_browsertest.cc",
         "../browser/ui/views/hung_renderer_view_browsertest.cc",
         "../browser/ui/views/importer/import_lock_dialog_view_browsertest.cc",

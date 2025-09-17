@@ -63,6 +63,9 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override {
     return gfx::Rect();
   }
+  gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const override {
+    return gfx::Rect();
+  }
   gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const override {
     return gfx::Rect();
   }

@@ -58,6 +58,7 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
   void InitViews();
 
   // BrowserFrameView:
+  BrowserLayoutParams GetBrowserLayoutParams() const override;
   gfx::Rect GetBoundsForTabStripRegion(
       const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(

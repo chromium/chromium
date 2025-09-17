@@ -103,6 +103,9 @@ class BrowserViewLayout : public views::LayoutManager {
   // Returns true if an infobar is showing.
   bool IsInfobarVisible() const;
 
+  void SetDelegateForTesting(
+      std::unique_ptr<BrowserViewLayoutDelegate> delegate);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, BrowserViewLayout);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, Layout);
@@ -145,8 +148,8 @@ class BrowserViewLayout : public views::LayoutManager {
 
   bool IsImmersiveModeEnabledWithoutToolbar() const;
 
-  // The delegate interface. May be a mock in tests.
-  const std::unique_ptr<BrowserViewLayoutDelegate> delegate_;
+  // The delegate interface. May be a mock or replaced in tests.
+  std::unique_ptr<BrowserViewLayoutDelegate> delegate_;
 
   // The owning browser view.
   const raw_ptr<BrowserView> browser_view_;

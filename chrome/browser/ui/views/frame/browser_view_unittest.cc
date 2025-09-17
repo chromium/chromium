@@ -28,7 +28,9 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -69,8 +71,9 @@ namespace {
 
 // Tab strip bounds depend on the window frame sizes.
 gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
-  gfx::Rect tabstrip_bounds(browser_view->frame()->GetBoundsForTabStripRegion(
-      browser_view->tab_strip_view()->GetMinimumSize()));
+  gfx::Rect tabstrip_bounds(
+      browser_view->frame()->GetFrameView()->GetBoundsForTabStripRegion(
+          browser_view->tab_strip_view()->GetMinimumSize()));
   gfx::Point tabstrip_region_origin(tabstrip_bounds.origin());
   views::View::ConvertPointToTarget(browser_view->parent(), browser_view,
                                     &tabstrip_region_origin);
