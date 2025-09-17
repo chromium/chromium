@@ -481,6 +481,9 @@ void ServiceWorkerRegisterJob::
 void ServiceWorkerRegisterJob::
     MaybeThrottleForDevToolsBeforeStartingScriptFetch(
         scoped_refptr<ServiceWorkerVersion> version) {
+  if (!version) {
+    return;
+  }
   int64_t version_id = version->version_id();
   const GURL& script_url = version->script_url();
   const GURL& scope = version->scope();
