@@ -11,29 +11,6 @@
 
 namespace viz {
 
-// static
-TransferableResource TransferableResource::MakeGpu(
-    const gpu::Mailbox& mailbox,
-    uint32_t texture_target,
-    const gpu::SyncToken& sync_token,
-    const gfx::Size& size,
-    SharedImageFormat format,
-    bool is_overlay_candidate,
-    ResourceSource source) {
-  // Passed in format must be either single or multiplane and not default set.
-  CHECK(format.is_single_plane() || format.is_multi_plane());
-  TransferableResource r;
-  r.is_software = false;
-  r.memory_buffer_id_ = mailbox;
-  r.texture_target_ = texture_target;
-  r.sync_token_ = sync_token;
-  r.size = size;
-  r.format = format;
-  r.is_overlay_candidate = is_overlay_candidate;
-  r.resource_source = source;
-  return r;
-}
-
 TransferableResource TransferableResource::Make(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     ResourceSource source,

@@ -30,10 +30,6 @@ namespace gpu {
 class ClientSharedImage;
 }
 
-namespace ash {
-class UiResourceManager;
-}  // namespace ash
-
 namespace viz {
 
 struct ReturnedResource;
@@ -228,18 +224,6 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   ResourceSource resource_source = ResourceSource::kUnknown;
 
  private:
-  // TODO(crbug.com/423939347): Following function is deprecated and only used
-  // by Ash implementation. Remove once that is converted.
-  friend ash::UiResourceManager;
-  static TransferableResource MakeGpu(
-      const gpu::Mailbox& mailbox,
-      uint32_t texture_target,
-      const gpu::SyncToken& sync_token,
-      const gfx::Size& size,
-      SharedImageFormat format,
-      bool is_overlay_candidate,
-      ResourceSource source = ResourceSource::kUnknown);
-
   gpu::Mailbox memory_buffer_id_;
 
   // The SyncToken associated with the above buffer. Allows the receiver to wait
