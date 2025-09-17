@@ -10536,24 +10536,6 @@
             ]
         }
     ],
-    "FRESignInSecondaryActionLabelUpdate": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "FRESignInSecondaryActionLabelUpdateParam": "StaySignedOut"
-                    },
-                    "enable_features": [
-                        "FRESignInSecondaryActionLabelUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "FastPairAdvertisingFormat2025": [
         {
             "platforms": [
