@@ -241,6 +241,26 @@ SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
   NOTREACHED();
 }
 
+size_t SharedMemoryOffsetForSharedImageFormat(SharedImageFormat format,
+                                              int plane_index,
+                                              const gfx::Size& size) {
+  if (format.is_single_plane()) {
+    return 0;
+  }
+
+  size_t offset = 0;
+  for (int plane = 0; plane < plane_index; ++plane) {
+    std::optional<size_t> plane_size =
+        format.MaybeEstimatedPlaneSizeInBytes(plane, size);
+    if (!plane_size) {
+      DLOG(ERROR) << "Could not calculate plane size for plane " << plane;
+      return 0;
+    }
+    offset += *plane_size;
+  }
+  return offset;
+}
+
 // static
 unsigned int
 SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(

@@ -75,6 +75,12 @@ gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format);
 
+// Returns the buffer offset for `plane_index` for a `format` of `size`.
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+size_t SharedMemoryOffsetForSharedImageFormat(SharedImageFormat format,
+                                              int plane_index,
+                                              const gfx::Size& size);
+
 // Utilities that conceptually belong only on the service side, but are
 // currently used by some clients. Usage is restricted to friended clients.
 class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)

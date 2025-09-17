@@ -4,10 +4,12 @@
 
 #include "components/viz/common/resources/shared_image_format_utils.h"
 
+#include <limits>
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorType.h"
+#include "ui/gfx/buffer_format_util.h"
 
 namespace viz {
 namespace {
@@ -134,6 +136,27 @@ TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSoftwareBGRA) {
   SharedImageFormat format = SinglePlaneFormat::kBGRA_8888;
   ASSERT_EQ(format.NumberOfPlanes(), 1);
   EXPECT_EQ(kBGRA_8888_SkColorType, ToClosestSkColorType(format));
+}
+
+TEST_F(SharedImageFormatUtilsTest, SharedMemoryOffsetForSharedImageFormat) {
+  int widths[] = {1, 2, 3, 4, 8, 10, 29, 53, 64, 128};
+  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); ++i) {
+    auto buffer_format = static_cast<gfx::BufferFormat>(i);
+    auto format = GetSharedImageFormat(buffer_format);
+    if (format.is_single_plane()) {
+      continue;
+    }
+    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+      for (int width : widths) {
+        gfx::Size size(width, 128);
+        size_t buffer_offset =
+            SharedMemoryOffsetForSharedImageFormat(format, plane, size);
+        size_t expected_buffer_offset =
+            gfx::BufferOffsetForBufferFormat(size, buffer_format, plane);
+        EXPECT_EQ(buffer_offset, expected_buffer_offset);
+      }
+    }
+  }
 }
 
 }  // namespace
