@@ -398,38 +398,6 @@ bool NativeTheme::UpdateWebInstance() const {
     return false;
   }
 
-  bool new_forced_colors = forced_colors();
-  PreferredContrast new_preferred_contrast = preferred_contrast();
-  PreferredColorScheme new_preferred_color_scheme = preferred_color_scheme();
-
-  const auto default_page_colors =
-      new_forced_colors ? PageColors::kHighContrast : PageColors::kOff;
-  if (page_colors() != default_page_colors) {
-    if (page_colors() == PageColors::kOff) {
-      new_forced_colors = false;
-      new_preferred_contrast = PreferredContrast::kNoPreference;
-    } else if (page_colors() != PageColors::kHighContrast) {
-      // Set other states based on the selected theme (i.e. `kDusk`, `kDesert`,
-      // `kNightSky`, `kWhite`, or `kAquatic`). This block is only executed when
-      // one of these themes is chosen. `kHighContrast` is not a valid theme
-      // here, as it is only available in forced colors mode.
-      CHECK_NE(page_colors(), ui::NativeTheme::PageColors::kOff);
-      CHECK_NE(page_colors(), ui::NativeTheme::PageColors::kHighContrast);
-      new_forced_colors = true;
-      new_preferred_contrast = PreferredContrast::kMore;
-    }
-  }
-
-  // Only update the color scheme if page colors is a selected theme.
-  if (page_colors() != PageColors::kOff &&
-      page_colors() != PageColors::kHighContrast) {
-    const bool is_dark_theme = page_colors() == PageColors::kNightSky ||
-                               page_colors() == PageColors::kDusk ||
-                               page_colors() == PageColors::kAquatic;
-    new_preferred_color_scheme = is_dark_theme ? PreferredColorScheme::kDark
-                                               : PreferredColorScheme::kLight;
-  }
-
   // NOTE: Intentionally does not copy the native "overlay scrollbar" setting to
   // the web instance, as the web instance often wants to differ there.
   // TODO(crbug.com/444399080): If we had a notion somewhere about "web wants
@@ -450,8 +418,8 @@ bool NativeTheme::UpdateWebInstance() const {
         should_use_system_accent_color();
     updated_web_instance = true;
   }
-  if (associated_web_instance_->forced_colors() != new_forced_colors) {
-    associated_web_instance_->forced_colors_ = new_forced_colors;
+  if (associated_web_instance_->forced_colors() != forced_colors()) {
+    associated_web_instance_->forced_colors_ = forced_colors();
     updated_web_instance = true;
   }
   if (associated_web_instance_->page_colors() != page_colors()) {
@@ -459,14 +427,13 @@ bool NativeTheme::UpdateWebInstance() const {
     updated_web_instance = true;
   }
   if (associated_web_instance_->preferred_color_scheme() !=
-      new_preferred_color_scheme) {
+      preferred_color_scheme()) {
     associated_web_instance_->preferred_color_scheme_ =
-        new_preferred_color_scheme;
+        preferred_color_scheme();
     updated_web_instance = true;
   }
-  if (associated_web_instance_->preferred_contrast() !=
-      new_preferred_contrast) {
-    associated_web_instance_->preferred_contrast_ = new_preferred_contrast;
+  if (associated_web_instance_->preferred_contrast() != preferred_contrast()) {
+    associated_web_instance_->preferred_contrast_ = preferred_contrast();
     updated_web_instance = true;
   }
   if (associated_web_instance_->prefers_reduced_transparency() !=

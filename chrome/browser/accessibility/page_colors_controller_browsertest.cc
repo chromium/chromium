@@ -115,14 +115,6 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   // page colors.
   ui_native_theme().SetPreferredContrast(
       ui::NativeTheme::PreferredContrast::kMore);
-  // TODO(pkasting): Unconditionally calling `set_forced_colors(true)` here
-  // masks a bug that, without forced colors on, explicitly changing the page
-  // colors to `kOff` below won't properly reduce contrast. This should be fixed
-  // by moving contrast adjustment to the PageColorsController, which can
-  // distinguish between "off" and "no preference". Once this is fixed, the
-  // unsetting of this lower down can also be removed.
-  ui_native_theme().set_forced_colors(true);
-  ui_native_theme().NotifyOnNativeThemeUpdated();
   EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kDusk);
   EXPECT_EQ(native_theme->preferred_color_scheme(),
             ui::NativeTheme::PreferredColorScheme::kDark);
@@ -151,8 +143,6 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
 
   // Unsetting the preferred page colors should cause the web theme to reflect
   // the high contrast state of the native theme.
-  ui_native_theme().set_forced_colors(false);
-  ui_native_theme().NotifyOnNativeThemeUpdated();
   page_colors->SetRequestedPageColors(PageColors::kNoPreference);
   EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kOff);
   EXPECT_EQ(native_theme->preferred_color_scheme(),

@@ -62,12 +62,6 @@ class PageColorsController : public KeyedService,
   // prefs. If anything changed, notifies the web theme's observers.
   void RecomputePageColors();
 
-  // This function makes use of different states such as the
-  // kRequestedPageColors, kApplyPageColorsOnlyOnIncreasedContrast and OS
-  // increased contrast state to calculate the used page colors.
-  ui::NativeTheme::PageColors CalculatePageColors(
-      const ui::NativeTheme& native_theme);
-
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
   PrefChangeRegistrar pref_change_registrar_;
