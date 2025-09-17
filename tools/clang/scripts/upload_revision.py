@@ -75,6 +75,7 @@ Cq-Include-Trybots: chromium/try:mac-official,linux-official
 Cq-Include-Trybots: chromium/try:mac12-arm64-rel,mac_chromium_asan_rel_ng
 Cq-Include-Trybots: chromium/try:win-arm64-rel
 Cq-Include-Trybots: chromium/try:win-official,win32-official
+Cq-Include-Trybots: chrome/try:android-arm32-pgo,android-arm64-pgo
 Cq-Include-Trybots: chrome/try:android-x64-rel-ready
 Cq-Include-Trybots: chrome/try:iphone-device,ipad-device
 Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
