@@ -9,7 +9,6 @@ source_set("ui") {
     "background_customization_configuration.h",
     "home_customization_background_cell.h",
     "home_customization_background_cell.mm",
-    "home_customization_background_color_picker_consumer.h",
     "home_customization_background_color_picker_view_controller.h",
     "home_customization_background_color_picker_view_controller.mm",
     "home_customization_background_configuration_consumer.h",

@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
-#import "ios/chrome/browser/home_customization/coordinator/home_customization_background_color_picker_mediator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_configuration_mediator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_picker_coordinator.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
@@ -46,10 +45,6 @@ CGFloat const kSheetCornerRadius = 30;
 @interface HomeCustomizationBackgroundPickerActionSheetCoordinator () <
     HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate> {
-  // The mediator for the color picker.
-  HomeCustomizationBackgroundColorPickerMediator*
-      _backgroundColorPickerMediator;
-
   // The mediator for the background preset gallery picker.
   HomeCustomizationBackgroundConfigurationMediator*
       _backgroundConfigurationMediator;
@@ -58,7 +53,9 @@ CGFloat const kSheetCornerRadius = 30;
   HomeCustomizationBackgroundPhotoPickerCoordinator* _photoPickerCoordinator;
 
   // The main view controller presented by the base view controller.
-  UIViewController* _mainViewController;
+  UIViewController<HomeCustomizationBackgroundConfigurationConsumer,
+                   HomeCustomizationBackgroundPickerActionSheetConsumer>*
+      _mainViewController;
 
   // The view to which the action sheet popover should be anchored.
   UIView* _sourceView;
@@ -92,10 +89,6 @@ CGFloat const kSheetCornerRadius = 30;
   HomeBackgroundCustomizationService* homeBackgroundCustomizationService =
       HomeBackgroundCustomizationServiceFactory::GetForProfile(self.profile);
 
-  _backgroundColorPickerMediator =
-      [[HomeCustomizationBackgroundColorPickerMediator alloc]
-          initWithBackgroundCustomizationService:
-              homeBackgroundCustomizationService];
   _backgroundConfigurationMediator =
       [[HomeCustomizationBackgroundConfigurationMediator alloc]
           initWithBackgroundCustomizationService:
@@ -158,7 +151,6 @@ CGFloat const kSheetCornerRadius = 30;
 
   [_mainViewController dismissViewControllerAnimated:YES completion:nil];
 
-  _backgroundColorPickerMediator = nil;
   _backgroundConfigurationMediator = nil;
   if (_photoPickerCoordinator) {
     [_photoPickerCoordinator stop];
@@ -208,15 +200,16 @@ CGFloat const kSheetCornerRadius = 30;
       break;
     case HomeCustomizationBackgroundStyle::kColor:
       _mainViewController = [self createColorPickerViewController];
-      _backgroundColorPickerMediator.consumer = (id)_mainViewController;
-      _backgroundConfigurationMediator.consumer = (id)_mainViewController;
-      [_backgroundColorPickerMediator configureBackgroundConfigurations];
+      _backgroundConfigurationMediator.configurationConsumer =
+          _mainViewController;
+      _backgroundConfigurationMediator.consumer = _mainViewController;
+      [_backgroundConfigurationMediator loadColorBackgroundConfigurations];
       break;
     case HomeCustomizationBackgroundStyle::kPreset:
       _mainViewController = [self createPresetGalleryPickerViewController];
       _backgroundConfigurationMediator.configurationConsumer =
-          (id)_mainViewController;
-      _backgroundConfigurationMediator.consumer = (id)_mainViewController;
+          _mainViewController;
+      _backgroundConfigurationMediator.consumer = _mainViewController;
       [_backgroundConfigurationMediator loadGalleryBackgroundConfigurations];
       break;
     case HomeCustomizationBackgroundStyle::kUserUploaded:

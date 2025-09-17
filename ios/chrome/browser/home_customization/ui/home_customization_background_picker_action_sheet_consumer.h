@@ -13,7 +13,7 @@
 @protocol HomeCustomizationBackgroundPickerActionSheetConsumer
 
 // Returns the UINavigationItem associated with the action sheet.
-@property(nonatomic, readonly) UINavigationItem* navigationItem;
+@property(nonatomic, strong, readonly) UINavigationItem* navigationItem;
 
 @end
 

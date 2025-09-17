@@ -26,8 +26,11 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
@@ -64,6 +67,26 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
         }
         )");
+
+// Represents a seed color and its associated scheme variant.
+struct SeedColor {
+  SkColor color;
+  ui::ColorProviderKey::SchemeVariant variant;
+};
+
+// Array of seed colors (in ARGB integer format) and variants used to generate
+// background color palette configurations in the color picker.
+const SeedColor kSeedColors[] = {
+    {0xff8cabe4, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Blue
+    {0xff26a69a, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Aqua
+    {0xff00ff00, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Green
+    {0xff87ba81, ui::ColorProviderKey::SchemeVariant::kNeutral},    // Viridian
+    {0xfffadf73, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Citron
+    {0xffff8000, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Orange
+    {0xfff3b2be, ui::ColorProviderKey::SchemeVariant::kNeutral},    // Rose
+    {0xffff00ff, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Fuchsia
+    {0xffe5d5fc, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Violet
+};
 
 }  // namespace
 
@@ -178,6 +201,50 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   [self.configurationConsumer
       setBackgroundCollectionConfigurations:@[ collectionConfiguration ]
                        selectedBackgroundId:selectedBackgroundID];
+}
+
+- (void)loadColorBackgroundConfigurations {
+  BackgroundCollectionConfiguration* collectionConfiguration =
+      [[BackgroundCollectionConfiguration alloc] init];
+  std::optional<sync_pb::UserColorTheme> colorTheme =
+      _backgroundCustomizationService->GetCurrentColorTheme();
+  NSString* selectedColorID = nil;
+
+  BackgroundCustomizationConfigurationItem* noBackgroundConfiguration =
+      [[BackgroundCustomizationConfigurationItem alloc] initWithNoBackground];
+  collectionConfiguration
+      .configurations[noBackgroundConfiguration.configurationID] =
+      noBackgroundConfiguration;
+  [collectionConfiguration.configurationOrder
+      addObject:noBackgroundConfiguration.configurationID];
+
+  for (SeedColor seedColor : kSeedColors) {
+    BackgroundCustomizationConfigurationItem* item =
+        [[BackgroundCustomizationConfigurationItem alloc]
+            initWithBackgroundColor:UIColorFromRGB(seedColor.color)
+                       colorVariant:seedColor.variant];
+    collectionConfiguration.configurations[item.configurationID] = item;
+    [collectionConfiguration.configurationOrder addObject:item.configurationID];
+
+    if (colorTheme && colorTheme->color() &&
+        seedColor.color == colorTheme->color()) {
+      selectedColorID = item.configurationID;
+    }
+  }
+
+  // If no color is currently selected, set selectedColorIndex to nil
+  // when a background image is active, or to the no background configuration's
+  // ID when there is no background.
+  if (!selectedColorID) {
+    selectedColorID =
+        _backgroundCustomizationService->GetCurrentCustomBackground()
+            ? nil
+            : noBackgroundConfiguration.configurationID;
+  }
+
+  [self.configurationConsumer
+      setBackgroundCollectionConfigurations:@[ collectionConfiguration ]
+                       selectedBackgroundId:selectedColorID];
 }
 
 - (void)saveCurrentTheme {

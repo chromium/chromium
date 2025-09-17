@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 
+#import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_cutomization_color_palette_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -49,20 +51,22 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   // This view controller's main collection view for displaying content.
   UICollectionView* _collectionView;
 
-  // An array storing the available background configurations, ordered by their
-  // index in the collection.
-  NSArray<id<BackgroundCustomizationConfiguration>>* _backgroundConfigurations;
+  // The background collection configuration to be displayed in this view
+  // controller.
+  BackgroundCollectionConfiguration* _backgroundCollectionConfiguration;
 
   // The `UICollectionViewCellRegistration` for registering  and configuring the
   // `HomeCustomizationColorPaletteCell` in the collection view.
   UICollectionViewCellRegistration* _colorCellRegistration;
 
   // Currently selected color index in the palette.
-  NSNumber* _selectedColorIndex;
+  NSString* _selectedColorId;
 }
 @end
 
 @implementation HomeCustomizationBackgroundColorPickerViewController
+
+@dynamic navigationItem;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -113,40 +117,45 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   ]];
 }
 
-#pragma mark - HomeCustomizationBackgroundColorPickerConsumer
+#pragma mark - HomeCustomizationBackgroundConfigurationConsumer
 
-- (void)populateBackgroundCustomizationConfigurations:
-            (NSArray<id<BackgroundCustomizationConfiguration>>*)
-                backgroundCustomizationConfigurations
-                                   selectedColorIndex:
-                                       (NSNumber*)selectedColorIndex {
-  _backgroundConfigurations = backgroundCustomizationConfigurations;
-  _selectedColorIndex = selectedColorIndex;
+- (void)setBackgroundCollectionConfigurations:
+            (NSArray<BackgroundCollectionConfiguration*>*)
+                backgroundCollectionConfigurations
+                         selectedBackgroundId:(NSString*)selectedBackgroundId {
+  CHECK(backgroundCollectionConfigurations.count == 1);
+  _backgroundCollectionConfiguration =
+      backgroundCollectionConfigurations.firstObject;
+  _selectedColorId = selectedBackgroundId;
 }
 
 #pragma mark - UICollectionViewDelegate
 
 - (NSInteger)collectionView:(UICollectionView*)collectionView
      numberOfItemsInSection:(NSInteger)section {
-  return _backgroundConfigurations.count;
+  return _backgroundCollectionConfiguration.configurationOrder.count;
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  NSString* selectedID =
+      _backgroundCollectionConfiguration.configurationOrder[indexPath.item];
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
-      _backgroundConfigurations[indexPath.item];
-  _selectedColorIndex = @(indexPath.item);
+      _backgroundCollectionConfiguration.configurations[selectedID];
+  _selectedColorId = backgroundConfiguration.configurationID;
   [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
 }
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
+  NSString* selectedID =
+      _backgroundCollectionConfiguration.configurationOrder[indexPath.item];
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
-      _backgroundConfigurations[indexPath.item];
+      _backgroundCollectionConfiguration.configurations[selectedID];
 
   if (indexPath.item >= 0) {
     std::size_t index = static_cast<std::size_t>(indexPath.item);
-    if (index < _backgroundConfigurations.count) {
+    if (index < _backgroundCollectionConfiguration.configurationOrder.count) {
       return [collectionView
           dequeueConfiguredReusableCellWithRegistration:_colorCellRegistration
                                            forIndexPath:indexPath
@@ -185,7 +194,8 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
     cell.colorPalette = backgroundConfiguration.colorPalette;
   }
 
-  if ([_selectedColorIndex isEqualToNumber:@(indexPath.item)]) {
+  if ([_selectedColorId
+          isEqualToString:backgroundConfiguration.configurationID]) {
     [_collectionView selectItemAtIndexPath:indexPath
                                   animated:NO
                             scrollPosition:UICollectionViewScrollPositionNone];

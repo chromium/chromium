@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_consumer.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
 
 @protocol HomeCustomizationBackgroundPickerPresentationDelegate;
 @protocol HomeCustomizationSearchEngineLogoMediatorProvider;
@@ -17,8 +18,9 @@
 // Home customization flow. Uses a collection view to showcase selectable preset
 // backgrounds.
 @interface HomeCustomizationBackgroundPresetGalleryPickerViewController
-    : UIViewController <UICollectionViewDelegate,
-                        HomeCustomizationBackgroundConfigurationConsumer>
+    : UIViewController <HomeCustomizationBackgroundConfigurationConsumer,
+                        HomeCustomizationBackgroundPickerActionSheetConsumer,
+                        UICollectionViewDelegate>
 
 // A provider responsible for supplying a logo vendor object.
 // TODO(crbug.com/436228514): Need to remove this property.

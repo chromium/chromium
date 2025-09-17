@@ -7,7 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_consumer.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_consumer.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
 
 @protocol HomeCustomizationBackgroundConfigurationMutator;
 @protocol HomeCustomizationBackgroundPickerPresentationDelegate;
@@ -16,7 +17,8 @@
 // picker in the Home customization flow. Implements collection view delegate
 // and data source to handle color options.
 @interface HomeCustomizationBackgroundColorPickerViewController
-    : UIViewController <HomeCustomizationBackgroundColorPickerConsumer,
+    : UIViewController <HomeCustomizationBackgroundConfigurationConsumer,
+                        HomeCustomizationBackgroundPickerActionSheetConsumer,
                         UICollectionViewDelegate,
                         UICollectionViewDataSource>
 

@@ -66,6 +66,9 @@ class UserUploadedImageManager;
 // Provide the recently used background configurations to the consumer.
 - (void)loadRecentlyUsedBackgroundConfigurations;
 
+// Provide the color background configurations to the consumer.
+- (void)loadColorBackgroundConfigurations;
+
 // Saves the currently selected theme data, if it has been changed by this
 // mediator.
 - (void)saveCurrentTheme;
