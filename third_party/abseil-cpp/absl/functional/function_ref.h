@@ -47,12 +47,13 @@
 #define ABSL_FUNCTIONAL_FUNCTION_REF_H_
 
 #include <cassert>
-#include <functional>
 #include <type_traits>
 
 #include "absl/base/attributes.h"
+#include "absl/base/config.h"
 #include "absl/functional/internal/function_ref.h"
 #include "absl/meta/type_traits.h"
+#include "absl/utility/utility.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -89,15 +90,17 @@ class FunctionRef<R(Args...)> {
   // signature of this FunctionRef.
   template <typename F, typename FR = std::invoke_result_t<F, Args&&...>>
   using EnableIfCompatible =
-      typename std::enable_if<std::is_void<R>::value ||
-                              std::is_convertible<FR, R>::value>::type;
+      std::enable_if_t<std::conditional_t<std::is_void_v<R>, std::true_type,
+                                          std::is_invocable_r<R, FR()>>::value>;
 
  public:
   // Constructs a FunctionRef from any invocable type.
-  template <typename F, typename = EnableIfCompatible<const F&>>
-  // NOLINTNEXTLINE(runtime/explicit)
-  FunctionRef(const F& f ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : invoker_(&absl::functional_internal::InvokeObject<F, R, Args...>) {
+  template <typename F,
+            typename = EnableIfCompatible<std::enable_if_t<
+                !std::is_same_v<FunctionRef, absl::remove_cvref_t<F>>, F&>>>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(F&& f ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept
+      : invoker_(&absl::functional_internal::InvokeObject<F&, R, Args...>) {
     absl::functional_internal::AssertNonNull(f);
     ptr_.obj = &f;
   }
@@ -111,14 +114,39 @@ class FunctionRef<R(Args...)> {
   template <
       typename F, typename = EnableIfCompatible<F*>,
       absl::functional_internal::EnableIf<absl::is_function<F>::value> = 0>
-  FunctionRef(F* f)  // NOLINT(runtime/explicit)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(F* f ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept
       : invoker_(&absl::functional_internal::InvokeFunction<F*, R, Args...>) {
     assert(f != nullptr);
     ptr_.fun = reinterpret_cast<decltype(ptr_.fun)>(f);
   }
 
-  FunctionRef& operator=(const FunctionRef& rhs) = default;
-  FunctionRef(const FunctionRef& rhs) = default;
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+  // Similar to the other overloads, but passes the address of a known callable
+  // `F` at compile time. This allows calling arbitrary functions while avoiding
+  // an indirection.
+  // Needs C++20 as `nontype_t` needs C++20 for `auto` template parameters.
+  template <auto F>
+  FunctionRef(nontype_t<F>) noexcept  // NOLINT(google-explicit-constructor)
+      : invoker_(&absl::functional_internal::InvokeFunction<decltype(F), F, R,
+                                                            Args...>) {}
+
+  template <auto F, typename Obj>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(nontype_t<F>, Obj&& obj) noexcept
+      : invoker_(&absl::functional_internal::InvokeObject<Obj&, decltype(F), F,
+                                                          R, Args...>) {
+    ptr_.obj = std::addressof(obj);
+  }
+
+  template <auto F, typename Obj>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(nontype_t<F>, Obj* obj) noexcept
+      : invoker_(&absl::functional_internal::InvokePtr<Obj, decltype(F), F, R,
+                                                       Args...>) {
+    ptr_.obj = obj;
+  }
+#endif
 
   // Call the underlying object.
   R operator()(Args... args) const {
@@ -134,8 +162,39 @@ class FunctionRef<R(Args...)> {
 // constness anyway we can just make this a no-op.
 template <typename R, typename... Args>
 class FunctionRef<R(Args...) const> : public FunctionRef<R(Args...)> {
+  using Base = FunctionRef<R(Args...)>;
+
+  template <typename F, typename T = void>
+  using EnableIfCallable =
+      std::enable_if_t<!std::is_same_v<FunctionRef, absl::remove_cvref_t<F>> &&
+                           std::is_invocable_r_v<R, F, Args...> &&
+                           std::is_constructible_v<Base, F>,
+                       T>;
+
  public:
-  using FunctionRef<R(Args...)>::FunctionRef;
+  template <typename F, typename = EnableIfCallable<const F&>>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(const F& f ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept : Base(f) {}
+
+  template <typename F,
+            typename = std::enable_if_t<std::is_constructible_v<Base, F*>>>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(F* f ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept : Base(f) {}
+
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+  template <auto F, typename = EnableIfCallable<decltype(F)>>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(nontype_t<F> arg) noexcept : Base(arg) {}
+
+  template <auto F, typename Obj, typename = EnableIfCallable<decltype(F)>>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(nontype_t<F> arg, Obj&& obj) noexcept
+      : Base(arg, std::forward<Obj>(obj)) {}
+
+  template <auto F, typename Obj, typename = EnableIfCallable<decltype(F)>>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(nontype_t<F> arg, Obj* obj) noexcept : Base(arg, obj) {}
+#endif
 };
 
 ABSL_NAMESPACE_END

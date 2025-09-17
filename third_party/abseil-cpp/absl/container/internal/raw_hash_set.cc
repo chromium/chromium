@@ -1365,12 +1365,12 @@ std::pair<ctrl_t*, void*> Grow1To3AndPrepareInsert(
   ctrl_t* old_ctrl = common.control();
   void* old_slots = common.slot_array();
 
-  common.set_capacity(kNewCapacity);
   const size_t slot_size = policy.slot_size;
   const size_t slot_align = policy.slot_align;
   void* alloc = policy.get_char_alloc(common);
   HashtablezInfoHandle infoz = common.infoz();
   const bool has_infoz = infoz.IsSampled();
+  common.set_capacity(kNewCapacity);
 
   const auto [new_ctrl, new_slots] =
       AllocBackingArray(common, policy, kNewCapacity, has_infoz, alloc);

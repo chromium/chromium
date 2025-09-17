@@ -3188,7 +3188,7 @@ class raw_hash_set {
     bool inserted;
     // We use a lambda function to be able to exit from the nested loop without
     // duplicating generated code for the return statement (e.g. iterator_at).
-    [&] {
+    [&]() ABSL_ATTRIBUTE_ALWAYS_INLINE {
       while (true) {
 #ifndef ABSL_HAVE_MEMORY_SANITIZER
         absl::PrefetchToLocalCache(slot_array() + seq.offset());

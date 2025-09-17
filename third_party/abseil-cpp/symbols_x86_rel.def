@@ -111,7 +111,7 @@ EXPORTS
     ??$IntegerToString@K@strings_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@K@Z
     ??$IntegerToString@_J@strings_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@_J@Z
     ??$IntegerToString@_K@strings_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@_K@Z
-    ??$InvokeObject@U?$HashKey@UStringHash@container_internal@absl@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@$00@container_internal@absl@@II@functional_internal@absl@@YAITVoidPtr@01@I@Z
+    ??$InvokeObject@AAU?$HashKey@UStringHash@container_internal@absl@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@$00@container_internal@absl@@II@functional_internal@absl@@YAITVoidPtr@01@I@Z
     ??$JoinAlgorithm@V?$__wrap_iter@PBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@__Cr@std@@X@strings_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$__wrap_iter@PBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@34@0V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@UNoFormatter@01@@Z
     ??$MakeCheckOpString@ABV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@ABV123@@log_internal@absl@@YAPBDABV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@0PBD@Z
     ??$MakeCheckOpString@ABV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@ABV123@@log_internal@absl@@YAPBDABV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@0PBD@Z

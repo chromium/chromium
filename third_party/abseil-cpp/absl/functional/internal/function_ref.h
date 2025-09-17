@@ -72,14 +72,37 @@ using Invoker = R (*)(VoidPtr, typename ForwardT<Args>::type...);
 // static_cast<R> handles the case the return type is void.
 template <typename Obj, typename R, typename... Args>
 R InvokeObject(VoidPtr ptr, typename ForwardT<Args>::type... args) {
-  auto o = static_cast<const Obj*>(ptr.obj);
-  return static_cast<R>(std::invoke(*o, std::forward<Args>(args)...));
+  using T = std::remove_reference_t<Obj>;
+  return static_cast<R>(std::invoke(
+      std::forward<Obj>(*const_cast<T*>(static_cast<const T*>(ptr.obj))),
+      std::forward<typename ForwardT<Args>::type>(args)...));
+}
+
+template <typename Obj, typename Fun, Fun F, typename R, typename... Args>
+R InvokeObject(VoidPtr ptr, typename ForwardT<Args>::type... args) {
+  using T = std::remove_reference_t<Obj>;
+  return static_cast<R>(
+      F(std::forward<Obj>(*const_cast<T*>(static_cast<const T*>(ptr.obj))),
+        std::forward<typename ForwardT<Args>::type>(args)...));
+}
+
+template <typename T, typename Fun, Fun F, typename R, typename... Args>
+R InvokePtr(VoidPtr ptr, typename ForwardT<Args>::type... args) {
+  return static_cast<R>(
+      F(const_cast<T*>(static_cast<const T*>(ptr.obj)),
+        std::forward<typename ForwardT<Args>::type>(args)...));
 }
 
 template <typename Fun, typename R, typename... Args>
 R InvokeFunction(VoidPtr ptr, typename ForwardT<Args>::type... args) {
   auto f = reinterpret_cast<Fun>(ptr.fun);
   return static_cast<R>(std::invoke(f, std::forward<Args>(args)...));
+}
+
+template <typename Fun, Fun F, typename R, typename... Args>
+R InvokeFunction(VoidPtr, typename ForwardT<Args>::type... args) {
+  return static_cast<R>(
+      F(std::forward<typename ForwardT<Args>::type>(args)...));
 }
 
 template <typename Sig>
@@ -98,7 +121,7 @@ template <typename F>
 void AssertNonNull(const F&) {}
 
 template <typename F, typename C>
-void AssertNonNull(F C::*f) {
+void AssertNonNull(F C::* f) {
   assert(f != nullptr);
   (void)f;
 }
