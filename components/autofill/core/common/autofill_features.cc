@@ -350,11 +350,6 @@ BASE_FEATURE(kAutofillImproveAddressFieldSwapping,
 BASE_FEATURE(kAutofillImproveCityFieldClassification,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, credit cards that are split into different fields are imported.
-// TODO: crbug.com/392179445 - Clean up when launched.
-BASE_FEATURE(kAutofillFixSplitCreditCardImport,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, focusing on a credit card number field that was traditionally
 // autofilled will yield all credit card suggestions.
 // TODO(crbug.com/354175563): Remove when launched.

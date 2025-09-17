@@ -1085,9 +1085,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
       // old value: '1234', offset: 4, new value:'5678', result: '12345678'
       // old value: '12345678', offset: 4, new value:'0000', result: '12340000'
       if (field.credit_card_number_offset() > 0 &&
-          field.credit_card_number_offset() <= old_value.size() &&
-          base::FeatureList::IsEnabled(
-              features::kAutofillFixSplitCreditCardImport)) {
+          field.credit_card_number_offset() <= old_value.size()) {
         value = old_value.replace(field.credit_card_number_offset(),
                                   value.size(), value);
       }
@@ -1108,11 +1106,9 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
     std::u16string new_value = result.card.GetInfo(field.Type(), app_locale);
     // Skip duplicate field check if the field is a split credit card
     // number field.
-    bool skip_duplication_check =
+    const bool skip_duplication_check =
         field.Type().GetCreditCardType() == FieldType::CREDIT_CARD_NUMBER &&
-        field.credit_card_number_offset() > 0 &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillFixSplitCreditCardImport);
+        field.credit_card_number_offset() > 0;
     result.has_duplicate_credit_card_field_type |=
         !skip_duplication_check && !old_value.empty() && old_value != new_value;
   };

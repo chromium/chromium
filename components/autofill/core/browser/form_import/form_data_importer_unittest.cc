@@ -4073,9 +4073,6 @@ class FormDataImporterTest_ExtractCreditCardFromForm
 
   FormStructure form_{/*form=*/{}};
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillFixSplitCreditCardImport};
 };
 
 // Tests that inconsistent values from different priority classes do not prevent
