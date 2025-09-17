@@ -80,10 +80,14 @@
   width: 174px;
 }
 
+:host([is-modal_]) #illustrationContainer {
+  margin-top: auto;
+}
+
 #illustrationContainer {
   display: flex;
   justify-content: center;
-  margin-top: auto;
+  margin-top: 0;
   position: relative;
 }
 
