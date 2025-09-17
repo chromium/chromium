@@ -146,7 +146,7 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
   bool found_content = false;
   DistillationParseResult result = DistillationParseResult::kParseFailure;
 
-  if (value->is_none()) {
+  if (!value || value->is_none()) {
     result = DistillationParseResult::kNoData;
   } else {
     bool parsed_successfully = false;
