@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 namespace ui {
 
@@ -29,7 +30,20 @@ class TestNativeTheme : public NativeTheme {
 
 }  // namespace
 
-TEST(NativeThemeTest, TestOnNativeThemeUpdatedMetricsEmitted) {
+class NativeThemeTest : public ::testing::Test {
+ protected:
+  NativeThemeTest() = default;
+  ~NativeThemeTest() override = default;
+
+  MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
+  }
+
+ private:
+  MockOsSettingsProvider os_settings_provider_;
+};
+
+TEST_F(NativeThemeTest, TestOnNativeThemeUpdatedMetricsEmitted) {
   base::HistogramTester histogram_tester;
   TestNativeTheme theme;
   histogram_tester.ExpectTotalCount(
@@ -53,7 +67,23 @@ TEST(NativeThemeTest, TestOnNativeThemeUpdatedMetricsEmitted) {
       2);
 }
 
-TEST(NativeThemeTest, CaretBlinkInterval) {
+TEST_F(NativeThemeTest, PreferredContrast) {
+  using enum NativeTheme::PreferredContrast;
+  const auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
+
+  EXPECT_EQ(native_theme->preferred_contrast(), kNoPreference);
+
+  os_settings_provider().SetPreferredContrast(kMore);
+  EXPECT_EQ(native_theme->preferred_contrast(), kMore);
+
+  os_settings_provider().SetPreferredContrast(kCustom);
+  EXPECT_EQ(native_theme->preferred_contrast(), kCustom);
+
+  os_settings_provider().SetPreferredContrast(kLess);
+  EXPECT_EQ(native_theme->preferred_contrast(), kLess);
+}
+
+TEST_F(NativeThemeTest, CaretBlinkInterval) {
   auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
   static constexpr auto kNewInterval = base::Milliseconds(42);
   native_theme->set_caret_blink_interval(kNewInterval);

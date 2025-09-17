@@ -11,12 +11,10 @@
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
-#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/win/registry.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/win/singleton_hwnd.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace ui {
@@ -34,9 +32,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra_params) const override;
-  PreferredContrast CalculatePreferredContrast() const override;
 
-  PreferredColorScheme CalculatePreferredColorScheme() const;
   void set_in_dark_mode_for_testing(bool in_dark_mode) {
     in_dark_mode_ = in_dark_mode;
   }
@@ -60,30 +56,19 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
 
  private:
   friend class base::NoDestructor<NativeThemeWin>;
+  friend class TestNativeThemeWin;
 
-  ColorProviderKey::ForcedColors OsForcedColors() const;
+  PreferredColorScheme CalculatePreferredColorScheme() const override;
   void CloseHandlesInternal();
-
-  // Called by `hwnd_subscription_`.
-  void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
   // Updates `accent_color_`. If it changed, notifies callbacks.
   void OnAccentColorMaybeChanged();
-
-  // Update the locally cached set of system colors.
-  void UpdateSystemColors();
 
   void RegisterThemeRegkeyObserver();
   void UpdateDarkModeStatus();
 
   // Dark Mode registry key.
   base::win::RegKey hkcu_themes_regkey_;
-
-  // Color/high contrast mode change observer.
-  base::CallbackListSubscription hwnd_subscription_ =
-      gfx::SingletonHwnd::GetInstance()->RegisterCallback(
-          base::BindRepeating(&NativeThemeWin::OnWndProc,
-                              base::Unretained(this)));
 
   // Accent color subscription.
   base::CallbackListSubscription accent_color_subscription_;

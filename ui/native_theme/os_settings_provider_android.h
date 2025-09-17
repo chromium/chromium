@@ -23,6 +23,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderAndroid
   ~OsSettingsProviderAndroid() override;
 
   // OsSettingsProvider:
+  NativeTheme::PreferredContrast PreferredContrast() const override;
   bool PrefersReducedTransparency() const override;
   bool PrefersInvertedColors() const override;
 

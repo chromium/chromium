@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_base.h"
 
 namespace ui {
@@ -37,7 +36,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
 
   // NativeThemeBase:
   SkColor GetSystemButtonPressedColor(SkColor base_color) const override;
-  PreferredContrast CalculatePreferredContrast() const override;
 
  protected:
   NativeThemeMac();

@@ -4101,7 +4101,7 @@ bool ShouldDisableForcedColorsForWebContent(content::WebContents* contents,
   return false;
 }
 
-blink::mojom::PreferredContrast preferred_contrast(
+blink::mojom::PreferredContrast GetPreferredContrast(
     const ui::NativeTheme* native_theme) {
   using NC = ui::NativeTheme::PreferredContrast;
   using BC = blink::mojom::PreferredContrast;
@@ -4811,7 +4811,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       SubAppsAPIsRequireUserGestureAndAuthorization(web_contents);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  web_prefs->preferred_contrast = preferred_contrast(GetWebTheme());
+  web_prefs->preferred_contrast = GetPreferredContrast(GetWebTheme());
 
   std::tie(web_prefs->in_forced_colors, web_prefs->is_forced_colors_disabled) =
       GetForcedColorsForWebContent(web_contents, GetWebTheme());
@@ -4975,7 +4975,7 @@ bool ChromeContentBrowserClient::
         WebContents& web_contents,
         const SiteInstance& main_frame_site) const {
   const WebPreferences& prefs = web_contents.GetOrCreateWebPreferences();
-  return preferred_contrast(GetWebTheme()) != prefs.preferred_contrast ||
+  return GetPreferredContrast(GetWebTheme()) != prefs.preferred_contrast ||
          GetForcedColorsForWebContent(&web_contents, GetWebTheme()) !=
              std::tie(prefs.in_forced_colors,
                       prefs.is_forced_colors_disabled) ||

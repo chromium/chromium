@@ -119,6 +119,7 @@ component("test_support") {
   deps = [
     ":native_theme",
     "//base",
+    "//ui/color:color_provider_key",
   ]
 }
 
@@ -129,6 +130,7 @@ test("native_theme_unittests") {
     "native_theme_base_unittest.cc",
     "native_theme_fluent_unittest.cc",
     "native_theme_unittest.cc",
+    "os_settings_provider_unittest.cc",
   ]
 
   deps = [

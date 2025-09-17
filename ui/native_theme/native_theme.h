@@ -473,7 +473,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   }
 
   PreferredContrast preferred_contrast() const { return preferred_contrast_; }
-  void SetPreferredContrast(PreferredContrast preferred_contrast);
+  void set_preferred_contrast(PreferredContrast preferred_contrast) {
+    preferred_contrast_ = preferred_contrast;
+  }
 
   bool prefers_reduced_transparency() const {
     return prefers_reduced_transparency_;
@@ -550,9 +552,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // instance's current settings. Returns whether anything was changed.
   bool UpdateWebInstance() const;
 
-  // Calculates and returns the current user preferred contrast.
-  virtual PreferredContrast CalculatePreferredContrast() const;
-
  private:
   // Updates web instance and notifies observers something has changed.
   void NotifyOnNativeThemeUpdatedImpl();
@@ -560,6 +559,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Updates variables affected by toolkit settings and returns whether anything
   // changed as a result.
   bool UpdateVariablesForToolkitSettings();
+
+  // Calculates and returns appropriate values based on flags and toolkit.
+  ColorProviderKey::ForcedColors CalculateForcedColors() const;
+  virtual PreferredColorScheme CalculatePreferredColorScheme() const;
+  PreferredContrast CalculatePreferredContrast() const;
 
   base::CallbackListSubscription os_settings_changed_subscription_;
   base::ObserverList<NativeThemeObserver> native_theme_observers_;

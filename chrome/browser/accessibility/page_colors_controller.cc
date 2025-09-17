@@ -159,7 +159,7 @@ void PageColorsController::RecomputePageColors() {
     updated = true;
   }
   if (web_theme->preferred_contrast() != preferred_contrast) {
-    web_theme->SetPreferredContrast(preferred_contrast);
+    web_theme->set_preferred_contrast(preferred_contrast);
     updated = true;
   }
 

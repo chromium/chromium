@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
   ui::MockOsSettingsProvider os_settings_provider;
   os_settings_provider.SetColor(ui::OsSettingsProvider::ColorId::kWindow,
                                 kWindowColor);
-  ui::NativeTheme::GetInstanceForNativeUi()->SetPreferredContrast(
+  os_settings_provider.SetPreferredContrast(
       ui::NativeTheme::PreferredContrast::kMore);
   EXPECT_EQ(controller->GetThemeColor(), kWindowColor);
 }

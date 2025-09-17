@@ -19,6 +19,7 @@
 #include "base/win/registry.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/win/native_color_mixers_win.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ui {
 
@@ -62,6 +63,10 @@ bool OsSettingsProviderWin::PrefersReducedTransparency() const {
 
 bool OsSettingsProviderWin::PrefersInvertedColors() const {
   return prefers_inverted_colors_;
+}
+
+bool OsSettingsProviderWin::ForcedColorsActive() const {
+  return forced_colors_active_;
 }
 
 std::optional<SkColor> OsSettingsProviderWin::Color(ColorId color_id) const {
@@ -170,7 +175,18 @@ void OsSettingsProviderWin::OnWndProc(HWND hwnd,
                                       LPARAM lparam) {
   if (message == WM_SYSCOLORCHANGE) {
     UpdateColors();
-    NotifyOnSettingsChanged(true);
+    if (ForcedColorsActive()) {
+      NotifyOnSettingsChanged(true);
+    }
+  } else if (message == WM_SETTINGCHANGE && wparam == SPI_SETHIGHCONTRAST) {
+    if (HIGHCONTRAST result = {.cbSize = sizeof(HIGHCONTRAST)};
+        SystemParametersInfo(SPI_GETHIGHCONTRAST, result.cbSize, &result, 0)) {
+      const bool old_forced_colors_active = ForcedColorsActive();
+      forced_colors_active_ = !!(result.dwFlags & HCF_HIGHCONTRASTON);
+      if (ForcedColorsActive() != old_forced_colors_active) {
+        NotifyOnSettingsChanged();
+      }
+    }
   }
 }
 

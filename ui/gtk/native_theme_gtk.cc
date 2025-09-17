@@ -99,6 +99,7 @@ NativeThemeGtk* NativeThemeGtk::instance() {
 
 NativeThemeGtk::NativeThemeGtk() : NativeThemeBase(ui::SystemTheme::kGtk) {
   OnThemeChanged(gtk_settings_get_default(), nullptr);
+  BeginObservingOsSettingChanges();
 }
 
 NativeThemeGtk::~NativeThemeGtk() {
@@ -148,7 +149,7 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
     updated = true;
   }
   if (ui_theme->preferred_contrast() != preferred_contrast()) {
-    ui_theme->SetPreferredContrast(preferred_contrast());
+    ui_theme->set_preferred_contrast(preferred_contrast());
     updated = true;
   }
   if (updated) {
@@ -176,18 +177,6 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
       (IsForcedDarkMode() || color_utils::IsDark(window_bg_color))
           ? ui::NativeTheme::PreferredColorScheme::kDark
           : ui::NativeTheme::PreferredColorScheme::kLight);
-
-  // GTK doesn't have a native high contrast setting.  Rather, it's implied by
-  // the theme name.  The only high contrast GTK themes that I know of are
-  // HighContrast (GNOME) and ContrastHighInverse (MATE).  So infer the contrast
-  // based on if the theme name contains both "high" and "contrast",
-  // case-insensitive.
-  std::ranges::transform(theme_name, theme_name.begin(), ::tolower);
-  bool high_contrast = theme_name.find("high") != std::string::npos &&
-                       theme_name.find("contrast") != std::string::npos;
-  SetPreferredContrast(
-      high_contrast ? ui::NativeThemeBase::PreferredContrast::kMore
-                    : ui::NativeThemeBase::PreferredContrast::kNoPreference);
 
   NotifyOnNativeThemeUpdated();
 }

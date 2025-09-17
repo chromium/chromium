@@ -56,10 +56,9 @@ NT::PreferredColorScheme NativeColorScheme(
   return kColorSchemeMap.at(color_scheme);
 }
 
-ui::NativeTheme::PreferredContrast NativeContrast(
-    mojom::blink::PreferredContrast contrast) {
+NT::PreferredContrast NativeContrast(mojom::blink::PreferredContrast contrast) {
   using MPC = mojom::blink::PreferredContrast;
-  using NTPC = ui::NativeTheme::PreferredContrast;
+  using NTPC = NT::PreferredContrast;
   static constexpr auto kContrastMap = base::MakeFixedFlatMap<MPC, NTPC>(
       {{MPC::kMore, NTPC::kMore},
        {MPC::kLess, NTPC::kLess},

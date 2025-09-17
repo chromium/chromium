@@ -298,15 +298,6 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
   return key;
 }
 
-void NativeTheme::SetPreferredContrast(
-    NativeTheme::PreferredContrast preferred_contrast) {
-  if (preferred_contrast_ == preferred_contrast) {
-    return;
-  }
-  preferred_contrast_ = preferred_contrast;
-  NotifyOnNativeThemeUpdated();
-}
-
 bool NativeTheme::IsForcedDarkMode() {
   static bool kIsForcedDarkMode =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -315,11 +306,7 @@ bool NativeTheme::IsForcedDarkMode() {
 }
 
 NativeTheme::NativeTheme(ui::SystemTheme system_theme)
-    : system_theme_(system_theme),
-      preferred_color_scheme_(IsForcedDarkMode()
-                                  ? PreferredColorScheme::kDark
-                                  : PreferredColorScheme::kLight),
-      preferred_contrast_(CalculatePreferredContrast()) {}
+    : system_theme_(system_theme) {}
 
 NativeTheme::~NativeTheme() = default;
 
@@ -431,11 +418,6 @@ bool NativeTheme::UpdateWebInstance() const {
   return updated_web_instance;
 }
 
-NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
-  return IsForcedHighContrast() ? PreferredContrast::kMore
-                                : PreferredContrast::kNoPreference;
-}
-
 void NativeTheme::NotifyOnNativeThemeUpdatedImpl() {
   // Update any associated web instance's settings before notifying observers,
   // since those observers may attempt to override the web instance's settings
@@ -480,15 +462,59 @@ bool NativeTheme::UpdateVariablesForToolkitSettings() {
   const auto& os_settings_provider = OsSettingsProvider::Get();
   const auto new_caret_blink_interval =
       os_settings_provider.CaretBlinkInterval();
+  const auto new_forced_colors = CalculateForcedColors();
+  const auto new_preferred_color_scheme = CalculatePreferredColorScheme();
+  const auto new_preferred_contrast = CalculatePreferredContrast();
+  const auto new_prefers_reduced_transparency =
+      os_settings_provider.PrefersReducedTransparency();
+  const auto new_inverted_colors = os_settings_provider.PrefersInvertedColors();
 
   // Set updated values and see if anything changed.
   bool updated = false;
+  if (forced_colors() != new_forced_colors) {
+    forced_colors_ = new_forced_colors;
+    updated = true;
+  }
+  if (preferred_color_scheme() != new_preferred_color_scheme) {
+    preferred_color_scheme_ = new_preferred_color_scheme;
+    updated = true;
+  }
+  if (preferred_contrast() != new_preferred_contrast) {
+    preferred_contrast_ = new_preferred_contrast;
+    updated = true;
+  }
+  if (prefers_reduced_transparency() != new_prefers_reduced_transparency) {
+    prefers_reduced_transparency_ = new_prefers_reduced_transparency;
+    updated = true;
+  }
+  if (inverted_colors() != new_inverted_colors) {
+    inverted_colors_ = new_inverted_colors;
+    updated = true;
+  }
   if (caret_blink_interval() != new_caret_blink_interval) {
     caret_blink_interval_ = new_caret_blink_interval;
     updated = true;
   }
 
   return updated;
+}
+
+ColorProviderKey::ForcedColors NativeTheme::CalculateForcedColors() const {
+  return (IsForcedHighContrast() ||
+          OsSettingsProvider::Get().ForcedColorsActive())
+             ? ColorProviderKey::ForcedColors::kSystem
+             : ColorProviderKey::ForcedColors::kNone;
+}
+
+NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
+    const {
+  return IsForcedDarkMode() ? PreferredColorScheme::kDark
+                            : preferred_color_scheme_;
+}
+
+NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
+  return IsForcedHighContrast() ? PreferredContrast::kMore
+                                : OsSettingsProvider::Get().PreferredContrast();
 }
 
 }  // namespace ui

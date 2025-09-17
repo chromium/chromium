@@ -16,6 +16,9 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 // `OsSettingsProviderImpl` is an alias to a forward-declared type; to construct
 // it in `Get()` below, we must have the full type definition.
@@ -137,11 +140,59 @@ bool OsSettingsProvider::DarkColorSchemeAvailable() const {
   return true;
 }
 
+NativeTheme::PreferredContrast OsSettingsProvider::PreferredContrast() const {
+  if (ForcedColorsActive()) {
+    // TODO(sartang@microsoft.com): Update the spec page at
+    // https://www.w3.org/TR/css-color-adjust-1/#forced, it currently does not
+    // mention the relation between forced-colors-active and prefers-contrast.
+    //
+    // According to spec [1], "in addition to forced-colors: active, the user
+    // agent must also match one of prefers-contrast: more or prefers-contrast:
+    // less if it can determine that the forced color palette chosen by the user
+    // has a particularly high or low contrast, and must make prefers-contrast:
+    // custom match otherwise".
+    //
+    // Using WCAG definitions [2], we have decided to match 'more' in Forced
+    // Colors Mode if the contrast ratio between the foreground and background
+    // color is 7:1 or greater.
+    //
+    // "A contrast ratio of 3:1 is the minimum level recommended by
+    // [[ISO-9241-3]] and [[ANSI-HFES-100-1988]] for standard text and
+    // vision"[2]. Given this, we will start by matching to 'less' in Forced
+    // Colors Mode if the contrast ratio between the foreground and background
+    // color is 2.5:1 or less.
+    //
+    // These ratios will act as an experimental baseline that we can adjust
+    // based on user feedback.
+    //
+    // [1]
+    // https://drafts.csswg.org/mediaqueries-5/#valdef-media-forced-colors-active
+    // [2] https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced
+    if (const auto bg_color = Color(ColorId::kWindow),
+        fg_color = Color(ColorId::kWindowText);
+        bg_color.has_value() && fg_color.has_value()) {
+      const float contrast_ratio =
+          color_utils::GetContrastRatio(bg_color.value(), fg_color.value());
+      if (contrast_ratio >= 7) {
+        return NativeTheme::PreferredContrast::kMore;
+      }
+      return contrast_ratio <= 2.5 ? NativeTheme::PreferredContrast::kLess
+                                   : NativeTheme::PreferredContrast::kCustom;
+    }
+  }
+
+  return NativeTheme::PreferredContrast::kNoPreference;
+}
+
 bool OsSettingsProvider::PrefersReducedTransparency() const {
   return false;
 }
 
 bool OsSettingsProvider::PrefersInvertedColors() const {
+  return false;
+}
+
+bool OsSettingsProvider::ForcedColorsActive() const {
   return false;
 }
 

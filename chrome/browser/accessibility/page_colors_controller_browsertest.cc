@@ -12,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -27,6 +28,10 @@ class PageColorsControllerBrowserTest : public InProcessBrowserTest {
     ui_native_theme().NotifyOnNativeThemeUpdated();
   }
 
+  ui::MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
+  }
+
   ui::NativeTheme& ui_native_theme() {
 #if BUILDFLAG(IS_LINUX)
     // Match PageColorsController::OnPageColorsChanged().
@@ -38,6 +43,9 @@ class PageColorsControllerBrowserTest : public InProcessBrowserTest {
 #endif
     return *ui::NativeTheme::GetInstanceForNativeUi();
   }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;
 };
 
 // Changing the requested page colors should affect the web theme's forced
@@ -64,14 +72,14 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
 
   // Once the OS is in increased contrast mode, the requested page colors should
   // be honored.
-  ui_native_theme().SetPreferredContrast(
+  os_settings_provider().SetPreferredContrast(
       ui::NativeTheme::PreferredContrast::kMore);
   EXPECT_EQ(native_theme->forced_colors(),
             ui::ColorProviderKey::ForcedColors::kDusk);
 
   // Switching increased contrast back off should turn forced colors back off
   // since `kApplyPageColorsOnlyOnIncreasedContrast` is still true.
-  ui_native_theme().SetPreferredContrast(
+  os_settings_provider().SetPreferredContrast(
       ui::NativeTheme::PreferredContrast::kNoPreference);
   EXPECT_EQ(native_theme->forced_colors(),
             ui::ColorProviderKey::ForcedColors::kNone);
@@ -121,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
 
   // Changing the UI theme to high contrast should not overwrite the web theme
   // page colors.
-  ui_native_theme().SetPreferredContrast(
+  os_settings_provider().SetPreferredContrast(
       ui::NativeTheme::PreferredContrast::kMore);
   EXPECT_EQ(native_theme->forced_colors(),
             ui::ColorProviderKey::ForcedColors::kDusk);

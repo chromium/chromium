@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ui {
 
@@ -92,11 +93,25 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProvider {
   // theme; see comments on `PreferredColorScheme()` below.
   virtual bool DarkColorSchemeAvailable() const;
 
+  // Returns OS-level preferred contrast, or `kNoPreference` if not
+  // set/applicable. This is not affected by e.g.
+  // `switches::kForceHighContrast`; that should be handled at the `NativeTheme`
+  // (i.e. caller) level.
+  virtual NativeTheme::PreferredContrast PreferredContrast() const;
+
   // Returns whether the OS prefers reduced transparency.
   virtual bool PrefersReducedTransparency() const;
 
   // Returns whether the OS prefers inverted colors.
   virtual bool PrefersInvertedColors() const;
+
+  // Returns whether forced colors are active at the OS level. This implies that
+  // various methods above should check `Color()` to decide how to behave. (They
+  // do not do so by default because when forced colors are not active, system
+  // colors may give an incomplete or incorrect picture of desired behavior.)
+  // This is not affected by e.g. "page colors"; that should be handled at the
+  // `NativeTheme` (i.e. caller) level.
+  virtual bool ForcedColorsActive() const;
 
   // Returns OS-level colors, if available.
   virtual std::optional<SkColor> Color(ColorId color_id) const;

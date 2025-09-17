@@ -14,7 +14,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/no_destructor.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
@@ -84,10 +83,6 @@ NativeTheme::PreferredColorScheme GetPreferredColorScheme() {
   return [appearance isEqual:NSAppearanceNameDarkAqua]
              ? NativeTheme::PreferredColorScheme::kDark
              : NativeTheme::PreferredColorScheme::kLight;
-}
-
-bool IsHighContrast() {
-  return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldIncreaseContrast;
 }
 
 void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
@@ -404,7 +399,6 @@ void PaintMacScrollBarTrackOrCorner(
 namespace ui {
 
 struct NativeThemeMac::ObjCMembers {
-  id __strong display_accessibility_notification_token;
   EffectiveAppearanceObserver* __strong appearance_observer;
 };
 
@@ -457,31 +451,10 @@ void NativeThemeMac::PaintImpl(cc::PaintCanvas* canvas,
                              accent_color);
 }
 
-NativeTheme::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
-    const {
-  return IsHighContrast() ? NativeTheme::PreferredContrast::kMore
-                          : NativeTheme::PreferredContrast::kNoPreference;
-}
-
 NativeThemeMac::NativeThemeMac() {
   objc_members_ = std::make_unique<ObjCMembers>();
 
   InitializeDarkModeStateAndObserver();
-
-  if (!IsForcedHighContrast()) {
-    SetPreferredContrast(CalculatePreferredContrast());
-    __block auto theme = this;
-    objc_members_->display_accessibility_notification_token =
-        [NSWorkspace.sharedWorkspace.notificationCenter
-            addObserverForName:
-                NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
-                        object:nil
-                         queue:nil
-                    usingBlock:^(NSNotification* notification) {
-                      theme->SetPreferredContrast(CalculatePreferredContrast());
-                      theme->NotifyOnNativeThemeUpdated();
-                    }];
-  }
 
   if (static bool initialized = false; !initialized) {
     // Observe caption style changes. Technically these notify the web instance
@@ -497,10 +470,7 @@ NativeThemeMac::NativeThemeMac() {
   }
 }
 
-NativeThemeMac::~NativeThemeMac() {
-  [NSNotificationCenter.defaultCenter
-      removeObserver:objc_members_->display_accessibility_notification_token];
-}
+NativeThemeMac::~NativeThemeMac() = default;
 
 void NativeThemeMac::PaintMenuItemBackground(
     cc::PaintCanvas* canvas,

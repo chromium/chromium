@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderWin
   bool DarkColorSchemeAvailable() const override;
   bool PrefersReducedTransparency() const override;
   bool PrefersInvertedColors() const override;
+  bool ForcedColorsActive() const override;
   std::optional<SkColor> Color(ColorId color_id) const override;
   base::TimeDelta CaretBlinkInterval() const override;
 
@@ -59,6 +60,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderWin
 
   bool prefers_reduced_transparency_ = false;
   bool prefers_inverted_colors_ = false;
+  bool forced_colors_active_ = false;
   base::flat_map<ColorId, SkColor> colors_;
 };
 

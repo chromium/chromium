@@ -18,6 +18,12 @@ OsSettingsProviderAndroid::OsSettingsProviderAndroid()
 
 OsSettingsProviderAndroid::~OsSettingsProviderAndroid() = default;
 
+NativeTheme::PreferredContrast OsSettingsProviderAndroid::PreferredContrast()
+    const {
+  return high_contrast_enabled_ ? NativeTheme::PreferredContrast::kMore
+                                : NativeTheme::PreferredContrast::kNoPreference;
+}
+
 bool OsSettingsProviderAndroid::PrefersReducedTransparency() const {
   return high_contrast_enabled_;
 }

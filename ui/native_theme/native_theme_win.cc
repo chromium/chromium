@@ -1217,54 +1217,6 @@ void NativeThemeWin::PaintImpl(cc::PaintCanvas* canvas,
   }
 }
 
-NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
-    const {
-  if (forced_colors() == ColorProviderKey::ForcedColors::kNone ||
-      IsForcedHighContrast()) {
-    return NativeTheme::CalculatePreferredContrast();
-  }
-
-  // TODO(sartang@microsoft.com): Update the spec page at
-  // https://www.w3.org/TR/css-color-adjust-1/#forced, it currently does not
-  // mention the relation between forced-colors-active and prefers-contrast.
-  //
-  // According to spec [1], "in addition to forced-colors: active, the user
-  // agent must also match one of prefers-contrast: more or
-  // prefers-contrast: less if it can determine that the forced color
-  // palette chosen by the user has a particularly high or low contrast,
-  // and must make prefers-contrast: custom match otherwise".
-  //
-  // Using WCAG definitions [2], we have decided to match 'more' in Forced
-  // Colors Mode if the contrast ratio between the foreground and background
-  // color is 7:1 or greater.
-  //
-  // "A contrast ratio of 3:1 is the minimum level recommended by [[ISO-9241-3]]
-  // and [[ANSI-HFES-100-1988]] for standard text and vision"[2]. Given this,
-  // we will start by matching to 'less' in Forced Colors Mode if the contrast
-  // ratio between the foreground and background color is 2.5:1 or less.
-  //
-  // These ratios will act as an experimental baseline that we can adjust based
-  // on user feedback.
-  //
-  // [1]
-  // https://drafts.csswg.org/mediaqueries-5/#valdef-media-forced-colors-active
-  // [2] https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced
-  const auto& os_settings_provider = OsSettingsProvider::Get();
-  using enum OsSettingsProvider::ColorId;
-  if (const auto bg_color = os_settings_provider.Color(kWindow),
-      fg_color = os_settings_provider.Color(kWindowText);
-      bg_color.has_value() && fg_color.has_value()) {
-    const float contrast_ratio =
-        color_utils::GetContrastRatio(bg_color.value(), fg_color.value());
-    if (contrast_ratio >= 7) {
-      return PreferredContrast::kMore;
-    }
-    return contrast_ratio <= 2.5 ? PreferredContrast::kLess
-                                 : PreferredContrast::kCustom;
-  }
-  return PreferredContrast::kNoPreference;
-}
-
 NativeTheme::PreferredColorScheme
 NativeThemeWin::CalculatePreferredColorScheme() const {
   if (IsForcedDarkMode()) {
@@ -1323,14 +1275,9 @@ NativeThemeWin::NativeThemeWin() {
         RegisterThemeRegkeyObserver();
       }
     }
-
-    if (!IsForcedHighContrast()) {
-      set_forced_colors(OsForcedColors());
-    }
   }
 
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  SetPreferredContrast(CalculatePreferredContrast());
 
   // Histogram high contrast state.
   // NOTE: Reported in metrics; do not reorder, add additional values at end.
@@ -1341,7 +1288,8 @@ NativeThemeWin::NativeThemeWin() {
     kMaxValue = kLight,
   };
   auto color_scheme = HighContrastColorScheme::kNone;
-  if (forced_colors() != ColorProviderKey::ForcedColors::kNone) {
+  if (OsSettingsProvider::Get().PreferredContrast() ==
+      NativeTheme::PreferredContrast::kMore) {
     color_scheme = (preferred_color_scheme() == PreferredColorScheme::kDark)
                        ? HighContrastColorScheme::kDark
                        : HighContrastColorScheme::kLight;
@@ -1361,16 +1309,6 @@ void NativeThemeWin::OnToolkitSettingsChanged(bool force_notify) {
   NativeTheme::OnToolkitSettingsChanged(force_notify);
 }
 
-ColorProviderKey::ForcedColors NativeThemeWin::OsForcedColors() const {
-  HIGHCONTRAST result;
-  result.cbSize = sizeof(HIGHCONTRAST);
-  return (SystemParametersInfo(SPI_GETHIGHCONTRAST, result.cbSize, &result,
-                               0) &&
-          (result.dwFlags & HCF_HIGHCONTRASTON) == HCF_HIGHCONTRASTON)
-             ? ColorProviderKey::ForcedColors::kSystem
-             : ColorProviderKey::ForcedColors::kNone;
-}
-
 void NativeThemeWin::CloseHandlesInternal() {
   HANDLE* theme_handles = GetThemeHandles();
   for (int i = 0; i < LAST; ++i) {
@@ -1379,22 +1317,6 @@ void NativeThemeWin::CloseHandlesInternal() {
       theme_handles[i] = nullptr;
     }
   }
-}
-
-void NativeThemeWin::OnWndProc(HWND hwnd,
-                               UINT message,
-                               WPARAM wparam,
-                               LPARAM lparam) {
-  if (message != WM_SETTINGCHANGE || wparam != SPI_SETHIGHCONTRAST) {
-    return;
-  }
-
-  if (!IsForcedHighContrast()) {
-    set_forced_colors(OsForcedColors());
-  }
-  set_preferred_color_scheme(CalculatePreferredColorScheme());
-  SetPreferredContrast(CalculatePreferredContrast());
-  NotifyOnNativeThemeUpdated();
 }
 
 void NativeThemeWin::OnAccentColorMaybeChanged() {

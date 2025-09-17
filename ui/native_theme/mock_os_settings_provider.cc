@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ui {
 
@@ -21,12 +22,21 @@ bool MockOsSettingsProvider::DarkColorSchemeAvailable() const {
   return dark_color_scheme_available_;
 }
 
+NativeTheme::PreferredContrast MockOsSettingsProvider::PreferredContrast()
+    const {
+  return preferred_contrast_;
+}
+
 bool MockOsSettingsProvider::PrefersReducedTransparency() const {
   return prefers_reduced_transparency_;
 }
 
 bool MockOsSettingsProvider::PrefersInvertedColors() const {
   return prefers_inverted_colors_;
+}
+
+bool MockOsSettingsProvider::ForcedColorsActive() const {
+  return forced_colors_active_;
 }
 
 std::optional<SkColor> MockOsSettingsProvider::Color(ColorId color_id) const {
@@ -44,6 +54,12 @@ void MockOsSettingsProvider::SetDarkColorSchemeAvailable(
   NotifyOnSettingsChanged();
 }
 
+void MockOsSettingsProvider::SetPreferredContrast(
+    NativeTheme::PreferredContrast preferred_contrast) {
+  preferred_contrast_ = preferred_contrast;
+  NotifyOnSettingsChanged();
+}
+
 void MockOsSettingsProvider::SetPrefersReducedTransparency(
     bool prefers_reduced_transparency) {
   prefers_reduced_transparency_ = prefers_reduced_transparency;
@@ -53,6 +69,11 @@ void MockOsSettingsProvider::SetPrefersReducedTransparency(
 void MockOsSettingsProvider::SetPrefersInvertedColors(
     bool prefers_inverted_colors) {
   prefers_inverted_colors_ = prefers_inverted_colors;
+  NotifyOnSettingsChanged();
+}
+
+void MockOsSettingsProvider::SetForcedColorsActive(bool forced_colors_active) {
+  forced_colors_active_ = forced_colors_active;
   NotifyOnSettingsChanged();
 }
 

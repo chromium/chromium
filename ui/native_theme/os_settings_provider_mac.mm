@@ -9,8 +9,8 @@
 
 #include <optional>
 
-#include "base/no_destructor.h"
 #include "ui/base/cocoa/defaults_utils.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/os_settings_provider_mac.h"
 
 namespace ui {
@@ -55,6 +55,13 @@ OsSettingsProviderMac::~OsSettingsProviderMac() {
     [NSNotificationCenter.defaultCenter
         removeObserver:objc_members_->non_blinking_cursor_token];
   }
+}
+
+NativeTheme::PreferredContrast OsSettingsProviderMac::PreferredContrast()
+    const {
+  return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldIncreaseContrast
+             ? NativeTheme::PreferredContrast::kMore
+             : OsSettingsProvider::PreferredContrast();
 }
 
 bool OsSettingsProviderMac::PrefersReducedTransparency() const {

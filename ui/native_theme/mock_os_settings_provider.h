@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/os_settings_provider.h"
 
 namespace ui {
@@ -26,22 +27,29 @@ class COMPONENT_EXPORT(NATIVE_THEME) MockOsSettingsProvider
 
   // OsSettingsProvider:
   bool DarkColorSchemeAvailable() const override;
+  NativeTheme::PreferredContrast PreferredContrast() const override;
   bool PrefersReducedTransparency() const override;
   bool PrefersInvertedColors() const override;
+  bool ForcedColorsActive() const override;
   std::optional<SkColor> Color(ColorId color_id) const override;
   base::TimeDelta CaretBlinkInterval() const override;
 
   // Setters for all the above settings.
   void SetDarkColorSchemeAvailable(bool dark_color_scheme_available);
+  void SetPreferredContrast(NativeTheme::PreferredContrast preferred_contrast);
   void SetPrefersReducedTransparency(bool prefers_reduced_transparency);
   void SetPrefersInvertedColors(bool prefers_inverted_colors);
+  void SetForcedColorsActive(bool forced_colors_active);
   void SetColor(ColorId color_id, SkColor color);
   void SetCaretBlinkInterval(base::TimeDelta caret_blink_interval);
 
  private:
   bool dark_color_scheme_available_ = true;
+  NativeTheme::PreferredContrast preferred_contrast_ =
+      NativeTheme::PreferredContrast::kNoPreference;
   bool prefers_reduced_transparency_ = false;
   bool prefers_inverted_colors_ = false;
+  bool forced_colors_active_ = false;
   base::flat_map<ColorId, SkColor> colors_;
   base::TimeDelta caret_blink_interval_ = kDefaultCaretBlinkInterval;
 };

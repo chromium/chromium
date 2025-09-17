@@ -26,6 +26,7 @@ class OsSettingsProviderGtk : public ui::OsSettingsProvider {
   ~OsSettingsProviderGtk() override;
 
   // ui::OsSettingsProvider:
+  ui::NativeTheme::PreferredContrast PreferredContrast() const override;
   base::TimeDelta CaretBlinkInterval() const override;
 
  private:
@@ -36,9 +37,10 @@ class OsSettingsProviderGtk : public ui::OsSettingsProvider {
 
   // Have to explicitly give template params instead of using `std::to_array()`,
   // since CTAD is banned in non-static member declarations :(
-  std::array<ScopedGSignal, 2> signals_{
+  std::array<ScopedGSignal, 3> signals_{
       ConnectSignal("notify::gtk-cursor-blink"),
       ConnectSignal("notify::gtk-cursor-blink-time"),
+      ConnectSignal("notify::gtk-theme-name"),
   };
 };
 
