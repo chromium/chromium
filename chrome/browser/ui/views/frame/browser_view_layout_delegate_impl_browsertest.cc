@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -14,13 +16,13 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_utils.h"
 #include "url/gurl.h"
 
-class BrowserViewLayoutDelegateImplBrowsertest : public InProcessBrowserTest {
+class BrowserViewLayoutDelegateImplBrowsertest : public InteractiveBrowserTest {
  public:
   BrowserViewLayoutDelegateImplBrowsertest() = default;
   ~BrowserViewLayoutDelegateImplBrowsertest() override = default;
@@ -41,6 +43,13 @@ class BrowserViewLayoutDelegateImplBrowsertest : public InProcessBrowserTest {
           std::make_unique<BrowserViewLayoutDelegateImplOld>(*browser_view));
     }
     views::test::RunScheduledLayout(browser_view);
+  }
+
+  Browser* CreateAppBrowser() {
+    const GURL kAppUrl("https://test.com");
+    const auto app_id = web_app::test::InstallDummyWebApp(browser()->profile(),
+                                                          "App Name", kAppUrl);
+    return web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   }
 
  private:
@@ -75,11 +84,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
                        CompareOldAndNewLayout_AppBrowser) {
-  const GURL kAppUrl("https://test.com");
-  const auto app_id = web_app::test::InstallDummyWebApp(browser()->profile(),
-                                                        "App Name", kAppUrl);
-  Browser* const app_browser =
-      web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  Browser* const app_browser = CreateAppBrowser();
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
   WebAppFrameToolbarView* const toolbar =
@@ -98,4 +103,49 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
     EXPECT_EQ(toolbar_bounds, GetBoundsInWindow(toolbar, browser_view))
         << "Toolbar bounds differ.";
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
+                       Screenshot_TabbedBrowser) {
+  SetUseLayoutDelegate(browser(), true);
+
+  gfx::Rect bounds;
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              "Screenshot not supported on all platforms"),
+      WithView(kBrowserViewElementId,
+               [this, &bounds](BrowserView* browser_view) {
+                 TabStrip* const tabstrip = browser_view->tabstrip();
+                 tabstrip->InvalidateLayout();
+                 views::test::RunScheduledLayout(browser_view);
+                 bounds = GetBoundsInWindow(tabstrip, browser_view);
+                 bounds.set_x(0);
+                 bounds.set_width(browser_view->width());
+               }),
+      Screenshot(kBrowserViewElementId, "tabstrip_region", "6956029",
+                 std::ref(bounds)));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
+                       Screenshot_AppBrowser) {
+  Browser* const app_browser = CreateAppBrowser();
+  SetUseLayoutDelegate(app_browser, true);
+
+  gfx::Rect bounds;
+  RunTestSequenceInContext(
+      BrowserElements::From(app_browser)->GetContext(),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              "Screenshot not supported on all platforms"),
+      WithView(kBrowserViewElementId,
+               [this, &bounds](BrowserView* browser_view) {
+                 WebAppFrameToolbarView* const toolbar =
+                     browser_view->web_app_frame_toolbar_for_testing();
+                 toolbar->InvalidateLayout();
+                 views::test::RunScheduledLayout(browser_view);
+                 bounds = GetBoundsInWindow(toolbar, browser_view);
+                 bounds.set_x(0);
+                 bounds.set_width(browser_view->width());
+               }),
+      Screenshot(kBrowserViewElementId, "tabstrip_region", "6956029",
+                 std::ref(bounds)));
 }

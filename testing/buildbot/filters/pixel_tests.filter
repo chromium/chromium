@@ -19,6 +19,7 @@ BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 BookmarkEditorViewBrowserTestMoveDialog.*
 BookmarkEditorViewBrowserTestWithAccountBookmarks.*
+BrowserViewLayoutDelegateImplBrowsertest.Screenshot*
 BrowserViewScrimPixelTest.*
 BubbleFrameViewBrowserTest.*
 BubbleSignInPromoInteractiveUITest.*
