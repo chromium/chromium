@@ -697,7 +697,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     id<SystemIdentity> identityToSignIn = _identityToSignIn;
     signin_metrics::AccessPoint accessPoint = _accessPoint;
     // In case of sign-in in same profile, we can reuse the same browser.
-    raw_ptr<Browser, LeakedDanglingUntriaged> browser = _browser;
+    base::WeakPtr<Browser> weakBrowser = _browser->AsWeakPtr();
     // In case of same profile signin, the delegate simply allows
     // to update the view that started the authentication. If it gets
     // deallocated, it means the view is closed, so it’s acceptable
@@ -709,8 +709,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       [delegate
           authenticationFlowDidSignInInSameProfileWithResult:result
                                                     identity:identityToSignIn];
-      CompletePostSignInActions(postSignInActions, identityToSignIn, browser,
-                                accessPoint);
+      if (Browser* browser = weakBrowser.get()) {
+        CompletePostSignInActions(postSignInActions, identityToSignIn, browser,
+                                  accessPoint);
+      }
     };
     [self continueFlow];
     return;
