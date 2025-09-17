@@ -365,6 +365,11 @@ extern const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[];
 extern const char kEnableCrossDevicePrefTrackerName[];
 extern const char kEnableCrossDevicePrefTrackerDescription[];
 
+#if BUILDFLAG(IS_WIN)
+extern const char kD3D12VideoEncoderName[];
+extern const char kD3D12VideoEncoderDescription[];
+#endif  // BUILDFLAG(IS_WIN)
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnableDevtoolsDeepLinkViaExtensibilityApiName[];
 extern const char kEnableDevtoolsDeepLinkViaExtensibilityApiDescription[];

@@ -11240,6 +11240,7 @@ from previous Chrome versions.
   <int value="-1042723808"
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:enabled"/>
   <int value="-1042579955" label="ChromeOSParentalControlsSettings:enabled"/>
+  <int value="-1041724739" label="D3D12VideoEncodeAccelerator:disabled"/>
   <int value="-1041650038" label="enable-forced-migration-to-tabbed-mode"/>
   <int value="-1041643783" label="SingleTouchSelect:enabled"/>
   <int value="-1041363400" label="QuickDeleteAndroidAnimation:enabled"/>
@@ -17536,6 +17537,7 @@ from previous Chrome versions.
       label="AutofillEnableUnmaskCardRequestSetInstrumentId:disabled"/>
   <int value="1231206336" label="CrOSLateBootAllowFpmcuBetaFirmware:enabled"/>
   <int value="1231489022" label="SyncAutofillWalletCredentialData:disabled"/>
+  <int value="1232310004" label="D3D12VideoEncodeAccelerator:enabled"/>
   <int value="1232707660" label="FilesKernelDrivers:enabled"/>
   <int value="1233218014" label="OmniboxMultimodalInput:enabled"/>
   <int value="1233310128" label="ExoConsumedByImeByFlag:enabled"/>

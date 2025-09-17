@@ -13273,6 +13273,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          sync_preferences::features::kEnableCrossDevicePrefTracker)},
 
+#if BUILDFLAG(IS_WIN)
+    {
+        "enable-d3d12-video-encoder",
+        flag_descriptions::kD3D12VideoEncoderName,
+        flag_descriptions::kD3D12VideoEncoderDescription,
+        kOsWin,
+        FEATURE_VALUE_TYPE(media::kD3D12VideoEncodeAccelerator),
+    },
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_ANDROID)
     {"media-codec-low-delay-mode",
      flag_descriptions::kMediaCodecLowDelayModeName,

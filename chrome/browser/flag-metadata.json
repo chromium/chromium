@@ -3286,6 +3286,11 @@
     "expiry_milestone": 144
   },
   {
+    "name": "enable-d3d12-video-encoder",
+    "owners": [ "eugene@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-debug-for-secure-payment-confirmation",
     "owners": [ "rouslan@chromium.org", "web-payments-team@google.com" ],
     "expiry_milestone": 136

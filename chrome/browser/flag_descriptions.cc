@@ -592,6 +592,14 @@ const char kEnableCrossDevicePrefTrackerDescription[] =
     "Enables the tracking and sharing of select non-syncing preference values "
     "across a user's signed-in devices.";
 
+#if BUILDFLAG(IS_WIN)
+const char kD3D12VideoEncoderName[] = "Use D3D12 video encoder";
+const char kD3D12VideoEncoderDescription[] =
+    "Enables D3D12 video encoding. The system might still fall back to "
+    "Media Foundation video encoder if D3D12 encoder is not available "
+    "or fails to initialize.";
+#endif  // BUILDFLAG(IS_WIN)
+
 const char kPreinstalledWebAppAlwaysMigrateCalculatorName[] =
     "Preinstalled web app always migrate - Calculator";
 const char kPreinstalledWebAppAlwaysMigrateCalculatorDescription[] =
