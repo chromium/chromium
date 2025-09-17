@@ -1116,6 +1116,8 @@ crbug.com/1489239 [ Linux ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on.htt
 crbug.com/1489239 [ Mac12 Release ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
 crbug.com/1489239 [ Mac13 ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
 crbug.com/1489239 [ Release Win ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
+crbug.com/390581529 virtual/fedcm-third-party-iframe/external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe-active-mode.https.html [ Slow ]
+crbug.com/390581529 virtual/fedcm-third-party-iframe/external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe.https.html [ Slow ]
 
 # Slow because it contains thousands of subtests
 crbug.com/1423483 [ Linux ] external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]
