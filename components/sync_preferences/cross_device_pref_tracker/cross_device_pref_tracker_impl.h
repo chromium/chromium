@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_IMPL_H_
 #define COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_IMPL_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -79,7 +82,23 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
-  // `PrefService` for Profile-based preferences (including syncable prefs).
+  // Starts tracking a set of pref names by validating, observing, and
+  // synchronizing each pref.
+  void StartTrackingPrefs(
+      const base::flat_set<std::string_view>& pref_names,
+      PrefService* tracked_pref_service,
+      PrefChangeRegistrar& registrar,
+      const PrefChangeRegistrar::NamedChangeAsViewCallback& callback);
+
+  // Handles notifications from the `PrefChangeRegistrar` when a tracked profile
+  // pref is modified.
+  void OnTrackedProfilePrefChanged(std::string_view tracked_pref_name);
+
+  // Handles notifications from the `PrefChangeRegistrar` when a tracked local
+  // state pref is modified.
+  void OnTrackedLocalStatePrefChanged(std::string_view tracked_pref_name);
+
+  // `PrefService` for profile-based preferences (including syncable prefs).
   // Must outlive this object until Shutdown().
   raw_ptr<PrefService> profile_pref_service_;
 
@@ -107,9 +126,16 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // List of observers notified of remote preference changes.
   base::ObserverList<CrossDevicePrefTracker::Observer, true> observers_;
 
+  // Tracks whether the `LocalDeviceInfo` (and thus the local Cache GUID) is
+  // available. Used to ensure the system only retries pushing all prefs once
+  // when the info initially becomes available.
+  bool is_local_device_info_ready_ = false;
+
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  base::WeakPtrFactory<CrossDevicePrefTrackerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace sync_preferences

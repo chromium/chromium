@@ -42,3 +42,20 @@ source_set("cross_device_pref_tracker") {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "cross_device_pref_tracker_impl_unittest.cc" ]
+  deps = [
+    ":cross_device_pref_tracker",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//components/sync_device_info:test_support",
+    "//testing/gtest",
+  ]
+  if (is_android) {
+    deps += [
+      "//components/sync_preferences/cross_device_pref_tracker/android:java",
+    ]
+  }
+}
