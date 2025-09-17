@@ -93,12 +93,33 @@ class MockDownloadRecordService : public DownloadRecordService {
     zip_record.file_name = "archive.zip";
     zip_record.created_time = base::Time::Now();
 
+    // Add incognito records for testing incognito functionality
+    DownloadRecord incognito_pdf_record;
+    incognito_pdf_record.download_id = "7";
+    incognito_pdf_record.original_url =
+        "https://testsite.org/incognito_document.pdf";
+    incognito_pdf_record.mime_type = "application/pdf";
+    incognito_pdf_record.file_name = "incognito_document.pdf";
+    incognito_pdf_record.created_time = base::Time::Now();
+    incognito_pdf_record.is_incognito = true;
+
+    DownloadRecord incognito_image_record;
+    incognito_image_record.download_id = "8";
+    incognito_image_record.original_url =
+        "https://testsite.org/incognito_image.jpg";
+    incognito_image_record.mime_type = "image/jpeg";
+    incognito_image_record.file_name = "incognito_image.jpg";
+    incognito_image_record.created_time = base::Time::Now();
+    incognito_image_record.is_incognito = true;
+
     stored_records_.push_back(pdf_record);
     stored_records_.push_back(image_record);
     stored_records_.push_back(video_record);
     stored_records_.push_back(audio_record);
     stored_records_.push_back(text_record);
     stored_records_.push_back(zip_record);
+    stored_records_.push_back(incognito_pdf_record);
+    stored_records_.push_back(incognito_image_record);
   }
 
   // Override virtual methods directly.
@@ -208,11 +229,13 @@ class DownloadListMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  // Helper method to initialize mediator and load test data.
+  // Helper method to initialize mediator with specific incognito setting and
+  // load test data.
   void InitializeMediatorAndLoadTestData() {
     // Create mediator.
     mediator_ = [[DownloadListMediator alloc]
-        initWithDownloadRecordService:mock_service_.get()];
+        initWithDownloadRecordService:mock_service_.get()
+                          isIncognito:NO];
     ASSERT_TRUE(mediator_);
 
     // Create mock consumer.
@@ -320,7 +343,8 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
   [mediator_ filterRecordsWithType:DownloadFilterType::kOther];
   [mock_consumer_ verify];
 
-  // Test All filter - expect all 6 items.
+  // Test All filter - expect all 6 non-incognito items (incognito items are
+  // filtered out).
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
@@ -537,6 +561,92 @@ TEST_F(DownloadListMediatorTest, TestDownloadsWereRemovedWithIDs) {
   [mock_consumer_ verify];
 }
 
+// Test incognito mediator filtering - non-incognito mediator should filter out
+// incognito records.
+TEST_F(DownloadListMediatorTest,
+       TestNonIncognitoMediatorFiltersIncognitoRecords) {
+  // The default mediator is non-incognito, so it should only show non-incognito
+  // records. This means we should have 6 records (the original non-incognito
+  // ones).
+  __block NSArray<DownloadListItem*>* capturedItems = nil;
+
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
+
+  [mediator_ filterRecordsWithType:DownloadFilterType::kAll];
+  [mock_consumer_ verify];
+
+  EXPECT_EQ(capturedItems.count, 6U);
+
+  // Verify that no incognito records are present (IDs 7 and 8 are incognito).
+  for (DownloadListItem* item in capturedItems) {
+    EXPECT_FALSE([item.downloadID isEqualToString:@"7"]);
+    EXPECT_FALSE([item.downloadID isEqualToString:@"8"]);
+  }
+}
+
+// Test incognito record observer filtering for non-incognito mediator.
+TEST_F(DownloadListMediatorTest,
+       TestNonIncognitoMediatorIgnoresIncognitoObserverUpdates) {
+  // Connect mediator to enable observer notifications.
+  [mediator_ connect];
+
+  // Create an incognito record and try to add it.
+  DownloadRecord incognitoRecord;
+  incognitoRecord.download_id = "9";
+  incognitoRecord.original_url = "https://testsite.org/incognito_new.pdf";
+  incognitoRecord.mime_type = "application/pdf";
+  incognitoRecord.file_name = "incognito_new.pdf";
+  incognitoRecord.created_time = base::Time::Now();
+  incognitoRecord.is_incognito = true;
+
+  // The consumer should NOT be called because the non-incognito mediator
+  // should ignore incognito record additions.
+  [[mock_consumer_ reject] setDownloadListItems:[OCMArg any]];
+
+  // Add incognito record through mock service.
+  mock_service_->AddRecordForTesting(incognitoRecord);
+
+  // Verify that consumer was not called.
+  [mock_consumer_ verify];
+}
+
+// Test non-incognito record observer behavior for non-incognito mediator.
+TEST_F(DownloadListMediatorTest,
+       TestNonIncognitoMediatorAcceptsNonIncognitoObserverUpdates) {
+  // Connect mediator to enable observer notifications.
+  [mediator_ connect];
+
+  // Create a non-incognito record and add it.
+  DownloadRecord nonIncognitoRecord;
+  nonIncognitoRecord.download_id = "10";
+  nonIncognitoRecord.original_url = "https://testsite.org/regular_new.pdf";
+  nonIncognitoRecord.mime_type = "application/pdf";
+  nonIncognitoRecord.file_name = "regular_new.pdf";
+  nonIncognitoRecord.created_time = base::Time::Now();
+  nonIncognitoRecord.is_incognito = false;
+
+  // The consumer SHOULD be called because the non-incognito mediator
+  // should accept non-incognito record additions.
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        // Should have more than original 6 records.
+        EXPECT_GT(items.count, 6U);
+        return YES;
+      }]];
+
+  // Add non-incognito record through mock service.
+  mock_service_->AddRecordForTesting(nonIncognitoRecord);
+
+  // Verify that consumer was called.
+  [mock_consumer_ verify];
+}
+
 // Test application state handling when app becomes active.
 TEST_F(DownloadListMediatorTest, TestApplicationDidBecomeActive) {
   // Connect the mediator to enable state handling.
@@ -562,6 +672,220 @@ TEST_F(DownloadListMediatorTest, TestApplicationDidBecomeActive) {
   [[NSNotificationCenter defaultCenter]
       postNotificationName:UIApplicationDidBecomeActiveNotification
                     object:nil];
+
+  [mock_consumer_ verify];
+}
+
+// Test class specifically for incognito mediator testing - equivalent to
+// DownloadListMediatorTest.
+class DownloadListMediatorIncognitoTest : public PlatformTest {
+ protected:
+  DownloadListMediatorIncognitoTest() {}
+
+  ~DownloadListMediatorIncognitoTest() override {
+    [mock_consumer_ stopMocking];
+  }
+
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    feature_list_.InitAndEnableFeature(kDownloadList);
+
+    mock_service_ = std::make_unique<MockDownloadRecordService>();
+    ASSERT_TRUE(mock_service_);
+    mock_service_->CreateRecordsForTesting();
+
+    // Initialize with incognito mediator - this is the key difference from the
+    // base test class
+    InitializeMediatorAndLoadTestData();
+  }
+
+  void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nil;
+    mock_service_.reset();
+    PlatformTest::TearDown();
+  }
+
+  // Helper method to initialize incognito mediator and load test data.
+  void InitializeMediatorAndLoadTestData() {
+    // Create incognito mediator (isIncognito:YES).
+    mediator_ = [[DownloadListMediator alloc]
+        initWithDownloadRecordService:mock_service_.get()
+                          isIncognito:YES];
+    ASSERT_TRUE(mediator_);
+
+    // Create mock consumer.
+    mock_consumer_ = OCMProtocolMock(@protocol(DownloadListConsumer));
+
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+
+    [mediator_ setConsumer:mock_consumer_];
+
+    // Set up expectations for the initial loadDownloadRecords call.
+    OCMStub([mock_consumer_ setEmptyState:NO])
+        .andDo(
+            [quit_closure](NSInvocation* invocation) { quit_closure.Run(); });
+    [[mock_consumer_ expect] setLoadingState:YES];
+    [[mock_consumer_ expect] setDownloadListItems:[OCMArg any]];
+    [[mock_consumer_ expect] setLoadingState:NO];
+
+    // Load records.
+    [mediator_ loadDownloadRecords];
+
+    // Wait for async operations to complete.
+    run_loop.Run();
+  }
+
+ protected:
+  web::WebTaskEnvironment task_environment_;
+  DownloadListMediator* mediator_;
+  id mock_consumer_;
+  std::unique_ptr<MockDownloadRecordService> mock_service_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that incognito mediator shows all records (both incognito and
+// non-incognito).
+TEST_F(DownloadListMediatorIncognitoTest, TestShowsAllRecords) {
+  __block NSArray<DownloadListItem*>* capturedItems = nil;
+
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
+
+  [mediator_ filterRecordsWithType:DownloadFilterType::kAll];
+  [mock_consumer_ verify];
+
+  // Incognito mediator should show all 8 records (6 regular + 2 incognito).
+  EXPECT_EQ(capturedItems.count, 8U);
+
+  // Verify that both regular and incognito records are present.
+  NSSet<NSString*>* expectedIDs =
+      [NSSet setWithArray:@[ @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8" ]];
+  NSMutableSet<NSString*>* actualIDs = [NSMutableSet set];
+  for (DownloadListItem* item in capturedItems) {
+    [actualIDs addObject:item.downloadID];
+  }
+  EXPECT_TRUE([expectedIDs isEqualToSet:actualIDs]);
+}
+
+// Test incognito mediator filtering with PDF type.
+TEST_F(DownloadListMediatorIncognitoTest, TestFilterRecordsWithPDFType) {
+  // Test PDF filter - should include both regular and incognito PDF files.
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        EXPECT_EQ(items.count,
+                  2U);  // Regular PDF (ID=1) and incognito PDF (ID=7)
+        BOOL foundRegularPDF = NO, foundIncognitoPDF = NO;
+        for (DownloadListItem* item in items) {
+          if ([item.downloadID isEqualToString:@"1"]) {
+            foundRegularPDF = YES;
+          } else if ([item.downloadID isEqualToString:@"7"]) {
+            foundIncognitoPDF = YES;
+          }
+        }
+        EXPECT_TRUE(foundRegularPDF);
+        EXPECT_TRUE(foundIncognitoPDF);
+        return YES;
+      }]];
+
+  [mediator_ filterRecordsWithType:DownloadFilterType::kPDF];
+  [mock_consumer_ verify];
+}
+
+// Test incognito mediator search functionality.
+TEST_F(DownloadListMediatorIncognitoTest, TestSearchRecordsWithKeyword) {
+  __block NSArray<DownloadListItem*>* capturedItems = nil;
+
+  // Search for "incognito" - should match incognito records.
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
+
+  [mediator_ filterRecordsWithKeyword:@"incognito"];
+  [mock_consumer_ verify];
+
+  // Should find both incognito records (IDs 7 and 8).
+  EXPECT_EQ(capturedItems.count, 2U);
+  BOOL foundIncognito7 = NO, foundIncognito8 = NO;
+  for (DownloadListItem* item in capturedItems) {
+    if ([item.downloadID isEqualToString:@"7"]) {
+      foundIncognito7 = YES;
+    } else if ([item.downloadID isEqualToString:@"8"]) {
+      foundIncognito8 = YES;
+    }
+  }
+  EXPECT_TRUE(foundIncognito7);
+  EXPECT_TRUE(foundIncognito8);
+}
+
+// Test that incognito mediator handles incognito record additions correctly.
+TEST_F(DownloadListMediatorIncognitoTest, TestHandlesIncognitoRecordAddition) {
+  // Connect mediator to enable observer notifications.
+  [mediator_ connect];
+
+  // Create an incognito record and add it.
+  DownloadRecord incognitoRecord;
+  incognitoRecord.download_id = "9";
+  incognitoRecord.original_url = "https://testsite.org/incognito_new.pdf";
+  incognitoRecord.mime_type = "application/pdf";
+  incognitoRecord.file_name = "incognito_new.pdf";
+  incognitoRecord.created_time = base::Time::Now();
+  incognitoRecord.is_incognito = true;
+
+  // The consumer SHOULD be called because the incognito mediator
+  // should accept incognito record additions.
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        // Should have more than original 8 records.
+        EXPECT_GT(items.count, 8U);
+        return YES;
+      }]];
+
+  // Add incognito record through mock service.
+  mock_service_->AddRecordForTesting(incognitoRecord);
+
+  [mock_consumer_ verify];
+}
+
+// Test that incognito mediator handles non-incognito record additions
+// correctly.
+TEST_F(DownloadListMediatorIncognitoTest,
+       TestHandlesNonIncognitoRecordAddition) {
+  // Connect mediator to enable observer notifications.
+  [mediator_ connect];
+
+  // Create a non-incognito record and add it.
+  DownloadRecord nonIncognitoRecord;
+  nonIncognitoRecord.download_id = "10";
+  nonIncognitoRecord.original_url = "https://testsite.org/regular_new.pdf";
+  nonIncognitoRecord.mime_type = "application/pdf";
+  nonIncognitoRecord.file_name = "regular_new.pdf";
+  nonIncognitoRecord.created_time = base::Time::Now();
+  nonIncognitoRecord.is_incognito = false;
+
+  // The consumer SHOULD be called because the incognito mediator
+  // should accept all record additions.
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        // Should have more than original 8 records.
+        EXPECT_GT(items.count, 8U);
+        return YES;
+      }]];
+
+  // Add non-incognito record through mock service.
+  mock_service_->AddRecordForTesting(nonIncognitoRecord);
 
   [mock_consumer_ verify];
 }

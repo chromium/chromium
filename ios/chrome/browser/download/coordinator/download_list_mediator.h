@@ -17,9 +17,10 @@ class DownloadRecordService;
 
 #pragma mark - Setup Methods
 
-// Inits with the download record service.
+// Inits with the download record service and incognito status.
 - (instancetype)initWithDownloadRecordService:
-    (DownloadRecordService*)downloadRecordService;
+                    (DownloadRecordService*)downloadRecordService
+                                  isIncognito:(BOOL)isIncognito;
 
 // Default initializer is unavailable.
 - (instancetype)init NS_UNAVAILABLE;

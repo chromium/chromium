@@ -69,8 +69,10 @@
   ProfileIOS* profile = self.browser->GetProfile();
   DownloadRecordService* downloadRecordService =
       DownloadRecordServiceFactory::GetForProfile(profile);
+  BOOL isIncognito = profile->IsOffTheRecord();
   _mediator = [[DownloadListMediator alloc]
-      initWithDownloadRecordService:downloadRecordService];
+      initWithDownloadRecordService:downloadRecordService
+                        isIncognito:isIncognito];
 
   [_mediator connect];
 
