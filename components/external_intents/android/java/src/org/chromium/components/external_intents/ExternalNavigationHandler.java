@@ -68,6 +68,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
 
@@ -186,7 +187,7 @@ public class ExternalNavigationHandler {
         protected final Intent mIntent;
         private @Nullable Intent mIntentCopy;
 
-        public IntentBasedSupplier(Intent intent, Supplier<T> innerSupplier) {
+        IntentBasedSupplier(Intent intent, Supplier<T> innerSupplier) {
             super(innerSupplier);
             mIntent = intent;
         }
@@ -333,7 +334,7 @@ public class ExternalNavigationHandler {
         // We need the query to include non-default intent filters, but should not return
         // them for clients that don't explicitly need to check non-default filters.
         private static class QueryNonDefaultSupplier extends LazySupplier<List<ResolveInfo>> {
-            public QueryNonDefaultSupplier(Intent intent) {
+            QueryNonDefaultSupplier(Intent intent) {
                 super(
                         () ->
                                 PackageManagerUtils.queryIntentActivities(
@@ -588,6 +589,13 @@ public class ExternalNavigationHandler {
         assert canLaunchExternalFallbackResult.get() != null;
         RecordHistogram.recordTimesHistogram(
                 "Android.StrictMode.OverrideUrlLoadingTime", SystemClock.elapsedRealtime() - time);
+
+        // Measure how many navigations would be affected if enabling feature flag
+        // AUXILIARY_NAVIGATION_STAYS_IN_BROWSER for all windowing modes.
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Intent.OverrideBrowserAuxiliaryNavigation",
+                isBrowserAuxiliaryNavigation(params)
+                        && result.getResultType() != OverrideUrlLoadingResultType.NO_OVERRIDE);
 
         if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
             result =
@@ -1180,7 +1188,8 @@ public class ExternalNavigationHandler {
                 && params.isInDesktopWindowingMode()
                 && params.isInitialNavigationInFrame()
                 && params.isTabInPWA()
-                && !params.isFromIntent()) {
+                && !params.isFromIntent()
+                && UrlUtilities.isHttpOrHttps(params.getUrl())) {
             if (debug()) Log.i(TAG, "No specialized handler found, reparent to browser.");
             return OverrideUrlLoadingResult.forReparentToBrowser();
         }
@@ -1556,6 +1565,66 @@ public class ExternalNavigationHandler {
                 || ignoreBackForwardNav(params);
     }
 
+    /** Returns whether a Tab instance should be reparented from the PWA to the browser. */
+    public boolean shouldReparentTab(
+            GURL url,
+            boolean isTabInPWA,
+            boolean isInitialNavigationInFrame,
+            boolean isInDesktopWindowingMode) {
+        WebContents webContents = mDelegate.getWebContents();
+        return ExternalIntentsFeatures.REPARENT_AUXILIARY_NAVIGATION_FROM_PWA.isEnabled()
+                && isInitialNavigationInFrame
+                && isTabInPWA
+                && isInDesktopWindowingMode
+                && webContents != null
+                && webContents.hasOpener()
+                && webContents.getOriginalWindowOpenDisposition()
+                        == WindowOpenDisposition.NEW_FOREGROUND_TAB
+                && UrlUtilities.isHttpOrHttps(url);
+    }
+
+    // A new auxiliary browsing context navigation starting in the browser should not be captured.
+    private boolean isBrowserAuxiliaryNavigation(ExternalNavigationParams params) {
+        // TODO(crbug.com/424781882): open discussion on whether self navigations in auxiliary page
+        // should be capturable or not. If opening apps is desirable, add
+        // `isInitialNavigationInFrame()` in
+        // the return statement below, otherwise remove it.
+        WebContents webContents = mDelegate.getWebContents();
+        if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER.isEnabled(
+                        params.isInDesktopWindowingMode())
+                && params.isTabInBrowser()
+                && webContents != null
+                && webContents.hasOpener()
+                && webContents.getOriginalWindowOpenDisposition()
+                        == WindowOpenDisposition.NEW_FOREGROUND_TAB
+                && UrlUtilities.isHttpOrHttps(params.getUrl())) {
+            if (debug()) {
+                Log.i(TAG, "Auxiliary browsing context navigation from browser is not overridden.");
+            }
+            return true;
+        }
+        return false;
+    }
+
+    // A new auxiliary browsing context navigation starting in the PWA should not be captured.
+    private boolean isPWAAuxiliaryNavigationInFullscreenWM(ExternalNavigationParams params) {
+        WebContents webContents = mDelegate.getWebContents();
+        if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_PWA.isEnabled()
+                && params.isTabInPWA()
+                && !params.isInDesktopWindowingMode()
+                && webContents != null
+                && webContents.hasOpener()
+                && webContents.getOriginalWindowOpenDisposition()
+                        == WindowOpenDisposition.NEW_FOREGROUND_TAB
+                && UrlUtilities.isHttpOrHttps(params.getUrl())) {
+            if (debug()) {
+                Log.i(TAG, "Do not override auxiliary browsing context navigation from a PWA.");
+            }
+            return true;
+        }
+        return false;
+    }
+
     private OverrideUrlLoadingResult shouldOverrideUrlLoadingInternal(
             ExternalNavigationParams params,
             Intent targetIntent,
@@ -1610,6 +1679,29 @@ public class ExternalNavigationHandler {
         // it occurs before the subsequent blocks.
         if (handleFileUrlPermissions(params)) {
             return OverrideUrlLoadingResult.forAsyncAction();
+        }
+
+        // All cases where a navigation that starts in a PWA should cause a Tab reparenting towards
+        // the Chrome browser.
+        // TODO(crbug.com/416562397): consider in-scope PWAs in the reparenting process.
+        // TODO(crbug.com/415926894): do not override navigations with WindowOpenDisposition POPUP
+        if (shouldReparentTab(
+                params.getUrl(),
+                params.isTabInPWA(),
+                params.isInitialNavigationInFrame(),
+                params.isInDesktopWindowingMode())) {
+            if (debug()) {
+                Log.i(TAG, "Reparent auxiliary browsing context navigation from a PWA.");
+            }
+            return OverrideUrlLoadingResult.forReparentToBrowser();
+        }
+
+        if (isBrowserAuxiliaryNavigation(params)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
+
+        if (isPWAAuxiliaryNavigationInFullscreenWM(params)) {
+            return OverrideUrlLoadingResult.forNoOverride();
         }
 
         // This should come after file intents, but before any returns of
