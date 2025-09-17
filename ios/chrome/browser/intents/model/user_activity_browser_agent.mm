@@ -54,6 +54,7 @@
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/page_transition_types.h"
 
@@ -862,6 +863,16 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
     params = UrlLoadParams::SwitchToTab(web_load_params);
   } else {
     params = UrlLoadParams::InNewTab(url, virtual_url);
+  }
+
+  // App scheme URLs are not generally allowed to be opened in new tabs.
+  // However, allow `chrome://dino` to be opened if the request originated
+  // from a widget in order to support the Dino Game widget. Setting the
+  // `transition_type` to `PAGE_TRANSITION_AUTO_BOOKMARK` instead of
+  // `PAGE_TRANSITION_LINK` allows this load to complete successfully.
+  if (connection_information_.startupParameters.openedViaWidgetScheme &&
+      url.scheme() == kChromeUIScheme && url.host() == kChromeUIDinoHost) {
+    params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   }
 
   if (connection_information_.startupParameters.imageSearchData) {
