@@ -350,16 +350,13 @@ const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
   _contentStack.alignment = UIStackViewAlignmentTop;
   [self addSubview:_contentStack];
   AddSameConstraints(_contentStack, self);
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(hideDescriptionOnTraitChange)];
-
-    if (IsNTPBackgroundCustomizationEnabled()) {
-      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
-                         withAction:@selector(applyBackgroundColors)];
-    }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(hideDescriptionOnTraitChange)];
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                       withAction:@selector(applyBackgroundColors)];
   }
   [self applyBackgroundColors];
 }
