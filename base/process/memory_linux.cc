@@ -23,6 +23,7 @@
 extern "C" {
 void* __libc_malloc(size_t);
 void __libc_free(void*);
+void* __libc_calloc(size_t, size_t);
 }
 #endif
 
