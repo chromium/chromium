@@ -337,7 +337,7 @@ public class FakeBookmarkModel extends BookmarkModel {
                 .ifPresent(
                         node -> {
                             getMutableChildIds(parent).add(index, id);
-                            bookmarkNodeAdded(node, index);
+                            bookmarkNodeAdded(node, index, /* addedByUser= */ false);
                         });
 
         return id;

@@ -923,11 +923,11 @@ class BookmarkBridge {
 
     @CalledByNative
     @VisibleForTesting
-    void bookmarkNodeAdded(BookmarkItem parent, int index) {
+    void bookmarkNodeAdded(BookmarkItem parent, int index, boolean addedByUser) {
         if (mIsDoingExtensiveChanges) return;
 
         for (BookmarkModelObserver observer : mObservers) {
-            observer.bookmarkNodeAdded(parent, index);
+            observer.bookmarkNodeAdded(parent, index, addedByUser);
         }
     }
 

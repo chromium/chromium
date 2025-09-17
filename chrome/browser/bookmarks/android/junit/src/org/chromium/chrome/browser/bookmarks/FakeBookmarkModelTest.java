@@ -84,7 +84,7 @@ public class FakeBookmarkModelTest {
         int index = 0;
         BookmarkItem parent = mBookmarkModel.getBookmarkById(mBookmarkModel.getOtherFolderId());
         BookmarkId id = mBookmarkModel.addFolder(parent.getId(), index, "user folder");
-        verify(mBookmarkModelObserver).bookmarkNodeAdded(parent, index);
+        verify(mBookmarkModelObserver).bookmarkNodeAdded(parent, index, /* addedByUser= */ false);
 
         List<BookmarkId> expected = Arrays.asList(id);
         assertEquals(expected, mBookmarkModel.getChildIds(parent.getId()));
@@ -101,7 +101,7 @@ public class FakeBookmarkModelTest {
         BookmarkId id =
                 mBookmarkModel.addBookmark(
                         parent.getId(), index, "user bookmark", new GURL("https://google.com"));
-        verify(mBookmarkModelObserver).bookmarkNodeAdded(parent, index);
+        verify(mBookmarkModelObserver).bookmarkNodeAdded(parent, index, /* addedByUser= */ false);
 
         List<BookmarkId> expected = Arrays.asList(id);
         assertEquals(expected, mBookmarkModel.getChildIds(parent.getId()));
@@ -119,7 +119,8 @@ public class FakeBookmarkModelTest {
         BookmarkId id =
                 mBookmarkModel.addToReadingList(
                         parentId, "user account bookmark", new GURL("https://google.com"));
-        verify(mBookmarkModelObserver).bookmarkNodeAdded(parent, /* index= */ 0);
+        verify(mBookmarkModelObserver)
+                .bookmarkNodeAdded(parent, /* index= */ 0, /* addedByUser= */ false);
 
         List<BookmarkId> expected = Arrays.asList(id);
         assertEquals(expected, mBookmarkModel.getChildIds(parentId));
@@ -161,11 +162,14 @@ public class FakeBookmarkModelTest {
         var parentId = mBookmarkModel.getLocalOrSyncableReadingListFolder();
         var parent = mBookmarkModel.getBookmarkById(parentId);
         var id1 = mBookmarkModel.addToReadingList(parentId, "rl1", new GURL("https://test1.com"));
-        verify(mBookmarkModelObserver).bookmarkNodeAdded(parent, /* index= */ 0);
+        verify(mBookmarkModelObserver)
+                .bookmarkNodeAdded(parent, /* index= */ 0, /* addedByUser= */ false);
         var id2 = mBookmarkModel.addToReadingList(parentId, "rl2", new GURL("https://test2.com"));
-        verify(mBookmarkModelObserver).bookmarkNodeAdded(parent, /* index= */ 1);
+        verify(mBookmarkModelObserver)
+                .bookmarkNodeAdded(parent, /* index= */ 1, /* addedByUser= */ false);
         var id3 = mBookmarkModel.addToReadingList(parentId, "rl3", new GURL("https://test3.com"));
-        verify(mBookmarkModelObserver).bookmarkNodeAdded(parent, /* index= */ 2);
+        verify(mBookmarkModelObserver)
+                .bookmarkNodeAdded(parent, /* index= */ 2, /* addedByUser= */ false);
 
         List<BookmarkId> expected = Arrays.asList(id1, id2, id3);
         assertEquals(expected, mBookmarkModel.getChildIds(parentId));

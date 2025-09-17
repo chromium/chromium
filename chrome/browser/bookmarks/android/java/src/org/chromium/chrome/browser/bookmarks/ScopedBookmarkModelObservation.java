@@ -132,7 +132,7 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
     }
 
     @Override
-    public void bookmarkNodeAdded(BookmarkItem parent, int index) {
+    public void bookmarkNodeAdded(BookmarkItem parent, int index, boolean addedByUser) {
         if (Objects.equals(mFolderId, parent.getId())) {
             mObserver.onBookmarkItemAdded(mId, getBookmarkByIndex(index), index);
         }

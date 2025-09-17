@@ -1610,7 +1610,7 @@ void BookmarkBridge::BookmarkNodeAdded(const BookmarkNode* parent,
 
   Java_BookmarkBridge_bookmarkNodeAdded(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_),
-      CreateJavaBookmark(parent), static_cast<int>(index));
+      CreateJavaBookmark(parent), static_cast<int>(index), added_by_user);
 }
 
 void BookmarkBridge::BookmarkNodeRemoved(const BookmarkNode* parent,
