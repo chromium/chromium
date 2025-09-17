@@ -84,24 +84,14 @@ void HistoryBackendDBBaseTest::TearDown() {
   base::RunLoop().RunUntilIdle();
 }
 
-void HistoryBackendDBBaseTest::CreateBackendAndDatabase() {
+bool HistoryBackendDBBaseTest::CreateBackendAndDatabase() {
   backend_ = base::MakeRefCounted<HistoryBackend>(
       std::make_unique<BackendDelegate>(this), nullptr,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   backend_->Init(false,
                  TestHistoryDatabaseParamsForPath(history_dir_));
   db_ = backend_->db_.get();
-  DCHECK(in_mem_backend_) << "Mem backend should have been set by "
-      "HistoryBackend::Init";
-}
-
-void HistoryBackendDBBaseTest::CreateBackendAndDatabaseAllowFail() {
-  backend_ = base::MakeRefCounted<HistoryBackend>(
-      std::make_unique<BackendDelegate>(this), nullptr,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-  backend_->Init(false,
-                 TestHistoryDatabaseParamsForPath(history_dir_));
-  db_ = backend_->db_.get();
+  return in_mem_backend_ != nullptr;
 }
 
 void HistoryBackendDBBaseTest::CreateDBVersion(int version) {

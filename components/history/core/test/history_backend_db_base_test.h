@@ -46,8 +46,7 @@ class HistoryBackendDBBaseTest : public HistoryUnitTestBase {
 
   // Creates the HistoryBackend and HistoryDatabase on the current thread,
   // assigning the values to backend_ and db_.
-  void CreateBackendAndDatabase();
-  void CreateBackendAndDatabaseAllowFail();
+  [[nodiscard]] bool CreateBackendAndDatabase();
 
   void CreateDBVersion(int version);
 
