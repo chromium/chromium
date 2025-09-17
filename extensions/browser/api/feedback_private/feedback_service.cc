@@ -400,15 +400,6 @@ void FeedbackService::OnAllLogsFetched(
   DCHECK(feedback_data->attached_file_uuid().empty());
   DCHECK(feedback_data->screenshot_uuid().empty());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Send feedback to Assistant server if triggered from Google Assistant.
-  if (feedback_data->from_assistant()) {
-    ash::AssistantController::Get()->SendAssistantFeedback(
-        feedback_data->assistant_debug_info_allowed(),
-        feedback_data->description(), feedback_data->image());
-  }
-#endif
-
   // Signal the feedback object that the data from the feedback page has been
   // filled - the object will manage sending of the actual report.
   feedback_data->OnFeedbackPageDataComplete();

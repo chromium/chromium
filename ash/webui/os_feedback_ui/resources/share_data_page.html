@@ -310,14 +310,6 @@
               class="checkbox-label"></div>
         </cr-checkbox>
       </div>
-      <!-- Assistant Logs (Googler Internal Only) -->
-      <div id="assistantLogsContainer" class="checkbox-field-container"
-          hidden="[[!shouldShowAssistantCheckbox]]">
-        <cr-checkbox id="assiatantLogsCheckbox" aria-labelledby="assistantLogsLabel" checked>
-          <div id="assistantLogsLabel" class="checkbox-label"
-              inner-h-t-m-l="[[getAssistantLogsCheckboxLabel()]]"></div>
-        </cr-checkbox>
-      </div>
       <!-- Bluetooth Logs (Googler Internal Only) -->
       <div id="bluetoothCheckboxContainer" class="checkbox-field-container"
           hidden="[[!shouldShowBluetoothCheckbox]]">
@@ -424,17 +416,6 @@
   <div slot="button-container">
     <cr-button id="linkCrossDeviceDogfoodFeedbackDialogDoneButton" class="action-button"
         on-click="handleCloseLinkCrossDeviceDogfoodFeedbackDialogClicked">
-      [[i18n('buttonDone')]]
-    </cr-button>
-  </div>
-</cr-dialog>
-<cr-dialog id="assistantDialog">
-  <div slot="body">
-    [[i18n('assistantLogsMessage')]]
-  </div>
-  <div slot="button-container">
-    <cr-button id="assistantDialogDoneButton" class="action-button"
-        on-click="handleCloseAssistantDialogClicked">
       [[i18n('buttonDone')]]
     </cr-button>
   </div>

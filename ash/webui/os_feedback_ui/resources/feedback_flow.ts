@@ -59,7 +59,6 @@ export const AdditionalContextQueryParam = {
   EXTRA_DIAGNOSTICS: 'extra_diagnostics',
   CATEGORY_TAG: 'category_tag',
   PAGE_URL: 'page_url',
-  FROM_ASSISTANT: 'from_assistant',
   SETTINGS_SEARCH_DO_NOT_RECORD_METRICS:
       'settings_search_do_not_record_metrics',
   FROM_AUTOFILL: 'from_autofill',
@@ -181,9 +180,6 @@ export class FeedbackFlowElement extends PolymerElement {
 
   /**  Whether to show the autofill checkbox in share data page. */
   protected shouldShowAutofillCheckbox = false;
-
-  /**  Whether to show the assistant checkbox in share data page. */
-  shouldShowAssistantCheckbox = false;
 
   private feedbackServiceProvider: FeedbackServiceProviderInterface;
 
@@ -338,14 +334,12 @@ export class FeedbackFlowElement extends PolymerElement {
     const feedbackInfo = JSON.parse(this.dialogArgs);
     assert(!!feedbackInfo);
     this.feedbackContext = {
-      assistantDebugInfoAllowed: false,
       settingsSearchDoNotRecordMetrics:
           feedbackInfo.settingsSearchDoNotRecordMetrics ?? false,
       isInternalAccount: feedbackInfo.isInternalAccount ?? false,
       wifiDebugLogsAllowed: false,
       traceId: feedbackInfo.traceId ?? 0,
       pageUrl: {url: feedbackInfo.pageUrl ?? ''},
-      fromAssistant: feedbackInfo.fromAssistant ?? false,
       fromAutofill: feedbackInfo.fromAutofill ?? false,
       autofillMetadata: feedbackInfo.autofillMetadata ?
           JSON.stringify(feedbackInfo.autofillMetadata) :
@@ -410,8 +404,6 @@ export class FeedbackFlowElement extends PolymerElement {
     if (!this.feedbackContext) {
       return;
     }
-    this.shouldShowAssistantCheckbox = this.feedbackContext.isInternalAccount &&
-        this.feedbackContext.fromAssistant;
     this.shouldShowAutofillCheckbox = this.feedbackContext.fromAutofill;
   }
   /**
@@ -447,9 +439,6 @@ export class FeedbackFlowElement extends PolymerElement {
     if (pageUrl) {
       this.set('feedbackContext.pageUrl', {url: pageUrl});
     }
-    const fromAssistant =
-        params.get(AdditionalContextQueryParam.FROM_ASSISTANT);
-    this.feedbackContext.fromAssistant = !!fromAssistant;
     const settingsSearchDoNotRecordMetrics = params.get(
         AdditionalContextQueryParam.SETTINGS_SEARCH_DO_NOT_RECORD_METRICS);
     this.set(

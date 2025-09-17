@@ -72,14 +72,6 @@ class FeedbackData : public FeedbackCommon {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return trace_id_;
   }
-  bool from_assistant() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return from_assistant_;
-  }
-  bool assistant_debug_info_allowed() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return assistant_debug_info_allowed_;
-  }
 
   // Setters
   void set_attached_filename(const std::string& attached_filename) {
@@ -97,14 +89,6 @@ class FeedbackData : public FeedbackCommon {
   void set_trace_id(int trace_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     trace_id_ = trace_id;
-  }
-  void set_from_assistant(bool from_assistant) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    from_assistant_ = from_assistant;
-  }
-  void set_assistant_debug_info_allowed(bool assistant_debug_info_allowed) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    assistant_debug_info_allowed_ = assistant_debug_info_allowed;
   }
 
  private:
@@ -131,9 +115,6 @@ class FeedbackData : public FeedbackCommon {
 
   int pending_op_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 1;
   bool report_sent_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  bool from_assistant_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  bool assistant_debug_info_allowed_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      false;
 };
 
 }  // namespace feedback

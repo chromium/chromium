@@ -74,12 +74,10 @@ export const fakeEmptySearchResponse: SearchResponse = {
 };
 
 export const fakeFeedbackContext: FeedbackContext = {
-  assistantDebugInfoAllowed: false,
   autofillMetadata: '',
   categoryTag: 'MediaApp',
   email: 'test.user2@test.com',
   extraDiagnostics: null,
-  fromAssistant: false,
   fromAutofill: false,
   settingsSearchDoNotRecordMetrics: true,
   hasLinkedCrossDevicePhone: false,
@@ -90,12 +88,10 @@ export const fakeFeedbackContext: FeedbackContext = {
 };
 
 export const fakeEmptyFeedbackContext: FeedbackContext = {
-  assistantDebugInfoAllowed: false,
   autofillMetadata: '',
   categoryTag: '',
   email: '',
   extraDiagnostics: null,
-  fromAssistant: false,
   fromAutofill: false,
   settingsSearchDoNotRecordMetrics: true,
   hasLinkedCrossDevicePhone: false,
@@ -107,12 +103,10 @@ export const fakeEmptyFeedbackContext: FeedbackContext = {
 
 /** Feedback context for login flow, i.e., on oobe or login screen. */
 export const fakeLoginFlowFeedbackContext: FeedbackContext = {
-  assistantDebugInfoAllowed: false,
   autofillMetadata: '',
   categoryTag: 'Login',
   email: '',
   extraDiagnostics: null,
-  fromAssistant: false,
   fromAutofill: false,
   settingsSearchDoNotRecordMetrics: true,
   hasLinkedCrossDevicePhone: false,
@@ -123,12 +117,10 @@ export const fakeLoginFlowFeedbackContext: FeedbackContext = {
 };
 
 export const fakeInternalUserFeedbackContext: FeedbackContext = {
-  assistantDebugInfoAllowed: false,
   autofillMetadata: '',
   categoryTag: '',
   email: 'test.user@google.com',
   extraDiagnostics: null,
-  fromAssistant: true,
   fromAutofill: false,
   settingsSearchDoNotRecordMetrics: false,
   hasLinkedCrossDevicePhone: true,
@@ -140,12 +132,10 @@ export const fakeInternalUserFeedbackContext: FeedbackContext = {
 
 export const fakeFeedbackContextWithoutLinkedCrossDevicePhone:
     FeedbackContext = {
-      assistantDebugInfoAllowed: false,
       autofillMetadata: '',
       categoryTag: '',
       email: 'test.user@google.com',
       extraDiagnostics: null,
-      fromAssistant: true,
       fromAutofill: false,
       settingsSearchDoNotRecordMetrics: false,
       hasLinkedCrossDevicePhone: false,
@@ -156,12 +146,10 @@ export const fakeFeedbackContextWithoutLinkedCrossDevicePhone:
     };
 
 export const fakeFeedbackContextWithExtraDiagnostics: FeedbackContext = {
-  assistantDebugInfoAllowed: false,
   autofillMetadata: '',
   categoryTag: '',
   email: 'test.user@google.com',
   extraDiagnostics: 'some extra info',
-  fromAssistant: true,
   fromAutofill: false,
   settingsSearchDoNotRecordMetrics: false,
   hasLinkedCrossDevicePhone: false,

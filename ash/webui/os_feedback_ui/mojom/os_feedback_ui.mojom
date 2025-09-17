@@ -79,10 +79,6 @@ struct FeedbackContext {
   bool has_linked_cross_device_phone;
   // Whether or not the signed in email is an internal google account.
   bool is_internal_account;
-  // Whether or not the feedback app is opened from Assistant.
-  bool from_assistant;
-  // Whether or not the assistant debug info is allowed by user.
-  bool assistant_debug_info_allowed;
   // Whether or not the feedback app is opened from OS Settings Search
   // and should not record user metrics.
   bool settings_search_do_not_record_metrics;

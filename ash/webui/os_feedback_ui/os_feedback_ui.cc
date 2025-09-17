@@ -125,9 +125,6 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_INFO},
       {"linkCrossDeviceDogfoodFeedbackMessage",
        IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_MESSAGE},
-      {"includeAssistantLogsCheckboxLabel",
-       IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_CHECKBOX},
-      {"assistantLogsMessage", IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_MESSAGE},
       {"includeAutofillCheckboxLabel",
        IDS_FEEDBACK_TOOL_AUTOFILL_LOGS_CHECKBOX},
   };
