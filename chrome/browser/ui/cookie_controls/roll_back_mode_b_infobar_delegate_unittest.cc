@@ -91,7 +91,7 @@ TEST_F(RollBackModeBInfoBarDelegateTest,
   ASSERT_EQ(infobar_manager()->infobars().size(), 1u);
   auto* delegate =
       infobar_manager()->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
-  EXPECT_TRUE(delegate->Cancel());
+  EXPECT_FALSE(delegate->Cancel());
   EXPECT_EQ(last_url(), GURL(chrome::kChromeUICookieSettingsURL));
 }
 

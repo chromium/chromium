@@ -41,8 +41,8 @@ std::u16string RollBackModeBInfoBarDelegate::GetMessageText() const {
 bool RollBackModeBInfoBarDelegate::Cancel() {
   // The "cancel" button is a link to cookie settings.
   infobar()->owner()->OpenURL(GURL(chrome::kChromeUICookieSettingsURL),
-                              WindowOpenDisposition::SWITCH_TO_TAB);
-  return true;
+                              WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  return false;
 }
 
 std::u16string RollBackModeBInfoBarDelegate::GetButtonLabel(
