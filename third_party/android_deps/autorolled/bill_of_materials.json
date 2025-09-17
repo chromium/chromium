@@ -1162,7 +1162,7 @@
     {
         "name": "lottie",
         "group": "com.airbnb.android",
-        "version": "6.6.7"
+        "version": "6.6.9"
     },
     {
         "name": "sqlite4java",
@@ -1612,17 +1612,17 @@
     {
         "name": "byte-buddy",
         "group": "net.bytebuddy",
-        "version": "1.14.12"
+        "version": "1.17.6"
     },
     {
         "name": "byte-buddy-agent",
         "group": "net.bytebuddy",
-        "version": "1.14.12"
+        "version": "1.17.6"
     },
     {
         "name": "byte-buddy-android",
         "group": "net.bytebuddy",
-        "version": "1.14.12"
+        "version": "1.17.6"
     },
     {
         "name": "bcprov-jdk18on",
@@ -1802,17 +1802,17 @@
     {
         "name": "mockito-android",
         "group": "org.mockito",
-        "version": "5.11.0"
+        "version": "5.19.0"
     },
     {
         "name": "mockito-core",
         "group": "org.mockito",
-        "version": "5.11.0"
+        "version": "5.19.0"
     },
     {
         "name": "mockito-subclass",
         "group": "org.mockito",
-        "version": "5.11.0"
+        "version": "5.19.0"
     },
     {
         "name": "objenesis",
