@@ -7,7 +7,8 @@
 #include <optional>
 #include <utility>
 
-#include "base/check.h"
+#include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -197,7 +198,13 @@ ScopedMessagePipeHandle ThreadLocalNode::AdoptPipe(
   const IpczResult open_result =
       ipcz.OpenPortals(node_->value(), IPCZ_NO_FLAGS, nullptr, &portal_to_bind,
                        &portal_to_merge);
-  CHECK_EQ(open_result, IPCZ_RESULT_OK);
+  if (open_result != IPCZ_RESULT_OK) {
+    // TODO(crbug.com/445243335): Remove the crash key after investigating. This
+    // is left as a CHECK_EQ even though it's temporarily wrapped in an if so
+    // the crash signature doesn't change.
+    SCOPED_CRASH_KEY_NUMBER("adopt-pipe", "open-result", open_result);
+    CHECK_EQ(open_result, IPCZ_RESULT_OK);
+  }
 
   // Stash the portal for later merge.
   const uint64_t merge_id = next_merge_id_++;
@@ -208,7 +215,13 @@ ScopedMessagePipeHandle ThreadLocalNode::AdoptPipe(
   const IpczResult put_result =
       ipcz.Put(global_portal_->value(), &merge_id, sizeof(merge_id),
                /*handles=*/&portal, /*num_handles=*/1, IPCZ_NO_FLAGS, nullptr);
-  CHECK_EQ(put_result, IPCZ_RESULT_OK);
+  if (put_result != IPCZ_RESULT_OK) {
+    // TODO(crbug.com/445243335): Remove the crash key after investigating. This
+    // is left as a CHECK_EQ even though it's temporarily wrapped in an if so
+    // the crash signature doesn't change.
+    SCOPED_CRASH_KEY_NUMBER("adopt-pipe", "put-result", put_result);
+    CHECK_EQ(put_result, IPCZ_RESULT_OK);
+  }
 
   return ScopedMessagePipeHandle{MessagePipeHandle{portal_to_bind}};
 }
