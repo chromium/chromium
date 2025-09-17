@@ -104,14 +104,12 @@ TEST(GetReceiverConnectionInfoRequestTest, OnSuccess) {
 }
 
 TEST(GetReceiverConnectionInfoRequestTest, MissinConnectionId) {
-  bool response_callback_called = false;
   std::optional<::boca::KioskReceiverConnection> response_proto;
   GetReceiverConnectionInfoRequest request(
       kReceiverId,
       base::BindLambdaForTesting(
-          [&response_proto, &response_callback_called](
+          [&response_proto](
               std::optional<::boca::KioskReceiverConnection> response) {
-            response_callback_called = true;
             response_proto = std::move(response);
           }));
 
@@ -122,19 +120,18 @@ TEST(GetReceiverConnectionInfoRequestTest, MissinConnectionId) {
   request.OnSuccess(
       std::make_unique<base::Value>(std::move(response_value.value())));
 
-  EXPECT_FALSE(response_proto.has_value());
-  EXPECT_TRUE(response_callback_called);
+  EXPECT_TRUE(response_proto.has_value());
+  EXPECT_FALSE(response_proto->has_connection_details());
+  EXPECT_TRUE(response_proto->connection_id().empty());
 }
 
 TEST(GetReceiverConnectionInfoRequestTest, MissinConnectionState) {
-  bool response_callback_called = false;
   std::optional<::boca::KioskReceiverConnection> response_proto;
   GetReceiverConnectionInfoRequest request(
       kReceiverId,
       base::BindLambdaForTesting(
-          [&response_proto, &response_callback_called](
+          [&response_proto](
               std::optional<::boca::KioskReceiverConnection> response) {
-            response_callback_called = true;
             response_proto = std::move(response);
           }));
 
@@ -145,11 +142,12 @@ TEST(GetReceiverConnectionInfoRequestTest, MissinConnectionState) {
   request.OnSuccess(
       std::make_unique<base::Value>(std::move(response_value.value())));
 
-  EXPECT_FALSE(response_proto.has_value());
-  EXPECT_TRUE(response_callback_called);
+  EXPECT_TRUE(response_proto.has_value());
+  EXPECT_FALSE(response_proto->has_connection_details());
+  EXPECT_TRUE(response_proto->connection_id().empty());
 }
 
-TEST(GetReceiverConnectionInfoRequestTest, InvalidResponse) {
+TEST(GetReceiverConnectionInfoRequestTest, EmptyResponse) {
   bool response_callback_called = false;
   std::optional<::boca::KioskReceiverConnection> response_proto;
   GetReceiverConnectionInfoRequest request(
@@ -160,9 +158,11 @@ TEST(GetReceiverConnectionInfoRequestTest, InvalidResponse) {
             response_callback_called = true;
             response_proto = std::move(response);
           }));
-  request.OnSuccess(std::make_unique<base::Value>("invalid response"));
+  request.OnSuccess(std::make_unique<base::Value>());
 
-  EXPECT_FALSE(response_proto.has_value());
+  EXPECT_TRUE(response_proto.has_value());
+  EXPECT_FALSE(response_proto->has_connection_details());
+  EXPECT_TRUE(response_proto->connection_id().empty());
   EXPECT_TRUE(response_callback_called);
 }
 

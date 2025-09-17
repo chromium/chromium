@@ -72,14 +72,14 @@ void ConvertConnectionDetails(const base::Value::Dict* dict,
   }
 }
 
-std::optional<::boca::KioskReceiverConnection> ConvertKioskReceiverConnection(
+::boca::KioskReceiverConnection ConvertKioskReceiverConnection(
     const base::Value& value) {
+  ::boca::KioskReceiverConnection connection;
   const base::Value::Dict* dict = value.GetIfDict();
   if (!dict || !dict->FindString(kConnectionIdKey) ||
       !dict->FindString(kReceiverConnectionStateKey)) {
-    return std::nullopt;
+    return connection;
   }
-  ::boca::KioskReceiverConnection connection;
   connection.set_connection_id(*dict->FindString(kConnectionIdKey));
   connection.set_receiver_connection_state(ReceiverConnectionStateProtoFromJson(
       *dict->FindString(kReceiverConnectionStateKey)));
@@ -110,9 +110,7 @@ void GetReceiverConnectionInfoRequest::OnSuccess(
     std::unique_ptr<base::Value> response) {
   CHECK(callback_);
   CHECK(response);
-  std::optional<::boca::KioskReceiverConnection> connection =
-      ConvertKioskReceiverConnection(*response);
-  std::move(callback_).Run(std::move(connection));
+  std::move(callback_).Run(ConvertKioskReceiverConnection(*response));
 }
 
 void GetReceiverConnectionInfoRequest::OnError(
