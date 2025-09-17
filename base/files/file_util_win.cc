@@ -385,34 +385,6 @@ OnceClosure GetDeleteFileCallbackInternal(
                   std::move(bound_callback));
 }
 
-// This function checks if the user is an administrator and whether they have a
-// default elevation type. This corresponds to a full administrator such as the
-// SYSTEM user or built in administrator. It will return false for split-token
-// administrators used in UAC and any non-administrator caller. It checks the
-// effective token in case the caller is impersonating an administrator.
-bool IsUserDefaultAdmin() {
-  base::win::Sid admin_sid(base::win::WellKnownSid::kBuiltinAdministrators);
-  BOOL is_member = FALSE;
-  if (!::CheckTokenMembership(nullptr, admin_sid.GetPSID(), &is_member)) {
-    DPLOG(WARNING) << "Error checking token membership";
-    return false;
-  }
-
-  if (!is_member) {
-    return false;
-  }
-
-  TOKEN_ELEVATION_TYPE elevation_type;
-  DWORD ret_length;
-  if (!::GetTokenInformation(::GetCurrentThreadEffectiveToken(),
-                             TokenElevationType, &elevation_type,
-                             sizeof(elevation_type), &ret_length)) {
-    DPLOG(WARNING) << "Cannot get token elevation type";
-    return false;
-  }
-  return elevation_type == TokenElevationTypeDefault;
-}
-
 // This function removes the Windows extended-length path prefix from a prefixed
 // path. It supports both the native UNC prefix and the native local path
 // prefix. If the prefix is not recognized, it logs a warning and returns an
@@ -477,10 +449,10 @@ bool IsPathSafeToSetAclOn(const FilePath& path) {
   }
 
   // Admin users create temporary files in SystemTemp; see
-  // `CreateNewTempDirectory` below.
+  // `GetSecureTempDirectory` below.
   FilePath secure_system_temp;
-  if (IsUserDefaultAdmin() &&
-      PathService::Get(DIR_SYSTEM_TEMP, &secure_system_temp)) {
+  if (internal::IsUserDefaultAdmin() &&
+      GetSecureTempDirectory(&secure_system_temp)) {
     valid_paths.push_back(secure_system_temp);
   }
 
@@ -761,14 +733,8 @@ bool CreateTemporaryDirInDir(const FilePath& base_dir,
 }
 
 // The directory is created under SystemTemp for security reasons if the caller
-// is admin to avoid attacks from lower privilege processes.
-//
-// If unable to create a dir under SystemTemp, the dir is created under
-// %TEMP%. The reasons for not being able to create a dir under SystemTemp could
-// be because `%systemroot%\SystemTemp` does not exist, or unable to resolve
-// `DIR_WINDOWS` or `DIR_PROGRAM_FILES`, say due to registry redirection, or
-// unable to create a directory due to SystemTemp being read-only or having
-// atypical ACLs. An override of `DIR_SYSTEM_TEMP` by tests will be respected.
+// is the default admin (i.e., no split token, such as the SYSTEM user or the
+// built-in administrator) to avoid attacks from lower privilege processes.
 bool CreateNewTempDirectory(const FilePath::StringType& prefix,
                             FilePath* new_temp_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -776,18 +742,12 @@ bool CreateNewTempDirectory(const FilePath::StringType& prefix,
   DCHECK(new_temp_path);
 
   FilePath parent_dir;
-  if (IsUserDefaultAdmin() && PathService::Get(DIR_SYSTEM_TEMP, &parent_dir) &&
-      CreateTemporaryDirInDir(parent_dir,
-                              prefix.empty() ? kDefaultTempDirPrefix : prefix,
-                              new_temp_path)) {
-    return true;
-  }
-
-  if (!GetTempDir(&parent_dir)) {
+  if (!GetSecureTempDirectory(&parent_dir)) {
     return false;
   }
-
-  return CreateTemporaryDirInDir(parent_dir, prefix, new_temp_path);
+  return CreateTemporaryDirInDir(
+      parent_dir, prefix.empty() ? kDefaultTempDirPrefix : prefix,
+      new_temp_path);
 }
 
 bool CreateDirectoryAndGetError(const FilePath& full_path, File::Error* error) {
@@ -881,6 +841,14 @@ bool NormalizeFilePath(const FilePath& path, FilePath* real_path) {
   }
 
   return !real_path->empty();
+}
+
+bool GetSecureTempDirectory(FilePath* temp_dir) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  DCHECK(temp_dir);
+  return internal::IsUserDefaultAdmin()
+             ? PathService::Get(DIR_SYSTEM_TEMP, temp_dir)
+             : GetTempDir(temp_dir);
 }
 
 FilePath RemoveWindowsExtendedPathPrefixForTesting(
@@ -1352,6 +1320,29 @@ bool CopyAndDeleteDirectory(const FilePath& from_path,
     // it by now, we don't get better off by deleting the new bits.
   }
   return false;
+}
+
+bool IsUserDefaultAdmin() {
+  base::win::Sid admin_sid(base::win::WellKnownSid::kBuiltinAdministrators);
+  BOOL is_member = FALSE;
+  if (!::CheckTokenMembership(nullptr, admin_sid.GetPSID(), &is_member)) {
+    DPLOG(WARNING) << "Error checking token membership";
+    return false;
+  }
+
+  if (!is_member) {
+    return false;
+  }
+
+  TOKEN_ELEVATION_TYPE elevation_type = TokenElevationTypeDefault;
+  DWORD ret_length = 0;
+  if (!::GetTokenInformation(::GetCurrentThreadEffectiveToken(),
+                             TokenElevationType, &elevation_type,
+                             sizeof(elevation_type), &ret_length)) {
+    DPLOG(WARNING) << "Cannot get token elevation type";
+    return false;
+  }
+  return elevation_type == TokenElevationTypeDefault;
 }
 
 }  // namespace internal
