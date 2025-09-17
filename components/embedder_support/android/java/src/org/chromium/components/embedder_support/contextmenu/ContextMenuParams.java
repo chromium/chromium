@@ -193,10 +193,9 @@ public class ContextMenuParams {
     }
 
     /**
-     * @return Only valid if `getOpenedFromInterestFor()` is true, and only non-zero if the
-     *     `HTMLInterestForContextMenuItemOnly` feature is enabled. With that feature enabled,
-     *     this returns the DOMNodeID for the element that should be "shown interest" in case the
-     *     "show interest" menu item is chosen by the user.
+     * @return Only valid if `getOpenedFromInterestFor()` is true. This returns the DOMNodeID
+     *     for the element that should be "shown interest" in case the "show interest" menu
+     *     item is chosen by the user.
      */
     public int getInterestForNodeID() {
         return mInterestForNodeID;

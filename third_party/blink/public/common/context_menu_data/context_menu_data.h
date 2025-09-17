@@ -171,9 +171,8 @@ struct ContextMenuData {
   // True when the context menu was opened from an element with the
   // `interestfor` attribute.
   bool opened_from_interest_for = false;
-  // If opened_from_interest_for is true, and if the
-  // HTMLInterestForContextMenuItemOnly feature is enabled, this will contain
-  // the DOMNodeID of the link that generated the context menu.
+  // If opened_from_interest_for is true, this will contain the DOMNodeID of the
+  // link that generated the context menu.
   int interest_for_node_id = 0;
 
   // The type of the form control element on which the context menu is invoked,
