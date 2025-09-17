@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "components/variations/client_filterable_state.h"
@@ -36,7 +37,14 @@ using LayerByIdMap = absl::flat_hash_map<uint32_t, raw_ptr<const Layer>>;
 void LogSeedRejectionReason(SeedRejectionReason reason) {
   base::UmaHistogramEnumeration(kSeedRejectionReasonHistogram, reason);
   SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "reason", static_cast<int>(reason));
-  base::debug::DumpWithoutCrashing();
+
+  // TODO: crbug.com/442498684 - Temporarily sampled due to noisiness during
+  // debugging. Remove sampling once hitting this codepath is expected to be
+  // rare.
+  constexpr double kSampleRate = 0.001;
+  if (base::RandDouble() < kSampleRate) {
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 // Builds a map of layers by id from the given seed, logging the seed rejection
