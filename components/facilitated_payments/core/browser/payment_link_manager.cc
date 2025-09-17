@@ -276,8 +276,6 @@ void PaymentLinkManager::OnEwalletAccountSelected(
                                        base::TimeTicks::Now()));
 }
 
-// TODO(https://crbug.com/437017495): Add kOtherFopSelected in
-// EwalletFlowExitedReason and log it inside OnPaymentAppSelected.
 void PaymentLinkManager::OnPaymentAppSelected(std::string_view package_name,
                                               std::string_view activity_name) {
   if (auto* strike_database = GetOrCreateStrikeDatabase()) {
@@ -287,6 +285,11 @@ void PaymentLinkManager::OnPaymentAppSelected(std::string_view package_name,
   LogNonCardPaymentMethodsFopSelected(
       GetPaymentLinkFopSelectorType(),
       PaymentLinkFopSelectorAction::kPaymentAppSelected, scheme_);
+
+  if (is_ewallet_available_) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kOtherFopSelected,
+                               scheme_);
+  }
 
   bool result = client_->GetDeviceDelegate()->InvokePaymentApp(
       package_name, activity_name,

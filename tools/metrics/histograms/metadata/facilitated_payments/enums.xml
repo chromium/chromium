@@ -62,6 +62,7 @@ reviewer.
   <int value="12" label="The FOP selector was closed by the user"/>
   <int value="13" label="Foldable devices not supported"/>
   <int value="14" label="Max strikes reached"/>
+  <int value="15" label="Another type of FOP is selected"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:EwalletFlowExitedReason) -->

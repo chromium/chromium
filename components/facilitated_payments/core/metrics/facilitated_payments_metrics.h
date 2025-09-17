@@ -111,7 +111,9 @@ enum class EwalletFlowExitedReason {
   // The device is a foldable device which we don't support yet.
   kFoldableDevice = 13,
   kMaxStrikes = 14,
-  kMaxValue = kMaxStrikes
+  // Another type of FOP selected.
+  kOtherFopSelected = 15,
+  kMaxValue = kOtherFopSelected
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.EwalletFlowExitedReason)
 
