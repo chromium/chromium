@@ -374,6 +374,7 @@ crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conform
 # edge of the 60s timeout.
 [ fuchsia web-engine-shell ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
 [ fuchsia web-engine-shell ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
+[ fuchsia web-engine-shell ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Slow ]
 crbug.com/1490427 [ fuchsia web-engine-shell ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 ###################
