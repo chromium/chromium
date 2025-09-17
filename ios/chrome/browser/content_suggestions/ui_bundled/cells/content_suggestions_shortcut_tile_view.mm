@@ -42,10 +42,7 @@ const CGFloat kCountBorderWidth = 24;
       [_iconView.heightAnchor constraintEqualToAnchor:_iconView.widthAnchor],
     ]];
 
-    if (@available(iOS 17, *)) {
-      [self registerViewForTraitChanges];
-    }
-
+    [self registerViewForTraitChanges];
     if (IsNTPBackgroundCustomizationEnabled()) {
       [self applyBackgroundColors];
     } else {
@@ -64,10 +61,7 @@ const CGFloat kCountBorderWidth = 24;
     _iconView.contentMode = UIViewContentModeCenter;
 
     [self updateConfiguration:config];
-
-    if (@available(iOS 17, *)) {
-      [self registerViewForTraitChanges];
-    }
+    [self registerViewForTraitChanges];
   }
   return self;
 }
@@ -143,22 +137,6 @@ const CGFloat kCountBorderWidth = 24;
   }
   return _countLabel;
 }
-
-#pragma mark - UIView
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateTitleLabelFontOnTraitChange];
-  }
-}
-#endif
 
 #pragma mark - Private
 

@@ -159,13 +159,10 @@ NSAttributedString* Strikethrough(NSString* text) {
   self.isAccessibilityElement = YES;
   self.accessibilityLabel =
       [NSString stringWithFormat:@"%@, %@", title.text, description.text];
-
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateTryButtonWidth)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateTryButtonWidth)];
 }
 
 // Creates the title label.
@@ -258,22 +255,6 @@ NSAttributedString* Strikethrough(NSString* text) {
       _tryButton.titleLabel.intrinsicContentSize.width + kTryButtonMargin * 2,
       kTryButtonMinWidth, kTryButtonMaxWidth);
 }
-
-#pragma mark - UITraitEnvironment
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateTryButtonWidth];
-  }
-}
-
-#endif
 
 #pragma mark - UIAccessibilityAction
 
