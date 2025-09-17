@@ -11,21 +11,6 @@ import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
-# ChromeOS is the only OS for which we support clang modules with a custom
-# sysroot. See http://crbug.com/443587270.
-# Android is here because on android, sysroot.gni would introduce a circular
-# dependency. We just assume that android is always safe to use clang modules
-# for, but we can change this later down the line if that turns out to be false.
-if (is_chromeos || is_android) {
-  using_tested_sysroot = true
-} else {
-  import("//build/config/sysroot.gni")
-
-  using_tested_sysroot =
-      use_sysroot && (current_os != target_os || current_cpu != target_cpu ||
-                      target_sysroot == "")
-}
-
 default_clang_base_path = "//third_party/llvm-build/Release+Asserts"
 
 # These platforms have been well-tested with clang modules.
@@ -91,7 +76,7 @@ declare_args() {
       # Clang modules doesn't work with translation_unit used in codesearch
       # pipeline http://b/436082487.
       !enable_kythe_annotations && is_clang &&
-      clang_modules_platform_supported && using_tested_sysroot &&
+      clang_modules_platform_supported &&
       # reclient doesn't handle headers in modulemap config.
       !use_reclient && !is_cronet_for_aosp_build
 }
