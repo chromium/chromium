@@ -156,8 +156,9 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   struct Diagnostics {
     base::Time creation_time;
     base::Time start_time;
-    int tasks_scheduled;
-    int tasks_completed;
+    int tasks_scheduled = 0;
+    int tasks_completed = 0;
+    bool mojo_receiver_disconnected = false;
   };
 
   const Diagnostics& diagnostics() const { return diagnostics_; }
@@ -248,6 +249,9 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // Generates a key for an auto_increment object store, or an invalid key if
   // the backing store has a problem.
   blink::IndexedDBKey GenerateAutoIncrementKey(int64_t object_store_id);
+
+  // Invoked when the associated receiver is disconnected.
+  void OnMojoReceiverDisconnected();
 
   const int64_t id_;
   const std::set<int64_t> object_store_ids_;

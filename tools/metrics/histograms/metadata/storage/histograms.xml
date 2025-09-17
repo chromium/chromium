@@ -611,6 +611,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.TransactionTimeout.MojoDisconnected" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether the Mojo receiver of an IndexedDB transaction is disconnected.
+    Recorded every time the 20 seconds inactivity timeout is hit for a
+    transaction. Will be used to diagnose crbug.com/381086791.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.TransactionTimeout.NumPendingPreemptiveTasks"
     units="tasks" expires_after="2026-03-30">
   <owner>fdoray@chromium.org</owner>

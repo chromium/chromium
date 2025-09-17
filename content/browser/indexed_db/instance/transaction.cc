@@ -187,6 +187,12 @@ void Transaction::BindReceiver(
     mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
         mojo_receiver) {
   receiver_.Bind(std::move(mojo_receiver));
+  if (receiver_.is_bound()) {
+    // `receiver_` might not be bound in tests that pass an invalid pending
+    // receiver.
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &Transaction::OnMojoReceiverDisconnected, ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void Transaction::SetCommitFlag() {
@@ -1126,6 +1132,8 @@ void Transaction::TimeoutFired() {
   // TODO(crbug.com/381086791): Remove after the leak is fixed.
   base::UmaHistogramEnumeration("IndexedDB.TransactionTimeout.Mode", mode_);
   base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.Used", used_);
+  base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.MojoDisconnected",
+                            diagnostics_.mojo_receiver_disconnected);
   base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.CommitPending",
                             is_commit_pending_);
   base::UmaHistogramCounts100("IndexedDB.TransactionTimeout.NumPendingTasks",
@@ -1214,6 +1222,10 @@ IndexedDBKey Transaction::GenerateAutoIncrementKey(int64_t object_store_id) {
   }
 
   return IndexedDBKey(current_number, blink::mojom::IDBKeyType::Number);
+}
+
+void Transaction::OnMojoReceiverDisconnected() {
+  diagnostics_.mojo_receiver_disconnected = true;
 }
 
 blink::mojom::IDBValuePtr Transaction::BuildMojoValue(IndexedDBValue value) {
