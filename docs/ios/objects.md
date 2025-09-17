@@ -11,10 +11,15 @@ The corresponding object on desktop is BrowserProcess.
 
 # ProfileIOS
 
-ProfileIOS objects correspond to a user browsing session. There is
-one for the off-the-record session, and one per user created in the UI (at
-the time this document is written, there is only one user on iOS so at most
-there are two ProfileIOSs).
+ProfileIOS objects correspond to a user browsing session. Each
+regular ProfileIOS also owns an incognito ProfileIOS. There can
+be more than one regular ProfileIOS loaded at the same time.
+
+When #separate-profiles-for-managed-accounts, each managed account
+uses a distinct ProfileIOS to separate the data between them and
+from the ProfileIOS used for the personal account. Then it is
+possible to open window with different accounts, and thus to have
+multiple regular ProfileIOS loaded.
 
 The ProfileIOS objects are owned by the ProfileManagerIOS that can be
 accessed via the ApplicationContext. It is possible to access the off-the-record
@@ -63,9 +68,10 @@ Browsers instances whereas on iOS there is one per ProfileIOS.
 
 # Browser
 
-Browser is the model for a window containing multiple tabs. Currently
-on iOS there is only one window per ProfileIOS, thus there is
-a single Browser per BrowserList.
+Browser is the model for a container of tabs for use by the UI.
+Each window can have multiple Browser associated (regular tabs,
+incognito tabs, inactive tabs). Additionally, iPads supports an
+arbitrary number of windows active at the same time.
 
 The Browser owns a WebStateList and thus indirectly owns all the tabs
 (aka WebState and their associated tab helpers). The Browser also owns
