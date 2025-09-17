@@ -3,6 +3,7 @@ Short Name: libaom
 URL: https://aomedia.googlesource.com/aom/
 Version: N/A
 Revision: 30d129dfac8e0977a6b1664c0badbdad31e4ba56
+Update Mechanism: Manual
 CPEPrefix: cpe:/a:aomedia:aomedia:3.13.0
 License: BSD-2-Clause, Patent
 License Android Compatible: yes

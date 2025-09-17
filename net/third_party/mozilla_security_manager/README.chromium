@@ -2,6 +2,7 @@ Name: Mozilla Personal Security Manager
 URL: https://dxr.mozilla.org/mozilla1.9.2/source/security/manager/
 InfoURL: http://www.mozilla.org/
 Version: Mozilla 1.9.2
+Update Mechanism: Manual
 License: MPL-1.1
 License File: LICENSE
 Shipped: yes

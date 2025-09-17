@@ -3,6 +3,7 @@ Short Name: Widevine CDM
 URL: https://www.widevine.com
 Version: N/A
 Revision: c96f53fde16f37b1a6cc2b6c468af3c4a364f426
+Update Mechanism: Manual
 License: Commercial
 License File: LICENSE
 Security Critical: yes

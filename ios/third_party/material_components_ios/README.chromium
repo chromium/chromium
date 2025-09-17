@@ -2,6 +2,7 @@ Name: Material Components for iOS
 URL: https://github.com/material-components/material-components-ios
 Version: N/A
 Revision: 266bcd2e07d99bac742fd14f67b8fdc6e26169a5
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Security Critical: yes

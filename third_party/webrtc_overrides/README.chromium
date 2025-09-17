@@ -1,6 +1,7 @@
 Name: WebRTC
 URL: This is the canonical public repository
 Version: N/A
+Update Mechanism: Manual
 License: BSD-3-Clause
 License File: LICENSE
 Security Critical: yes

@@ -1,6 +1,7 @@
 Name: Requests
 URL: http://docs.python-requests.org/
 Version: 2.23.0
+Update Mechanism: Manual
 CPEPrefix: cpe:/a:python-requests:requests:2.23.0
 License: Apache-2.0
 License File: LICENSE

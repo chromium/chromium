@@ -4,6 +4,7 @@ URL: https://android.googlesource.com/platform/external/puffin
 Version: 1.0.0
 Date: 2022-10-05
 Revision: e0820dcfebfb4df925be2e37ad8f56c00dc624f5
+Update Mechanism: Manual
 License: BSD-3-Clause
 License File: LICENSE
 Security Critical: yes

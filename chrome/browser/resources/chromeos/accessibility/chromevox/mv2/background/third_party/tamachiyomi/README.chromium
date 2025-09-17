@@ -2,6 +2,7 @@ Name: Tamachiyomi
 Short Name: N/A
 URL: https://source.corp.google.com/piper///depot/google3/third_party/tamachiyomi/README.md
 Version: 0
+Update Mechanism: Manual
 License: MIT
 License File: LICENSE
 Security Critical: No

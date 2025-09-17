@@ -3,6 +3,7 @@ Short Name: tflite
 URL: https://github.com/tensorflow/tensorflow
 Version: 313f58ae85278ced9ccc7f90ee630bdf8735c52f
 Date: 2025-08-29
+Update Mechanism: Manual
 License: Caffe, Apache-2.0
 License File: LICENSE
 Security Critical: Yes

@@ -1,6 +1,7 @@
 Name: wayland
 URL: http://wayland.freedesktop.org/
 Version: 1.23.0
+Update Mechanism: Manual
 CPEPrefix: cpe:/a:wayland:wayland:1.20.91
 License: MIT
 License File: src/COPYING

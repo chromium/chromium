@@ -2,6 +2,7 @@ Name: Braille Translation Library
 Short Name: liblouis
 URL: https://github.com/liblouis/liblouis
 Version: 3.22.0
+Update Mechanism: Manual
 CPEPrefix: cpe:/a:liblouis:liblouis:3.22.0
 License: LGPL-3.0
 License Android Compatible: No

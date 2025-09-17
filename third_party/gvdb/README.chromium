@@ -2,6 +2,7 @@ Name: gvdb
 URL: https://gitlab.gnome.org/GNOME/gvdb
 Version: N/A
 Revision: 2b42fc75f09dbe1cd1057580b5782b08f2dcb400
+Update Mechanism: Manual
 License: LGPL-2.1
 License File: LICENSE
 Shipped: no

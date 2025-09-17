@@ -1,6 +1,7 @@
 Name: sqlite
 URL: https://github.com/sqlite/sqlite
 Revision: 7d348fc79216a09b864ff881d8561a6222301666
+Update Mechanism: Manual
 Version: 3.50.4
 CPEPrefix: cpe:/a:sqlite:sqlite:3.50.4
 Security Critical: yes

@@ -3,6 +3,7 @@ Short Name: tools-licenses-parse-dir-test
 URL: https://chromium.tools.licenses.test/src.git
 Version: 0
 Revision: v1.0.0
+Update Mechanism: Manual
 License: FAKE
 License file: NONEXISTING-LICENSE, NOT_SHIPPED, //tools/licenses/test_dir/LICENSE
 Security Critical: no
@@ -21,6 +22,7 @@ Short Name: tools-licenses-parse-dir-test-multi
 URL: https://chromium.tools.licenses.test/multi/src.git
 Version: 0
 Revision: v1.0.0
+Update Mechanism: Manual
 License: FAKE
 Shipped in Chromium: no
 Shipped: yes

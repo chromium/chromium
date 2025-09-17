@@ -3,6 +3,7 @@ Short Name: crabbyavif
 URL: https://github.com/webmproject/CrabbyAvif
 Version: N/A
 Revision: 3ba05863e84fd3acb4f4af2b4545221b317a2e55
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Security Critical: yes

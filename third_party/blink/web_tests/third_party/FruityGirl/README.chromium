@@ -2,6 +2,7 @@ Name: FruityGirl
 Short Name: FruityGirl
 URL: https://code.google.com/p/color-emoji/
 Version: 1.000
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE.txt
 Security Critical: no

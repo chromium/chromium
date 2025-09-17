@@ -3,6 +3,7 @@ Short Name: minigbm
 URL: https://chromium.googlesource.com/chromiumos/platform/minigbm
 Version: N/A
 Revision: DEPS
+Update Mechanism: Manual
 License: BSD-3-Clause
 License File: LICENSE
 Security Critical: yes

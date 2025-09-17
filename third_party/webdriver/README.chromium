@@ -3,6 +3,7 @@ Short Name: selenium
 URL: https://github.com/SeleniumHQ/selenium/tree/trunk/py
 Version: 4.33.0
 Revision: 1e954903022e9386b9acf452c24f4458dd4c4fc1
+Update Mechanism: Manual
 Security Critical: no
 Shipped: no
 License: Apache-2.0

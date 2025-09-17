@@ -2,6 +2,7 @@ Name: Netscape Portable Runtime (NSPR)
 URL: https://hg.mozilla.org/projects/nspr
 Version: 4.8
 Revision: dd5b9aa4631b350ba58e2e83106724808fd9a97f
+Update Mechanism: Manual
 License: MPL-1.1
 License File: LICENSE
 Security Critical: yes

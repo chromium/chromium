@@ -1,6 +1,7 @@
 Name: coverage
 URL: https://pypi.python.org/pypi/coverage
 Version: 3.7.1
+Update Mechanism: Manual
 Security Critical: no
 Shipped: no
 License: BSD-2-Clause

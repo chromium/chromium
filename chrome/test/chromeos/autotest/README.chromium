@@ -1,5 +1,6 @@
 Name: Test code
 URL: https://chromium.googlesource.com/chromiumos/third_party/autotest/+/refs/heads/master/docs/user-doc.md
+Update Mechanism: Manual
 License: BSD-3-Clause
 Security Critical: no
 Shipped: no

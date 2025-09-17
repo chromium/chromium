@@ -3,6 +3,7 @@ Short Name: libwebp
 URL: https://chromium.googlesource.com/webm/libwebp
 Version: N/A
 Revision: b0e8039062eedbcb20ebb1bad62bfeaee2b94ec6
+Update Mechanism: Manual
 CPEPrefix: cpe:/a:webmproject:libwebp:1.6.0
 License: BSD-3-Clause, Patent
 License File: src/COPYING, src/PATENTS

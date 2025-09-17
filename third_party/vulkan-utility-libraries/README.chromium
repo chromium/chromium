@@ -4,6 +4,7 @@ Version: N/A
 URL: https://github.com/KhronosGroup/Vulkan-Utility-Libraries
 SOURCE CODE: git clone https://github.com/KhronosGroup/Vulkan-Utility-Libraries.git
 Revision: DEPS
+Update Mechanism: Manual
 Security Critical: no
 Shipped: no
 License: Apache-2.0

@@ -3,6 +3,7 @@ Short Name: Ed25519
 URL: http://ed25519.cr.yp.to/software.html
 Version: N/A
 Date: 2017-01-22
+Update Mechanism: Manual
 License: Public Domain
 License File: LICENSE
 Security Critical: no

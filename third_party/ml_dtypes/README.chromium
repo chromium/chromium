@@ -3,6 +3,7 @@ Short Name: ml_dtypes
 URL: https://github.com/jax-ml/ml_dtypes
 Version: 57e857e85df34d463f2c778810dc4b876750c5e0
 Date: 2025-05-07
+Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
 Security Critical: Yes

@@ -3,6 +3,7 @@ Short Name: omnibox_proto
 URL: This is the canonical public repository
 Version: 804504049
 Date: 2025-09-08
+Update Mechanism: Manual
 License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes

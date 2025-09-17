@@ -4,6 +4,7 @@ URL: https://gitlab.com/libeigen/eigen
 Version: 430e35fbd15d3c946d2d2ba19ec41c16ba217cb3
 Date: 2025-09-10
 Revision: 430e35fbd15d3c946d2d2ba19ec41c16ba217cb3
+Update Mechanism: Manual
 License: MPL-2.0
 License File: LICENSE
 Security Critical: Yes

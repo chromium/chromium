@@ -3,6 +3,7 @@ Short Name: gemmlowp
 URL: https://github.com/google/gemmlowp
 Version: 16e8662c34917be0065110bfcd9cc27d30f52fdf
 Date: 2025-08-29
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Security Critical: Yes
