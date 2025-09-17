@@ -2332,6 +2332,7 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
     CHECK(context.worker_origin());
     if (context.worker_origin()->opaque()) {
       std::move(callback).Run(false);
+      return;
     }
 
     PermissionController& permission_controller =
