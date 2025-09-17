@@ -11,8 +11,7 @@
 
 namespace {
 
-/// Visibility of Safari data import entry point. If `verify_visibility`, fail
-/// the test if the entry point is not visible.
+/// Visibility of Safari data import entry point.
 bool IsSafariDataImportEntryPointVisible(bool verify_visibility) {
   bool visible = [ChromeEarlGrey
       testUIElementAppearanceWithMatcher:
@@ -32,19 +31,6 @@ void DismissSafariDataImportEntryPoint(bool verify_visibility) {
         selectElementWithMatcher:
             grey_accessibilityID(
                 kConfirmationAlertSecondaryActionAccessibilityIdentifier)]
-        performAction:grey_tap()];
-  }
-}
-
-bool IsSafariDataImportEntryPointVisible() {
-  return IsSafariDataImportEntryPointVisible(/*verify_visibility=*/false);
-}
-
-void StartImportOnSafariDataImportEntryPoint() {
-  if (IsSafariDataImportEntryPointVisible(true)) {
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
         performAction:grey_tap()];
   }
 }

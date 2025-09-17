@@ -11,12 +11,6 @@
 /// verification.
 void DismissSafariDataImportEntryPoint(bool verify_visibility);
 
-/// Visibility of Safari data import entry point.
-bool IsSafariDataImportEntryPointVisible();
-
-/// Tap "Import" on the Safari data import entry point displayed.
-void StartImportOnSafariDataImportEntryPoint();
-
 /// Tap "Remind Me Later" on Safari data import entry point displayed.
 void SetReminderOnSafariDataImportEntryPoint();
 
