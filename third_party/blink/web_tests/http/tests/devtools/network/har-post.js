@@ -37,8 +37,8 @@ import * as Common from 'devtools/core/common/common.js';
     const stream = new TestRunner.StringOutputStream(resolve);
     const progress = new Common.Progress.Progress();
     const networkRequests = NetworkTestRunner.networkRequests();
-    await NetworkTestRunner.writeHARLog(stream, networkRequests, {sanitize: false}, progress);
-    progress.done();
+    await NetworkTestRunner.writeHARLog(
+        stream, networkRequests, {sanitize: false}, progress);
     stream.close();
   });
 

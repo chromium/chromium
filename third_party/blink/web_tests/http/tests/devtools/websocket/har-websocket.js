@@ -41,11 +41,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     const stream = new TestRunner.StringOutputStream(resolve);
     const progress = new Common.Progress.Progress();
     await NetworkTestRunner.writeHARLog(
-        stream,
-        NetworkTestRunner.networkRequests(),
-        {sanitize: false},
+        stream, NetworkTestRunner.networkRequests(), {sanitize: false},
         progress);
-    progress.done();
     stream.close();
   });
   const har = JSON.parse(harString);
