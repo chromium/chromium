@@ -58,16 +58,12 @@
     <activity-alias  # DIFF-ANCHOR: da85c28e
         android:name="org.chromium.android_webview.SafeModeState"
         android:enabled="false"
-        android:process=":webview_apk"
-        android:targetActivity="org.chromium.android_webview.devui.MainActivity"
-        android:visibleToInstantApps="true">
+        android:targetActivity="org.chromium.android_webview.devui.MainActivity">
     </activity-alias>  # DIFF-ANCHOR: da85c28e
     <activity-alias  # DIFF-ANCHOR: b7cc06e9
         android:name="org.chromium.android_webview.devui.DeveloperModeState"
         android:enabled="false"
-        android:process=":webview_apk"
-        android:targetActivity="org.chromium.android_webview.devui.MainActivity"
-        android:visibleToInstantApps="true">
+        android:targetActivity="org.chromium.android_webview.devui.MainActivity">
     </activity-alias>  # DIFF-ANCHOR: b7cc06e9
     <meta-data android:name="$PACKAGE.WebViewLibrary" android:value="libwebviewchromium.so"/>
     <meta-data android:name="PIN_SHARED_LIBS_FIRST" android:value="false"/>

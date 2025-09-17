@@ -92,9 +92,7 @@ by a child template that "extends" this file.
                  test/shell/AndroidManifest.xml -->
             <activity-alias android:name="org.chromium.android_webview.devui.DeveloperModeState"
                       android:targetActivity="org.chromium.android_webview.devui.MainActivity"
-                      android:visibleToInstantApps="true"
-                      android:enabled="false"
-                      android:process=":webview_apk" />  {# Explicit process required for monochrome compatibility. #}
+                      android:enabled="false" />  {# Explicit process required for monochrome compatibility. #}
             <!-- End of WebView Developer UI Activities -->
 
             <!-- Don't actually try to launch with this alias: it only exists so we can query its enabled state. -->
@@ -102,9 +100,7 @@ by a child template that "extends" this file.
                  test/shell/AndroidManifest.xml -->
             <activity-alias android:name="org.chromium.android_webview.SafeModeState"
                       android:targetActivity="org.chromium.android_webview.devui.MainActivity"
-                      android:visibleToInstantApps="true"
-                      android:enabled="false"
-                      android:process=":webview_apk" />  {# Explicit process required for monochrome compatibility. #}
+                      android:enabled="false" />  {# Explicit process required for monochrome compatibility. #}
 
             <activity android:name="org.chromium.android_webview.nonembedded.LicenseActivity"
                       android:label="@string/license_activity_title"

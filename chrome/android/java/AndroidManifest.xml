@@ -402,8 +402,6 @@ by a child template that "extends" this file.
              images in that case. -->
         <activity-alias android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
             android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
-            android:theme="@style/Theme.BrowserUI.NoDisplay"
-            android:excludeFromRecents="true"
             android:exported="true"
             android:enabled="false"><!-- This will be selectively enabled at runtime. -->
             <intent-filter tools:ignore="AppLinkUrlError">
@@ -682,10 +680,7 @@ by a child template that "extends" this file.
         <!-- Activities for downloads. -->
         <activity-alias android:name="org.chromium.chrome.browser.download.DownloadActivity"
             android:targetActivity="org.chromium.chrome.browser.app.download.home.DownloadActivity"
-            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
-            android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
+            android:exported="false">
         </activity-alias>
         <activity android:name="org.chromium.chrome.browser.app.download.home.DownloadActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
@@ -776,8 +771,7 @@ by a child template that "extends" this file.
         </activity>
         <activity-alias android:name="com.google.android.apps.chrome.webapps.WebappActivity"
             android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity"
-            android:label="@string/webapp_activity_title"
-            {{ self.supports_video_persistence() }} >
+            android:label="@string/webapp_activity_title">
         </activity-alias>
         <!-- Activities for WebAPKs. -->
         <activity android:name="org.chromium.chrome.browser.webapps.SameTaskWebApkActivity"

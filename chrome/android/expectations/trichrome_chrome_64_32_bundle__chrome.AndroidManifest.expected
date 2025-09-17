@@ -660,8 +660,6 @@
     <activity-alias  # DIFF-ANCHOR: dcfe2999
         android:name="com.google.android.apps.chrome.webapps.WebappActivity"
         android:label="@string/webapp_activity_title"
-        android:resizeableActivity="true"
-        android:supportsPictureInPicture="true"
         android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity">
     </activity-alias>  # DIFF-ANCHOR: dcfe2999
     <activity-alias  # DIFF-ANCHOR: 8e23336d
@@ -670,19 +668,14 @@
     </activity-alias>  # DIFF-ANCHOR: 8e23336d
     <activity-alias  # DIFF-ANCHOR: 5c83a464
         android:name="org.chromium.chrome.browser.download.DownloadActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:exported="false"
-        android:targetActivity="org.chromium.chrome.browser.app.download.home.DownloadActivity"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
-        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+        android:targetActivity="org.chromium.chrome.browser.app.download.home.DownloadActivity">
     </activity-alias>  # DIFF-ANCHOR: 5c83a464
     <activity-alias  # DIFF-ANCHOR: b4a6221b
         android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
         android:enabled="false"
-        android:excludeFromRecents="true"
         android:exported="true"
-        android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
-        android:theme="@style/Theme.BrowserUI.NoDisplay">
+        android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity">
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
