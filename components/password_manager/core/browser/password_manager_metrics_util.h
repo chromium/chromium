@@ -531,19 +531,6 @@ enum class SubmittedFormType {
   kMaxValue = kSingleUsername,
 };
 
-// Represents different user interactions related to shared password
-// notification bubble. These values are persisted to logs. Entries should not
-// be renumbered and numeric values should never be reused. Always keep this
-// enum in sync with the corresponding
-// PasswordManager.SharedPasswordsNotificationInteractions in enums.xml.
-enum class SharedPasswordsNotificationBubbleInteractions {
-  kNotificationDisplayed = 0,
-  kGotItButtonClicked = 1,
-  kManagePasswordsButtonClicked = 2,
-  kCloseButtonClicked = 3,
-  kMaxValue = kCloseButtonClicked,
-};
-
 // Represents the result of processing an incoming password sharing invitation.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Always keep this enum in sync with the
@@ -806,10 +793,6 @@ void LogPasswordNoteActionInSettings(PasswordNoteAction action);
 void LogUserInteractionsInPasswordManagementBubble(
     PasswordManagementBubbleInteractions
         password_management_bubble_interaction);
-
-// Log the user interaction events in the shared passwords notification bubble.
-void LogUserInteractionsInSharedPasswordsNotificationBubble(
-    SharedPasswordsNotificationBubbleInteractions interaction);
 
 // Log the result of processing an incoming password sharing invitation.
 void LogProcessIncomingPasswordSharingInvitationResult(

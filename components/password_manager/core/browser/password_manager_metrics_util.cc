@@ -503,13 +503,6 @@ void LogUserInteractionsInPasswordManagementBubble(
       password_management_bubble_interaction);
 }
 
-void LogUserInteractionsInSharedPasswordsNotificationBubble(
-    SharedPasswordsNotificationBubbleInteractions interaction) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.SharedPasswordsNotificationBubble.UserAction",
-      interaction);
-}
-
 void LogProcessIncomingPasswordSharingInvitationResult(
     ProcessIncomingPasswordSharingInvitationResult result) {
   base::UmaHistogramEnumeration(

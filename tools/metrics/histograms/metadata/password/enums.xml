@@ -1190,13 +1190,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Invalid credentials"/>
 </enum>
 
-<enum name="PasswordManager.SharedPasswordsNotificationInteractions">
-  <int value="0" label="Notification displayed"/>
-  <int value="1" label="Got it button clicked"/>
-  <int value="2" label="Manage passwords button clicked"/>
-  <int value="3" label="Close button clicked"/>
-</enum>
-
 <enum name="PasswordManager.SurfaceVisit">
   <int value="0" label="Opened Password Manager Main Page"/>
   <int value="1" label="Opened Password Details Page"/>
