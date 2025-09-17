@@ -227,8 +227,16 @@ IN_PROC_BROWSER_TEST_F(FencedFrameViewportObserverBrowserTest,
   ValidateHistograms(/*overall_max=*/3, /*unload_time_max=*/3);
 }
 
+// TODO(crbug.com/445735972): Fix failing test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LogVisibleFrameMetricsNestedCrossSiteFrames \
+  DISABLED_LogVisibleFrameMetricsNestedCrossSiteFrames
+#else
+#define MAYBE_LogVisibleFrameMetricsNestedCrossSiteFrames \
+  LogVisibleFrameMetricsNestedCrossSiteFrames
+#endif
 IN_PROC_BROWSER_TEST_F(FencedFrameViewportObserverBrowserTest,
-                       LogVisibleFrameMetricsNestedCrossSiteFrames) {
+                       MAYBE_LogVisibleFrameMetricsNestedCrossSiteFrames) {
   const GURL main_url =
       https_server()->GetURL("a.test",
                              "/cross_site_iframe_factory.html?a.test(a.test{"
