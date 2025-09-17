@@ -781,19 +781,9 @@ void ExtractUnderlines(NSAttributedString* string,
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent*)theEvent {
-  switch ([self acceptsMouseEventsOption]) {
-    case AcceptMouseEvents::kWhenInActiveWindow:
-      // It is important to accept clicks when this window is the main window.
-      // It handles the case when the find bar (or other secondary UI) is the
-      // key window.
-      return self.window.mainWindow || self.window.keyWindow;
-    case AcceptMouseEvents::kWhenInActiveApp:
-      // This will accept clicks regardless of Chrome being the active app or
-      // not. This is intentional. It mimics the views UI's behavior.
-      return YES;
-    case AcceptMouseEvents::kAlways:
-      return YES;
-  }
+  // Enable "click-through" if mouse clicks are accepted in inactive windows.
+  return
+      [self acceptsMouseEventsOption] > AcceptMouseEvents::kWhenInActiveWindow;
 }
 
 - (void)setCloseOnDeactivate:(BOOL)b {
