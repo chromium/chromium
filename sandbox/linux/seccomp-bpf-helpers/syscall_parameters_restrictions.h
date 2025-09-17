@@ -135,8 +135,8 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPipe2();
 // particular, this denies MSG_OOB.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictSockSendFlags(int sysno);
 
-// Restrict the flags of memfd_create(). The flags are allowlistred, but in
-// particular, this denies MFD_HUGETLB.
+// Restrict the flags of memfd_create(). The flags are allowlisted, but in
+// particular, this denies MFD_HUGETLB and MFD_EXEC.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMemfdCreate();
 }  // namespace sandbox.
 
