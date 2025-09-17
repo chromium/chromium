@@ -197,17 +197,12 @@ rust_static_library("crabbyavif") {
     "dav1d",
     "libyuv",
     "capi",
-
-    # TODO: crbug.com/440481923 - Un-comment this once the new rust roll
-    # (http://crrev.com/c/6874449) lands and
-    # https://github.com/webmproject/CrabbyAvif/pull/654 is rolled into
-    # chromium.
-    #"disable_cfi",
+    "disable_cfi",
   ]
 
   # Required for disable_cfi feature.
   configs -= [ "//build/config/compiler:disallow_unstable_features" ]
-  rustflags = [ "-Zallow-features=no_sanitize" ]
+  rustflags = [ "-Zallow-features=sanitize" ]
 
   public_deps = [ ":header_files" ]
   deps = [
