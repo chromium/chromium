@@ -12,6 +12,9 @@ ConvertToVariantFn::~ConvertToVariantFn() = default;
 void ConvertToVariantFn::Apply(const ActivateTabToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+void ConvertToVariantFn::Apply(const ActivateWindowToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
 void ConvertToVariantFn::Apply(const AttemptLoginToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
@@ -21,7 +24,13 @@ void ConvertToVariantFn::Apply(const ClickToolRequest& tr) {
 void ConvertToVariantFn::Apply(const CloseTabToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+void ConvertToVariantFn::Apply(const CloseWindowToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
 void ConvertToVariantFn::Apply(const CreateTabToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
+void ConvertToVariantFn::Apply(const CreateWindowToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
 void ConvertToVariantFn::Apply(const DragAndReleaseToolRequest& tr) {

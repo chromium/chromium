@@ -80,6 +80,9 @@ optimization_guide::proto::Actions MakeNavigate(tabs::TabHandle tab_handle,
                                                 std::string_view target_url);
 optimization_guide::proto::Actions MakeCreateTab(SessionID window_id,
                                                  bool foreground);
+optimization_guide::proto::Actions MakeActivateWindow(SessionID window_id);
+optimization_guide::proto::Actions MakeCreateWindow();
+optimization_guide::proto::Actions MakeCloseWindow(SessionID window_id);
 optimization_guide::proto::Actions MakeType(content::RenderFrameHost& rfh,
                                             int content_node_id,
                                             std::string_view text,

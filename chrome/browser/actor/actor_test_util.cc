@@ -49,11 +49,14 @@ using ::content::RenderFrameHost;
 using ::content::WebContents;
 using ::optimization_guide::DocumentIdentifierUserData;
 using ::optimization_guide::proto::Actions;
+using ::optimization_guide::proto::ActivateWindowAction;
 using ::optimization_guide::proto::ClickAction;
 using ClickType = ::optimization_guide::proto::ClickAction::ClickType;
 using ClickCount = ::optimization_guide::proto::ClickAction::ClickCount;
+using ::optimization_guide::proto::CloseWindowAction;
 using ::optimization_guide::proto::Coordinate;
 using ::optimization_guide::proto::CreateTabAction;
+using ::optimization_guide::proto::CreateWindowAction;
 using ::optimization_guide::proto::DragAndReleaseAction;
 using ::optimization_guide::proto::HistoryBackAction;
 using ::optimization_guide::proto::HistoryForwardAction;
@@ -152,6 +155,28 @@ Actions MakeCreateTab(SessionID window_id, bool foreground) {
   CreateTabAction* create_tab = actions.add_actions()->mutable_create_tab();
   create_tab->set_foreground(foreground);
   create_tab->set_window_id(window_id.id());
+  return actions;
+}
+
+Actions MakeActivateWindow(SessionID window_id) {
+  Actions actions;
+  ActivateWindowAction* activate_window =
+      actions.add_actions()->mutable_activate_window();
+  activate_window->set_window_id(window_id.id());
+  return actions;
+}
+
+Actions MakeCreateWindow() {
+  Actions actions;
+  actions.add_actions()->mutable_create_window();
+  return actions;
+}
+
+Actions MakeCloseWindow(SessionID window_id) {
+  Actions actions;
+  CloseWindowAction* close_window =
+      actions.add_actions()->mutable_close_window();
+  close_window->set_window_id(window_id.id());
   return actions;
 }
 

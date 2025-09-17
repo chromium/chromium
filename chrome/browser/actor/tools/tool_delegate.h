@@ -13,6 +13,8 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace actor_login {
 class ActorLoginService;
 struct Credential;
@@ -34,6 +36,9 @@ class AggregatedJournal;
 class ToolDelegate {
  public:
   virtual ~ToolDelegate() = default;
+
+  // Returns the profile in which the task is running.
+  virtual Profile& GetProfile() = 0;
 
   // Returns the journal so that tools may log information related to their
   // execution.

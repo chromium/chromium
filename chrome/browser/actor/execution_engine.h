@@ -102,6 +102,7 @@ class ExecutionEngine : public ToolDelegate {
   base::WeakPtr<ExecutionEngine> GetWeakPtr();
 
   // ToolDelegate:
+  Profile& GetProfile() override;
   AggregatedJournal& GetJournal() override;
   favicon::FaviconService* GetFaviconService() override;
   actor_login::ActorLoginService& GetActorLoginService() override;

@@ -57,8 +57,11 @@ constexpr absl::Overload PreToolEventsFn{
           MouseClick(tr.GetTabHandle(), tr.GetClickType(), tr.GetClickCount())};
     },
     NoUiEvents<ActivateTabToolRequest>,
+    NoUiEvents<ActivateWindowToolRequest>,
     NoUiEvents<CloseTabToolRequest>,
+    NoUiEvents<CloseWindowToolRequest>,
     NoUiEvents<CreateTabToolRequest>,
+    NoUiEvents<CreateWindowToolRequest>,
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<HistoryToolRequest>,
     [](const MoveMouseToolRequest& tr) {
@@ -77,15 +80,24 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<ScriptToolRequest>,
     NoUiEvents<ScrollToToolRequest>};
 
-constexpr absl::Overload PostToolEventsFn{
-    NoUiEvents<ClickToolRequest>,          NoUiEvents<ActivateTabToolRequest>,
-    NoUiEvents<CloseTabToolRequest>,       NoUiEvents<CreateTabToolRequest>,
-    NoUiEvents<DragAndReleaseToolRequest>, NoUiEvents<HistoryToolRequest>,
-    NoUiEvents<MoveMouseToolRequest>,      NoUiEvents<NavigateToolRequest>,
-    NoUiEvents<ScrollToolRequest>,         NoUiEvents<SelectToolRequest>,
-    NoUiEvents<TypeToolRequest>,           NoUiEvents<WaitToolRequest>,
-    NoUiEvents<AttemptLoginToolRequest>,   NoUiEvents<ScriptToolRequest>,
-    NoUiEvents<ScrollToToolRequest>};
+constexpr absl::Overload PostToolEventsFn{NoUiEvents<ClickToolRequest>,
+                                          NoUiEvents<ActivateTabToolRequest>,
+                                          NoUiEvents<ActivateWindowToolRequest>,
+                                          NoUiEvents<CloseTabToolRequest>,
+                                          NoUiEvents<CloseWindowToolRequest>,
+                                          NoUiEvents<CreateTabToolRequest>,
+                                          NoUiEvents<CreateWindowToolRequest>,
+                                          NoUiEvents<DragAndReleaseToolRequest>,
+                                          NoUiEvents<HistoryToolRequest>,
+                                          NoUiEvents<MoveMouseToolRequest>,
+                                          NoUiEvents<NavigateToolRequest>,
+                                          NoUiEvents<ScrollToolRequest>,
+                                          NoUiEvents<SelectToolRequest>,
+                                          NoUiEvents<TypeToolRequest>,
+                                          NoUiEvents<WaitToolRequest>,
+                                          NoUiEvents<AttemptLoginToolRequest>,
+                                          NoUiEvents<ScriptToolRequest>,
+                                          NoUiEvents<ScrollToToolRequest>};
 
 constexpr absl::Overload ActorTaskAsyncChangeFn{
     [](const UiEventDispatcher::AddTab& c) {

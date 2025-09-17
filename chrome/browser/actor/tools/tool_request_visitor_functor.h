@@ -19,16 +19,20 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
+#include "chrome/browser/actor/tools/window_management_tool_request.h"
 
 namespace actor {
 
 class ToolRequestVisitorFunctor {
  public:
   virtual void Apply(const ActivateTabToolRequest&) = 0;
+  virtual void Apply(const ActivateWindowToolRequest&) = 0;
   virtual void Apply(const AttemptLoginToolRequest&) = 0;
   virtual void Apply(const ClickToolRequest&) = 0;
   virtual void Apply(const CloseTabToolRequest&) = 0;
+  virtual void Apply(const CloseWindowToolRequest&) = 0;
   virtual void Apply(const CreateTabToolRequest&) = 0;
+  virtual void Apply(const CreateWindowToolRequest&) = 0;
   virtual void Apply(const DragAndReleaseToolRequest&) = 0;
   virtual void Apply(const HistoryToolRequest&) = 0;
   virtual void Apply(const MoveMouseToolRequest&) = 0;

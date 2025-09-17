@@ -493,6 +493,10 @@ favicon::FaviconService* ExecutionEngine::GetFaviconService() {
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
 }
 
+Profile& ExecutionEngine::GetProfile() {
+  return *profile_;
+}
+
 AggregatedJournal& ExecutionEngine::GetJournal() {
   return *journal_;
 }

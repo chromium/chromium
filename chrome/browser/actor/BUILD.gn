@@ -43,6 +43,7 @@ source_set("actor") {
     "tools/tool_request.h",
     "tools/type_tool_request.h",
     "tools/wait_tool_request.h",
+    "tools/window_management_tool_request.h",
   ]
   public_deps = [
     ":types",
@@ -118,6 +119,9 @@ source_set("impl") {
     "tools/wait_tool.cc",
     "tools/wait_tool.h",
     "tools/wait_tool_request.cc",
+    "tools/window_management_tool.cc",
+    "tools/window_management_tool.h",
+    "tools/window_management_tool_request.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -291,8 +295,12 @@ source_set("browser_tests") {
       "tools/tool_agnostic_browsertest.cc",
       "tools/type_tool_browsertest.cc",
       "tools/wait_tool_browsertest.cc",
+      "tools/window_management_tool_browsertest.cc",
     ]
-    deps += [ "//chrome/browser/glic" ]
+    deps += [
+      "//chrome/browser/glic",
+      "//ui/base:ozone_buildflags",
+    ]
   }
 }
 

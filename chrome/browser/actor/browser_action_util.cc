@@ -34,6 +34,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
+#include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -57,10 +58,13 @@ namespace apc = ::optimization_guide::proto;
 using apc::Action;
 using apc::ActionTarget;
 using apc::ActivateTabAction;
+using apc::ActivateWindowAction;
 using apc::AttemptLoginAction;
 using apc::ClickAction;
 using apc::CloseTabAction;
+using apc::CloseWindowAction;
 using apc::CreateTabAction;
+using apc::CreateWindowAction;
 using apc::DragAndReleaseAction;
 using apc::HistoryBackAction;
 using apc::HistoryForwardAction;
@@ -407,6 +411,29 @@ std::unique_ptr<ToolRequest> CreateCloseTabRequest(
   return std::make_unique<CloseTabToolRequest>(tab_handle);
 }
 
+std::unique_ptr<ToolRequest> CreateCreateWindowRequest(
+    const CreateWindowAction& action) {
+  return std::make_unique<CreateWindowToolRequest>();
+}
+
+std::unique_ptr<ToolRequest> CreateCloseWindowRequest(
+    const CloseWindowAction& action) {
+  if (!action.has_window_id()) {
+    return nullptr;
+  }
+
+  return std::make_unique<CloseWindowToolRequest>(action.window_id());
+}
+
+std::unique_ptr<ToolRequest> CreateActivateWindowRequest(
+    const ActivateWindowAction& action) {
+  if (!action.has_window_id()) {
+    return nullptr;
+  }
+
+  return std::make_unique<ActivateWindowToolRequest>(action.window_id());
+}
+
 std::unique_ptr<ToolRequest> CreateBackRequest(
     const HistoryBackAction& action,
     TabInterface* deprecated_fallback_tab) {
@@ -605,9 +632,19 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
       const ScrollToAction& scroll_to_action = action.scroll_to();
       return CreateScrollToRequest(scroll_to_action, deprecated_fallback_tab);
     }
-    case optimization_guide::proto::Action::kCreateWindow:
-    case optimization_guide::proto::Action::kCloseWindow:
-    case optimization_guide::proto::Action::kActivateWindow:
+    case optimization_guide::proto::Action::kCreateWindow: {
+      const CreateWindowAction& create_window_action = action.create_window();
+      return CreateCreateWindowRequest(create_window_action);
+    }
+    case optimization_guide::proto::Action::kCloseWindow: {
+      const CloseWindowAction& close_window_action = action.close_window();
+      return CreateCloseWindowRequest(close_window_action);
+    }
+    case optimization_guide::proto::Action::kActivateWindow: {
+      const ActivateWindowAction& activate_window_action =
+          action.activate_window();
+      return CreateActivateWindowRequest(activate_window_action);
+    }
     case optimization_guide::proto::Action::kYieldToUser:
       NOTIMPLEMENTED();
       break;
