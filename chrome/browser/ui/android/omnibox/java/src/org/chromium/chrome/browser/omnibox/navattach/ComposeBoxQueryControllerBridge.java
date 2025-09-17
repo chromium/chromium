@@ -61,6 +61,11 @@ public class ComposeBoxQueryControllerBridge {
         return ComposeBoxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, queryText);
     }
 
+    /** Remove the given file from the current session. */
+    void removeAttachment(String token) {
+        ComposeBoxQueryControllerBridgeJni.get().removeAttachment(mNativeInstance, token);
+    }
+
     @NativeMethods
     public interface Natives {
         long init(@JniType("Profile*") Profile profile);
@@ -84,5 +89,8 @@ public class ComposeBoxQueryControllerBridge {
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         @JniType("GURL")
         GURL getAimUrl(long nativeInstance, @JniType("std::string") String queryText);
+
+        @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
+        void removeAttachment(long nativeInstance, @JniType("std::string") String token);
     }
 }

@@ -17,12 +17,16 @@ class NavigationAttachmentItemProperties {
     public static final WritableObjectPropertyKey<String> DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
-    /** The name of the attachment. */
-    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    /** The handler for a remove button click. */
+    public static final WritableObjectPropertyKey<Runnable> ON_REMOVE =
+            new WritableObjectPropertyKey<>();
 
     /** The thumbnail of the attachment. */
     public static final WritableObjectPropertyKey<Drawable> THUMBNAIL =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {DESCRIPTION, TITLE, THUMBNAIL};
+    /** The name of the attachment. */
+    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+
+    public static final PropertyKey[] ALL_KEYS = {DESCRIPTION, ON_REMOVE, THUMBNAIL, TITLE};
 }

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -327,7 +328,7 @@ class NavigationAttachmentsMediator {
      * @param attachmentDetails The details of the attachment to add.
      */
     /* package */ void addAttachment(AttachmentDetailsFetcher.AttachmentDetails attachmentDetails) {
-        uploadAttachment(attachmentDetails);
+        String token = uploadAttachment(attachmentDetails);
         setComposeboxSessionState(true);
 
         PropertyModel model =
@@ -342,14 +343,31 @@ class NavigationAttachmentsMediator {
                                 NavigationAttachmentItemProperties.DESCRIPTION,
                                 attachmentDetails.mimeType)
                         .build();
-        mModelList.add(new MVCListAdapter.ListItem(attachmentDetails.itemType, model));
+
+        var listItem = new MVCListAdapter.ListItem(attachmentDetails.itemType, model);
+        model.set(
+                NavigationAttachmentItemProperties.ON_REMOVE,
+                () -> removeAttachment(listItem, token));
+        mModelList.add(listItem);
     }
 
-    private void uploadAttachment(AttachmentDetails attachmentDetails) {
+    /**
+     * Remove an attachment from the navigation attachments toolbar.
+     *
+     * @param token The token of the attachment to remove.
+     */
+    public void removeAttachment(ListItem item, String token) {
+        mModelList.remove(item);
         assert mComposeBoxQueryControllerBridge != null;
         if (mComposeBoxQueryControllerBridge == null) return;
+        mComposeBoxQueryControllerBridge.removeAttachment(token);
+    }
 
-        mComposeBoxQueryControllerBridge.addFile(
+    private String uploadAttachment(AttachmentDetails attachmentDetails) {
+        assert mComposeBoxQueryControllerBridge != null;
+        if (mComposeBoxQueryControllerBridge == null) return "";
+
+        return mComposeBoxQueryControllerBridge.addFile(
                 attachmentDetails.title, attachmentDetails.mimeType, attachmentDetails.data);
     }
 

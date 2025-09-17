@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/omnibox/composebox_query_controller_bridge.h"
 
+#include <utility>
+
 #include "base/android/jni_bytebuffer.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
@@ -98,6 +100,16 @@ ComposeboxQueryControllerBridge::AddFile(
 GURL ComposeboxQueryControllerBridge::GetAimUrl(JNIEnv* env,
                                                 std::string& query_text) {
   return query_controller_->CreateAimUrl(query_text, base::Time::Now());
+}
+
+void ComposeboxQueryControllerBridge::RemoveAttachment(
+    JNIEnv* env,
+    const std::string& token) {
+  std::optional<base::UnguessableToken> unguessable_token =
+      base::UnguessableToken::DeserializeFromString(token);
+  if (unguessable_token.has_value()) {
+    query_controller_->DeleteFile(unguessable_token.value());
+  }
 }
 
 void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(

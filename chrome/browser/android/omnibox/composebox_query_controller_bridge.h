@@ -31,6 +31,7 @@ class ComposeboxQueryControllerBridge
       std::string& file_type,
       const jni_zero::JavaParamRef<jobject>& file_data);
   GURL GetAimUrl(JNIEnv* env, std::string& query_text);
+  void RemoveAttachment(JNIEnv* env, const std::string& token);
 
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(

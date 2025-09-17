@@ -27,6 +27,10 @@ class NavigationAttachmentItemViewBinder {
         } else if (propertyKey == NavigationAttachmentItemProperties.TITLE
                 || propertyKey == NavigationAttachmentItemProperties.DESCRIPTION) {
             applyTitleAndDescriptionIfPresent(model, view);
+        } else if (propertyKey == NavigationAttachmentItemProperties.ON_REMOVE) {
+            view.findViewById(R.id.attachment_remove_button)
+                    .setOnClickListener(
+                            v -> model.get(NavigationAttachmentItemProperties.ON_REMOVE).run());
         }
     }
 
