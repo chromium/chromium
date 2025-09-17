@@ -89,4 +89,31 @@ TEST_F(GeneratedSecuritySettingsBundlePrefTest, NotifyPrefUpdates) {
   test_observer.Reset();
 }
 
+TEST_F(GeneratedSecuritySettingsBundlePrefTest,
+       BundlePrefUpdatesSafeBrowsingState) {
+  auto pref = std::make_unique<GeneratedSecuritySettingsBundlePref>(profile());
+
+  // Set profile to standard safe browsing.
+  SetSafeBrowsingState(profile()->GetPrefs(),
+                       SafeBrowsingState::STANDARD_PROTECTION);
+
+  // Set bundle to enhanced should set Safe Browsing to enhanced
+  EXPECT_EQ(pref->SetPref(
+                std::make_unique<base::Value>(
+                    static_cast<int>(SecuritySettingsBundleSetting::ENHANCED))
+                    .get()),
+            settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(GetSafeBrowsingState(*profile()->GetPrefs()),
+            SafeBrowsingState::ENHANCED_PROTECTION);
+
+  // Set bundle to standard should set Safe Browsing to standard
+  EXPECT_EQ(pref->SetPref(
+                std::make_unique<base::Value>(
+                    static_cast<int>(SecuritySettingsBundleSetting::STANDARD))
+                    .get()),
+            settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(GetSafeBrowsingState(*profile()->GetPrefs()),
+            SafeBrowsingState::STANDARD_PROTECTION);
+}
+
 }  // namespace safe_browsing

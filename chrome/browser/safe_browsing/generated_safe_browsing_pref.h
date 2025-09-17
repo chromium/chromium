@@ -15,12 +15,15 @@ namespace safe_browsing {
 extern const char kGeneratedSafeBrowsingPref[];
 
 // Must be kept in sync with the SafeBrowsing enum located in
-// chrome/browser/resources/settings/privacy_page/security_page.js.
+// chrome/browser/resources/settings/privacy_page/security_page_v2.js.
+// and chrome/browser/resources/settings/privacy_page/security_page.js
+// LINT.IfChange(SafeBrowsingSetting)
 enum class SafeBrowsingSetting {
   ENHANCED,
   STANDARD,
   DISABLED,
 };
+// LINT.ThenChange(/chrome/browser/resources/settings/privacy_page/security_page_v2.ts:SafeBrowsingSetting,/chrome/browser/resources/settings/privacy_page/security_page.ts:SafeBrowsingSetting)
 
 // A generated preference which represents the effective Safe Browsing setting
 // state (including non-user management) based on the underlying Safe Browsing

@@ -1918,6 +1918,29 @@
     Provides Google’s strongest account security for people at risk of targeted attacks
   </message>
 
+  <!-- Bundled Security Settings (chrome://settings/security) -->
+  <message name="IDS_SETTINGS_SECURITY_TITLE" desc="Name of security page header">
+    Browsing protection
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_STANDARD_BUNDLE_TITLE" desc="Name of standard bundle">
+    Standard
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_ENHANCED_BUNDLE_TITLE" desc="Name of enhanced bundle">
+    Enhanced
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_TITLE" desc="Name of Safe Browsing security setting">
+    Google Safe Browsing
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_DESCRIPTION" desc="Description of the Safe Browsing security setting">
+    Protects you from dangerous sites, downloads, and extensions
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_STANDARD_TITLE" desc="Name of Safe Browsing standard protection">
+    Standard Protection
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_ENHANCED_TITLE" desc="Name of Safe Browsing enhanced protection">
+    Enhanced Protection
+  </message>
+
   <!-- Secure Connections -->
   <message name="IDS_SETTINGS_SECURE_CONNECTIONS_SECTION_TITLE" desc="Title of the Secure Connections section in Security settings">
     Secure connections

@@ -51,11 +51,13 @@ import {getTemplate} from './security_page.html.js';
  * of the same name located in:
  * chrome/browser/safe_browsing/generated_safe_browsing_pref.h
  */
+// LINT.IfChange(SafeBrowsingSetting)
 export enum SafeBrowsingSetting {
   ENHANCED = 0,
   STANDARD = 1,
   DISABLED = 2,
 }
+// LINT.ThenChange(/chrome/browser/safe_browsing/generated_safe_browsing_pref.h:SafeBrowsingSetting)
 
 /**
  * Enumeration of all HTTPS-First Mode setting states. Must be kept in sync with

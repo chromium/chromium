@@ -8,8 +8,8 @@ import type {SettingsSecurityPageV2Element} from 'chrome://settings/lazy_load.js
 import {SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
 
@@ -50,4 +50,19 @@ suite('Main', function() {
         SecuritySettingsBundleSetting.ENHANCED,
         page.prefs.generated.security_settings_bundle.value);
   });
+
+  test('SafeBrowsingRowClickExpandsRowAndShowsSafeBrowsingSettings', async function() {
+    assertFalse(isChildVisible(page, '#safeBrowsingRadioGroup'));
+
+    // Click on the row, expands content and we can see the radio group.
+    page.$.safeBrowsingRow.click();
+    await microtasksFinished();
+    assertTrue(isChildVisible(page, '#safeBrowsingRadioGroup'));
+
+    // Click on the row, collapses content and we can't see the radio group.
+    page.$.safeBrowsingRow.click();
+    await microtasksFinished();
+    assertFalse(isChildVisible(page, '#safeBrowsingRadioGroup'));
+  });
+
 });

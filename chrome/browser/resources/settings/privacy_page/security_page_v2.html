@@ -1,22 +1,126 @@
+<style include="cr-shared-style">
+  :host {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .box {
+    background-color: var(--cr-card-background-color);
+    box-shadow: var(--cr-card-shadow);
+  }
+
+  .card {
+    align-items: flex-start;
+    aspect-ratio: 1 / 1;
+    display: inline-flex;
+    justify-content: flex-start;
+    min-width: 44%;
+    padding: 20px;
+  }
+
+  .card:hover {
+    background-color: var(--cr-hover-background-color);
+    cursor: pointer;
+  }
+
+  .card-container {
+    align-items: stretch;
+    display: flex;
+    gap: 0;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .section-header {
+    color: var(--cr-primary-text-color);
+    flex: 1;
+    font-size: 108%;
+    font-weight: 400;
+    letter-spacing: .25px;
+    margin-bottom: 16px;
+    margin-top: 30px;
+    width: 100%;
+    user-select: none;
+  }
+
+  .section-header.first{
+    margin-top: 0px;
+  }
+
+  #securitySettingsBundleStandard {
+    border-top-left-radius: var(--cr-card-border-radius);
+  }
+
+  #securitySettingsBundleEnhanced {
+    border-top-right-radius: var(--cr-card-border-radius);
+  }
+
+  #safeBrowsingRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  settings-toggle-button:last-of-type {
+    border-bottom-left-radius: var(--cr-card-border-radius);
+    border-bottom-right-radius: var(--cr-card-border-radius);
+  }
+</style>
 <settings-subpage page-title="$i18n{securityPageTitle}"
     learn-more-url="$i18n{safeBrowsingHelpCenterURL}"
-    route-path$="[[routePath]]">
-  <h1 class="cr-title-text">Bundled Security Settings</h1>
+    route-path$="[[routePath]]" class="multi-card">
+  <h2 class="section-header cr-secondary-text first">
+    $i18n{securityTitle}
+  </h2>
   <settings-radio-group id="bundlesRadioGroup"
+      class="card-container"
       pref="{{prefs.generated.security_settings_bundle}}"
-      selectable-elements="cr-radio-button, settings-collapse-radio-button">
-    <!-- TODO(crbug.com/423878094): Replace hardcoded strings. -->
-    <settings-collapse-radio-button id="securitySettingsBundleEnhanced"
-        name="[[securitySettingsBundleSettingEnum_.ENHANCED]]"
-        pref="[[prefs.generated.security_settings_bundle]]"
-        label="Enhanced Bundle"
-        no-automatic-collapse>
-    </settings-collapse-radio-button>
-    <settings-collapse-radio-button id="securitySettingsBundleStandard"
+      selectable-elements="controlled-radio-button">
+    <controlled-radio-button
+        id="securitySettingsBundleStandard"
         name="[[securitySettingsBundleSettingEnum_.STANDARD]]"
-        pref="[[prefs.generated.security_settings_bundle]]"
-        label="Standard Bundle"
-        no-automatic-collapse>
-    </settings-collapse-radio-button>
+        pref="{{prefs.generated.security_settings_bundle}}"
+        label="$i18n{securityStandardBundleTitle}"
+        class="card box">
+    </controlled-radio-button>
+    <controlled-radio-button
+        id="securitySettingsBundleEnhanced"
+        name="[[securitySettingsBundleSettingEnum_.ENHANCED]]"
+        pref="{{prefs.generated.security_settings_bundle}}"
+        label="$i18n{securityEnhancedBundleTitle}"
+        class="card box">
+    </controlled-radio-button>
   </settings-radio-group>
+  <settings-toggle-button
+      pref="{{prefs.generated.safe_browsing}}"
+      label="$i18n{securitySafeBrowsingTitle}"
+      sub-label="$i18n{securitySafeBrowsingDesc}"
+      id="safeBrowsingRow"
+      class="box"
+      numeric-unchecked-values="[[safeBrowsingOff_]]"
+      numeric-checked-value="[[safeBrowsingSettingEnum_.STANDARD]]"
+      no-toggle-on-host-click on-click="onSafeBrowsingRowExpanded_">
+    <div id="safeBrowsingRowMoreActions"
+        slot="more-actions">
+      <cr-expand-button id="safeBrowsingRowExpandButton" no-hover
+          expanded="{{safeBrowsingRowExpanded_}}">
+      </cr-expand-button>
+    </div>
+  </settings-toggle-button>
+  <cr-collapse id="safeBrowsingCollapse"
+      opened="[[safeBrowsingRowExpanded_]]">
+    <settings-radio-group id="safeBrowsingRadioGroup"
+        pref="{{prefs.generated.safe_browsing}}"
+        selectable-elements="controlled-radio-button">
+      <controlled-radio-button
+          label="$i18n{securitySafeBrowsingStandardTitle}"
+          name="[[safeBrowsingSettingEnum_.STANDARD]]"
+          pref="[[prefs.generated.safe_browsing]]">
+      </controlled-radio-button>
+      <controlled-radio-button id="enhancedProtectionButton"
+          label="$i18n{securitySafeBrowsingEnhancedTitle}"
+          name="[[safeBrowsingSettingEnum_.ENHANCED]]"
+          pref="[[prefs.generated.safe_browsing]]">
+      </controlled-radio-button>
+    </settings-radio-group>
+  </cr-collapse>
 </settings-subpage>

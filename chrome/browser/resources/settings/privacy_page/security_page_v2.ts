@@ -3,14 +3,22 @@
 // found in the LICENSE file.
 
 import '../settings_page/settings_subpage.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '/shared/settings/prefs/prefs.js';
+import '../controls/controlled_radio_button.js';
+import '../controls/settings_radio_group.js';
+import '../controls/settings_toggle_button.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {ControlledRadioButtonElement} from '../controls/controlled_radio_button.js';
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
-import type {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
 import {getTemplate} from './security_page_v2.html.js';
 
 /** Enumeration of all security settings bundle modes.*/
@@ -20,11 +28,27 @@ export enum SecuritySettingsBundleSetting {
   ENHANCED = 1,
 }
 // LINT.ThenChange(/chrome/browser/safe_browsing/generated_security_settings_bundle_pref.h:SecuritySettingsBundleSetting)
+
+/**
+ * Enumeration of all Safe Browsing modes. Must be kept in sync with the enum
+ * of the same name located in:
+ * chrome/browser/safe_browsing/generated_safe_browsing_pref.h
+ */
+// LINT.IfChange(SafeBrowsingSetting)
+export enum SafeBrowsingSetting {
+  ENHANCED = 0,
+  STANDARD = 1,
+  DISABLED = 2,
+}
+// LINT.ThenChange(/chrome/browser/safe_browsing/generated_safe_browsing_pref.h:SafeBrowsingSetting)
+
 export interface SettingsSecurityPageV2Element {
   $: {
-    securitySettingsBundleEnhanced: SettingsCollapseRadioButtonElement,
     bundlesRadioGroup: SettingsRadioGroupElement,
-    securitySettingsBundleStandard: SettingsCollapseRadioButtonElement,
+    securitySettingsBundleEnhanced: ControlledRadioButtonElement,
+    securitySettingsBundleStandard: ControlledRadioButtonElement,
+    safeBrowsingRow: SettingsToggleButtonElement,
+    safeBrowsingRadioGroup: SettingsRadioGroupElement,
   };
 }
 
@@ -43,17 +67,38 @@ export class SettingsSecurityPageV2Element extends
 
   static get properties() {
     return {
-      /** Valid security settings bundle states.*/
       securitySettingsBundleSettingEnum_: {
         type: Object,
         value: SecuritySettingsBundleSetting,
       },
+
+      safeBrowsingSettingEnum_: {
+        type: Object,
+        value: SafeBrowsingSetting,
+      },
+
+      safeBrowsingOff_: {
+        type: Array,
+        value: () => [SafeBrowsingSetting.DISABLED],
+      },
+
+      safeBrowsingRowExpanded_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
+
+  declare private safeBrowsingOff_: SafeBrowsingSetting[];
+  declare private safeBrowsingRowExpanded_: boolean;
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
+
+  private onSafeBrowsingRowExpanded_() {
+    this.safeBrowsingRowExpanded_ = !this.safeBrowsingRowExpanded_;
   }
 }
 
