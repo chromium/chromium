@@ -276,36 +276,6 @@ class NavigationControllerBrowserTest
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
 };
 
-// Base class for tests that need to supply modifications to EmbeddedTestServer
-// which are required to be complete before it is started.
-class NavigationControllerBrowserTestNoServer
-    : public ContentBrowserTest,
-      public ::testing::WithParamInterface<
-          std::tuple<std::string /* render_document_level */,
-                     bool /* enable_back_forward_cache*/>> {
- public:
-  NavigationControllerBrowserTestNoServer() {
-    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
-                                       std::get<0>(GetParam()));
-    InitBackForwardCacheFeature(&feature_list_for_back_forward_cache_,
-                                std::get<1>(GetParam()));
-  }
-
- protected:
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    content::SetupCrossSiteRedirector(embedded_test_server());
-  }
-
-  WebContentsImpl* contents() const {
-    return static_cast<WebContentsImpl*>(shell()->web_contents());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_for_render_document_;
-  base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
-};
-
 // Ensure that tests can navigate subframes cross-site in both default mode and
 // --site-per-process, but that they only go cross-process in the latter.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, LoadCrossSiteSubframe) {
@@ -452,6 +422,15 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_for_render_document_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool()),
+    LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest::DescribeParams);
 
 // Verifies that the base, history, and data URLs for LoadDataWithBaseURL end up
 // in the expected parts of the NavigationEntry in each stage of navigation, and
@@ -1225,6 +1204,13 @@ class LoadDataWithBaseURLBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_for_render_document_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LoadDataWithBaseURLBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    LoadDataWithBaseURLBrowserTest::DescribeParams);
 
 // Tests that navigating with LoadDataWithBaseURL succeeds even when the base
 // URL given is invalid.
@@ -4527,6 +4513,13 @@ class InitialEmptyDocNavigationControllerBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_for_render_document_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InitialEmptyDocNavigationControllerBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    InitialEmptyDocNavigationControllerBrowserTest::DescribeParams);
 
 // Test various navigation cases on newly-created subframes that have only
 // loaded the initial empty document (but might have done other navigations that
@@ -12008,6 +12001,13 @@ class ValidateCommitOriginTest : public NavigationControllerBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ValidateCommitOriginTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+
 // This test uses ASSERT_DEATH, which is not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
 // Test that if a frame's committed origin in session history is manually
@@ -14816,6 +14816,43 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationRequest::SetCommitTimeoutForTesting(base::TimeDelta());
 }
 
+// Base class for tests that need to supply modifications to EmbeddedTestServer
+// which are required to be complete before it is started.
+class NavigationControllerBrowserTestNoServer
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<
+          std::tuple<std::string /* render_document_level */,
+                     bool /* enable_back_forward_cache*/>> {
+ public:
+  NavigationControllerBrowserTestNoServer() {
+    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
+                                       std::get<0>(GetParam()));
+    InitBackForwardCacheFeature(&feature_list_for_back_forward_cache_,
+                                std::get<1>(GetParam()));
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(embedded_test_server());
+  }
+
+  WebContentsImpl* contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_for_render_document_;
+  base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationControllerBrowserTestNoServer,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+
 // This test simulates a same-document navigation racing with a cross-document
 // one. Historically this would have been started as a same-document navigation
 // then restarted by the renderer as a cross-document navigation (see
@@ -15067,6 +15104,13 @@ class NavigationControllerAlertDialogBrowserTest
   bool callback_called_ = false;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationControllerAlertDialogBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+
 }  // namespace
 
 // Check that swapped out frames cannot spawn JavaScript dialogs.
@@ -15175,6 +15219,13 @@ class RequestMonitoringNavigationBrowserTest
   base::WeakPtrFactory<RequestMonitoringNavigationBrowserTest> weak_factory_{
       this};
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RequestMonitoringNavigationBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
 
 // Helper for waiting until the main frame of |web_contents| has loaded
 // |expected_url| (and all subresources have finished loading).
@@ -18554,6 +18605,13 @@ class SandboxedNavigationControllerBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SandboxedNavigationControllerBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+
 // Tests navigations which occur from a sandboxed frame are prevented.
 IN_PROC_BROWSER_TEST_P(SandboxedNavigationControllerBrowserTest,
                        TopLevelNavigationFromSandboxSource) {
@@ -18629,6 +18687,13 @@ class SandboxedNavigationControllerWithBfcacheBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SandboxedNavigationControllerWithBfcacheBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Values(true)),
+    NavigationControllerBrowserTest::DescribeParams);
 
 // Tests navigations which occur from a sandboxed frame are prevented.
 IN_PROC_BROWSER_TEST_P(SandboxedNavigationControllerWithBfcacheBrowserTest,
@@ -18749,6 +18814,13 @@ class NavigationControllerMainDocumentSequenceNumberBrowserTest
  private:
   std::vector<int64_t> main_frame_document_sequence_numbers_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationControllerMainDocumentSequenceNumberBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerMainDocumentSequenceNumberBrowserTest,
@@ -23562,6 +23634,13 @@ class IgnoreDuplicateNavsBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IgnoreDuplicateNavsBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    IgnoreDuplicateNavsBrowserTest::DescribeParams);
+
 // Tests that a link click navigation that's a duplicate of an ongoing link
 // click navigation gets ignored.
 IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
@@ -23807,76 +23886,8 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsUserGestureBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    NavigationControllerAlertDialogBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
-    NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
     NavigationControllerBrowserTest,
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Bool()),
     NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NavigationControllerBrowserTestNoServer,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
-    NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NavigationControllerMainDocumentSequenceNumberBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
-    NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    RequestMonitoringNavigationBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
-    NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SandboxedNavigationControllerBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
-    NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SandboxedNavigationControllerWithBfcacheBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Values(true)),
-    NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    InitialEmptyDocNavigationControllerBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
-    InitialEmptyDocNavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ValidateCommitOriginTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
-    NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool()),
-    LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    LoadDataWithBaseURLBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
-    LoadDataWithBaseURLBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    IgnoreDuplicateNavsBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
-    IgnoreDuplicateNavsBrowserTest::DescribeParams);
 }  // namespace content
