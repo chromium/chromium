@@ -120,7 +120,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onlostpointercapture;
   attribute EventHandler onpointerdown;
   attribute EventHandler onpointermove;
-  attribute EventHandler onpointerrawupdate;
+  [SecureContext] attribute EventHandler onpointerrawupdate;
   attribute EventHandler onpointerup;
   attribute EventHandler onpointercancel;
   attribute EventHandler onpointerover;
