@@ -25,12 +25,6 @@ namespace base {
 class Clock;
 }
 
-namespace site_engagement {
-class SiteEngagementService;
-}
-
-class StatefulSSLHostStateDelegate;
-
 // The set of valid states of the user-controllable HTTPS-First Mode setting.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -121,13 +115,6 @@ class HttpsFirstModeService
   // auto-enable HFM pref, but updates the fallback events, evicting old ones.
   bool IsUserTypicallySecure();
 
-  // Check the Site Engagement scores of the hostname of `url` and enable
-  // HFM on the hostname if the HTTPS score is high enough. `url` should have a
-  // default port.
-  void MaybeEnableHttpsFirstModeForUrl(
-      const GURL& url,
-      site_engagement::SiteEngagementService* engagement_service,
-      StatefulSSLHostStateDelegate* state);
   // Called after getting the engaged sites list from Site Engagement service.
   // Calls `done_callback` before returning.
   void ProcessEngagedSitesList(
