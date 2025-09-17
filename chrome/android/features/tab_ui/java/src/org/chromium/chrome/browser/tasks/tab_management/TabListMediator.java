@@ -244,7 +244,7 @@ class TabListMediator implements TabListNotificationHandler {
     /** Provides capability to asynchronously acquire {@link ShoppingPersistedTabData} */
     static class ShoppingPersistedTabDataFetcher {
         protected final Tab mTab;
-        protected final @Nullable Supplier<PriceWelcomeMessageController>
+        protected final @Nullable Supplier<@Nullable PriceWelcomeMessageController>
                 mPriceWelcomeMessageControllerSupplier;
 
         /**
@@ -253,9 +253,8 @@ class TabListMediator implements TabListNotificationHandler {
          */
         ShoppingPersistedTabDataFetcher(
                 Tab tab,
-                @Nullable
-                        Supplier<PriceWelcomeMessageController>
-                                priceWelcomeMessageControllerSupplier) {
+                @Nullable Supplier<@Nullable PriceWelcomeMessageController>
+                        priceWelcomeMessageControllerSupplier) {
             mTab = tab;
             mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         }
@@ -330,7 +329,7 @@ class TabListMediator implements TabListNotificationHandler {
     private final @Nullable SelectionDelegateProvider mSelectionDelegateProvider;
     private final @Nullable GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     private final @Nullable TabGridDialogHandler mTabGridDialogHandler;
-    private final @Nullable Supplier<PriceWelcomeMessageController>
+    private final @Nullable Supplier<@Nullable PriceWelcomeMessageController>
             mPriceWelcomeMessageControllerSupplier;
     private final @Nullable DataSharingTabManager mDataSharingTabManager;
     private final @Nullable Runnable mOnTabGroupCreation;
@@ -1009,7 +1008,8 @@ class TabListMediator implements TabListNotificationHandler {
             @Nullable SelectionDelegateProvider selectionDelegateProvider,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable TabGridDialogHandler dialogHandler,
-            @Nullable Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
+            @Nullable Supplier<@Nullable PriceWelcomeMessageController>
+                    priceWelcomeMessageControllerSupplier,
             String componentName,
             @TabActionState int initialTabActionState,
             @Nullable DataSharingTabManager dataSharingTabManager,

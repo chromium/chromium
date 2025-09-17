@@ -18,7 +18,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -171,11 +170,11 @@ public class TabSwitcherMessageManager {
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
 
-    private Profile mProfile;
-    private PriceWelcomeMessageController mPriceWelcomeMessageController;
+    private @Nullable Profile mProfile;
+    private @Nullable PriceWelcomeMessageController mPriceWelcomeMessageController;
     private @Nullable IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
     private @Nullable TabGroupSuggestionMessageService mTabGroupSuggestionMessageService;
-    private ArchivedTabsMessageService mArchivedTabsMessageService;
+    private @Nullable ArchivedTabsMessageService mArchivedTabsMessageService;
 
     /**
      * @param activity The Android activity.
@@ -316,7 +315,6 @@ public class TabSwitcherMessageManager {
     }
 
     /** Post-native initialization. */
-    @Initializer
     public void initWithNative(Profile profile, @TabListMode int mode) {
         assert profile != null;
         mProfile = profile;
@@ -424,7 +422,9 @@ public class TabSwitcherMessageManager {
         // TabListCoordinator#resetWithListOfTabs to ensure that the TabList gets observer
         // calls before the TabSwitcherMessageManager.
         removeTabGroupModelFilterObservers(mCurrentTabGroupModelFilterSupplier.get());
-        mPriceWelcomeMessageController.invalidate();
+        if (mPriceWelcomeMessageController != null) {
+            mPriceWelcomeMessageController.invalidate();
+        }
     }
 
     /** Called after resetting the list of tabs. */
@@ -442,7 +442,9 @@ public class TabSwitcherMessageManager {
         mMultiWindowModeStateDispatcher.removeObserver(mMultiWindowModeObserver);
         removeTabGroupModelFilterObservers(mCurrentTabGroupModelFilterSupplier.get());
         mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
-        mPriceWelcomeMessageController.destroy();
+        if (mPriceWelcomeMessageController != null) {
+            mPriceWelcomeMessageController.destroy();
+        }
 
         mMessageCardProviderCoordinator.destroy();
         mTabGridIphDialogCoordinator.destroy();
@@ -527,7 +529,8 @@ public class TabSwitcherMessageManager {
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         assert tabListCoordinator != null;
         assumeNonNull(mIncognitoReauthPromoMessageService);
-        if (mIncognitoReauthPromoMessageService.isIncognitoReauthPromoMessageEnabled(mProfile)) {
+        if (mIncognitoReauthPromoMessageService.isIncognitoReauthPromoMessageEnabled(
+                assumeNonNull(mProfile))) {
             tabListCoordinator.addSpecialListItem(
                     tabListCoordinator.getTabListModelSize(),
                     UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
@@ -700,7 +703,7 @@ public class TabSwitcherMessageManager {
         }
     }
 
-    public PriceWelcomeMessageController getPriceWelcomeMessageController() {
+    public @Nullable PriceWelcomeMessageController getPriceWelcomeMessageController() {
         return mPriceWelcomeMessageController;
     }
 

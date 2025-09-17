@@ -883,7 +883,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         return mMediator;
     }
 
-    private PriceWelcomeMessageController getPriceWelcomeMessageController() {
+    private @Nullable PriceWelcomeMessageController getPriceWelcomeMessageController() {
         return mMessageManager.getPriceWelcomeMessageController();
     }
 
