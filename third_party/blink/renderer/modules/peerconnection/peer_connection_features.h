@@ -7,7 +7,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 namespace blink {
-MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncodedTransformDirectCallback);
 MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncodedTransformRememberMetadata);
 MODULES_EXPORT BASE_DECLARE_FEATURE(
     kWebRtcEncodedTransformRememberVideoFrameType);

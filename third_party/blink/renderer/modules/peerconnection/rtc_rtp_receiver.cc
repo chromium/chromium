@@ -76,14 +76,6 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
   DCHECK(pc_);
   DCHECK(receiver_);
   DCHECK(track_);
-  if (!base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback)) {
-    if (encoded_audio_transformer_) {
-      RegisterEncodedAudioStreamCallback();
-    } else if (encoded_video_transformer_) {
-      CHECK(encoded_video_transformer_);
-      RegisterEncodedVideoStreamCallback();
-    }
-  }
 
   if (!require_encoded_insertable_streams) {
     // We're not requiring JS to create encoded streams itself, so schedule a
@@ -388,15 +380,6 @@ RTCRtpReceiveParameters* RTCRtpReceiver::getParameters() {
   return parameters;
 }
 
-void RTCRtpReceiver::RegisterEncodedAudioStreamCallback() {
-  CHECK(!base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback));
-  // TODO(crbug.com/347915599): Delete this method once
-  // kWebRtcEncodedTransformDirectCallback is fully launched.
-  encoded_audio_transformer_->SetTransformerCallback(
-      CrossThreadBindRepeating(&RTCRtpReceiver::OnAudioFrameFromDepacketizer,
-                               WrapCrossThreadWeakPersistent(this)));
-}
-
 void RTCRtpReceiver::UnregisterEncodedAudioStreamCallback() {
   // Threadsafe as this might be called from the realm to which a stream has
   // been transferred.
@@ -416,12 +399,9 @@ void RTCRtpReceiver::SetAudioUnderlyingSource(
     base::AutoLock locker(audio_underlying_source_lock_);
     audio_from_depacketizer_underlying_source_->OnSourceTransferStarted();
     audio_from_depacketizer_underlying_source_ = new_underlying_source;
-    if (base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback)) {
-      encoded_audio_transformer_->SetTransformerCallback(
-          CrossThreadBindRepeating(
-              &RTCEncodedAudioUnderlyingSource::OnFrameFromSource,
-              audio_from_depacketizer_underlying_source_));
-    }
+    encoded_audio_transformer_->SetTransformerCallback(CrossThreadBindRepeating(
+        &RTCEncodedAudioUnderlyingSource::OnFrameFromSource,
+        audio_from_depacketizer_underlying_source_));
   }
 
   encoded_audio_transformer_->SetSourceTaskRunner(
@@ -476,12 +456,9 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedAudioStreams(
                 std::move(disconnect_callback)));
     encoded_streams_->setReadable(readable_stream);
 
-    if (base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback)) {
-      encoded_audio_transformer_->SetTransformerCallback(
-          CrossThreadBindRepeating(
-              &RTCEncodedAudioUnderlyingSource::OnFrameFromSource,
-              audio_from_depacketizer_underlying_source_));
-    }
+    encoded_audio_transformer_->SetTransformerCallback(CrossThreadBindRepeating(
+        &RTCEncodedAudioUnderlyingSource::OnFrameFromSource,
+        audio_from_depacketizer_underlying_source_));
   }
 
   WritableStream* writable_stream;
@@ -549,29 +526,6 @@ void RTCRtpReceiver::setTransform(RTCRtpScriptTransform* transform,
       encoded_video_transformer_);
 }
 
-void RTCRtpReceiver::OnAudioFrameFromDepacketizer(
-    std::unique_ptr<webrtc::TransformableAudioFrameInterface>
-        encoded_audio_frame) {
-  // TODO(crbug.com/347915599): Delete this method once
-  // kWebRtcEncodedTransformDirectCallback is fully launched.
-  CHECK(!base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback));
-
-  base::AutoLock locker(audio_underlying_source_lock_);
-  if (audio_from_depacketizer_underlying_source_) {
-    audio_from_depacketizer_underlying_source_->OnFrameFromSource(
-        std::move(encoded_audio_frame));
-  }
-}
-
-void RTCRtpReceiver::RegisterEncodedVideoStreamCallback() {
-  CHECK(!base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback));
-  // TODO(crbug.com/347915599): Delete this method once
-  // kWebRtcEncodedTransformDirectCallback is fully launched.
-  encoded_video_transformer_->SetTransformerCallback(
-      CrossThreadBindRepeating(&RTCRtpReceiver::OnVideoFrameFromDepacketizer,
-                               WrapCrossThreadWeakPersistent(this)));
-}
-
 void RTCRtpReceiver::UnregisterEncodedVideoStreamCallback() {
   // Threadsafe as this might be called from the realm to which a stream has
   // been transferred.
@@ -591,12 +545,9 @@ void RTCRtpReceiver::SetVideoUnderlyingSource(
     base::AutoLock locker(video_underlying_source_lock_);
     video_from_depacketizer_underlying_source_->OnSourceTransferStarted();
     video_from_depacketizer_underlying_source_ = new_underlying_source;
-    if (base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback)) {
-      encoded_video_transformer_->SetTransformerCallback(
-          CrossThreadBindRepeating(
-              &RTCEncodedVideoUnderlyingSource::OnFrameFromSource,
-              video_from_depacketizer_underlying_source_));
-    }
+    encoded_video_transformer_->SetTransformerCallback(CrossThreadBindRepeating(
+        &RTCEncodedVideoUnderlyingSource::OnFrameFromSource,
+        video_from_depacketizer_underlying_source_));
   }
 
   encoded_video_transformer_->SetSourceTaskRunner(
@@ -665,12 +616,9 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedVideoStreams(
                 std::move(disconnect_callback)));
     encoded_streams_->setReadable(readable_stream);
 
-    if (base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback)) {
-      encoded_video_transformer_->SetTransformerCallback(
-          CrossThreadBindRepeating(
-              &RTCEncodedVideoUnderlyingSource::OnFrameFromSource,
-              video_from_depacketizer_underlying_source_));
-    }
+    encoded_video_transformer_->SetTransformerCallback(CrossThreadBindRepeating(
+        &RTCEncodedVideoUnderlyingSource::OnFrameFromSource,
+        video_from_depacketizer_underlying_source_));
   }
 
   WritableStream* writable_stream;
@@ -699,20 +647,6 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedVideoStreams(
 
   encoded_streams_->setWritable(writable_stream);
   return encoded_streams_;
-}
-
-void RTCRtpReceiver::OnVideoFrameFromDepacketizer(
-    std::unique_ptr<webrtc::TransformableVideoFrameInterface>
-        encoded_video_frame) {
-  // TODO(crbug.com/347915599): Delete this method once
-  // kWebRtcEncodedTransformDirectCallback is fully launched.
-  CHECK(!base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback));
-
-  base::AutoLock locker(video_underlying_source_lock_);
-  if (video_from_depacketizer_underlying_source_) {
-    video_from_depacketizer_underlying_source_->OnFrameFromSource(
-        std::move(encoded_video_frame));
-  }
 }
 
 void RTCRtpReceiver::LogMessage(const std::string& message) {

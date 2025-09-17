@@ -118,27 +118,21 @@ class RTCRtpSender final : public ScriptWrappable,
  private:
   // Insertable Streams audio support methods
   RTCInsertableStreams* CreateEncodedAudioStreams(ScriptState*);
-  void RegisterEncodedAudioStreamCallback();
   void UnregisterEncodedAudioStreamCallback();
   void SetAudioUnderlyingSource(
       RTCEncodedAudioUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void SetAudioUnderlyingSink(
       RTCEncodedAudioUnderlyingSink* new_underlying_sink);
-  void OnAudioFrameFromEncoder(
-      std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame);
 
   // Insertable Streams video support methods
   RTCInsertableStreams* CreateEncodedVideoStreams(ScriptState*);
-  void RegisterEncodedVideoStreamCallback();
   void UnregisterEncodedVideoStreamCallback();
   void SetVideoUnderlyingSource(
       RTCEncodedVideoUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void SetVideoUnderlyingSink(
       RTCEncodedVideoUnderlyingSink* new_underlying_sink);
-  void OnVideoFrameFromEncoder(
-      std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame);
 
   void LogMessage(const std::string& message);
 

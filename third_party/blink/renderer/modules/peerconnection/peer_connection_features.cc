@@ -8,13 +8,6 @@
 
 namespace blink {
 
-// When performing Encoded Transform in-process transfer optimization, set the
-// encoded_audio_transformer_'s transform callback to directly call the new
-// underlying source rather than bouncing via the RTCRtpSender or
-// RTCRtpReceiver.
-BASE_FEATURE(kWebRtcEncodedTransformDirectCallback,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Keep the metadata of RTC encoded frames after they are neutered.
 // If disabled, the metadata is reset to default or no values.
 BASE_FEATURE(kWebRtcEncodedTransformRememberMetadata,
