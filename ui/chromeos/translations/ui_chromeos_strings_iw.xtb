@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ז'אנר</translation>
 <translation id="1254593899333212300">חיבור אינטרנט ישיר</translation>
 <translation id="1272293450992660632">ערכי קוד האימות לא תואמים.</translation>
+<translation id="1279040297980392566">בהמתנה לסיום הסריקה, אפשר לנסות שוב אחר כך</translation>
 <translation id="1280820357415527819">בחיפוש אחר רשתות סלולריות</translation>
 <translation id="1293556467332435079">קבצים</translation>
 <translation id="1297922636971898492">‏Google Drive אינו זמין כעת. ההעלאה תופעל מחדש באופן אוטומטי לאחר ש-Google Drive יחזור לפעול.</translation>
@@ -246,7 +247,7 @@
 <translation id="2977940621473452797">‏הקובץ הזה מיועד למחשב שיכול להפעיל תוכנות Macintosh. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. יש לחפש אפליקציה חלופית בחנות האינטרנט של Chrome.</translation>
 <translation id="2984337792991268709">היום <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">צרפתית (קנדה)</translation>
-<translation id="3003189754374775221">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="NETWORK_PROVIDER_NAME" />, רמת הקליטה: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
+<translation id="3003189754374775221">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="NETWORK_PROVIDER_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
 <translation id="3003633581067744647">לעבור לתצוגה של תמונות ממוזערות</translation>
 <translation id="3016566519832145558">זהירות: הקבצים האלה זמניים, ויכול להיות שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.</translation>
 <translation id="3029114385395636667">‏יש להפעיל את Google Docs Offline כדי ש-Docs,‏ Sheets ו-Slides יהיו זמינים במצב אופליין.</translation>
@@ -866,7 +867,7 @@
 <translation id="770015031906360009">יוונית</translation>
 <translation id="7705251383879779343">ההעתקה של <ph name="FILE_NAME" /> הסתיימה.</translation>
 <translation id="7707941139430559579">לא ניתן להעביר את הקובץ. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="7708271999969613024">‏כדי להשתמש ברשת הזו, עליך להזין את המפתח האישי לביטול החסימה (PUK) בן 8 הספרות שקיבלת מהספק.</translation>
+<translation id="7708271999969613024">‏כדי להשתמש ברשת הזו, עליך להזין את המפתח האישי לביטול החסימה (PUK) בן 8 הספרות שמקבלים מהספק.</translation>
 <translation id="7711920809702896782">פרטי התמונה</translation>
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7732111077498238432">הרשת כפופה למדיניות</translation>
@@ -1046,8 +1047,8 @@
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8971742885766657349">מתבצע סנכרון – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">‏סינית (מסורתית) Pinyin</translation>
-<translation id="8998871447376656508">‏אין מספיק מקום פנוי ב-Google Drive שלך כדי להשלים את ההעלאה.</translation>
-<translation id="9003940392834790328">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי האדמין שלך, פרטים</translation>
+<translation id="8998871447376656508">‏אין מספיק מקום פנוי ב-Google Drive כדי להשלים את ההעלאה.</translation>
+<translation id="9003940392834790328">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>
 <translation id="9007990314804111233">‏כניסה לחשבון Microsoft</translation>
 <translation id="9017798300203431059">רוסית פונטית</translation>
 <translation id="9034924485347205037">‏קובצי Linux</translation>
@@ -1079,6 +1080,7 @@
 <translation id="9213073329713032541">ההתקנה התחילה בהצלחה.</translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="9219908252191632183">נוף ירח</translation>
+<translation id="931652069802536959">הרשת חסומה בעקבות המדיניות</translation>
 <translation id="938470336146445890">צריך להתקין אישור משתמש.</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>
 <translation id="943972244133411984">שונה על ידי</translation>

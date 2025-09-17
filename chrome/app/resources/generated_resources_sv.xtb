@@ -1818,7 +1818,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2236963250883149540">Vill du ta bort din jobbadress från Autofyll i Chrome?</translation>
 <translation id="2238379619048995541">Data för frekvenstillstånd</translation>
 <translation id="2240582393605484605">Data som sparas enbart på den här enheten finns kvar i den befintliga profilen</translation>
-<translation id="2241053333139545397">Läs och ändra dina uppgifter på ett antal webbplatser</translation>
+<translation id="2241053333139545397">Läsa och ändra dina uppgifter på ett antal webbplatser</translation>
 <translation id="2241634353105152135">Bara en gång</translation>
 <translation id="2242687258748107519">Filinformation</translation>
 <translation id="2243452222143104807">Inaktiv flik</translation>
@@ -2387,7 +2387,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2613535083491958306"><ph name="ORIGIN" /> får redigeringsbehörighet till <ph name="FILENAME" /></translation>
 <translation id="2613747923081026172">Skapa grupp</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{Öppna och redigera <ph name="FILE1" /> i detta tillägg}other{Öppna och redigera <ph name="FILE1" />, … i denna app}}</translation>
-<translation id="2616366145935564096">Läs och ändra dina uppgifter på <ph name="WEBSITE_1" /></translation>
+<translation id="2616366145935564096">Läsa och ändra dina uppgifter på <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Konfigurera Närdelning</translation>
 <translation id="2619305858360733464"><ph name="SHARED_STATE" /> namnlös grupp – <ph name="OPENED_STATE" /></translation>
 <translation id="2619340799655338321">spela upp/pausa</translation>
@@ -8177,7 +8177,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6694634756612002311">Hantera delning</translation>
 <translation id="6697172646384837537">Välj var du vill importera dina lösenord</translation>
 <translation id="6697690052557311665">Om du vill dela en mapp klickar du på den i appen Filer och väljer Dela med Linux.</translation>
-<translation id="6698810901424468597">Läs och ändra dina uppgifter på <ph name="WEBSITE_1" /> och <ph name="WEBSITE_2" /></translation>
+<translation id="6698810901424468597">Läsa och ändra dina uppgifter på <ph name="WEBSITE_1" /> och <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Lås för SIM-kortet</translation>
 <translation id="6700480081846086223">Casta <ph name="HOST_NAME" /></translation>
 <translation id="670121579181704262">&amp;Synkronisering är aktiverat</translation>

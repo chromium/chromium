@@ -1250,6 +1250,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3086579638707268289">Jūsų veikla žiniatinklyje stebima</translation>
 <translation id="3087734570205094154">Apačia</translation>
 <translation id="3090667236485488075">Stiklas</translation>
+<translation id="3093122472063815077">Funkcijos „Pirkite dabar, mokėkite vėliau“ eigos ekranas atidarytas per pusę ekrano aukščio.</translation>
 <translation id="3094051226187213523">Atidaryti DI režimą naudojant šį pasiūlymą.</translation>
 <translation id="3095940652251934233">Ataskaita</translation>
 <translation id="3098513225387949945">Nepaisoma, nes išjungimo sąraše yra šablonas, lygus „*“, kuris atitinka politikos išjungimą.</translation>
@@ -1918,6 +1919,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Nr. 4 kinietiškas vokas</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1 psl.}one{{COUNT} psl.}few{{COUNT} psl.}many{{COUNT} psl.}other{{COUNT} psl}}</translation>
+<translation id="4152495263075154876">Funkcijos „Pirkite dabar, mokėkite vėliau“ eigos ekranas uždarytas.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 skirtukas}one{# skirtukas}few{# skirtukai}many{# skirtuko}other{# skirtukų}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> nepalaiko saugaus ryšio naudojant HTTPS</translation>
 <translation id="4154277373259957087">Dabar „Chrome“ patvirtins jūsų tapatybę prieš užpildydama mokėjimo metodus. Tai galite bet kada atnaujintI <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
@@ -2582,6 +2584,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5255583962255635076">Pritaikyta naršyklės politika darbo profilyje</translation>
 <translation id="5255690596502591079">Vis tiek užfiksuoti</translation>
 <translation id="5255771248404149177">Kortelės teikėjas nori įsitikinti, kad tai jūs</translation>
+<translation id="525579853540851404">Funkcijos „Pirkite dabar, mokėkite vėliau“ eigos ekranas. Klaviatūra paslėpta.</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šio failo į <ph name="DESTINATION_NAME" />}one{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}few{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}many{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}other{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Skirtukų grupė „<ph name="GROUP_NAME" />“ nebepasiekiama</translation>
@@ -3095,6 +3098,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6122181661879998141">priekinėje kortelės dalyje</translation>
 <translation id="6124058285696691147">Atsisiųsti priedą</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
+<translation id="6124996493718543728">Funkcijos „Pirkite dabar, mokėkite vėliau“ eigos ekranas atidarytas per visą aukštį.</translation>
 <translation id="6126565365696310362">Nr. 2 kinietiškas vokas</translation>
 <translation id="6131824478727057281">vieta</translation>
 <translation id="6133320744616005677">Toliau leisti</translation>

@@ -14,7 +14,7 @@
 <translation id="1361748954329991663">‏إصدار Chromium قديم. في حال عدم توفُّر تحديث في <ph name="BEGIN_LINK" />متجر التطبيقات<ph name="END_LINK" />، قد يعني هذا أن جهازك لم يعد متوافقًا مع الإصدارات الجديدة من Chromium.</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1423007117030725713">‏يمكنك بدء البحث في علامة تبويب جديدة على Chromium.</translation>
-<translation id="1431818719585918472">‏السماح لمتصفّح Chromium بقفل علامات التبويب في وضع التصفّح المتخفي.</translation>
+<translation id="1431818719585918472">‏اسمح لمتصفّح Chromium بقفل علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="1451665391191990528">‏إخفاء علامات التبويب المفتوحة في وضع التصفُّح المتخفي عند إغلاق Chromium</translation>
 <translation id="146407871188825689">‏استخدام متصفّح Chromium على جهاز iPad تلقائيًا</translation>
 <translation id="1471084500615228555">‏حذف بيانات التصفّح في Chromium</translation>
@@ -65,7 +65,7 @@
 <translation id="2340423701577464731">‏إضافة عنصر "قائمة القراءة" إلى Chromium</translation>
 <translation id="2374627437126809292">‏يستخدم Chromium "خرائط Google" لإعلامك بالاتجاهات بالإضافة إلى معلومات محلية عن العناوين التي تم رصدها.</translation>
 <translation id="2386292341327187942">‏عليك إدخال كلمة "Chromium" في مربّع "البحث في التطبيقات المصغّرة"</translation>
-<translation id="2426113998523353159">‏تطلُب المؤسسة منك تسجيل الدخول لاستخدام Chromium.</translation>
+<translation id="2426113998523353159">‏تطلُب المؤسسة منك تسجيل الدخول للتمكّن من استخدام Chromium.</translation>
 <translation id="2450140762465183767">‏بإمكانك الآن استخدام Chromium عند النقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="2459183986985456602">‏يؤدي هذا الاختصار إلى فتح آخر علامة تبويب في Chromium.</translation>
 <translation id="2476409803017965813">‏يمكنك تعديل اختياراتك متى شئت من خلال إعدادات Chromium.</translation>
@@ -126,7 +126,7 @@
 <translation id="3949514465204582407">‏نصيحة من Chromium: يمكنك الوصول إلى كلمات المرور في أي تطبيق</translation>
 <translation id="4005283307739974863">‏يؤدي هذا الاختصار إلى فتح صفحة "التحقّق من الأمان" وإجرائه في Chromium.</translation>
 <translation id="4043291146360695975">يتم حفظ كلمات المرور في "مدير كلمات المرور" على هذا الجهاز فقط.</translation>
-<translation id="4066426933127344530">‏استخدام Chromium كمتصفح تلقائي</translation>
+<translation id="4066426933127344530">‏استخدام Chromium بشكل تلقائي</translation>
 <translation id="4087314024407094071">‏يؤدي هذا الاختصار إلى فتح الإعدادات في Chromium.</translation>
 <translation id="4099085513035183040">‏غير متاح على الإصدار التجريبي من Chromium</translation>
 <translation id="4106512142782407609">‏تم تسجيل الدخول بحساب <ph name="EMAIL" />.
@@ -256,7 +256,7 @@
 <translation id="7185731475720473450">‏لن يتم تشفير طُرق الدفع والعناوين. ولن تتم مزامنة سجلّ التصفُّح من Chromium.
 
 لا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور الخاصة بك. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chromium في حسابك<ph name="END_LINK" />.</translation>
-<translation id="7192111075364461693">‏إشعارات Chromium غير مفعَّلة حاليًا في إعدادات جهازك.</translation>
+<translation id="7192111075364461693">‏إنّ إشعارات Chromium غير مفعَّلة حاليًا في إعدادات جهازك.</translation>
 <translation id="7195217321165708458">‏‫Gemini في Chromium</translation>
 <translation id="7219205286115692265">‏يمكنك الوصول إلى Chromium بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية على جهاز iPad.</translation>
 <translation id="7222001353246886083">‏البحث عن "${searchPhrase}" في Chromium</translation>

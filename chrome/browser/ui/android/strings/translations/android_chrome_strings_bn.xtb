@@ -99,6 +99,7 @@
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="1409879593029778104">ফাইল ইতিমধ্যেই থাকায় <ph name="FILE_NAME" /> ডাউনলোড আটকানো হয়েছে।</translation>
 <translation id="1413446866325418126">আপনার Google অ্যাকাউন্টে ডেটা সেভ করুন</translation>
+<translation id="1414919006379339073">বর্তমান উইন্ডো বন্ধ করুন</translation>
 <translation id="1416550906796893042">অ্যাপ্লিকেশন ভার্সন</translation>
 <translation id="1419753403124156396">Chrome রিস্টার্ট করতে চান?</translation>
 <translation id="1428770807407000502">সিঙ্ক করা বন্ধ করতে চান?</translation>
@@ -709,6 +710,7 @@
 <translation id="4380055775103003110">এই সমস্যা থেকে গেলে, আপনি <ph name="SITE_ETLD_PLUS_ONE" />-এ চালিয়ে যেতে অন্য উপায় চেষ্টা করে দেখতে পারেন।</translation>
 <translation id="4384468725000734951">সার্চের জন্য Sogou কে ব্যবহার করছে</translation>
 <translation id="4387647248986092471">গাড়ির জন্য প্রোফাইল লক তৈরি করুন</translation>
+<translation id="4387817230000841154">ডাউনলোড পৃষ্ঠা খুলুন</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{ট্যাব ও গ্রুপ ১ দিন বা তার চেয়ে বেশি সময় ধরে ব্যবহার করা হয়নি}one{ট্যাব ও গ্রুপ # দিন বা তার চেয়ে বেশি সময় ধরে ব্যবহার করা হয়নি}other{ট্যাব ও গ্রুপ # দিন বা তার চেয়ে বেশি সময় ধরে ব্যবহার করা হয়নি}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ডাউনলোড করা হচ্ছে…</translation>
 <translation id="4404568932422911380">কোনও বুকমার্ক নেই</translation>

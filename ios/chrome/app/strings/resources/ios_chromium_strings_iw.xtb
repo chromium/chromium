@@ -156,7 +156,7 @@
 <translation id="4685611756167369067">‏פתיחת כרטיסייה פרטית ב-Chromium</translation>
 <translation id="4736424910885271643">‏החשבון שלך מנוהל על ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים שלך מ-Chromium יימחקו מהמכשיר הזה</translation>
 <translation id="4790638144988730920">‏המשך השימוש בנתוני Chromium בחשבון Google.</translation>
-<translation id="4828317641996116749">‏Chromium לא הצליח לבדוק את כל הסיסמאות. מומלץ לנסות שוב אחר כך.</translation>
+<translation id="4828317641996116749">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="4856138222358683580">‏פעולות ב-Chromium</translation>
 <translation id="4904452304169763785">‏התראות לגבי כל בעיה בפרטיות או באבטחה ש-Chromium מזהה עבורך.</translation>
 <translation id="4908570938463711775">‏מידע בסיסי על Chromium שיעזור לך להתחיל</translation>
@@ -178,7 +178,7 @@
 <translation id="5284913972719948193">‏כדי להשתמש בסיסמאות, בהיסטוריה, בסימניות ובכרטיסי האשראי שלך ב-Chromium, צריך לייבא את הנתונים שלך</translation>
 <translation id="5308226104666789935">‏Chromium לא יכול לחפש עדכונים</translation>
 <translation id="5311557153294205270">‏הוספה של כתובות ה-URL שהוזנו לסימניות ב-Chromium.</translation>
-<translation id="5383251701169024761">‏כדי לגשת בקלות לסיסמאות השמורות שלכם באפליקציות אחרות, בחרו ב-Chromium למילוי אוטומטי.</translation>
+<translation id="5383251701169024761">‏כדי לגשת בקלות לסיסמאות השמורות שלך באפליקציות אחרות, אפשר לבחור ב-Chromium למילוי אוטומטי.</translation>
 <translation id="538767207339317086">‏מתן אישור כניסה אל Chromium</translation>
 <translation id="5389058611415066188">‏שמירה על הבטיחות בעזרת Chromium</translation>
 <translation id="5414059596208264343">‏טיפ ל-Chromium: גישה לסיסמאות שלך</translation>
@@ -307,7 +307,7 @@
 <translation id="8602103377623855616">‏דף Chromium</translation>
 <translation id="865600487977764604">‏שומר על הביטחון שלך ב-Chromium ויכול לשמש לשיפור האבטחה גם באפליקציות Google אחרות בחיבור לחשבון.</translation>
 <translation id="8663480472502753423">‏Chromium יתעדכן באופן קבוע</translation>
-<translation id="8685813584220679697">‏רוצה להתחבר לאתר הזה ול-Chromium?</translation>
+<translation id="8685813584220679697">‏יש להיכנס לאתר הזה ול-Chromium.</translation>
 <translation id="8698780336333802489">‏ייבוא אל Chromium</translation>
 <translation id="8730503818204408000">‏פתיחה של הגדרות Chromium כדי להגדיר את Chromium כדפדפן ברירת המחדל.</translation>
 <translation id="8754966941001340678">‏ההמלצה של Chromium היא הגנה משופרת</translation>

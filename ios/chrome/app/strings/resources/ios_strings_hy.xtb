@@ -479,6 +479,7 @@
 <translation id="2797029671965852011">Ցույց տալ պատմությունը</translation>
 <translation id="2797302972324086597">Երկրի կոդը</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} ֆայլ}one{{COUNT} ֆայլ}other{{COUNT} ֆայլ}}</translation>
+<translation id="2816149645002567541">Ներբեռնումը դադարեցված է</translation>
 <translation id="2816489851009559785">Ընտրացանկ → Կարգավորումներ → Կանխադրված դիտարկիչ</translation>
 <translation id="2818821771744632548">Ձեր iPhone-ը վերակայելիս դուք դուրս եք գրվել ձեր <ph name="USER_NAME" /> հաշվից։ Մուտք գործելու համար ստորև սեղմեք «Շարունակել»։</translation>
 <translation id="2819667972867209401">Երբ միացված է, տվյալները պահվում են ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում և կջնջվեն, երբ դուրս գաք հաշվից։</translation>
@@ -735,6 +736,7 @@
 <translation id="3921585859122905677">Հասցեագոտու դիրքը</translation>
 <translation id="3922185497376658606">Վեբ էջերի նախաբեռնում</translation>
 <translation id="3922395466317605522">Ընտրացանկի անհատականացում</translation>
+<translation id="3926703470020109118">Ներբեռնումը չեղարկվել է</translation>
 <translation id="3929457972718048006">Հասցեներ</translation>
 <translation id="3931215329146376310">{count,plural, =1{Նոր գաղտնաբառ այս կայքի համար}one{Նոր գաղտնաբառ այս կայքի համար}other{Նոր գաղտնաբառեր այս կայքի համար}}</translation>
 <translation id="3934905113567851655">Երկու մատով շարժեք՝ չափը փոխելու համար</translation>
@@ -787,6 +789,7 @@
 <translation id="4113957097611235433">Փոխեք ձեր գաղտնաբառերը</translation>
 <translation id="4120936477286528673">Այս կայքը բազմիցս փորձում է մեկ այլ հավելված բացել։</translation>
 <translation id="4121993058175073134">Զուտ արտահանման տվյալները ուղարկելու համար կազմաձևեք ձեր էլփոստի հաշիվը Կարգավորումներ հավելվածում:</translation>
+<translation id="4132991308423633339">Արտահանել գաղտնաբառերն ու մուտքի բանալիները…</translation>
 <translation id="4133139945030148655">Պատրաստ է</translation>
 <translation id="4133265950310064865">Կատարելագործված պաշտպանություն</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1588,6 +1591,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7102005569666697658">Ներբեռնում… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Ընտրացանկ → Կարգավորումներ → Վճարման եղանակներ</translation>
 <translation id="7108338896283013870">Թաքցնել</translation>
+<translation id="7127922377013221748">Թաքցնել գործիքագոտին</translation>
 <translation id="7128693485119315539">Ձեր կազմակերպությանը կարող է անհրաժեշտ լինել տեսնել և կառավարել կայքերի այցելությունների մասին տվյալները, որոնք կապված են ձեր կառավարվող հաշվի հետ, օրինակ՝ ձեր այցելությունների պատմությունը և գաղտնաբառերը։</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Ֆոտոխցիկն անհասանելի է</translation>
@@ -1898,6 +1902,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8283172974887967105">Սահմանել…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />․ ծանուցումներն անջատվեցին</translation>
 <translation id="8290077367744012649">Հետևեք գներին ձեր ներդիրներից</translation>
+<translation id="8292893224181644074">Ներբեռնումն ավարտված է</translation>
 <translation id="8299417921174340354">Գաղտնաբառերն օգտագործելու համար նախ պետք է ձեր սարքում անցակոդ սահմանեք։</translation>
 <translation id="8307481894409578819">Չհաջողվեց վերբեռնել այս ֆայլը</translation>
 <translation id="8319076807703933069">Նոր որոնում</translation>

@@ -99,6 +99,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1407135791313364759">Buksan lahat</translation>
 <translation id="1409879593029778104">Pinigilan ang pag-download sa <ph name="FILE_NAME" /> dahil may ganitong file na sa kasalukuyan.</translation>
 <translation id="1413446866325418126">Mag-save ng data sa iyong Google Account</translation>
+<translation id="1414919006379339073">Isara ang kasalukuyang window</translation>
 <translation id="1416550906796893042">Bersyon ng application</translation>
 <translation id="1419753403124156396">I-restart ang Chrome?</translation>
 <translation id="1428770807407000502">I-off ang pag-sync?</translation>
@@ -709,6 +710,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4380055775103003110">Kung patuloy na nangyayari ang isyung ito, puwede kang sumubok ng iba pang paraan para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Ginagamit ang Sogou para sa paghahanap</translation>
 <translation id="4387647248986092471">Gumawa ng lock ng profile ng kotse</translation>
+<translation id="4387817230000841154">Buksan ang Mga Download</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Hindi ginamit ang mga tab at grupo sa loob ng 1 araw o higit pa}one{Hindi ginamit ang mga tab at grupo sa loob ng # araw o higit pa}other{Hindi ginamit ang mga tab at grupo sa loob ng # na araw o higit pa}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Dina-download…</translation>
 <translation id="4404568932422911380">Walang bookmark</translation>

@@ -2174,6 +2174,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2471469610750100598">Crna (podrazumevano)</translation>
 <translation id="2471506181342525583">Dozvoljen je pristup lokaciji</translation>
 <translation id="2471632709106952369">Tabele za poređenje</translation>
+<translation id="2472855537207709205">Grupiši sve negrupisane kartice</translation>
 <translation id="2473195200299095979">Prevedite ovu stranicu</translation>
 <translation id="2475982808118771221">Došlo je do greške</translation>
 <translation id="2476435723907345463">Uklonjen je pristup pristupnim ključevima</translation>
@@ -2789,6 +2790,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2900247416110050639">Google dokumenti, tabele i prezentacije zahtevaju da se fajlovi čuvaju na Google disku. Lokalni fajlovi će se premestiti, a fajlovi sa drugih lokacija će se kopirati. Fajlove možete da pronađete u folderu Google diska u aplikaciji Fajlovi.</translation>
 <translation id="290105521672621980">Datoteka koristi funkcije koje nisu podržane</translation>
 <translation id="2901348420151309559">Nedavne slike i aplikacije</translation>
+<translation id="2901431118738474110">Ovaj pristupni ključ više ne radi. Izbrisan je sa <ph name="RPID" /> i uskoro će biti izbrisan i ovde. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;O pristupnim ključevima&lt;/a&gt;</translation>
 <translation id="2902127500170292085">Komunikacija dodatka <ph name="EXTENSION_NAME" /> sa ovim štampačem nije uspela. Proverite da li je štampač priključen i pokušajte ponovo.</translation>
 <translation id="2902265136119311513">Pregledajte kao gost</translation>
 <translation id="2902312830803030883">Još radnji</translation>
@@ -11520,10 +11522,12 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8993945059918628059">Dodirnite prstom senzor za otisak prsta. Podaci o otisku prsta se bezbedno čuvaju na <ph name="DEVICE_TYPE" /> uređaju i uvek ostaju na njemu.</translation>
 <translation id="899403249577094719">Osnovna URL adresa za Netscape sertifikat</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Ovaj dodatak je sačuvan na Google nalogu, ali svi podaci koje je sačuvao samo na ovom uređaju mogu da se izbrišu}one{Ovi dodaci su sačuvani na Google nalogu, ali svi podaci koje su sačuvali samo na ovom uređaju mogu da se izbrišu}few{Ovi dodaci su sačuvani na Google nalogu, ali svi podaci koje su sačuvali samo na ovom uređaju mogu da se izbrišu}other{Ovi dodaci su sačuvani na Google nalogu, ali svi podaci koje su sačuvali samo na ovom uređaju mogu da se izbrišu}}</translation>
+<translation id="8997659961727384862">Grupiši sve negrupisane kartice</translation>
 <translation id="8999027165951679951">Neaktivna kartica: oslobođeno je <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Sintaksička greška sa odeljkom: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Umanjeno kretanje na ekranu</translation>
 <translation id="9000185763019430629">Dodirnite senzor za otisak prsta na desnoj strani <ph name="DEVICE_TYPE" /> uređaja. Podaci o otisku prsta se bezbedno čuvaju na <ph name="DEVICE_TYPE" /> uređaju i uvek ostaju na njemu.</translation>
+<translation id="900267527532832868">Ovaj pristupni ključ više ne radi. Uskoro će biti izbrisan iz usluge <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Unesite <ph name="NUM_DIGIT" />. cifru PIN-a od ukupno 6. Koristite taster Backspace ili Delete da biste uklonili poslednju cifru.</translation>
 <translation id="9003185744423389627">Veza sa serverom za upravljanje uređajima nije uspela uz status <ph name="STATUS_TEXT" /> u <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Želite li automatski da skenirate dostupne eSIM profile?</translation>

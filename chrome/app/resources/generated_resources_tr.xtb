@@ -2372,7 +2372,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2613535083491958306"><ph name="ORIGIN" />, <ph name="FILENAME" /> dosyasını düzenleyebilir</translation>
 <translation id="2613747923081026172">Grup oluştur</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{<ph name="FILE1" /> dosyasını bu uzantıda açıp düzenle}other{<ph name="FILE1" /> dosyalarını bu uygulamada açıp düzenlemek istiyor musunuz?}}</translation>
-<translation id="2616366145935564096"><ph name="WEBSITE_1" /> web sitesinde verilerinizi okuma ve değiştirme</translation>
+<translation id="2616366145935564096"><ph name="WEBSITE_1" /> üzerindeki verilerinizi okuma ve değiştirme</translation>
 <translation id="2618797463720777311">Yakındakilerle Paylaş kurulumu</translation>
 <translation id="2619305858360733464"><ph name="SHARED_STATE" /> adsız grup - <ph name="OPENED_STATE" /></translation>
 <translation id="2619340799655338321">oynat/duraklat</translation>
@@ -10470,7 +10470,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8280848878018088610">Arka planda fantastik bir şehir ve kale manzarasıyla denizdeki dev dalgaların gösterildiği karanlık bir resim.</translation>
 <translation id="828180235270931531">Kullanılabilen diğer yazıcılar</translation>
 <translation id="8281886186245836920">Atla</translation>
-<translation id="8284279544186306258">tüm <ph name="WEBSITE_1" /> siteleri</translation>
+<translation id="8284279544186306258">Tüm <ph name="WEBSITE_1" /> siteleri</translation>
 <translation id="8284326494547611709">Altyazılar</translation>
 <translation id="8285625579699113397">Hesabınız</translation>
 <translation id="8286036467436129157">Oturum Aç</translation>

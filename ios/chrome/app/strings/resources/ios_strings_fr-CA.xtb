@@ -479,6 +479,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2797029671965852011">Afficher l'historique</translation>
 <translation id="2797302972324086597">Code de pays</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fichier}one{{COUNT} fichier}other{{COUNT} fichiers}}</translation>
+<translation id="2816149645002567541">Téléchargement interrompu</translation>
 <translation id="2816489851009559785">Menu → Paramètres → Navigateur par défaut</translation>
 <translation id="2818821771744632548">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPhone. Pour vous reconnecter, touchez « Continuer » ci-dessous.</translation>
 <translation id="2819667972867209401">Activé : les données sont enregistrées dans votre compte Google. Désactivé : les données sont uniquement enregistrées sur cet appareil et sont supprimées lorsque vous vous déconnectez.</translation>
@@ -735,6 +736,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3921585859122905677">Position de la barre d'adresse</translation>
 <translation id="3922185497376658606">Précharger les pages Web</translation>
 <translation id="3922395466317605522">Personnaliser le menu</translation>
+<translation id="3926703470020109118">Téléchargement annulé</translation>
 <translation id="3929457972718048006">Adresses</translation>
 <translation id="3931215329146376310">{count,plural, =1{Nouveau mot de passe pour ce site}one{Nouveau mot de passe pour ce site}other{Nouveaux mots de passe pour ce site}}</translation>
 <translation id="3934905113567851655">Pincez l'écran pour effectuer un redimensionnement</translation>
@@ -787,6 +789,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4113957097611235433">Changer vos mots de passe</translation>
 <translation id="4120936477286528673">Ce site a essayé plusieurs fois d'ouvrir une autre application.</translation>
 <translation id="4121993058175073134">Configurez votre compte de courriel dans l'application Paramètres pour envoyer des données d'exportation nette.</translation>
+<translation id="4132991308423633339">Exporter les mots de passe et les clés d'accès…</translation>
 <translation id="4133139945030148655">Vous êtes prêt</translation>
 <translation id="4133265950310064865">Protection renforcée</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1588,6 +1591,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7102005569666697658">Téléchargement en cours… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Paramètres → Modes de paiement</translation>
 <translation id="7108338896283013870">Masquer</translation>
+<translation id="7127922377013221748">Masquer la barre d'outils</translation>
 <translation id="7128693485119315539">Votre organisation devra peut-être consulter et gérer les données de navigation associées à votre compte géré, comme votre historique de navigation et vos mots de passe.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">La caméra est indisponible</translation>
@@ -1898,6 +1902,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8289930144142009940">Notifications pour <ph name="FEATURE_NAME" /> désactivées</translation>
 <translation id="8290077367744012649">Suivre les prix dans vos onglets</translation>
+<translation id="8292893224181644074">Téléchargement terminé</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="8307481894409578819">Impossible de téléverser ce fichier</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>

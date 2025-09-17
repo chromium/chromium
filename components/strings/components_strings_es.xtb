@@ -1247,6 +1247,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3086579638707268289">Se está vigilando tu actividad en la Web</translation>
 <translation id="3087734570205094154">Abajo</translation>
 <translation id="3090667236485488075">Cristal</translation>
+<translation id="3093122472063815077">La pantalla de progreso de pago aplazado está abierta a media altura.</translation>
 <translation id="3094051226187213523">Abrir Modo IA con esta sugerencia.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Se ignora porque la lista inhabilitada contiene un patrón igual a "*", lo que equivale a inhabilitar la política.</translation>
@@ -1913,6 +1914,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Sobre chino n.º 4</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Página 1}other{Página {COUNT}}}</translation>
+<translation id="4152495263075154876">La pantalla de progreso de pago aplazado está cerrada.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> no admite una conexión segura con HTTPS</translation>
 <translation id="4154277373259957087">Ahora, Chrome verificará tu identidad antes de rellenar los métodos de pago. Puedes actualizar esta información en cualquier momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
@@ -2577,6 +2579,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5255583962255635076">Las políticas del navegador aplicadas en tu perfil de trabajo</translation>
 <translation id="5255690596502591079">Capturar de todos modos</translation>
 <translation id="5255771248404149177">El proveedor de tu tarjeta quiere verificar que eres tú</translation>
+<translation id="525579853540851404">Pantalla de progreso de pago aplazado. Teclado oculto.</translation>
 <translation id="5255833070095767006">350x460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política del administrador no recomienda copiar este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda copiar estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">El grupo de pestañas <ph name="GROUP_NAME" /> ya no está disponible</translation>
@@ -3090,6 +3093,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6122181661879998141">anverso de tu tarjeta</translation>
 <translation id="6124058285696691147">Descargar el adjunto</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
+<translation id="6124996493718543728">La pantalla de progreso de pago aplazado está abierta a altura completa.</translation>
 <translation id="6126565365696310362">Sobre chino n.º 2</translation>
 <translation id="6131824478727057281">ubicación</translation>
 <translation id="6133320744616005677">Seguir permitiendo</translation>

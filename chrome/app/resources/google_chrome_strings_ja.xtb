@@ -441,6 +441,9 @@
 <translation id="6180522807229584611">このタブでは追加のリソースが使用されています。パフォーマンスを改善するには、このタブを非アクティブにしてください。</translation>
 <translation id="6182736845697986886">更新サーバーの内部エラーが発生したため、インストールできませんでした。</translation>
 <translation id="6192058120268468905">Chrome のアカウント設定</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> により、Chrome の動作方法を変更する可能性のある拡張機能が追加されました。
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">mDNS トラフィックを許可する Google Chrome のインバウンド ルールです。</translation>
 <translation id="624230925347970731">Chrome はまもなく終了します</translation>
 <translation id="6247557882553405851">Google パスワード マネージャー</translation>

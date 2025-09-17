@@ -450,6 +450,9 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6180522807229584611">ეს ჩანართი დამატებით რესურსებს იყენებს. ეფექტურობის გაზრდის მიზნით, ნება დართეთ Chrome-ს, ჩანართი უმოქმედო რეჟიმში გადაიტანოს.</translation>
 <translation id="6182736845697986886">ინსტალაცია ვერ მოხერხდა განახლების სერვერის შიდა შეცდომის გამო.</translation>
 <translation id="6192058120268468905">თქვენი ანგარიში Chrome-ში</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" />-მა დაამატა გაფართოება, რომელმაც შეიძლება შეცვალოს Chrome-ის მუშაობის პრინციპი.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Google Chrome-ის შემომავალი ტრაფიკის წესი mDNS ტრაფიკისთვის.</translation>
 <translation id="624230925347970731">Chrome მალე დაიხურება</translation>
 <translation id="6247557882553405851">Google პაროლების მმართველი</translation>

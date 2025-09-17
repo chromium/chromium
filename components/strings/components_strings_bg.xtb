@@ -1247,6 +1247,7 @@
 <translation id="3086579638707268289">Активността ви в мрежата се наблюдава</translation>
 <translation id="3087734570205094154">Най-долу</translation>
 <translation id="3090667236485488075">Стъкло</translation>
+<translation id="3093122472063815077">Екранът за напредъка на „Купете сега, платете по-късно“ е отворен на половината височина.</translation>
 <translation id="3094051226187213523">Отваряне на режима с AI с това предложение.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Правилото бе пренебрегнато, защото списъкът за деактивиране съдържа образец, еквивалентен на „*“, което е равносилно на деактивиране на правилото.</translation>
@@ -1913,6 +1914,7 @@
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Плик, китайски №4</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Страница 1}other{Страница {COUNT}}}</translation>
+<translation id="4152495263075154876">Екранът за напредъка на „Купете сега, платете по-късно“ е затворен.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> не поддържа защитена връзка с HTTPS</translation>
 <translation id="4154277373259957087">Chrome вече ще потвърждава самоличността ви, преди да попълва начините на плащане. Можете да актуализирате това по всяко време в „<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />“.</translation>
@@ -2577,6 +2579,7 @@
 <translation id="5255583962255635076">приложените правила за браузъра в служебния ви потребителски профил.</translation>
 <translation id="5255690596502591079">Заснемане въпреки това</translation>
 <translation id="5255771248404149177">Издателят на картата ви иска да се увери, че това сте вие</translation>
+<translation id="525579853540851404">Екран за напредъка на „Купете сега, платете по-късно“. Клавиатурата е скрита.</translation>
 <translation id="5255833070095767006">350 x 460 мм</translation>
 <translation id="5257739419779698609">{0,plural, =1{Според администраторско правило копирането на този файл в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило копирането на тези файлове в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>
 <translation id="5258473597674772367">Групата раздели „<ph name="GROUP_NAME" />“ вече не е налице</translation>
@@ -3090,6 +3093,7 @@
 <translation id="6122181661879998141">предната страна на картата ви</translation>
 <translation id="6124058285696691147">Изтегляне на прикачения файл</translation>
 <translation id="6124432979022149706">Конектори за Chrome Enterprise</translation>
+<translation id="6124996493718543728">Екранът за напредъка на „Купете сега, платете по-късно“ е отворен на пълната височина.</translation>
 <translation id="6126565365696310362">Плик, китайски №2</translation>
 <translation id="6131824478727057281">местоположение</translation>
 <translation id="6133320744616005677">Продължаване на достъпа</translation>

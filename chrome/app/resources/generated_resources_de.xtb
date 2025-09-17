@@ -616,7 +616,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1418559532423038045">Entfernt <ph name="VM_NAME" /> von deinem Gerät (<ph name="DEVICE_TYPE" />). Dadurch werden alle Apps und Daten der virtuellen Maschine gelöscht.</translation>
 <translation id="1418882096915998312">Enterprise-Registrierung wird durchgeführt</translation>
 <translation id="1418954524306642206">Dateien durchsuchen und PPD für den Drucker auswählen</translation>
-<translation id="1419086691207546433">Füge Erweiterungen hinzu, um organisiert zu bleiben, Aufgaben zu vereinfachen und dein Surferlebnis zu verbessern</translation>
+<translation id="1419086691207546433">Füge Erweiterungen hinzu, um einen besseren Überblick zu behalten und Arbeitsschritte zu vereinfachen</translation>
 <translation id="1421334842435688311">Standortinformationen über Mobilfunk</translation>
 <translation id="1421514190500081936">Bitte gib einen Grund für das Herunterladen dieser Daten an:</translation>
 <translation id="1422159345171879700">Unsichere Skripts laden</translation>
@@ -6642,7 +6642,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="560834977503641186">Weitere Informationen zur WLAN-Synchronisation</translation>
 <translation id="5608580678041221894">Tippe auf die folgenden Tasten, um den Overscan-Bereich anzupassen oder zu verschieben</translation>
 <translation id="5609231933459083978">Die Anwendung ist anscheinend ungültig.</translation>
-<translation id="5610759359710387751">Nutzen Sie Chrome</translation>
+<translation id="5610759359710387751">Chrome personalisieren</translation>
 <translation id="5610867721023328944">Versuch es noch einmal oder wähle unten eines der verfügbaren Designs aus.</translation>
 <translation id="5611398002774823980">In Konto speichern</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
@@ -8191,7 +8191,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6723661294526996303">Lesezeichen und Einstellungen importieren...</translation>
 <translation id="6723740634201835758">Im Google-Konto</translation>
 <translation id="6723839827191551955">Gestreamte Medien steuern</translation>
-<translation id="6723839937902243910">Leistung</translation>
+<translation id="6723839937902243910">Ein/Aus-Taste</translation>
 <translation id="6723946439672043591">Anderes Profil auswählen</translation>
 <translation id="6725073593266469338">UI-Dienst</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>

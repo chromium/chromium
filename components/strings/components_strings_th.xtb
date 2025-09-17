@@ -827,6 +827,7 @@
 <translation id="2348509731468399833">หยุดติดตามราคาแล้ว</translation>
 <translation id="2349957959687031096">ปุ่มเปิดแท็บที่ไม่ระบุตัวตน เปิดใช้งานเพื่อเปิดแท็บใหม่ที่ไม่ระบุตัวตนในการท่องเว็บแบบส่วนตัว</translation>
 <translation id="2350796302381711542">ต้องการอนุญาตให้ <ph name="HANDLER_HOSTNAME" /> เปิดลิงก์ <ph name="PROTOCOL" /> ทั้งหมดแทน <ph name="REPLACED_HANDLER_TITLE" /> ไหม</translation>
+<translation id="2351718832234620840">เซิร์ฟเวอร์นี้พิสูจน์ไม่ได้ว่าเป็น <ph name="DOMAIN" /> เนื่องจากใช้ใบรับรองความปลอดภัยที่ Chromium หรือค่ากำหนดของระบบคุณไม่เชื่อถือสำหรับการเข้ารหัสการรับส่งข้อมูลเว็บ สาเหตุอาจเกิดจากการกำหนดค่าผิดหรือผู้โจมตีขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2353297238722298836">อนุญาตให้ใช้กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="2354001756790975382">บุ๊กมาร์กอื่นๆ</translation>
 <translation id="2355395290879513365">ผู้โจมตีอาจเห็นรูปภาพที่คุณกำลังดูอยู่บนเว็บไซต์นี้และหลอกลวงคุณโดยการแก้ไขรูปภาพ</translation>
@@ -971,6 +972,7 @@
 <translation id="2573170131138724450">โทรทัศน์</translation>
 <translation id="257674075312929031">จัดกลุ่ม</translation>
 <translation id="2580031090587209073">ตัวเลือกการแชร์</translation>
+<translation id="258027838577899739">ลบทั้งหมดออกจากประวัติ</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> เพิ่มแท็บแล้ว</translation>
 <translation id="2586657967955657006">คลิปบอร์ด</translation>
 <translation id="2587841377698384444">รหัส API ไดเรกทอรี:</translation>
@@ -995,6 +997,7 @@
 <translation id="2625385379895617796">นาฬิกาเร็วเกินไป</translation>
 <translation id="262745152991669301">สามารถขอเชื่อมต่อกับอุปกรณ์ USB ได้</translation>
 <translation id="2627847595568876492">กำลังดึงข้อความจาก PDF...</translation>
+<translation id="2628025184666666186">เซิร์ฟเวอร์นี้พิสูจน์ไม่ได้ว่าเป็น <ph name="DOMAIN" /> เนื่องจากใช้ใบรับรองความปลอดภัยที่ Chrome หรือการกำหนดค่าระบบของคุณไม่เชื่อถือสำหรับการเข้ารหัสการรับส่งข้อมูลเว็บ สาเหตุอาจเกิดจากการกำหนดค่าผิดหรือผู้โจมตีขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2628224721443278970">ลงชื่อเข้าใช้ Microsoft OneDrive</translation>
 <translation id="2634124572758952069">ไม่พบที่อยู่ IP ของเซิร์ฟเวอร์ <ph name="HOST_NAME" /></translation>
 <translation id="2638567100095052009">พิมพ์ @ เพื่อค้นหาใน <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1877,6 +1880,7 @@
 <translation id="4099048595830172239">นโยบายของผู้ดูแลระบบไม่แนะนำให้แชร์หน้าจอกับ <ph name="APPLICATION_TITLE" /> เมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับแต่งขนาดแบบอักษรและลักษณะแบบอักษรใน Chrome</translation>
 <translation id="4101413244023615925">ข้อความและกราฟิก</translation>
+<translation id="4101917550061398111">ลบรายการที่เลือก</translation>
 <translation id="4102567721634170493">ข่าวท้องถิ่น</translation>
 <translation id="4103249731201008433">หมายเลขซีเรียลของอุปกรณ์ไม่ถูกต้อง</translation>
 <translation id="4103592298805904008">กระดาษแข็ง (3 ชั้น)</translation>
@@ -3895,6 +3899,7 @@
 <translation id="7450577240311017924">ปุ่มจัดการการซิงค์ เปิดใช้งานเพื่อจัดการข้อมูลที่คุณซิงค์ในการตั้งค่า Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับปัญหานี้</translation>
 <translation id="745208957946308667">เกมไดโนเสาร์ กด Space เพื่อเล่น</translation>
+<translation id="7453849010505253492">เซิร์ฟเวอร์นี้พิสูจน์ไม่ได้ว่าเป็น <ph name="DOMAIN" /> เนื่องจากใช้ใบรับรองความปลอดภัยที่ Chrome หรือการกำหนดค่าระบบของคุณไม่เชื่อถือสำหรับการเข้ารหัสการรับส่งข้อมูลเว็บ สาเหตุอาจเกิดจากการกำหนดค่าผิดหรือผู้โจมตีขัดขวางการเชื่อมต่อของคุณ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ดูใบรับรอง<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">บัญชีระบบคลาวด์</translation>
 <translation id="7455133967321480974">ใช้ค่าเริ่มต้นสากล (บล็อก)</translation>
 <translation id="7455452752247248289">เทคโนโลยีขององค์กร</translation>
@@ -4227,6 +4232,7 @@
 <translation id="7992044431894087211">กลับมาแชร์หน้าจอกับ <ph name="APPLICATION_TITLE" /> อีกครั้ง</translation>
 <translation id="7995512525968007366">ไม่ได้ระบุ</translation>
 <translation id="7997855386298213183">แท็บที่แชร์</translation>
+<translation id="8001912761979890298">เซิร์ฟเวอร์นี้พิสูจน์ไม่ได้ว่าเป็น <ph name="DOMAIN" /> เนื่องจากใช้ใบรับรองความปลอดภัยที่ Chromium หรือค่ากำหนดของระบบคุณไม่เชื่อถือสำหรับการเข้ารหัสการรับส่งข้อมูลเว็บ สาเหตุอาจเกิดจากการกำหนดค่าผิดหรือผู้โจมตีขัดขวางการเชื่อมต่อของคุณ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ดูใบรับรอง<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">ลองปิดแท็บหรือโปรแกรมอื่นๆ เพื่อเพิ่มหน่วยความจำ</translation>
 <translation id="8002230960325005199">ดูเว็บไซต์ที่เกี่ยวข้องในแท็บใหม่</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
@@ -4568,6 +4574,7 @@
 <translation id="8564466070529550495">บัตรเสมือน (Virtual Card) ไม่พร้อมใช้งานในขณะนี้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="8564985650692024650">Chromium ขอแนะนำให้รีเซ็ตรหัสผ่าน <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> หากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="8570895683659698018">งานอดิเรกและงานยามว่าง</translation>
+<translation id="8574570240981266561">ลบรายการแล้ว</translation>
 <translation id="8574841453995331336">ตู้เย็นและตู้แช่แข็ง</translation>
 <translation id="8577192028579836704">ราคาปกติของตัวเลือกทั้งหมดอยู่ที่ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">บัตรเสมือนไม่พร้อมใช้งาน</translation>

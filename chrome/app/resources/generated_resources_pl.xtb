@@ -2164,6 +2164,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2471469610750100598">Czarny (domyślny)</translation>
 <translation id="2471506181342525583">Zezwolono na dostęp do lokalizacji</translation>
 <translation id="2471632709106952369">Tabele porównawcze</translation>
+<translation id="2472855537207709205">Grupuj wszystkie karty, które nie należą do żadnej grupy</translation>
 <translation id="2473195200299095979">Przetłumacz tę stronę</translation>
 <translation id="2475982808118771221">Wystąpił błąd</translation>
 <translation id="2476435723907345463">Usunięto dostęp do kluczy dostępu</translation>
@@ -2777,6 +2778,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2900247416110050639">Pliki Dokumentów, Arkuszy i Prezentacji Google muszą być przechowywane na Dysku Google. Pliki lokalne zostaną przeniesione, a pliki z innych lokalizacji – skopiowane. Swoje pliki znajdziesz w folderze Dysku Google w aplikacji Pliki.</translation>
 <translation id="290105521672621980">Plik korzysta z nieobsługiwanych funkcji</translation>
 <translation id="2901348420151309559">Ostatnie zdjęcia i aplikacje</translation>
+<translation id="2901431118738474110">Ten klucz dostępu już nie działa. Został usunięty ze strony <ph name="RPID" /> i wkrótce zostanie usunięty również tutaj. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;Informacje o kluczach dostępu&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> nie może skomunikować się z drukarką. Upewnij się, że jest ona podłączona, i spróbuj ponownie.</translation>
 <translation id="2902265136119311513">Przeglądaj jako gość</translation>
 <translation id="2902312830803030883">Więcej czynności</translation>
@@ -11493,10 +11495,12 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8993945059918628059">Przyłóż palec do czytnika linii papilarnych. Odcisk palca jest przechowywany w bezpieczny sposób i jest dostępny tylko na Twoim urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="899403249577094719">Podstawowy adres URL certyfikatu firmy Netscape</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{To rozszerzenie jest zapisane na Twoim koncie Google, ale dane, które zostały przez nie zapisane tylko na tym urządzeniu, mogą zostać usunięte}few{Te rozszerzenia są zapisane na Twoim koncie Google, ale dane, które zostały przez nie zapisane tylko na tym urządzeniu, mogą zostać usunięte}many{Te rozszerzenia są zapisane na Twoim koncie Google, ale dane, które zostały przez nie zapisane tylko na tym urządzeniu, mogą zostać usunięte}other{Te rozszerzenia są zapisane na Twoim koncie Google, ale dane, które zostały przez nie zapisane tylko na tym urządzeniu, mogą zostać usunięte}}</translation>
+<translation id="8997659961727384862">Grupuj wszystkie karty, które nie należą do żadnej grupy</translation>
 <translation id="8999027165951679951">Nieaktywna karta: zwolniono <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Błąd składni sekcji: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Mniej ruchu na ekranie</translation>
 <translation id="9000185763019430629">Dotknij czytnika linii papilarnych po prawej stronie urządzenia <ph name="DEVICE_TYPE" />. Odcisk palca jest przechowywany w bezpieczny sposób i jest dostępny tylko na Twoim urządzeniu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="900267527532832868">Ten klucz dostępu już nie działa. Wkrótce zostanie usunięty z <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Wpisz cyfrę <ph name="NUM_DIGIT" /> z 6 cyfr kodu PIN. Aby usunąć ostatnią cyfrę, użyj klawisza Backspace lub Delete.</translation>
 <translation id="9003185744423389627">Nie udało się połączyć z serwerem zarządzania urządzeniami (stan „<ph name="STATUS_TEXT" />” o godzinie „<ph name="FAILURE_TIME" />”)</translation>
 <translation id="90033698482696970">Automatycznie skanować pod kątem dostępnych profili eSIM?</translation>

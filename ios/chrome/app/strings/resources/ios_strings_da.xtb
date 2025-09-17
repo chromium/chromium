@@ -479,6 +479,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2797029671965852011">Vis historik</translation>
 <translation id="2797302972324086597">Landekode</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fil}one{{COUNT} fil}other{{COUNT} filer}}</translation>
+<translation id="2816149645002567541">Downloaden er sat på pause</translation>
 <translation id="2816489851009559785">Menu → Indstillinger → Standardbrowser</translation>
 <translation id="2818821771744632548">Du blev logget ud af din konto, <ph name="USER_NAME" />, som en del af nulstillingen af din iPhone. Tryk på "Fortsæt" nedenfor for at logge ind igen.</translation>
 <translation id="2819667972867209401">Når denne indstilling er aktiveret, gemmes data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed, og dataene slettes, hvis du logger ud.</translation>
@@ -735,6 +736,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3921585859122905677">Adresselinjens placering</translation>
 <translation id="3922185497376658606">Forudindlæs websider</translation>
 <translation id="3922395466317605522">Tilpas menuen</translation>
+<translation id="3926703470020109118">Downloaden blev annulleret</translation>
 <translation id="3929457972718048006">Adresser</translation>
 <translation id="3931215329146376310">{count,plural, =1{Ny adgangskode til dette website}one{Ny adgangskode til dette website}other{Nye adgangskoder til dette website}}</translation>
 <translation id="3934905113567851655">Knib fingrene sammen for at tilpasse størrelse</translation>
@@ -787,6 +789,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4113957097611235433">Skift dine adgangskoder</translation>
 <translation id="4120936477286528673">Dette website forsøger hele tiden at åbne en anden app.</translation>
 <translation id="4121993058175073134">For at sende oplysninger om nettoeksporten skal du konfigurere din mailkonto i appen Indstillinger.</translation>
+<translation id="4132991308423633339">Eksportér adgangskoder og adgangsnøgler…</translation>
 <translation id="4133139945030148655">Du er klar til at gå i gang</translation>
 <translation id="4133265950310064865">Forbedret beskyttelse</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1899,6 +1902,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8283172974887967105">Angiv…</translation>
 <translation id="8289930144142009940">Notifikationer for <ph name="FEATURE_NAME" /> er deaktiveret</translation>
 <translation id="8290077367744012649">Overvåg priser på dine faner</translation>
+<translation id="8292893224181644074">Downloaden er fuldført</translation>
 <translation id="8299417921174340354">Før du kan bruge adgangskoder, skal du angive en adgangskode på din enhed.</translation>
 <translation id="8307481894409578819">Denne fil kunne ikke uploades</translation>
 <translation id="8319076807703933069">Ny søgning</translation>

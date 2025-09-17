@@ -99,6 +99,7 @@
 <translation id="1407135791313364759">Mở tất cả</translation>
 <translation id="1409879593029778104">Đã ngăn tải xuống <ph name="FILE_NAME" /> do tệp này đã tồn tại.</translation>
 <translation id="1413446866325418126">Lưu dữ liệu vào Tài khoản Google của bạn</translation>
+<translation id="1414919006379339073">Đóng cửa sổ hiện tại</translation>
 <translation id="1416550906796893042">Phiên bản ứng dụng</translation>
 <translation id="1419753403124156396">Khởi động lại Chrome?</translation>
 <translation id="1428770807407000502">Tắt tính năng đồng bộ hoá?</translation>
@@ -709,6 +710,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4380055775103003110">Nếu sự cố này vẫn tiếp diễn, bạn có thể thử các cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Sử dụng Sogou để tìm kiếm</translation>
 <translation id="4387647248986092471">Tạo phương thức khoá hồ sơ cho ô tô</translation>
+<translation id="4387817230000841154">Mở Tệp đã tải xuống</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Các thẻ và nhóm thẻ không được dùng đến từ 1 ngày trở lên}other{Các thẻ và nhóm thẻ mà bạn không dùng đến từ # ngày trở lên}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Đang tải xuống…</translation>
 <translation id="4404568932422911380">Không có dấu trang nào</translation>

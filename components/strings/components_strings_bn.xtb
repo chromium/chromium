@@ -4003,6 +4003,7 @@
 <translation id="7613889955535752492">মেয়াদোত্তীর্ণ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার পাসওয়ার্ড দেখতে ও ম্যানেজ করতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="7615932826417658001">আইডি কার্ড যোগ করুন</translation>
+<translation id="7616390733770379387">এগুলি র‍্যান্ডম অর্ডারে অ্যাপ দেখানো হয়।</translation>
 <translation id="7616645509853975347">আপনার অ্যাডমিনিস্ট্রেটর Chrome Enterprise কানেক্টরগুলিকে আপনার ব্রাউজারে চালু করেছে। এই কানেক্টর আপনার কিছু ডেটা অ্যাক্সেস করতে পারবে।</translation>
 <translation id="7617825962482469577">এনভেলপ C7/C6</translation>
 <translation id="7618270539713451657">মার্শাল আর্টস</translation>
@@ -4826,6 +4827,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> আপনার স্থানীয় নেটওয়ার্কে, যেকোনও ডিভাইস খুঁজতে ও কানেক্ট করতে চায়</translation>
 <translation id="9046864189129893978">মাইক্রোফোন (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">আপনার ডিফল্ট সার্চ ইঞ্জিনের মাধ্যমে ওয়েব সার্চ করতে পারবেন। আপনি এটি সেটিংস থেকে পরিবর্তন করতে পারবেন।</translation>
 <translation id="9048035366624198823"><ph name="POLICY_VALUE" />-এ সেট করার জন্য এই অ্যাকশনের <ph name="POLICY_NAME" /> নীতি প্রয়োজন: <ph name="ACTION_LIST" />।</translation>
 <translation id="9048662076076074925">২৪ x ৩৬ ইঞ্চি</translation>
 <translation id="9049981332609050619">আপনি <ph name="DOMAIN" />-এ পৌছানোর প্রয়াস করছেন, কিন্তু সার্ভার একটি ভুল সার্টিফিকেট উপস্থাপন করেছে|</translation>

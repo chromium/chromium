@@ -829,6 +829,7 @@
 <translation id="2348509731468399833">បាន​បញ្ឈប់​ការ​តាម​ដាន​តម្លៃ។</translation>
 <translation id="2349957959687031096">ប៊ូតុង "បើកផ្ទាំងឯកជន", បើកដំណើរការ ដើម្បីបើកផ្ទាំងឯកជនថ្មីសម្រាប់រុករកជាលក្ខណៈឯកជន</translation>
 <translation id="2350796302381711542">អនុញ្ញាតឲ្យ <ph name="HANDLER_HOSTNAME" /> បើក <ph name="PROTOCOL" /> តំណទាំងអស់ជំនួសឲ្យ <ph name="REPLACED_HANDLER_TITLE" />?</translation>
+<translation id="2351718832234620840">ម៉ាស៊ីនមេ​នេះ​មិនអាច​បញ្ជាក់ថា​វាជា <ph name="DOMAIN" /> បានទេ ដោយសារ​វាកំពុងប្រើ​វិញ្ញាបនបត្រ​សុវត្ថិភាព​ដែល​មិនត្រូវបាន​ទុកចិត្តដោយ Chromium ឬការកំណត់រចនាសម្ព័ន្ធ​ប្រព័ន្ធ​របស់អ្នក​សម្រាប់​ការ​អ៊ីនគ្រីប​ចរាចរណ៍​បណ្ដាញ​ឡើយ។ បញ្ហានេះ​អាច​បណ្ដាល​មកពី​ការកំណត់​រចនាសម្ព័ន្ធ​មិនត្រឹមត្រូវ ឬ​អ្នកវាយប្រហារ​ជ្រៀតជ្រែក​ការតភ្ជាប់​របស់អ្នក។</translation>
 <translation id="2353297238722298836">បាន​អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="2354001756790975382">ចំណាំផ្សេងទៀត</translation>
 <translation id="2355395290879513365">អ្នកវាយប្រហារអាចនឹងមើលឃើញរូបភាពដែលអ្នកកំពុងមើលនៅលើគេហទំព័រនេះ និងបញ្ឆោតអ្នកដោយធ្វើការកែសម្រួលពួកវា។</translation>
@@ -974,6 +975,7 @@
 <translation id="2573170131138724450">ទូរទស្សន៍</translation>
 <translation id="257674075312929031">ដាក់ជាក្រុម</translation>
 <translation id="2580031090587209073">ជម្រើសនៃការចែក​រំលែក</translation>
+<translation id="258027838577899739">លុប​ទាំងអស់​ចេញពី​ប្រវត្តិ</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> បានបញ្ចូល​ផ្ទាំង</translation>
 <translation id="2586657967955657006">អង្គ​ចងចាំ</translation>
 <translation id="2587841377698384444">API ID ថតផ្ទុកឯកសារ៖</translation>
@@ -998,6 +1000,7 @@
 <translation id="2625385379895617796">ម៉ោងរបស់អ្នកដើរលឿន</translation>
 <translation id="262745152991669301">អាចស្នើសុំភ្ជាប់​ជាមួយ​ឧបករណ៍ USB</translation>
 <translation id="2627847595568876492">កំពុង​ស្រង់យក​អក្សរពី PDF...</translation>
+<translation id="2628025184666666186">ម៉ាស៊ីនមេ​នេះ​មិនអាច​បញ្ជាក់ថា​វាជា <ph name="DOMAIN" /> បានទេ ដោយសារ​វាកំពុងប្រើ​វិញ្ញាបនបត្រ​សុវត្ថិភាព​ដែល​មិនត្រូវបាន​ទុកចិត្តដោយ Chrome ឬការកំណត់រចនាសម្ព័ន្ធ​ប្រព័ន្ធ​របស់អ្នក​សម្រាប់​ការ​អ៊ីនគ្រីប​ចរាចរណ៍​បណ្ដាញ​ឡើយ។ បញ្ហានេះ​អាច​បណ្ដាល​មកពី​ការកំណត់​រចនាសម្ព័ន្ធ​មិនត្រឹមត្រូវ ឬ​អ្នកវាយប្រហារ​ជ្រៀតជ្រែក​ការតភ្ជាប់​របស់អ្នក។</translation>
 <translation id="2628224721443278970">ចូលគណនី Microsoft OneDrive</translation>
 <translation id="2634124572758952069">រកមិន​ឃើញអាសយដ្ឋាន IP ម៉ាស៊ីនមេរបស់ <ph name="HOST_NAME" /> ទេ។</translation>
 <translation id="2638567100095052009">វាយបញ្ចូល @ ដើម្បី​ស្វែងរក​នៅលើ <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1250,6 +1253,7 @@
 <translation id="3086579638707268289">សកម្មភាព​របស់អ្នក​នៅលើ​បណ្ដាញ​កំពុង​ត្រូវបាន​ឃ្លាំមើល</translation>
 <translation id="3087734570205094154">ខាងក្រោម</translation>
 <translation id="3090667236485488075">កញ្ចក់</translation>
+<translation id="3093122472063815077">បានបើក​អេក្រង់​ដំណើរវិវឌ្ឍន៍ "ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ" ពាក់កណ្ដាល​អេក្រង់។</translation>
 <translation id="3094051226187213523">បើក​មុខងារ AI ដោយប្រើ​ការណែនាំនេះ។</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">មិនបាន​អើពើ ដោយសារ​បញ្ជីបិទ​មានតួអក្សរ​ជំនួស '*' ដែលស្មើនឹង​ការបិទ​គោលការណ៍។</translation>
@@ -1881,6 +1885,7 @@
 <translation id="4099048595830172239">គោលការណ៍របស់អ្នកគ្រប់គ្រងមិនណែនាំឱ្យចែករំលែកអេក្រង់របស់អ្នកជាមួយ <ph name="APPLICATION_TITLE" /> នៅពេលដែលអាចមើលឃើញខ្លឹមសារសម្ងាត់ទេ៖</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "tab" រួចចុច "Enter" ដើម្បីប្ដូរទំហំពុម្ពអក្សរ និងពុម្ពអក្សរ​តាមបំណង​នៅក្នុង Chrome</translation>
 <translation id="4101413244023615925">អក្សរ និងក្រាហ្វិក</translation>
+<translation id="4101917550061398111">លុប​ធាតុ​ដែល​បាន​ជ្រើសរើស</translation>
 <translation id="4102567721634170493">ព័ត៌មាន​ក្នុងស្រុក</translation>
 <translation id="4103249731201008433">លេខសេរ៊ីឧបករណ៍គ្មានសុពលភាព</translation>
 <translation id="4103592298805904008">កាតុង (មួយស្រទាប់)</translation>
@@ -1916,6 +1921,7 @@
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">ស្រោមសំបុត្រចិន #4</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{ទំព័រទី 1}other{ទំព័រទី {COUNT}}}</translation>
+<translation id="4152495263075154876">អេក្រង់​ដំណើរវិវឌ្ឍន៍ "ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ" ត្រូវបានបិទ។</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{ផ្ទាំង 1}other{ផ្ទាំង #}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> មិនអាចធ្វើ​ការ​តភ្ជាប់ដែលមានសុវត្ថិភាព​ជាមួយ HTTPS បានទេ</translation>
 <translation id="4154277373259957087">ឥឡូវនេះ Chrome នឹង​ផ្ទៀងផ្ទាត់​ថាជាអ្នក មុននឹងបំពេញ​វិធីបង់ប្រាក់។ អ្នកអាច​ធ្វើបច្ចុប្បន្នភាពលក្ខណៈនេះបានគ្រប់ពេល​នៅក្នុង<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />។</translation>
@@ -2581,6 +2587,7 @@
 <translation id="5255583962255635076">គោលការណ៍របស់កម្មវិធីរុករកតាមអ៊ីនធឺណិតដែលបានអនុវត្តនៅក្នុងកម្រងព័ត៌មានការងាររបស់អ្នក</translation>
 <translation id="5255690596502591079">មិនអីទេ ថតចុះ</translation>
 <translation id="5255771248404149177">ស្ថាប័នចេញកាតរបស់អ្នកចង់ធ្វើឱ្យប្រាកដថាពិតជាអ្នក</translation>
+<translation id="525579853540851404">អេក្រង់​ដំណើរវិវឌ្ឍន៍ "ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ"។ បាន​លាក់​ក្ដារចុច។</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​ចម្លង​ឯកសារ​នេះ​ទៅ​ក្នុង <ph name="DESTINATION_NAME" /> ទេ}other{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​​ចម្លង​ឯកសារ​ទាំង​នេះ​ទៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}}</translation>
 <translation id="5258473597674772367">លែងមាន​ក្រុមផ្ទាំង "<ph name="GROUP_NAME" />" ទៀតហើយ</translation>
@@ -3094,6 +3101,7 @@
 <translation id="6122181661879998141">ផ្នែកខាងមុខ​កាតរបស់អ្នក</translation>
 <translation id="6124058285696691147">ទាញ​យកឯកសារ​ភ្ជាប់</translation>
 <translation id="6124432979022149706">កម្មវិធីភ្ជាប់ Chrome Enterprise</translation>
+<translation id="6124996493718543728">បានបើក​អេក្រង់​ដំណើរវិវឌ្ឍន៍ "ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ" ពេញអេក្រង់។</translation>
 <translation id="6126565365696310362">ស្រោមសំបុត្រចិន #2</translation>
 <translation id="6131824478727057281">ទីតាំង</translation>
 <translation id="6133320744616005677">បន្តការអនុញ្ញាត</translation>
@@ -3899,6 +3907,7 @@
 <translation id="7450577240311017924">ប៊ូតុង "គ្រប់គ្រងសមកាលកម្ម", បើកដំណើរការ ដើម្បីគ្រប់គ្រងព័ត៌មានអ្វីខ្លះដែលអ្នកធ្វើសមកាលកម្មនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" />អំពីបញ្ហានេះ</translation>
 <translation id="745208957946308667">ហ្គេមដាយ​ណូស័រ, ចុច​ដកឃ្លា​ដើម្បីលេង</translation>
+<translation id="7453849010505253492">ម៉ាស៊ីនមេ​នេះ​មិនអាច​បញ្ជាក់ថា​វាជា <ph name="DOMAIN" /> បានទេ ដោយសារ​វាកំពុងប្រើ​វិញ្ញាបនបត្រ​សុវត្ថិភាព​ដែល​មិនត្រូវបាន​ទុកចិត្តដោយ Chrome ឬការកំណត់រចនាសម្ព័ន្ធ​ប្រព័ន្ធ​របស់អ្នក​សម្រាប់​ការ​អ៊ីនគ្រីប​ចរាចរណ៍​បណ្ដាញ​ឡើយ។ បញ្ហានេះ​អាច​បណ្ដាល​មកពី​ការកំណត់​រចនាសម្ព័ន្ធ​មិនត្រឹមត្រូវ ឬ​អ្នកវាយប្រហារ​ជ្រៀតជ្រែក​ការតភ្ជាប់​របស់អ្នក។ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />មើល​វិញ្ញាបនបត្រ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">គណនី​ពពក</translation>
 <translation id="7455133967321480974">ប្រើលំនាំដើមជាសកល (រារាំង)</translation>
 <translation id="7455452752247248289">បច្ចេកវិទ្យា​សម្រាប់​អាជីវកម្ម</translation>
@@ -4007,6 +4016,7 @@
 <translation id="7613889955535752492">ផុតកំណត់៖ <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីមើល និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នកនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="7615932826417658001">បញ្ចូល​អត្តសញ្ញាណ​ប័ណ្ណ</translation>
+<translation id="7616390733770379387">ម៉ាស៊ីនស្វែងរកទាំងនេះត្រូវបាន​បង្ហាញ​តាមលំដាប់​ចៃដន្យ។</translation>
 <translation id="7616645509853975347">អ្នកគ្រប់គ្រង​របស់អ្នក​បានបើក Chrome Enterprise Connectors នៅលើ​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​។ កម្មវិធីភ្ជាប់ទាំងនេះមានសិទ្ធិចូលប្រើ​ទិន្នន័យមួយចំនួនរបស់អ្នក។</translation>
 <translation id="7617825962482469577">ស្រោមសំបុត្រ C7/C6</translation>
 <translation id="7618270539713451657">ក្បាច់គុន</translation>
@@ -4233,6 +4243,7 @@
 <translation id="7992044431894087211">ការបង្ហាញអេក្រង់​ជាមួយ <ph name="APPLICATION_TITLE" /> ត្រូវបានបន្ត</translation>
 <translation id="7995512525968007366">មិនបានបញ្ជាក់</translation>
 <translation id="7997855386298213183">ផ្ទាំង​ដែលបាន​ចែករំលែក</translation>
+<translation id="8001912761979890298">ម៉ាស៊ីនមេ​នេះ​មិនអាច​បញ្ជាក់ថា​វាជា <ph name="DOMAIN" /> បានទេ ដោយសារ​វាកំពុងប្រើ​វិញ្ញាបនបត្រ​សុវត្ថិភាព​ដែល​មិនត្រូវបាន​ទុកចិត្តដោយ Chromium ឬការកំណត់រចនាសម្ព័ន្ធ​ប្រព័ន្ធ​របស់អ្នក​សម្រាប់​ការ​អ៊ីនគ្រីប​ចរាចរណ៍​បណ្ដាញ​ឡើយ។ បញ្ហានេះ​អាច​បណ្ដាល​មកពី​ការកំណត់​រចនាសម្ព័ន្ធ​មិនត្រឹមត្រូវ ឬ​អ្នកវាយប្រហារ​ជ្រៀតជ្រែក​ការតភ្ជាប់​របស់អ្នក។ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />មើល​វិញ្ញាបនបត្រ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">សាកល្បងបិទផ្ទាំង ឬកម្មវិធីផ្សេងទៀត ដើម្បីបង្កើនទំហំអង្គចងចាំ។</translation>
 <translation id="8002230960325005199">មើល​គេហទំព័រ​ដែល​ពាក់ព័ន្ធ​នៅ​ក្នុង​ផ្ទាំង​ថ្មី</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
@@ -4574,6 +4585,7 @@
 <translation id="8564466070529550495">មិនអាចប្រើ​កាតនិមិ្មត​នៅពេលនេះ​បានទេ សូមព្យាយាម​ម្ដងទៀត​នៅពេល​ក្រោយ។</translation>
 <translation id="8564985650692024650">Chromium ណែនាំឱ្យ​កំណត់​ពាក្យសម្ងាត់ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> របស់អ្នក​ឡើងវិញ ប្រសិនបើ​អ្នកបាន​ប្រើ​វាម្តងទៀត​នៅលើ​ទំព័រផ្សេង។</translation>
 <translation id="8570895683659698018">ចំណូល​ចិត្ត និង​ការលំហែអារម្មណ៍</translation>
+<translation id="8574570240981266561">បានលុបធាតុ</translation>
 <translation id="8574841453995331336">ទូទឹកកក និងទូក្លាសេ</translation>
 <translation id="8577192028579836704">ជម្រើសទាំងអស់​ជាធម្មតា <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">មិនអាចប្រើ​កាតនិមិ្មតបានទេ</translation>
@@ -4831,6 +4843,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> ចង់​រកមើល និងភ្ជាប់​ជាមួយ​ឧបករណ៍​នៅលើ​បណ្ដាញ​មូលដ្ឋាន​របស់អ្នក</translation>
 <translation id="9046864189129893978">មីក្រូហ្វូន (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">ជម្រើស​លំនាំដើម​របស់អ្នក​អាចឱ្យអ្នក​ស្វែងរក​នៅលើ​បណ្ដាញ។ អ្នកអាច​ប្ដូរវាបាន​នៅក្នុង​ការ​កំណត់។</translation>
 <translation id="9048035366624198823">សកម្មភាព​ទាំង​នេះ​តម្រូវ​ឱ្យកំណត់​គោលការណ៍ <ph name="POLICY_NAME" /> ទៅជា "<ph name="POLICY_VALUE" />"៖ <ph name="ACTION_LIST" />។</translation>
 <translation id="9048662076076074925">24 x 36 in</translation>
 <translation id="9049981332609050619">អ្នកប៉ុនប៉ងទៅកាន់ <ph name="DOMAIN" /> ប៉ុន្តែម៉ាស៊ីនមេបានបង្ហាញវិញ្ញាបនប័ត្រដែលគ្មានសុពលភាព។</translation>

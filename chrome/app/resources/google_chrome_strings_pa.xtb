@@ -450,6 +450,9 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6180522807229584611">ਇਹ ਟੈਬ ਵਾਧੂ ਸਰੋਤਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ। ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ Chrome ਨੂੰ ਇਸ ਟੈਬ ਨੂੰ ਅਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਦਿਓ।</translation>
 <translation id="6182736845697986886">ਅੱਪਡੇਟ ਸਰਵਰ ਦੀ ਅੰਦਰੂਨੀ ਗੜਬੜ ਕਾਰਨ ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="6192058120268468905">Chrome ਵਿੱਚ ਤੁਹਾਡਾ ਖਾਤਾ</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ਨੇ ਇੱਕ ਅਜਿਹੀ ਐਕਸਟੈਂਸ਼ਨ ਸ਼ਾਮਲ ਕੀਤੀ ਹੈ ਜੋ Chrome ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">mDNS ਟਰੈਫ਼ਿਕ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ Google Chrome ਲਈ ਇਨਬਾਊਂਡ ਨਿਯਮ।</translation>
 <translation id="624230925347970731">Chrome ਜਲਦ ਹੀ ਬੰਦ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>

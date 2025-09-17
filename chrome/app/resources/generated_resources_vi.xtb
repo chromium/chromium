@@ -2189,6 +2189,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2471469610750100598">Đen (mặc định)</translation>
 <translation id="2471506181342525583">Đã cho phép truy cập thông tin vị trí</translation>
 <translation id="2471632709106952369">Bảng so sánh</translation>
+<translation id="2472855537207709205">Nhóm tất cả các thẻ chưa được nhóm</translation>
 <translation id="2473195200299095979">Dịch trang này</translation>
 <translation id="2475982808118771221">Đã xảy ra lôi</translation>
 <translation id="2476435723907345463">Đã xoá quyền truy cập vào khoá truy cập</translation>
@@ -2804,6 +2805,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2900247416110050639">Google Tài liệu, Trang tính và Trang trình bày yêu cầu lưu trữ các tệp trong Google Drive. Các tệp trên thiết bị sẽ di chuyển sang OneDrive, còn các tệp từ vị trí khác sẽ được sao chép vào đó. Bạn có thể tìm thấy các tệp của mình ở thư mục Google Drive trong ứng dụng Files.</translation>
 <translation id="290105521672621980">Tệp sử dụng các tính năng không được hỗ trợ</translation>
 <translation id="2901348420151309559">Ảnh và ứng dụng gần đây</translation>
+<translation id="2901431118738474110">Khoá truy cập này không còn hoạt động nữa. Khoá đã bị xoá khỏi <ph name="RPID" /> và sẽ sớm bị xoá khỏi đây. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;Giới thiệu về khoá truy cập&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> không thể giao tiếp với máy in này. Hãy đảm bảo rằng bạn đã cắm máy in rồi thử lại.</translation>
 <translation id="2902265136119311513">Duyệt với tư cách Khách</translation>
 <translation id="2902312830803030883">Thao tác khác</translation>
@@ -11532,10 +11534,12 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="8993945059918628059">Dùng ngón tay chạm vào cảm biến vân tay. Dữ liệu vân tay được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="899403249577094719">URL Cơ sở Chứng chỉ Netscape</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Tiện ích này được lưu trong Tài khoản Google của bạn, nhưng mọi dữ liệu mà tiện ích này chỉ lưu trên thiết bị bạn đang sử dụng có thể sẽ bị xoá}other{Các tiện ích này được lưu trong Tài khoản Google của bạn, nhưng mọi dữ liệu mà các tiện ích này chỉ lưu trên thiết bị bạn đang sử dụng có thể sẽ bị xoá}}</translation>
+<translation id="8997659961727384862">Nhóm tất cả các thẻ chưa được nhóm</translation>
 <translation id="8999027165951679951">Thẻ không hoạt động: Đã giải phóng <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Lỗi cú pháp trong phần: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Giảm chuyển động trên màn hình</translation>
 <translation id="9000185763019430629">Chạm vào cảm biến vân tay ở bên phải <ph name="DEVICE_TYPE" />. Dữ liệu vân tay được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> của bạn.</translation>
+<translation id="900267527532832868">Khoá truy cập này không còn hoạt động nữa. Khoá truy cập sẽ sớm bị xoá khỏi <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Nhập chữ số <ph name="NUM_DIGIT" />/6 của mã PIN. Dùng phím Backspace hoặc Delete để xoá chữ số cuối cùng.</translation>
 <translation id="9003185744423389627">Không kết nối được với Máy chủ quản lý thiết bị do trạng thái "<ph name="STATUS_TEXT" />" vào <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Tự động quét tìm hồ sơ eSIM hiện có?</translation>

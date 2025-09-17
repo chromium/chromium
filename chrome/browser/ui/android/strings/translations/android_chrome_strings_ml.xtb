@@ -99,6 +99,7 @@
 <translation id="1407135791313364759">എല്ലാം തുറക്കുക</translation>
 <translation id="1409879593029778104">ഫയൽ ഇതിനകം തന്നെ ഉള്ളതിനാൽ <ph name="FILE_NAME" /> ഡൗൺലോഡ് തടഞ്ഞു.</translation>
 <translation id="1413446866325418126">നിങ്ങളുടെ Google Account-ൽ ഡാറ്റ സംരക്ഷിക്കുക</translation>
+<translation id="1414919006379339073">നിലവിലെ വിൻഡോ അടയ്‌ക്കുക</translation>
 <translation id="1416550906796893042">ആപ്പ് പതിപ്പ്</translation>
 <translation id="1419753403124156396">Chrome റീസ്‌റ്റാർട്ട് ചെയ്യണോ?</translation>
 <translation id="1428770807407000502">സമന്വയം ഓഫാക്കണോ?</translation>
@@ -709,6 +710,7 @@
 <translation id="4380055775103003110">ഈ പ്രശ്‌നം നിലനിൽക്കുകയാണെങ്കിൽ, <ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ തുടരാൻ നിങ്ങൾക്ക് മറ്റ് മാർഗ്ഗങ്ങൾ പരീക്ഷിക്കാവുന്നതാണ്.</translation>
 <translation id="4384468725000734951">തിരയാൻ Sogou ഉപയോഗിക്കുന്നു</translation>
 <translation id="4387647248986092471">കാർ പ്രൊഫൈൽ ലോക്ക് സൃഷ്ടിക്കുക</translation>
+<translation id="4387817230000841154">ഡൗൺലോഡുകൾ തുറക്കുക</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{ടാബുകളും ഗ്രൂപ്പുകളും ഒരു ദിവസമോ അതിൽ കൂടുതലോ ഉപയോഗിച്ചിട്ടില്ല}other{ടാബുകളും ഗ്രൂപ്പുകളും # ദിവസമോ അതിൽ കൂടുതലോ ഉപയോഗിച്ചിട്ടില്ല}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ഡൗൺലോഡ് ചെയ്യുന്നു…</translation>
 <translation id="4404568932422911380">ബുക്ക്‌മാർക്കുകളൊന്നുമില്ല</translation>

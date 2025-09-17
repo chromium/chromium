@@ -442,6 +442,9 @@
 <translation id="6180522807229584611">ఈ ట్యాబ్ అదనపు రిసోర్స్‌లను ఉపయోగిస్తోంది. మీ పనితీరును మెరుగుపరచడానికి, దాన్ని ఇన్‌యాక్టివ్‌గా ఉంచడానికి Chromeకు అనుమతినివ్వండి.</translation>
 <translation id="6182736845697986886">అప్‌డేట్ సర్వర్ అంతర్గత ఎర్రర్ కారణంగా ఇన్‌స్టాలేషన్ విఫలమైంది.</translation>
 <translation id="6192058120268468905">Chromeలో మీ ఖాతా</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ఎక్స్‌టెన్షన్ కారణంగా Chrome పని చేసే విధానం మారవచ్చు.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome కోసం ఇన్‌బౌండ్ నియమం.</translation>
 <translation id="624230925347970731">Chrome త్వరలోనే మూసివేయబడుతుంది</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>

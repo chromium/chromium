@@ -99,6 +99,7 @@
 <translation id="1407135791313364759">ყველას გახსნა</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა, რადგან ფაილი უკვე არსებობს.</translation>
 <translation id="1413446866325418126">თქვენი მონაცემების Google ანგარიშში შენახვა</translation>
+<translation id="1414919006379339073">ამჟამინდელი ფანჯრის დახურვა</translation>
 <translation id="1416550906796893042">პროგრამის ვერსია</translation>
 <translation id="1419753403124156396">გსურთ Chrome-ის გადატვირთვა?</translation>
 <translation id="1428770807407000502">გამოირთოს სინქრონიზაცია?</translation>
@@ -709,6 +710,7 @@
 <translation id="4380055775103003110">თუ პრობლემა არ გვარდება, <ph name="SITE_ETLD_PLUS_ONE" />-თან მუშაობის გაგრძელების სხვა ხერხების ცდა შეგიძლიათ.</translation>
 <translation id="4384468725000734951">ძიებისთვის Sogou გამოიყენება</translation>
 <translation id="4387647248986092471">მანქანის პროფილის ჩაკეტვის მეთოდის შექმნა</translation>
+<translation id="4387817230000841154">ჩამოტვირთვების გახსნა</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{ჩანართები და ჯგუფები, რომლებიც 1 ან მეტი დღის განმავლობაში არ გამოყენებულა}other{ჩანართები და ჯგუფები, რომლებიც # ან მეტი დღის განმავლობაში არ გამოყენებულა}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> — იტვირთება…</translation>
 <translation id="4404568932422911380">სანიშნეები არ არის</translation>

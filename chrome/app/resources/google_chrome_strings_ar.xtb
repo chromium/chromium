@@ -134,7 +134,7 @@
 <translation id="2534365042754120737">‏لحماية بياناتك، يمكنك السماح لمتصفِّح Chrome بإزالة الأذونات من المواقع الإلكترونية التي لم يتم زيارتها مؤخرًا. لا يؤدي تفعيل هذا الإعداد إلى إيقاف الإشعارات.</translation>
 <translation id="2556847002339236023">‏تُغلق مؤسستك متصفِّح Chrome في حال عدم استخدامه لمدّة <ph name="TIMEOUT_DURATION" />. تم حذف بيانات التصفُّح. ويمكن أن يشمل ذلك بيانات السجلّ والملء التلقائي وعمليات التنزيل.</translation>
 <translation id="2559253115192232574">‏بعد ذلك، يمكن للموقع الإلكتروني الذي تتم زيارته أن يطلب من Chrome معرفة اهتماماتك من أجل تقديم إعلانات مخصصة لك. ويمكن أن يشارك Chrome ما يصل إلى 3 اهتمامات.</translation>
-<translation id="2563121210305478421">‏هل نعيد تشغيل Chrome؟</translation>
+<translation id="2563121210305478421">‏هل تريد إعادة تشغيل Chrome؟</translation>
 <translation id="2569974318947988067">‏سيحاول Chrome ترقية عمليات الانتقال إلى بروتوكول HTTPS.</translation>
 <translation id="2571392474191184472">‏تدير مؤسستك متصفِّح Chrome</translation>
 <translation id="2574930892358684005">‏حساب "<ph name="EXISTING_USER" />" مسجلاً الدخول إلى هذا الملف الشخصي على Chrome. للحصول على تجربة تصفّح منفصلة، ما رأيك بإنشاء ملف شخصي آخر خاص بك على Chrome؟</translation>
@@ -179,7 +179,7 @@
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - Chrome - تسجيل الدخول إلى الشبكة</translation>
 <translation id="2970681950995291301">‏لإزالة حسابك على Google من Chrome، يجب تسجيل الخروج من Chrome في صفحة "الإعدادات"</translation>
 <translation id="2991167882679440829">‏ستتم إزالة كلمات المرور وبيانات Chrome الأخرى التي تم حفظها في حسابك على Google من هذا الجهاز. ولاستخدامها مرة أخرى في Chrome، عليك تسجيل الدخول مجددًا.</translation>
-<translation id="2994465299455873643">توفِّر هذه الخدمة خدمات تشفير وطريقة آمنة لاسترداد <ph name="BROWSER_NAME" /> عندما يصبح قديمًا. وفي حال إيقاف هذه الخدمة، قد يتعذّر الوصول إلى البيانات المشفّرة من قِبل <ph name="BROWSER_NAME" /> وبالتالي، قد تفشل عملية الاسترداد من قِبل <ph name="BROWSER_NAME" />.</translation>
+<translation id="2994465299455873643">توفِّر هذه الخدمة خدمات تشفير وطريقة آمنة لترقية <ph name="BROWSER_NAME" /> عندما يصبح قديمًا. وفي حال إيقاف هذه الخدمة، قد يفقد <ph name="BROWSER_NAME" /> إمكانية الوصول إلى البيانات المشفّرة، وقد يتعذّر على <ph name="BROWSER_NAME" /> إجراء الترقية.</translation>
 <translation id="3003694935412297923">كل المهام</translation>
 <translation id="3018957014024118866">‏حذف البيانات من Chrome أيضًا (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">‏إعادة التشغيل لتحديث &amp;ChromeOS Flex</translation>
@@ -516,7 +516,7 @@
 <translation id="7025789849649390912">تم إيقاف التثبيت.</translation>
 <translation id="7025800014283535195">‏يمكنك من هنا التبديل بين الملفات الشخصية على Chrome</translation>
 <translation id="7051685429025310665">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome أذونات <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="PERMISSION_3" />.</translation>
-<translation id="7059914902409643750">‏ما رأيك بجعل Chrome متصفِّحك الدائم؟</translation>
+<translation id="7059914902409643750">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="7060643578009939353">‏البحث عن هذا الفيديو باستخدام "عدسة Google"</translation>
 <translation id="7071827361006050863">‏سيحذف Chrome بيانات التصفُّح قريبًا</translation>
 <translation id="7085332316435785646">‏يمكنك اختيار ما إذا أردت تضمين سجلّ Chrome للحصول على تجارب أكثر تخصيصًا في خدمات Google.</translation>
@@ -533,7 +533,7 @@
 <translation id="7285616922384953075">‏تدير "<ph name="MANAGER" />" متصفِّح Chrome</translation>
 <translation id="7288567540154601580">علامات التبويب والإضافات</translation>
 <translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>
-<translation id="7302361266603927550">‏لم يتم بعد حفظ بعض بيانات Chrome في حسابك على Google. يُرجى الانتظار بضع دقائق قبل تسجيل الخروج. في حال تسجيل الخروج الآن، فسيتم حذف هذه البيانات.</translation>
+<translation id="7302361266603927550">‏لم يتم حفظ بعض بيانات Chrome في حسابك على Google إلى الآن. يُرجى الانتظار بضع دقائق قبل تسجيل الخروج. إذا سجّلت الخروج الآن، فسيتم حذف هذه البيانات.</translation>
 <translation id="7308322188646931570">‏يحتاج Chrome للوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
 <translation id="7352651011704765696">حدث خطأ ما</translation>

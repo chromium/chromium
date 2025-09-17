@@ -827,6 +827,7 @@
 <translation id="2348509731468399833">Адсочванне цаны прыпынена.</translation>
 <translation id="2349957959687031096">Кнопка "Адкрыць укладку ў рэжыме інкогніта". Каб адкрыць новую ўкладку ў рэжыме інкогніта для прыватнага прагляду вэб-старонак, націсніце яе.</translation>
 <translation id="2350796302381711542">Дазволіць хосту <ph name="HANDLER_HOSTNAME" /> адкрываць усе спасылкі тыпу "<ph name="PROTOCOL" />" (замест <ph name="REPLACED_HANDLER_TITLE" />)?</translation>
+<translation id="2351718832234620840">Серверу не ўдалося даказаць, што гэта дамен <ph name="DOMAIN" />, бо ён выкарыстоўвае сертыфікат бяспекі, якому не давярае Chromium ці канфігурацыя вашай сістэмы для шыфравання інтэрнэт-трафіка. Прычынай могуць быць няправільныя налады або спроба зламысніка перахапіць падключэнне.</translation>
 <translation id="2353297238722298836">Камера і мікрафон дазволены</translation>
 <translation id="2354001756790975382">Іншыя закладкі</translation>
 <translation id="2355395290879513365">Зламыснікі могуць бачыць відарысы, якія вы праглядаеце на гэтым сайце, і падмануць вас, мадыфікуючы іх.</translation>
@@ -972,6 +973,7 @@
 <translation id="2573170131138724450">Тэлевізары</translation>
 <translation id="257674075312929031">Група</translation>
 <translation id="2580031090587209073">Параметры абагульвання</translation>
+<translation id="258027838577899739">Выдаліць усе элементы з гісторыі</translation>
 <translation id="258135245577667916">Карыстальнік <ph name="USER_DISPLAY_NAME" /> дадаў укладку</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
 <translation id="2587841377698384444">Ідэнтыфікатар API каталога:</translation>
@@ -996,6 +998,7 @@
 <translation id="2625385379895617796">Ваш гадзіннік спяшаецца</translation>
 <translation id="262745152991669301">Сайт можа запытваць дазвол на падключэнне да прылад USB</translation>
 <translation id="2627847595568876492">Вымаецца тэкст з PDF…</translation>
+<translation id="2628025184666666186">Серверу не ўдалося даказаць, што гэта дамен <ph name="DOMAIN" />, бо ён выкарыстоўвае сертыфікат бяспекі, якому не давярае Chrome ці канфігурацыя вашай сістэмы для шыфравання інтэрнэт-трафіка. Прычынай могуць быць няправільныя налады або спроба зламысніка перахапіць падключэнне.</translation>
 <translation id="2628224721443278970">Увайсці ў Microsoft OneDrive</translation>
 <translation id="2634124572758952069">IP-адрас сервера хоста <ph name="HOST_NAME" /> не знойдзены.</translation>
 <translation id="2638567100095052009">Увядзіце @ для пошуку тут: <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1878,6 +1881,7 @@
 <translation id="4099048595830172239">Палітыка адміністратара не рэкамендуе абагульваць экран з праграмай <ph name="APPLICATION_TITLE" />, калі паказваецца канфідэнцыяльнае змесціва:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб наладзіць памеры і тыпы шрыфтоў у Chrome, націсніце Tab, затым Enter</translation>
 <translation id="4101413244023615925">Тэкст і графіка</translation>
+<translation id="4101917550061398111">Выдаліць выбраныя элементы</translation>
 <translation id="4102567721634170493">Мясцовыя навіны</translation>
 <translation id="4103249731201008433">Серыйны нумар прылады – памылковы</translation>
 <translation id="4103592298805904008">Аднаслойны гафрыраваны кардон</translation>
@@ -3789,6 +3793,7 @@
 <translation id="7292031607255951991">Імя атрымальніка</translation>
 <translation id="7298195798382681320">Рэкамендавана</translation>
 <translation id="7299471494012161875">Падключаныя перыферыйныя дысплэі</translation>
+<translation id="7299721129597238157">Выдаліць закладку</translation>
 <translation id="7299769361777046949">Кіраваць карткамі лаяльнасці ў Google Кашальку</translation>
 <translation id="7304030187361489308">Высокая</translation>
 <translation id="7304562222803846232">Кіраваць наладамі прыватнасці Уліковага запісу Google</translation>
@@ -3894,6 +3899,7 @@
 <translation id="7450577240311017924">Кнопка "Кіраваць сінхранізацыяй". Каб задаць у наладах Chrome, якая іменна інфармацыя будзе сінхранізавацца, націсніце яе.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра гэту праблему.</translation>
 <translation id="745208957946308667">Гульня з дыназаўрам – націсніце клавішу прабелу, каб гуляць</translation>
+<translation id="7453849010505253492">Серверу не ўдалося даказаць, што гэта дамен <ph name="DOMAIN" />, бо ён выкарыстоўвае сертыфікат бяспекі, якому не давярае Chrome ці канфігурацыя вашай сістэмы для шыфравання інтэрнэт-трафіка. Прычынай могуць быць няправільныя налады або спроба зламысніка перахапіць падключэнне. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Праглядзець сертыфікат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Воблачны ўліковы запіс</translation>
 <translation id="7455133967321480974">Выкарыстоўваць глабальныя стандартныя налады (заблакіраваць)</translation>
 <translation id="7455452752247248289">Карпаратыўныя тэхналогіі</translation>
@@ -4001,6 +4007,7 @@
 <translation id="7613889955535752492">Да: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб паглядзець паролі або кіраваць імі ў наладах Chrome, націсніце Tab, затым Enter</translation>
 <translation id="7615932826417658001">Дадайце пасведчанне асобы</translation>
+<translation id="7616390733770379387">Гэтыя пошукавыя сістэмы размешчаны ў выпадковым парадку.</translation>
 <translation id="7616645509853975347">Адміністратар уключыў злучальнікі Chrome Enterprise Connectors у вашым браўзеры. У злучальнікаў ёсць доступ да некаторых вашых даных.</translation>
 <translation id="7617825962482469577">Канверт C7/C6</translation>
 <translation id="7618270539713451657">Баявыя мастацтвы</translation>
@@ -4226,6 +4233,7 @@
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> зноў абагульвае экран</translation>
 <translation id="7995512525968007366">Не вызначана</translation>
 <translation id="7997855386298213183">абагуленыя ўкладкі</translation>
+<translation id="8001912761979890298">Серверу не ўдалося даказаць, што гэта дамен <ph name="DOMAIN" />, бо ён выкарыстоўвае сертыфікат бяспекі, якому не давярае Chromium ці канфігурацыя вашай сістэмы для шыфравання інтэрнэт-трафіка. Прычынай могуць быць няправільныя налады або спроба зламысніка перахапіць падключэнне. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Праглядзець сертыфікат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Каб вызваліць памяць, закрыйце іншыя ўкладкі або праграмы.</translation>
 <translation id="8002230960325005199">Паказаць спіс звязаных сайтаў у новай укладцы</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
@@ -4567,6 +4575,7 @@
 <translation id="8564466070529550495">Віртуальная картка зараз недаступная, паўтарыце спробу пазней</translation>
 <translation id="8564985650692024650">Chromium рэкамендуе скінуць пароль <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, калі вы карысталіся ім на іншых сайтах.</translation>
 <translation id="8570895683659698018">Хобі і вольны час</translation>
+<translation id="8574570240981266561">Элемент выдалены</translation>
 <translation id="8574841453995331336">Халадзільнікі і маразільныя камеры</translation>
 <translation id="8577192028579836704">Звычайна для ўсіх варыянтаў: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Віртуальная картка недаступная</translation>
@@ -4824,6 +4833,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />.–.<ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618">Сайт "<ph name="URL" />" запытвае дазвол на пошук прылад у лакальнай сетцы і падключэнне да іх</translation>
 <translation id="9046864189129893978">Мікрафоны (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">Выбраная вамі стандартная праграма дазваляе выконваць пошук у інтэрнэце. Яе можна змяніць у наладах.</translation>
 <translation id="9048035366624198823">Каб выканаць дзеянні <ph name="ACTION_LIST" />, задайце для палітыкі <ph name="POLICY_NAME" /> значэнне <ph name="POLICY_VALUE" />.</translation>
 <translation id="9048662076076074925">24 x 36 цаляў</translation>
 <translation id="9049981332609050619">Вы спрабавалі трапіць на дамен <ph name="DOMAIN" />, але сервер выдаў несапраўдны сертыфікат.</translation>

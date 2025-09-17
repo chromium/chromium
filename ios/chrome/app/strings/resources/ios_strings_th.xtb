@@ -479,6 +479,7 @@
 <translation id="2797029671965852011">แสดงประวัติ</translation>
 <translation id="2797302972324086597">รหัสประเทศ</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} ไฟล์}other{{COUNT} ไฟล์}}</translation>
+<translation id="2816149645002567541">หยุดดาวน์โหลดชั่วคราว</translation>
 <translation id="2816489851009559785">เมนู → การตั้งค่า → เบราว์เซอร์เริ่มต้น</translation>
 <translation id="2818821771744632548">คุณออกจากระบบบัญชี <ph name="USER_NAME" /> ในขั้นตอนการรีเซ็ต iPhone หากต้องการลงชื่อเข้าใช้อีกครั้ง ให้แตะ "ต่อไป" ด้านล่าง</translation>
 <translation id="2819667972867209401">เมื่อเปิดไว้ ระบบจะบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้นและข้อมูลจะถูกลบหากคุณออกจากระบบ</translation>
@@ -735,6 +736,7 @@
 <translation id="3921585859122905677">ตำแหน่งของแถบที่อยู่</translation>
 <translation id="3922185497376658606">โหลดหน้าเว็บล่วงหน้า</translation>
 <translation id="3922395466317605522">ปรับแต่งเมนู</translation>
+<translation id="3926703470020109118">ยกเลิกการดาวน์โหลดแล้ว</translation>
 <translation id="3929457972718048006">ที่อยู่</translation>
 <translation id="3931215329146376310">{count,plural, =1{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}other{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}}</translation>
 <translation id="3934905113567851655">บีบเพื่อปรับขนาด</translation>
@@ -787,6 +789,7 @@
 <translation id="4113957097611235433">เปลี่ยนรหัสผ่าน</translation>
 <translation id="4120936477286528673">เว็บไซต์นี้พยายามเปิดแอปพลิเคชันอื่นอยู่เรื่อยๆ</translation>
 <translation id="4121993058175073134">หากต้องการส่งข้อมูล net-export โปรดกำหนดค่าบัญชีอีเมลของคุณในแอปการตั้งค่า</translation>
+<translation id="4132991308423633339">ส่งออกรหัสผ่านและพาสคีย์…</translation>
 <translation id="4133139945030148655">พร้อมใช้งานแล้ว</translation>
 <translation id="4133265950310064865">การปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1899,6 +1902,7 @@
 <translation id="8283172974887967105">ตั้งค่า…</translation>
 <translation id="8289930144142009940">ปิดการแจ้งเตือน<ph name="FEATURE_NAME" /> แล้ว</translation>
 <translation id="8290077367744012649">ติดตามราคาจากแท็บ</translation>
+<translation id="8292893224181644074">การดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="8299417921174340354">หากต้องการใช้รหัสผ่าน คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="8307481894409578819">อัปโหลดไฟล์นี้ไม่ได้</translation>
 <translation id="8319076807703933069">ค้นหาใหม่</translation>

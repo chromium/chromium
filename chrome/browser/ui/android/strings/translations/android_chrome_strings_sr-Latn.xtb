@@ -99,6 +99,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="1409879593029778104">Preuzimanje datoteke <ph name="FILE_NAME" /> je sprečeno jer ona već postoji.</translation>
 <translation id="1413446866325418126">Sačuvajte podatke na Google nalogu</translation>
+<translation id="1414919006379339073">Zatvori prozor u kome se trenutno radi</translation>
 <translation id="1416550906796893042">Verzija aplikacije</translation>
 <translation id="1419753403124156396">Želite da ponovo pokrenete Chrome?</translation>
 <translation id="1428770807407000502">Želite da isključite sinhronizaciju?</translation>
@@ -709,6 +710,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4380055775103003110">Ako problem nastavi da se javlja, možete da probate druge načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Koristite Sogou za pretragu</translation>
 <translation id="4387647248986092471">Primeni zaključavanje profila automobila</translation>
+<translation id="4387817230000841154">Otvori Preuzimanja</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Kartice i grupe koje se ne koriste 1 dan ili duže}one{Kartice i grupe koje se ne koriste # dan ili duže}few{Kartice i grupe koje se ne koriste # dana ili duže}other{Kartice i grupe koje se ne koriste # dana ili duže}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Preuzima se…</translation>
 <translation id="4404568932422911380">Nema obeleživača</translation>

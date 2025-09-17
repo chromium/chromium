@@ -2171,6 +2171,7 @@
 <translation id="2471469610750100598">黒（デフォルト）</translation>
 <translation id="2471506181342525583">位置情報へのアクセスが許可されています</translation>
 <translation id="2471632709106952369">比較表</translation>
+<translation id="2472855537207709205">グループ化されていないすべてのタブをグループ化</translation>
 <translation id="2473195200299095979">このページを翻訳</translation>
 <translation id="2475982808118771221">エラーが発生しました</translation>
 <translation id="2476435723907345463">パスキーへのアクセス権を削除しました</translation>
@@ -2785,6 +2786,7 @@
 <translation id="2900247416110050639">Google ドキュメント、スプレッドシート、スライドでは、ファイルを Google ドライブに保存する必要があります。ローカル ファイルは移動され、他の場所にあるファイルはコピーされます。ファイルはファイルアプリの Google ドライブ フォルダで確認できます。</translation>
 <translation id="290105521672621980">サポートされていない機能がファイルで使用されています</translation>
 <translation id="2901348420151309559">最近の写真とアプリ</translation>
+<translation id="2901431118738474110">このパスキーは利用できなくなりました。<ph name="RPID" /> から削除され、まもなくここでも削除されます。&lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;パスキーについて&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> はこのプリンタと通信できませんでした。プリンタが接続されていることを確認して、もう一度お試しください。</translation>
 <translation id="2902265136119311513">ゲストとしてブラウジングする</translation>
 <translation id="2902312830803030883">その他の操作</translation>
@@ -6633,7 +6635,7 @@
 <translation id="560834977503641186">Wi-Fi 同期の詳細</translation>
 <translation id="5608580678041221894">トリミング範囲を調整または移動するには次のキーをタップします</translation>
 <translation id="5609231933459083978">アプリケーションが無効になっているようです。</translation>
-<translation id="5610759359710387751">自分だけのChromeを</translation>
+<translation id="5610759359710387751">自分だけの Chrome を</translation>
 <translation id="5610867721023328944">もう一度お試しいただくか、以下の使用可能なテーマから選択してください。</translation>
 <translation id="5611398002774823980">アカウントに保存</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />、<ph name="APP_FULL_NAME" /></translation>
@@ -11498,10 +11500,12 @@
 <translation id="8993945059918628059">指紋認証センサーに指を置いてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="899403249577094719">Netscape 証明書基本 URL</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{この拡張機能は Google アカウントに保存されていますが、このデバイスにのみ保存されているデータは削除される可能性があります}other{これらの拡張機能は Google アカウントに保存されていますが、このデバイスにのみ保存されているデータは削除される可能性があります}}</translation>
+<translation id="8997659961727384862">グループ化されていないすべてのタブをグループ化</translation>
 <translation id="8999027165951679951">非アクティブなタブ: <ph name="MEMORY_SAVINGS" /> を解放しました</translation>
 <translation id="8999560016882908256">セクションの構文エラーです: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">画面上の動きを減らす</translation>
 <translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> の右側にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
+<translation id="900267527532832868">このパスキーは利用できなくなりました。まもなく <ph name="GOOGLE_PASSWORD_MANAGER" /> から削除されます。</translation>
 <translation id="9003031149571024583">6 桁の PIN の <ph name="NUM_DIGIT" /> 桁目を入力します。前の桁を削除するには Backspace キーまたは Delete キーを使用します。</translation>
 <translation id="9003185744423389627">デバイス管理サーバーに接続できませんでした（ステータス「<ph name="STATUS_TEXT" />」、<ph name="FAILURE_TIME" />）</translation>
 <translation id="90033698482696970">利用可能な eSIM プロファイルを自動的にスキャンしますか？</translation>

@@ -446,6 +446,9 @@
 <translation id="6180522807229584611">এই ট্যাব অতিরিক্ত রিসোর্ট ব্যবহার করছে। আপনার পারফর্ম্যান্স উন্নত করতে, Chrome-কে এটি নিষ্ক্রিয় করতে দিন।</translation>
 <translation id="6182736845697986886">ইনস্টলেশন করা যায়নি, কারণ আপডেট সার্ভারের ইন্টার্নাল সমস্যা আছে।</translation>
 <translation id="6192058120268468905">Chrome-এ আপনার অ্যাকাউন্ট</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> এমন একটি এক্সটেনশন যোগ করেছে যেটি Chrome কাজ করার পদ্ধতি পরিবর্তন করতে পারে।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome এর জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="624230925347970731">Chrome শীঘ্রই বন্ধ হয়ে যাবে</translation>
 <translation id="6247557882553405851">Google পাসওয়ার্ড ম্যানেজার</translation>

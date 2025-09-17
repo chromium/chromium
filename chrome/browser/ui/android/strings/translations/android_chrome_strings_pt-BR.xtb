@@ -47,7 +47,7 @@
 <translation id="1197761954713363183">Página de confirmação da chave de acesso fechada</translation>
 <translation id="1201402288615127009">Avançar</translation>
 <translation id="1202892408424955784">Produtos monitorados</translation>
-<translation id="1204037785786432551">Baixar o link</translation>
+<translation id="1204037785786432551">Baixar link</translation>
 <translation id="1206892813135768548">Copiar texto do link</translation>
 <translation id="1209206284964581585">Ocultar por enquanto</translation>
 <translation id="1227058898775614466">Histórico de navegação</translation>
@@ -99,6 +99,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1409879593029778104">O download de <ph name="FILE_NAME" /> foi impedido porque o arquivo já existe.</translation>
 <translation id="1413446866325418126">Salvar dados na sua Conta do Google</translation>
+<translation id="1414919006379339073">Fechar a janela atual</translation>
 <translation id="1416550906796893042">Versão do aplicativo</translation>
 <translation id="1419753403124156396">Reiniciar o Chrome?</translation>
 <translation id="1428770807407000502">Desativar a sincronização?</translation>
@@ -684,7 +685,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4277529130885813215">Usar outro dispositivo</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
 <translation id="4282440837784183472">Sua organização, <ph name="MANAGED_DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
-<translation id="4285498937028063278">Soltar</translation>
+<translation id="4285498937028063278">Liberar guia</translation>
 <translation id="4285846616383034558">Cookies, cache e outros dados do site</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ativar o bloqueio de tela nas configurações do Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nova guia anônima</translation>

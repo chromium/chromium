@@ -4002,6 +4002,7 @@ Détails supplémentaires :
 <translation id="7613889955535752492">Expiration : <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Entrée pour afficher et gérer vos mots de passe dans les paramètres de Chrome</translation>
 <translation id="7615932826417658001">Ajouter une carte d'identité</translation>
+<translation id="7616390733770379387">Ceux-ci sont présentés dans un ordre aléatoire.</translation>
 <translation id="7616645509853975347">Votre administrateur a activé les connecteurs Chrome Enterprise dans votre navigateur. Ces connecteurs ont accès à certaines de vos données.</translation>
 <translation id="7617825962482469577">Enveloppe C7/C6</translation>
 <translation id="7618270539713451657">Arts martiaux</translation>
@@ -4825,6 +4826,7 @@ Détails supplémentaires :
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> souhaite rechercher n'importe quel appareil sur votre réseau local et s'y connecter</translation>
 <translation id="9046864189129893978">Microphones (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">Votre moteur de recherche par défaut vous permet de faire des recherches sur le Web. Vous pouvez le modifier dans les paramètres.</translation>
 <translation id="9048035366624198823">Ces actions nécessitent que la politique <ph name="POLICY_NAME" /> soit définie sur <ph name="POLICY_VALUE" /> : <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 po x 36 po</translation>
 <translation id="9049981332609050619">Vous avez essayé d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat non valide.</translation>

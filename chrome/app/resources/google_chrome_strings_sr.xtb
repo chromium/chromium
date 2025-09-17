@@ -450,6 +450,9 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6180522807229584611">Ова картица користи додатне ресурсе. Да бисте побољшали перформансе, дозволите Chrome-у да је учини неактивном.</translation>
 <translation id="6182736845697986886">Инсталација није успела због интерне грешке сервера за ажурирање.</translation>
 <translation id="6192058120268468905">Ваш налог у Chrome-у</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> је додао додатак који може да промени начин на који Chrome функционише.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Правило за долазни саобраћај за Google Chrome да бисте омогућили mDNS саобраћај.</translation>
 <translation id="624230925347970731">Chrome ће се ускоро затворити</translation>
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>

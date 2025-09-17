@@ -479,6 +479,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2797029671965852011">Mostrar historial</translation>
 <translation id="2797302972324086597">Código de país</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} archivo}other{{COUNT} archivos}}</translation>
+<translation id="2816149645002567541">Descarga en pausa</translation>
 <translation id="2816489851009559785">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="2818821771744632548">Se ha cerrado la sesión de tu cuenta (<ph name="USER_NAME" />) al restablecer tu iPhone. Para volver a iniciar sesión, toca Continuar abajo.</translation>
 <translation id="2819667972867209401">Si esta opción está activada, los datos se guardan en tu cuenta de Google. Si está desactivada, los datos solo se guardan en este dispositivo y se eliminan al cerrar sesión.</translation>
@@ -735,6 +736,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3921585859122905677">Posición de la barra de direcciones</translation>
 <translation id="3922185497376658606">Precargar páginas</translation>
 <translation id="3922395466317605522">Personalizar menú</translation>
+<translation id="3926703470020109118">Descarga cancelada</translation>
 <translation id="3929457972718048006">Direcciones</translation>
 <translation id="3931215329146376310">{count,plural, =1{Nueva contraseña para este sitio}other{Nuevas contraseñas para este sitio}}</translation>
 <translation id="3934905113567851655">Pellizca para cambiar el tamaño</translation>
@@ -787,6 +789,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4113957097611235433">Cambia tus contraseñas</translation>
 <translation id="4120936477286528673">Este sitio está intentando abrir otra aplicación repetidamente.</translation>
 <translation id="4121993058175073134">Configura tu correo en Configuración para enviar datos de exportaciones netas.</translation>
+<translation id="4132991308423633339">Exportar contraseñas y llaves de acceso…</translation>
 <translation id="4133139945030148655">Ya está todo preparado</translation>
 <translation id="4133265950310064865">Protección mejorada</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1172,6 +1175,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="561269594905823128">Toca <ph name="BEGIN_BOLD" />Seleccionar archivo<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordenar por más recientes</translation>
 <translation id="5614553682702429503">¿Guardar la contraseña?</translation>
+<translation id="5617769621178348890">Abrir en la app Archivos</translation>
 <translation id="5619871095170816857">Esta tarjeta muestra la última pestaña abierta que has usado en todos los dispositivos sincronizados en las últimas 24 horas.</translation>
 <translation id="5624120631404540903">Gestionar contraseñas</translation>
 <translation id="5624637933505983014">No activar la sincronización</translation>
@@ -1899,6 +1903,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8289930144142009940">Notificaciones de <ph name="FEATURE_NAME" /> desactivadas</translation>
 <translation id="8290077367744012649">Seguir precios de tus pestañas</translation>
+<translation id="8292893224181644074">Descarga completada</translation>
 <translation id="8299417921174340354">Para usar las contraseñas, primero debes establecer una contraseña en tu dispositivo.</translation>
 <translation id="8307481894409578819">No se ha podido subir este archivo</translation>
 <translation id="8319076807703933069">Nueva búsqueda</translation>

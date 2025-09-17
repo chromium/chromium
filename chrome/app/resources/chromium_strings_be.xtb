@@ -17,6 +17,9 @@
 <translation id="1131805035311359397">Каб праверыць, ці не пагражае вашым паролям раскрыццё ў выніку ўцечкі даных або іншых праблем з бяспекай, <ph name="BEGIN_LINK" />увайдзіце ў Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Націсніце меню Chromium</translation>
 <translation id="1157985233335035034">Нядаўна выкарыстаныя мовы</translation>
+<translation id="1171831736360285680">Праграма "<ph name="PARTNER_NAME" />" дадала пашырэнне, якое можа змяніць працу Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Не ўдалося выканаць усталяванне, бо гэта версія Windows не падтрымліваецца.</translation>
 <translation id="1185134272377778587">Пра Chromium</translation>
 <translation id="1203500561924088507">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце браўзер.</translation>
@@ -172,6 +175,7 @@
 <translation id="3068187312562070417">Іншыя профілі Chromium</translation>
 <translation id="3068515742935458733">Дапамагаць палепшыць Chromium, адпраўляючы ў Google справаздачы аб збоях і <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Адно або некалькі пашырэнняў Chromium мелі доступ да 1 прылады USB}=1{Адно або некалькі пашырэнняў Chromium маюць доступ да 1 прылады USB}one{Адно або некалькі пашырэнняў Chromium маюць доступ да # прылады USB}few{Адно або некалькі пашырэнняў Chromium маюць доступ да # прылад USB}many{Адно або некалькі пашырэнняў Chromium маюць доступ да # прылад USB}other{Адно або некалькі пашырэнняў Chromium маюць доступ да # прылады USB}}</translation>
+<translation id="3095811995836568724">Гісторыя Chromium</translation>
 <translation id="3101560983689755071">Гісторыя прагляду сайтаў уплывае на рэкламу, якая вам паказваецца, і на спіс пералічаных ніжэй інтарэсаў. У мэтах аховы вашай прыватнасці звесткі пра вашы інтарэсы ў Chromium штомесяц аўтаматычна выдаляюцца. Інтарэсы могуць абнаўляцца, пакуль вы іх не выдаліце.</translation>
 <translation id="3103660991484857065">Усталёўшчык не змог распакаваць архіў. Спампуйце Chromium зноў.</translation>
 <translation id="310459126943037700">Не ўдалося завяршыць задачы.</translation>

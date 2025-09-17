@@ -15,6 +15,9 @@
 <translation id="1131805035311359397">আপনার পাসওয়ার্ড ডেটার নিরাপত্তা লঙ্ঘন এবং অন্যান্য নিরাপত্তা সংক্রান্ত সমস্যা থেকে সুরক্ষিত কিনা তা চেক করতে <ph name="BEGIN_LINK" />Chromium-এ সাইন-ইন করুন<ph name="END_LINK" />।</translation>
 <translation id="1153368717515616349">Chromium মেনুতে ক্লিক করুন</translation>
 <translation id="1157985233335035034">সাম্প্রতিক ভাষা</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> এমন একটি এক্সটেনশন যোগ করেছে যেটি Chromium কাজ করার পদ্ধতি পরিবর্তন করতে পারে।
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">আপনার Windows-এর ভার্সনে কাজ করছে না তাই ইনস্টল করা যায়নি।</translation>
 <translation id="1185134272377778587">Chromium সম্পর্কে</translation>
 <translation id="1203500561924088507">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই ব্রাউজার রিস্টার্ট করতে হবে।</translation>

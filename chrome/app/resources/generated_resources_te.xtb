@@ -2187,6 +2187,7 @@
 <translation id="2471469610750100598">నలుపు (ఆటోమేటిక్ సెట్టింగ్)</translation>
 <translation id="2471506181342525583">లొకేషన్ యాక్సెస్ అనుమతించబడింది</translation>
 <translation id="2471632709106952369">టేబుల్స్‌ను కంపార్ చేయండి</translation>
+<translation id="2472855537207709205">అన్‌గ్రూప్డ్ ట్యాబ్‌లు అన్నింటినీ గ్రూప్ చేయండి</translation>
 <translation id="2473195200299095979">ఈ పేజీని అనువదించండి</translation>
 <translation id="2475982808118771221">ఒక ఎర్రర్ ఏర్పడింది</translation>
 <translation id="2476435723907345463">పాస్-కీల యాక్సెస్‌ను తీసివేయడం జరిగింది</translation>
@@ -2802,6 +2803,7 @@
 <translation id="2900247416110050639">Google Docs, Sheets, Slidesకు ఫైల్స్ Google Driveలో స్టోర్ చేయబడాలి. లోకల్ ఫైల్స్ తరలించబడతాయి, ఇతర లొకేషన్‌ల నుండి ఫైల్స్ కాపీ చేయబడతాయి. Files యాప్‌లోని Google Drive ఫోల్డర్‌లో మీ ఫైల్స్‌ను కనుగొనవచ్చు.</translation>
 <translation id="290105521672621980">ఫైల్ మద్దతు లేని లక్షణాలను ఉపయోగిస్తోంది</translation>
 <translation id="2901348420151309559">తాజా ఫోటోలు, యాప్‌లు</translation>
+<translation id="2901431118738474110">ఈ పాస్-కీ ఇకపై పని చేయదు. అది <ph name="RPID" /> నుండి తొలగించబడింది, అలాగే త్వరలో ఇక్కడి నుండి కూడా తొలగించబడుతుంది. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;About passkeys&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> ఈ ప్రింటర్‌తో కమ్యూనికేట్ చేయలేకపోయింది. ప్రింటర్ ప్లగిన్ చేయబడిందని నిర్ధారించుకొని, ఆపై మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2902265136119311513">గెస్ట్‌లాగా బ్రౌజ్ చేయండి</translation>
 <translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
@@ -11524,10 +11526,12 @@
 <translation id="8993945059918628059">వేలిముద్ర సెన్సార్‌ను మీ వేలితో తాకండి. మీ వేలిముద్ర డేటా సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ మీ <ph name="DEVICE_TYPE" />‌లోనే ఉంటుంది.</translation>
 <translation id="899403249577094719">Netscape సర్టిఫికెట్ ఆధార URL</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{ఈ ఎక్స్‌టెన్షన్ మీ Google ఖాతాలో సేవ్ అయ్యింది, కానీ అది ఈ డివైజ్‌లో మాత్రమే సేవ్ చేసిన డేటా ఏదైనా ఉంటే, అది తొలగించబడవచ్చు}other{ఈ ఎక్స్‌టెన్షన్‌లు మీ Google ఖాతాలో సేవ్ అయ్యాయి, కానీ అవి ఈ డివైజ్‌లో మాత్రమే సేవ్ చేసిన డేటా ఏదైనా ఉంటే, అది తొలగించబడవచ్చు}}</translation>
+<translation id="8997659961727384862">అన్‌గ్రూప్డ్ ట్యాబ్‌లు అన్నింటినీ గ్రూప్ చేయండి</translation>
 <translation id="8999027165951679951">ఇన్‌యాక్టివ్ ట్యాబ్: <ph name="MEMORY_SAVINGS" /> మెమరీ ఖాళీ చేయబడింది</translation>
 <translation id="8999560016882908256">ఒక విభాగంలో సింటాక్స్ ఎర్రర్: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">స్క్రీన్‌పై తక్కువ యానిమేషన్‌ను చూపే సెట్టింగ్</translation>
 <translation id="9000185763019430629">మీ <ph name="DEVICE_TYPE" />‌కు కుడి వైపున ఉన్న వేలిముద్ర సెన్సార్‌ను తాకండి. మీ వేలిముద్ర డేటా సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ మీ <ph name="DEVICE_TYPE" />‌లోనే ఉంటుంది.</translation>
+<translation id="900267527532832868">ఈ పాస్-కీ ఇకపై పని చేయదు. ఇది త్వరలో <ph name="GOOGLE_PASSWORD_MANAGER" /> నుండి తొలగించబడుతుంది.</translation>
 <translation id="9003031149571024583">6లో <ph name="NUM_DIGIT" /> డిజిట్ PINను ఎంటర్ చేయండి. చివరి డిజిట్‌ను తీసివేయడానికి 'బ్యాక్‌స్పేస్ లేదా తొలగించండి'ని ఉపయోగించండి.</translation>
 <translation id="9003185744423389627">డివైజ్ మేనేజర్ సర్వర్‌కు కనెక్షన్ <ph name="FAILURE_TIME" />కు '<ph name="STATUS_TEXT" />' స్టేటస్‌తో విఫలమైంది</translation>
 <translation id="90033698482696970">అందుబాటులో ఉన్న eSIM ప్రొఫైల్స్ కోసం ఆటోమేటిక్‌గా స్కాన్ చేయాలా?</translation>

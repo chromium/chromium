@@ -1250,6 +1250,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3086579638707268289">A sua atividade na Web está a ser monitorizada</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3090667236485488075">Vidro</translation>
+<translation id="3093122472063815077">Ecrã de progresso do método Comprar agora e pagar depois aberto a meia altura.</translation>
 <translation id="3094051226187213523">Abrir o Modo de IA com esta sugestão.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignorada porque a lista de desativação contém um padrão igual a "*", que é equivalente a desativar a política.</translation>
@@ -1917,6 +1918,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese n.º 4</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Página 1}other{Página {COUNT}}}</translation>
+<translation id="4152495263075154876">O ecrã de progresso do método Comprar agora e pagar depois está fechado.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 separador}other{# separadores}}</translation>
 <translation id="4153446078232988116">O site <ph name="SITE" /> não é compatível com uma ligação segura com HTTPS</translation>
 <translation id="4154277373259957087">O Chrome vai validar a sua identidade antes de preencher os métodos de pagamento. Pode atualizar esta opção em qualquer altura em <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
@@ -2581,6 +2583,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5255583962255635076">Políticas do navegador aplicadas no seu perfil de trabalho</translation>
 <translation id="5255690596502591079">Capturar mesmo assim</translation>
 <translation id="5255771248404149177">O fornecedor do cartão quer confirmar a sua identidade</translation>
+<translation id="525579853540851404">Ecrã de progresso do método Comprar agora e pagar depois. Teclado oculto.</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{A política do administrador não recomenda copiar este ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda copiar estes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">O grupo de separadores "<ph name="GROUP_NAME" />" já não está disponível</translation>
@@ -3094,6 +3097,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6122181661879998141">na frente do cartão</translation>
 <translation id="6124058285696691147">Transferir anexo</translation>
 <translation id="6124432979022149706">Conetores do Chrome Enterprise</translation>
+<translation id="6124996493718543728">Ecrã de progresso do método Comprar agora e pagar depois aberto à altura total.</translation>
 <translation id="6126565365696310362">Envelope Chinese n.º 2</translation>
 <translation id="6131824478727057281">localização</translation>
 <translation id="6133320744616005677">Continuar a permitir</translation>

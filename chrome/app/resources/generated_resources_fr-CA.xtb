@@ -2177,6 +2177,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2471469610750100598">Noir (par défaut)</translation>
 <translation id="2471506181342525583">Accès à la position autorisé</translation>
 <translation id="2471632709106952369">Tableaux de comparaison</translation>
+<translation id="2472855537207709205">Regrouper tous les onglets non regroupés</translation>
 <translation id="2473195200299095979">Traduire cette page</translation>
 <translation id="2475982808118771221">Une erreur s'est produite</translation>
 <translation id="2476435723907345463">L'Accès par clé d'accès a été retiré</translation>
@@ -2794,6 +2795,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2900247416110050639">Google Documents, Feuilles de calcul et Présentations exigent que les fichiers soient stockés dans Google Disque. Les fichiers locaux seront déplacés, et les fichiers provenant d'autres emplacements seront copiés. Vos fichiers se trouvent dans le dossier Google Disque de l'application Fichiers.</translation>
 <translation id="290105521672621980">Le fichier utilise des fonctionnalités qui ne sont pas prises en charge</translation>
 <translation id="2901348420151309559">Photos et applications récentes</translation>
+<translation id="2901431118738474110">Cette clé d'accès ne fonctionne plus. Elle a été supprimée du site Web <ph name="RPID" /> et sera bientôt supprimée d'ici. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;À propos des clés d'accès&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> n'a pas pu communiquer avec cette imprimante. Assurez-vous que l'imprimante est bien branchée, puis recommencez.</translation>
 <translation id="2902265136119311513">Naviguer en tant qu'invité</translation>
 <translation id="2902312830803030883">Autres actions</translation>
@@ -11518,10 +11520,12 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8993945059918628059">Touchez le capteur d'empreintes digitales avec votre doigt. Les données liées à votre empreinte digitale sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="899403249577094719">URL de base du certificat Netscape</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Cette extension est enregistrée dans votre compte Google, mais les données qu'elle a enregistrées uniquement sur cet appareil pourraient être supprimées}one{Cette extension est enregistrée dans votre compte Google, mais les données qu'elle a enregistrées uniquement sur cet appareil pourraient être supprimées}other{Ces extensions sont enregistrées dans votre compte Google, mais les données qu'elles ont enregistrées uniquement sur cet appareil pourraient être supprimées}}</translation>
+<translation id="8997659961727384862">Regrouper tous les onglets non regroupés</translation>
 <translation id="8999027165951679951">Onglet inactif : <ph name="MEMORY_SAVINGS" /> libérés</translation>
 <translation id="8999560016882908256">Erreur de syntaxe de section : <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Mouvement réduit sur l'écran</translation>
 <translation id="9000185763019430629">Touchez le capteur d'empreintes digitales sur le côté droit de votre <ph name="DEVICE_TYPE" />. Les données liées à votre empreinte digitale sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
+<translation id="900267527532832868">Cette clé d'accès ne fonctionne plus. Elle sera bientôt supprimée du <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Entrer le chiffre <ph name="NUM_DIGIT" /> sur 6 du NIP. Utilisez la touche retour arrière ou supprimer pour retirer le dernier chiffre.</translation>
 <translation id="9003185744423389627">La connexion au serveur de gestion des appareils a échoué avec l'état « <ph name="STATUS_TEXT" /> » à <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Rechercher automatiquement les profils eSIM disponibles?</translation>

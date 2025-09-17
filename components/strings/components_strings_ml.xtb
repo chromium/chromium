@@ -827,6 +827,7 @@
 <translation id="2348509731468399833">നിരക്ക് ട്രാക്ക് ചെയ്യൽ നിർത്തി.</translation>
 <translation id="2349957959687031096">'അദൃശ്യ ടാബ് തുറക്കുക' ബട്ടൺ, സ്വകാര്യമായി ബ്രൗസ് ചെയ്യുന്നതിന് പുതിയ അദൃശ്യ ടാബ് തുറക്കാൻ സജീവമാക്കുക</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> എന്നതിനുപകരം എല്ലാ <ph name="PROTOCOL" /> ലിങ്കുകളും തുറക്കാൻ <ph name="HANDLER_HOSTNAME" /> എന്നതിനെ അനുവദിക്കണോ?</translation>
+<translation id="2351718832234620840">വെബ് ട്രാഫിക് എൻക്രിപ്ഷന് വേണ്ടി Chromium-ന് വിശ്വാസമില്ലാത്ത ഒരു സുരക്ഷാ സർട്ടിഫിക്കറ്റ് അല്ലെങ്കിൽ നിങ്ങളുടെ സിസ്റ്റം കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാലാണ് ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാൻ കഴിയാത്തത്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അറ്റാക്കർ നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2353297238722298836">ക്യാമറയും മൈക്രോഫോണും അനുവദനീയം</translation>
 <translation id="2354001756790975382">മറ്റ് ബുക്‌മാര്‍ക്കുകള്‍</translation>
 <translation id="2355395290879513365">നിങ്ങൾ ഈ സൈറ്റിൽ തിരയുന്ന ചിത്രങ്ങൾ കാണാനും അവയിൽ മാറ്റം വരുത്തി നിങ്ങളെ കബളിപ്പിക്കാനും അക്രമകാരികൾക്ക് കഴിഞ്ഞേക്കാം.</translation>
@@ -971,6 +972,7 @@
 <translation id="2573170131138724450">ടെലിവിഷനുകൾ</translation>
 <translation id="257674075312929031">ഗ്രൂപ്പ്</translation>
 <translation id="2580031090587209073">പങ്കിടൽ ഓപ്‌ഷ‌നുകൾ</translation>
+<translation id="258027838577899739">ചരിത്രത്തിൽ നിന്ന് എല്ലാം ഇല്ലാതാക്കുക</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ടാബ് ചേർത്തു</translation>
 <translation id="2586657967955657006">ക്ലിപ്പ്ബോർഡ്</translation>
 <translation id="2587841377698384444">ഡയറക്‌റ്ററി API ഐഡി:</translation>
@@ -995,6 +997,7 @@
 <translation id="2625385379895617796">നിങ്ങളുടെ ക്ലോക്ക് വളരെ മുമ്പിലാണ്</translation>
 <translation id="262745152991669301">USB ഉപകരണങ്ങൾ കണക്റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="2627847595568876492">PDF-ൽ നിന്ന് ടെക്സ്റ്റ് എക്‌സ്‌ട്രാക്റ്റ് ചെയ്യുന്നു...</translation>
+<translation id="2628025184666666186">വെബ് ട്രാഫിക് എൻക്രിപ്ഷന് വേണ്ടി Chrom-ന് വിശ്വാസമില്ലാത്ത ഒരു സുരക്ഷാ സർട്ടിഫിക്കറ്റ് അല്ലെങ്കിൽ നിങ്ങളുടെ സിസ്റ്റം കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാലാണ് ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാൻ കഴിയാത്തത്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അറ്റാക്കർ നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-ന്‍റെ സെർവർ IP വിലാസം കണ്ടെത്താനായില്ല.</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> എന്നതിലുടനീളം തിരയാൻ @ എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
@@ -1247,6 +1250,7 @@
 <translation id="3086579638707268289">വെബിലുള്ള നിങ്ങളുടെ ആക്റ്റിവിറ്റി നിരീക്ഷണത്തിലാണ്</translation>
 <translation id="3087734570205094154">താഴെ</translation>
 <translation id="3090667236485488075">ഗ്ലാസ്</translation>
+<translation id="3093122472063815077">'ഇപ്പോൾ വാങ്ങി പിന്നീട് പണമടയ്ക്കുക' പുരോഗതി സ്‌ക്രീൻ പകുതി ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="3094051226187213523">ഈ നിർദ്ദേശമുപയോഗിച്ച് AI മോഡ് തുറക്കുക.</translation>
 <translation id="3095940652251934233">പ്രസ്‌താവന</translation>
 <translation id="3098513225387949945">പ്രവർത്തനരഹിതമാക്കൽ ലിസ്റ്റിൽ '*' എന്നതിന് സമമായ ഒരു പാറ്റേൺ ഉള്ളതിനാൽ അവഗണിച്ചു, ഇത് നയം പ്രവർത്തനരഹിതമാക്കുന്നതിന് തുല്യമാണ്.</translation>
@@ -1877,6 +1881,7 @@
 <translation id="4099048595830172239">രഹസ്യാത്മകമായ ഉള്ളടക്കം ദൃശ്യമാകുമ്പോൾ, <ph name="APPLICATION_TITLE" /> എന്നതുമായി നിങ്ങളുടെ സ്ക്രീൻ പങ്കിടാൻ അഡ്മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ൽ ഫോണ്ട് വലുപ്പങ്ങളും ടൈപ്പ്ഫേസുകളും ഇഷ്ടാനുസൃതമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="4101413244023615925">ടെക്സ്റ്റും ഗ്രാഫിക്കും</translation>
+<translation id="4101917550061398111">തിരഞ്ഞെടുത്ത ഇനങ്ങൾ ഇല്ലാതാക്കുക</translation>
 <translation id="4102567721634170493">പ്രാദേശിക വാർത്തകൾ</translation>
 <translation id="4103249731201008433">ഉപകരണ സീരിയൽ നമ്പർ അസാധുവാണ്</translation>
 <translation id="4103592298805904008">കാർഡ്ബോർഡ് (സിംഗിൾ വാൾ)</translation>
@@ -1912,6 +1917,7 @@
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{പേജ് 1}other{പേജ് {COUNT}}}</translation>
+<translation id="4152495263075154876">'ഇപ്പോൾ വാങ്ങി പിന്നീട് പണമടയ്ക്കുക' പുരോഗതി സ്‌ക്രീൻ അടച്ചിരിക്കുന്നു.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{ഒരു ടാബ്}other{# ടാബുകൾ}}</translation>
 <translation id="4153446078232988116">HTTPS ഉപയോഗിച്ചുള്ള സുരക്ഷിത കണക്ഷനെ <ph name="SITE" /> പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="4154277373259957087">പേയ്‌മെന്റ് രീതികൾ പൂരിപ്പിക്കുന്നതിന് മുമ്പ് ഇത് നിങ്ങളാണെന്ന് Chrome ഇപ്പോൾ പരിശോധിച്ചുറപ്പിക്കും. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> എന്നതിൽ നിങ്ങൾക്ക് ഏതുസമയത്തും ഇത് അപ്ഡേറ്റ് ചെയ്യാം.</translation>
@@ -2576,6 +2582,7 @@
 <translation id="5255583962255635076">നിങ്ങളുടെ ഔദ്യോഗിക പ്രൊഫൈലിൽ ബാധകമാക്കിയ ബ്രൗസർ നയങ്ങൾ</translation>
 <translation id="5255690596502591079">എന്തായാലും ക്യാപ്‌ചർ ചെയ്യുക</translation>
 <translation id="5255771248404149177">നിങ്ങളുടെ കാർഡ് ദാതാവ് ഇത് നിങ്ങളാണെന്ന് ഉറപ്പാക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
+<translation id="525579853540851404">'ഇപ്പോൾ വാങ്ങി പിന്നീട് പണമടയ്ക്കുക' പുരോഗതി സ്‌ക്രീൻ. കീബോർഡ് മറച്ചിരിക്കുന്നു.</translation>
 <translation id="5255833070095767006">350 x 460 മി.മീ</translation>
 <translation id="5257739419779698609">{0,plural, =1{ഈ ഫയൽ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് പകർത്താൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}other{ഈ ഫയലുകൾ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് പകർത്താൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പ് ഇനി ലഭ്യമല്ല</translation>
@@ -3089,6 +3096,7 @@
 <translation id="6122181661879998141">നിങ്ങളുടെ കാർഡിന്റെ മുൻവശത്ത്</translation>
 <translation id="6124058285696691147">അറ്റാച്ച്മെന്റ് ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="6124432979022149706">Chrome എന്റർപ്രൈസ് കണക്റ്ററുകൾ</translation>
+<translation id="6124996493718543728">'ഇപ്പോൾ വാങ്ങി പിന്നീട് പണമടയ്ക്കുക' പുരോഗതി സ്‌ക്രീൻ മുഴുവനായും തുറന്നു.</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6131824478727057281">ലൊക്കേഷന്‍</translation>
 <translation id="6133320744616005677">അനുവദിക്കുന്നത് തുടരുക</translation>
@@ -3893,6 +3901,7 @@
 <translation id="7450577240311017924">'സമന്വയിപ്പിക്കൽ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങൾ സമന്വയിപ്പിക്കുന്ന വിവരങ്ങൾ മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="7451311239929941790">ഈ പ്രശ്‌നത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുന്നു<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">ദിനോസർ ഗെയിം, കളിക്കാൻ space അമർത്തുക</translation>
+<translation id="7453849010505253492">വെബ് ട്രാഫിക് എൻക്രിപ്ഷന് വേണ്ടി Chrom-ന് വിശ്വാസമില്ലാത്ത ഒരു സുരക്ഷാ സർട്ടിഫിക്കറ്റ് അല്ലെങ്കിൽ നിങ്ങളുടെ സിസ്റ്റം കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാലാണ് ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാൻ കഴിയാത്തത്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അറ്റാക്കർ നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />സർട്ടിഫിക്കറ്റ് കാണുക<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud അക്കൗണ്ട്</translation>
 <translation id="7455133967321480974">ആഗോള ഡിഫോൾട്ട് ഉപയോഗിക്കുക (ബ്ലോക്ക് ചെയ്യുക)</translation>
 <translation id="7455452752247248289">എന്റർപ്രൈസ് സാങ്കേതികവിദ്യ</translation>
@@ -4000,6 +4009,7 @@
 <translation id="7613889955535752492">കാലഹരണപ്പെടുന്നത്: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ പാസ്‌വേഡുകൾ കാണാനും മാനേജ് ചെയ്യാനും 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="7615932826417658001">ഐഡന്റിറ്റി കാർഡ് ചേർക്കുക</translation>
+<translation id="7616390733770379387">ഇവ ക്രമരഹിതമായാണ് കാണിച്ചിരിക്കുന്നത്.</translation>
 <translation id="7616645509853975347">അഡ്‌മിൻ നിങ്ങളുടെ ബ്രൗസറിൽ Chrome Enterprise Connectors ഓണാക്കിയിരിക്കുന്നു. ഈ കണക്‌റ്ററുകൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
 <translation id="7617825962482469577">Envelope C7/C6</translation>
 <translation id="7618270539713451657">ആയോധന കലകൾ</translation>
@@ -4225,6 +4235,7 @@
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> എന്നതുമായി സ്ക്രീൻ പങ്കിടൽ പുനരാരംഭിച്ചു</translation>
 <translation id="7995512525968007366">വ്യക്തമാക്കിയിട്ടില്ല</translation>
 <translation id="7997855386298213183">പങ്കിട്ട ടാബുകൾ</translation>
+<translation id="8001912761979890298">വെബ് ട്രാഫിക് എൻക്രിപ്ഷന് വേണ്ടി Chromium-ന് വിശ്വാസമില്ലാത്ത ഒരു സുരക്ഷാ സർട്ടിഫിക്കറ്റ് അല്ലെങ്കിൽ നിങ്ങളുടെ സിസ്റ്റം കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാലാണ് ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാൻ കഴിയാത്തത്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അറ്റാക്കർ നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />സർട്ടിഫിക്കറ്റ് കാണുക<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">ഇടം സൃഷ്‌ടിക്കാൻ മറ്റ് ടാബുകളോ പ്രോഗ്രാമുകളോ അടയ്‌ക്കുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="8002230960325005199">അനുബന്ധ സൈറ്റുകൾ പുതിയൊരു ടാബിൽ കാണുക</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
@@ -4566,6 +4577,7 @@
 <translation id="8564466070529550495">വെർച്വൽ കാർഡ് ഇപ്പോൾ ലഭ്യമല്ല, പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="8564985650692024650">മറ്റ് സൈറ്റുകളിൽ നിങ്ങൾ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് റീസെറ്റ് ചെയ്യാൻ Chromium ശുപാർ‌ശ ചെയ്യുന്നു.</translation>
 <translation id="8570895683659698018">ഹോബികളും വിശ്രമവേളയും</translation>
+<translation id="8574570240981266561">ഇനം ഇല്ലാതാക്കി</translation>
 <translation id="8574841453995331336">റെഫ്രിജറേറ്ററുകളും ഫ്രീസറുകളും</translation>
 <translation id="8577192028579836704">എല്ലാ ഓപ്ഷനുകളും സാധാരണഗതിയിൽ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">വെർച്വൽ കാർഡ് ലഭ്യമല്ല</translation>
@@ -4823,6 +4835,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618">നിങ്ങളുടെ പ്രാദേശിക നെറ്റ്‌വർക്കിലെ ഏത് ഉപകരണവും തിരയാനും കണക്‌റ്റ് ചെയ്യാനും <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="9046864189129893978">മൈക്രോഫോണുകൾ (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിൻ, വെബിൽ തിരയാൻ നിങ്ങളെ അനുവദിക്കുന്നു. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇത് മാറ്റാം.</translation>
 <translation id="9048035366624198823">ഇവ ചെയ്യാൻ, <ph name="POLICY_NAME" /> നയം <ph name="POLICY_VALUE" /> എന്നതായി സജ്ജീകരിക്കണം: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 ഇഞ്ച്</translation>
 <translation id="9049981332609050619">നിങ്ങള്‍ <ph name="DOMAIN" /> എന്നതില്‍ എത്താന്‍ ശ്രമിച്ചു, പക്ഷേ സെര്‍വര്‍ ഒരു അസാധുവായ സര്‍ട്ടിഫിക്കറ്റ് അവതരിപ്പിച്ചു.</translation>

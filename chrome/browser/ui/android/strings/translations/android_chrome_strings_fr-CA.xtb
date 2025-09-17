@@ -99,6 +99,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1409879593029778104">Le téléchargement de <ph name="FILE_NAME" /> n'a pas pu être effectué, car ce fichier existe déjà.</translation>
 <translation id="1413446866325418126">Enregistrer les données dans votre compte Google</translation>
+<translation id="1414919006379339073">Fermer la fenêtre actuelle</translation>
 <translation id="1416550906796893042">Version de l'application</translation>
 <translation id="1419753403124156396">Redémarrer Chrome?</translation>
 <translation id="1428770807407000502">Désactiver la synchronisation?</translation>
@@ -709,6 +710,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4380055775103003110">Si ce problème persiste, vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Sogou est utilisé pour la recherche</translation>
 <translation id="4387647248986092471">Créer un verrouillage de profil du véhicule</translation>
+<translation id="4387817230000841154">Ouvrir les téléchargements</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Onglets et groupes d'onglets non utilisés pendant 1 jour ou plus}one{Onglets et groupes d'onglets non utilisés pendant # jour ou plus}other{Onglets et groupes d'onglets non utilisés pendant # jours ou plus}}</translation>
 <translation id="4402611456429872546">Téléchargement de la langue <ph name="LANG" /> en cours…</translation>
 <translation id="4404568932422911380">Aucun favori</translation>

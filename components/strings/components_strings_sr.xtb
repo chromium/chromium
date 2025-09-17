@@ -827,6 +827,7 @@
 <translation id="2348509731468399833">Праћење цена је заустављено.</translation>
 <translation id="2349957959687031096">Дугме Отвори картицу без архивирања, активирајте га да бисте отворили нову картицу без архивирања и прегледали приватно</translation>
 <translation id="2350796302381711542">Желите ли да дозволите да <ph name="HANDLER_HOSTNAME" /> отвара све <ph name="PROTOCOL" /> линкове за које сте до сада користили <ph name="REPLACED_HANDLER_TITLE" />?</translation>
+<translation id="2351718832234620840">Овај сервер не може да докаже да је <ph name="DOMAIN" /> јер користи безбедносни сертификат који Chromium или конфигурација система за шифровање веб-саобраћаја не сматрају поузданим. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="2353297238722298836">Камера и микрофон су дозвољени</translation>
 <translation id="2354001756790975382">Остали обележивачи</translation>
 <translation id="2355395290879513365">Нападачи ће моћи да виде слике које гледате на овом сајту и да их измене како би вас преварили.</translation>
@@ -971,6 +972,7 @@
 <translation id="2573170131138724450">Телевизори</translation>
 <translation id="257674075312929031">Група</translation>
 <translation id="2580031090587209073">Опције дељења</translation>
+<translation id="258027838577899739">Избриши све из историје</translation>
 <translation id="258135245577667916">Корисник <ph name="USER_DISPLAY_NAME" /> је додао картицу</translation>
 <translation id="2586657967955657006">Меморија</translation>
 <translation id="2587841377698384444">ИД API-ја за директоријуме:</translation>
@@ -995,6 +997,7 @@
 <translation id="2625385379895617796">Сат вам жури</translation>
 <translation id="262745152991669301">Може да тражи да се повезује са USB уређајима</translation>
 <translation id="2627847595568876492">Текст се издваја из PDF-а…</translation>
+<translation id="2628025184666666186">Овај сервер не може да докаже да је <ph name="DOMAIN" /> јер користи безбедносни сертификат који Chrome или конфигурација система за шифровање веб-саобраћаја не сматрају поузданим. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="2628224721443278970">Пријави ме на Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Нисмо успели да пронађемо IP адресу сервера хоста <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Унесите @ да бисте претражили <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1247,6 +1250,7 @@
 <translation id="3086579638707268289">Ваше активности на вебу се прате</translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090667236485488075">Стакло</translation>
+<translation id="3093122472063815077">Екран са напретком за Купите одмах, платите касније отворен је до половине екрана.</translation>
 <translation id="3094051226187213523">Отвори AI режим помоћу овог предлога.</translation>
 <translation id="3095940652251934233">Изјава</translation>
 <translation id="3098513225387949945">Занемарује се јер се на листи онемогућених налази образац који је једнак „*“, а што је еквивалентно онемогућавању смерница.</translation>
@@ -1878,6 +1882,7 @@
 <translation id="4099048595830172239">Смернице администратора не препоручују дељење екрана са <ph name="APPLICATION_TITLE" /> када се види поверљив садржај:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прилагодили величине и изглед фонтова у Chrome-у</translation>
 <translation id="4101413244023615925">Текст и слика</translation>
+<translation id="4101917550061398111">Избриши изабране ставке</translation>
 <translation id="4102567721634170493">Локалне вести</translation>
 <translation id="4103249731201008433">Серијски број уређаја је неважећи</translation>
 <translation id="4103592298805904008">Картон (један слој)</translation>
@@ -1913,6 +1918,7 @@
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Кинеска коверта бр. 4</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. страница}one{{COUNT}. страница}few{{COUNT}. страница}other{{COUNT}. страница}}</translation>
+<translation id="4152495263075154876">Екран са напретком за опцију Купите одмах, платите касније је затворен.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 картица}one{# картица}few{# картице}other{# картица}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> не подржава безбедну везу са HTTPS-ом</translation>
 <translation id="4154277373259957087">Chrome ће сада потврдити да сте то ви пре него што унесе начине плаћања. То можете да ажурирате у сваком тренутку у одељку <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
@@ -2577,6 +2583,7 @@
 <translation id="5255583962255635076">Примењене смернице за прегледач на пословном профилу</translation>
 <translation id="5255690596502591079">Ипак сними</translation>
 <translation id="5255771248404149177">Добављач картице жели да се увери да сте то ви</translation>
+<translation id="525579853540851404">Екран са напретка за Купите одмах, платите касније. Тастатура је сакривена.</translation>
 <translation id="5255833070095767006">350×460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Смернице администратора не препоручују копирање овог фајла на <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују копирање ових фајлова на <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују копирање ових фајлова на <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују копирање ових фајлова на <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Група картица <ph name="GROUP_NAME" /> више није доступна</translation>
@@ -3090,6 +3097,7 @@
 <translation id="6122181661879998141">предњој страни картице</translation>
 <translation id="6124058285696691147">Преузми прилог</translation>
 <translation id="6124432979022149706">Прикључци за Chrome за предузећа</translation>
+<translation id="6124996493718543728">Екран са напретком Купите одмах, платите касније отворен је на целом екрану.</translation>
 <translation id="6126565365696310362">Кинеска коверта бр. 2</translation>
 <translation id="6131824478727057281">локација</translation>
 <translation id="6133320744616005677">Не опозивај дозволу</translation>
@@ -3895,6 +3903,7 @@
 <translation id="7450577240311017924">Дугме Управљај синхронизацијом, активирајте га да бисте управљали тиме које информације синхронизујете у подешавањима Chrome-а</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />да сазнате више<ph name="END_LINK" /> о овом проблему.</translation>
 <translation id="745208957946308667">Игра са диносаурусом, притискајте тастер за размак да бисте играли</translation>
+<translation id="7453849010505253492">Овај сервер не може да докаже да је <ph name="DOMAIN" /> јер користи безбедносни сертификат који Chrome или конфигурација система за шифровање веб-саобраћаја не сматрају поузданим. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Прикажи сертификат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Налог у клауду</translation>
 <translation id="7455133967321480974">Користи глобалну подразумевану вредност (Блокирај)</translation>
 <translation id="7455452752247248289">Технологија пословања</translation>
@@ -4002,6 +4011,7 @@
 <translation id="7613889955535752492">Истиче: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прегледали лозинке и управљали њима у подешавањима Chrome-а</translation>
 <translation id="7615932826417658001">Додајте идентификациони документ</translation>
+<translation id="7616390733770379387">Приказују се насумичним редоследом.</translation>
 <translation id="7616645509853975347">Администратор је укључио Chrome Enterprise Connectors у прегледачу. Ови прикључци имају приступ неким вашим подацима.</translation>
 <translation id="7617825962482469577">Коверта C7/C6</translation>
 <translation id="7618270539713451657">Борилачке вештине</translation>
@@ -4227,6 +4237,7 @@
 <translation id="7992044431894087211">Настављено је дељење садржаја екрана са апликацијом <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Није наведено</translation>
 <translation id="7997855386298213183">дељене картице</translation>
+<translation id="8001912761979890298">Овај сервер не може да докаже да је <ph name="DOMAIN" /> јер користи безбедносни сертификат који Chromium или конфигурација система за шифровање веб-саобраћаја не сматрају поузданим. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Прикажи сертификат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Пробајте да затворите друге картице или програме да бисте ослободили меморију.</translation>
 <translation id="8002230960325005199">Погледајте сродне сајтове на новој картици</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
@@ -4568,6 +4579,7 @@
 <translation id="8564466070529550495">Виртуелна картица тренутно није доступна. Пробајте поново касније.</translation>
 <translation id="8564985650692024650">Chromium вам препоручује да ресетујете лозинку за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако сте је користили на другим сајтовима.</translation>
 <translation id="8570895683659698018">Хобији и разонода</translation>
+<translation id="8574570240981266561">Ставка је избрисана</translation>
 <translation id="8574841453995331336">Фрижидери и замрзивачи</translation>
 <translation id="8577192028579836704">Све опције су обично <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Виртуелна картица није доступна</translation>
@@ -4826,6 +4838,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> жели да тражи уређаје на локалној мрежи и повезује се са њима</translation>
 <translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">Подразумевани претраживач вам омогућава да претражујете веб. Можете да га промените у подешавањима.</translation>
 <translation id="9048035366624198823">Ове радње захтевају да смернице <ph name="POLICY_NAME" /> буду подешене на <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24×36 in</translation>
 <translation id="9049981332609050619">Покушали сте да дођете до домена <ph name="DOMAIN" />, али сервер је послао неважећи сертификат.</translation>

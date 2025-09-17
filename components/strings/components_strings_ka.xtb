@@ -827,6 +827,7 @@
 <translation id="2348509731468399833">ფასისთვის თვალის მიდევნება შეწყდა.</translation>
 <translation id="2349957959687031096">ახალი ინკოგნიტო ჩანართის გახსნის ღილაკი, ვების კონფიდენციალურად დათვალიერებისთვის ახალი ინკოგნიტო ჩანართის გასახსნელად გაააქტიურეთ ის</translation>
 <translation id="2350796302381711542">დავრთოთ ნება <ph name="HANDLER_HOSTNAME" />-ს, გახსნას ყველა <ph name="PROTOCOL" /> ბმული <ph name="REPLACED_HANDLER_TITLE" />-ის ნაცვლად?</translation>
+<translation id="2351718832234620840">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />, რადგან ის იყენებს უსაფრთხოების სერტიფიკატს, რომელსაც არ ენდობა Chromium ან თქვენი სისტემის კონფიგურაცია ვებ-ტრაფიკის დაშიფვრისთვის. ეს შეიძლება გამოწვეული იყოს არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის ხელში ჩაგდებით.</translation>
 <translation id="2353297238722298836">კამერა და მიკროფონი დაშვებულია</translation>
 <translation id="2354001756790975382">სხვა სანიშნეები</translation>
 <translation id="2355395290879513365">თავდამსხმელებს შეუძლიათ იმ სურათების ნახვა, რომლებსაც ამ საიტზე ათვალიერებთ, და მათი შეცვლის მეშვეობით, თქვენი შეცდომაში შეყვანა.</translation>
@@ -971,6 +972,7 @@
 <translation id="2573170131138724450">ტელევიზორები</translation>
 <translation id="257674075312929031">ჯგუფი</translation>
 <translation id="2580031090587209073">გაზიარების პარამეტრები</translation>
+<translation id="258027838577899739">ყველაფრის წაშლა ისტორიიდან</translation>
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />-მა დაამატა ჩანართი</translation>
 <translation id="2586657967955657006">გაცვლის ბუფერი</translation>
 <translation id="2587841377698384444">კატალოგის API-ის ID:</translation>
@@ -995,6 +997,7 @@
 <translation id="2625385379895617796">თქვენი საათი წინაა</translation>
 <translation id="262745152991669301">შეუძლია USB-მოწყობილობებთან დაკავშირების თხოვნა</translation>
 <translation id="2627847595568876492">მიმდინარეობს PDF-დან ტექსტის ამოღება...</translation>
+<translation id="2628025184666666186">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />, რადგან ის იყენებს უსაფრთხოების სერტიფიკატს, რომელსაც არ ენდობა Chrome ან თქვენი სისტემის კონფიგურაცია ვებ-ტრაფიკის დაშიფვრისთვის. ეს შეიძლება გამოწვეული იყოს არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის ხელში ჩაგდებით.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-ში შესვლა</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-ის სერვერის IP მისამართი ვერ მოიძებნა.</translation>
 <translation id="2638567100095052009">აკრიფეთ „@“, რომ მოიძიოთ აქ: <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1878,6 +1881,7 @@
 <translation id="4099048595830172239">ადმინისტრატორის მიერ დადგენილი წესების მიხედვით, არ არის მიზანშეწონილი თქვენი ეკრანის <ph name="APPLICATION_TITLE" />-თან გაზიარება, როცა ეკრანზე კონფიდენციალური კონტენტი ჩანს:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ში შრიფტების ზომებისა და ტიპების მოსარგებად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="4101413244023615925">ტექსტი და გრაფიკა</translation>
+<translation id="4101917550061398111">არჩეული ელემენტების წაშლა</translation>
 <translation id="4102567721634170493">ადგილობრივი სიახლეები</translation>
 <translation id="4103249731201008433">მოწყობილობის სერიული ნომერი არასწორია</translation>
 <translation id="4103592298805904008">მუყაო (ერთშრიანი)</translation>
@@ -3895,6 +3899,7 @@
 <translation id="7450577240311017924">სინქრონიზაციის მართვის ღილაკი, თქვენ მიერ სინქრონიზებული ინფორმაციის Chrome-ის პარამეტრებიდან სამართავად გაააქტიურეთ ის</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />შეიტყოთ მეტი<ph name="END_LINK" /> ამ პრობლემის შესახებ.</translation>
 <translation id="745208957946308667">დინოზავრის თამაში, დააჭირეთ შორისის კლავიშს და ითამაშეთ</translation>
+<translation id="7453849010505253492">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />, რადგან ის იყენებს უსაფრთხოების სერტიფიკატს, რომელსაც არ ენდობა Chrome ან თქვენი სისტემის კონფიგურაცია ვებ-ტრაფიკის დაშიფვრისთვის. ეს შეიძლება გამოწვეული იყოს არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის ხელში ჩაგდებით. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />სერტიფიკატის ნახვა<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">ღრუბლოვანი ანგარიში</translation>
 <translation id="7455133967321480974">გამოიყენეთ გლობალური ნაგულისხმევი (დაბლოკვა)</translation>
 <translation id="7455452752247248289">საწარმო ტექნოლოგიები</translation>
@@ -4002,6 +4007,7 @@
 <translation id="7613889955535752492">მოქმ.: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან თქვენი პაროლების სანახავად და სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="7615932826417658001">პირადობის მოწმობის დამატება</translation>
+<translation id="7616390733770379387">მიმდევრობა შემთხვევითია.</translation>
 <translation id="7616645509853975347">თქვენმა ადმინისტრატორმა ჩართო Chrome Enterprise Connectors თქვენს ბრაუზერში. აღნიშნულ მაერთებლებს წვდომა აქვს თქვენს გარკვეულ მონაცემებზე.</translation>
 <translation id="7617825962482469577">კონვერტი C7/C6</translation>
 <translation id="7618270539713451657">საბრძოლო ხელოვნება</translation>
@@ -4227,6 +4233,7 @@
 <translation id="7992044431894087211">ეკრანის <ph name="APPLICATION_TITLE" />-თან გაზიარება აღდგენილია</translation>
 <translation id="7995512525968007366">არ არის მითითებული</translation>
 <translation id="7997855386298213183">გაზიარებული ჩანართები</translation>
+<translation id="8001912761979890298">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />, რადგან ის იყენებს უსაფრთხოების სერტიფიკატს, რომელსაც არ ენდობა Chromium ან თქვენი სისტემის კონფიგურაცია ვებ-ტრაფიკის დაშიფვრისთვის. ეს შეიძლება გამოწვეული იყოს არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის ხელში ჩაგდებით. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />სერტიფიკატის ნახვა<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">მეხსიერების გამოსათავისუფლებლად ცადეთ სხვა ჩანართების ან პროგრამების დახურვა.</translation>
 <translation id="8002230960325005199">დაკავშირებული საიტების ნახვა ახალ ჩანართში</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
@@ -4568,6 +4575,7 @@
 <translation id="8564466070529550495">ვირტუალური ბარათი ამჟამად მიუწვდომელია, ცადეთ მოგვიანებით.</translation>
 <translation id="8564985650692024650">Chromium გირჩევთ, გადააყენოთ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ის პაროლი, თუ მას სხვა საიტებზეც იყენებთ.</translation>
 <translation id="8570895683659698018">ჰობი და დასვენება</translation>
+<translation id="8574570240981266561">ერთეული წაიშალა</translation>
 <translation id="8574841453995331336">მაცივრები და საყინულეები</translation>
 <translation id="8577192028579836704">ყველა ვარიანტი, როგორც წესი, <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ვირტუალური ბარათი მიუწვდომელია</translation>
@@ -4825,6 +4833,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" />-ს სურს, მოძებნოს თქვენს ლოკალურ ქსელში ჩართული მოწყობილობა და დაუკავშირდეს მას</translation>
 <translation id="9046864189129893978">მიკროფონები (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">თქვენი ნაგულისხმევი პარამეტრები ვებში ძიების საშუალებას გაძლევთ. მისი შეცვლა პარამეტრებიდან შეგიძლიათ.</translation>
 <translation id="9048035366624198823">ეს მოქმედებები საჭიროებს, რომ „<ph name="POLICY_NAME" />“ წესების მნიშვნელობად მითითებული იყოს „<ph name="POLICY_VALUE" />“: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 დუიმი</translation>
 <translation id="9049981332609050619">თქვენ სცადეთ <ph name="DOMAIN" />-თან დაკავშირება, მაგრამ სერვერმა წარმოადგინა არასწორი სერტიფიკატი.</translation>

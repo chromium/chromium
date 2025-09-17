@@ -17,6 +17,9 @@
 <translation id="1131805035311359397">Да бисте проверили да ли су лозинке безбедне од упада у податке и других безбедносних проблема, <ph name="BEGIN_LINK" />пријавите се у Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Кликните на Chromium мени</translation>
 <translation id="1157985233335035034">Недавни језици</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> је додао додатак који може да промени начин на који Chromium функционише.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Инсталација није успела јер ваша верзија Windows-а није подржана.</translation>
 <translation id="1185134272377778587">О Chromium-у</translation>
 <translation id="1203500561924088507">Хвала вам на инсталацији. Потребно је да рестартујете прегледач пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
@@ -173,6 +176,7 @@
 <translation id="3068187312562070417">Други Chromium профили</translation>
 <translation id="3068515742935458733">Помозите нам да побољшамо Chromium тако што ћете Google-у слати извештаје о отказивању и <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Један или више додатака за Chromium су приступали 1 USB уређају}=1{Један или више додатака за Chromium приступају 1 USB уређају}one{Један или више додатака за Chromium приступају # USB уређају}few{Један или више додатака за Chromium приступају USB уређајима (#)}other{Један или више додатака за Chromium приступају USB уређајима (#)}}</translation>
+<translation id="3095811995836568724">Историја Chromium-а</translation>
 <translation id="3101560983689755071">Историја прегледања утиче на огласе који вам се приказују и интересовања процењена у наставку. Ради заштите приватности Chromium аутоматски брише интересовања сваког месеца чим постану доступна. Интересовања могу да се освежавају ако их не уклоните.</translation>
 <translation id="3103660991484857065">Програм за инсталацију није успео да декомпримује архиву. Преузмите Chromium поново.</translation>
 <translation id="310459126943037700">Завршавање задатака није успело.</translation>
