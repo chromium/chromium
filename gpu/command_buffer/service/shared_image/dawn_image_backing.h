@@ -24,6 +24,11 @@ class GPU_GLES2_EXPORT DawnImageBacking : public SharedImageBacking {
                    std::string debug_label);
   ~DawnImageBacking() override;
 
+  wgpu::Device device() const { return device_; }
+  wgpu::Texture GetTexture() const { return texture_; }
+
+  void InitializeForTesting(const wgpu::Device& device);
+
  private:
   // SharedImageBacking:
   SharedImageBackingType GetType() const override;

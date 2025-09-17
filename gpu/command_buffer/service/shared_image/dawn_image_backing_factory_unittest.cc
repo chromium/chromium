@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
+#include "gpu/command_buffer/service/shared_image/dawn_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,6 +78,9 @@ TEST_F(DawnImageBackingFactoryTest, Basic) {
       alpha_type, usage, "DawnImageBackingFactoryTest",
       /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
+
+  static_cast<DawnImageBacking*>(backing.get())
+      ->InitializeForTesting(dawn_device_);
 
   // Check clearing.
   if (!backing->IsCleared()) {

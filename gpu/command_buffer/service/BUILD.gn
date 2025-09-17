@@ -348,6 +348,8 @@ target(link_target_type, "gles2_sources") {
       "dawn_service_memory_transfer_service.h",
       "dawn_service_serializer.cc",
       "dawn_service_serializer.h",
+      "shared_image/dawn_copy_strategy.cc",
+      "shared_image/dawn_copy_strategy.h",
       "shared_image/dawn_fallback_image_representation.cc",
       "shared_image/dawn_fallback_image_representation.h",
       "shared_image/dawn_image_backing.cc",

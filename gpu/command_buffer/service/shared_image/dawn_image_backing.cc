@@ -102,4 +102,19 @@ std::unique_ptr<DawnImageRepresentation> DawnImageBacking::ProduceDawn(
 
 void DawnImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
 
+void DawnImageBacking::InitializeForTesting(const wgpu::Device& device) {
+  wgpu::TextureDescriptor descriptor;
+  descriptor.usage =
+      static_cast<wgpu::TextureUsage>(wgpu::TextureUsage::RenderAttachment |
+                                      wgpu::TextureUsage::TextureBinding);
+  descriptor.dimension = wgpu::TextureDimension::e2D;
+  descriptor.size = {static_cast<uint32_t>(size().width()),
+                     static_cast<uint32_t>(size().height()), 1};
+  descriptor.format = wgpu::TextureFormat::RGBA8Unorm;
+  descriptor.mipLevelCount = 1;
+  descriptor.sampleCount = 1;
+  texture_ = device.CreateTexture(&descriptor);
+  device_ = device;
+}
+
 }  // namespace gpu
