@@ -157,8 +157,8 @@ CreateInputDataFromAnnotatedPageContent(
   _composeboxQueryController->NotifySessionAbandoned();
   _urlLoadingBrowserAgent = nullptr;
   _faviconLoader = nullptr;
-  _composeboxQueryController.reset();
   _composeboxObserverBridge.reset();
+  _composeboxQueryController.reset();
 }
 
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider {
@@ -570,7 +570,7 @@ CreateInputDataFromAnnotatedPageContent(
     base::OnceClosure completion = base::BindOnce(^{
       [weakSelf dismissAimPrototype];
     });
-    constexpr base::TimeDelta kDelay = base::Seconds(0);
+    constexpr base::TimeDelta kDelay = base::Seconds(0.5);
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(completion), kDelay);
   }

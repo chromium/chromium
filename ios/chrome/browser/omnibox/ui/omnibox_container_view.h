@@ -56,6 +56,9 @@
 /// Hides or shows the clear button.
 - (void)setClearButtonHidden:(BOOL)isHidden;
 
+/// Updates the height of the text view.
+- (void)updateTextViewHeight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_OMNIBOX_CONTAINER_VIEW_H_

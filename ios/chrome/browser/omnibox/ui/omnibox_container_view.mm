@@ -47,6 +47,8 @@ const CGFloat kLeadingImageTrailingMarginLensOverlay = 9;
 
 /// Space between the clear button and the edge of the omnibox.
 const CGFloat kTextInputViewClearButtonTrailingOffset = 4;
+/// The maximum number of lines for the text view before it starts scrolling.
+const int kMaxLines = 5;
 
 /// Clear button inset on all sides.
 const CGFloat kClearButtonInset = 4.0f;
@@ -121,7 +123,7 @@ UIButton* CreateClearButton() {
 
 #pragma mark - OmniboxContainerView
 
-@interface OmniboxContainerView ()
+@interface OmniboxContainerView () <OmniboxTextViewHeightDelegate>
 
 // Redefined as readwrite.
 @property(nonatomic, strong) UIButton* clearButton;
@@ -135,6 +137,8 @@ UIButton* CreateClearButton() {
   OmniboxThumbnailButton* _thumbnailButton;
   // The text input view.
   UIView<OmniboxTextInput>* _textInputView;
+  // Stores the text view for height adjustment.
+  OmniboxTextViewIOS* _textView;
 
   /// The context in which the omnibox is presented.
   OmniboxPresentationContext _presentationContext;
@@ -145,6 +149,8 @@ UIButton* CreateClearButton() {
   // The constraint for the textfield's leading anchor when the thumbnail is
   // hidden.
   NSLayoutConstraint* _textInputViewLeadingToIconConstraint;
+  // Text input height constraint.
+  NSLayoutConstraint* _textInputHeightConstraint;
 }
 
 #pragma mark - Public
@@ -277,6 +283,27 @@ UIButton* CreateClearButton() {
   return _textInputView;
 }
 
+- (void)updateTextViewHeight {
+  if (!_textView) {
+    return;
+  }
+  // Recalculate textView height and update it to clip and scroll if necessary.
+  CGFloat verticalPadding =
+      _textView.textContainerInset.top + _textView.textContainerInset.bottom;
+  CGFloat maxHeight = (_textView.font.lineHeight * kMaxLines) + verticalPadding;
+  CGSize size = [_textView
+      sizeThatFits:CGSizeMake(_textView.frame.size.width, CGFLOAT_MAX)];
+  CGFloat newHeight = MIN(size.height, maxHeight);
+  if (!_textInputHeightConstraint) {
+    _textInputHeightConstraint =
+        [_textView.heightAnchor constraintEqualToConstant:newHeight];
+    _textInputHeightConstraint.active = YES;
+  } else {
+    _textInputHeightConstraint.constant = newHeight;
+  }
+  _textView.scrollEnabled = size.height > maxHeight;
+}
+
 #pragma mark - TextFieldViewContaining
 
 - (UIView*)textFieldView {
@@ -302,7 +329,10 @@ UIButton* CreateClearButton() {
     placeholderLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:placeholderLabel];
     textView.placeholderLabel = placeholderLabel;
+    textView.heightDelegate = self;
+    _textView = textView;
     _textInputView = textView;
+    [self updateTextViewHeight];
   } else {
     OmniboxTextFieldIOS* textField =
         [[OmniboxTextFieldIOS alloc] initWithFrame:CGRectZero
@@ -315,6 +345,12 @@ UIButton* CreateClearButton() {
     [self addSubview:textField];
     _textInputView = textField;
   }
+}
+
+#pragma mark - OmniboxTextViewHeightDelegate
+
+- (void)textViewContentChanged:(OmniboxTextViewIOS*)textView {
+  [self updateTextViewHeight];
 }
 
 @end

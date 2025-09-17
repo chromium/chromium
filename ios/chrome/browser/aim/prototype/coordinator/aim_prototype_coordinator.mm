@@ -151,6 +151,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       didMoveToParentViewController:_viewController];
 
   [_omniboxCoordinator updateOmniboxState];
+  [_omniboxCoordinator focusOmnibox];
 }
 
 - (void)stop {

@@ -10,6 +10,17 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 
+@class OmniboxTextViewIOS;
+
+/// Delegate for adjusting the text view height when the content changes.
+@protocol OmniboxTextViewHeightDelegate
+
+/// Informs that the content has changed, whether it's caused by the user or the
+/// system.
+- (void)textViewContentChanged:(OmniboxTextViewIOS*)textView;
+
+@end
+
 /// UITextView subclass to allow for adjusting borders.
 /// A textview with a pre-edit state, inline autocomplete and additional text.
 /// - Pre-edit: the state when the text is "selected" and will erase upon
@@ -17,6 +28,8 @@
 /// - Inline autocomplete: optional autocomplete text following the caret.
 /// - Additional text: optional text after user and autocomplete text.
 @interface OmniboxTextViewIOS : UITextView <OmniboxTextInput>
+
+@property(nonatomic, weak) id<OmniboxTextViewHeightDelegate> heightDelegate;
 
 /// The placeholder label. It must be added as a sibling to this view before
 /// being set here because it must not be inside of the scroll view of

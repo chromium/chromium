@@ -185,6 +185,13 @@ using base::UserMetricsAction;
   }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  if (_presentationContext == OmniboxPresentationContext::kAIMPrototype) {
+    [self.view updateTextViewHeight];
+  }
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
   self.textInput.selectedTextRange =

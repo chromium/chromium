@@ -97,8 +97,7 @@ using enum OmniboxKeyboardAction;
     self.keyboardType = UIKeyboardTypeWebSearch;
     self.smartQuotesType = UITextSmartQuotesTypeNo;
     self.textContainer.lineFragmentPadding = 0;
-    self.contentInsetAdjustmentBehavior =
-        UIScrollViewContentInsetAdjustmentNever;
+    self.dataDetectorTypes = UIDataDetectorTypeNone;
 
     // Disable drag on iPhone because there's nowhere to drag to
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -454,14 +453,7 @@ using enum OmniboxKeyboardAction;
     // making the URL render from right to left, as per the URL rendering
     // standard described here: https://url.spec.whatwg.org/#url-rendering
     [style setBaseWritingDirection:NSWritingDirectionLeftToRight];
-
-    // Set linebreak mode to 'clipping' to ensure the text is never elided.
-    // This is a workaround for iOS 6, where it appears that
-    // [self.attributedText size] is not wide enough for the string (e.g. a URL
-    // else ending with '.com' will be elided to end with '.c...'). It appears
-    // to be off by one point so clipping is acceptable as it doesn't actually
-    // cut off any of the text.
-    [style setLineBreakMode:NSLineBreakByClipping];
+    [style setLineBreakMode:NSLineBreakByCharWrapping];
 
     [mutableText addAttribute:NSParagraphStyleAttributeName
                         value:style
@@ -1054,6 +1046,7 @@ using enum OmniboxKeyboardAction;
   [self setFont:self.currentFont];
   [self updateTextDirection];
   [self updatePlaceholderVisibility];
+  [self.heightDelegate textViewContentChanged:self];
 }
 
 /// Returns the background color for selected text.
@@ -1112,6 +1105,7 @@ using enum OmniboxKeyboardAction;
 - (void)textViewDidChange:(UITextView*)textView {
   [self.omniboxTextInputDelegate textInputDidChange:self];
   [self updatePlaceholderVisibility];
+  [self.heightDelegate textViewContentChanged:self];
 }
 
 - (BOOL)textView:(UITextView*)textView
