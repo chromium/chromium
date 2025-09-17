@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
+import static org.chromium.ui.interpolators.Interpolators.STANDARD_INTERPOLATOR;
+
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -25,16 +28,21 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
+import org.chromium.ui.animation.AnimationHandler;
 
 /** View for a pinned tab strip item. */
 @NullMarked
 public class PinnedTabStripItemView extends FrameLayout {
+    private static final int WIDTH_ANIMATION_DURATION_MS = 400;
+
     private @Nullable ImageView mFavicon;
     private @Nullable TextView mTitle;
     private @Nullable ImageView mTrailingIcon;
+    private final AnimationHandler mWidthAnimationHandler;
 
     public PinnedTabStripItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        mWidthAnimationHandler = new AnimationHandler();
     }
 
     @Override
@@ -114,13 +122,45 @@ public class PinnedTabStripItemView extends FrameLayout {
      */
     void setGridCardSize(@Nullable Size size) {
         if (size == null) return;
+
+        updateHeight(size.getHeight());
+
+        int targetWidth = size.getWidth();
+        int startWidth = getWidth();
+
+        // If the view is not laid out yet or width is the same, just set the width.
+        if (startWidth == 0 || startWidth == targetWidth) {
+            updateWidth(targetWidth);
+            return;
+        }
+
+        ValueAnimator animator = ValueAnimator.ofInt(startWidth, targetWidth);
+        animator.setDuration(WIDTH_ANIMATION_DURATION_MS);
+        animator.setInterpolator(STANDARD_INTERPOLATOR);
+        animator.addUpdateListener(
+                animation -> {
+                    updateWidth((int) animation.getAnimatedValue());
+                });
+        mWidthAnimationHandler.startAnimation(animator);
+    }
+
+    AnimationHandler getWidthAnimationHandlerForTesting() {
+        return mWidthAnimationHandler;
+    }
+
+    private void updateWidth(int width) {
+        if (width <= 0) return;
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
-        if (size.getWidth() > 0) {
-            layoutParams.width = size.getWidth();
-        }
-        if (size.getHeight() > 0) {
-            layoutParams.height = size.getHeight();
-        }
+        if (layoutParams.width == width) return;
+        layoutParams.width = width;
+        setLayoutParams(layoutParams);
+    }
+
+    private void updateHeight(int height) {
+        if (height <= 0) return;
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        if (layoutParams.width == height) return;
+        layoutParams.height = height;
         setLayoutParams(layoutParams);
     }
 

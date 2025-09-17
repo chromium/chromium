@@ -120,6 +120,7 @@ public class PinnedTabStripMediator {
         int firstVisiblePosition = mTabGridListLayoutManager.findFirstVisibleItemPosition();
         List<ListItem> newPinnedTabs = new ArrayList<>();
 
+        // Find pinned tabs that are scrolled off-screen (above the current viewport).
         for (int i = 0; i < mTabGridListModel.size() && i < firstVisiblePosition; i++) {
             ListItem item = mTabGridListModel.get(i);
             if (item == null) continue;
@@ -144,6 +145,8 @@ public class PinnedTabStripMediator {
      * @return A new ListItem for the pinned tabs strip.
      */
     private ListItem createPinnedTabListItem(PropertyModel model) {
+        // The view will animate to its final size, so we can set a default width here.
+        // The correct width will be set in resizePinnedTabCards.
         Size pinnedTabSize = new Size(mTabListItemCurrentWidth, 0);
 
         PropertyModel newModel =
@@ -181,6 +184,7 @@ public class PinnedTabStripMediator {
             }
         }
 
+        // Remove any trailing items that are no longer in the new list.
         if (newPinnedTabs.size() < mPinnedTabsModelList.size()) {
             mPinnedTabsModelList.removeRange(
                     newPinnedTabs.size(), mPinnedTabsModelList.size() - newPinnedTabs.size());
