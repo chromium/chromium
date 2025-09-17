@@ -799,7 +799,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void cancelFling() {
-            mWebContents.getEventForwarder().cancelFling(SystemClock.uptimeMillis());
+            mWebContents.getEventForwarder().cancelFling(SystemClock.uptimeMillis(), false);
         }
     }
 
@@ -3048,7 +3048,7 @@ public class AwContents implements SmartClipProvider {
         if (isDestroyed(WARN)) return;
         mWebContents
                 .getEventForwarder()
-                .startFling(SystemClock.uptimeMillis(), -velocityX, -velocityY, false, true);
+                .startFling(SystemClock.uptimeMillis(), -velocityX, -velocityY, false, true, false);
     }
 
     /** @see android.webkit.WebView#pageUp(boolean) */

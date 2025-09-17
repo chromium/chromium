@@ -337,33 +337,39 @@ void EventForwarder::StartFling(JNIEnv* env,
                                 jfloat velocity_x,
                                 jfloat velocity_y,
                                 jboolean synthetic_scroll,
-                                jboolean prevent_boosting) {
-  CancelFling(env, time_ms, prevent_boosting);
+                                jboolean prevent_boosting,
+                                jboolean is_touchpad_event) {
+  CancelFling(env, time_ms, prevent_boosting, is_touchpad_event);
 
   if (velocity_x == 0 && velocity_y == 0)
     return;
   float dip_scale = view_->GetDipScale();
+  ui::GestureDeviceType source =
+      is_touchpad_event ? ui::GestureDeviceType::DEVICE_TOUCHPAD
+                        : ui::GestureDeviceType::DEVICE_TOUCHSCREEN;
   // Use velocity as delta in scroll event.
   view_->OnGestureEvent(GestureEventAndroid(
       GESTURE_EVENT_TYPE_SCROLL_START, gfx::PointF(), gfx::PointF(), time_ms,
-      ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, velocity_x / dip_scale,
-      velocity_y / dip_scale, 0, 0,
+      source, 0, velocity_x / dip_scale, velocity_y / dip_scale, 0, 0,
       /*target_viewport*/ true, synthetic_scroll,
       /*prevent_boosting*/ false));
   view_->OnGestureEvent(GestureEventAndroid(
       GESTURE_EVENT_TYPE_FLING_START, gfx::PointF(), gfx::PointF(), time_ms,
-      ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, 0, 0,
-      velocity_x / dip_scale, velocity_y / dip_scale,
+      source, 0, 0, 0, velocity_x / dip_scale, velocity_y / dip_scale,
       /*target_viewport*/ true, synthetic_scroll,
       /*prevent_boosting*/ false));
 }
 
 void EventForwarder::CancelFling(JNIEnv* env,
                                  jlong time_ms,
-                                 jboolean prevent_boosting) {
+                                 jboolean prevent_boosting,
+                                 jboolean is_touchpad_event) {
+  ui::GestureDeviceType source =
+      is_touchpad_event ? ui::GestureDeviceType::DEVICE_TOUCHPAD
+                        : ui::GestureDeviceType::DEVICE_TOUCHSCREEN;
   view_->OnGestureEvent(GestureEventAndroid(
       GESTURE_EVENT_TYPE_FLING_CANCEL, gfx::PointF(), gfx::PointF(), time_ms,
-      ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, 0, 0, 0, 0,
+      source, 0, 0, 0, 0, 0,
       /*target_viewport*/ false, /*synthetic_scroll*/ false, prevent_boosting));
 }
 

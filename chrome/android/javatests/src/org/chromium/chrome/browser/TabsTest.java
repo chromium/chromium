@@ -475,7 +475,13 @@ public class TabsTest {
                             WebContents webContents = mActivityTestRule.getWebContents();
                             webContents
                                     .getEventForwarder()
-                                    .startFling(SystemClock.uptimeMillis(), 0, -2000, false, true);
+                                    .startFling(
+                                            SystemClock.uptimeMillis(),
+                                            0,
+                                            -2000,
+                                            false,
+                                            true,
+                                            false);
                         });
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());

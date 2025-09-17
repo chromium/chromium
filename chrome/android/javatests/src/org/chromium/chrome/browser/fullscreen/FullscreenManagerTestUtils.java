@@ -199,7 +199,8 @@ public class FullscreenManagerTestUtils {
                                     vx,
                                     vy,
                                     /* syntheticScroll= */ false,
-                                    /* preventBoosting= */ false);
+                                    /* preventBoosting= */ false,
+                                    /* isTouchpadEvent= */ false);
                 });
     }
 }

@@ -768,13 +768,16 @@ public class EventForwarder {
      *     fling)
      * @param preventBoosting if false, this fling may boost an existing fling. Otherwise, ends the
      *     current fling and starts a new one.
+     * @param isTouchpadEvent if true, the gesture event created will have source touchpad,
+     *     touchscreen otherwise.
      */
     public void startFling(
             long timeMs,
             float velocityX,
             float velocityY,
             boolean syntheticScroll,
-            boolean preventBoosting) {
+            boolean preventBoosting,
+            boolean isTouchpadEvent) {
         if (mNativeEventForwarder == 0) return;
         EventForwarderJni.get()
                 .startFling(
@@ -783,18 +786,25 @@ public class EventForwarder {
                         velocityX,
                         velocityY,
                         syntheticScroll,
-                        preventBoosting);
+                        preventBoosting,
+                        isTouchpadEvent);
     }
 
     /**
      * Cancel any fling gestures active.
      *
      * @param timeMs Current time (in milliseconds).
+     * @param isTouchpadEvent if true, the gesture event created will have source touchpad,
+     *     touchscreen otherwise.
      */
-    public void cancelFling(long timeMs) {
+    public void cancelFling(long timeMs, boolean isTouchpadEvent) {
         if (mNativeEventForwarder == 0) return;
         EventForwarderJni.get()
-                .cancelFling(mNativeEventForwarder, timeMs, /* preventBoosting= */ true);
+                .cancelFling(
+                        mNativeEventForwarder,
+                        timeMs,
+                        /* preventBoosting= */ true,
+                        isTouchpadEvent);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -859,8 +869,13 @@ public class EventForwarder {
                 float velocityX,
                 float velocityY,
                 boolean syntheticScroll,
-                boolean preventBoosting);
+                boolean preventBoosting,
+                boolean isTouchpadEvent);
 
-        void cancelFling(long nativeEventForwarder, long timeMs, boolean preventBoosting);
+        void cancelFling(
+                long nativeEventForwarder,
+                long timeMs,
+                boolean preventBoosting,
+                boolean isTouchpadEvent);
     }
 }

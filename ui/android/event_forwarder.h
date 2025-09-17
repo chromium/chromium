@@ -110,11 +110,13 @@ class UI_ANDROID_EXPORT EventForwarder {
                   jfloat velocity_x,
                   jfloat velocity_y,
                   jboolean synthetic_scroll,
-                  jboolean prevent_boosting);
+                  jboolean prevent_boosting,
+                  jboolean is_touchpad_event);
 
   void CancelFling(JNIEnv* env,
                    jlong time_ms,
-                   jboolean prevent_boosting);
+                   jboolean prevent_boosting,
+                   jboolean is_touchpad_event);
 
   void AddObserver(Observer* observer);
 
