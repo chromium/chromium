@@ -7,6 +7,9 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
