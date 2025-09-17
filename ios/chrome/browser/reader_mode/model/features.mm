@@ -35,6 +35,9 @@ const char kReaderModeDefaultBrowserNumDaysCriteriaStringName[] =
 
 BASE_FEATURE(kEnableReaderMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableReaderModeOmniboxEntryPoint,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableReaderModeTranslation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -72,6 +75,10 @@ bool IsReaderModeAvailable() {
     return true;
   }
   return base::FeatureList::IsEnabled(kEnableReaderMode);
+}
+
+bool IsReaderModeOmniboxEntryPointEnabled() {
+  return base::FeatureList::IsEnabled(kEnableReaderModeOmniboxEntryPoint);
 }
 
 bool IsReaderModeSnackbarEnabled() {

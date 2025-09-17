@@ -66,7 +66,8 @@ ContextualPanelModelServiceFactory::BuildServiceInstanceFor(
 
   auto* reader_mode_model_factory =
       ReaderModeModelFactory::GetForProfile(profile);
-  if (reader_mode_model_factory && IsReaderModeAvailable()) {
+  if (reader_mode_model_factory && IsReaderModeAvailable() &&
+      IsReaderModeOmniboxEntryPointEnabled()) {
     models.emplace(ContextualPanelItemType::ReaderModeItem,
                    reader_mode_model_factory);
   }

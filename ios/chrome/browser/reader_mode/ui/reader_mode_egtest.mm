@@ -158,6 +158,12 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   } else {
     config.features_disabled.push_back(kPageActionMenu);
   }
+  if ([self isRunningTest:@selector(testOmniboxEntryPointDisabled)]) {
+    config.features_disabled.push_back(kEnableReaderModeOmniboxEntryPoint);
+  } else {
+    config.features_enabled_and_params.push_back(
+        {kEnableReaderModeOmniboxEntryPoint, {}});
+  }
   return config;
 }
 
@@ -1229,6 +1235,22 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+}
+
+// Tests that the killswitch to disable the omnibox entrypoint does not
+// interfere with other Reading Mode entrypoints.
+- (void)testOmniboxEntryPointDisabled {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Verify that the omnibox entrypoint is disabled and the tools menu
+  // entrypoint is still available.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_hidden(YES)];
+  [self assertReaderModeInToolsMenuWithMatcher:
+            grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled))];
 }
 
 @end
