@@ -78,6 +78,12 @@ ValuableSyncBridge::ValuableSyncBridge(
          syncer::ModelError::Type::kAutofillValuableFailedToLoadDatabase});
     return;
   }
+
+  if (IsSyncWalletFlightReservationsEnabled() ||
+      IsSyncWalletVehicleRegistrationsEnabled()) {
+    scoped_observation_.Observe(web_data_backend_.get());
+  }
+
   LoadMetadata();
 }
 
@@ -424,6 +430,28 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
     web_data_backend_->NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE);
   }
   return std::nullopt;
+}
+
+void ValuableSyncBridge::EntityInstanceChanged(
+    const EntityInstanceChange& change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Determine if the entity change should be uploaded to AUTOFILL_VALUABLE.
+  switch (change.data_model()->record_type()) {
+    case EntityInstance::RecordType::kLocal:
+      // Local entities are not uploaded as AUTOFILL_VALUABLE.
+      return;
+    case EntityInstance::RecordType::kServerWallet:
+      break;
+  }
+
+  switch (change.type()) {
+    case EntityInstanceChange::ADD:
+    case EntityInstanceChange::UPDATE:
+    case EntityInstanceChange::REMOVE:
+    case EntityInstanceChange::HIDE_IN_AUTOFILL:
+      // TODO(crbug.com/441736370) Handle switch cases.
+      break;
+  }
 }
 
 ValuablesTable* ValuableSyncBridge::GetValuablesTable() {

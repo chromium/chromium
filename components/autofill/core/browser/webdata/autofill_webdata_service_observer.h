@@ -32,6 +32,10 @@ class AutofillWebDataServiceObserverOnDBSequence {
   // the WebDatabase.
   virtual void ServerCvcChanged(const ServerCvcChange& change) {}
 
+  // Called on DB sequence when a server entity instance has been added/updated
+  // in the WebDatabase.
+  virtual void EntityInstanceChanged(const EntityInstanceChange& change) {}
+
  protected:
   virtual ~AutofillWebDataServiceObserverOnDBSequence() = default;
 };

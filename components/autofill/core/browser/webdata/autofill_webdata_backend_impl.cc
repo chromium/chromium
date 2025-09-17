@@ -491,6 +491,8 @@ WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
     ReportResult(Result::kAddOrUpdateEntityInstance_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
+  // TODO(crbug.com/441736370): Notify web_data observers of ADD and UPDATE
+  // events.
   EntityInstance::EntityId guid = entity.guid();
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -511,11 +513,14 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
     ReportResult(Result::kRemoveEntityInstance_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
+  EntityInstanceChange change(EntityInstanceChange::REMOVE, std::move(guid),
+                              std::nullopt);
+  for (AutofillWebDataServiceObserverOnDBSequence& db_observer :
+       db_observer_list_) {
+    db_observer.EntityInstanceChanged(change);
+  }
   ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(on_success),
-                     EntityInstanceChange(EntityInstanceChange::REMOVE,
-                                          std::move(guid), std::nullopt)));
+      FROM_HERE, base::BindOnce(std::move(on_success), std::move(change)));
   ReportResult(Result::kRemoveEntityInstance_Success);
   return WebDatabase::COMMIT_NEEDED;
 }

@@ -10,11 +10,13 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
@@ -29,7 +31,8 @@ namespace autofill {
 
 class AutofillWebDataService;
 
-class ValuableSyncBridge : public base::SupportsUserData::Data,
+class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
+                           public base::SupportsUserData::Data,
                            public syncer::DataTypeSyncBridge {
  public:
   // Result of a database operation in the `ValuableSyncBridge`.
@@ -56,7 +59,7 @@ class ValuableSyncBridge : public base::SupportsUserData::Data,
   static syncer::DataTypeSyncBridge* FromWebDataService(
       AutofillWebDataService* web_data_service);
 
-  // syncer::DataTypeSyncBridge implementation.
+  // syncer::DataTypeSyncBridge:
   bool SupportsIncrementalUpdates() const override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
@@ -78,6 +81,9 @@ class ValuableSyncBridge : public base::SupportsUserData::Data,
                                    delete_metadata_change_list) override;
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
+
+  // AutofillWebDataServiceObserverOnDBSequence:
+  void EntityInstanceChanged(const EntityInstanceChange& change) override;
 
  private:
   // Synchronously load sync metadata from the `ValuablesTable` and pass it to
@@ -112,6 +118,10 @@ class ValuableSyncBridge : public base::SupportsUserData::Data,
   // These cards are converted to their `AutofillLoyaltyCardSpecifics`
   // representation and returned as a `syncer::MutableDataBatch`.
   std::unique_ptr<syncer::MutableDataBatch> GetData();
+
+  base::ScopedObservation<AutofillWebDataBackend,
+                          AutofillWebDataServiceObserverOnDBSequence>
+      scoped_observation_{this};
 
   // The bridge should be used on the same sequence where it has been
   // constructed.
