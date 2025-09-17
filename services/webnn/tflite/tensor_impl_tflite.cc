@@ -74,21 +74,25 @@ void TensorImplTflite::ReadTensorImpl(ReadTensorCallback callback) {
       /*exclusive_resources=*/
       std::vector<scoped_refptr<QueueableResourceStateBase>>(),
       base::BindOnce(
-          [](scoped_refptr<QueueableResourceState<BufferContent>>
+          [](base::WeakPtr<WebNNContextImpl> context,
+             scoped_refptr<QueueableResourceState<BufferContent>>
                  content_handle,
              ReadTensorCallback callback, ScopedTrace scoped_trace,
              base::OnceClosure completion_closure) {
-            scoped_trace.AddStep("Begin read");
-            // Memory copies are fast, avoid the overhead of posting a task
-            // to the thread pool and do the work synchronously.
-            std::move(callback).Run(
-                mojom::ReadTensorResult::NewBuffer(mojo_base::BigBuffer(
-                    content_handle->GetSharedLockedResource().AsSpan())));
+            if (context) {
+              scoped_trace.AddStep("Begin read");
+              // Memory copies are fast, avoid the overhead of posting a task
+              // to the thread pool and do the work synchronously.
+              std::move(callback).Run(mojom::ReadTensorResult::NewBuffer(
+                  context->WriteDataToDataPipeOrBigBuffer(
+                      content_handle->GetSharedLockedResource().AsSpan())));
 
-            scoped_trace.AddStep("End read");
+              scoped_trace.AddStep("End read");
+            }
             std::move(completion_closure).Run();
           },
-          buffer_state_, std::move(callback), std::move(scoped_trace)));
+          context_->AsWeakPtr(), buffer_state_, std::move(callback),
+          std::move(scoped_trace)));
   task->Enqueue();
 }
 

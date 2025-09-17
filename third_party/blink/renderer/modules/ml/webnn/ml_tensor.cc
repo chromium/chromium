@@ -200,9 +200,33 @@ void MLTensor::OnDidReadTensor(
     return;
   }
 
-  CHECK_EQ(result->get_buffer().size(), descriptor_.PackedByteLength());
+  if (result->get_buffer().size() == 0) {
+    if (!ml_context_->read_tensor_consumer()) {
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "ReadTensor(): No data pipe to read tensor data.");
+      return;
+    }
+    ArrayBufferContents contents(
+        descriptor_.PackedByteLength(), 1, ArrayBufferContents::kNotShared,
+        ArrayBufferContents::kDontInitialize,
+        ArrayBufferContents::AllocationFailureBehavior::kCrash);
+    size_t bytes_read = 0;
+    if (ml_context_->read_tensor_consumer()->ReadData(
+            MOJO_READ_DATA_FLAG_ALL_OR_NONE, contents.ByteSpan(), bytes_read) !=
+        MOJO_RESULT_OK) {
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kDataError,
+          "ReadTensor(): Failed to read tensor data from the data pipe.");
+      return;
+    }
+    CHECK_EQ(bytes_read, descriptor_.PackedByteLength());
+    resolver->Resolve(DOMArrayBuffer::Create(std::move(contents)));
+  } else {
+    CHECK_EQ(result->get_buffer().size(), descriptor_.PackedByteLength());
 
-  resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer()));
+    resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer()));
+  }
 
   RecordReadTensorTime(std::move(read_tensor_timer));
 }
@@ -229,13 +253,34 @@ void MLTensor::OnDidReadTensorByob(
     return;
   }
 
-  CHECK_EQ(result->get_buffer().size(), descriptor_.PackedByteLength());
+  if (result->get_buffer().size() == 0) {
+    if (!ml_context_->read_tensor_consumer()) {
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "ReadTensor(): No data pipe to read tensor data.");
+      return;
+    }
+    size_t bytes_read = 0;
+    if (ml_context_->read_tensor_consumer()->ReadData(
+            MOJO_READ_DATA_FLAG_ALL_OR_NONE,
+            bytes.first(descriptor_.PackedByteLength()),
+            bytes_read) != MOJO_RESULT_OK) {
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kDataError,
+          "ReadTensor(): Failed to read tensor data from the data pipe.");
+      return;
+    }
+    CHECK_EQ(bytes_read, descriptor_.PackedByteLength());
+  } else {
+    CHECK_EQ(result->get_buffer().size(), descriptor_.PackedByteLength());
 
-  // It is safe to write into `dst_data` even though it was not transferred
-  // because this method is called in a task which runs on same thread where
-  // script executes, so script can't observe a partially written state (unless
-  // `dst_data` is a SharedArrayBuffer).
-  bytes.copy_prefix_from(result->get_buffer());
+    // It is safe to write into `dst_data` even though it was not transferred
+    // because this method is called in a task which runs on same thread where
+    // script executes, so script can't observe a partially written state
+    // (unless `dst_data` is a SharedArrayBuffer).
+    bytes.copy_prefix_from(result->get_buffer());
+  }
+
   resolver->Resolve();
 
   RecordReadTensorTime(std::move(read_tensor_timer));

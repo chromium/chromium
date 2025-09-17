@@ -49,24 +49,27 @@ void TensorImplOrt::ReadTensorImpl(ReadTensorCallback callback) {
       /*exclusive_resources=*/
       std::vector<scoped_refptr<QueueableResourceStateBase>>(),
       base::BindOnce(
-          [](size_t bytes_to_read,
+          [](base::WeakPtr<WebNNContextImpl> context, size_t bytes_to_read,
              scoped_refptr<QueueableResourceState<BufferContentOrt>>
                  buffer_state,
              ReadTensorCallback callback, ScopedTrace scoped_trace,
              base::OnceClosure completion_closure) {
-            scoped_trace.AddStep("Begin read");
-            // Memory copies are fast, avoid the overhead of posting a task
-            // to the thread pool and do the work synchronously.
-            base::span<const uint8_t> buffer_span =
-                buffer_state->GetSharedLockedResource().AsSpan();
-            CHECK_EQ(bytes_to_read, buffer_span.size());
-            std::move(callback).Run(mojom::ReadTensorResult::NewBuffer(
-                mojo_base::BigBuffer(buffer_span)));
+            if (context) {
+              scoped_trace.AddStep("Begin read");
+              // Memory copies are fast, avoid the overhead of posting a task
+              // to the thread pool and do the work synchronously.
+              base::span<const uint8_t> buffer_span =
+                  buffer_state->GetSharedLockedResource().AsSpan();
+              CHECK_EQ(bytes_to_read, buffer_span.size());
+              std::move(callback).Run(mojom::ReadTensorResult::NewBuffer(
+                  context->WriteDataToDataPipeOrBigBuffer(buffer_span)));
 
-            scoped_trace.AddStep("End read");
+              scoped_trace.AddStep("End read");
+            }
             // Unlock the buffer contents.
             std::move(completion_closure).Run();
           },
+          context_->AsWeakPtr(),
           /*bytes_to_read=*/PackedByteLength(), buffer_state_,
           std::move(callback), std::move(scoped_trace)));
   task->Enqueue();

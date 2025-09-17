@@ -33,6 +33,7 @@ ContextImplCoreml::ContextImplCoreml(
                        GraphBuilderCoreml::GetContextProperties(),
                        std::move(options),
                        mojo::ScopedDataPipeConsumerHandle(),
+                       mojo::ScopedDataPipeProducerHandle(),
                        command_buffer_id,
                        std::move(sequence),
                        std::move(task_runner)) {}

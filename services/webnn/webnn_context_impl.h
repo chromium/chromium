@@ -58,6 +58,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       ContextProperties properties,
       mojom::CreateContextOptionsPtr options,
       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
       gpu::CommandBufferId command_buffer_id,
       std::unique_ptr<ScopedSequence> sequence,
       scoped_refptr<gpu::SchedulerTaskRunner> task_runner);
@@ -145,9 +146,17 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Returns true if the data pipe consumer handle for WriteTensor() is valid.
   bool HasValidWriteTensorConsumer() const;
 
+  // Returns true if the data pipe producer handle for ReadTensor() is valid.
+  bool HasValidReadTensorProducer() const;
+
   // Reads data from either a BigBuffer or the data pipe into the provided span.
   void ReadDataFromBigBufferOrDataPipe(mojo_base::BigBuffer src_buffer,
                                        base::span<uint8_t> dst_span);
+
+  // Writes data from the given span into the data pipe producer if it is valid
+  // and return an empty BigBuffer, or into a new BigBuffer otherwise.
+  mojo_base::BigBuffer WriteDataToDataPipeOrBigBuffer(
+      base::span<const uint8_t> src_span);
 
  protected:
   ~WebNNContextImpl() override;
@@ -232,6 +241,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   // Data pipe handles for transferring tensor data across processes.
   mojo::ScopedDataPipeConsumerHandle write_tensor_consumer_;
+  mojo::ScopedDataPipeProducerHandle read_tensor_producer_;
 };
 
 }  // namespace webnn

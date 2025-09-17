@@ -588,6 +588,7 @@ ContextImplDml::ContextImplDml(
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+    mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     std::unique_ptr<CommandRecorder> command_recorder,
     const gpu::GpuFeatureInfo& gpu_feature_info,
     gpu::CommandBufferId command_buffer_id,
@@ -598,6 +599,7 @@ ContextImplDml::ContextImplDml(
                        GetProperties(adapter->max_supported_feature_level()),
                        std::move(options),
                        std::move(write_tensor_consumer),
+                       std::move(read_tensor_producer),
                        command_buffer_id,
                        std::move(sequence),
                        std::move(task_runner)),
@@ -841,7 +843,7 @@ void ContextImplDml::OnReadbackComplete(
     return;
   }
 
-  mojo_base::BigBuffer dst_buffer(base::span(
+  mojo_base::BigBuffer dst_buffer = WriteDataToDataPipeOrBigBuffer(base::span(
       static_cast<const uint8_t*>(mapped_download_data), read_byte_size));
 
   download_buffer->Unmap(0, nullptr);

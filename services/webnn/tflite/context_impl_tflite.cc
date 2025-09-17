@@ -22,6 +22,7 @@ ContextImplTflite::ContextImplTflite(
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+    mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
     scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
@@ -30,6 +31,7 @@ ContextImplTflite::ContextImplTflite(
                        GraphBuilderTflite::GetContextProperties(),
                        std::move(options),
                        std::move(write_tensor_consumer),
+                       std::move(read_tensor_producer),
                        command_buffer_id,
                        std::move(sequence),
                        std::move(task_runner)) {}

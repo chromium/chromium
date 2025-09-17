@@ -35,6 +35,7 @@ base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
 CreateContextFromOptions(
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+    mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::GPUInfo& gpu_info,
     const gpu::SharedContextState* shared_context_state,

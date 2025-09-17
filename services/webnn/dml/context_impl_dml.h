@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
                  mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+                 mojo::ScopedDataPipeProducerHandle read_tensor_producer,
                  std::unique_ptr<CommandRecorder> command_recorder,
                  const gpu::GpuFeatureInfo& gpu_feature_info,
                  gpu::CommandBufferId command_buffer_id,

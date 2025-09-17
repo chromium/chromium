@@ -191,12 +191,19 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
   mojo::ScopedDataPipeProducerHandle write_tensor_producer;
   mojo::ScopedDataPipeConsumerHandle write_tensor_consumer;
+  mojo::ScopedDataPipeProducerHandle read_tensor_producer;
+  mojo::ScopedDataPipeConsumerHandle read_tensor_consumer;
   if (base::FeatureList::IsEnabled(kWebNNUseDataPipe)) {
     constexpr base::ByteCount kDataPipeSize = base::MiB(16);
     MojoResult result = mojo::CreateDataPipe(
         kDataPipeSize.InBytes(), write_tensor_producer, write_tensor_consumer);
     if (result != MOJO_RESULT_OK) {
-      LOG(WARNING) << "Failed to create a mojo data pipe.";
+      LOG(WARNING) << "Failed to create a mojo data pipe for WriteTensor.";
+    }
+    result = mojo::CreateDataPipe(kDataPipeSize.InBytes(), read_tensor_producer,
+                                  read_tensor_consumer);
+    if (result != MOJO_RESULT_OK) {
+      LOG(WARNING) << "Failed to create a mojo data pipe for ReadTensor.";
     }
   }
 
@@ -212,6 +219,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
           std::move(receiver), this,
           env_creation_results.value()->GetEpWorkarounds(options->device),
           std::move(options), std::move(write_tensor_consumer),
+          std::move(read_tensor_producer),
           std::move(env_creation_results.value()), command_buffer_id,
           std::move(sequence), std::move(scheduler_task_runner));
     }
@@ -219,8 +227,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
         context_creation_results = dml::CreateContextFromOptions(
             std::move(options), std::move(write_tensor_consumer),
-            gpu_feature_info_, gpu_info_, shared_context_state_.get(),
-            std::move(receiver), this, command_buffer_id, std::move(sequence),
+            std::move(read_tensor_producer), gpu_feature_info_, gpu_info_,
+            shared_context_state_.get(), std::move(receiver), this,
+            command_buffer_id, std::move(sequence),
             std::move(scheduler_task_runner));
     if (!context_creation_results.has_value()) {
       std::move(callback).Run(mojom::CreateContextResult::NewError(
@@ -241,6 +250,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       // Using mojo data pipe is not yet implemented in CoreML backend.
       write_tensor_producer.reset();
       write_tensor_consumer.reset();
+      read_tensor_producer.reset();
+      read_tensor_consumer.reset();
       context_impl = base::MakeRefCounted<coreml::ContextImplCoreml>(
           std::move(receiver), this, std::move(options), command_buffer_id,
           std::move(sequence), std::move(scheduler_task_runner));
@@ -252,8 +263,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   if (!context_impl) {
     context_impl = base::MakeRefCounted<tflite::ContextImplTflite>(
         std::move(receiver), this, std::move(options),
-        std::move(write_tensor_consumer), command_buffer_id,
-        std::move(sequence), std::move(scheduler_task_runner));
+        std::move(write_tensor_consumer), std::move(read_tensor_producer),
+        command_buffer_id, std::move(sequence),
+        std::move(scheduler_task_runner));
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
@@ -272,7 +284,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
   auto success = mojom::CreateContextSuccess::New(
       std::move(remote), std::move(context_properties),
-      std::move(context_handle), std::move(write_tensor_producer));
+      std::move(context_handle), std::move(write_tensor_producer),
+      std::move(read_tensor_consumer));
   std::move(callback).Run(
       mojom::CreateContextResult::NewSuccess(std::move(success)));
 }

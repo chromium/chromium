@@ -37,6 +37,7 @@ WebNNContextImpl::WebNNContextImpl(
     ContextProperties properties,
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+    mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
     scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
@@ -49,7 +50,8 @@ WebNNContextImpl::WebNNContextImpl(
       command_buffer_id_(command_buffer_id),
       sequence_(std::move(sequence)),
       scheduler_task_runner_(std::move(task_runner)),
-      write_tensor_consumer_(std::move(write_tensor_consumer)) {
+      write_tensor_consumer_(std::move(write_tensor_consumer)),
+      read_tensor_producer_(std::move(read_tensor_producer)) {
   CHECK(context_provider_);
 }
 
@@ -188,6 +190,10 @@ bool WebNNContextImpl::HasValidWriteTensorConsumer() const {
   return write_tensor_consumer_.is_valid();
 }
 
+bool WebNNContextImpl::HasValidReadTensorProducer() const {
+  return read_tensor_producer_.is_valid();
+}
+
 void WebNNContextImpl::ReadDataFromBigBufferOrDataPipe(
     mojo_base::BigBuffer src_buffer,
     base::span<uint8_t> dst_span) {
@@ -202,6 +208,16 @@ void WebNNContextImpl::ReadDataFromBigBufferOrDataPipe(
   } else {
     dst_span.copy_from(src_buffer);
   }
+}
+
+mojo_base::BigBuffer WebNNContextImpl::WriteDataToDataPipeOrBigBuffer(
+    base::span<const uint8_t> src_span) {
+  if (read_tensor_producer_ &&
+      src_span.size() > mojo_base::BigBuffer::kMaxInlineBytes &&
+      read_tensor_producer_->WriteAllData(src_span) == MOJO_RESULT_OK) {
+    return mojo_base::BigBuffer();
+  }
+  return mojo_base::BigBuffer(src_span);
 }
 
 void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,

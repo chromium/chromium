@@ -200,6 +200,8 @@ MLContext::MLContext(
       properties_(std::move(create_context_success->context_properties)),
       write_tensor_producer_(
           std::move(create_context_success->write_tensor_producer)),
+      read_tensor_consumer_(
+          std::move(create_context_success->read_tensor_consumer)),
       webnn_handle_(std::move(create_context_success->context_handle)) {
   context_remote_.Bind(
       std::move(create_context_success->context_remote),
