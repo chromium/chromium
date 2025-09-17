@@ -52,19 +52,17 @@ BASE_FEATURE(kOmniboxRemovePopupWidgetSoftwareCompositing,
 #endif
 
 }  // namespace
-
-class OmniboxPopupViewViews::AutocompletePopupWidget final
-    : public ThemeCopyingWidget {
+class OmniboxPopupViewViews::PopupWidget final : public ThemeCopyingWidget {
  public:
   // TODO(tapted): Remove |role_model| when the omnibox is completely decoupled
   // from NativeTheme.
-  explicit AutocompletePopupWidget(views::Widget* role_model)
+  explicit PopupWidget(views::Widget* role_model)
       : ThemeCopyingWidget(role_model) {}
 
-  AutocompletePopupWidget(const AutocompletePopupWidget&) = delete;
-  AutocompletePopupWidget& operator=(const AutocompletePopupWidget&) = delete;
+  PopupWidget(const PopupWidget&) = delete;
+  PopupWidget& operator=(const PopupWidget&) = delete;
 
-  ~AutocompletePopupWidget() override = default;
+  ~PopupWidget() override = default;
 
   void InitOmniboxPopup(const views::Widget* parent_widget) {
     views::Widget::InitParams params(
@@ -116,12 +114,12 @@ class OmniboxPopupViewViews::AutocompletePopupWidget final
 
     // Destroy the popup when done. The observer deletes itself on completion.
     scoped_settings->AddObserver(new ui::ClosureAnimationObserver(
-        base::BindOnce(&AutocompletePopupWidget::Close, AsWeakPtr())));
+        base::BindOnce(&PopupWidget::Close, AsWeakPtr())));
   }
 
   void OnWidgetDestroying(views::Widget* widget) override {
     // ThemeCopyingWidget observation is set on the role_model widget, which in
-    // the case of `AutocompletePopupWidget` is the hosting parent widget.
+    // the case of `PopupWidget` is the hosting parent widget.
     CHECK_NE(widget, this);
     ThemeCopyingWidget::OnWidgetDestroying(widget);
 
@@ -161,7 +159,7 @@ class OmniboxPopupViewViews::AutocompletePopupWidget final
 
   bool is_setting_popup_bounds() const { return is_setting_popup_bounds_; }
 
-  base::WeakPtr<AutocompletePopupWidget> AsWeakPtr() {
+  base::WeakPtr<PopupWidget> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -186,7 +184,7 @@ class OmniboxPopupViewViews::AutocompletePopupWidget final
   // True if the popup's bounds are currently being set.
   bool is_setting_popup_bounds_ = false;
 
-  base::WeakPtrFactory<AutocompletePopupWidget> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PopupWidget> weak_ptr_factory_{this};
 };
 
 OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
@@ -215,10 +213,10 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
 }
 
 OmniboxPopupViewViews::~OmniboxPopupViewViews() {
-  // We don't need to close or delete |popup_| here. The OS either has already
+  // We don't need to close or delete `widget_` here. The OS either has already
   // closed the window, in which case it's been deleted, or it will soon.
-  if (popup_) {
-    popup_->RemoveObserver(this);
+  if (widget_) {
+    widget_->RemoveObserver(this);
   }
   CHECK(!IsInObserverList());
   model()->set_popup_view(nullptr);
@@ -253,13 +251,13 @@ OmniboxPopupSelection OmniboxPopupViewViews::GetSelection() const {
 }
 
 void OmniboxPopupViewViews::UpdatePopupBounds() {
-  if (popup_) {
-    popup_->SetTargetBounds(GetTargetBounds());
+  if (widget_) {
+    widget_->SetTargetBounds(GetTargetBounds());
   }
 }
 
 bool OmniboxPopupViewViews::IsOpen() const {
-  return popup_ != nullptr;
+  return widget_ != nullptr;
 }
 
 void OmniboxPopupViewViews::InvalidateLine(size_t line) {
@@ -294,15 +292,15 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
       omnibox_view_->IsImeShowingPopup()) {
     // No matches or the IME is showing a popup window which may overlap
     // the omnibox popup window.  Close any existing popup.
-    if (popup_) {
+    if (widget_) {
       // Check whether omnibox should be not closed according to the UI
       // DevTools settings.
-      if (!popup_->ShouldHandleNativeWidgetActivationChanged(false)) {
+      if (!widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
         return;
       }
-      popup_->CloseAnimated();  // This will eventually delete the popup.
-      popup_->RemoveObserver(this);
-      popup_.reset();
+      widget_->CloseAnimated();  // This will eventually delete the popup.
+      widget_->RemoveObserver(this);
+      widget_.reset();
       if (contextual_group_view_) {
         contextual_group_view_->OnPopupHide();
       }
@@ -318,26 +316,26 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
   // Ensure that we have an existing popup widget prior to creating the result
   // views to ensure the proper initialization of the views hierarchy.
   bool popup_created = false;
-  if (!popup_) {
+  if (!widget_) {
     views::Widget* popup_parent = location_bar_view_->GetWidget();
 
     // If the popup is currently closed, we need to create it.
     popup_create_start_time_ = base::TimeTicks::Now();
-    // Self-deleting. See comment for `popup_` in the header.
-    popup_ = (new AutocompletePopupWidget(popup_parent))->AsWeakPtr();
-    popup_->InitOmniboxPopup(popup_parent);
+    // Self-deleting. See comment for `widget_` in the header.
+    widget_ = (new PopupWidget(popup_parent))->AsWeakPtr();
+    widget_->InitOmniboxPopup(popup_parent);
     // Third-party software such as DigitalPersona identity verification can
     // hook the underlying window creation methods and use SendMessage to
     // synchronously change focus/activation, resulting in the popup being
     // destroyed by the time control returns here.  Bail out in this case to
     // avoid a nullptr dereference.
-    if (!popup_) {
+    if (!widget_) {
       return;
     }
 
-    popup_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
-    popup_->SetPopupContentsView(this);
-    popup_->AddObserver(this);
+    widget_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
+    widget_->SetPopupContentsView(this);
+    widget_->AddObserver(this);
 
     popup_created = true;
   }
@@ -392,10 +390,10 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
   }
 
   UpdateContextualSuggestionsGroup(grouped_matches_start_index);
-  popup_->SetTargetBounds(GetTargetBounds());
+  widget_->SetTargetBounds(GetTargetBounds());
 
   if (popup_created) {
-    popup_->ShowAnimated();
+    widget_->ShowAnimated();
 
     // Popup is now expanded and first item will be selected.
     UpdateAccessibleStates();
@@ -506,7 +504,7 @@ void OmniboxPopupViewViews::OnWidgetBoundsChanged(views::Widget* widget,
                                                   const gfx::Rect& new_bounds) {
   // Because we don't directly control the lifetime of the widget, gracefully
   // handle "stale" notifications by ignoring them. https://crbug.com/1108762
-  if (!popup_ || popup_.get() != widget) {
+  if (!widget_ || widget_.get() != widget) {
     return;
   }
 
@@ -514,7 +512,7 @@ void OmniboxPopupViewViews::OnWidgetBoundsChanged(views::Widget* widget,
   // the new location bar location.
 
   // Ignore cases when we are internally updating the popup bounds.
-  if (popup_->is_setting_popup_bounds()) {
+  if (widget_->is_setting_popup_bounds()) {
     return;
   }
 
@@ -523,7 +521,7 @@ void OmniboxPopupViewViews::OnWidgetBoundsChanged(views::Widget* widget,
 
 void OmniboxPopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
                                                       bool visible) {
-  if (!popup_ || widget != popup_.get()) {
+  if (!widget_ || widget != widget_.get()) {
     return;
   }
 
@@ -531,7 +529,7 @@ void OmniboxPopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
     // Use the popup's compositor. The next presentation time will correspond to
     // the first visual presentation of the bubble's content after the Widget
     // has been created.
-    popup_->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+    widget_->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(
             [](base::TimeTicks popup_create_start_time,
                const viz::FrameTimingDetails& frame_timing_details) {
@@ -547,10 +545,10 @@ void OmniboxPopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 void OmniboxPopupViewViews::OnWidgetDestroying(views::Widget* widget) {
-  CHECK_EQ(widget, popup_.get());
-  if (popup_) {
-    popup_->RemoveObserver(this);
-    popup_ = nullptr;
+  CHECK_EQ(widget, widget_.get());
+  if (widget_) {
+    widget_->RemoveObserver(this);
+    widget_ = nullptr;
   }
   UpdateAccessibleStates();
 }

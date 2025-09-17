@@ -32,8 +32,8 @@ class OmniboxPopupPresenter : public views::WebView,
   METADATA_HEADER(OmniboxPopupPresenter, views::WebView)
 
  public:
-  explicit OmniboxPopupPresenter(LocationBarView* location_bar_view,
-                                 OmniboxController* controller);
+  OmniboxPopupPresenter(LocationBarView* location_bar_view,
+                        OmniboxController* controller);
   OmniboxPopupPresenter(const OmniboxPopupPresenter&) = delete;
   OmniboxPopupPresenter& operator=(const OmniboxPopupPresenter&) = delete;
   ~OmniboxPopupPresenter() override;
@@ -67,15 +67,16 @@ class OmniboxPopupPresenter : public views::WebView,
   // Remove observation and reset widget, optionally requesting it to close.
   void ReleaseWidget(bool close);
 
-  // The location bar view that owns owners of this and thus outlives this.
-  raw_ptr<LocationBarView> location_bar_view_;
+  // The location bar view that owns `this`.
+  const raw_ptr<LocationBarView> location_bar_view_;
 
-  // Created by this, closed by this; owned and destroyed by OS.
+  // The popup widget that contains this WebView. Created and closed by `this`;
+  // owned and destroyed by the OS.
   // TODO(crbug.com/40232479): Migrate this to CLIENT_OWNS_WIDGET.
-  raw_ptr<views::Widget> widget_;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   // Whether any call to `GetHandler` has been made.
-  bool requested_handler_;
+  bool requested_handler_ = false;
 
   // Last reported WebUI element size.
   gfx::Size webui_element_size_;

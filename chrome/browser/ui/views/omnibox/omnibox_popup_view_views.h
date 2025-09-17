@@ -99,8 +99,7 @@ class OmniboxPopupViewViews : public views::View,
   friend class OmniboxPopupViewViewsTest;
   friend class OmniboxRowGroupedViewBrowserTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
-
-  class AutocompletePopupWidget;
+  class PopupWidget;
 
   // Returns the target popup bounds in screen coordinates based on the bounds
   // of |location_bar_view_|.
@@ -143,20 +142,20 @@ class OmniboxPopupViewViews : public views::View,
   // `match_start_index` into a group view for a joint animation.
   void UpdateContextualSuggestionsGroup(size_t match_start_index);
 
-  // The popup that contains this view.  We create this, but it deletes itself
-  // when its window is destroyed.  This is a WeakPtr because it's possible for
-  // the OS to destroy the window and thus delete this object before we're
-  // deleted, or without our knowledge.
+  // The popup widget that contains this View. Created and closed by `this`;
+  // owned and destroyed by the OS. This is a WeakPtr because it's possible for
+  // the OS to destroy the window and thus delete this object before `this` is
+  // deleted or informed.
   // TODO(crbug.com/40232479): Migrate this to CLIENT_OWNS_WIDGET.
-  base::WeakPtr<AutocompletePopupWidget> popup_;
+  base::WeakPtr<PopupWidget> widget_;
 
   // Timestamp for when the current omnibox popup creation started.
   std::optional<base::TimeTicks> popup_create_start_time_;
 
-  // The edit view that invokes us. May be nullptr in tests.
+  // The edit view owned by `location_bar_view_`. May be nullptr in tests.
   const raw_ptr<OmniboxViewViews> omnibox_view_;
 
-  // The location bar view that owns |omnibox_view_|. May be nullptr in tests.
+  // The location bar view that owns `this`. May be nullptr in tests.
   const raw_ptr<LocationBarView> location_bar_view_;
 
   // A view that groups together contextual search row views for a joint

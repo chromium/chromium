@@ -23,9 +23,7 @@
 OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
                                              OmniboxController* controller)
     : views::WebView(location_bar_view->profile()),
-      location_bar_view_(location_bar_view),
-      widget_(nullptr),
-      requested_handler_(false) {
+      location_bar_view_(location_bar_view) {
   set_owned_by_client(OwnedByClientPassKey());
 
   // Make the OmniboxController available to the OmniboxPopupUI.

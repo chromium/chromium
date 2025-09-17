@@ -52,10 +52,10 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView {
   // Time when this instance was constructed, or null after use for histogram.
   base::TimeTicks construction_time_;
 
-  // The edit view that invokes us. May be nullptr in tests.
+  // The edit view owned by `location_bar_view_`. May be nullptr in tests.
   raw_ptr<OmniboxViewViews> omnibox_view_;
 
-  // The location bar view that owns `omnibox_view_`. May be nullptr in tests.
+  // The location bar view that owns `this`. May be nullptr in tests.
   raw_ptr<LocationBarView> location_bar_view_;
 
   // The presenter that manages its own widget and WebUI presentation.
