@@ -54,6 +54,8 @@ class HttpsOnlyModeEnforcelist {
   // Revokes all HTTPS enforcements for host.
   void RevokeEnforcements(const std::string& host);
 
+  // Returns the set of hosts that have enforcement enabled, as HTTPS
+  // origins-like GURLs (i.e. GURLs of the form https://<host>/).
   std::set<GURL> GetHosts(bool is_nondefault_storage) const;
 
   // Clears enforcelist for the given pattern filter. If the pattern filter is

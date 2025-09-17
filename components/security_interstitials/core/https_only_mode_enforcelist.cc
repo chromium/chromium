@@ -141,7 +141,8 @@ std::set<GURL> HttpsOnlyModeEnforcelist::GetHosts(
        host_content_settings_map_->GetSettingsForOneType(
            ContentSettingsType::HTTPS_ENFORCED)) {
     GURL url(rule.primary_pattern.ToString());
-    if (!url.is_empty()) {
+    if (!url.is_empty() && rule.setting_value.is_dict() &&
+        rule.setting_value.GetDict().FindBool(kEnabledKey).value_or(false)) {
       urls.insert(url);
     }
   }
