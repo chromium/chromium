@@ -56,6 +56,8 @@ source_set("lib") {
     "scheduler_utils.h",
     "stats.cc",
     "stats.h",
+    "tips_client.cc",
+    "tips_client.h",
     "webui_client.cc",
     "webui_client.h",
   ]

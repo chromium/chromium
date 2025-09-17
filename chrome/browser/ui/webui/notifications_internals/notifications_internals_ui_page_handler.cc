@@ -33,7 +33,7 @@ void NotificationsInternalsUIPageHandler::ScheduleNotification() {
   data.title = u"title";
   data.message = u"message";
   auto params = std::make_unique<notifications::NotificationParams>(
-      notifications::SchedulerClientType::kWebUI, std::move(data),
+      notifications::SchedulerClientType::kTips, std::move(data),
       std::move(schedule_params));
   service_->Schedule(std::move(params));
 }

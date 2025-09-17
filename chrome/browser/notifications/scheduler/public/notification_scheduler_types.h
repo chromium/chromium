@@ -36,7 +36,9 @@ enum class SchedulerClientType {
   kReadingList = 4,
   // Feature guide specific notifications. (Deprecated)
   kDeprecatedFeatureGuide = 5,
-  kMaxValue = kDeprecatedFeatureGuide
+  // Clank tips notifications feature.
+  kTips = 6,
+  kMaxValue = kTips
 };
 
 // The type of user feedback from a displayed notification.

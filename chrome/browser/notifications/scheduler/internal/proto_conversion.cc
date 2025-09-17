@@ -60,6 +60,8 @@ proto::SchedulerClientType ToSchedulerClientType(SchedulerClientType type) {
       return proto::SchedulerClientType::PREFETCH;
     case SchedulerClientType::kReadingList:
       return proto::SchedulerClientType::READING_LIST;
+    case SchedulerClientType::kTips:
+      return proto::SchedulerClientType::TIPS;
   }
   NOTREACHED();
 }
@@ -84,6 +86,8 @@ SchedulerClientType FromSchedulerClientType(
       return SchedulerClientType::kPrefetch;
     case proto::SchedulerClientType::READING_LIST:
       return SchedulerClientType::kReadingList;
+    case proto::SchedulerClientType::TIPS:
+      return SchedulerClientType::kTips;
   }
   NOTREACHED();
 }

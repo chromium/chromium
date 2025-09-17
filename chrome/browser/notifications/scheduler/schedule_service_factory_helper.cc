@@ -24,6 +24,7 @@
 #include "chrome/browser/notifications/scheduler/internal/scheduled_notification_manager.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_config.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_utils.h"
+#include "chrome/browser/notifications/scheduler/internal/tips_client.h"
 #include "chrome/browser/notifications/scheduler/internal/webui_client.h"
 #include "chrome/browser/notifications/scheduler/public/display_agent.h"
 #include "chrome/browser/notifications/scheduler/public/features.h"
@@ -58,6 +59,8 @@ std::unique_ptr<KeyedService> CreateNotificationScheduleService(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   client_registrar->RegisterClient(SchedulerClientType::kWebUI,
                                    std::make_unique<WebUIClient>());
+  client_registrar->RegisterClient(SchedulerClientType::kTips,
+                                   std::make_unique<TipsClient>());
 
   // Build icon store.
   base::FilePath icon_store_dir = storage_dir.Append(kIconDBName);
