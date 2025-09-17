@@ -183,5 +183,53 @@ TEST_F(SharedImageFormatUtilsTest, SharedMemoryRowSizeForSharedImageFormat) {
   }
 }
 
+TEST_F(SharedImageFormatUtilsTest, SharedMemoryPlaneSizeForSharedImageFormat) {
+  int widths[] = {1, 2, 3, 4, 8, 10, 29, 53, 64, 128};
+  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); ++i) {
+    auto buffer_format = static_cast<gfx::BufferFormat>(i);
+    auto format = GetSharedImageFormat(buffer_format);
+    if (format == SinglePlaneFormat::kETC1) {
+      continue;
+    }
+    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+      for (int width : widths) {
+        auto size = gfx::Size(width, width);
+        std::optional<size_t> plane_bytes =
+            SharedMemoryPlaneSizeForSharedImageFormat(format, plane, size);
+        EXPECT_TRUE(plane_bytes);
+
+        size_t expected_plane_bytes = 0;
+        bool valid = gfx::PlaneSizeForBufferFormatChecked(
+            size, buffer_format, plane, &expected_plane_bytes);
+        EXPECT_TRUE(valid);
+        EXPECT_EQ(*plane_bytes, expected_plane_bytes);
+      }
+    }
+  }
+}
+
+TEST_F(SharedImageFormatUtilsTest, SharedMemorySizeForSharedImageFormat) {
+  int widths[] = {1, 2, 3, 4, 8, 10, 29, 53, 64, 128};
+  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); ++i) {
+    auto buffer_format = static_cast<gfx::BufferFormat>(i);
+    auto format = GetSharedImageFormat(buffer_format);
+    if (format == SinglePlaneFormat::kETC1) {
+      continue;
+    }
+    for (int width : widths) {
+      auto size = gfx::Size(width, width);
+      std::optional<size_t> buffer_bytes =
+          SharedMemorySizeForSharedImageFormat(format, size);
+      EXPECT_TRUE(buffer_bytes);
+
+      size_t expected_buffer_bytes = 0;
+      bool valid = gfx::BufferSizeForBufferFormatChecked(
+          size, buffer_format, &expected_buffer_bytes);
+      EXPECT_TRUE(valid);
+      EXPECT_EQ(*buffer_bytes, expected_buffer_bytes);
+    }
+  }
+}
+
 }  // namespace
 }  // namespace viz

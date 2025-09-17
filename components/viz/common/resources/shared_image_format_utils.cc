@@ -305,6 +305,43 @@ std::optional<size_t> SharedMemoryRowSizeForSharedImageFormat(
   return bytes_per_row.ValueOrDie();
 }
 
+std::optional<size_t> SharedMemoryPlaneSizeForSharedImageFormat(
+    SharedImageFormat format,
+    int plane_index,
+    const gfx::Size& size) {
+  std::optional<size_t> row_size = SharedMemoryRowSizeForSharedImageFormat(
+      format, plane_index, base::checked_cast<size_t>(size.width()));
+  if (!row_size) {
+    return std::nullopt;
+  }
+  base::CheckedNumeric<size_t> plane_size = row_size.value();
+  plane_size *= format.GetPlaneSize(plane_index, size).height();
+  if (!plane_size.IsValid()) {
+    return std::nullopt;
+  }
+
+  return plane_size.ValueOrDie();
+}
+
+std::optional<size_t> SharedMemorySizeForSharedImageFormat(
+    SharedImageFormat format,
+    const gfx::Size& size) {
+  base::CheckedNumeric<size_t> buffer_size = 0;
+  for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+    auto plane_size =
+        SharedMemoryPlaneSizeForSharedImageFormat(format, plane, size);
+    if (!plane_size) {
+      return std::nullopt;
+    }
+    buffer_size += plane_size.value();
+    if (!buffer_size.IsValid()) {
+      return std::nullopt;
+    }
+  }
+
+  return buffer_size.ValueOrDie();
+}
+
 // static
 unsigned int
 SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
