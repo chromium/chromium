@@ -258,7 +258,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertStyle(composeboxElement.$.submitIcon, 'cursor', 'pointer');
   });
 
-  test('uploading/deleting file queries zps', async () => {
+  test('uploading/deleting pdf file queries zps', async () => {
     loadTimeData.overrideValues({composeboxShowZps: true});
     createComposeboxElement();
     await microtasksFinished();
@@ -267,7 +267,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
     const id = generateZeroId();
     await uploadFileAndVerify(
-        id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+        id, new File(['foo'], 'foo.pdf', {type: 'application/pdf'}));
     callbackRouterRemote.onContextualInputStatusChanged(
         id, FileUploadStatus.kProcessing, null);
     await microtasksFinished();
@@ -298,6 +298,47 @@ suite('NewTabPageComposeboxTest', () => {
     // then query autocomplete again for unimodal zps results.
     assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 2);
     assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 3);
+  });
+
+  test('uploading image file without flag does nothing', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowImageSuggestions: false});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Autocomplete queried once when composebox is opened.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+    const id = generateZeroId();
+    await uploadFileAndVerify(
+        id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+    callbackRouterRemote.onContextualInputStatusChanged(
+        id, FileUploadStatus.kProcessing, null);
+    await microtasksFinished();
+
+    // Autocomplete should not be queried again since the uploaded file is an
+    // image and the image suggest flag is disabled.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+  });
+
+  test('uploading image file with image suggest flag queries zps', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowImageSuggest: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Autocomplete queried once when composebox is opened.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+    const id = generateZeroId();
+    await uploadFileAndVerify(
+        id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+    callbackRouterRemote.onContextualInputStatusChanged(
+        id, FileUploadStatus.kProcessing, null);
+    await microtasksFinished();
+
+    // Autocomplete should be stopped (with matches cleared) and then
+    // queried again when a file is uploaded.
+    assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 1);
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
   });
 
   [new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}),

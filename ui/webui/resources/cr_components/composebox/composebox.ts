@@ -125,6 +125,10 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      enableImageContextualSuggestions_: {
+        reflect: true,
+        type: Boolean,
+      },
       showErrorScrim_: {
         reflect: true,
         type: Boolean,
@@ -162,6 +166,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor inputsDisabled_: boolean = false;
   protected accessor showDropdown_: boolean =
       loadTimeData.getBoolean('composeboxShowZps');
+  protected accessor enableImageContextualSuggestions_: boolean =
+      loadTimeData.getBoolean('composeboxShowImageSuggest');
   // When enabled, the file input buttons will not be rendered.
   protected accessor hideFileInputs_: boolean = false;
   protected accessor selectedMatchIndex_: number = -1;
@@ -246,7 +252,9 @@ export class ComposeboxElement extends I18nMixinLit
                 file = {...file, status: status};
                 this.files_.set(token, file);
 
-                if (status === FileUploadStatus.kProcessing && this.showZps) {
+                if (status === FileUploadStatus.kProcessing && this.showZps &&
+                    (this.enableImageContextualSuggestions_ ||
+                     !file.type.includes('image'))) {
                   // Query autocomplete to get contextual suggestions for files.
                   this.clearAutocompleteMatches_();
                   this.lastQueriedInput_ = this.$.input.value;
