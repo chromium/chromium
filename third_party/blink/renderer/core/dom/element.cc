@@ -11710,16 +11710,19 @@ void Element::InvalidateStyleAttribute(
 void Element::UpdateTransitionPseudoElements(
     const StyleRecalcChange style_recalc_change,
     const StyleRecalcContext& style_recalc_context) {
+  const auto* transition = ViewTransitionUtils::GetTransition(*this);
+
   if (!IsPseudoElement()) {
     PseudoElement* old_transition_pseudo =
         GetPseudoElement(kPseudoIdViewTransition);
-    const auto* transition = ViewTransitionUtils::GetTransition(*this);
-
     if (old_transition_pseudo &&
         (!transition ||
          !transition->IsGeneratingPseudo(
              To<ViewTransitionPseudoElementBase>(*old_transition_pseudo)))) {
       ClearPseudoElement(kPseudoIdViewTransition);
+      // If the transition still exists, it is no longer bound to the style
+      // tracker as it is finished.
+      transition = nullptr;
     }
 
     if (!transition) {
@@ -11743,6 +11746,10 @@ void Element::UpdateTransitionPseudoElements(
 
   ViewTransitionPseudoElementBase* transition_pseudo =
       To<ViewTransitionPseudoElementBase>(this);
+
+  if (!transition || !transition->IsGeneratingPseudo(*transition_pseudo)) {
+    return;
+  }
 
   switch (GetPseudoId()) {
     case kPseudoIdViewTransition: {

@@ -416,6 +416,11 @@ class ViewTransitionStyleTracker::ImageWrapperPseudoElement
 
  private:
   bool CanGeneratePseudoElement(PseudoId pseudo_id) const override {
+    // The view-transition must still be active.
+    // See(crbug.com/444889294)
+    ViewTransition* transition = ViewTransitionUtils::GetTransition(*this);
+    CHECK(transition && transition->IsGeneratingPseudo(*this));
+
     if (!ViewTransitionPseudoElementBase::CanGeneratePseudoElement(pseudo_id)) {
       return false;
     }
@@ -1308,17 +1313,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
   bool is_generated_name = false;
   if (view_transition_name) {
     auto it = element_data_map_.find(view_transition_name);
-    if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
-      if (it == element_data_map_.end()) {
-        // TODO(crbug.com/405117185): This is only possible because view
-        // transition names are still tracked globally in StyleEngine.
-        // Once that's fixed, we should enforce that the name passed to this
-        // method exists in element_data_map_.
-        return nullptr;
-      }
-    } else {
-      DCHECK(it != element_data_map_.end());
-    }
+    CHECK(it != element_data_map_.end());
     is_generated_name = it->value->is_generated_name;
   }
 
