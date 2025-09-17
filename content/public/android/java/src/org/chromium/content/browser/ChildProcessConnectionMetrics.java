@@ -246,23 +246,8 @@ public class ChildProcessConnectionMetrics {
 
     private void emitBinderIpcCount() {
         assert LauncherThread.runningOnLauncherThread();
-        BindService.BinderCallCounter counter = BindService.getAndResetBinderCallCounter();
-        if (counter == null) {
-            return;
-        }
+        int bindServiceCount = BindService.getAndResetBindServiceCount();
         RecordHistogram.recordCount100000Histogram(
-                "Android.ChildProcessBinding.BinderIPC.BindService.Count",
-                counter.mBindServiceCount);
-        RecordHistogram.recordCount100000Histogram(
-                "Android.ChildProcessBinding.BinderIPC.UnbindService.Count",
-                counter.mUnbindServiceCount);
-        RecordHistogram.recordCount100000Histogram(
-                "Android.ChildProcessBinding.BinderIPC.UpdateServiceGroup.Count",
-                counter.mUpdateServiceGroupCount);
-        RecordHistogram.recordCount100000Histogram(
-                "Android.ChildProcessBinding.BinderIPC.Total.Count",
-                counter.mBindServiceCount
-                        + counter.mUnbindServiceCount
-                        + counter.mUpdateServiceGroupCount);
+                "Android.ChildProcessBinding.BinderIPC.Count", bindServiceCount);
     }
 }

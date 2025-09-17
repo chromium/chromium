@@ -89,7 +89,7 @@ import java.util.concurrent.Executor;
                 mExecutor,
                 instanceName);
         if (mDeferredConnections >= mMaxDeferredConnections) {
-            BindService.doUnbindService(ContextUtils.getApplicationContext(), this);
+            ContextUtils.getApplicationContext().unbindService(this);
             mDeferredConnections = 0;
         } else {
             mDeferredConnections += 1;
@@ -98,7 +98,7 @@ import java.util.concurrent.Executor;
 
     void unbind() {
         if (mDeferredConnections > 0) {
-            BindService.doUnbindService(ContextUtils.getApplicationContext(), this);
+            ContextUtils.getApplicationContext().unbindService(this);
             mDeferredConnections = 0;
         }
     }

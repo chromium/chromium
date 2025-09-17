@@ -27,13 +27,8 @@ import java.util.concurrent.Executor;
 @NullMarked
 public final class BindService {
     private static @Nullable Method sBindServiceAsUserMethod;
-    private static @Nullable BinderCallCounter sBinderCallCounter;
-
-    public static final class BinderCallCounter {
-        public int mBindServiceCount;
-        public int mUnbindServiceCount;
-        public int mUpdateServiceGroupCount;
-    }
+    private static int sBindServiceCount;
+    private static boolean sEnableCounting;
 
     static boolean supportVariableConnections() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
@@ -50,8 +45,8 @@ public final class BindService {
             Handler handler,
             Executor executor,
             @Nullable String instanceName) {
-        if (sBinderCallCounter != null) {
-            sBinderCallCounter.mBindServiceCount++;
+        if (sEnableCounting) {
+            sBindServiceCount++;
         }
         if (supportVariableConnections() && instanceName != null) {
             return context.bindIsolatedService(intent, flags, instanceName, executor, connection);
@@ -73,36 +68,16 @@ public final class BindService {
         }
     }
 
-    static void doUnbindService(Context context, ServiceConnection connection) {
-        if (sBinderCallCounter != null) {
-            sBinderCallCounter.mUnbindServiceCount++;
-        }
-        context.unbindService(connection);
-    }
-
-    static void doUpdateServiceGroup(
-            Context context, ServiceConnection connection, int group, int importanceInGroup) {
-        if (sBinderCallCounter != null) {
-            sBinderCallCounter.mUpdateServiceGroupCount++;
-        }
-        context.updateServiceGroup(connection, group, importanceInGroup);
-    }
-
     /**
-     * Enables counting of service binding Binder calls.
+     * Enables counting of bindService calls.
      *
      * <p>Note that counter is not thread-safe. setEnableCounting(), doBindService(),
-     * doUnbindService(), doUpdateServiceGroup(), and getAndResetBinderCallCounter() should be
-     * called on the same thread.
+     * getAndResetBindServiceCount() should be called on the same thread.
      *
-     * @param enabled Whether to enable counting of binder calls.
+     * @param enabled Whether to enable counting of bindService calls.
      */
     public static void setEnableCounting(boolean enabled) {
-        if (enabled) {
-            sBinderCallCounter = new BinderCallCounter();
-        } else {
-            sBinderCallCounter = null;
-        }
+        sEnableCounting = enabled;
     }
 
     /**
@@ -110,12 +85,10 @@ public final class BindService {
      *
      * @return The number of bindService calls.
      */
-    public static @Nullable BinderCallCounter getAndResetBinderCallCounter() {
-        BinderCallCounter counter = sBinderCallCounter;
-        if (counter != null) {
-            sBinderCallCounter = new BinderCallCounter();
-        }
-        return counter;
+    public static int getAndResetBindServiceCount() {
+        int count = sBindServiceCount;
+        sBindServiceCount = 0;
+        return count;
     }
 
     private static boolean bindServiceByCall(
