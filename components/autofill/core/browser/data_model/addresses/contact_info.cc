@@ -430,6 +430,9 @@ std::optional<FieldType> NameInfo::GetStorableTypeOf(FieldType type) const {
 }
 
 bool NameInfo::HasNameEligibleForPhoneticNameMigration() const {
+  if (!IsAlternativeNameSupported()) {
+    return false;
+  }
   // A full name is eligible to be migrated into a phonetic name if it contains
   // only Katakana or Hiragana characters (Japanese phonetic symbols) and
   // whitespaces or separators, but no Kanji (regular Japanese characters),

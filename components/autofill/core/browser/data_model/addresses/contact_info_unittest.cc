@@ -12,6 +12,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
@@ -1324,6 +1326,7 @@ INSTANTIATE_TEST_SUITE_P(
 struct NameMigrationTestCase {
   std::string name;
   bool should_migrate;
+  AddressCountryCode country_code = AddressCountryCode("JP");
 };
 
 class NameInfoNameMigrationTest
@@ -1336,7 +1339,7 @@ class NameInfoNameMigrationTest
 TEST_P(NameInfoNameMigrationTest, NameMigration) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillSupportPhoneticNameForJP};
-  AutofillProfile profile(AddressCountryCode("JP"));
+  AutofillProfile profile(GetParam().country_code);
 
   profile.SetRawInfo(NAME_FULL, base::UTF8ToUTF16(GetParam().name));
   profile.FinalizeAfterImport();
@@ -1350,41 +1353,45 @@ TEST_P(NameInfoNameMigrationTest, NameMigration) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         NameInfoNameMigrationTest,
-                         testing::Values(
-                             // Only katakana.
-                             NameMigrationTestCase{"メタワ", true},
-                             NameMigrationTestCase{"ワ 　タシ", true},
-                             NameMigrationTestCase{"メタ-ワ", true},
-                             NameMigrationTestCase{"メタ・ ワ", true},
-                             // Only hiragana.
-                             NameMigrationTestCase{"ねこです", true},
-                             NameMigrationTestCase{"ねこ です", true},
-                             NameMigrationTestCase{"ねこ-です", true},
-                             NameMigrationTestCase{"ねこ・です", true},
-                             NameMigrationTestCase{"ねこ・ 　です", true},
-                             // The following names should not be migrated
-                             // because they contain Latin characters.
-                             NameMigrationTestCase{"John Doe", false},
-                             NameMigrationTestCase{"John-Doe", false},
-                             NameMigrationTestCase{"John・Doe", false},
-                             NameMigrationTestCase{"abcメタワ", false},
-                             NameMigrationTestCase{"abcワ 　タシ", false},
-                             NameMigrationTestCase{"abc-ワ", false},
-                             NameMigrationTestCase{"メタ・ ワab", false},
-                             NameMigrationTestCase{"abcねこです", false},
-                             NameMigrationTestCase{"abcねこ です", false},
-                             NameMigrationTestCase{"ねこ-ですabc", false},
-                             NameMigrationTestCase{"abcねこ・です", false},
-                             NameMigrationTestCase{"ねこ・ 　ですabc", false},
-                             // The following names should not be migrated
-                             // because they contain Kanji characters.
-                             NameMigrationTestCase{"静夢メタワ", false},
-                             NameMigrationTestCase{"静夢ワ 　タシ", false},
-                             NameMigrationTestCase{"a静夢-ワ", false},
-                             NameMigrationTestCase{"メタ・ ワ静夢", false},
-                             NameMigrationTestCase{"a静ねこです", false}));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NameInfoNameMigrationTest,
+    testing::Values(
+        // Only katakana.
+        NameMigrationTestCase{"メタワ", true},
+        NameMigrationTestCase{"ワ 　タシ", true},
+        NameMigrationTestCase{"メタ-ワ", true},
+        NameMigrationTestCase{"メタ・ ワ", true},
+        // Only hiragana.
+        NameMigrationTestCase{"ねこです", true},
+        NameMigrationTestCase{"ねこ です", true},
+        NameMigrationTestCase{"ねこ-です", true},
+        NameMigrationTestCase{"ねこ・です", true},
+        NameMigrationTestCase{"ねこ・ 　です", true},
+        // The following names should not be migrated
+        // because they contain Latin characters.
+        NameMigrationTestCase{"John Doe", false},
+        NameMigrationTestCase{"John-Doe", false},
+        NameMigrationTestCase{"John・Doe", false},
+        NameMigrationTestCase{"abcメタワ", false},
+        NameMigrationTestCase{"abcワ 　タシ", false},
+        NameMigrationTestCase{"abc-ワ", false},
+        NameMigrationTestCase{"メタ・ ワab", false},
+        NameMigrationTestCase{"abcねこです", false},
+        NameMigrationTestCase{"abcねこ です", false},
+        NameMigrationTestCase{"ねこ-ですabc", false},
+        NameMigrationTestCase{"abcねこ・です", false},
+        NameMigrationTestCase{"ねこ・ 　ですabc", false},
+        // The following names should not be migrated
+        // because they contain Kanji characters.
+        NameMigrationTestCase{"静夢メタワ", false},
+        NameMigrationTestCase{"静夢ワ 　タシ", false},
+        NameMigrationTestCase{"a静夢-ワ", false},
+        NameMigrationTestCase{"メタ・ ワ静夢", false},
+        NameMigrationTestCase{"a静ねこです", false},
+        // Non Japanese profiles shouldn't offer migration.
+        NameMigrationTestCase{"メタワ", false, AddressCountryCode("US")},
+        NameMigrationTestCase{"ねこです", false, AddressCountryCode("US")}));
 
 TEST(CompanyTest, SetRawInfo) {
   CompanyInfo company;
