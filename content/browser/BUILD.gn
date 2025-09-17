@@ -2446,6 +2446,8 @@ source_set("browser") {
     "webid/delegation/dns_request.h",
     "webid/delegation/email_verification_request.cc",
     "webid/delegation/email_verification_request.h",
+    "webid/delegation/email_verifier_impl.cc",
+    "webid/delegation/email_verifier_impl.h",
     "webid/delegation/federated_sd_jwt_handler.cc",
     "webid/delegation/federated_sd_jwt_handler.h",
     "webid/delegation/jwt_signer.cc",

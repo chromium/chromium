@@ -161,8 +161,8 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
 
   base::test::TestFuture<std::optional<std::string>> future;
   std::string nonce = kNonce;
-  email_verification_request_.Verify(kEmail, nonce, kRpOrigin,
-                                     future.GetCallback());
+  email_verification_request_.Send(kEmail, nonce, kRpOrigin,
+                                   future.GetCallback());
   std::optional<std::string> token = future.Get();
   EXPECT_TRUE(token.has_value());
 

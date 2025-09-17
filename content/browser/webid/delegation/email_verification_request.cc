@@ -43,6 +43,18 @@ std::optional<std::string> GetDomainFromEmail(const std::string& email) {
 }
 
 EmailVerificationRequest::EmailVerificationRequest(
+    content::RenderFrameHost& render_frame_host)
+    : EmailVerificationRequest(
+          IdpNetworkRequestManager::Create(
+              static_cast<RenderFrameHostImpl*>(&render_frame_host)),
+          std::make_unique<DnsRequest>(base::BindRepeating(
+              [](content::RenderFrameHost* rfh)
+                  -> network::mojom::NetworkContext* {
+                return rfh->GetStoragePartition()->GetNetworkContext();
+              },
+              &render_frame_host))) {}
+
+EmailVerificationRequest::EmailVerificationRequest(
     std::unique_ptr<IdpNetworkRequestManager> network_manager,
     std::unique_ptr<DnsRequest> dns_request)
     : dns_request_(std::move(dns_request)),
@@ -89,7 +101,7 @@ sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
 // goes through Step 1 and 2 described here:
 //
 // https://github.com/dickhardt/email-verification-protocol?tab=readme-ov-file#3-token-request
-void EmailVerificationRequest::Verify(
+void EmailVerificationRequest::Send(
     const std::string& email,
     const std::string& nonce,
     const url::Origin& website,
@@ -274,25 +286,6 @@ void EmailVerificationRequest::OnTokenRequestComplete(
   // the SD-JWT+KB is ready.
 
   std::move(callback).Run(sd_jwt_kb.Serialize());
-}
-
-// Creates an instance of EmailVerifier. The RenderFrameHost
-// must outlive it.
-// static
-std::unique_ptr<EmailVerifier> EmailVerifier::Create(
-    content::RenderFrameHost& render_frame_host) {
-  auto network_manager = content::IdpNetworkRequestManager::Create(
-      static_cast<RenderFrameHostImpl*>(&render_frame_host));
-
-  auto dns_request = std::make_unique<DnsRequest>(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host)
-          -> network::mojom::NetworkContext* {
-        return render_frame_host->GetStoragePartition()->GetNetworkContext();
-      },
-      &render_frame_host));
-
-  return std::make_unique<EmailVerificationRequest>(std::move(network_manager),
-                                                    std::move(dns_request));
 }
 
 }  // namespace content::webid

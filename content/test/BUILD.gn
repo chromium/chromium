@@ -2948,6 +2948,7 @@ test("content_unittests") {
     "../browser/webid/config_fetcher_unittest.cc",
     "../browser/webid/delegation/dns_request_unittest.cc",
     "../browser/webid/delegation/email_verification_request_unittest.cc",
+    "../browser/webid/delegation/email_verifier_impl_unittest.cc",
     "../browser/webid/delegation/jwt_signer_unittest.cc",
     "../browser/webid/delegation/sd_jwt_unittest.cc",
     "../browser/webid/disconnect_request_unittest.cc",

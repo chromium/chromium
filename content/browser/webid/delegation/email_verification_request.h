@@ -31,21 +31,25 @@ CONTENT_EXPORT std::optional<std::string> GetDomainFromEmail(
 // Performs the email verification process, which involves making a DNS TXT
 // record request to determine the issuer, and then fetching a token from the
 // issuer.
-class CONTENT_EXPORT EmailVerificationRequest : public EmailVerifier {
+// This class is associated with a valid and alive RenderFrameHost which has
+// to outlive it.
+class CONTENT_EXPORT EmailVerificationRequest {
  public:
+  explicit EmailVerificationRequest(
+      content::RenderFrameHost& render_frame_host);
   EmailVerificationRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       std::unique_ptr<DnsRequest> dns_request);
-  ~EmailVerificationRequest() override;
+  virtual ~EmailVerificationRequest();
 
   EmailVerificationRequest(const EmailVerificationRequest&) = delete;
   EmailVerificationRequest& operator=(const EmailVerificationRequest&) = delete;
 
   // Starts the verification process for the given `email`.
-  void Verify(const std::string& email,
-              const std::string& nonce,
-              const url::Origin& website,
-              EmailVerifier::OnEmailVerifiedCallback callback) override;
+  virtual void Send(const std::string& email,
+                    const std::string& nonce,
+                    const url::Origin& website,
+                    EmailVerifier::OnEmailVerifiedCallback callback);
 
  private:
   sdjwt::Jwt CreateRequestToken(const std::string& email,
