@@ -33,7 +33,9 @@ import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuFlyoutController;
 import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -160,11 +162,24 @@ class ExtensionActionListMediator implements Destroyable {
         BasicListMenu listMenu =
                 BrowserUiListMenuUtils.getBasicListMenu(mContext, modelList, buttonDelegate);
 
+        listMenu.setupCallbacksRecursively(
+                () -> {
+                    buttonView.dismiss();
+                },
+                /* drillDownOverrideValue= */ null,
+                new ListMenuFlyoutController(buttonView.getHost()));
+
         ListMenuDelegate listDelegate =
                 new ListMenuDelegate() {
                     @Override
                     public ListMenu getListMenu() {
                         return listMenu;
+                    }
+
+                    @Override
+                    public ListMenu getListMenuFromParentListItem(ListItem item) {
+                        return BrowserUiListMenuUtils.getBasicListMenu(
+                                mContext, ListMenuUtils.getModelListSubtree(item), buttonDelegate);
                     }
 
                     @Override

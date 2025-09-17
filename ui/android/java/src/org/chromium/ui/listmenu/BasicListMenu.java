@@ -235,14 +235,17 @@ public class BasicListMenu implements ListMenu {
      * If an item doesn't already have a click callback in its model, no click callback is added.
      *
      * @param dismissDialog The {@link Runnable} to run.
+     * @param ListMenuFlyoutController The {@link ListMenuFlyoutController} to use for flyout menus.
      */
     public void setupCallbacksRecursively(
-            Runnable dismissDialog, @Nullable Boolean drillDownOverrideValue) {
+            Runnable dismissDialog,
+            @Nullable Boolean drillDownOverrideValue,
+            @Nullable ListMenuFlyoutController flyoutController) {
         ListMenuUtils.setupCallbacksRecursively(
                 mHeaderModelList,
                 mContentModelList,
                 dismissDialog,
-                /* flyoutController= */ null,
+                flyoutController,
                 drillDownOverrideValue);
     }
 

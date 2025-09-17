@@ -435,7 +435,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         mAnchoredPopupWindow.dismiss();
                     }
                 },
-                /* drillDownOverrideValue= */ true);
+                /* drillDownOverrideValue= */ true,
+                /* flyoutController= */ null);
 
         View popupContentView = popupListMenu.getContentView();
         // This is needed because list_menu_layout.xml already sets a background, and we want to

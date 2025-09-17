@@ -113,7 +113,8 @@ public class BrowserUiListMenuUnitTest {
                                 .build());
         data.add(submenuParentItem);
         mBasicListMenu = getBasicListMenu(mActivity, data, item -> {}, 0, colorIntForTest);
-        mBasicListMenu.setupCallbacksRecursively(() -> {}, /* drillDownOverrideValue= */ null);
+        mBasicListMenu.setupCallbacksRecursively(
+                () -> {}, /* drillDownOverrideValue= */ null, /* flyoutController= */ null);
         mView = mBasicListMenu.getContentView();
         int itemHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.list_menu_item_min_height);
