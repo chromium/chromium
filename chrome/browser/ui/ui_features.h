@@ -188,6 +188,8 @@ BASE_DECLARE_FEATURE_PARAM(MiniToolbarActiveConfiguration,
 
 BASE_DECLARE_FEATURE_PARAM(int, kSideBySideSnapDistance);
 
+BASE_DECLARE_FEATURE_PARAM(int, kSideBySideIphTabSwitchCount);
+
 BASE_DECLARE_FEATURE(kSideBySideSessionRestore);
 
 bool IsRestoringSplitViewEnabled();

@@ -35,6 +35,9 @@ extern const char kMediaBackgrounded[];
 // The user opened the Global Media Controls dialog.
 extern const char kGlobalMediaControlsOpened[];
 
+// A split tab has been created
+extern const char kSplitViewCreated[];
+
 // A side panel has been pinned.
 extern const char kSidePanelPinned[];
 

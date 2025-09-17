@@ -22,6 +22,8 @@ const char kCustomizeChromeOpened[] = "customize_chrome_opened";
 const char kMediaBackgrounded[] = "media_backgrounded";
 const char kGlobalMediaControlsOpened[] = "global_media_controls_opened";
 
+const char kSplitViewCreated[] = "split_view_created";
+
 const char kSidePanelPinned[] = "side_panel_pinned";
 
 const char kSideSearchAutoTriggered[] = "side_search_auto_triggered";

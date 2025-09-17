@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 #include "chrome/browser/ui/tabs/split_tab_highlight_controller.h"
+#include "chrome/browser/ui/tabs/split_view_iph_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_mojo_handler.h"
@@ -467,6 +468,15 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
         split_tab_highlight_controller_ =
             std::make_unique<split_tabs::SplitTabHighlightController>(
                 browser_view);
+      }
+
+      if (base::FeatureList::IsEnabled(
+              feature_engagement::kIPHSideBySidePinnableFeature) ||
+          base::FeatureList::IsEnabled(
+              feature_engagement::kIPHSideBySideTabSwitchFeature)) {
+        split_view_iph_controller_ =
+            GetUserDataFactory().CreateInstance<SplitViewIphController>(
+                *browser, browser);
       }
     }
   }

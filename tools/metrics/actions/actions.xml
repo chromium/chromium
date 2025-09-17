@@ -50765,6 +50765,8 @@ should be able to be added at any place in this file.
       label="For ShoppingListSaveFlow feature."/>
   <suffix name="SideBySidePinnableFeature"
       label="For side by side split view pinning feature."/>
+  <suffix name="SideBySideTabSwitchFeature"
+      label="For switching between tabs many times for split view feature."/>
   <suffix name="SidePanelGenericPinnableFeature"
       label="For Side Panel Pinning pin feature."/>
   <suffix name="SidePanelLensOverlayPinnableFeature"

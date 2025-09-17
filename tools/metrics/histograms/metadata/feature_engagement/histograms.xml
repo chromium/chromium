@@ -626,7 +626,9 @@ chromium-metrics-reviews@google.com.
       summary="A text bubble showing that a product can be tracked from the
                overflow menu"/>
   <variant name="IPH_SideBySidePinnableFeature"
-      summary="side by side split view tabs pinnable IPH."/>
+      summary="side by side split view tabs pinnable IPH"/>
+  <variant name="IPH_SideBySideTabSwitchFeature"
+      summary="side by side split view tab switch IPH"/>
   <variant name="IPH_SidePanelGenericPinnableFeature"
       summary="side panel pinnable"/>
   <variant name="IPH_SidePanelLensOverlayPinnableFeature"
