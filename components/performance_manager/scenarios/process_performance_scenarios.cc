@@ -47,13 +47,13 @@ bool CurrentProcessScenariosMatch(
       pattern);
 }
 
-base::ObserverList<performance_scenarios::PerformanceScenarioObserver>&
-GetScenarioObserversForProcess(const ProcessNode* process) {
+ProcessPerformanceScenarioObserverList& GetScenarioObserversForProcess(
+    const ProcessNode* process) {
   return PerformanceScenarioData::GetOrCreate(process).observers();
 }
 
-base::ObserverList<performance_scenarios::MatchingScenarioObserver>&
-GetMatchingScenarioObserversForProcess(const ProcessNode* process) {
+ProcessMatchingScenarioObserverList& GetMatchingScenarioObserversForProcess(
+    const ProcessNode* process) {
   return PerformanceScenarioData::GetOrCreate(process).matching_observers();
 }
 
