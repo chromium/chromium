@@ -33,7 +33,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/snapshot/snapshot.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

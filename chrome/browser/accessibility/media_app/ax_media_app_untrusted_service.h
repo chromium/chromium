@@ -43,7 +43,7 @@
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class SkBitmap;
 

@@ -16,7 +16,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/android/window_android.h"
 #endif

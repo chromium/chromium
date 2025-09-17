@@ -96,7 +96,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"

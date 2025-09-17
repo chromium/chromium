@@ -50,7 +50,7 @@
 #include "ui/display/test/virtual_display_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/widget_focus_observer.h"

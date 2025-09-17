@@ -21,7 +21,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class DesktopMediaList;
 

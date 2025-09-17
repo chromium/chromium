@@ -8,7 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/device_reauth/android/device_authenticator_android.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class DeviceAuthenticatorBridgeImpl : public DeviceAuthenticatorBridge {
  public:

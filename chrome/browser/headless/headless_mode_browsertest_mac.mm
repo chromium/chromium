@@ -13,7 +13,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace headless {

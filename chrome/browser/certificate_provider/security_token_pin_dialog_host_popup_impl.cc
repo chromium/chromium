@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/notifications/request_pin_view_chromeos.h"
 #include "ui/aura/window.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 

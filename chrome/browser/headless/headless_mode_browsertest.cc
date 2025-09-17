@@ -58,7 +58,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/display/display_switches.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/switches.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view.h"

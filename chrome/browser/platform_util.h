@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Browser;
 class GURL;

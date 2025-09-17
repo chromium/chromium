@@ -34,7 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "third_party/search_engines_data/resources/definitions/regional_settings.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using ::country_codes::CountryId;
 using ::search_engines::SearchEngineChoiceScreenConditions;

@@ -31,7 +31,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_ANDROID)

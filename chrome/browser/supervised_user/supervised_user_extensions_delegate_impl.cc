@@ -22,7 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace {
 

@@ -121,7 +121,7 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/native_theme/native_theme_mac.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "url/gurl.h"

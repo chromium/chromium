@@ -29,7 +29,7 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #endif
 
 #if !BUILDFLAG(ENABLE_OOP_PRINTING)

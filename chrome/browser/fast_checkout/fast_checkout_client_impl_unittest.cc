@@ -41,7 +41,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using ::autofill::AutofillDriver;
 using ::autofill::AutofillManager;

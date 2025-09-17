@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/download/download_dialog_types.h"
 #include "net/base/network_change_notifier.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Profile;
 

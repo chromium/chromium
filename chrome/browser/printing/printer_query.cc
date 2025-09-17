@@ -25,7 +25,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/print_settings.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
