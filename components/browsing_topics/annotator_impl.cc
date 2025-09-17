@@ -251,7 +251,7 @@ void AnnotatorImpl::StartBatchAnnotate(BatchAnnotationCallback callback,
   for (size_t i = 0; i < inputs.size(); i++) {
     AnnotateSingleInput(
         /*single_input_done_signal=*/barrier_closure,
-        /*annotation=*/(UNSAFE_TODO(annotations_ptr->data() + i)));
+        /*annotation=*/&(*annotations_ptr)[i]);
   }
 }
 
