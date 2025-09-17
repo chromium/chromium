@@ -11272,6 +11272,7 @@
     "GlicAppendModelQualityClientId": [
         {
             "platforms": [
+                "linux",
                 "mac",
                 "windows"
             ],
