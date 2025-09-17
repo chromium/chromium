@@ -159,5 +159,29 @@ TEST_F(SharedImageFormatUtilsTest, SharedMemoryOffsetForSharedImageFormat) {
   }
 }
 
+TEST_F(SharedImageFormatUtilsTest, SharedMemoryRowSizeForSharedImageFormat) {
+  int widths[] = {1, 2, 3, 4, 8, 10, 29, 53, 64, 128};
+  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); ++i) {
+    auto buffer_format = static_cast<gfx::BufferFormat>(i);
+    auto format = GetSharedImageFormat(buffer_format);
+    if (format == SinglePlaneFormat::kETC1) {
+      continue;
+    }
+    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+      for (int width : widths) {
+        std::optional<size_t> row_bytes =
+            SharedMemoryRowSizeForSharedImageFormat(format, plane, width);
+        EXPECT_TRUE(row_bytes);
+
+        size_t expected_row_bytes = 0;
+        bool valid = gfx::RowSizeForBufferFormatChecked(
+            width, buffer_format, plane, &expected_row_bytes);
+        EXPECT_TRUE(valid);
+        EXPECT_EQ(*row_bytes, expected_row_bytes);
+      }
+    }
+  }
+}
+
 }  // namespace
 }  // namespace viz

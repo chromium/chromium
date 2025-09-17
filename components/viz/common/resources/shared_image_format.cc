@@ -67,18 +67,6 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
   NOTREACHED();
 }
 
-uint64_t StorageBytesPerElement(SharedImageFormat::ChannelFormat channel) {
-  switch (channel) {
-    case SharedImageFormat::ChannelFormat::k8:
-      return 1;
-    // 10 bit formats like P010 still use 2 bytes per element.
-    case SharedImageFormat::ChannelFormat::k10:
-    case SharedImageFormat::ChannelFormat::k16:
-    case SharedImageFormat::ChannelFormat::k16F:
-      return 2;
-  }
-}
-
 const char* PlaneConfigToString(SharedImageFormat::PlaneConfig plane) {
   switch (plane) {
     case SharedImageFormat::PlaneConfig::kY_U_V:
@@ -196,7 +184,7 @@ std::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
     return estimated_bytes.ValueOrDie();
   }
 
-  size_t bytes_per_element = StorageBytesPerElement(channel_format());
+  size_t bytes_per_element = MultiplanarStorageBytesPerChannel();
 
   gfx::Size plane_size = GetPlaneSize(plane_index, size);
 
@@ -291,6 +279,19 @@ int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
       return plane_index == 1 ? 2 : 1;
   }
   NOTREACHED();
+}
+
+// For multiplanar formats.
+uint64_t SharedImageFormat::MultiplanarStorageBytesPerChannel() const {
+  switch (channel_format()) {
+    case ChannelFormat::k8:
+      return 1;
+    // 10 bit formats like P010 still use 2 bytes per element.
+    case ChannelFormat::k10:
+    case ChannelFormat::k16:
+    case ChannelFormat::k16F:
+      return 2;
+  }
 }
 
 // For multiplanar formats.

@@ -261,6 +261,50 @@ size_t SharedMemoryOffsetForSharedImageFormat(SharedImageFormat format,
   return offset;
 }
 
+std::optional<size_t> SharedMemoryRowSizeForSharedImageFormat(
+    SharedImageFormat format,
+    int plane_index,
+    int width) {
+  if (!format.IsValidPlaneIndex(plane_index)) {
+    return std::nullopt;
+  }
+
+  if (format.is_single_plane()) {
+    DCHECK_EQ(plane_index, 0);
+
+    auto bits_per_row = format.BitsPerPixel();
+    // This should work as this code should not be called for ETC1 formats.
+    CHECK_EQ(bits_per_row % 8, 0);
+
+    base::CheckedNumeric<size_t> bytes_per_row = bits_per_row / 8;
+    bytes_per_row *= width;
+
+    // Row size must be aligned to 4 bytes.
+    bytes_per_row += 3;
+    bytes_per_row -= bytes_per_row % 4;
+    if (!bytes_per_row.IsValid()) {
+      return std::nullopt;
+    }
+
+    return bytes_per_row.ValueOrDie();
+  }
+
+  int plane_width =
+      format.GetPlaneSize(plane_index, gfx::Size(width, 0)).width();
+  int num_channels = format.NumChannelsInPlane(plane_index);
+
+  base::CheckedNumeric<size_t> bytes_per_row =
+      format.MultiplanarStorageBytesPerChannel();
+  bytes_per_row *= num_channels;
+  bytes_per_row *= plane_width;
+
+  if (!bytes_per_row.IsValid()) {
+    return std::nullopt;
+  }
+
+  return bytes_per_row.ValueOrDie();
+}
+
 // static
 unsigned int
 SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
