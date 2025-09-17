@@ -400,7 +400,7 @@ FindLengthOfDeclarationListAVX2(base::span<const CharType> chars) {
     // about.
     const __m256i eq_newline_table =
         _mm256_setr_epi64x(0x0000000000000001, 0x00000d0c000a0000,
-                           0x0000000000000000, 0x0000000000000000);
+                           0x0000000000000001, 0x00000d0c000a0000);
     const __m256i eq_newline =
         _mm256_cmpeq_epi8(x, _mm256_shuffle_epi8(eq_newline_table, x));
     const __m256i quoted_newline = quoted_mask & eq_newline;
