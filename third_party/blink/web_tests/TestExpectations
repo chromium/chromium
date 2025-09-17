@@ -5674,11 +5674,12 @@ crbug.com/922951 [ Release Win ] media/controls/overflow-menu-hide-on-click-outs
 
 crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Crash Failure Pass Timeout ]
 
-# The following tests have expectations that seem incorrect on MacOS.
+# The following tests have expectations that seem incorrect on Mac/Win.
 crbug.com/359279545 [ Mac ] http/tests/html/scaled-oopif-scrollbar-both.html [ Failure ]
 crbug.com/359279545 [ Mac ] http/tests/html/scaled-oopif-scrollbar-vertical.html [ Failure ]
 crbug.com/359279545 [ Mac ] http/tests/html/scaled-oopif-scrollbar-horizontal.html [ Failure ]
 crbug.com/359279545 [ Mac ] http/tests/html/translated-oopif-scrollbar-both.html [ Failure ]
+crbug.com/359279545 [ Win ] http/tests/html/translated-oopif-scrollbar-both.html [ Failure Pass ]
 crbug.com/359279545 [ Mac ] http/tests/html/translated-oopif-scrollbar-vertical.html [ Failure ]
 crbug.com/359279545 [ Mac ] http/tests/html/translated-oopif-scrollbar-horizontal.html [ Failure ]
 crbug.com/359279545 [ Mac ] compositing/video/video-subpixel.html [ Failure ]
@@ -9714,6 +9715,3 @@ crbug.com/443229243 inspector-protocol/page/reload-with-script.js [ Failure Pass
 
 # Gardener 2025-09-08
 crbug.com/443533494 [ Linux ] http/tests/worklet/paint-worklet-csp-eval.html [ Failure Pass ]
-
-# Gardener 2025-09-16
-crbug.com/445283253 [ Win11-arm64 ] http/tests/html/translated-oopif-scrollbar-both.html [ Failure Pass ]
