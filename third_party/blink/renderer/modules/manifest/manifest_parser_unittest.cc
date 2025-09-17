@@ -3416,11 +3416,7 @@ TEST_F(ManifestParserTest, ProtocolHandlerParseRules) {
   }
 }
 
-TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kWebAppEnableScopeExtensions);
-
+TEST_F(ManifestParserTest, ScopeExtensionsParseRules) {
   // Manifest does not contain a 'scope_extensions' field.
   {
     auto& manifest = ParseManifest("{ }");
@@ -3698,173 +3694,6 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     ASSERT_EQ(0u, scope_extensions.size());
   }
 
-  // Parse origin with wildcard.
-  {
-    base::test::ScopedFeatureList inner_feature_list(
-        blink::features::kWebAppEnableScopeExtensionsBySite);
-    // Valid wildcard format.
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            {
-              "type": "origin", "origin": "https://*.foo.com"
-            }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-    ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
-  }
-
-  // Parse origin with wildcard with feature disabled.
-  {
-    base::test::ScopedFeatureList inner_feature_list;
-    inner_feature_list.InitAndDisableFeature(
-        blink::features::kWebAppEnableScopeExtensionsBySite);
-    // Valid wildcard format.
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            {
-              "type": "origin", "origin": "https://*.foo.com"
-            }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://*.foo.com")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
-  }
-
-  // Parse invalid origin wildcard format.
-  {
-    base::test::ScopedFeatureList inner_feature_list(
-        blink::features::kWebAppEnableScopeExtensionsBySite);
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            {
-              "type": "origin", "origin": "https://*foo.com"
-            }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://*foo.com")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
-  }
-
-  // Parse origin where the host is just the wildcard prefix.
-  {
-    base::test::ScopedFeatureList inner_feature_list(
-        blink::features::kWebAppEnableScopeExtensionsBySite);
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            {
-              "type": "origin", "origin": "https://*."
-            }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    ASSERT_EQ(
-        "scope_extensions entry ignored, domain of required property 'origin' "
-        "is invalid.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Parse invalid origin where wildcard is used with a TLD.
-  {
-    base::test::ScopedFeatureList inner_feature_list(
-        blink::features::kWebAppEnableScopeExtensionsBySite);
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            {
-              "type": "origin", "origin": "https://*.com"
-            }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    ASSERT_EQ(
-        "scope_extensions entry ignored, domain of required property 'origin' "
-        "is invalid.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Parse invalid origin where wildcard is used with an unknown TLD.
-  {
-    base::test::ScopedFeatureList inner_feature_list(
-        blink::features::kWebAppEnableScopeExtensionsBySite);
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            {
-              "type": "origin", "origin": "https://*.foo"
-            }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    ASSERT_EQ(
-        "scope_extensions entry ignored, domain of required property 'origin' "
-        "is invalid.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Parse invalid origin where wildcard is used with a multipart TLD.
-  {
-    base::test::ScopedFeatureList inner_feature_list(
-        blink::features::kWebAppEnableScopeExtensionsBySite);
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            {
-              "type": "origin", "origin": "https://*.co.uk"
-            }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(1u, GetErrorCount());
-    ASSERT_EQ(
-        "scope_extensions entry ignored, domain of required property 'origin' "
-        "is invalid.",
-        errors()[0]);
-    ASSERT_EQ(0u, scope_extensions.size());
-  }
-
-  // Parse valid origin with private registry.
-  {
-    base::test::ScopedFeatureList inner_feature_list(
-        blink::features::kWebAppEnableScopeExtensionsBySite);
-    auto& manifest = ParseManifest(R"({
-          "scope_extensions": [
-            {
-              "type": "origin", "origin": "https://*.glitch.me"
-            }
-          ]
-        })");
-    auto& scope_extensions = manifest->scope_extensions;
-
-    ASSERT_EQ(0u, GetErrorCount());
-    ASSERT_EQ(1u, scope_extensions.size());
-    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://glitch.me")
-                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
-    ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
-  }
-
   // Parse valid IP address as origin.
   {
     auto& manifest = ParseManifest(R"({
@@ -3937,6 +3766,164 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     ASSERT_TRUE(
         blink::SecurityOrigin::CreateFromString("https://192.168.0.1:8010")
             ->IsSameOriginWith(scope_extensions[9]->origin.get()));
+  }
+}
+
+TEST_F(ManifestParserTest, ScopeExtensionsBySiteParseRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kWebAppEnableScopeExtensionsBySite);
+
+  // Parse origin with wildcard.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "origin", "origin": "https://*.foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse origin with wildcard with feature disabled.
+  {
+    base::test::ScopedFeatureList inner_feature_list;
+    inner_feature_list.InitAndDisableFeature(
+        blink::features::kWebAppEnableScopeExtensionsBySite);
+    // Valid wildcard format.
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "origin", "origin": "https://*.foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://*.foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse invalid origin wildcard format.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "origin", "origin": "https://*foo.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://*foo.com")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_FALSE(scope_extensions[0]->has_origin_wildcard);
+  }
+
+  // Parse origin where the host is just the wildcard prefix.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "origin", "origin": "https://*."
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse invalid origin where wildcard is used with a TLD.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "origin", "origin": "https://*.com"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse invalid origin where wildcard is used with an unknown TLD.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "origin", "origin": "https://*.foo"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse invalid origin where wildcard is used with a multipart TLD.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "origin", "origin": "https://*.co.uk"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "scope_extensions entry ignored, domain of required property 'origin' "
+        "is invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, scope_extensions.size());
+  }
+
+  // Parse valid origin with private registry.
+  {
+    auto& manifest = ParseManifest(R"({
+          "scope_extensions": [
+            {
+              "type": "origin", "origin": "https://*.glitch.me"
+            }
+          ]
+        })");
+    auto& scope_extensions = manifest->scope_extensions;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, scope_extensions.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://glitch.me")
+                    ->IsSameOriginWith(scope_extensions[0]->origin.get()));
+    ASSERT_TRUE(scope_extensions[0]->has_origin_wildcard);
   }
 }
 

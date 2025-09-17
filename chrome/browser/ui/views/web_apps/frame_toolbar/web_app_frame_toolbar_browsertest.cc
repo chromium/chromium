@@ -2598,14 +2598,6 @@ class WebAppFrameToolbarBrowserTest_OriginText
 
   WebAppFrameToolbarBrowserTest_OriginText() {
     WebAppToolbarButtonContainer::DisableAnimationForTesting(false);
-
-    if (IsScopeExtensionsEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kWebAppEnableScopeExtensions);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kWebAppEnableScopeExtensions);
-    }
   }
 
   void InstallAndLaunchWebApp() {
@@ -2641,11 +2633,7 @@ class WebAppFrameToolbarBrowserTest_OriginText
     return https_server()->GetURL(in_scope_host_, "/web_apps/basic.html");
   }
 
-  bool IsScopeExtensionsEnabled() { return GetParam(); }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
@@ -2656,7 +2644,7 @@ class WebAppFrameToolbarBrowserTest_OriginText
 #else
 #define MAYBE_InScopeNavigation InScopeNavigation
 #endif
-IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
                        MAYBE_InScopeNavigation) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
@@ -2678,7 +2666,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
 #else
 #define MAYBE_OutOfScopeBarShown OutOfScopeBarShown
 #endif
-IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
                        MAYBE_OutOfScopeBarShown) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
@@ -2707,7 +2695,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
 #else
 #define MAYBE_ThemeColorChange ThemeColorChange
 #endif
-IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
                        MAYBE_ThemeColorChange) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
@@ -2738,7 +2726,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
 #define MAYBE_OutOfScopeBarWithThemeColorChange \
   OutOfScopeBarWithThemeColorChange
 #endif
-IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
                        MAYBE_OutOfScopeBarWithThemeColorChange) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
@@ -2784,7 +2772,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
 #define MAYBE_WebAppOriginTextAccessibleProperties \
   WebAppOriginTextAccessibleProperties
 #endif
-IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
                        MAYBE_WebAppOriginTextAccessibleProperties) {
   InstallAndLaunchWebApp();
   auto* origin_text = helper()->origin_text_view();
@@ -2807,11 +2795,6 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
   EXPECT_EQ(origin_text->GetViewAccessibility().GetCachedName(),
             origin_text->GetLabelTextForTesting());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    WebAppFrameToolbarBrowserTest_OriginText,
-    ::testing::Bool());
 
 class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
     : public WebAppFrameToolbarBrowserTest {
@@ -2915,9 +2898,6 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableScopeExtensions};
-
   raw_ptr<webapps::TestWebAppOriginAssociationFetcher>
       test_origin_association_fetcher_ = nullptr;
 

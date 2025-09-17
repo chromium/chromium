@@ -398,8 +398,6 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed list of ScopeExtensions. The returned ScopeExtensions
   // are empty if the field didn't exist, parsing failed, the input list was
   // empty, or if the blink feature flag is disabled.
-  // This feature is experimental and is only enabled by the blink feature flag:
-  // blink::features::kWebAppEnableScopeExtensions.
   Vector<mojom::blink::ManifestScopeExtensionPtr> ParseScopeExtensions(
       const JSONObject* object);
 
@@ -407,8 +405,6 @@ class MODULES_EXPORT ManifestParser {
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // Returns |std::nullopt| if the ScopeExtension was invalid, or a
   // ScopeExtension if parsing succeeded.
-  // This feature is experimental and is only enabled by the blink feature flag:
-  // blink::features::kWebAppEnableScopeExtensions.
   std::optional<mojom::blink::ManifestScopeExtensionPtr> ParseScopeExtension(
       const JSONObject* object);
 
@@ -417,8 +413,6 @@ class MODULES_EXPORT ManifestParser {
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // Returns |std::nullopt| if the ScopeExtension origin was invalid, or a
   // ScopeExtension if parsing succeeded.
-  // This feature is experimental and is only enabled by the blink feature flag:
-  // blink::features::kWebAppEnableScopeExtensions.
   std::optional<mojom::blink::ManifestScopeExtensionPtr>
   ParseScopeExtensionOrigin(const String& origin_string);
 

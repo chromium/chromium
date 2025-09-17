@@ -1537,13 +1537,6 @@ const char kDevToolsLiveEditDescription[] =
     "Re-enable the deprecated feature in DevTools' Sources panel to apply code "
     "edits to the target page live.";
 
-const char kDesktopPWAsScopeExtensionsName[] = "Desktop PWA Scope Extensions";
-const char kDesktopPWAsScopeExtensionsDescription[] =
-    "Enable web app manifests to declare scope extensions to extend app scope "
-    "to other origins. Prototype implementation of: "
-    "https://github.com/WICG/manifest-incubations/blob/gh-pages/"
-    "scope_extensions-explainer.md";
-
 const char kDesktopPWAsBorderlessName[] = "Desktop PWA Borderless";
 const char kDesktopPWAsBorderlessDescription[] =
     "Enable web app manifests to declare borderless mode as a display "

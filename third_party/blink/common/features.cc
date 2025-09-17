@@ -2411,12 +2411,6 @@ BASE_FEATURE(kWebRtcPqcForDtls, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable borderless mode for desktop PWAs. go/borderless-mode
 BASE_FEATURE(kWebAppBorderless, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls scope extensions feature in web apps. Controls parsing of
-// "scope_extensions" field in web app manifests. See explainer for more
-// information:
-// https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
-BASE_FEATURE(kWebAppEnableScopeExtensions, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls scope extensions feature in web apps. Enables parsing of "site"
 // entries in "scope_extensions" field in web app manifests. See explainer for
 // more information:

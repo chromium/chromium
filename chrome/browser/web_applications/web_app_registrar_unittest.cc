@@ -1311,14 +1311,7 @@ TEST_F(WebAppRegistrarTest, AppsDoNotOverlapIfNestedScope) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-class WebAppRegistrarTest_ScopeExtensions : public WebAppRegistrarTest {
- public:
-  WebAppRegistrarTest_ScopeExtensions() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableScopeExtensions};
-};
+using WebAppRegistrarTest_ScopeExtensions = WebAppRegistrarTest;
 
 TEST_F(WebAppRegistrarTest_ScopeExtensions, IsUrlInAppExtendedScope) {
   StartWebAppProvider();

@@ -60,17 +60,7 @@ class WebAppScopeExtensionsBrowserTest
         features::kPwaNavigationCapturingWithScopeExtensions,
         base::FieldTrialParams());
 
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (enabled) {
-      enabled_features.emplace_back(
-          blink::features::kWebAppEnableScopeExtensions,
-          base::FieldTrialParams());
-    } else {
-      disabled_features.push_back(
-          blink::features::kWebAppEnableScopeExtensions);
-    }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
   ~WebAppScopeExtensionsBrowserTest() override = default;
 
@@ -379,7 +369,7 @@ class WebAppScopeExtensionsDisabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsDisabledBrowserTest,
-                       NoExtendedLinkCapturing) {
+                       ExtendedLinkCapturing) {
   InstallScopeExtendedWebApp(
       /*manifest_file=*/base::ReplaceStringPlaceholders(
           R"(
@@ -399,12 +389,12 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsDisabledBrowserTest,
           })",
           {primary_origin_.Serialize()}, nullptr));
 
-  EXPECT_TRUE(app_->scope_extensions().empty());
-  EXPECT_TRUE(app_->validated_scope_extensions().empty());
+  EXPECT_FALSE(app_->scope_extensions().empty());
+  EXPECT_FALSE(app_->validated_scope_extensions().empty());
 
   ASSERT_TRUE(
       WebAppCapturesUrl(primary_server_.GetURL("/web_apps/basic.html")));
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       WebAppCapturesUrl(secondary_server_.GetURL("/web_apps/basic.html")));
 }
 
@@ -420,156 +410,5 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // BUILDFLAG(IS_CHROMEOS)
         ,
     apps::test::LinkCapturingVersionToString);
-
-class WebAppScopeExtensionsOriginTrialBrowserTest
-    : public WebAppBrowserTestBase {
- public:
-  WebAppScopeExtensionsOriginTrialBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kWebAppEnableScopeExtensions);
-  }
-  ~WebAppScopeExtensionsOriginTrialBrowserTest() override = default;
-
-  // WebAppBrowserTestBase:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Using the test public key from docs/origin_trials_integration.md#Testing.
-    command_line->AppendSwitchASCII(
-        embedder_support::kOriginTrialPublicKey,
-        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
-  }
-  void SetUpOnMainThread() override {
-    WebAppBrowserTestBase::SetUpOnMainThread();
-    web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-namespace {
-
-// InstallableManager requires https or localhost to load the manifest. Go with
-// localhost to avoid having to set up cert servers.
-constexpr char kTestWebAppUrl[] = "http://127.0.0.1:8000/";
-constexpr char kTestWebAppHeaders[] =
-    "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
-constexpr char kTestWebAppBody[] = R"(
-  <!DOCTYPE html>
-  <head>
-    <link rel="manifest" href="manifest.webmanifest">
-    <meta http-equiv="origin-trial" content="$1">
-  </head>
-)";
-
-constexpr char kTestIconUrl[] = "http://127.0.0.1:8000/icon.png";
-constexpr char kTestManifestUrl[] =
-    "http://127.0.0.1:8000/manifest.webmanifest";
-constexpr char kTestManifestHeaders[] =
-    "HTTP/1.1 200 OK\nContent-Type: application/json; charset=utf-8\n";
-constexpr char kTestManifestBody[] = R"({
-  "name": "Test app",
-  "display": "standalone",
-  "display_override": ["tabbed"],
-  "start_url": "/",
-  "scope": "/",
-  "icons": [{
-    "src": "icon.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  }],
-  "scope_extensions": [
-    {
-      "type": "origin", "origin": "https://test.com"
-    }
-  ]
-})";
-constexpr char kTestAssociatedOrigin[] = "https://test.com/";
-constexpr char kTestOriginAssociationFile[] = R"({
-    "http://127.0.0.1:8000/" : {}
-})";
-
-// Generated from script:
-// $ tools/origin_trials/generate_token.py http://127.0.0.1:8000
-// "WebAppScopeExtensions" --expire-timestamp=2000000000
-constexpr char kOriginTrialToken[] =
-    "A6wt8IeZJ7M9rThrMsExahxtxjgVGPp1f2k6AdCzj2+Nl+"
-    "74sf4z9YYU1ChSCI5qDFf44q3Lff42UnCCbUunwQQAAABdeyJvcmlnaW4iOiAiaHR0cDovLzEy"
-    "Ny4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiV2ViQXBwU2NvcGVFeHRlbnNpb25zIiwgImV4cG"
-    "lyeSI6IDIwMDAwMDAwMDB9";
-
-}  // namespace
-
-IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsOriginTrialBrowserTest,
-                       OriginTrial) {
-  ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting
-      bypass_window_close_waiting;
-  WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
-
-  bool serve_token = true;
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&serve_token](
-          content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (params->url_request.url.spec() == kTestWebAppUrl) {
-          content::URLLoaderInterceptor::WriteResponse(
-              kTestWebAppHeaders,
-              base::ReplaceStringPlaceholders(
-                  kTestWebAppBody, {serve_token ? kOriginTrialToken : ""},
-                  nullptr),
-              params->client.get());
-          return true;
-        }
-        if (params->url_request.url.spec() == kTestManifestUrl) {
-          content::URLLoaderInterceptor::WriteResponse(
-              kTestManifestHeaders, kTestManifestBody, params->client.get());
-          return true;
-        }
-        if (params->url_request.url.spec() == kTestIconUrl) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "chrome/test/data/web_apps/basic-192.png", params->client.get());
-          return true;
-        }
-        return false;
-      }));
-  auto origin_association_fetcher =
-      std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
-  origin_association_fetcher->SetData(
-      {{url::Origin::Create(GURL(kTestAssociatedOrigin)),
-        kTestOriginAssociationFile}});
-  provider.origin_association_manager().SetFetcherForTest(
-      std::move(origin_association_fetcher));
-
-  // Install web app with origin trial token.
-  webapps::AppId app_id =
-      web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
-
-  // Origin trial should grant the app access.
-  base::flat_set<ScopeExtensionInfo> expected_scope_extensions = {
-      ScopeExtensionInfo::CreateForOrigin(
-          url::Origin::Create(GURL(kTestAssociatedOrigin)),
-          /*has_origin_wildcard=*/false)};
-  EXPECT_EQ(expected_scope_extensions,
-            provider.registrar_unsafe().GetValidatedScopeExtensions(app_id));
-  EXPECT_TRUE(provider.registrar_unsafe().IsUrlInAppExtendedScope(
-      GURL(kTestAssociatedOrigin), app_id));
-
-  // Out of scope bar should not be shown for extended scope.
-  Browser* app_browser = LaunchWebAppToURL(browser()->profile(), app_id,
-                                           GURL(kTestAssociatedOrigin));
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
-
-  // Open the page again with the token missing.
-  {
-    UpdateAwaiter update_awaiter(provider.install_manager());
-    serve_token = false;
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTestWebAppUrl)));
-    update_awaiter.AwaitUpdate();
-  }
-
-  // The app should update to no longer parsing scope_extensions without the
-  // origin trial active.
-  EXPECT_TRUE(provider.registrar_unsafe().GetScopeExtensions(app_id).empty());
-  EXPECT_FALSE(provider.registrar_unsafe().IsUrlInAppExtendedScope(
-      GURL(kTestAssociatedOrigin), app_id));
-}
 
 }  // namespace web_app

@@ -869,9 +869,6 @@ extern const char kDevToolsIndividualRequestThrottlingDescription[];
 extern const char kDevToolsLiveEditName[];
 extern const char kDevToolsLiveEditDescription[];
 
-extern const char kDesktopPWAsScopeExtensionsName[];
-extern const char kDesktopPWAsScopeExtensionsDescription[];
-
 extern const char kDesktopPWAsBorderlessName[];
 extern const char kDesktopPWAsBorderlessDescription[];
 

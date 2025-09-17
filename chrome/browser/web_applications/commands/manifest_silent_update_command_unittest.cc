@@ -49,8 +49,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kWebAppUsePrimaryIcon,
-         features::kSilentPolicyAndDefaultAppUpdating,
-         blink::features::kWebAppEnableScopeExtensions},
+         features::kSilentPolicyAndDefaultAppUpdating},
         {});
     WebAppTest::SetUp();
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());

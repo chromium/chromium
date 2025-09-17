@@ -35,11 +35,9 @@ namespace web_app {
 class ManifestSilentUpdateCommandBrowserTest : public WebAppBrowserTestBase {
  public:
   ManifestSilentUpdateCommandBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kWebAppPredictableAppUpdating,
-         features::kWebAppUsePrimaryIcon,
-         blink::features::kWebAppEnableScopeExtensions},
-        {});
+    feature_list_.InitWithFeatures({features::kWebAppPredictableAppUpdating,
+                                    features::kWebAppUsePrimaryIcon},
+                                   {});
   }
   ~ManifestSilentUpdateCommandBrowserTest() override = default;
 

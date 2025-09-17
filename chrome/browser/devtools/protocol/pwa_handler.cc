@@ -499,14 +499,8 @@ void PWAHandler::Launch(const std::string& in_manifest_id,
 
     // TODO(crbug.com/338406726): Remove after launches correctly fail when url
     // is out of scope.
-    bool is_in_scope;
-    if (base::FeatureList::IsEnabled(
-            blink::features::kWebAppEnableScopeExtensions)) {
-      is_in_scope =
-          provider->registrar_unsafe().IsUrlInAppExtendedScope(*url, app_id);
-    } else {
-      is_in_scope = provider->registrar_unsafe().IsUrlInAppScope(*url, app_id);
-    }
+    bool is_in_scope =
+        provider->registrar_unsafe().IsUrlInAppExtendedScope(*url, app_id);
     if (!is_in_scope) {
       std::move(callback)->sendFailure(
           protocol::Response::InvalidParams(base::StrCat(

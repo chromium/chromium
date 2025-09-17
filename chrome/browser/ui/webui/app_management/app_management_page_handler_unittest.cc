@@ -89,8 +89,6 @@ class AppManagementPageHandlerTestBase
         page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
     auto features_and_params =
         apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
-    features_and_params.push_back(
-        {blink::features::kWebAppEnableScopeExtensions, {}});
     scoped_feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   }

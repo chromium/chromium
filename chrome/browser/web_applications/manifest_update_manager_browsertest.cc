@@ -4209,10 +4209,6 @@ class ManifestUpdateManagerBrowserTest_ScopeExtensions
     OverrideManifest(kScopeExtensionsManifestTemplate,
                      {kInstallableIconList, substitution});
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableScopeExtensions};
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
