@@ -335,10 +335,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   virtual void OnDestroyResource() {}
 
-  virtual void OnAcquireRecyclableCanvasResource() {}
-  virtual void OnDestroyRecyclableCanvasResource(
-      const gpu::SyncToken& sync_token) {}
-
   void FlushIfRecordingLimitExceeded();
 
   const MemoryManagedPaintRecorder& Recorder() const { return *recorder_; }
@@ -592,6 +588,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       FlushReason reason,
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
+  // For WebGpu RecyclableCanvasResource.
+  void OnAcquireRecyclableCanvasResource();
+  void OnDestroyRecyclableCanvasResource(const gpu::SyncToken& sync_token);
+
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
 
@@ -664,10 +664,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void RasterRecord(cc::PaintRecord last_recording) override;
   sk_sp<SkSurface> CreateSkSurface() const override;
   GrBackendTexture CreateGrTextureForResource() const;
-  // For WebGpu RecyclableCanvasResource.
-  void OnAcquireRecyclableCanvasResource() override;
-  void OnDestroyRecyclableCanvasResource(
-      const gpu::SyncToken& sync_token) override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
  private:
