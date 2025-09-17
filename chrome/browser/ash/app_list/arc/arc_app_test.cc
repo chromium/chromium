@@ -370,17 +370,6 @@ void ArcAppTest::RestartArcInstance() {
   WaitForInstanceReady(bridge_service->app());
 }
 
-void ArcAppTest::SetUpIntentHelper() {
-  DCHECK(profile_);
-  auto* arc_bridge_service = arc_service_manager_->arc_bridge_service();
-  intent_helper_host_ = std::make_unique<arc::FakeIntentHelperHost>(
-      arc_bridge_service->intent_helper());
-  intent_helper_instance_ = std::make_unique<arc::FakeIntentHelperInstance>();
-  arc_bridge_service->intent_helper()->SetInstance(
-      intent_helper_instance_.get());
-  WaitForInstanceReady(arc_bridge_service->intent_helper());
-}
-
 const user_manager::User* ArcAppTest::CreateUserAndLogin() {
   const AccountId account_id(AccountId::FromUserEmailGaiaId(
       profile_->GetProfileUserName(), GaiaId("1234567890")));

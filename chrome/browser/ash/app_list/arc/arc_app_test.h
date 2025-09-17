@@ -57,8 +57,6 @@ class ArcAppTest {
   void StopArcInstance();
   void RestartArcInstance();
 
-  void SetUpIntentHelper();
-
   static std::string GetAppId(const arc::mojom::AppInfo& app_info);
   static std::string GetAppId(const arc::mojom::ShortcutInfo& shortcut);
 
