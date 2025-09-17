@@ -213,8 +213,12 @@ class WebTestRunner(object):
         def interrupt_if_at_failure_limit(limit, failure_count,
                                           test_run_results, message):
             if limit and failure_count >= limit:
-                message += ' %d tests run.' % (
-                    test_run_results.expected + test_run_results.unexpected)
+                # Skipped tests are not run, so they don't count towards the number
+                # of run tests.
+                num_run = (
+                    test_run_results.expected + test_run_results.unexpected -
+                    len(test_run_results.tests_by_expectation[ResultType.Skip]))
+                message += f' {num_run} tests run.'
                 self._mark_interrupted_tests_as_skipped(test_run_results)
                 raise TestRunInterruptedException(
                     message, InterruptReason.TOO_MANY_FAILURES)

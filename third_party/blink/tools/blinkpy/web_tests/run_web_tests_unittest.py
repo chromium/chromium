@@ -1388,6 +1388,19 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         self.assertTrue('0 tests ran as expected, 2 didn\'t:\n' in
                         regular_output.getvalue())
 
+    def test_exit_after_n_failures_with_skipped_tests(self):
+        # Test that we don't count skipped tests as "run".
+        host = MockHost()
+        _, regular_output, _ = logging_run([
+            '--exit-after-n-failures', '1', '--order', 'natural',
+            'failures/unexpected/text-image-checksum.html',
+            'passes/skipped/skip.html'
+        ],
+                                           tests_included=True,
+                                           host=host)
+        self.assertIn('Exiting early after 1 failures. 1 tests run.',
+                      regular_output.getvalue())
+
     def test_exit_after_n_failures(self):
         # Unexpected failures should result in tests stopping.
         tests_run = get_tests_run([
