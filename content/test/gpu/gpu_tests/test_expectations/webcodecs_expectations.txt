@@ -126,18 +126,12 @@ crbug.com/1379766 [ mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodeColorSpace_av01.0.04M.08 [ Failure ]
-crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_arraybuffer [ Failure ]
-crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_camera [ Failure ]
-crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_capture [ Failure ]
-crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]
-crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_offscreen [ Failure ]
-crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_sw_decoder [ Failure ]
-crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_arraybuffer [ Failure ]
-crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_camera [ Failure ]
-crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_capture [ Failure ]
-crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]
-crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_offscreen [ Failure ]
-crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_sw_decoder [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_arraybuffer [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_camera [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_capture [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_offscreen [ Failure ]
+crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_sw_decoder [ Failure ]
 
 
 # AVC, HEVC, and VP8 VBR seems to be unreliable on some Android devices
@@ -169,10 +163,10 @@ crbug.com/371802469 [ amd-0x7340 angle-metal graphite-disabled mac ] WebCodecs_E
 
 crbug.com/389978730 [ win11 nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
 
-# Win/AMD RX 7600 Failures
-crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_DrawImage_hw_decoder [ Failure ]
-crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
-crbug.com/398904317 [ win11 amd-0x7480 ] WebCodecs_copyTo_hw_decoder [ Failure ]
+# Win11/AMD RDNA3/3.5 Failures
+crbug.com/398904317 [ win11 amd ] WebCodecs_DrawImage_hw_decoder [ Failure ]
+crbug.com/398904317 [ win11 amd ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
+crbug.com/398904317 [ win11 amd ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
 # Linux/AMD RX 7600 Failures
 crbug.com/436300892 [ linux amd mesa_ge_24.2 ] WebCodecs_DrawImage_hw_decoder [ Failure ]
