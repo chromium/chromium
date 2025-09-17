@@ -34,6 +34,9 @@ const CGFloat kButtonCornerRadius = 24.0;
 // The sise of the quick actions symbols.
 const CGFloat kSymbolPointSize = 18.0;
 
+// The maximum font size for the quick actions button.
+const CGFloat kMaximumFontSize = 20.0;
+
 // The color used to match the fakebox background.
 NSString* const kFakeboxMatchingBackgroundColor =
     @"fake_omnibox_bottom_gradient_color";
@@ -168,11 +171,13 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
   configuration.image = MakeSymbolMonochrome(icon);
 
   if (title) {
-    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
+    UIFont* font = PreferredFontForTextStyle(
+        UIFontTextStyleSubheadline, UIFontWeightRegular, kMaximumFontSize);
     NSDictionary* attributes = @{NSFontAttributeName : font};
     NSAttributedString* attributedTitle =
         [[NSAttributedString alloc] initWithString:title attributes:attributes];
     configuration.attributedTitle = attributedTitle;
+    configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
     configuration.imagePadding = 8;
   }
 
