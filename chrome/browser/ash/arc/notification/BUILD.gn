@@ -38,6 +38,7 @@ static_library("notification") {
     "//chrome/common",
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/vm_data_migration",
     "//chromeos/components/mgs",
     "//chromeos/ui/vector_icons",
     "//components/account_id",
