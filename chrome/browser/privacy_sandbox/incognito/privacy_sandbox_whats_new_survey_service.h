@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new.mojom-data-view.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -37,7 +38,8 @@ class PrivacySandboxWhatsNewSurveyService : public KeyedService {
     kSurveyLaunchFailed = 3,  // The survey launch failed.
     kSurveyLaunched =
         4,  // The survey was launched (can overlap with other statuses)
-    kMaxValue = kSurveyLaunched,
+    kWebContentsDestructed = 5,  // What's New was closed before the launch
+    kMaxValue = kWebContentsDestructed,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxWhatsNewSurveyStatus)
 
@@ -45,14 +47,12 @@ class PrivacySandboxWhatsNewSurveyService : public KeyedService {
 
   ~PrivacySandboxWhatsNewSurveyService() override;
 
-  // Checks if the conditions are met to show the "What's New" survey and
-  // requests the HatsService to display it if appropriate.
-  // Conditions include feature flags, whether the user has seen the page, etc.
-  // |web_contents| is the context in which the survey may be shown.
+  // Checks if the survey is enabled and if so, posts a task that launches a
+  // delayed survey.
   void MaybeShowSurvey(content::WebContents* web_contents);
 
  private:
-  // Checks if the "What's New" survey feature is enabled
+  // Checks if the "What's New" survey feature is enabled.
   bool IsSurveyEnabled();
 
   // Records the final status of the attempt to show the survey to UMA
@@ -66,6 +66,14 @@ class PrivacySandboxWhatsNewSurveyService : public KeyedService {
   // Callback function executed if the HaTS survey fails to show for any reason
   // after being requested.
   void OnSurveyFailure();
+
+  // Attempts to launch the HaTS survey for the given web_contents and trigger.
+  // Includes scroll depth as PSD, defaulting to "No data" if unavailable.
+  void LaunchSurveyWithPsd(
+      base::WeakPtr<content::WebContents> web_contents_weak_ptr,
+      const std::string& trigger);
+
+  base::TimeDelta GetSurveyDelay();
 
   raw_ptr<Profile> profile_;
   // Factory for creating weak pointers to this service.

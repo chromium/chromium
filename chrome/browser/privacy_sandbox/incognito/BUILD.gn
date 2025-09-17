@@ -93,6 +93,8 @@ if (is_win || is_mac || is_linux) {
       "//chrome/app:branded_strings",
       "//chrome/browser/profiles",
       "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       "//content/public/browser",
     ]
   }
@@ -105,6 +107,7 @@ if (is_win || is_mac || is_linux) {
       ":whats_new_survey",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/webui/whats_new",
       "//chrome/test:test_support",
     ]
   }

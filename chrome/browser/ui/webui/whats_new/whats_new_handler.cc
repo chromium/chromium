@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_interaction_data.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -25,6 +27,7 @@
 #include "components/user_education/webui/whats_new_registry.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -119,6 +122,13 @@ void WhatsNewHandler::RecordExploreMoreToggled(bool expanded) {
 
 void WhatsNewHandler::RecordScrollDepth(whats_new::mojom::ScrollDepth depth) {
   base::UmaHistogramEnumeration("UserEducation.WhatsNew.ScrollDepth", depth);
+
+  WhatsNewInteractionData::CreateForWebContents(web_contents_);
+  WhatsNewInteractionData* interaction_data =
+      WhatsNewInteractionData::FromWebContents(web_contents_);
+  if (interaction_data) {
+    interaction_data->set_scroll_depth(depth);
+  }
 }
 
 void WhatsNewHandler::RecordTimeOnPage(base::TimeDelta time) {

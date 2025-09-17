@@ -503,6 +503,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed to fetch HaTS service"/>
   <int value="3" label="Failed to launch survey"/>
   <int value="4" label="Launched delayed survey"/>
+  <int value="5" label="WebContents destroyed at the moment of launch"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/incognito/privacy_sandbox_whats_new_survey_service.h:PrivacySandboxWhatsNewSurveyStatus) -->
