@@ -456,6 +456,7 @@ ap.leg.br, 4
 ap.ngrok.io, 4
 aparecida.br, 0
 apartments, 0
+api.br, 0
 api.gov.uk, 4
 api.lp.dev, 4
 api.stdlib.com, 4
@@ -2400,6 +2401,7 @@ erimo.hokkaido.jp, 0
 erni, 0
 erotica.hu, 0
 erotika.hu, 0
+erp.dev, 4
 es, 0
 es-1.axarnet.cloud, 4
 es.eu.org, 4
@@ -2961,7 +2963,6 @@ glass, 0
 gle, 0
 gleeze.com, 4
 gliding.aero, 0
-glitch.me, 4
 gliwice.pl, 4
 global, 0
 global.prod.fastly.net, 4
@@ -3085,6 +3086,7 @@ gov.cn, 0
 gov.co, 0
 gov.cx, 0
 gov.cy, 0
+gov.cz, 0
 gov.dm, 0
 gov.do, 0
 gov.dz, 0
@@ -3296,6 +3298,7 @@ hachijo.tokyo.jp, 0
 hachinohe.aomori.jp, 0
 hachioji.tokyo.jp, 0
 hachirogata.akita.jp, 0
+hackclub.app, 4
 hacker.replit.dev, 4
 hadano.kanagawa.jp, 0
 hadsel.no, 0
@@ -3586,6 +3589,7 @@ hoylandet.no, 0
 hr, 0
 hr.eu.org, 4
 hra.health, 4
+hrsn.au, 4
 hrsn.dev, 4
 hs.kr, 0
 hsbc, 0
@@ -3613,6 +3617,7 @@ i.ng, 0
 i.ph, 0
 i.se, 0
 i234.me, 4
+ia.br, 0
 ia.us, 0
 iamallama.com, 4
 ibara.okayama.jp, 0
@@ -3637,6 +3642,7 @@ ichinohe.iwate.jp, 0
 ichinomiya.aichi.jp, 0
 ichinomiya.chiba.jp, 0
 ichinoseki.iwate.jp, 0
+icp.net, 6
 icp0.io, 4
 icp1.io, 4
 icu, 0
@@ -4098,6 +4104,7 @@ jor.br, 0
 jorpeland.no, 0
 joso.ibaraki.jp, 0
 jot, 0
+jote.cloud, 4
 jotelulu.cloud, 4
 journal.aero, 0
 journalist.aero, 0
@@ -4726,7 +4733,6 @@ lib.ca.us, 0
 lib.co.us, 0
 lib.ct.us, 0
 lib.dc.us, 0
-lib.de.us, 4
 lib.ee, 0
 lib.fl.us, 0
 lib.ga.us, 0
@@ -4745,7 +4751,6 @@ lib.me.us, 0
 lib.mi.us, 0
 lib.mn.us, 0
 lib.mo.us, 0
-lib.ms.us, 0
 lib.mt.us, 0
 lib.nc.us, 0
 lib.nd.us, 0
@@ -5476,7 +5481,6 @@ mydns.jp, 4
 mydns.tw, 4
 mydns.vc, 4
 mydobiss.com, 4
-mydrobo.com, 4
 myds.me, 4
 myeffect.net, 4
 myfast.host, 4
@@ -6242,10 +6246,12 @@ omuta.fukuoka.jp, 0
 on-acorn.io, 6
 on-aptible.com, 4
 on-fleek.app, 4
+on-forge.com, 4
 on-k3s.io, 6
 on-rancher.cloud, 6
 on-rio.io, 6
 on-the-web.tv, 4
+on-vapor.com, 4
 on-web.fr, 4
 on.biz.ng, 4
 on.ca, 0
@@ -6886,6 +6892,8 @@ qoto.io, 4
 qpon, 0
 qsl.br, 0
 qualifioapp.com, 4
+qualyhqpartner.com, 6
+qualyhqportal.com, 6
 quangbinh.vn, 0
 quangnam.vn, 0
 quangngai.vn, 0
@@ -6955,6 +6963,7 @@ readymade.jp, 4
 realestate, 0
 realestate.pl, 0
 realm.cz, 4
+realtime.supabase.co, 4
 realtor, 0
 realty, 0
 rebun.hokkaido.jp, 0
@@ -6969,7 +6978,6 @@ recreation.aero, 0
 red, 0
 red.sv, 0
 redirectme.net, 4
-redstone, 0
 redumbrella, 0
 reed.replit.dev, 4
 reg.dk, 4
@@ -7512,6 +7520,8 @@ saloon.jp, 4
 saltdal.no, 0
 salud.bo, 0
 salvador.br, 0
+same-app.com, 4
+same-preview.com, 4
 samegawa.fukushima.jp, 0
 samnanger.no, 0
 sampa.br, 0
@@ -7612,7 +7622,6 @@ school.ge, 0
 school.nz, 0
 school.za, 0
 schoolbus.jp, 4
-schools.nsw.edu.au, 0
 schuldock.de, 4
 schule, 0
 schulplattform.de, 4
@@ -7706,7 +7715,6 @@ servepics.com, 4
 servequake.com, 4
 server-on.net, 4
 servername.us, 4
-servers.run, 4
 servesarcasm.com, 4
 service.gov.scot, 4
 service.gov.uk, 4
@@ -7830,6 +7838,7 @@ shonai.fukuoka.jp, 0
 shonai.yamagata.jp, 0
 shoo.okayama.jp, 0
 shop, 0
+shop.brendly.ba, 4
 shop.brendly.hr, 4
 shop.brendly.rs, 4
 shop.ht, 0
@@ -7944,6 +7953,7 @@ soc.srcf.net, 4
 soccer, 0
 sochi.su, 4
 social, 0
+social.br, 0
 soctrang.vn, 0
 sodegaura.chiba.jp, 0
 soeda.fukuoka.jp, 0
@@ -7984,6 +7994,7 @@ sos.pl, 0
 sosa.chiba.jp, 0
 sosnowiec.pl, 0
 soundcast.me, 4
+sourcecraft.site, 4
 sowa.ibaraki.jp, 0
 soy, 0
 sp.gov.br, 0
@@ -8065,6 +8076,7 @@ stokke.no, 0
 stolos.io, 6
 stor-elvdal.no, 0
 storage, 0
+storage.supabase.co, 4
 storage.yandexcloud.net, 4
 stord.no, 0
 stordal.no, 0
@@ -8804,6 +8816,7 @@ uol, 0
 uonuma.niigata.jp, 0
 uozu.toyama.jp, 0
 up.in, 0
+up.railway.app, 4
 upow.gov.pl, 0
 upper.jp, 4
 uppo.gov.pl, 0
@@ -9055,6 +9068,7 @@ vp4.me, 4
 vpndns.net, 4
 vpnplus.to, 4
 vps-host.net, 4
+vps.hrsn.au, 4
 vps.mcdir.ru, 4
 vps.myjino.ru, 6
 vr.it, 0
@@ -9089,6 +9103,7 @@ wakayama.wakayama.jp, 0
 wake.okayama.jp, 0
 wakkanai.hokkaido.jp, 0
 wakuya.miyagi.jp, 0
+wal.app, 4
 walbrzych.pl, 0
 wales, 0
 walmart, 0
@@ -9119,6 +9134,7 @@ weatherchannel, 0
 web.app, 4
 web.bo, 0
 web.do, 0
+web.erp.dev, 4
 web.gu, 0
 web.id, 0
 web.in, 4
@@ -9761,6 +9777,7 @@ xx.kg, 4
 xxx, 0
 xxx.ec, 0
 xyz, 0
+xyz.br, 0
 xz.cn, 0
 y.bg, 0
 y.se, 0
@@ -9889,6 +9906,7 @@ za.bz, 4
 za.com, 4
 za.net, 4
 za.org, 4
+zabc.net, 4
 zachpomor.pl, 0
 zagan.pl, 0
 zakarpattia.ua, 0
