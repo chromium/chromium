@@ -595,16 +595,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private MVCListAdapter.ListItem buildManageWindowsItem() {
         assert MultiWindowUtils.shouldShowManageWindowsMenu();
-        PropertyModel model =
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
                         R.id.manage_all_windows_menu_id,
                         R.string.menu_manage_all_windows,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_select_window : 0);
-        model.set(
-                AppMenuItemProperties.TITLE,
-                mContext.getString(R.string.menu_manage_all_windows, getInstanceCount()));
-
-        return new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
+                        shouldShowIconBeforeItem() ? R.drawable.ic_select_window : 0));
     }
 
     private MVCListAdapter.ListItem buildHistoryItem() {
