@@ -40,6 +40,7 @@ include_rules = [
   "+chrome/updater/update_service.h",
   "+chromeos",
   "+components/access_code_cast",
+  "+components/private_inference",
   "+components/account_id",
   "+components/account_manager_core",
   "+components/affiliations",

@@ -2416,6 +2416,7 @@ if (!is_android) {
       "//chrome/browser/privacy_budget:browser_tests",
       "//chrome/browser/privacy_sandbox:browser_tests",
       "//chrome/browser/privacy_sandbox/notice:test_support",
+      "//chrome/browser/private_inference:browser_tests",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/profiles/keep_alive",

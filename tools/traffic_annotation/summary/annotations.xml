@@ -522,4 +522,5 @@ Refer to README.md for content description and update process.
  <item id="save_to_drive" added_in_milestone="141" content_hash_code="0012bc0c" os_list="linux,windows" file_path="chrome/browser/save_to_drive/drive_uploader.cc" />
  <item id="corp_messaging_client_receive_client_messages" added_in_milestone="142" content_hash_code="059366dc" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/corp_messaging_client.cc" />
  <item id="corp_messaging_client_send_host_message" added_in_milestone="142" content_hash_code="003280dd" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/corp_messaging_client.cc" />
+ <item id="private_inference_client" added_in_milestone="142" content_hash_code="075eb968" os_list="linux,windows,android,chromeos" file_path="components/private_inference/websocket_client.cc" />
 </annotations>

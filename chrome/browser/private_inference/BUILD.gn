@@ -10,3 +10,20 @@ source_set("private_inference") {
     "//components/private_inference",
   ]
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "websocket_client_browsertest.cc" ]
+
+    deps = [
+      ":private_inference",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/test:test_support",
+      "//components/private_inference",
+      "//content/test:test_support",
+    ]
+  }
+}

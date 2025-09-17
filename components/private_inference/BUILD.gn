@@ -6,6 +6,14 @@ source_set("private_inference") {
   sources = [
     "features.cc",
     "features.h",
+    "websocket_client.cc",
+    "websocket_client.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
 }
