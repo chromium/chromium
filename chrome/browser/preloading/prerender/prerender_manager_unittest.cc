@@ -347,4 +347,50 @@ TEST_F(PrerenderManagerPrewarmTest, StartPrewarmSearchResult) {
   EXPECT_EQ(prerender_host_id, content::FrameTreeNodeId());
 }
 
+TEST_F(PrerenderManagerPrewarmTest, ScopedPrewarmDisabler) {
+  const GURL prewarm_url(features::kPrewarmUrl.Get());
+  ASSERT_TRUE(prewarm_url.is_valid());
+
+  // Prewarming should be possible initially.
+  {
+    content::test::PrerenderHostRegistryObserver registry_observer(
+        *GetActiveWebContents());
+    ASSERT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
+    registry_observer.WaitForTrigger(prewarm_url);
+  }
+
+  // Stop the prewarm to test the disabler.
+  prerender_manager()->StopPrewarmSearchResultForTesting();
+
+  {
+    // Create a disabler.
+    auto disabler = prerender_manager()->CreateScopedPrewarmDisabler();
+    ASSERT_TRUE(disabler);
+
+    // Prewarming should be disabled.
+    EXPECT_FALSE(prerender_manager()->MaybeStartPrewarmSearchResult());
+  }
+
+  // After the disabler is destroyed, prewarming should be enabled again.
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  EXPECT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
+  registry_observer.WaitForTrigger(prewarm_url);
+}
+
+TEST_F(PrerenderManagerPrewarmTest, ScopedPrewarmDisablerDoesNotCrash) {
+  auto* manager = prerender_manager();
+  ASSERT_TRUE(manager);
+
+  // Create a disabler.
+  auto disabler = manager->CreateScopedPrewarmDisabler();
+  ASSERT_TRUE(disabler);
+
+  // Destroy the WebContents, which should destroy the PrerenderManager.
+  DeleteContents();
+
+  // The test passes if the disabler's destructor does not crash when it goes
+  // out of scope.
+}
+
 }  // namespace

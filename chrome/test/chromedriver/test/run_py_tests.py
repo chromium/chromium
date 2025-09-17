@@ -7809,6 +7809,17 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
     })
     return response['contexts'][idx]['context']
 
+  def getContextIdForUrl(self, conn, url):
+    response = conn.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    for context in response['contexts']:
+      if context['url'] == url:
+        return context['context']
+    return None
+
   def testSessionStatus(self):
     conn = self.createWebSocketConnection()
     status = conn.SendCommand({
@@ -7987,7 +7998,7 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
         self.assertGreater(len(response_list), 0)
 
         for response in response_list:
-          contexts = response['contexts']
+          contexts = [c for c in response['contexts'] if c['url'] == 'about:blank']
           self.assertEqual(1, len(contexts))
 
   def testMultipleConnectionsToSameSession(self):
@@ -8098,7 +8109,7 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
       'params': {
       }
     })
-    context = response['contexts'][0]['context']
+    context = self.getContextIdForUrl(connection, 'about:blank')
     result = connection.SendCommand({
       'method': 'script.evaluate',
       'params': {
@@ -8220,6 +8231,23 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     })
     return response['contexts'][idx]['context']
 
+  def getContextForUrl(self, conn, url):
+    response = conn.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    for context in response['contexts']:
+      if context['url'] == url:
+        return context
+    return None
+
+  def getContextIdForUrl(self, conn, url):
+    context = self.getContextForUrl(conn, url)
+    if context is None:
+      return None
+    return context['context']
+
   def postEvaluate(self, conn, expression, context_id=None, channel=None,
                    id=None):
     if context_id is None:
@@ -8268,7 +8296,8 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     })
     contexts = response['contexts']
-    self.assertEqual(1, len(contexts))
+    blank_contexts = [c for c in contexts if c['url'] == 'about:blank']
+    self.assertEqual(1, len(blank_contexts))
 
   def testMapperIsNotDisplacedByNavigation(self):
     self._http_server.SetDataForPath('/page.html',
@@ -8314,6 +8343,15 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def testCloseOneOfManyPages(self):
     conn = self.createWebSocketConnection()
+
+    response = conn.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    contexts = response['contexts']
+    context_count_in_first_tab = len(contexts)
+
     conn.SendCommand({
       'method': 'browsingContext.create',
       'params': {
@@ -8329,7 +8367,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     })
     contexts = response['contexts']
-    existed_context_count = len(contexts)
+    context_count_in_total = len(contexts)
 
     self._driver.CloseWindow()
     response = conn.SendCommand({
@@ -8338,11 +8376,20 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     })
     contexts = response['contexts']
-    self.assertEqual(existed_context_count - 1, len(contexts))
+    expected_count = context_count_in_total - context_count_in_first_tab
+    self.assertEqual(expected_count, len(contexts))
 
   def testCloseFirstTab(self):
     conn = self.createWebSocketConnection()
     context_id1 = self.getContextId(conn, 0)
+
+    response = conn.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    contexts = response['contexts']
+    context_count_in_first_tab = len(contexts)
 
     conn.SendCommand({
       'method': 'browsingContext.create',
@@ -8357,7 +8404,8 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     })
     contexts = response['contexts']
-    existed_context_count = len(contexts)
+    context_count_in_total = len(contexts)
+    self.assertGreater(context_count_in_total, context_count_in_first_tab)
 
     conn.SendCommand({
       'method': 'browsingContext.close',
@@ -8372,7 +8420,8 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     })
     contexts = response['contexts']
-    self.assertEqual(existed_context_count - 1, len(contexts))
+    expected_count = context_count_in_total - context_count_in_first_tab
+    self.assertEqual(expected_count, len(contexts))
 
   def testBrowserQuitsWhenLastBrowsingContextIsClosed(self):
     conn = self.createWebSocketConnection()
@@ -8439,9 +8488,11 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     contexts = response['contexts']
     self.assertIsNotNone(contexts)
     self.assertIsInstance(contexts, list)
-    self.assertEqual(1, len(contexts))
+    non_prewarm_contents = [c for c in contexts if not c['url'].endswith('warmup.html')]
+    self.assertEqual(1, len(non_prewarm_contents))
 
-    parent_context = contexts[0]
+    parent_context = non_prewarm_contents[0]
+    self.assertIsNotNone(parent_context)
     children = parent_context['children']
     self.assertIsNotNone(children)
     self.assertIsInstance(children, list)
@@ -8566,7 +8617,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def testEvent(self):
     conn = self.createWebSocketConnection()
-    context_id = self.getContextId(conn, 0)
+    context_id = self.getContextIdForUrl(conn, 'about:blank')
     self.assertIsNotNone(context_id)
 
     self.subscribeToLoad(conn)
@@ -8580,7 +8631,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def testEventChannel(self):
     conn = self.createWebSocketConnection()
-    context_id = self.getContextId(conn, 0)
+    context_id = self.getContextIdForUrl(conn, 'about:blank')
     self.assertIsNotNone(context_id)
 
     self.subscribeToLoad(conn, channel='abc')
@@ -8619,7 +8670,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
   def testEventConnections(self):
     conn1 = self.createWebSocketConnection()
     conn2 = self.createWebSocketConnection()
-    context_id = self.getContextId(conn1, 0)
+    context_id = self.getContextIdForUrl(conn1, 'about:blank')
     self.assertIsNotNone(context_id)
 
     self.subscribeToLoad(conn2)
@@ -8718,7 +8769,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def testCompareClassicAndBidiIds(self):
     conn = self.createWebSocketConnection()
-    root_context = self.getContextId(conn, 0)
+    root_context = self.getContextIdForUrl(conn, 'about:blank')
     div = self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
         'return document.getElementsByTagName("div")[0];')

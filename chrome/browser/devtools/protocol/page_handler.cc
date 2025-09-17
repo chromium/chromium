@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
@@ -40,6 +41,11 @@ PageHandler::PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
                          protocol::UberDispatcher* dispatcher)
     : agent_host_(agent_host), web_contents_(web_contents->GetWeakPtr()) {
   protocol::Page::Dispatcher::wire(dispatcher, this);
+
+  // Disable prewarming by default. All clients need an explicit support to
+  // enable it. This is automatically enabled again once all clients release
+  // the scoped disabler handle on its agent destruction.
+  SetPrewarmingAllowed(false);
 }
 
 PageHandler::~PageHandler() {
@@ -133,6 +139,24 @@ protocol::Response PageHandler::SetRPHRegistrationMode(
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           web_contents_->GetBrowserContext());
   registry->SetRphRegistrationMode(rph_mode);
+  return protocol::Response::Success();
+}
+
+protocol::Response PageHandler::SetPrewarmingAllowed(bool is_allowed) {
+  if (is_allowed) {
+    scoped_prewarm_disabler_.reset();
+    return protocol::Response::Success();
+  }
+  if (!web_contents_) {
+    return protocol::Response::ServerError("No web contents to host a dialog.");
+  }
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(web_contents_.get());
+  if (!prerender_manager) {
+    return protocol::Response::ServerError(
+        "No prerender manager to host a dialog.");
+  }
+  scoped_prewarm_disabler_ = prerender_manager->CreateScopedPrewarmDisabler();
   return protocol::Response::Success();
 }
 

@@ -77,6 +77,16 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
 
 }  // namespace
 
+PrerenderManager::ScopedPrewarmDisabler::ScopedPrewarmDisabler(
+    base::WeakPtr<PrerenderManager> prerender_manager)
+    : prerender_manager_(std::move(prerender_manager)) {}
+
+PrerenderManager::ScopedPrewarmDisabler::~ScopedPrewarmDisabler() {
+  if (prerender_manager_) {
+    prerender_manager_->DecreasePrewarmDisablerCount();
+  }
+}
+
 PrerenderManager::~PrerenderManager() = default;
 
 class PrerenderManager::SearchPrerenderTask {
@@ -285,6 +295,15 @@ void PrerenderManager::SetPrewarmUrlForTesting(const GURL& url) {
   prewarm_url_for_testing_ = url;
 }
 
+std::unique_ptr<PrerenderManager::ScopedPrewarmDisabler>
+PrerenderManager::CreateScopedPrewarmDisabler() {
+  if (prewarm_disabler_count_ == std::numeric_limits<size_t>::max()) {
+    return nullptr;
+  }
+  prewarm_disabler_count_++;
+  return std::make_unique<ScopedPrewarmDisabler>(GetWeakPtr());
+}
+
 void PrerenderManager::StartPrerenderSearchResult(
     const GURL& canonical_search_url,
     const GURL& prerendering_url,
@@ -431,10 +450,11 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
   if (headless::IsHeadlessMode() || headless::IsOldHeadlessMode()) {
     return PrewarmDecision::kInHeadlessMode;
   }
-  if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents()) &&
+  if (prewarm_disabler_count_ > 0 &&
       !features::kForceEnableWithDevTools.Get()) {
-    // TODO(https://crbug.com/431928370): Allows this once the prewarm support
-    // is implemented in the CDP.
+    // TODO(https://crbug.com/431928370): Remove the feature param once the
+    // DevTools support the API. Once everything is done, this disabler itself
+    // should be removed.
     return PrewarmDecision::kDebuggerAttached;
   }
   prewarm_url =
@@ -481,6 +501,11 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   return PrewarmDecision::kReady;
+}
+
+void PrerenderManager::DecreasePrewarmDisablerCount() {
+  CHECK_GT(prewarm_disabler_count_, 0u);
+  prewarm_disabler_count_--;
 }
 
 PrerenderManager::PrerenderManager(content::WebContents* web_contents)

@@ -35,6 +35,8 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -2607,6 +2609,71 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpensDevTools_OpensUndocked) {
 
   EXPECT_EQ(2u, result->FindList("targetInfos")->size());
   EXPECT_EQ(devtools_target_id, *devtools_target.FindString("targetId"));
+}
+
+class DevToolsProtocolPrerenderTest : public DevToolsProtocolTest {
+ public:
+  DevToolsProtocolPrerenderTest() = default;
+
+ private:
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kEnabledWithNoTrigger};
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolPrerenderTest, SetPrewarmingAllowed) {
+  PrerenderManager* prerender_manager =
+      PrerenderManager::GetOrCreateForWebContents(web_contents());
+  ASSERT_TRUE(prerender_manager);
+
+  const GURL prewarm_url(features::kPrewarmUrl.Get());
+  ASSERT_TRUE(prewarm_url.is_valid());
+
+  // 1. Before attaching DevTools, prewarming should be possible.
+  {
+    content::test::PrerenderHostRegistryObserver registry_observer(
+        *web_contents());
+    EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
+    registry_observer.WaitForTrigger(prewarm_url);
+  }
+  prerender_manager->StopPrewarmSearchResultForTesting();
+
+  // 2. Attach DevTools. Prewarming should be disabled by default.
+  Attach();
+  EXPECT_FALSE(prerender_manager->MaybeStartPrewarmSearchResult());
+
+  // 3. Enable prewarming via DevTools.
+  {
+    base::Value::Dict params;
+    params.Set("isAllowed", true);
+    SendCommandSync("Page.setPrewarmingAllowed", std::move(params));
+
+    content::test::PrerenderHostRegistryObserver registry_observer(
+        *web_contents());
+    EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
+    registry_observer.WaitForTrigger(prewarm_url);
+  }
+  prerender_manager->StopPrewarmSearchResultForTesting();
+
+  // 4. Disable prewarming via DevTools.
+  {
+    base::Value::Dict params;
+    params.Set("isAllowed", false);
+    SendCommandSync("Page.setPrewarmingAllowed", std::move(params));
+    EXPECT_FALSE(prerender_manager->MaybeStartPrewarmSearchResult());
+  }
+
+  // 5. Page.enable should not change the prewarming trigger ability.
+  SendCommandSync("Page.enable");
+  EXPECT_FALSE(prerender_manager->MaybeStartPrewarmSearchResult());
+
+  // 6. Page.disable should not change the prewarming trigger ability.
+  SendCommandSync("Page.disable");
+  EXPECT_FALSE(prerender_manager->MaybeStartPrewarmSearchResult());
+
+  // 7. Detach DevTools. Prewarming should be enabled again.
+  ASSERT_TRUE(agent_host_->DetachClient(this));
+  EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

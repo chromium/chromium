@@ -54,6 +54,17 @@ enum class PrerenderPredictionStatus {
 class PrerenderManager : public content::WebContentsObserver,
                          public content::WebContentsUserData<PrerenderManager> {
  public:
+  class ScopedPrewarmDisabler {
+   public:
+    explicit ScopedPrewarmDisabler(
+        base::WeakPtr<PrerenderManager> prerender_manager);
+    ScopedPrewarmDisabler(const ScopedPrewarmDisabler&) = delete;
+    ScopedPrewarmDisabler& operator=(const ScopedPrewarmDisabler&) = delete;
+    ~ScopedPrewarmDisabler();
+
+   private:
+    base::WeakPtr<PrerenderManager> prerender_manager_;
+  };
   PrerenderManager(const PrerenderManager&) = delete;
   PrerenderManager& operator=(const PrerenderManager&) = delete;
 
@@ -74,6 +85,11 @@ class PrerenderManager : public content::WebContentsObserver,
   // Sets the prewarm page URL for testing as it's difficult to set the testing
   // server's URL as a Finch parameter in the tests.
   void SetPrewarmUrlForTesting(const GURL& url);
+
+  // Creates a ScopedPrewarmDisabler instance. The callers should keep the
+  // returned instance until they want to enable the prewarm again. The feature
+  // will be disabled until all ScopedPrewarmDisabler instances are destroyed.
+  std::unique_ptr<ScopedPrewarmDisabler> CreateScopedPrewarmDisabler();
 
   // Calling this method will lead to the cancellation of the previous prerender
   // if the given `canonical_search_url` differs from the ongoing one's.
@@ -110,6 +126,7 @@ class PrerenderManager : public content::WebContentsObserver,
   const GURL GetPrerenderCanonicalSearchURLForTesting() const;
 
  private:
+  friend class ScopedPrewarmDisabler;
   class SearchPrerenderTask;
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -142,6 +159,8 @@ class PrerenderManager : public content::WebContentsObserver,
   // Otherwise, returns kReady and sets `prewarm_url`.
   PrewarmDecision ShouldPrewarm(GURL& prewarm_url);
 
+  void DecreasePrewarmDisablerCount();
+
   std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;
   std::optional<GURL> prewarm_url_for_testing_;
 
@@ -151,6 +170,9 @@ class PrerenderManager : public content::WebContentsObserver,
   std::unique_ptr<SearchPrerenderTask> search_prerender_task_;
 
   std::unique_ptr<content::PrerenderHandle> direct_url_input_prerender_handle_;
+
+  // Holds the number of active ScopedPrewarmDisabler instances.
+  size_t prewarm_disabler_count_ = 0;
 
   base::WeakPtrFactory<PrerenderManager> weak_factory_{this};
 
