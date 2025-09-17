@@ -13,14 +13,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -34,8 +34,21 @@ namespace {
 
 // Returns whether the `contents` is a WebApp.
 bool IsWebApp(content::WebContents* contents) {
-  return web_app::AppBrowserController::IsWebApp(
-      chrome::FindBrowserWithTab(contents));
+  ash::BrowserDelegate* browser = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& current) {
+        for (size_t index = 0; index < current.GetWebContentsCount(); ++index) {
+          content::WebContents* const tab = current.GetWebContentsAt(index);
+          if (tab == contents) {
+            browser = &current;
+            return ash::BrowserController::kBreakIteration;
+          }
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+
+  return browser && browser->IsWebApp();
 }
 
 // Returns the AppType of the `contents`.

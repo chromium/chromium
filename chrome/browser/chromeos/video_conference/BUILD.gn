@@ -22,6 +22,7 @@ static_library("video_conference") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui/web_applications",
     "//chromeos/crosapi/mojom",
