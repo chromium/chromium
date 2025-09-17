@@ -1340,6 +1340,10 @@ class LocationBarMediator
 
     @VisibleForTesting
     boolean shouldShowMicButton() {
+        if (mNavigationFulfillmentTypeSupplier.get() != NavigationFulfillmentType.DEFAULT) {
+            return false;
+        }
+
         if (shouldShowDeleteButton()) return false;
         if (!mNativeInitialized
                 || mVoiceRecognitionHandler == null
