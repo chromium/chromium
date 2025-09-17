@@ -1252,8 +1252,15 @@ void Widget::CloseAllWidgets() {
     crash_reporter::ScopedCrashKeyString scopedWindowKey(&window_info_key,
                                                          value);
 
-    if (GetWidgetForNativeWindow(gfx::NativeWindow(window))) {
-      [window close];
+    // It is necessary to call `GetNativeWidgetForNativeWindow()` below as the
+    // views::Widget may be destroyed independently from its NativeWidget (see
+    // CLIENT_OWNS_WIDGET), and in this case `GetWidgetForNativeWindow()` will
+    // return null.
+    if (internal::NativeWidgetPrivate* native_widget =
+            internal::NativeWidgetPrivate::GetNativeWidgetForNativeWindow(
+                gfx::NativeWindow(window))) {
+      // `CloseNow()` will destroy both in-process and remote NSWindows.
+      native_widget->CloseNow();
     }
   }
 }

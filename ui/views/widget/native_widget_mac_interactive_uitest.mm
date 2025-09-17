@@ -17,6 +17,7 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/native_widget_mac.h"
+#include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 namespace views::test {
@@ -432,6 +433,61 @@ TEST_F(NativeWidgetMacInteractiveUITest, UnregisterAccelerators) {
 
   child_widget.reset();
   EXPECT_FALSE(focus_manager->IsAcceleratorRegistered(accelerator));
+}
+
+// Regression test for crbug.com/443168930.
+// Widget::CloseAllWidgets() is intended to clean up all platform widgets
+// (typically called at shutdown). The CLIENT_OWNS_WIDGET ownership scheme
+// allows a views::Widget to be destroyed independently of its associated
+// platform widget (wrapped by a NativeWidget). This test ensures that
+// CloseAllWidgets() destroys all platform widgets in the case the corresponding
+// views::Widget has already been destroyed - leaving the platform widget /
+// NativeWidget effectively orphaned.
+TEST_F(NativeWidgetMacInteractiveUITest, ClientOwnsWidget_CloseAllWidgets) {
+  // Counts the number of reported views::Widgets.
+  const auto count_widgets = []() {
+    int count = 0;
+    for (NSWindow* window : [NSApp windows]) {
+      if (Widget::GetWidgetForNativeWindow(gfx::NativeWindow(window))) {
+        count++;
+      }
+    }
+    return count;
+  };
+  // Counts the number of reported NativeWidgets.
+  const auto count_native_widgets = []() {
+    int count = 0;
+    for (NSWindow* window : [NSApp windows]) {
+      if (internal::NativeWidgetPrivate::GetNativeWidgetForNativeWindow(
+              gfx::NativeWindow(window))) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  // Test should start with zero widgets.
+  EXPECT_EQ(0, count_widgets());
+  EXPECT_EQ(0, count_native_widgets());
+
+  // Create a new widget using CLIENT_OWNS_WIDGET.
+  auto widget = base::WrapUnique<Widget>(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  widget->SetBounds(gfx::Rect(100, 100, 100, 100));
+  EXPECT_EQ(1, count_widgets());
+  EXPECT_EQ(1, count_native_widgets());
+
+  // Simulate a client destroying `widget`. The views::Widget should have been
+  // destroyed but the NativeWidget should remain.
+  widget.reset();
+  EXPECT_EQ(0, count_widgets());
+  EXPECT_EQ(1, count_native_widgets());
+
+  // CloseAllWidgets() is expected to close all platform widgets, including
+  // those for which the corresponding views::Widget has been destroyed.
+  Widget::CloseAllWidgets();
+  EXPECT_EQ(0, count_widgets());
+  EXPECT_EQ(0, count_native_widgets());
 }
 
 INSTANTIATE_TEST_SUITE_P(NativeWidgetMacInteractiveUITestInstance,
