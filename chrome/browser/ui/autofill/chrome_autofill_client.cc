@@ -110,6 +110,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/password_form_classification_util.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
@@ -1184,12 +1185,14 @@ OtpFieldDetector* ChromeAutofillClient::GetOtpFieldDetector() {
 
 one_time_tokens::SmsOtpBackend* ChromeAutofillClient::GetSmsOtpBackend() const {
 #if BUILDFLAG(IS_ANDROID)
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return AndroidSmsOtpBackendFactory::GetForProfile(profile);
-#else
-  return nullptr;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kAndroidSmsOtpFilling)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    return AndroidSmsOtpBackendFactory::GetForProfile(profile);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
+  return nullptr;
 }
 
 void ChromeAutofillClient::set_test_addresses(
