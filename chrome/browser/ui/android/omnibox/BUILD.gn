@@ -351,7 +351,6 @@ android_resources("java_resources") {
     "java/res/layout/location_status.xml",
     "java/res/layout/location_status_icon.xml",
     "java/res/layout/location_status_incognito_badge.xml",
-    "java/res/layout/navigation_attachment_image.xml",
     "java/res/layout/navigation_attachment_item.xml",
     "java/res/layout/navigation_attachments_bar.xml",
     "java/res/layout/navigation_attachments_popup.xml",

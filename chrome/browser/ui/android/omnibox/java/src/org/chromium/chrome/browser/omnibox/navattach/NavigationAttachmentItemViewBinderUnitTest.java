@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -71,6 +72,13 @@ public class NavigationAttachmentItemViewBinderUnitTest {
     }
 
     @Test
+    public void testSetTitle_emptyString() {
+        mModel.set(NavigationAttachmentItemProperties.TITLE, "");
+        TextView textView = mView.findViewById(R.id.attachment_title);
+        assertEquals(View.GONE, textView.getVisibility());
+    }
+
+    @Test
     public void testSetTitle() {
         mModel.set(NavigationAttachmentItemProperties.TITLE, "My Attachment");
         TextView textView = mView.findViewById(R.id.attachment_title);
@@ -78,9 +86,21 @@ public class NavigationAttachmentItemViewBinderUnitTest {
     }
 
     @Test
-    public void testSetDescription() {
+    public void testSetDescription_emptyTitle() {
+        mModel.set(NavigationAttachmentItemProperties.TITLE, "");
         mModel.set(NavigationAttachmentItemProperties.DESCRIPTION, "My Description");
         TextView textView = mView.findViewById(R.id.attachment_description);
-        assertEquals("My Description", textView.getText());
+        assertEquals(View.GONE, textView.getVisibility());
+    }
+
+    @Test
+    public void testSetDescription_withTitle() {
+        mModel.set(NavigationAttachmentItemProperties.TITLE, "My Title");
+        mModel.set(NavigationAttachmentItemProperties.DESCRIPTION, "My Description");
+
+        TextView title = mView.findViewById(R.id.attachment_title);
+        assertEquals("My Title", title.getText());
+        TextView description = mView.findViewById(R.id.attachment_description);
+        assertEquals("My Description", description.getText());
     }
 }

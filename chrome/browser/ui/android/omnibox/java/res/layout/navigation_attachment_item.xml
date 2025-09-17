@@ -12,7 +12,7 @@ found in the LICENSE file.
     android:layout_width="wrap_content"
     android:layout_height="48dp"
     android:paddingStart="6dp"
-    android:paddingEnd="16dp"
+    android:paddingEnd="6dp"
     android:paddingVertical="4dp">
 
     <ImageView
@@ -24,6 +24,7 @@ found in the LICENSE file.
         android:scaleType="centerCrop"
         android:importantForAccessibility="no"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/attachment_title"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -35,9 +36,10 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary.Bold"
-        app:layout_constraintBottom_toTopOf="@+id/attachment_description"
         app:layout_constraintStart_toEndOf="@id/attachment_thumbnail"
+        app:layout_constraintEnd_toStartOf="@id/attachment_remove_button"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/attachment_description"
         app:layout_constraintVertical_chainStyle="packed"/>
 
     <TextView
@@ -48,8 +50,21 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        app:layout_constraintStart_toStartOf="@id/attachment_title"
+        app:layout_constraintEnd_toStartOf="@id/attachment_remove_button"
+        app:layout_constraintTop_toBottomOf="@id/attachment_title"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageButton
+        android:id="@+id/attachment_remove_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/btn_delete_24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/attachment_thumbnail"
-        app:layout_constraintTop_toBottomOf="@id/attachment_title"/>
+        app:tint="@color/default_icon_color_secondary_baseline"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

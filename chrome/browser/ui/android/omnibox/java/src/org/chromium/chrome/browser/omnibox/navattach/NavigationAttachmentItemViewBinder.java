@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,16 +24,25 @@ class NavigationAttachmentItemViewBinder {
         if (propertyKey == NavigationAttachmentItemProperties.THUMBNAIL) {
             ImageView imageView = view.findViewById(R.id.attachment_thumbnail);
             imageView.setImageDrawable(model.get(NavigationAttachmentItemProperties.THUMBNAIL));
-        } else if (propertyKey == NavigationAttachmentItemProperties.TITLE) {
-            TextView textView = view.findViewById(R.id.attachment_title);
-            if (textView != null) {
-                textView.setText(model.get(NavigationAttachmentItemProperties.TITLE));
-            }
-        } else if (propertyKey == NavigationAttachmentItemProperties.DESCRIPTION) {
-            TextView textView = view.findViewById(R.id.attachment_description);
-            if (textView != null) {
-                textView.setText(model.get(NavigationAttachmentItemProperties.DESCRIPTION));
-            }
+        } else if (propertyKey == NavigationAttachmentItemProperties.TITLE
+                || propertyKey == NavigationAttachmentItemProperties.DESCRIPTION) {
+            applyTitleAndDescriptionIfPresent(model, view);
+        }
+    }
+
+    private static void applyTitleAndDescriptionIfPresent(PropertyModel model, View view) {
+        CharSequence title = model.get(NavigationAttachmentItemProperties.TITLE);
+        TextView titleView = view.findViewById(R.id.attachment_title);
+        TextView descriptionView = view.findViewById(R.id.attachment_description);
+
+        if (TextUtils.isEmpty(title)) {
+            titleView.setVisibility(View.GONE);
+            descriptionView.setVisibility(View.GONE);
+        } else {
+            titleView.setVisibility(View.VISIBLE);
+            titleView.setText(title);
+            descriptionView.setVisibility(View.VISIBLE);
+            descriptionView.setText(model.get(NavigationAttachmentItemProperties.DESCRIPTION));
         }
     }
 }
