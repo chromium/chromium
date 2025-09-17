@@ -29,9 +29,18 @@
 #include "ui/views/interaction/polling_view_observer.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace glic {
 
 namespace {
+
+#if BUILDFLAG(IS_MAC)
+bool kTestDisabledForVirtualMachineMac =
+    (base::mac::MacOSMajorVersion() == 15) && base::mac::IsVirtualMachine();
+#endif  // BUILDFLAG(IS_MAC)
 
 tabs::TabAlertController* GetTabAlertControllerForTab(Browser* browser,
                                                       int tab_index) {
@@ -126,6 +135,13 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, TabAlertTurnsOff) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, SecondTabAlerted) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       AddNewCandidateTab(kSecondTabId),
@@ -266,6 +282,13 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        IncognitoBrowserShouldNotAlert) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
     GTEST_SKIP()

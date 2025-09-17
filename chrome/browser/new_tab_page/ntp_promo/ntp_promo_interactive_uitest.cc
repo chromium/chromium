@@ -48,6 +48,10 @@
 #include "ui/views/interaction/polling_view_observer.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace {
 
 using ntp_promo::mojom::ShowNtpPromosResult;
@@ -327,6 +331,13 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() == 15 && base::mac::IsVirtualMachine()) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   InstallTestPromo(Eligibility::kEligible);
   RunTestSequence(
       InstrumentTab(kNtpElementId),

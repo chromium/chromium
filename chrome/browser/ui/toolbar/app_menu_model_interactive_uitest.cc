@@ -76,12 +76,19 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabPageElementId);
+
+#if BUILDFLAG(IS_MAC)
+bool kTestDisabledForVirtualMachineMac =
+    (base::mac::MacOSMajorVersion() == 15) && base::mac::IsVirtualMachine();
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace
 
 class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
@@ -178,6 +185,13 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoAccelerator) {
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest,
                        CastSaveShareSubMenuItemText) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   if (!media_router::MediaRouterEnabled(browser()->profile())) {
     GTEST_SKIP() << "The cast item only exists if cast is enabled.";
   }
@@ -552,6 +566,13 @@ class UniversalInstallAppMenuModelInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
                        DIYAppMenuWorksCorrectly) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
       ObserveState(kAppBannerManagerState, GetManager()),

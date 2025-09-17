@@ -47,6 +47,10 @@
 #include "ui/gfx/switches.h"
 #include "ui/views/test/widget_activation_waiter.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace glic {
 
 namespace {
@@ -529,6 +533,13 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
 // Ensures that only the emphasis animation is restarted when the focused tab is
 // destroyed.
 IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabDestroyed) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() == 15 && base::mac::IsVirtualMachine()) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()

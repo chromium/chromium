@@ -23,6 +23,10 @@
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace shortcuts {
 
 namespace {
@@ -34,12 +38,24 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
 // Identifier for the shortcut created in these tests.
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewShortcutId);
 
+#if BUILDFLAG(IS_MAC)
+bool kTestDisabledForVirtualMachineMac =
+    (base::mac::MacOSMajorVersion() == 15) && base::mac::IsVirtualMachine();
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace
 
 using ShortcutIntegrationInteractiveUiTest =
     ShortcutIntegrationInteractionTestBase;
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest, CreateAndLaunch) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   const GURL kPageWithIconsUrl =
       embedded_https_test_server().GetURL("/shortcuts/page_icons.html");
   RunTestSequence(
@@ -53,6 +69,13 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest, CreateAndLaunch) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest, CustomTitle) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   const GURL kPageWithIconsUrl =
       embedded_https_test_server().GetURL("/shortcuts/page_icons.html");
   RunTestSequence(
@@ -65,6 +88,13 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest, CustomTitle) {
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest,
                        MultipleShortcuts) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   const GURL kPageWithIconsUrl =
       embedded_https_test_server().GetURL("/shortcuts/page_icons.html");
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondShortcutId);
@@ -195,6 +225,13 @@ class ShortcutIntegrationMultiProfileInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
                        CreatedForCorrectProfile) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   const std::u16string shortcut_title_1 =
       u"Page with icon links (" +
       // "Your Chrome"
@@ -244,6 +281,13 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
                        DontLaunchInLockedProfile) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);

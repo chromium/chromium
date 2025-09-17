@@ -21,6 +21,9 @@
 
 namespace views::test {
 
+bool kTestDisabledForVirtualMachineMac =
+    (base::mac::MacOSMajorVersion() == 15) && base::mac::IsVirtualMachine();
+
 // Tests for NativeWidgetMac that rely on global window manager state, and can
 // not be parallelized.
 class NativeWidgetMacInteractiveUITest
@@ -75,6 +78,11 @@ class NativeWidgetMacInteractiveUITest::Observer : public TestWidgetObserver {
 
 // Test that showing a window causes it to attain global keyWindow status.
 TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+
   Widget* widget = MakeWidget();
   observer_ = std::make_unique<Observer>(this, widget);
 
@@ -118,6 +126,11 @@ TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
 
 // Test that ShowInactive does not take keyWindow status.
 TEST_P(NativeWidgetMacInteractiveUITest, ShowInactiveIgnoresKeyStatus) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+
   WidgetTest::WaitForSystemAppActivation();
   Widget* widget = MakeWidget();
   NSWindow* widget_window = widget->GetNativeWindow().GetNativeNSWindow();
