@@ -229,6 +229,18 @@ bool Character::IsEmojiModifierBase(UChar32 ch) {
 }
 #endif  // defined(USING_SYSTEM_ICU) && (U_ICU_VERSION_MAJOR_NUM <= 61)
 
+bool Character::IsEmojiReserved(UChar32 ch) {
+  // `Extended_Pictographic` is for pictographic symbols, as well as reserved
+  // ranges in blocks largely associated with emoji characters. Intersect with
+  // `GC=Cn` (Unassigned) to get the reserved ranges.
+  // https://unicode.org/reports/tr44/#Extended_Pictographic
+  return u_charType(ch) == U_UNASSIGNED && IsExtendedPictographic(ch);
+}
+
+bool Character::IsEmojiIncludingReserved(UChar32 ch) {
+  return IsEmoji(ch) || IsEmojiReserved(ch);
+}
+
 bool Character::IsRegionalIndicator(UChar32 ch) {
   return (ch >= 0x1F1E6 && ch <= 0x1F1FF);
 }

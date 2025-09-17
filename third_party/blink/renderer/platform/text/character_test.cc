@@ -373,6 +373,15 @@ TEST(CharacterTest, TestEmoji40Data) {
   EXPECT_TRUE(Character::IsEmojiModifierBase(0x1F933));
 }
 
+TEST(CharacterTest, EmojiReserved) {
+#if U_ICU_VERSION_MAJOR_NUM >= 78
+  EXPECT_TRUE(Character::IsEmoji(0x1FAEF));
+#else
+  EXPECT_TRUE(Character::IsEmojiReserved(0x1FAEF));
+#endif
+  EXPECT_TRUE(Character::IsEmojiReserved(0x1FFFD));
+}
+
 TEST(CharacterTest, LineBreakAndQuoteNotEmoji) {
   EXPECT_FALSE(Character::IsEmojiTextDefault('\n'));
   EXPECT_FALSE(Character::IsEmojiTextDefault('"'));

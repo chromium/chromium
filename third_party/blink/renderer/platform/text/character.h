@@ -208,6 +208,10 @@ class PLATFORM_EXPORT Character {
   // Returns true if the character has a Emoji property.
   // See http://www.unicode.org/Public/emoji/3.0/emoji-data.txt
   static bool IsEmoji(UChar32);
+  // Reserved ranges in blocks largely associated with emoji characters. This
+  // allows handling future Emoji code points.
+  static bool IsEmojiReserved(UChar32);
+  static bool IsEmojiIncludingReserved(UChar32);
   // Default presentation style according to:
   // http://www.unicode.org/reports/tr51/#Presentation_Style
   static bool IsEmojiTextDefault(UChar32);
