@@ -424,7 +424,7 @@
 -keep,allowshrinking @androidx.appsearch.annotation.Document class ** {}
 
 # Keep AppSearchDocumentClassMap name for ServiceLoader
--keep,allowshrinking class androidx.appsearch.app.AppSearchDocumentClassMap {}
+-keep,allowshrinking,allowoptimization class androidx.appsearch.app.AppSearchDocumentClassMap {}
 
 # If AppSearchDocumentClassMap#getGlobalMap() is used, keep any implementing subclasses since
 # AppSearchDocumentClassMap#getMap() is used to populate the global map.
@@ -489,6 +489,10 @@
 # robolectric tests.
 -assumenosideeffects class androidx.datastore.core.SharedCounter$Factory {
     private boolean isDalvik() return true;
+}
+
+-keepclasseswithmembernames,includedescriptorclasses class androidx.datastore.core.NativeSharedCounter {
+    native <methods>;
 }
 
 # File: obj/third_party/androidx/androidx_datastore_datastore_preferences_core_android_java/proguard.txt
