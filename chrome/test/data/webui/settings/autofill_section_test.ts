@@ -164,19 +164,9 @@ suite('AutofillSectionUiTest', function() {
     const accountAddress = createAddressEntry();
     accountAddress.metadata!.recordType =
         chrome.autofillPrivate.AddressRecordType.ACCOUNT;
-    const homeAddress = createAddressEntry();
-    homeAddress.metadata!.recordType =
-        chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME;
-    const workAddress = createAddressEntry();
-    workAddress.metadata!.recordType =
-        chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
-    const nameEmailAddress = createAddressEntry();
-    nameEmailAddress.metadata!.recordType =
-        chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL;
 
     const autofillManager = new TestAutofillManager();
-    autofillManager.data.addresses =
-        [address, accountAddress, homeAddress, workAddress, nameEmailAddress];
+    autofillManager.data.addresses = [address, accountAddress];
     autofillManager.data.accountInfo = {
       ...STUB_USER_ACCOUNT_INFO,
       isSyncEnabledForAutofillProfiles: true,
@@ -262,10 +252,29 @@ suite('AutofillSectionUiTest', function() {
       await eventToPromise('close', dialog.$.dialog);
     }
 
+    document.body.removeChild(section);
+  });
+
+  test('verifyAddressDeleteHomeAddressNotice', async () => {
+    const homeAddress = createAddressEntry();
+    homeAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME;
+
+    const autofillManager = new TestAutofillManager();
+    autofillManager.data.addresses = [homeAddress];
+    autofillManager.data.accountInfo = {
+      ...STUB_USER_ACCOUNT_INFO,
+      isSyncEnabledForAutofillProfiles: true,
+    };
+    AutofillManagerImpl.setInstance(autofillManager);
+
+    const section = document.createElement('settings-autofill-section');
+    document.body.appendChild(section);
+    await autofillManager.whenCalled('getAddressList');
     await flushTasks();
 
     {
-      const dialog = await initiateRemoving(section, 2);
+      const dialog = await initiateRemoving(section, 0);
       const homeUrl = loadTimeData.getString('googleAccountHomeAddressUrl')
                           .replace(/&/g, '&amp;');
       const expectedMessage = loadTimeData.getStringF(
@@ -278,10 +287,29 @@ suite('AutofillSectionUiTest', function() {
       await eventToPromise('close', dialog.$.dialog);
     }
 
+    document.body.removeChild(section);
+  });
+
+  test('verifyAddressDeleteWorkAddressNotice', async () => {
+    const workAddress = createAddressEntry();
+    workAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
+
+    const autofillManager = new TestAutofillManager();
+    autofillManager.data.addresses = [workAddress];
+    autofillManager.data.accountInfo = {
+      ...STUB_USER_ACCOUNT_INFO,
+      isSyncEnabledForAutofillProfiles: true,
+    };
+    AutofillManagerImpl.setInstance(autofillManager);
+
+    const section = document.createElement('settings-autofill-section');
+    document.body.appendChild(section);
+    await autofillManager.whenCalled('getAddressList');
     await flushTasks();
 
     {
-      const dialog = await initiateRemoving(section, 3);
+      const dialog = await initiateRemoving(section, 0);
       const workUrl = loadTimeData.getString('googleAccountWorkAddressUrl')
                           .replace(/&/g, '&amp;');
       const expectedMessage = loadTimeData.getStringF(
@@ -294,10 +322,29 @@ suite('AutofillSectionUiTest', function() {
       await eventToPromise('close', dialog.$.dialog);
     }
 
+    document.body.removeChild(section);
+  });
+
+  test('verifyAddressDeleteNameEmailAddressNotice', async () => {
+    const nameEmailAddress = createAddressEntry();
+    nameEmailAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL;
+
+    const autofillManager = new TestAutofillManager();
+    autofillManager.data.addresses = [nameEmailAddress];
+    autofillManager.data.accountInfo = {
+      ...STUB_USER_ACCOUNT_INFO,
+      isSyncEnabledForAutofillProfiles: true,
+    };
+    AutofillManagerImpl.setInstance(autofillManager);
+
+    const section = document.createElement('settings-autofill-section');
+    document.body.appendChild(section);
+    await autofillManager.whenCalled('getAddressList');
     await flushTasks();
 
     {
-      const dialog = await initiateRemoving(section, 4);
+      const dialog = await initiateRemoving(section, 0);
       const nameEmailUrl =
           loadTimeData.getString('googleAccountNameEmailAddressEditUrl')
               .replace(/&/g, '&amp;');
