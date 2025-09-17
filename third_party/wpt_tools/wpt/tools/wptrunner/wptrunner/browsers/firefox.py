@@ -238,9 +238,9 @@ def run_info_extras(logger, default_prefs=None, **kwargs):
           "sessionHistoryInParent": (not kwargs.get("disable_fission") or
                                      not bool_pref("fission.disableSessionHistoryInParent")),
           "swgl": bool_pref("gfx.webrender.software"),
+          "useDrawSnapshot": bool_pref("reftest.use-draw-snapshot"),
           "privateBrowsing": bool_pref("browser.privatebrowsing.autostart"),
           "remoteAsyncEvents": bool_pref("remote.events.async.wheel.enabled"),
-          "remoteCNM": not bool_pref("remote.parent-navigation.enabled"),
           "incOriginInit": os.environ.get("MOZ_ENABLE_INC_ORIGIN_INIT") == "1",
           }
     rv.update(run_info_browser_version(**kwargs))
@@ -271,13 +271,13 @@ def update_properties():
         "isolated_process",
         "processor",
         "swgl",
+        "useDrawSnapshot",
         "asan",
         "tsan",
         "remoteAsyncEvents",
-        "remoteCNM",
         "sessionHistoryInParent",
         "subsuite"], {
-        "os": ["version"],
+        "os": ["version", "os_version"],
         "processor": ["bits"]})
 
 
