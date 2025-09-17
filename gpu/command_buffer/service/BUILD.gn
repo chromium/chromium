@@ -635,6 +635,8 @@ target(link_target_type, "gles2_sources") {
     sources += [
       "dxgi_shared_handle_manager.cc",
       "dxgi_shared_handle_manager.h",
+      "shared_image/d3d11_image_same_adapter_copy_strategy.cc",
+      "shared_image/d3d11_image_same_adapter_copy_strategy.h",
       "shared_image/d3d_image_backing.cc",
       "shared_image/d3d_image_backing.h",
       "shared_image/d3d_image_backing_factory.cc",
