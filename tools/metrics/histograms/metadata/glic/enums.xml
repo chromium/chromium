@@ -293,6 +293,7 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="SubscribeToPageMetadata"/>
   <int value="64" label="SwitchConversation"/>
   <int value="65" label="RegisterConversation"/>
+  <int value="66" label="OnReaction"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->

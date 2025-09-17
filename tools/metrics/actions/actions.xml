@@ -13097,6 +13097,35 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicReactionCanned" not_user_triggered="true">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <description>
+    Recorded when a reaction was rendered in response to a Glic user query, and
+    the reaction type is 'Canned'. Canned reactions are pre-defined reactions
+    that can be rendered without delay.
+  </description>
+</action>
+
+<action name="GlicReactionModelled" not_user_triggered="true">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <description>
+    Recorded when a reaction was rendered in response to a Glic user query, and
+    the reaction type is 'Model'. Model reactions show output from a model to
+    explain work on the response.
+  </description>
+</action>
+
+<action name="GlicReactionUnknown" not_user_triggered="true">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <description>
+    Recorded when a reaction was rendered in response to a Glic user query, and
+    the reaction type is unknown.
+  </description>
+</action>
+
 <action name="GlicRemoveHighlight">
   <owner>adithyas@chromium.org</owner>
   <owner>liuwilliam@chromium.org</owner>

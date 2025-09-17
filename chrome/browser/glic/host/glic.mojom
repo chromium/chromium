@@ -87,6 +87,17 @@ enum WebUiState {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
 
+[Stable, Extensible]
+enum MetricUserInputReactionType {
+  // An unknown reaction type.
+  [Default] kUnknown = 0,
+  // A canned reaction which can be presented without communication with the
+  // server.
+  kCanned = 1,
+  // A reaction which requires some generic modeling to produce.
+  kModel = 2,
+};
+
 // The result of `PrepareForClient()`.
 enum PrepareForClientResult {
   // Ready to load the web client.
@@ -696,6 +707,10 @@ interface WebClientHandler {
 
   // Called when the user submits input.
   OnUserInputSubmitted(WebClientMode mode);
+
+  // Called after user input is submitted, but before a response starts,
+  // when the UI shows a message that explains the progress of the request.
+  OnReaction(MetricUserInputReactionType reactionType);
 
   // Called when the web client starts to respond.
   OnResponseStarted();

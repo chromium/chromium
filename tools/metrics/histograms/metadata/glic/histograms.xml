@@ -140,6 +140,7 @@ chromium-metrics-reviews@google.com.
     <variant name="MaybeRefreshUserStatus"/>
     <variant name="OnClosedCaptionsShown"/>
     <variant name="OnModelChanged"/>
+    <variant name="OnReaction"/>
     <variant name="OnResponseRated"/>
     <variant name="OnResponseStarted"/>
     <variant name="OnResponseStopped"/>
@@ -239,6 +240,22 @@ chromium-metrics-reviews@google.com.
     glic. The Three-Dot menu entry is always shown but the Tabstrip and OS
     entrypoints can be removed based on user configuration.
   </summary>
+</histogram>
+
+<histogram name="Glic.FirstReaction.Text.{ReactionType}.Time" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Recorded when the first reaction is rendered after a user input was made in
+    text mode. Measures the time from a user's submitted input until a response
+    starts and was visible to the user. Reported once for each type, only on the
+    first reaction of each user input.
+  </summary>
+  <token key="ReactionType">
+    <variant name="Canned"/>
+    <variant name="Modelled"/>
+  </token>
 </histogram>
 
 <histogram name="Glic.Focus.Settings.Shortcut.Customized" enum="BooleanEnabled"

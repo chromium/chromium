@@ -1161,9 +1161,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     journal_handler_.RecordFeedback(positive, reason);
   }
 
-  void OnUserInputSubmitted(glic::mojom::WebClientMode mode) override {
+  void OnUserInputSubmitted(mojom::WebClientMode mode) override {
     glic_service_->OnUserInputSubmitted(mode);
     glic_service_->metrics()->OnUserInputSubmitted(mode);
+  }
+
+  void OnReaction(mojom::MetricUserInputReactionType reaction_type) override {
+    glic_service_->metrics()->OnReaction(reaction_type);
   }
 
   void OnResponseStarted() override {

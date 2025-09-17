@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {ClientView, HostCapability, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {ClientView, HostCapability, MetricUserInputReactionType, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, UserProfileInfo, ViewChangeRequest, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -704,14 +704,16 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(metrics);
     assertDefined(metrics.onResponseRated);
     assertDefined(metrics.onUserInputSubmitted);
+    assertDefined(metrics.onReaction);
     assertDefined(metrics.onResponseStarted);
     assertDefined(metrics.onResponseStopped);
     assertDefined(metrics.onSessionTerminated);
     assertDefined(metrics.onClosedCaptionsShown);
     metrics.onResponseRated(true);
-    metrics.onUserInputSubmitted(WebClientMode.AUDIO);
+    metrics.onUserInputSubmitted(WebClientMode.TEXT);
+    metrics.onReaction(MetricUserInputReactionType.MODEL);
     metrics.onResponseStarted();
-    metrics.onResponseStopped();
+    metrics.onResponseStopped({cause: ResponseStopCause.USER});
     metrics.onSessionTerminated();
     metrics.onClosedCaptionsShown();
   }

@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -161,6 +162,7 @@ class GlicApiTestWithOneTab : public GlicApiTest {
     GlicApiTest::SetUpOnMainThread();
 
     histogram_tester = std::make_unique<base::HistogramTester>();
+    user_action_tester = std::make_unique<base::UserActionTester>();
     // Load the test page in a tab, so that there is some page context.
     RunTestSequence(InstrumentTab(kFirstTab),
                     NavigateWebContents(kFirstTab, page_url()),
@@ -186,6 +188,7 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   }
 
   std::unique_ptr<base::HistogramTester> histogram_tester;
+  std::unique_ptr<base::UserActionTester> user_action_tester;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -432,8 +435,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowClosed) {
   window_controller().Close();
   ExecuteJsTest();
   WaitForWebUiState(mojom::WebUiState::kError);
-  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
-                                      /*WEB_CLIENT_INITIALIZE_FAILED=*/2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Host.WebClientState.OnDestroy",
+      /*sample=*/2 /*WEB_CLIENT_INITIALIZE_FAILED*/, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowOpen) {
@@ -1140,6 +1144,10 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, MAYBE_testMetrics) {
 
   histogram_tester->ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
                                        true, 1);
+  EXPECT_EQ(1, user_action_tester->GetActionCount("GlicReactionModelled"));
+  EXPECT_EQ(1, user_action_tester->GetActionCount("GlicResponseStopByUser"));
+  histogram_tester->ExpectTotalCount("Glic.FirstReaction.Text.Modelled.Time",
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToFindsText) {

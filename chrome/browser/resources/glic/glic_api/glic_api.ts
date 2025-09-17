@@ -788,6 +788,12 @@ export declare interface GlicBrowserHostMetrics {
   onUserInputSubmitted?(mode: WebClientMode): void;
 
   /**
+   * Called after user input is submitted, but before a response starts,
+   * when the UI shows a message that explains the progress of the request.
+   */
+  onReaction?(reactionType: MetricUserInputReactionType): void;
+
+  /**
    * Called when the web client has sufficiently processed the input such that
    * it is able to start providing a response.
    */
@@ -821,6 +827,19 @@ export declare interface GlicBrowserHostMetrics {
    * scope.
    */
   onModelChanged?(model: WebClientModel): void;
+}
+
+/** The type of user input reaction. */
+export enum MetricUserInputReactionType {
+  /** An unknown reaction type. */
+  UNKNOWN = 0,
+  /**
+   * A canned reaction which can be presented without communication with the
+   * server.
+   */
+  CANNED = 1,
+  /** A reaction which requires some generic modeling to produce. */
+  MODEL = 2,
 }
 
 /** Web client's operation modes */

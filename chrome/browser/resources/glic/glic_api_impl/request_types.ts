@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AnnotatedPageData, ChromeVersion, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {WebClientInitialState} from '../glic.mojom-webui.js';
+import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AnnotatedPageData, ChromeVersion, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, MetricUserInputReactionType, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -333,6 +333,12 @@ export declare type HostRequestTypes = ValidateRequestMap<{
       mode: number,
     },
     backgroundAllowed: true,
+  },
+  glicBrowserOnReaction: {
+    backgroundAllowed: true,
+    request: {
+      reactionType: MetricUserInputReactionType,
+    },
   },
   glicBrowserOnResponseStarted: {
     backgroundAllowed: true,
@@ -702,6 +708,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         SubscribeToPageMetadata: 63,
         SwitchConversation: 64,
         RegisterConversation: 65,
+        OnReaction: 66,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();
