@@ -18817,6 +18817,24 @@
             ]
         }
     ],
+    "PrefetchNewTabPageTrigger": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NewTabPageTriggerForPrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrefetchProxyDesktop": [
         {
             "platforms": [
