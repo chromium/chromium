@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -33,30 +33,17 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class UploadImagePreviewCoordinator {
 
     private final PropertyModel mPreviewPropertyModel;
-    private final CropImageView mCropImageView;
-
-    /** A callback for receiving the result of the image crop operation. */
-    public interface CropResultCallback {
-        void onCropResult(Matrix portraitMatrix, Matrix landscapeMatrix);
-    }
 
     /**
      * @param activity The activity context.
      * @param bitmap The bitmap to be previewed.
-     * @param onConfirmCallback The callback to be invoked with crop matrices when the user clicks
-     *     "Save".
-     * @param onCancelCallback The callback to be invoked when the user clicks "Cancel".
      */
     public UploadImagePreviewCoordinator(
-            Activity activity,
-            Bitmap bitmap,
-            CropResultCallback onConfirmCallback,
-            Runnable onCancelCallback) {
+            Activity activity, Bitmap bitmap, Runnable dismissBottomSheetRunnable) {
         mPreviewPropertyModel = new PropertyModel(PREVIEW_KEYS);
         View contentView =
                 LayoutInflater.from(activity)
                         .inflate(R.layout.ntp_customization_theme_preview_dialog_layout, null);
-        mCropImageView = contentView.findViewById(R.id.preview_image);
 
         final ChromeDialog dialog =
                 new ChromeDialog(
@@ -73,16 +60,18 @@ public class UploadImagePreviewCoordinator {
         mPreviewPropertyModel.set(
                 NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER,
                 v -> {
-                    Matrix portraitMatrix = mCropImageView.getPortraitMatrix();
-                    Matrix landscapeMatrix = mCropImageView.getLandscapeMatrix();
-                    onConfirmCallback.onCropResult(portraitMatrix, landscapeMatrix);
+                    // TODO(crbug.com/423579377): update the current onBackgroundChanged to the
+                    // latest one.
+                    NtpCustomizationConfigManager.getInstance().onBackgroundChanged(bitmap);
+
+                    dismissBottomSheetRunnable.run();
                     dialog.dismiss();
                 });
 
         mPreviewPropertyModel.set(
                 NtpThemeProperty.PREVIEW_CANCEL_CLICK_LISTENER,
                 v -> {
-                    onCancelCallback.run();
+                    dismissBottomSheetRunnable.run();
                     dialog.dismiss();
                 });
 

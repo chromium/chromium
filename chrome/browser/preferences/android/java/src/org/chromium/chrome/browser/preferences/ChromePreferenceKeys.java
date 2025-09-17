@@ -203,6 +203,14 @@ public final class ChromePreferenceKeys {
     public static final String NTP_CUSTOMIZATION_BACKGROUND_COLOR =
             "Chrome.NtpCustomization.NtpBackgroundColor";
 
+    /** The transformation matrix for the NTP background image in portrait orientation. */
+    public static final String NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX =
+            "Chrome.NtpCustomization.BackgroundImagePortraitMatrix";
+
+    /** The transformation matrix for the NTP background image in landscape orientation. */
+    public static final String NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX =
+            "Chrome.NtpCustomization.BackgroundImageLandscapeMatrix";
+
     public static final String CRASH_UPLOAD_FAILURE_BROWSER = "browser_crash_failure_upload";
     public static final String CRASH_UPLOAD_FAILURE_GPU = "gpu_crash_failure_upload";
     public static final String CRASH_UPLOAD_FAILURE_OTHER = "other_crash_failure_upload";
@@ -1066,6 +1074,8 @@ public final class ChromePreferenceKeys {
                 CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
                 NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
                 NTP_CUSTOMIZATION_BACKGROUND_COLOR,
+                NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX,
+                NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX,
                 CUSTOM_TABS_LAST_CLIENT_PACKAGE,
                 CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION,
                 CUSTOM_TABS_LAST_CLOSE_TIMESTAMP,

@@ -20,9 +20,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Browser;
+import android.text.TextUtils;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
@@ -38,6 +40,7 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp_customization.theme.BackgroundImageInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,6 +50,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.Executor;
 
 /** Utility class of the NTP customization. */
@@ -243,6 +247,22 @@ public class NtpCustomizationUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    /**
+     * Saves the background transformation matrices to SharedPreferences.
+     *
+     * @param backgroundImageInfo The {@link BackgroundImageInfo} object containing the portrait and
+     *     landscape matrices.
+     */
+    public static void updateBackgroundImageMatrices(BackgroundImageInfo backgroundImageInfo) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeString(
+                ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX,
+                matrixToString(backgroundImageInfo.portraitMatrix));
+        prefsManager.writeString(
+                ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX,
+                matrixToString(backgroundImageInfo.landscapeMatrix));
+    }
+
     @VisibleForTesting
     static void saveBackgroundImageFile(Bitmap backgroundImageBitmap) {
         File file = getBackgroundImageFile();
@@ -256,7 +276,7 @@ public class NtpCustomizationUtils {
 
     /** Returns the file to save the NTP's background image. */
     @VisibleForTesting
-    static File getBackgroundImageFile() {
+    public static File getBackgroundImageFile() {
         return new File(
                 ContextUtils.getApplicationContext().getFilesDir(), NTP_BACKGROUND_IMAGE_FILE);
     }
@@ -316,6 +336,63 @@ public class NtpCustomizationUtils {
         }
 
         return BitmapFactory.decodeFile(file.getPath(), null);
+    }
+
+    /** Loads the NTP's background transformation matrices from SharedPreferences. */
+    public static @Nullable BackgroundImageInfo readNtpBackgroundImageMatrices() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        String portraitMatrixString =
+                prefsManager.readString(
+                        ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX, null);
+        String landscapeMatrixString =
+                prefsManager.readString(
+                        ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX, null);
+
+        if (TextUtils.isEmpty(portraitMatrixString) || TextUtils.isEmpty(landscapeMatrixString)) {
+            return null;
+        }
+
+        Matrix portraitMatrix = stringToMatrix(portraitMatrixString);
+        Matrix landscapeMatrix = stringToMatrix(landscapeMatrixString);
+
+        if (portraitMatrix == null || landscapeMatrix == null) {
+            return null;
+        }
+
+        return new BackgroundImageInfo(portraitMatrix, landscapeMatrix);
+    }
+
+    /** Converts a Matrix into a string representation for storage. */
+    public static String matrixToString(Matrix matrix) {
+        float[] values = new float[9];
+        matrix.getValues(values);
+        return Arrays.toString(values);
+    }
+
+    /** Converts a string representation back into a Matrix. Returns null on failure. */
+    public static @Nullable Matrix stringToMatrix(String matrixString) {
+        if (matrixString == null || !matrixString.startsWith("[") || !matrixString.endsWith("]")) {
+            return null;
+        }
+
+        try {
+            // Remove brackets and spaces
+            String[] stringValues =
+                    matrixString.substring(1, matrixString.length() - 1).split(", ");
+            if (stringValues.length != 9) return null;
+
+            float[] values = new float[9];
+            for (int i = 0; i < 9; i++) {
+                values[i] = Float.parseFloat(stringValues[i]);
+            }
+
+            Matrix matrix = new Matrix();
+            matrix.setValues(values);
+            return matrix;
+        } catch (Exception e) {
+            Log.i(TAG, "Error in stringToMatrix: " + e);
+            return null;
+        }
     }
 
     /**
@@ -392,5 +469,7 @@ public class NtpCustomizationUtils {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX);
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX);
     }
 }

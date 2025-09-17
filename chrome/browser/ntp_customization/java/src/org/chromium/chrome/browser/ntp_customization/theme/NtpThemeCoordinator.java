@@ -114,17 +114,7 @@ public class NtpThemeCoordinator {
 
         mUploadPreviewCoordinator =
                 new UploadImagePreviewCoordinator(
-                        (Activity) mContext,
-                        bitmap,
-                        // "On Confirm" callback
-                        (portraitMatrix, landscapeMatrix) -> {
-                            // TODO(crbug.com/423579377): call methods in
-                            // NtpCustomizationConfigManager to convert two matrices to two
-                            // drawables.
-                            NtpCustomizationConfigManager.getInstance().onBackgroundChanged(bitmap);
-                        },
-                        // "On Cancel" callback
-                        mDismissBottomSheetRunnable);
+                        (Activity) mContext, bitmap, mDismissBottomSheetRunnable);
     }
 
     public void destroy() {

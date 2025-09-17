@@ -29,6 +29,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsListContainerView.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/BackgroundImageInfo.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/CropImageUtils.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/CropImageView.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBottomSheetView.java",
