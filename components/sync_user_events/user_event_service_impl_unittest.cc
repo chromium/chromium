@@ -55,7 +55,9 @@ std::unique_ptr<UserEventSpecifics> WithNav(
 
 class TestGlobalIdMapper : public GlobalIdMapper {
   void AddGlobalIdChangeObserver(GlobalIdChange callback) override {}
-  int64_t GetLatestGlobalId(int64_t global_id) override { return global_id; }
+  int64_t GetLatestGlobalId(int64_t global_id) const override {
+    return global_id;
+  }
 };
 
 class UserEventServiceImplTest : public testing::Test {

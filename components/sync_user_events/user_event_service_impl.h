@@ -36,7 +36,7 @@ class UserEventServiceImpl : public UserEventService {
 
  private:
   // Checks dynamic or event specific conditions.
-  bool ShouldRecordEvent(const sync_pb::UserEventSpecifics& specifics);
+  bool ShouldRecordEvent(const sync_pb::UserEventSpecifics& specifics) const;
 
   std::unique_ptr<UserEventSyncBridge> bridge_;
 

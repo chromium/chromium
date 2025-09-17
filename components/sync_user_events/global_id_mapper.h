@@ -32,7 +32,7 @@ class GlobalIdMapper {
   // Given a |global_id|, returns what the latest global_id is for the given
   // navigation, to the best of our ability. If we do not have such a mapping,
   // which is quite possible, the input |global_id| is returned.
-  virtual int64_t GetLatestGlobalId(int64_t global_id) = 0;
+  virtual int64_t GetLatestGlobalId(int64_t global_id) const = 0;
 };
 
 }  // namespace syncer

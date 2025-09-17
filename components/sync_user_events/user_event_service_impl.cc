@@ -120,7 +120,7 @@ UserEventServiceImpl::GetControllerDelegate() {
 }
 
 bool UserEventServiceImpl::ShouldRecordEvent(
-    const UserEventSpecifics& specifics) {
+    const UserEventSpecifics& specifics) const {
   if (specifics.event_case() == UserEventSpecifics::EVENT_NOT_SET) {
     return false;
   }

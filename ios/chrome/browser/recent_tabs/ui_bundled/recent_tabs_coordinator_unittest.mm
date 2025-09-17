@@ -125,7 +125,7 @@ class GlobalIdMapperMock : public syncer::GlobalIdMapper {
 
   MOCK_METHOD1(AddGlobalIdChangeObserver,
                void(syncer::GlobalIdChange callback));
-  MOCK_METHOD1(GetLatestGlobalId, int64_t(int64_t global_id));
+  MOCK_CONST_METHOD1(GetLatestGlobalId, int64_t(int64_t global_id));
 };
 
 class RecentTabsTableCoordinatorTest : public BlockCleanupTest {

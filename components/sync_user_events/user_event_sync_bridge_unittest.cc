@@ -81,7 +81,7 @@ class TestGlobalIdMapper : public GlobalIdMapper {
     callback_ = std::move(callback);
   }
 
-  int64_t GetLatestGlobalId(int64_t global_id) override {
+  int64_t GetLatestGlobalId(int64_t global_id) const override {
     auto iter = id_map_.find(global_id);
     return iter == id_map_.end() ? global_id : iter->second;
   }
