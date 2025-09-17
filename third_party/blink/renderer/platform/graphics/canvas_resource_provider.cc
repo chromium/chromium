@@ -1892,9 +1892,10 @@ gpu::raster::RasterInterface* CanvasResourceProvider::RasterInterface() const {
 }
 
 GrDirectContext* CanvasResourceProvider::GetGrContext() const {
-  if (!context_provider_wrapper_)
-    return nullptr;
-  return context_provider_wrapper_->ContextProvider().GetGrContext();
+  // ContextProvider no longer has a GrDirectContext following shipping of
+  // OOP-R.
+  // TODO(crbug.com/391648152): Eliminate this method entirely.
+  return nullptr;
 }
 
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
