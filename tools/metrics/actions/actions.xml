@@ -13151,8 +13151,8 @@ should be able to be added at any place in this file.
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
-    Tracks a single response stop in glic, initiated by a non-user cause (could
-    be normal completion).
+    Tracks a single response stop in glic that was not caused by a user or
+    normal completion.
   </description>
 </action>
 
@@ -13161,7 +13161,9 @@ should be able to be added at any place in this file.
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
-    Tracks a single response stop in glic, the cause is unspecified.
+    Tracks a single response stop in glic, the cause is unspecified. This is
+    reported for all stops in older server versions, and only successful
+    completions in newer server versions.
   </description>
 </action>
 
