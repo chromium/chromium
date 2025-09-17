@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
@@ -553,7 +553,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
   RunTestSequence(
       // Ensure browser() is active.
       Do([&]() {
-        ASSERT_EQ(BrowserList::GetInstance()->GetLastActive(), browser());
+        ASSERT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+                  browser());
       }),
       // Current widow: 1 tab group, 2 tabs.
       CheckResult([&]() { return GetTabGroupCount(browser()); }, 1),
@@ -569,7 +570,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
       CheckResult([&]() { return GetTabCount(browser()); }, 1),
       // Verify browser() is not active.
       Do([&]() {
-        ASSERT_NE(BrowserList::GetInstance()->GetLastActive(), browser());
+        ASSERT_NE(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+                  browser());
       }),
       // Load the New Tab Page in browser().
       LoadNewTabPage(),
@@ -582,7 +584,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveTabGroupsUiTest,
       CheckResult([&]() { return GetTabCount(browser()); }, 1),
       // Verify browser() is not active.
       Do([&]() {
-        ASSERT_NE(BrowserList::GetInstance()->GetLastActive(), browser());
+        ASSERT_NE(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+                  browser());
       }));
 }
 

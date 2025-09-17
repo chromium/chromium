@@ -1649,6 +1649,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/prefetch",
       "//chrome/browser/reading_list",
       "//chrome/browser/sync",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:test_support",
       "//chrome/browser/ui/toolbar",

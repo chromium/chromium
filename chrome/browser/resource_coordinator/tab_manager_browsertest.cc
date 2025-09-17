@@ -32,9 +32,9 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -1033,7 +1033,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerFencedFrameTest, TabManagerWasDiscarded) {
 namespace {
 
 // Ensures that |browser| has |num_tabs| open tabs.
-void EnsureTabsInBrowser(Browser* browser, int num_tabs) {
+void EnsureTabsInBrowser(BrowserWindowInterface* browser, int num_tabs) {
   for (int i = 0; i < num_tabs; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser, GURL(chrome::kChromeUICreditsURL),
@@ -1042,22 +1042,24 @@ void EnsureTabsInBrowser(Browser* browser, int num_tabs) {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
-  EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
+  EXPECT_EQ(num_tabs, browser->GetTabStripModel()->count());
 }
 
 // Creates a browser with |num_tabs| tabs.
-Browser* CreateBrowserWithTabs(int num_tabs) {
-  Browser* current_browser = BrowserList::GetInstance()->GetLastActive();
+BrowserWindowInterface* CreateBrowserWithTabs(int num_tabs) {
+  BrowserWindowInterface* const current_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::NewWindow(current_browser);
   ui_test_utils::WaitForBrowserSetLastActive(browser_created_observer.Wait());
-  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* new_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_NE(new_browser, current_browser);
 
   // To avoid flakes when focus changes, set the active tab strip model
   // explicitly.
   GetTabLifecycleUnitSource()->SetFocusedTabStripModelForTesting(
-      new_browser->tab_strip_model());
+      new_browser->GetTabStripModel());
 
   EnsureTabsInBrowser(new_browser, num_tabs);
   return new_browser;
@@ -1124,9 +1126,9 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithOccludedWindow) {
   EnsureTabsInBrowser(browser(), 2);
   browser()->window()->SetBounds(gfx::Rect(10, 10, 10, 10));
   // Other browser that covers the occluded browser.
-  Browser* other_browser = CreateBrowserWithTabs(1);
+  BrowserWindowInterface* const other_browser = CreateBrowserWithTabs(1);
   EXPECT_NE(other_browser, browser());
-  other_browser->window()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  other_browser->GetWindow()->SetBounds(gfx::Rect(0, 0, 100, 100));
 
   // Advance time so everything is urgent discardable.
   test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);

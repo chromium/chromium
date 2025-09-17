@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -94,8 +95,9 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
 
     // Pretend to "close the browser."
     SessionServiceFactory::ShutdownForProfile(profile);
-    while (Browser* browser = BrowserList::GetInstance()->GetLastActive()) {
-      if (browser->window()->IsMinimized()) {
+    while (BrowserWindowInterface* const browser =
+               GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
+      if (browser->GetWindow()->IsMinimized()) {
         minimized_window_counter++;
       } else {
         normal_window_counter++;

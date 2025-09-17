@@ -19,7 +19,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -115,10 +115,11 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
                    extended_scope_page_, LinkTarget::SELF, "");
 
   // The navigation should get link captured into the web app.
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
   EXPECT_EQ(
-      app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      app_browser->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       extended_scope_page_);
 }
 
@@ -235,9 +236,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
   observer->Wait();
 
   // The web app handles the navigation.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const active_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -272,9 +274,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
   observer->Wait();
 
   // The web app handles the navigation by opening a new app window.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const active_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -299,9 +302,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
   observer->Wait();
 
   // The web app handles the navigation by opening a new app window.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const active_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -327,9 +331,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
   observer->Wait();
 
   // The web app handles the navigation by opening a new app window.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const active_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -352,9 +357,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
   observer->Wait();
 
   // The web app handles the navigation by opening a new app window.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const active_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -379,9 +385,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
   observer->Wait();
 
   // The app window was not launched for the navigation.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const active_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_FALSE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
@@ -403,9 +410,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
   observer->Wait();
 
   // A browser tab is opened for the target URL.
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const active_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_FALSE(AppBrowserController::IsForWebApp(active_browser, app_id_));
-  EXPECT_EQ(active_browser->tab_strip_model()
+  EXPECT_EQ(active_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             target_url);

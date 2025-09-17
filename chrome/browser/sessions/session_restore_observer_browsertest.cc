@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/sessions/session_restore_observer.h"
+
 #include <memory>
 #include <unordered_map>
 
@@ -15,14 +17,13 @@
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/sessions/session_restore_observer.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -87,8 +88,9 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  Browser* QuitBrowserAndRestore(Browser* browser) {
-    Profile* profile = browser->profile();
+  BrowserWindowInterface* QuitBrowserAndRestore(
+      BrowserWindowInterface* browser) {
+    Profile* const profile = browser->GetProfile();
 
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
@@ -99,12 +101,12 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
     // Create a new window, which should trigger session restore.
     chrome::NewEmptyWindow(profile);
     SessionRestoreTestHelper().Wait();
-    return BrowserList::GetInstance()->GetLastActive();
+    return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   }
 
-  void WaitForTabsToLoad(Browser* browser) {
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      WebContents* contents = browser->tab_strip_model()->GetWebContentsAt(i);
+  void WaitForTabsToLoad(TabStripModel* tab_strip_model) {
+    for (int i = 0; i < tab_strip_model->count(); ++i) {
+      WebContents* contents = tab_strip_model->GetWebContentsAt(i);
       contents->GetController().LoadIfNecessary();
       resource_coordinator::WaitForTransitionToLoaded(contents);
     }
@@ -139,10 +141,10 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SessionRestoreObserverTest,
                        MAYBE_SingleTabSessionRestore) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
-  Browser* new_browser = QuitBrowserAndRestore(browser());
 
   // The restored browser should have 1 tab.
-  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  TabStripModel* tab_strip =
+      QuitBrowserAndRestore(browser())->GetTabStripModel();
   ASSERT_TRUE(tab_strip);
   ASSERT_EQ(1, tab_strip->count());
 
@@ -151,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreObserverTest,
       MockSessionRestoreObserver::SessionRestoreEvent::kStartedLoadingTabs,
       session_restore_events()[0]);
 
-  ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(new_browser));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(tab_strip));
   ASSERT_EQ(2u, number_of_session_restore_events());
   EXPECT_EQ(
       MockSessionRestoreObserver::SessionRestoreEvent::kFinishedLoadingTabs,
@@ -163,10 +165,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreObserverTest, MultipleTabSessionRestore) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetTestURL(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  Browser* new_browser = QuitBrowserAndRestore(browser());
 
   // The restored browser should have 2 tabs.
-  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  TabStripModel* tab_strip =
+      QuitBrowserAndRestore(browser())->GetTabStripModel();
   ASSERT_TRUE(tab_strip);
   ASSERT_EQ(2, tab_strip->count());
 
@@ -175,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreObserverTest, MultipleTabSessionRestore) {
       MockSessionRestoreObserver::SessionRestoreEvent::kStartedLoadingTabs,
       session_restore_events()[0]);
 
-  ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(new_browser));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(tab_strip));
   ASSERT_EQ(2u, number_of_session_restore_events());
   EXPECT_EQ(
       MockSessionRestoreObserver::SessionRestoreEvent::kFinishedLoadingTabs,

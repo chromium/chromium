@@ -107,7 +107,7 @@ class PrintManagementInteractiveUiTest : public InteractiveAshTest {
     return Do([]() {
       // Printer settings is opened last so it'll be the last active browser.
       ASSERT_FALSE(BrowserList::GetInstance()->empty());
-      chrome::CloseWindow(BrowserList::GetInstance()->GetLastActive());
+      chrome::CloseWindow(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
     });
   }
 

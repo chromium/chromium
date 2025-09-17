@@ -2526,10 +2526,10 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
         ->SetLoginFinishedReportedForTesting();
   }
 
-  Browser* LaunchSystemWebApp(const GURL& gurl,
-                              SystemWebAppType system_app_type,
-                              apps::LaunchSource launch_source,
-                              bool is_override_gurl = false) {
+  BrowserWindowInterface* LaunchSystemWebApp(const GURL& gurl,
+                                             SystemWebAppType system_app_type,
+                                             apps::LaunchSource launch_source,
+                                             bool is_override_gurl = false) {
     WaitForTestSystemAppInstall();
 
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
@@ -2549,17 +2549,10 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
 
     navigation_observer.Wait();
 
-    return BrowserList::GetInstance()->GetLastActive();
+    return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   }
 
-  Browser* LaunchSystemWebAppWithOverrideURL(SystemWebAppType system_app_type,
-                                             const GURL& override_url) {
-    return LaunchSystemWebApp(override_url, system_app_type,
-                              apps::LaunchSource::kFromChromeInternal,
-                              /*is_override_gurl=*/true);
-  }
-
-  Browser* LaunchHelpSystemWebApp() {
+  BrowserWindowInterface* LaunchHelpSystemWebApp() {
     return LaunchSystemWebApp(GURL("chrome://help-app/"),
                               SystemWebAppType::HELP,
                               apps::LaunchSource::kFromChromeInternal);
@@ -2567,7 +2560,7 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
 
   // Launches the media system web app. Used when a test needs to use a
   // different system web app.
-  Browser* LaunchMediaSystemWebApp(
+  BrowserWindowInterface* LaunchMediaSystemWebApp(
       apps::LaunchSource launch_source =
           apps::LaunchSource::kFromChromeInternal) {
     return LaunchSystemWebApp(GURL("chrome://media-app/"),
@@ -2600,12 +2593,12 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
 
 IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
                        LaunchSWA) {
-  Browser* app_browser = LaunchHelpSystemWebApp();
+  BrowserWindowInterface* const app_browser = LaunchHelpSystemWebApp();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
 
   // Get the window id.
-  aura::Window* window = app_browser->window()->GetNativeWindow();
+  aura::Window* window = app_browser->GetWindow()->GetNativeWindow();
   int32_t window_id = window->GetProperty(::app_restore::kWindowIdKey);
 
   AppLaunchInfoSaveWaiter::Wait();
@@ -2640,12 +2633,12 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 // SWA doesn't have the restore info.
 IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
                        LaunchSWAWithoutRestore) {
-  Browser* app_browser = LaunchHelpSystemWebApp();
+  BrowserWindowInterface* const app_browser = LaunchHelpSystemWebApp();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
 
   // Get the window id.
-  aura::Window* window = app_browser->window()->GetNativeWindow();
+  aura::Window* window = app_browser->GetWindow()->GetNativeWindow();
   int32_t window_id = window->GetProperty(::app_restore::kWindowIdKey);
 
   CreateAndSaveWindowInfo(window);
@@ -2662,12 +2655,12 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   ASSERT_FALSE(HasWindowInfo(window_id));
 
-  Browser* new_app_browser = LaunchHelpSystemWebApp();
+  BrowserWindowInterface* const new_app_browser = LaunchHelpSystemWebApp();
 
   ASSERT_TRUE(new_app_browser);
   ASSERT_NE(browser(), new_app_browser);
 
-  window = new_app_browser->window()->GetNativeWindow();
+  window = new_app_browser->GetWindow()->GetNativeWindow();
   auto* window_state = WindowState::Get(window);
   EXPECT_FALSE(window_state->HasRestoreBounds());
 }
@@ -2676,12 +2669,12 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 // restore, and the restoration can work if the SWA is added later.
 IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
                        NoSWAWhenRestore) {
-  Browser* app_browser = LaunchHelpSystemWebApp();
+  BrowserWindowInterface* const app_browser = LaunchHelpSystemWebApp();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
 
   // Get the window id.
-  aura::Window* window = app_browser->window()->GetNativeWindow();
+  aura::Window* window = app_browser->GetWindow()->GetNativeWindow();
   int32_t window_id = window->GetProperty(::app_restore::kWindowIdKey);
 
   AppLaunchInfoSaveWaiter::Wait();
@@ -2727,18 +2720,18 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 // Reboot, verify the help app can be restored.
 IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
                        RestartMutiTimesWithLaunchBySystem) {
-  Browser* app_browser1 = LaunchHelpSystemWebApp();
+  BrowserWindowInterface* const app_browser1 = LaunchHelpSystemWebApp();
   ASSERT_TRUE(app_browser1);
   ASSERT_NE(browser(), app_browser1);
 
   // Get the window id.
-  aura::Window* window1 = app_browser1->window()->GetNativeWindow();
+  aura::Window* window1 = app_browser1->GetWindow()->GetNativeWindow();
   int32_t window_id1 = window1->GetProperty(::app_restore::kWindowIdKey);
 
   AppLaunchInfoSaveWaiter::Wait();
   ::full_restore::FullRestoreSaveHandler::GetInstance()->ClearForTesting();
 
-  // Close app_browser so that the SWA can be relaunched.
+  // Close app_browser1 so that the SWA can be relaunched.
   web_app::CloseAndWait(app_browser1);
 
   // Modify the app readiness to uninstall to simulate the app is not installed
@@ -2756,9 +2749,9 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Launch another app from kFromChromeInternal, so not start the save timer,
   // to prevent overwriting the full restore file.
-  Browser* app_browser2 = LaunchMediaSystemWebApp();
+  BrowserWindowInterface* const app_browser2 = LaunchMediaSystemWebApp();
   ASSERT_TRUE(app_browser2);
-  aura::Window* window2 = app_browser2->window()->GetNativeWindow();
+  aura::Window* const window2 = app_browser2->GetWindow()->GetNativeWindow();
   int32_t window_id2 = window2->GetProperty(::app_restore::kWindowIdKey);
 
   AppLaunchInfoSaveWaiter::Wait(/*allow_save=*/false);
@@ -2798,18 +2791,18 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 // Reboot, verify the media app can be restored.
 IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
                        RestartMultiTimesWithLaunchByUser) {
-  Browser* app_browser1 = LaunchHelpSystemWebApp();
+  BrowserWindowInterface* const app_browser1 = LaunchHelpSystemWebApp();
   ASSERT_TRUE(app_browser1);
   ASSERT_NE(browser(), app_browser1);
 
   // Get the window id.
-  aura::Window* window1 = app_browser1->window()->GetNativeWindow();
+  aura::Window* const window1 = app_browser1->GetWindow()->GetNativeWindow();
   int32_t window_id1 = window1->GetProperty(::app_restore::kWindowIdKey);
 
   AppLaunchInfoSaveWaiter::Wait();
   ::full_restore::FullRestoreSaveHandler::GetInstance()->ClearForTesting();
 
-  // Close app_browser so that the SWA can be relaunched.
+  // Close app_browser1 so that the SWA can be relaunched.
   web_app::CloseAndWait(app_browser1);
 
   // Modify the app readiness to uninstall to simulate the app is not installed
@@ -2826,10 +2819,10 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   ASSERT_FALSE(GetBrowserForWindowId(window_id1));
 
   // Launch another app from kFromShelf, so start the save timer,
-  Browser* app_browser2 =
+  BrowserWindowInterface* const app_browser2 =
       LaunchMediaSystemWebApp(apps::LaunchSource::kFromShelf);
   ASSERT_TRUE(app_browser2);
-  aura::Window* window2 = app_browser2->window()->GetNativeWindow();
+  aura::Window* window2 = app_browser2->GetWindow()->GetNativeWindow();
   int32_t window_id2 = window2->GetProperty(::app_restore::kWindowIdKey);
 
   AppLaunchInfoSaveWaiter::Wait(/*allow_save=*/false);
@@ -2870,12 +2863,12 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
                        WindowProperties) {
-  Browser* app_browser = LaunchHelpSystemWebApp();
+  BrowserWindowInterface* const app_browser = LaunchHelpSystemWebApp();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
 
   // Get the window id.
-  aura::Window* window = app_browser->window()->GetNativeWindow();
+  aura::Window* window = app_browser->GetWindow()->GetNativeWindow();
   int32_t window_id = window->GetProperty(::app_restore::kWindowIdKey);
 
   // Snap |window| to the left and store its window properties.
@@ -2925,11 +2918,13 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
                        TabletSplitView) {
   TabletMode::Get()->SetEnabledForTest(true);
 
-  Browser* app1_browser = LaunchHelpSystemWebApp();
-  Browser* app2_browser = LaunchMediaSystemWebApp();
+  BrowserWindowInterface* const app1_browser = LaunchHelpSystemWebApp();
+  BrowserWindowInterface* const app2_browser = LaunchMediaSystemWebApp();
 
-  aura::Window* app1_window = app1_browser->window()->GetNativeWindow();
-  aura::Window* app2_window = app2_browser->window()->GetNativeWindow();
+  aura::Window* const app1_window =
+      app1_browser->GetWindow()->GetNativeWindow();
+  aura::Window* const app2_window =
+      app2_browser->GetWindow()->GetNativeWindow();
 
   SplitViewTestApi split_view_test_api;
   split_view_test_api.SnapWindow(app1_window, ash::SnapPosition::kPrimary);

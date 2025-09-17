@@ -536,8 +536,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_NO_FATAL_FAILURE(StartFullscreenLockPage());
   ASSERT_TRUE(DisablePreventDefaultOnTestPage());
 
-  Browser* first_instance = GetActiveBrowser();
-  Browser* second_instance = CreateNewBrowserInstance();
+  BrowserWindowInterface* const first_instance = GetActiveBrowser();
+  BrowserWindowInterface* const second_instance = CreateNewBrowserInstance();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(first_instance));
 
   // Save this off for querying later as ActiveWebContents() is based on focus
@@ -599,8 +599,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 
   // Create a second browser instance so we can switch back and forth between
   // the two instances to simulate focus loss/gain.
-  Browser* first_instance = GetActiveBrowser();
-  Browser* second_instance = CreateNewBrowserInstance();
+  BrowserWindowInterface* const first_instance = GetActiveBrowser();
+  BrowserWindowInterface* const second_instance = CreateNewBrowserInstance();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(first_instance));
 
   // Save this off for querying later as ActiveWebContents() based on focus.

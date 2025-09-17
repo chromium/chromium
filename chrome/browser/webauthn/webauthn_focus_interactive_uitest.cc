@@ -8,7 +8,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -176,8 +176,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnFocusTest, SucceedWithNewWindowOpen) {
       base::BindRepeating(
           [](Browser* browser, device::VirtualFidoDevice* device) {
             chrome::NewWindow(browser);
-            Browser* new_window = BrowserList::GetInstance()->GetLastActive();
-            return ui_test_utils::BringBrowserWindowToFront(new_window);
+            return ui_test_utils::BringBrowserWindowToFront(
+                GetLastActiveBrowserWindowInterfaceWithAnyProfile());
           },
           browser());
   RunTestSequence(

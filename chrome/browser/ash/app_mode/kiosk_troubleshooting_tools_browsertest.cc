@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/task_manager_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -110,10 +111,11 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
         /*alt=*/false, /*command=*/false);
   }
 
-  Browser* EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser() const {
+  BrowserWindowInterface*
+  EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser() const {
     EmulateOpenNewWindowShortcutPressed();
     EXPECT_FALSE(DidKioskCloseNewWindow());
-    return BrowserList::GetInstance()->GetLastActive();
+    return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   }
 
   void EmulateOpenTaskManagerShortcutPressed() const {
@@ -149,11 +151,11 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
     return popup_browser;
   }
 
-  bool IsLactActiveBrowserResizable() {
-    BrowserWindow* lact_active_window =
-        BrowserList::GetInstance()->GetLastActive()->window();
-    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-        lact_active_window->GetNativeWindow());
+  bool IsLastActiveBrowserResizable() {
+    views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+            ->GetWindow()
+            ->GetNativeWindow());
     return widget->widget_delegate()->CanResize();
   }
 
@@ -255,15 +257,15 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   EnableDevTools();
 
   // The main browser should not be resizable.
-  EXPECT_FALSE(IsLactActiveBrowserResizable());
+  EXPECT_FALSE(IsLastActiveBrowserResizable());
 
   DevToolsWindowTesting::OpenDevToolsWindowSync(browser(),
                                                 /*is_docked=*/false);
-  EXPECT_TRUE(IsLactActiveBrowserResizable());
+  EXPECT_TRUE(IsLastActiveBrowserResizable());
 
   EmulateOpenNewWindowShortcutPressed();
   EXPECT_FALSE(DidKioskCloseNewWindow());
-  EXPECT_TRUE(IsLactActiveBrowserResizable());
+  EXPECT_TRUE(IsLastActiveBrowserResizable());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
@@ -295,37 +297,40 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, NewWindowAddTab) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
-  Browser* newly_opened_browser =
+  BrowserWindowInterface* const newly_opened_browser =
       EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser();
+  TabStripModel* const tab_strip_model =
+      newly_opened_browser->GetTabStripModel();
 
   ExpectOpenBrowser(
       chromeos::KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
-  int initial_number_of_tabs = newly_opened_browser->tab_strip_model()->count();
+  const int initial_number_of_tabs = tab_strip_model->count();
 
   ui_test_utils::NavigateToURLWithDisposition(
       newly_opened_browser, GURL("https://www.google.com/"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  EXPECT_EQ(newly_opened_browser->tab_strip_model()->count(),
-            initial_number_of_tabs + 1);
+  EXPECT_EQ(tab_strip_model->count(), initial_number_of_tabs + 1);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsForward) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
-  EXPECT_TRUE(browser()->window()->IsActive());
-  Browser* newly_opened_browser =
-      EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser();
+  ui::BaseWindow* const original_window = browser()->GetWindow();
+  EXPECT_TRUE(original_window->IsActive());
+
+  ui::BaseWindow* const newly_opened_window =
+      EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser()->GetWindow();
 
   // When new window is opened, it becomes active.
-  EXPECT_TRUE(newly_opened_browser->window()->IsActive());
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_TRUE(newly_opened_window->IsActive());
+  EXPECT_FALSE(original_window->IsActive());
 
   EmulateSwitchWindowsForwardShortcutPressed();
 
   // The main window should be active again.
-  EXPECT_TRUE(browser()->window()->IsActive());
-  EXPECT_FALSE(newly_opened_browser->window()->IsActive());
+  EXPECT_TRUE(original_window->IsActive());
+  EXPECT_FALSE(newly_opened_window->IsActive());
 }
 
 // TODO(crbug.com/1481017): Re-enable this test
@@ -337,19 +342,22 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsForward) {
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
                        MAYBE_SwitchWindowsBackward) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
-  EXPECT_TRUE(browser()->window()->IsActive());
-  Browser* newly_opened_browser =
-      EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser();
+
+  ui::BaseWindow* const original_window = browser()->GetWindow();
+  EXPECT_TRUE(original_window->IsActive());
+
+  ui::BaseWindow* const newly_opened_window =
+      EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser()->GetWindow();
 
   // When new window is opened, it becomes active.
-  EXPECT_TRUE(newly_opened_browser->window()->IsActive());
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_TRUE(newly_opened_window->IsActive());
+  EXPECT_FALSE(original_window->IsActive());
 
   EmulateSwitchWindowsBackwardShortcutPressed();
 
   // The main window should be active again.
-  EXPECT_TRUE(browser()->window()->IsActive());
-  EXPECT_FALSE(newly_opened_browser->window()->IsActive());
+  EXPECT_TRUE(original_window->IsActive());
+  EXPECT_FALSE(newly_opened_window->IsActive());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsDisallowed) {

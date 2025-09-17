@@ -137,8 +137,8 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/common/chrome_features.h"
@@ -2968,13 +2968,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "getLastActiveTabURL") {
-    BrowserList* browser_list = BrowserList::GetInstance();
-    Browser* browser = browser_list->GetLastActive();
+    BrowserWindowInterface* const browser =
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile();
     if (!browser) {
       return;
     }
-    content::WebContents* active_web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* const active_web_contents =
+        browser->GetTabStripModel()->GetActiveWebContents();
     *output = active_web_contents->GetVisibleURL().spec();
     return;
   }

@@ -136,6 +136,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -513,9 +514,10 @@ class DevToolsBeforeUnloadTest : public DevToolsTest {
     ASSERT_TRUE(content::ExecJs(
         DevToolsWindowTesting::Get(devtools_window)->main_web_contents(),
         "window.open(\"\", \"\", \"location=0\");"));
-    Browser* popup_browser = BrowserList::GetInstance()->GetLastActive();
-    WebContents* popup_contents =
-        popup_browser->tab_strip_model()->GetActiveWebContents();
+    WebContents* const popup_contents =
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+            ->GetTabStripModel()
+            ->GetActiveWebContents();
     content::WaitForLoadStop(popup_contents);
   }
 

@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -275,7 +276,8 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
   api_test_utils::RunFunction(function_call.get(), args, profile());
 
   // The tab was opened in a new M365 window
-  Browser* new_m365_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const new_m365_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(
       new_m365_browser, ash::kMicrosoft365AppId));
   EXPECT_EQ(GURL(kExampleUrl), new_m365_browser->GetTabStripModel()

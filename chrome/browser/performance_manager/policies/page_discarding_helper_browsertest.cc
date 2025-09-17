@@ -29,8 +29,8 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -140,8 +140,9 @@ class TabLifecycleUnitFreezeWaiter
 };
 
 // Ensures that `browser` has `num_tabs` tabs.
-void EnsureTabsInBrowser(Browser* browser, int num_tabs) {
-  EXPECT_EQ(1, browser->tab_strip_model()->count());
+void EnsureTabsInBrowser(BrowserWindowInterface* browser, int num_tabs) {
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+  EXPECT_EQ(1, tab_strip_model->count());
 
   for (int i = 0; i < num_tabs; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
@@ -151,16 +152,18 @@ void EnsureTabsInBrowser(Browser* browser, int num_tabs) {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
-  EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
+  EXPECT_EQ(num_tabs, tab_strip_model->count());
 }
 
 // Creates a browser with `num_tabs` tabs.
-Browser* CreateBrowserWithTabs(int num_tabs) {
-  Browser* current_browser = BrowserList::GetInstance()->GetLastActive();
+BrowserWindowInterface* CreateBrowserWithTabs(int num_tabs) {
+  BrowserWindowInterface* const current_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::NewWindow(current_browser);
   ui_test_utils::WaitForBrowserSetLastActive(browser_created_observer.Wait());
-  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const new_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_NE(new_browser, current_browser);
 
   EnsureTabsInBrowser(new_browser, num_tabs);
@@ -671,9 +674,9 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
   EnsureTabsInBrowser(browser(), 2);
   browser()->window()->SetBounds(gfx::Rect(10, 10, 10, 10));
   // Create another browser which occludes the previous browser.
-  Browser* other_browser = CreateBrowserWithTabs(1);
+  BrowserWindowInterface* const other_browser = CreateBrowserWithTabs(1);
   EXPECT_NE(other_browser, browser());
-  other_browser->window()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  other_browser->GetWindow()->SetBounds(gfx::Rect(0, 0, 100, 100));
 
   // Request to discard pages a few times.
   auto* helper =

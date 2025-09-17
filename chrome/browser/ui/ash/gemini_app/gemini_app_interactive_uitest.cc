@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
@@ -239,7 +240,8 @@ class GeminiAppInteractiveUiTestBase
   [[nodiscard]] auto AssignLastActiveBrowser(
       std::reference_wrapper<Browser*> ptr_ref) {
     return Do([ptr_ref]() {
-      ptr_ref.get() = BrowserList::GetInstance()->GetLastActive();
+      ptr_ref.get() = GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                          ->GetBrowserForMigrationOnly();
     });
   }
 

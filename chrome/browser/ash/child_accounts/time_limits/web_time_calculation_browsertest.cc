@@ -25,9 +25,9 @@
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -64,7 +64,8 @@ class WebTimeCalculationBrowserTest : public MixinBasedInProcessBrowserTest {
   void SetUpOnMainThread() override;
   void TearDown() override;
 
-  Browser* DetachTabToNewBrowser(Browser* browser, int tab_index);
+  BrowserWindowInterface* DetachTabToNewBrowser(BrowserWindowInterface* browser,
+                                                int tab_index);
   content::WebContents* Navigate(Browser* browser,
                                  const std::string& url_in,
                                  WindowOpenDisposition disposition);
@@ -113,12 +114,13 @@ void WebTimeCalculationBrowserTest::TearDown() {
   MixinBasedInProcessBrowserTest::TearDown();
 }
 
-Browser* WebTimeCalculationBrowserTest::DetachTabToNewBrowser(Browser* browser,
-                                                              int tab_index) {
+BrowserWindowInterface* WebTimeCalculationBrowserTest::DetachTabToNewBrowser(
+    BrowserWindowInterface* browser,
+    int tab_index) {
   std::vector<int> tabs{tab_index};
 
-  browser->tab_strip_model()->delegate()->MoveTabsToNewWindow(tabs);
-  return BrowserList::GetInstance()->GetLastActive();
+  browser->GetTabStripModel()->delegate()->MoveTabsToNewWindow(tabs);
+  return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 }
 
 content::WebContents* WebTimeCalculationBrowserTest::Navigate(
@@ -207,16 +209,16 @@ IN_PROC_BROWSER_TEST_F(WebTimeCalculationBrowserTest, TabDetached) {
   EXPECT_EQ(app_time::ChromeAppActivityState::kActive,
             GetChromeAppActivityState());
 
-  Browser* new_browser = DetachTabToNewBrowser(browser(), 1);
+  TabStripModel* const new_tab_strip_model =
+      DetachTabToNewBrowser(browser(), 1)->GetTabStripModel();
 
   EXPECT_EQ(app_time::ChromeAppActivityState::kActive,
             GetChromeAppActivityState());
 
   // Now we have two browser windows.
   content::WebContentsDestroyedWatcher destroyed_watcher_new_browser(
-      new_browser->tab_strip_model()->GetWebContentsAt(0));
-  new_browser->tab_strip_model()->CloseWebContentsAt(
-      0, TabCloseTypes::CLOSE_USER_GESTURE);
+      new_tab_strip_model->GetWebContentsAt(0));
+  new_tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher_new_browser.Wait();
   EXPECT_EQ(app_time::ChromeAppActivityState::kActive,
             GetChromeAppActivityState());

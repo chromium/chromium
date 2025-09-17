@@ -31,6 +31,7 @@ specific_include_rules = {
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
     "+chrome/browser/ui/web_applications/app_browser_controller.h",
     "+chrome/browser/ui/web_applications/test/web_app_browsertest_util.h",
     "+chrome/browser/web_applications/test/web_app_install_test_utils.h",

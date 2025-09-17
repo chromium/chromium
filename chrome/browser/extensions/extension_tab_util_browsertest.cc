@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
@@ -166,10 +167,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLCheckFailure) {
                                   web_contents, GURL("chrome://version"));
   // After opening a new window, the last active browser should be the new
   // one.
-  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const new_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   // Ensure it's not the same as the original browser.
   ASSERT_NE(browser(), new_browser);
-  auto url = new_browser->tab_strip_model()->GetActiveWebContents()->GetURL();
+  auto url = new_browser->GetTabStripModel()->GetActiveWebContents()->GetURL();
   EXPECT_THAT(url, GURL("chrome://version"));
 #else
   EXPECT_DEATH(ExtensionTabUtil::NavigateToURL(
@@ -408,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // There should be two browser windows open, regular and incognito.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   // Ensure that the regular browser is the foreground browser.
-  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+  EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   // The options page in the regular window should be in focus instead of
   // the tab pointing to www.google.com.
   EXPECT_TRUE(content::WaitForLoadStop(
@@ -460,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
                 ? browser_list->get(0u)
                 : browser_list->get(1u);
   // Ensure that the regular browser is the foreground browser.
-  EXPECT_EQ(regular, browser_list->GetLastActive());
+  EXPECT_EQ(regular, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EXPECT_EQ(1, regular->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
       regular->tab_strip_model()->GetActiveWebContents()));
