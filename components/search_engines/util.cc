@@ -44,6 +44,7 @@ constexpr char kVisualRequestIdQueryParameter[] = "vsrid";
 constexpr char kVisualInputTypeQueryParameter[] = "vit";
 constexpr char kVisualInputTypeQueryParameterPdfValue[] = "pdf";
 constexpr char kVisualInputTypeQueryParameterImageValue[] = "img";
+constexpr char kVisualInputTypeQueryParameterWebpageValue[] = "wp";
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 constexpr char kClientUploadDurationQueryParameter[] = "cud";
 
@@ -85,6 +86,8 @@ std::string GetMimeTypeParamValue(lens::MimeType mime_type) {
       return kVisualInputTypeQueryParameterPdfValue;
     case lens::MimeType::kImage:
       return kVisualInputTypeQueryParameterImageValue;
+    case lens::MimeType::kAnnotatedPageContent:
+      return kVisualInputTypeQueryParameterWebpageValue;
     default:
       NOTREACHED() << "File type not supported.";
   }
@@ -109,8 +112,9 @@ GURL GetDefaultSearchURLForSearchTerms(TemplateURLService* service,
                                        const std::u16string& terms) {
   DCHECK(service);
   const TemplateURL* default_provider = service->GetDefaultSearchProvider();
-  if (!default_provider)
+  if (!default_provider) {
     return GURL();
+  }
   const TemplateURLRef& search_url = default_provider->url_ref();
   DCHECK(search_url.SupportsReplacement(service->search_terms_data()));
   TemplateURLRef::SearchTermsArgs search_terms_args(terms);
@@ -131,8 +135,9 @@ void RemoveDuplicatePrepopulateIDs(
 
   // For convenience construct an ID->TemplateURL* map from |prepopulated_urls|.
   std::map<int, TemplateURLData*> prepopulated_url_map;
-  for (const auto& url : prepopulated_urls)
+  for (const auto& url : prepopulated_urls) {
     prepopulated_url_map[url->prepopulate_id] = url.get();
+  }
 
   constexpr size_t invalid_index = std::numeric_limits<size_t>::max();
   // A helper structure for deduplicating elements with the same prepopulate_id.
@@ -217,8 +222,9 @@ void RemoveDuplicatePrepopulateIDs(
     for (const auto& duplicate : id_data.second.duplicates) {
       if (service) {
         service->RemoveKeyword(duplicate->id());
-        if (removed_keyword_guids)
+        if (removed_keyword_guids) {
           removed_keyword_guids->insert(duplicate->sync_guid());
+        }
       }
     }
   }
@@ -244,8 +250,9 @@ TemplateURL* FindURLByPrepopulateID(
     const TemplateURLService::TemplateURLVector& template_urls,
     int prepopulate_id) {
   for (auto i = template_urls.begin(); i < template_urls.end(); ++i) {
-    if ((*i)->prepopulate_id() == prepopulate_id)
+    if ((*i)->prepopulate_id() == prepopulate_id) {
       return *i;
+    }
   }
   return nullptr;
 }
@@ -319,8 +326,9 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
       regulatory_entries.insert({turl->keyword(), turl.get()});
     }
     int prepopulate_id = turl->prepopulate_id();
-    if (prepopulate_id > 0)
+    if (prepopulate_id > 0) {
       id_to_turl[prepopulate_id] = turl.get();
+    }
   }
 
   // For each current prepopulated URL, check whether |template_urls| contained
@@ -411,8 +419,9 @@ ActionsFromCurrentData CreateActionsFromCurrentStarterPackData(
   std::map<int, TemplateURL*> id_to_turl;
   for (auto& turl : existing_urls) {
     int starter_pack_id = turl->starter_pack_id();
-    if (starter_pack_id > 0)
+    if (starter_pack_id > 0) {
       id_to_turl[starter_pack_id] = turl.get();
+    }
   }
 
   // For each current starter pack URL, check whether |template_urls| contained
@@ -479,16 +488,18 @@ void ApplyActionsFromCurrentData(
     template_urls->erase(j);
     if (service) {
       service->RemoveKeyword(template_url->id());
-      if (removed_keyword_guids)
+      if (removed_keyword_guids) {
         removed_keyword_guids->insert(template_url->sync_guid());
+      }
     }
   }
 
   // Edit items.
   for (const auto& edited_engine : actions.edited_engines) {
     const TemplateURLData& data = edited_engine.second;
-    if (service)
+    if (service) {
       service->UpdateKeyword(data);
+    }
 
     // Replace the entry in |template_urls| with the updated one.
     auto j = FindTemplateURL(template_urls, edited_engine.first);
@@ -496,8 +507,9 @@ void ApplyActionsFromCurrentData(
   }
 
   // Add items.
-  for (const auto& added_engine : actions.added_engines)
+  for (const auto& added_engine : actions.added_engines) {
     template_urls->push_back(std::make_unique<TemplateURL>(added_engine));
+  }
 }
 
 void GetSearchProvidersUsingKeywordResult(
@@ -523,8 +535,9 @@ void GetSearchProvidersUsingKeywordResult(
     // update the server with the merged, de-duped results at that time.  We
     // still fix here, though, to correct problems in clients that have disabled
     // search engine sync, since in that case that code will never be reached.
-    if (DeDupeEncodings(&keyword.input_encodings) && service)
+    if (DeDupeEncodings(&keyword.input_encodings) && service) {
       service->UpdateKeyword(keyword);
+    }
     template_urls->push_back(std::make_unique<TemplateURL>(keyword));
   }
 
@@ -586,8 +599,9 @@ bool DeDupeEncodings(std::vector<std::string>* encodings) {
   std::set<std::string> encoding_set;
   for (std::vector<std::string>::const_iterator i(encodings->begin());
        i != encodings->end(); ++i) {
-    if (encoding_set.insert(*i).second)
+    if (encoding_set.insert(*i).second) {
       deduped_encodings.push_back(*i);
+    }
   }
   encodings->swap(deduped_encodings);
   return encodings->size() != deduped_encodings.size();

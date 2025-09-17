@@ -901,8 +901,8 @@ TEST_F(ComposeboxQueryControllerTest,
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
 
-  // Act: Start the file upload flow with multiple context inputs and page
-  // context params.
+  // Act: Start the file upload flow with context inputs and page context
+  // params.
   GURL page_url = GURL("https://www.test.com");
   std::string page_title = "Test Page";
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
@@ -927,6 +927,10 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Assert: Validate file upload request and status changes.
   WaitForFileUpload(file_token, lens::MimeType::kAnnotatedPageContent);
+
+  // Act: Create the destination URL for the query. The destination URL can
+  // only be created after the cluster info is received.
+  GURL aim_url = controller().CreateAimUrl("hello", kTestQueryStartTime);
 
   // Get the file and viewport upload requests.
   std::optional<lens::LensOverlayServerRequest> file_upload_request;
@@ -1040,6 +1044,20 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_id()
                 .media_type(),
             lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
+
+  // Check that the Lens request id is in the AIM url is correct.
+  std::string vsrid_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
+                                         &vsrid_value));
+  EXPECT_FALSE(vsrid_value.empty());
+  EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
+            DecodeRequestIdFromVsrid(vsrid_value).media_type());
+
+  // Assert: Visual input type is set to wp for webpage queries.
+  std::string vit_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
+                                         &vit_value));
+  EXPECT_EQ(vit_value, "wp");
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
