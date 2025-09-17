@@ -124,6 +124,25 @@ class ActorEventLog {
           protobytes}`;
       link.target = '_blank';
       detailsCell.appendChild(link);
+    } else if (entry.screenshot) {
+      const byteArray = new Uint8Array(entry.screenshot);
+      const blob = new Blob([byteArray], { type: 'image/jpeg' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      const img = document.createElement('img');
+      img.src = blobUrl; // Use the Blob URL for the small image
+      img.style.width = '200px';
+      img.style.height = '100px';
+      img.style.cursor = 'pointer'; // Indicate it's clickable
+
+      img.onclick = () => {
+          const newTab = window.open(blobUrl, '_blank');
+          if (newTab) {
+              newTab.focus();
+          }
+      };
+
+      detailsCell.appendChild(img);
     } else {
       detailsCell.textContent = entry.details;
     }

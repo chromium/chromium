@@ -29,6 +29,9 @@ struct JournalEntry {
 
   // The track of the event.
   string track;
+
+  // A base64 encoded screenshot of the page.
+  array<uint8>? screenshot;
 };
 
 // Interface for browser-to-page events
