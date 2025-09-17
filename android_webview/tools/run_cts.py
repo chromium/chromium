@@ -61,9 +61,6 @@ _TEST_APK_AS_INSTANT_ARG = '--test-apk-as-instant'
 _USE_WEBVIEW_PROVIDER_ARG = '--use-webview-provider'
 
 SDK_PLATFORM_DICT = {
-    version_codes.OREO: 'O',
-    version_codes.OREO_MR1: 'O',
-    version_codes.PIE: 'P',
     version_codes.Q: 'Q',
     version_codes.R: 'R',
     version_codes.S: 'S',

@@ -8,15 +8,11 @@ import json
 
 
 def do_latest():
-  print('2025.01.10')  # Update to current date when updating the URLs below
+  print('2025.09.16')  # Update to current date when updating the URLs below
 
 
 def get_download_url():
   filenames = [
-      "android-cts-8.0_R26-linux_x86-arm.zip",
-      "android-cts-8.0_R26-linux_x86-x86.zip",
-      "android-cts-9.0_r20-linux_x86-arm.zip",
-      "android-cts-9.0_r20-linux_x86-x86.zip",
       "android-cts-10_r16-linux_x86-arm.zip",
       "android-cts-10_r16-linux_x86-x86.zip",
       "android-cts-11_r16-linux_x86-arm.zip",

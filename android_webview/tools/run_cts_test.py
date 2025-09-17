@@ -58,17 +58,17 @@ class _RunCtsTest(unittest.TestCase):
     with self.assertRaises(Exception) as _:
       run_cts.DetermineArch(device)
 
-  def testDetermineCtsRelease_oreo(self):
+  def testDetermineCtsRelease_q(self):
     logging_mock = mock.Mock()
     logging.info = logging_mock
-    device = mock.Mock(build_version_sdk=version_codes.OREO)
-    self.assertEqual(run_cts.DetermineCtsRelease(device), 'O')
+    device = mock.Mock(build_version_sdk=version_codes.Q)
+    self.assertEqual(run_cts.DetermineCtsRelease(device), 'Q')
     # We should log a message to explain how we auto-determined the CTS release.
     # We don't assert the message itself, since that's rather strict.
     logging_mock.assert_called()
 
   def testDetermineCtsRelease_tooLow(self):
-    device = mock.Mock(build_version_sdk=version_codes.NOUGAT_MR1)
+    device = mock.Mock(build_version_sdk=version_codes.PIE)
     with self.assertRaises(Exception) as cm:
       run_cts.DetermineCtsRelease(device)
     message = str(cm.exception)
