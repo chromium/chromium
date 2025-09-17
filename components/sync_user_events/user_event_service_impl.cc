@@ -45,7 +45,7 @@ NavigationPresence GetNavigationPresence(
 
 bool NavigationPresenceValid(UserEventSpecifics::EventCase event_case,
                              bool has_navigation_id) {
-  NavigationPresence presence = GetNavigationPresence(event_case);
+  const NavigationPresence presence = GetNavigationPresence(event_case);
   return presence == kEitherOkay ||
          (presence == kMustHave && has_navigation_id) ||
          (presence == kCannotHave && !has_navigation_id);
