@@ -316,17 +316,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         // this guard passes, so the data shows only actions that resulted in a change.
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profileAfterLoading, modelAfterLoading) -> {
-                    // Get the id of the entire bookmarks bar.
-                    BookmarkId bookmarkBarDesktopFolderId =
-                            Optional.ofNullable(modelAfterLoading.getAccountDesktopFolderId())
-                                    .orElseGet(modelAfterLoading::getDesktopFolderId);
-
-                    if (bookmarkBarDesktopFolderId == null) return;
-
                     // Get an ordered list of all the children (both folders and web pages) of the
                     // bookmarks bar.
-                    List<BookmarkId> allBookmarkItems =
-                            modelAfterLoading.getChildIds(bookmarkBarDesktopFolderId);
+                    List<BookmarkId> allBookmarkItems = getBookmarkIdsForModel(modelAfterLoading);
 
                     // Get the index of the first hidden item from the LayoutManager.
                     int firstHiddenIndex =
@@ -592,17 +584,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         BookmarkModel bookmarkModel = BookmarkModel.getForProfile(mProfileSupplier.get());
         if (bookmarkModel == null) return INVALID_INDEX;
 
-        // Get the id of the entire bookmarks bar.
-        BookmarkId bookmarkBarFolderId =
-                Optional.ofNullable(bookmarkModel.getAccountDesktopFolderId())
-                        .orElseGet(bookmarkModel::getDesktopFolderId);
-        if (bookmarkBarFolderId == null) return INVALID_INDEX;
-
-        // Get an ordered list of all the children (both folders and web pages) of the bookmarks
-        // bar.
-        List<BookmarkId> childrenOfBookmarkBar = bookmarkModel.getChildIds(bookmarkBarFolderId);
-
-        return childrenOfBookmarkBar.indexOf(item.getId());
+        return getBookmarkIdsForModel(bookmarkModel).indexOf(item.getId());
     }
 
     private @Nullable View getAnchorViewForBookmark(BookmarkItem item) {
@@ -895,6 +877,29 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             parent = parentView.getParent();
         }
         return null;
+    }
+
+    /**
+     * Gets the full list of BookmarkId's based on the given model. This will find all the account
+     * bookmark bar IDs, followed by the local bookmark bar IDs, since both should appear in the bar
+     * if they both exist.
+     *
+     * @param bookmarkModel The bookmark model to query bookmarks for.
+     * @return List of BookmarkId's for the bookmark bar of the given model.
+     */
+    private List<BookmarkId> getBookmarkIdsForModel(BookmarkModel bookmarkModel) {
+        BookmarkId accountDesktopFolderId = bookmarkModel.getAccountDesktopFolderId();
+        List<BookmarkId> bookmarkIds = new ArrayList<>();
+        if (accountDesktopFolderId != null) {
+            bookmarkIds.addAll(bookmarkModel.getChildIds(accountDesktopFolderId));
+        }
+
+        BookmarkId localFolderId = bookmarkModel.getDesktopFolderId();
+        if (localFolderId != null) {
+            bookmarkIds.addAll(bookmarkModel.getChildIds(localFolderId));
+        }
+
+        return bookmarkIds;
     }
 
     void setAnchoredPopupWindowForTesting(AnchoredPopupWindow anchoredPopupWindow) {
