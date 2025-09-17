@@ -128,15 +128,8 @@ export class PeerConnectionUpdateTable {
       peerConnectionElement.firstChild.children[2].textContent = update.value;
     } else if (['transceiverAdded',
         'transceiverModified'].includes(update.type)) {
-      // Show the transceiver index.
-      const indexLine = update.value.split('\n', 3)[2];
-      if (indexLine.startsWith('getTransceivers()[')) {
-        type += ' ' + indexLine.substring(17, indexLine.length - 2);
-      }
-      const kindLine = update.value.split('\n', 5)[4].trim();
-      if (kindLine.startsWith('kind:')) {
-        type += ', ' + kindLine.substring(6, kindLine.length - 2);
-      }
+      const data = JSON.parse(update.value);
+      type += '(index=' + data.transceiverIndex + ', kind=' + data.kind + ')';
     } else if (['iceconnectionstatechange', 'connectionstatechange',
         'signalingstatechange'].includes(update.type)) {
       const fieldName = {
@@ -240,8 +233,8 @@ export class PeerConnectionUpdateTable {
           valueContainer.appendChild(sectionDetails);
         });
       }
-    } else if (update.type === 'icecandidate' ||
-        update.type === 'addIceCandidate') {
+    } else if (['icecandidate', 'addIceCandidate', 'transceiverAdded',
+        'transceiverModified'].includes(update.type)) {
       const parts = JSON.parse(update.value);
       valueContainer.textContent = JSON.stringify(parts, null, ' ');
     } else {

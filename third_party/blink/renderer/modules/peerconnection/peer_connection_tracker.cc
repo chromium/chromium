@@ -122,191 +122,125 @@ String SerializeAnswerOptions(blink::RTCAnswerOptionsPlatform* options) {
   return value.ToString();
 }
 
-String SerializeMediaStreamIds(const Vector<String>& stream_ids) {
-  if (!stream_ids.size())
-    return "[]";
-  StringBuilder result;
-  result.Append("[");
-  for (const auto& stream_id : stream_ids) {
-    if (result.length() > 2u)
-      result.Append(",");
-    result.Append("'");
-    result.Append(stream_id);
-    result.Append("'");
-  }
-  result.Append("]");
-  return result.ToString();
-}
-
 String SerializeDirection(webrtc::RtpTransceiverDirection direction) {
   switch (direction) {
     case webrtc::RtpTransceiverDirection::kSendRecv:
-      return "'sendrecv'";
+      return "sendrecv";
     case webrtc::RtpTransceiverDirection::kSendOnly:
-      return "'sendonly'";
+      return "sendonly";
     case webrtc::RtpTransceiverDirection::kRecvOnly:
-      return "'recvonly'";
+      return "recvonly";
     case webrtc::RtpTransceiverDirection::kInactive:
-      return "'inactive'";
+      return "inactive";
     case webrtc::RtpTransceiverDirection::kStopped:
-      return "'stopped'";
+      return "stopped";
     default:
       NOTREACHED();
   }
 }
 
-String SerializeOptionalDirection(
-    const std::optional<webrtc::RtpTransceiverDirection>& direction) {
-  return direction ? SerializeDirection(*direction) : "null";
-}
-
-String SerializeTransceiverKind(const String& indent,
-                                const RTCRtpTransceiverPlatform& transceiver) {
+String SerializeTransceiverKind(const RTCRtpTransceiverPlatform& transceiver) {
   DCHECK(transceiver.Receiver());
   DCHECK(transceiver.Receiver()->Track());
 
-  auto kind = transceiver.Receiver()->Track()->GetSourceType();
-  StringBuilder result;
-  result.Append(indent);
-  result.Append("kind:");
-  if (kind == MediaStreamSource::StreamType::kTypeAudio) {
-    result.Append("'audio'");
-  } else if (kind == MediaStreamSource::StreamType::kTypeVideo) {
-    result.Append("'video'");
-  } else {
-    NOTREACHED();
+  switch (transceiver.Receiver()->Track()->GetSourceType()) {
+    case MediaStreamSource::StreamType::kTypeAudio:
+      return "audio";
+    case MediaStreamSource::StreamType::kTypeVideo:
+      return "video";
+    default:
+      NOTREACHED();
   }
-  result.Append(",\n");
-  return result.ToString();
 }
 
-String SerializeEncodingParameters(
-    const String& indent,
-    const std::vector<webrtc::RtpEncodingParameters>& encodings) {
-  StringBuilder result;
-  if (encodings.empty()) {
-    return result.ToString();
-  }
-  result.Append(indent);
-  result.Append("encodings: [\n");
-  for (const auto& encoding : encodings) {
-    result.Append(indent);
-    result.Append("    {");
-    result.Append("active: ");
-    result.Append(String::Boolean(encoding.active));
-    result.Append(", ");
-    if (encoding.max_bitrate_bps) {
-      result.Append("maxBitrate: ");
-      result.AppendNumber(*encoding.max_bitrate_bps);
-      result.Append(", ");
-    }
-    if (encoding.scale_resolution_down_by) {
-      result.Append("scaleResolutionDownBy: ");
-      result.AppendNumber(*encoding.scale_resolution_down_by);
-      result.Append(", ");
-    }
+std::unique_ptr<JSONArray> SerializeEncodingParameters(
+    const std::vector<webrtc::RtpEncodingParameters>& send_encodings) {
+  auto encodings = std::make_unique<JSONArray>();
+  for (const auto& encoding : send_encodings) {
+    auto obj = std::make_unique<JSONObject>();
+    obj->SetBoolean("active", encoding.active);
     if (!encoding.rid.empty()) {
-      result.Append("rid: ");
-      result.Append(String(encoding.rid));
-      result.Append(", ");
+      obj->SetString("rid", String(encoding.rid));
     }
     if (encoding.max_framerate) {
-      result.Append("maxFramerate: ");
-      result.AppendNumber(*encoding.max_framerate);
-      result.Append(", ");
+      obj->SetDouble("maxFramerate", *encoding.max_framerate);
     }
-    if (encoding.adaptive_ptime) {
-      result.Append("adaptivePtime: true, ");
+    if (encoding.max_bitrate_bps) {
+      obj->SetInteger("maxBitrate", *encoding.max_bitrate_bps);
+    }
+    if (encoding.scale_resolution_down_by) {
+      obj->SetDouble("scaleResolutionDownBy",
+                     *encoding.scale_resolution_down_by);
+    }
+    if (encoding.scale_resolution_down_to) {
+      auto res = std::make_unique<JSONObject>();
+      res->SetInteger("width", encoding.scale_resolution_down_to->width);
+      res->SetInteger("height", encoding.scale_resolution_down_to->height);
+      obj->SetObject("scaleResolutionDownTo", std::move(res));
     }
     if (encoding.scalability_mode) {
-      result.Append("scalabilityMode: ");
-      result.Append(String(*encoding.scalability_mode));
+      obj->SetString("scalabilityMode", String(*encoding.scalability_mode));
     }
-    result.Append("},\n");
+    if (encoding.adaptive_ptime) {
+      obj->SetBoolean("adpativePtime", true);
+    }
+    encodings->PushObject(std::move(obj));
   }
-  result.Append(indent);
-  result.Append("  ],\n");
-  result.Append(indent);
-  return result.ToString();
+  return encodings;
 }
 
-String SerializeSender(const String& indent,
-                       const blink::RTCRtpSenderPlatform& sender) {
-  StringBuilder result;
-  result.Append(indent);
-  result.Append("sender:{\n");
-  // track:'id',
-  result.Append(indent);
-  result.Append("  track:");
-  if (!sender.Track()) {
-    result.Append("null");
+std::unique_ptr<JSONObject> SerializeSender(
+    const blink::RTCRtpSenderPlatform& sender) {
+  auto json = std::make_unique<JSONObject>();
+  if (sender.Track()) {
+    json->SetString("track", String(sender.Track()->Id()));
   } else {
-    result.Append("'");
-    result.Append(sender.Track()->Id());
-    result.Append("'");
+    json->SetValue("track", JSONValue::Null());
   }
-  result.Append(",\n");
-  // streams:['id,'id'],
-  result.Append(indent);
-  result.Append("  streams:");
-  result.Append(SerializeMediaStreamIds(sender.StreamIds()));
-  result.Append(",\n");
-  result.Append(indent);
-  result.Append(
-      SerializeEncodingParameters(indent, sender.GetParameters()->encodings));
-  result.Append("},\n");
 
-  return result.ToString();
+  auto stream_ids = std::make_unique<JSONArray>();
+  for (const auto& stream_id : sender.StreamIds()) {
+    stream_ids->PushString(String(stream_id));
+  }
+  json->SetArray("streams", std::move(stream_ids));
+
+  json->SetArray("encodings", SerializeEncodingParameters(
+                                  sender.GetParameters()->encodings));
+  return json;
 }
 
-String SerializeReceiver(const String& indent,
-                         const RTCRtpReceiverPlatform& receiver) {
-  StringBuilder result;
-  result.Append(indent);
-  result.Append("receiver:{\n");
-  // track:'id',
+std::unique_ptr<JSONObject> SerializeReceiver(
+    const RTCRtpReceiverPlatform& receiver) {
+  auto json = std::make_unique<JSONObject>();
   DCHECK(receiver.Track());
-  result.Append(indent);
-  result.Append("  track:'");
-  result.Append(receiver.Track()->Id());
-  result.Append("',\n");
-  // streams:['id,'id'],
-  result.Append(indent);
-  result.Append("  streams:");
-  result.Append(SerializeMediaStreamIds(receiver.StreamIds()));
-  result.Append(",\n");
-  result.Append(indent);
-  result.Append("},\n");
-  return result.ToString();
+  json->SetString("track", String(receiver.Track()->Id()));
+  auto stream_ids = std::make_unique<JSONArray>();
+  for (const auto& stream_id : receiver.StreamIds()) {
+    stream_ids->PushString(String(stream_id));
+  }
+  json->SetArray("streams", std::move(stream_ids));
+  return json;
 }
 
-String SerializeTransceiver(const RTCRtpTransceiverPlatform& transceiver) {
-  StringBuilder result;
-  result.Append("{\n");
-  // mid:'foo',
+std::unique_ptr<JSONObject> SerializeTransceiver(
+    const RTCRtpTransceiverPlatform& transceiver) {
+  auto json = std::make_unique<JSONObject>();
   if (transceiver.Mid().IsNull()) {
-    result.Append("  mid:null,\n");
+    json->SetValue("mid", JSONValue::Null());
   } else {
-    result.Append("  mid:'");
-    result.Append(String(transceiver.Mid()));
-    result.Append("',\n");
+    json->SetString("mid", String(transceiver.Mid()));
   }
-  // kind:audio|video
-  result.Append(SerializeTransceiverKind("  ", transceiver));
-  // sender:{...},
-  result.Append(SerializeSender("  ", *transceiver.Sender()));
-  // receiver:{...},
-  result.Append(SerializeReceiver("  ", *transceiver.Receiver()));
-  // direction:'sendrecv',
-  result.Append("  direction:");
-  result.Append(SerializeDirection(transceiver.Direction()));
-  result.Append(",\n");
-  // currentDirection:null,
-  result.Append("  currentDirection:");
-  result.Append(SerializeOptionalDirection(transceiver.CurrentDirection()));
-  result.Append(",\n");
-  result.Append("}");
-  return result.ToString();
+  json->SetString("kind", SerializeTransceiverKind(transceiver));
+  json->SetValue("sender", SerializeSender(*transceiver.Sender()));
+  json->SetValue("receiver", SerializeReceiver(*transceiver.Receiver()));
+  json->SetString("direction", SerializeDirection(transceiver.Direction()));
+  if (transceiver.CurrentDirection().has_value()) {
+    json->SetString("currentDirection",
+                    SerializeDirection(*transceiver.CurrentDirection()));
+  } else {
+    json->SetValue("currentDirection", JSONValue::Null());
+  }
+  return json;
 }
 
 // Serializes things that are of interest from the RTCConfiguration.
@@ -914,11 +848,13 @@ void PeerConnectionTracker::TrackTransceiver(
     return;
   String callback_type =
       StrCat({"transceiver", String::FromUTF8(callback_type_ending)});
-  String result =
-      StrCat({"Caused by: ", GetTransceiverUpdatedReasonString(reason), "\n\n",
-              "getTransceivers()", "[", String::Number(transceiver_index),
-              "]:", SerializeTransceiver(transceiver)});
-  SendPeerConnectionUpdate(id, callback_type, result);
+  std::unique_ptr<JSONObject> json = SerializeTransceiver(transceiver);
+  json->SetString("reason", GetTransceiverUpdatedReasonString(reason));
+  json->SetInteger("transceiverIndex", transceiver_index);
+
+  StringBuilder value;
+  json->WriteJSON(&value);
+  SendPeerConnectionUpdate(id, callback_type, value.ToString());
 }
 
 void PeerConnectionTracker::TrackCreateDataChannel(

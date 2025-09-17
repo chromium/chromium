@@ -33,19 +33,21 @@ using PeerConnectionInfoPtr = ::blink::mojom::blink::PeerConnectionInfoPtr;
 namespace blink {
 
 const char* kDefaultTransceiverString =
-    "getTransceivers()[0]:{\n"
-    "  mid:null,\n"
-    "  kind:'audio',\n"
-    "  sender:{\n"
-    "    track:'senderTrackId',\n"
-    "    streams:['senderStreamId'],\n"
-    "  },\n"
-    "  receiver:{\n"
-    "    track:'receiverTrackId',\n"
-    "    streams:['receiverStreamId'],\n"
-    "  },\n"
-    "  direction:'sendonly',\n"
-    "  currentDirection:null,\n"
+    "{\"mid\":null,"
+    "\"kind\":\"audio\","
+    "\"sender\":{"
+    "\"track\":\"senderTrackId\","
+    "\"streams\":[\"senderStreamId\"],"
+    "\"encodings\":[]"
+    "},"
+    "\"receiver\":{"
+    "\"track\":\"receiverTrackId\","
+    "\"streams\":[\"receiverStreamId\"]"
+    "},"
+    "\"direction\":\"sendonly\","
+    "\"currentDirection\":null,"
+    "\"reason\":\"setLocalDescription\","
+    "\"transceiverIndex\":0"
     "}";
 
 class MockPeerConnectionTrackerHost
@@ -389,21 +391,21 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesPresent) {
       0u);
   base::RunLoop().RunUntilIdle();
   String expected_value(
-      "Caused by: addTrack\n"
-      "\n"
-      "getTransceivers()[0]:{\n"
-      "  mid:'midValue',\n"
-      "  kind:'audio',\n"
-      "  sender:{\n"
-      "    track:'senderTrackId',\n"
-      "    streams:['streamIdA','streamIdB'],\n"
-      "  },\n"
-      "  receiver:{\n"
-      "    track:'receiverTrackId',\n"
-      "    streams:['streamIdC'],\n"
-      "  },\n"
-      "  direction:'sendrecv',\n"
-      "  currentDirection:'inactive',\n"
+      "{\"mid\":\"midValue\","
+      "\"kind\":\"audio\","
+      "\"sender\":{"
+      "\"track\":\"senderTrackId\","
+      "\"streams\":[\"streamIdA\",\"streamIdB\"],"
+      "\"encodings\":[]"
+      "},"
+      "\"receiver\":{"
+      "\"track\":\"receiverTrackId\","
+      "\"streams\":[\"streamIdC\"]"
+      "},"
+      "\"direction\":\"sendrecv\","
+      "\"currentDirection\":\"inactive\","
+      "\"reason\":\"addTrack\","
+      "\"transceiverIndex\":0"
       "}");
   EXPECT_EQ(expected_value, update_value);
 }
@@ -431,21 +433,21 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesNull) {
       transceiver, 1u);
   base::RunLoop().RunUntilIdle();
   String expected_value(
-      "Caused by: addTransceiver\n"
-      "\n"
-      "getTransceivers()[1]:{\n"
-      "  mid:null,\n"
-      "  kind:'audio',\n"
-      "  sender:{\n"
-      "    track:null,\n"
-      "    streams:[],\n"
-      "  },\n"
-      "  receiver:{\n"
-      "    track:'receiverTrackId',\n"
-      "    streams:[],\n"
-      "  },\n"
-      "  direction:'inactive',\n"
-      "  currentDirection:null,\n"
+      "{\"mid\":null,"
+      "\"kind\":\"audio\","
+      "\"sender\":{"
+      "\"track\":null,"
+      "\"streams\":[],"
+      "\"encodings\":[]"
+      "},"
+      "\"receiver\":{"
+      "\"track\":\"receiverTrackId\","
+      "\"streams\":[]"
+      "},"
+      "\"direction\":\"inactive\","
+      "\"currentDirection\":null,"
+      "\"reason\":\"addTransceiver\","
+      "\"transceiverIndex\":1"
       "}");
   EXPECT_EQ(expected_value, update_value);
 }
@@ -463,8 +465,7 @@ TEST_F(PeerConnectionTrackerTest, ModifyTransceiver) {
       PeerConnectionTracker::TransceiverUpdatedReason::kSetLocalDescription,
       *transceiver, 0u);
   base::RunLoop().RunUntilIdle();
-  String expected_value("Caused by: setLocalDescription\n\n" +
-                        String(kDefaultTransceiverString));
+  String expected_value(kDefaultTransceiverString);
   EXPECT_EQ(expected_value, update_value);
 }
 
