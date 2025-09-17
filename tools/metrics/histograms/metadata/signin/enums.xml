@@ -832,22 +832,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Rotation stopped timeout"/>
 </enum>
 
-<!-- LINT.IfChange(ShouldShowChromeSigninBubbleWithReason) -->
-
-<enum name="ShouldShowChromeSigninBubbleWithReason">
-  <int value="0" label="Should Show"/>
-  <int value="1" label="Should not Show: Max shown count reached"/>
-  <int value="2" label="Should not Show: Already Signed in"/>
-  <int value="3"
-      label="Should not Show: Secondary account (deprecated 02-2024)"/>
-  <int value="4" label="Should not Show: Unknown access point"/>
-  <int value="5" label="Should not Show: Not from web sign in"/>
-  <int value="6" label="Should not Show: User choice"/>
-  <int value="7" label="Should not Show: Signin disallowed"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/signin/dice_web_signin_interceptor.h:ShouldShowChromeSigninBubbleWithReason) -->
-
 <enum name="SigninAccessPoint">
   <int value="0" label="Start page"/>
   <int value="1" label="NTP Link"/>

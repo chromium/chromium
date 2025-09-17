@@ -50,32 +50,6 @@ class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
 
-// LINT.IfChange(ShouldShowChromeSigninBubbleWithReason)
-
-// This enum gets the result of `MaybeShouldShowChromeSigninBubble()`, which
-// could be `ShouldShow` or `ShouldNotShow`. When the result is `ShouldNotShow`
-// the reason is also added to differentiate the cases of not showing the
-// bubble. These values are persisted to logs. Entries should not be renumbered
-// and numeric values should never be reused.
-enum class ShouldShowChromeSigninBubbleWithReason {
-  // The bubble should be shown.
-  kShouldShow = 0,
-
-  // The bubble should not be shown: multiple reasons listed below with order of
-  // priority.
-  // Deprecated: kShouldNotShowMaxShownCountReached = 1,
-  kShouldNotShowAlreadySignedIn = 2,
-  // Deprecated: kShouldNotShowSecondaryAccount = 3,
-  kShouldNotShowUnknownAccessPoint = 4,
-  kShouldNotShowNotFromWebSignin = 5,
-  kShouldNotShowUserChoice = 6,
-  kShouldNotShowSigninDisallowed = 7,
-
-  kMaxValue = kShouldNotShowSigninDisallowed,
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ShouldShowChromeSigninBubbleWithReason)
-
 // Supervision state of the user who is shown the sign-in intercept bubble.
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -161,7 +135,6 @@ class DiceWebSigninInterceptor : public KeyedService,
       bool is_sync_signin,
       const std::string& email,
       const GaiaId& gaia_id = GaiaId(),
-      bool update_state = false,
       const ProfileAttributesEntry** entry = nullptr) const;
 
   // Returns true if the interception is in progress (running the heuristic or
@@ -272,7 +245,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   bool ShouldShowMultiUserBubble(
       const AccountInfo& intercepted_account_info) const;
   bool ShouldShowChromeSigninBubble(const GaiaId& gaia_id,
-                                    const std::string& email);
+                                    const std::string& email) const;
 
   // Helper function to call `delegate_->ShowSigninInterceptionBubble()`.
   void ShowSigninInterceptionBubble(
@@ -412,8 +385,6 @@ class DiceWebSigninInterceptor : public KeyedService,
         interception_type_;
     signin_metrics::AccessPoint access_point_ =
         signin_metrics::AccessPoint::kUnknown;
-    std::optional<ShouldShowChromeSigninBubbleWithReason>
-        should_show_chrome_signin_bubble_;
 
     // Timeout for waiting for full information to be available (see
     // `ProcessInterceptionOrWait()`).

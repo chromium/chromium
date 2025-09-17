@@ -229,67 +229,6 @@ void MaybeUpdateRepromptInfoAfterDecline(SigninPrefs& signin_prefs,
                                 kMaxChromeSigninBubbleRepromptCountAllowed + 1);
 }
 
-// Returns `ShouldShowChromeSigninBubbleWithReason::kShouldShow` if sign in
-// happens through the web and Chrome isn't already signed in.
-ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
-    Profile& profile,
-    signin::IdentityManager* manager,
-    const GaiaId& gaia_id,
-    const std::string& email,
-    signin_metrics::AccessPoint access_point) {
-  // If the access point is not set, we cannot accurately know if we have to
-  // show the bubble or not, so we will not show it.
-  if (access_point == signin_metrics::AccessPoint::kUnknown) {
-    return ShouldShowChromeSigninBubbleWithReason::
-        kShouldNotShowUnknownAccessPoint;
-  }
-
-  // Only show the Chrome Signin Bubble when the signin event occurred through
-  // a regular web signin in (not triggered through a chrome feature).
-  if (access_point != signin_metrics::AccessPoint::kWebSignin) {
-    return ShouldShowChromeSigninBubbleWithReason::
-        kShouldNotShowNotFromWebSignin;
-  }
-
-  // Check if an account is already signed in to Chrome.
-  if (manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return ShouldShowChromeSigninBubbleWithReason::
-        kShouldNotShowAlreadySignedIn;
-  }
-
-  // Check for the Chrome Signin setting value and possible reprompts.
-  SigninPrefs signin_prefs(*profile.GetPrefs());
-  ChromeSigninUserChoice user_choice =
-      signin_prefs.GetChromeSigninInterceptionUserChoice(gaia_id);
-  switch (user_choice) {
-    case ChromeSigninUserChoice::kNoChoice:
-    case ChromeSigninUserChoice::kAlwaysAsk:
-      break;
-    case ChromeSigninUserChoice::kSignin:
-      // This should not happen in a regular case, but rather an edge case; if
-      // the user changed their preference while the interception is in
-      // progress. Might also happen during tests that do not test the full
-      // flow; mainly the early flow that automatically signs in and do not
-      // get to this point.
-      return ShouldShowChromeSigninBubbleWithReason::kShouldNotShowUserChoice;
-    case ChromeSigninUserChoice::kDoNotSignin:
-      if (!ShouldAllowChromeSigninBubbleReprompt(signin_prefs, gaia_id)) {
-        return ShouldShowChromeSigninBubbleWithReason::kShouldNotShowUserChoice;
-      }
-      break;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      !signin::IsUsernameAllowedByPatternFromPrefs(
-          g_browser_process->local_state(), email)) {
-    return ShouldShowChromeSigninBubbleWithReason::
-        kShouldNotShowSigninDisallowed;
-  }
-
-  return ShouldShowChromeSigninBubbleWithReason::kShouldShow;
-}
-
 // Returns true if we have the minimum extended account information needed to
 // make a best-effort intercept heuristic decision. If we fail to retrieve
 // this information we will cancel the interception completely.
@@ -376,13 +315,6 @@ std::optional<bool> EnterpriseSeparationMaybeRequired(
   }
 
   return false;
-}
-
-void RecordShouldShowChromeSigninBubbleReason(
-    ShouldShowChromeSigninBubbleWithReason reason) {
-  base::UmaHistogramEnumeration(
-      "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
-      reason);
 }
 
 bool IsPrimaryAccountInterception(const CoreAccountId& account_id,
@@ -493,7 +425,6 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     bool is_sync_signin,
     const std::string& email,
     const GaiaId& gaia_id,
-    bool update_state,
     const ProfileAttributesEntry** entry) const {
   bool signin_interception_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kSigninInterceptionEnabled);
@@ -550,18 +481,9 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
   // The `gaia_id` must have a value to properly read the prefs related to the
   // account and the Chrome Signin Bubble.
   if (!gaia_id.empty()) {
-    // Chrome sign in bubble is shown if chrome isn't signed in.
-    ShouldShowChromeSigninBubbleWithReason should_show_chrome_signin_bubble =
-        MaybeShouldShowChromeSigninBubble(*profile_, identity_manager_, gaia_id,
-                                          email, state_->access_point_);
-    if (update_state) {
-      state_->should_show_chrome_signin_bubble_ =
-          should_show_chrome_signin_bubble;
-    }
-
-    // Showing the Chrome Signin Bubble is part of the Uno Desktop project.
-    if (should_show_chrome_signin_bubble ==
-        ShouldShowChromeSigninBubbleWithReason::kShouldShow) {
+    // Chrome sign in bubble is shown if chrome isn't signed in and the account
+    // is eligible.
+    if (ShouldShowChromeSigninBubble(gaia_id, email)) {
       return SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
     }
   }
@@ -670,8 +592,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   const ProfileAttributesEntry* entry = nullptr;
   std::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
       GetHeuristicOutcome(is_new_account, is_sync_signin, account_info.email,
-                          account_info.gaia,
-                          /*update_state=*/true, &entry);
+                          account_info.gaia, &entry);
   state_->account_id_ = account_id;
   state_->is_interception_in_progress_ = true;
   state_->new_account_interception_ = is_new_account;
@@ -680,10 +601,6 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   if (heuristic_outcome &&
       !SigninInterceptionHeuristicOutcomeIsSuccess(*heuristic_outcome)) {
     RecordSigninInterceptionHeuristicOutcome(*heuristic_outcome);
-    if (state_->should_show_chrome_signin_bubble_) {
-      RecordShouldShowChromeSigninBubbleReason(
-          state_->should_show_chrome_signin_bubble_.value());
-    }
     Reset();
     return;
   }
@@ -875,17 +792,58 @@ bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
   return true;
 }
 
+// Returns true if sign in happens through the web and Chrome isn't already
+// signed in. Also checks if the account with `gaia_id` is eligible.
 bool DiceWebSigninInterceptor::ShouldShowChromeSigninBubble(
     const GaiaId& gaia_id,
-    const std::string& email) {
-  state_->should_show_chrome_signin_bubble_ = MaybeShouldShowChromeSigninBubble(
-      *profile_, identity_manager_, gaia_id, email, state_->access_point_);
-  CHECK(state_->should_show_chrome_signin_bubble_.has_value());
-  RecordShouldShowChromeSigninBubbleReason(
-      state_->should_show_chrome_signin_bubble_.value());
+    const std::string& email) const {
+  // If the access point is not set, we cannot accurately know if we have to
+  // show the bubble or not, so we will not show it.
+  if (state_->access_point_ == signin_metrics::AccessPoint::kUnknown) {
+    return false;
+  }
 
-  return state_->should_show_chrome_signin_bubble_ ==
-         ShouldShowChromeSigninBubbleWithReason::kShouldShow;
+  // Only show the Chrome Signin Bubble when the signin event occurred through
+  // a regular web signin in (not triggered through a chrome feature).
+  if (state_->access_point_ != signin_metrics::AccessPoint::kWebSignin) {
+    return false;
+  }
+
+  // Check if an account is already signed in to Chrome.
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return false;
+  }
+
+  // Check for the Chrome Signin setting value and possible reprompts.
+  SigninPrefs signin_prefs(*profile_->GetPrefs());
+  ChromeSigninUserChoice user_choice =
+      signin_prefs.GetChromeSigninInterceptionUserChoice(gaia_id);
+  switch (user_choice) {
+    case ChromeSigninUserChoice::kNoChoice:
+    case ChromeSigninUserChoice::kAlwaysAsk:
+      break;
+    case ChromeSigninUserChoice::kSignin:
+      // This should not happen in a regular case, but rather an edge case; if
+      // the user changed their preference while the interception is in
+      // progress. Might also happen during tests that do not test the full
+      // flow; mainly the early flow that automatically signs in and do not
+      // get to this point.
+      return false;
+    case ChromeSigninUserChoice::kDoNotSignin:
+      if (!ShouldAllowChromeSigninBubbleReprompt(signin_prefs, gaia_id)) {
+        return false;
+      }
+      break;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      !signin::IsUsernameAllowedByPatternFromPrefs(
+          g_browser_process->local_state(), email)) {
+    return false;
+  }
+
+  return true;
 }
 
 void DiceWebSigninInterceptor::ShowSigninInterceptionBubble(
