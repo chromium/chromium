@@ -330,9 +330,6 @@ void WebContentsFrameTracker::ApplySubCaptureTarget(
   DCHECK(callback);
 
   if (sub_capture_target_version_ >= sub_capture_target_version) {
-    // This will trigger a BadMessage from MediaStreamDispatcherHost.
-    // (MediaStreamDispatcherHost knows the capturer, whereas here we know
-    // the capturee.)
     std::move(callback).Run(
         media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion);
     return;

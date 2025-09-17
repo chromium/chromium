@@ -427,7 +427,6 @@ void FrameSinkVideoCapturerImpl::ChangeTarget(
     const std::optional<VideoCaptureTarget>& target,
     uint32_t sub_capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GE(sub_capture_version, capture_version_sub_capture_);
 
   target_ = target;
 

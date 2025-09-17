@@ -138,28 +138,6 @@ bool MayApplySubCaptureTarget(GlobalRenderFrameHostId capturing_id,
 
   return helper->IsAssociatedWith(target, type);
 }
-
-MediaStreamDispatcherHost::ApplySubCaptureTargetCallback
-WrapApplySubCaptureTarget(
-    MediaStreamDispatcherHost::ApplySubCaptureTargetCallback callback,
-    mojo::ReportBadMessageCallback bad_message_callback) {
-  return base::BindOnce(
-      [](MediaStreamDispatcherHost::ApplySubCaptureTargetCallback callback,
-         mojo::ReportBadMessageCallback bad_message_callback,
-         media::mojom::ApplySubCaptureTargetResult result) {
-        if (result ==
-            media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion) {
-          std::move(bad_message_callback)
-              .Run("Non-increasing capture-target-version.");
-          // Intentionally avoid returning. Instead, continue execution and
-          // invoke the callback. If the callback were allowed to "drop" that
-          // would trigger a DCHECK in the mojom pipe.
-          // TODO(crbug.com/40823292): Avoid the necessity for this.
-        }
-        std::move(callback).Run(result);
-      },
-      std::move(callback), std::move(bad_message_callback));
-}
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 bool AllowedStreamTypeCombination(
@@ -756,8 +734,6 @@ void MediaStreamDispatcherHost::ApplySubCaptureTarget(
   // Namely, cropping and restricting are currently only allowed
   // for self-capture, so the sub_capture_target has to be associated with the
   // top-level WebContents belonging to this very tab.
-  // TODO(crbug.com/40823292): Switch away from the free function version
-  // when SelfOwnedReceiver properly supports this.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&MayApplySubCaptureTarget,
@@ -766,9 +742,7 @@ void MediaStreamDispatcherHost::ApplySubCaptureTarget(
       base::BindOnce(
           &MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete,
           weak_factory_.GetWeakPtr(), device_id, type, sub_capture_target,
-          sub_capture_version,
-          WrapApplySubCaptureTarget(std::move(callback),
-                                    mojo::GetBadMessageCallback())));
+          sub_capture_version, std::move(callback)));
 }
 
 void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(

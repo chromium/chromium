@@ -91,11 +91,6 @@ void ResolveApplySubCaptureTargetPromiseHelper(
           ApplySubCaptureTargetResult::kRejectedWithNotImplemented);
       return;
     case media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion:
-      // This should rarely happen, as the browser process would issue
-      // a BadMessage in this case. But if that message has to hop from
-      // the IO thread to the UI thread, it could theoretically happen
-      // that Blink receives this callback before being killed, so we
-      // can't quite DCHECK this.
       RaiseApplySubCaptureTargetException(
           resolver, DOMExceptionCode::kAbortError, "Non-increasing version.",
           ApplySubCaptureTargetResult::kNonIncreasingVersion);

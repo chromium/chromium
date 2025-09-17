@@ -558,7 +558,6 @@ void FrameSinkVideoCaptureDevice::OnTargetChanged(
     const std::optional<viz::VideoCaptureTarget>& target,
     uint32_t sub_capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(sub_capture_version, sub_capture_version_);
 
   target_ = target;
   sub_capture_version_ = sub_capture_version;
