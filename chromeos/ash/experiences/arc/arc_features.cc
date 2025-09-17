@@ -91,7 +91,7 @@ BASE_FEATURE_PARAM(int,
 // Controls whether attestation will be used on ARCVM.
 BASE_FEATURE(kEnableArcAttestation,
              "ArcAttestation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether we automatically send ARCVM into Doze mode
 // when it is mostly idle - even if Chrome is still active.
