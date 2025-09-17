@@ -547,6 +547,12 @@ void BackgroundTabLoadingPolicy::NotifyAllTabsScored() {
 void BackgroundTabLoadingPolicy::InitiateLoad(const PageNode* page_node) {
   TRACE_EVENT("browser", "BackgroundTabLoadingPolicy::InitiateLoad");
   for (const PageNode* to_load : page_loader_->GetPageNodesToLoad(page_node)) {
+    // Extra page nodes that weren't passed to ScheduleLoadForRestoredTabs() may
+    // already be loading.
+    if (to_load != page_node && base::Contains(page_nodes_loading_, to_load)) {
+      DCHECK(!base::Contains(page_nodes_load_initiated_, to_load));
+      continue;
+    }
     InitiateSinglePageLoad(to_load);
   }
 }
