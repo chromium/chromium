@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
@@ -101,9 +101,9 @@ bool IsGraphemeBreak(UChar32 prev_code_point, UChar32 next_code_point) {
           U_OTHER_LETTER)
     return false;
 
-  // GB11, ZWJ x Emoji
+  // GB11, ZWJ x Extended_Pictographic
   if (prev_code_point == uchar::kZeroWidthJoiner &&
-      (Character::IsEmoji(next_code_point))) {
+      IsExtendedPictographicGb11(next_code_point)) {
     return false;
   }
 
