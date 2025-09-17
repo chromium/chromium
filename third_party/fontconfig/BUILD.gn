@@ -13,7 +13,7 @@ if (use_bundled_fontconfig) {
     header = "include/fontconfig/fontconfig.h"
     bindgen_flags = [
       "merge-extern-blocks",
-      "allowlist-item=(FcCharSet.*|FC_(SLANT|WEIGHT|WIDTH)_.*|FcFontSet(Add|Create|Destroy).*|FcLangSet(Create|Destroy|Copy|Add|HasLang)|FcWeightFromOpenType.*|FC_DUAL|FC_MONO)",
+      "allowlist-item=(FcCharSet.*|FC_(SLANT|WEIGHT|WIDTH|DUAL|MONO|FAMILY)(_.*)?|Fc(Lang|Font)Set(Add|Create|Destroy|Copy|HasLang).*|FcWeightFromOpenType.*)",
     ]
     crate_name = "fontconfig_bindings"
     configs = [

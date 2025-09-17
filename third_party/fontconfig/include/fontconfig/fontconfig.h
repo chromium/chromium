@@ -69,7 +69,7 @@ typedef int            FcBool;
  * it means multiple copies of the font information.
  */
 
-#define FC_CACHE_VERSION_NUMBER 10
+#define FC_CACHE_VERSION_NUMBER 11
 #define _FC_STRINGIFY_(s)       #s
 #define _FC_STRINGIFY(s)        _FC_STRINGIFY_ (s)
 #define FC_CACHE_VERSION        _FC_STRINGIFY (FC_CACHE_VERSION_NUMBER)
@@ -133,8 +133,9 @@ typedef int            FcBool;
 #define FC_DESKTOP_NAME         "desktop"        /* String */
 #define FC_NAMED_INSTANCE       "namedinstance"  /* Bool - true if font is named instance */
 #define FC_FONT_WRAPPER         "fontwrapper"    /* String */
+#define FC_GENERIC_FAMILY       "genericfamily"  /* Integer */
 
-#define FC_CACHE_SUFFIX         ".cache-reindex1-" FC_CACHE_VERSION
+#define FC_CACHE_SUFFIX         ".cache-" FC_CACHE_VERSION
 #define FC_DIR_CACHE_FILE       "fonts.cache-" FC_CACHE_VERSION
 #define FC_USER_CACHE_FILE      ".fonts.cache-" FC_CACHE_VERSION
 
@@ -202,6 +203,22 @@ typedef int            FcBool;
 #define FC_LCD_DEFAULT          1
 #define FC_LCD_LIGHT            2
 #define FC_LCD_LEGACY           3
+
+/* Generic family */
+#define FC_FAMILY_UNKNOWN       0
+#define FC_FAMILY_SERIF         1
+#define FC_FAMILY_SANS          2
+#define FC_FAMILY_MONO          3
+#define FC_FAMILY_CURSIVE       4
+#define FC_FAMILY_FANTASY       5
+#define FC_FAMILY_SYSTEM_UI     6
+#define FC_FAMILY_UI_SERIF      7
+#define FC_FAMILY_UI_SANS       8
+#define FC_FAMILY_UI_MONO       9
+#define FC_FAMILY_UI_ROUNDED    10
+#define FC_FAMILY_EMOJI         11
+#define FC_FAMILY_MATH          12
+#define FC_FAMILY_FANGSONG      13
 
 typedef enum _FcType {
     FcTypeUnknown = -1,
