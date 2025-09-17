@@ -252,6 +252,14 @@ class DatabaseConnection {
     return metadata_snapshot_.has_value();
   }
 
+  // Gets a handle to a blob in either the `blobs` table (when `chunk_index` is
+  // 0) or the `overflow_blob_chunks` table, used for writing bytes that
+  // overflow a single SQLite BLOB.
+  std::optional<sql::StreamingBlobHandle> OpenBlobChunkForStreaming(
+      int64_t blob_row_id,
+      bool readonly,
+      size_t chunk_index);
+
   // Invoked by an owned `BlobWriter` when it's done writing, or has encountered
   // an error.
   void OnBlobWriteComplete(int64_t blob_row_id, bool success);

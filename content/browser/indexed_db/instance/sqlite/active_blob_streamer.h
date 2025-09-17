@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_ACTIVE_BLOB_STREAMER_H_
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_ACTIVE_BLOB_STREAMER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
@@ -33,9 +35,12 @@ class ActiveBlobStreamer : public blink::mojom::Blob,
                            public network::mojom::DataPipeGetter,
                            public storage::mojom::BlobDataItemReader {
  public:
-  ActiveBlobStreamer(const IndexedDBExternalObject& blob_info,
-                     sql::StreamingBlobHandle readable_blob_handle,
-                     base::OnceClosure on_became_inactive);
+  ActiveBlobStreamer(
+      const IndexedDBExternalObject& blob_info,
+      base::RepeatingCallback<std::optional<sql::StreamingBlobHandle>(size_t)>
+          fetch_blob_chunk,
+      int max_chunk_size,
+      base::OnceClosure on_became_inactive);
   ~ActiveBlobStreamer() override;
 
   ActiveBlobStreamer(const ActiveBlobStreamer&) = delete;
@@ -88,6 +93,14 @@ class ActiveBlobStreamer : public blink::mojom::Blob,
   // `offset`.
   uint64_t ClampReadLength(uint64_t offset, uint64_t length) const;
 
+  // Reads `into.size()` bytes from the blob starting at `offset`, storing them
+  // in `into`. Returns true for success, meaning exactly `into.size()` bytes
+  // were read, and false otherwise. Even on failure, `into` could be modified.
+  // If the requested bytes span multiple chunks, this will handle reading from
+  // them all. See `overflow_blob_chunks` in DatabaseConnection for an
+  // explanation of chunking.
+  bool ReadBlobBytes(uint64_t offset, base::span<uint8_t> into);
+
   // This UUID is used for both the blob that's served via `blink::mojom::Blob`
   // and the blob in the registry. This is crucial because operations such as
   // copying the blob to a new file do so by identifying the blob to the blob
@@ -100,9 +113,20 @@ class ActiveBlobStreamer : public blink::mojom::Blob,
   // A MIME type.
   std::string content_type_;
 
-  // A handle opened for reading. `this` is owned by the DatabaseConnection, so
-  // the handle should remain valid for the lifetime of `this`.
-  sql::StreamingBlobHandle readable_blob_handle_;
+  // The handle currently opened for reading. This is a result of
+  // `fetch_blob_chunk_`, cached here to avoid extra work when reading from the
+  // same chunk multiple times in a row.
+  std::optional<sql::StreamingBlobHandle> readable_blob_handle_;
+  // Gets a blob chunk by the index of the chunk. It's expected that the chunk
+  // will out-last `this`, since `this` is owned by the DatabaseConnection that
+  // owns the SQLite DB.
+  base::RepeatingCallback<std::optional<sql::StreamingBlobHandle>(size_t)>
+      fetch_blob_chunk_;
+  // The index of the chunk currently held in `readable_blob_handle_`. Starts as
+  // -1 to indicate that no handle has been fetched.
+  int chunk_idx_ = -1;
+  // The maximum size of a blob chunk, in bytes.
+  const int max_chunk_size_;
 
   // Notes on lifetimes:
   //

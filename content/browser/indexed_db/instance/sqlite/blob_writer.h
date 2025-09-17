@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_BLOB_WRITER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -27,15 +28,17 @@ class BlobWriter : public mojo::DataPipeDrainer::Client {
   static std::unique_ptr<BlobWriter> WriteBlobIntoDatabase(
       // Contains a mojo Blob connection from which bytes are read.
       IndexedDBExternalObject& external_object,
-      // The destination for the bytes.
-      sql::StreamingBlobHandle blob_handle,
+      base::RepeatingCallback<std::optional<sql::StreamingBlobHandle>(size_t)>
+          fetch_blob_chunk,
       base::OnceCallback<void(/*success=*/bool)> on_complete);
 
   ~BlobWriter() override;
 
  private:
-  BlobWriter(sql::StreamingBlobHandle blob_handle,
-             base::OnceCallback<void(/*success=*/bool)> on_complete);
+  BlobWriter(
+      base::RepeatingCallback<std::optional<sql::StreamingBlobHandle>(size_t)>
+          fetch_blob_chunk,
+      base::OnceCallback<void(/*success=*/bool)> on_complete);
 
   void Start(mojo::ScopedDataPipeConsumerHandle consumer_handle);
 
@@ -43,14 +46,25 @@ class BlobWriter : public mojo::DataPipeDrainer::Client {
   void OnDataAvailable(base::span<const uint8_t> data) override;
   void OnDataComplete() override;
 
-  // The position in the blob for the next write.
-  size_t bytes_written_so_far_ = 0;
-
-  // Will be set to null if an error has occurred when attempting to write into
-  // it.
-  std::optional<sql::StreamingBlobHandle> target_;
+  // Called after `fetch_blob_chunk_` fails to return a handle or fails to write
+  // bytes.
+  void OnSqlError();
 
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;
+
+  // Used to retrieve the next blob handle after the current one has been
+  // filled. The argument is the index of the chunk. See `overflow_blob_chunks`
+  // table in `DatabaseConnection` for information about blob chunking.
+  const base::RepeatingCallback<std::optional<sql::StreamingBlobHandle>(size_t)>
+      fetch_blob_chunk_;
+  size_t next_blob_chunk_idx_ = 0;
+
+  // The current handle for streaming bytes into. This is a cached result of
+  // `fetch_blob_chunk_`.
+  std::optional<sql::StreamingBlobHandle> blob_chunk_;
+
+  // The position in the blob for the next write.
+  int bytes_written_this_chunk_ = 0;
 
   // Called when done, with the parameter indicating success.
   base::OnceCallback<void(/*success=*/bool)> on_complete_;

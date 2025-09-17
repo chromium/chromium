@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
@@ -75,6 +76,12 @@
 
 namespace content::indexed_db::sqlite {
 namespace {
+
+// The maximum number of bytes that will be stored in a single SQLite BLOB
+// column. If a blob is larger than this, it will be chunked into multiple rows
+// in the `overflow_blob_chunks` table. Small value is here temporarily to cause
+// tests to exercise the chunking codepaths. Final value TBD.
+constexpr base::ByteCount kMaxBlobSize = base::KiB(25);
 
 // The separator used to join the strings when encoding an `IndexedDBKeyPath` of
 // type array. Spaces are not allowed in the individual strings, which makes
@@ -231,13 +238,42 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
       // This can be null if the blob is stored on disk, which will be the
       // case for legacy blobs. It's also temporarily null while FSA handles are
       // being serialized into a token (after which point, this holds the
-      // token).
+      // token). If there are more bytes than fit into a single SQLite BLOB
+      // (kMaxBlobSize), additional bytes will be stored in
+      // `overflow_blob_chunks` table.
       " bytes BLOB,"
-      " mime_type TEXT,"         // Null for FSA handles.
-      " size_bytes INTEGER,"     // Null for FSA handles.
+      // Null for FSA handles.
+      " mime_type TEXT,"
+      // Null for FSA handles. For blobs, this is the total size of the blob,
+      // including overflow bytes.
+      " size_bytes INTEGER,"
       " file_name BLOB,"         // only for files
       " last_modified INTEGER)"  // only for files
   );
+
+  // IndexedDB aims to support multi-GB blobs. SQLite does not support blobs
+  // larger than a certain size, which is at most 2^31 - 1, and is by default
+  // 1,000,000,000 (1 billion) bytes. See https://www.sqlite.org/limits.html
+  //
+  // As such, large blobs must be split across multiple rows. Each piece of a
+  // blob is called a "chunk" in this context. The 0th chunk (which for most
+  // blobs is the only chunk) is stored in the `blobs` table, along with
+  // metadata. Subsequent chunks are stored here, and identified by an index (1
+  // or higher). When reading or writing a blob, helper classes
+  // (ActiveBlobStreamer and BlobWriter) will translate offsets into the entire
+  // blob into offsets into the appropriate chunk.
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
+      "CREATE TABLE overflow_blob_chunks "
+      "(row_id INTEGER PRIMARY KEY,"
+      // The ID in the `blobs` table for which this row holds some overflow
+      // bytes.
+      " blob_row_id INTEGER NOT NULL,"
+      // 1-based index into overflow chunks for a given blob. 1 refers to the
+      // first *overflow chunk*. (0 theoretically refers to the non-overflow
+      // bytes in the `blobs` table.)
+      " chunk_index INTEGER NOT NULL,"
+      " bytes BLOB NOT NULL)");
 
   // Blobs may be referenced by rows in `records` or by active connections to
   // clients.
@@ -279,6 +315,13 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
       "  (SELECT 1 FROM blob_references WHERE blob_row_id = OLD.blob_row_id) "
       "BEGIN"
       "  DELETE FROM blobs WHERE row_id = OLD.blob_row_id;"
+      "END");
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
+      "CREATE TRIGGER on_blob_deleted"
+      "  AFTER DELETE ON blobs "
+      "BEGIN"
+      "  DELETE FROM overflow_blob_chunks WHERE blob_row_id = OLD.row_id;"
       "END");
 
   // Insert the initial metadata entry.
@@ -928,27 +971,49 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
                          blob_writers_weak_factory_.GetWeakPtr(), blob_row_id));
       continue;
     }
-    std::optional<sql::StreamingBlobHandle> blob_for_writing =
-        db_->GetStreamingBlob("blobs", "bytes", blob_row_id,
-                              /*readonly=*/false);
-    std::unique_ptr<BlobWriter> writer;
-    if (blob_for_writing) {
-      writer = BlobWriter::WriteBlobIntoDatabase(
-          external_object, *std::move(blob_for_writing),
-          base::BindOnce(&DatabaseConnection::OnBlobWriteComplete,
-                         blob_writers_weak_factory_.GetWeakPtr(), blob_row_id));
-    }
-    if (!writer) {
-      CancelBlobWriting();
-      // This is currently ignored as the error is already surfaced through
-      // `blob_write_callback_`.
-      return Status::IOError();
-    }
-
+    std::unique_ptr<BlobWriter> writer = BlobWriter::WriteBlobIntoDatabase(
+        external_object,
+        // Unretained is safe because `this` owns `writer`. (And WeakPtr doesn't
+        // work with functions that return values.)
+        base::BindRepeating(&DatabaseConnection::OpenBlobChunkForStreaming,
+                            base::Unretained(this), blob_row_id,
+                            /*readonly=*/false),
+        // Uses a WeakPtr because the completion callback can be Posted i.e. can
+        // be in flight when `writer` is destroyed.
+        base::BindOnce(&DatabaseConnection::OnBlobWriteComplete,
+                       blob_writers_weak_factory_.GetWeakPtr(), blob_row_id));
     blob_writers_[blob_row_id] = std::move(writer);
   }
 
   return Status::OK();
+}
+
+std::optional<sql::StreamingBlobHandle>
+DatabaseConnection::OpenBlobChunkForStreaming(int64_t blob_row_id,
+                                              bool readonly,
+                                              size_t chunk_index) {
+  if (chunk_index == 0) {
+    return db_->GetStreamingBlob("blobs", "bytes", blob_row_id, readonly);
+  }
+
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT row_id "
+                              "FROM overflow_blob_chunks "
+                              "WHERE blob_row_id = ? AND chunk_index = ?"));
+  statement.BindInt64(0, blob_row_id);
+  statement.BindInt64(1, chunk_index);
+  if (!statement.Step()) {
+    // If the statement succeeded (no SQLite error), there's a programming
+    // error.
+    if (statement.Succeeded()) {
+      Fatal(Status::NotFound("Blob chunk missing"));
+    }
+    return std::nullopt;
+  }
+  int64_t chunk_row_id = statement.ColumnInt64(0);
+  return db_->GetStreamingBlob("overflow_blob_chunks", "bytes", chunk_row_id,
+                               readonly);
 }
 
 void DatabaseConnection::OnBlobWriteComplete(int64_t blob_row_id,
@@ -1460,40 +1525,68 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
 
   // Insert external objects into relevant tables.
   for (auto& external_object : value.external_objects) {
-    // Reserve space in the blob table. It's not actually written yet though.
+    int64_t blob_row_id = -1;
     if (external_object.object_type() ==
         IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle) {
+      // Write metadata. Blob bytes will be written later in one go, after
+      // serializing the handle.
       sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE,
                                                        "INSERT INTO blobs "
                                                        "(object_type) "
                                                        "VALUES (?)"));
       statement.BindInt(0, static_cast<int>(external_object.object_type()));
       RUN_STATEMENT_RETURN_ON_ERROR(statement);
+      blob_row_id = db_->GetLastInsertRowId();
     } else {
-      sql::Statement statement(
-          db_->GetCachedStatement(SQL_FROM_HERE,
-                                  "INSERT INTO blobs "
-                                  "(object_type, mime_type, size_bytes, "
-                                  "bytes, file_name, last_modified) "
-                                  "VALUES (?, ?, ?, ?, ?, ?)"));
-      statement.BindInt(0, static_cast<int>(external_object.object_type()));
-      statement.BindString16(1, external_object.type());
-      statement.BindInt64(2, external_object.size());
-      statement.BindBlobForStreaming(3, external_object.size());
-      if (external_object.object_type() ==
-          IndexedDBExternalObject::ObjectType::kBlob) {
-        statement.BindNull(4);
-        statement.BindNull(5);
-      } else {
-        CHECK_EQ(external_object.object_type(),
-                 IndexedDBExternalObject::ObjectType::kFile);
-        statement.BindString16(4, external_object.file_name());
-        statement.BindTime(5, external_object.last_modified());
+      // Write metadata and reserve space for the `bytes` column. Blob bytes are
+      // not actually written yet though.
+      int main_chunk_size =
+          std::min(external_object.size(), kMaxBlobSize.InBytes());
+      {
+        sql::Statement statement(
+            db_->GetCachedStatement(SQL_FROM_HERE,
+                                    "INSERT INTO blobs "
+                                    "(object_type, mime_type, size_bytes, "
+                                    "bytes, file_name, last_modified) "
+                                    "VALUES (?, ?, ?, ?, ?, ?)"));
+        statement.BindInt(0, static_cast<int>(external_object.object_type()));
+        statement.BindString16(1, external_object.type());
+        statement.BindInt64(2, external_object.size());
+        statement.BindBlobForStreaming(3, main_chunk_size);
+        if (external_object.object_type() ==
+            IndexedDBExternalObject::ObjectType::kBlob) {
+          statement.BindNull(4);
+          statement.BindNull(5);
+        } else {
+          CHECK_EQ(external_object.object_type(),
+                   IndexedDBExternalObject::ObjectType::kFile);
+          statement.BindString16(4, external_object.file_name());
+          statement.BindTime(5, external_object.last_modified());
+        }
+        RUN_STATEMENT_RETURN_ON_ERROR(statement);
       }
-      RUN_STATEMENT_RETURN_ON_ERROR(statement);
+
+      blob_row_id = db_->GetLastInsertRowId();
+
+      // Reserve space for overflow chunks, if any.
+      int chunk_index = 1;
+      for (int64_t bytes_written = main_chunk_size;
+           bytes_written < external_object.size();) {
+        const int64_t chunk_size = std::min(
+            external_object.size() - bytes_written, kMaxBlobSize.InBytes());
+        sql::Statement statement(
+            db_->GetCachedStatement(SQL_FROM_HERE,
+                                    "INSERT INTO overflow_blob_chunks "
+                                    "(blob_row_id, chunk_index, bytes)"
+                                    "VALUES (?, ?, ?)"));
+        statement.BindInt64(0, blob_row_id);
+        statement.BindInt(1, chunk_index++);
+        statement.BindBlobForStreaming(2, chunk_size);
+        RUN_STATEMENT_RETURN_ON_ERROR(statement);
+        bytes_written += chunk_size;
+      }
     }
 
-    const int64_t blob_row_id = db_->GetLastInsertRowId();
     external_object.set_blob_number(blob_row_id);
 
     // Store the reference.
@@ -1684,12 +1777,13 @@ DatabaseConnection::CreateAllExternalObjects(
     // object that manages the active blob.
     auto it = active_blobs_.find(object.blob_number());
     if (it == active_blobs_.end()) {
-      std::optional<sql::StreamingBlobHandle> blob_for_reading =
-          db_->GetStreamingBlob("blobs", "bytes", object.blob_number(),
-                                /*readonly=*/true);
-      TRANSIENT_CHECK(blob_for_reading);
       auto streamer = std::make_unique<ActiveBlobStreamer>(
-          object, *std::move(blob_for_reading),
+          object,
+          // Unretained is safe because `this` owns `streamer`.
+          base::BindRepeating(&DatabaseConnection::OpenBlobChunkForStreaming,
+                              base::Unretained(this), object.blob_number(),
+                              /*readonly=*/true),
+          kMaxBlobSize.InBytes(),
           base::BindOnce(&DatabaseConnection::OnBlobBecameInactive,
                          base::Unretained(this), object.blob_number()));
       it = active_blobs_.insert({object.blob_number(), std::move(streamer)})
