@@ -6,6 +6,8 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -72,7 +74,8 @@ void ProfileCustomizationBubbleSyncController::ShowOnSyncFailedOrDefaultTheme(
       suggested_profile_color,
       base::BindOnce(&ShowBubble, base::to_address(bwi_)),
       SyncServiceFactory::GetForProfile(profile),
-      ThemeServiceFactory::GetForProfile(profile));
+      ThemeServiceFactory::GetForProfile(profile),
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile));
 }
 
 void ProfileCustomizationBubbleSyncController::
@@ -80,10 +83,13 @@ void ProfileCustomizationBubbleSyncController::
         SkColor suggested_profile_color,
         ShowBubbleCallback show_bubble_callback_testing_override,
         syncer::SyncService* sync_service_testing_override,
-        ThemeService* theme_service_testing_override) {
+        ThemeService* theme_service_testing_override,
+        NtpCustomBackgroundService*
+            ntp_custom_background_service_testing_override) {
   ShowOnSyncFailedOrDefaultThemeInternal(
       suggested_profile_color, std::move(show_bubble_callback_testing_override),
-      sync_service_testing_override, theme_service_testing_override);
+      sync_service_testing_override, theme_service_testing_override,
+      ntp_custom_background_service_testing_override);
 }
 
 bool ProfileCustomizationBubbleSyncController::IsWaitingForTheme() const {
@@ -95,7 +101,8 @@ void ProfileCustomizationBubbleSyncController::
         SkColor suggested_profile_color,
         ShowBubbleCallback show_bubble_callback,
         syncer::SyncService* sync_service,
-        ThemeService* theme_service) {
+        ThemeService* theme_service,
+        NtpCustomBackgroundService* ntp_custom_background_service) {
   // Abort any existing callback before updating the field.
   MaybeInvokeCallback(Outcome::kAbort);
 
@@ -111,19 +118,27 @@ void ProfileCustomizationBubbleSyncController::
       base::BindOnce(
           &ProfileCustomizationBubbleSyncController::OnSyncedThemeReady,
           // base::Unretained() is fine because `this` owns `theme_waiter_`.
-          base::Unretained(this), suggested_profile_color, theme_service));
+          base::Unretained(this), suggested_profile_color, theme_service,
+          ntp_custom_background_service));
   theme_waiter_->Run();
 }
 
 void ProfileCustomizationBubbleSyncController::OnSyncedThemeReady(
     SkColor suggested_profile_color,
     ThemeService* theme_service,
+    NtpCustomBackgroundService* ntp_custom_background_service,
     ProfileCustomizationSyncedThemeWaiter::Outcome outcome) {
   theme_waiter_.reset();
   switch (outcome) {
     case ProfileCustomizationSyncedThemeWaiter::Outcome::kSyncSuccess: {
-      bool using_custom_theme = !theme_service->UsingDefaultTheme() &&
-                                !theme_service->UsingSystemTheme();
+      const bool using_custom_theme =
+          theme_service->GetThemeID() != ThemeHelper::kDefaultThemeID ||
+          // Checked separately because grayscale theme also sets
+          // kDefaultThemeID.
+          theme_service->GetIsGrayscale() ||
+          // Checked separately because custom background can be set with
+          // kDefaultThemeID.
+          ntp_custom_background_service->GetCustomBackground().has_value();
       if (using_custom_theme) {
         MaybeInvokeCallback(Outcome::kSkipBubble);
       } else {
