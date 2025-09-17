@@ -19,12 +19,13 @@ constexpr int kGinPerContextDataIndex =
 PerContextData::PerContextData(ContextHolder* context_holder,
                                v8::Local<v8::Context> context)
     : context_holder_(context_holder) {
-  context->SetAlignedPointerInEmbedderData(kGinPerContextDataIndex, this);
+  context->SetAlignedPointerInEmbedderData(kGinPerContextDataIndex, this,
+                                           kEmbedderNativeGin);
 }
 
 PerContextData::~PerContextData() {
   context_holder_->context()->SetAlignedPointerInEmbedderData(
-      kGinPerContextDataIndex, nullptr);
+      kGinPerContextDataIndex, nullptr, kEmbedderNativeGin);
 }
 
 // static
