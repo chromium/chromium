@@ -60,10 +60,12 @@ LayoutSVGEllipse::LayoutSVGEllipse(SVGGeometryElement* node)
 
 LayoutSVGEllipse::~LayoutSVGEllipse() = default;
 
-void LayoutSVGEllipse::StyleDidChange(StyleDifference diff,
-                                      const ComputedStyle* old_style) {
+void LayoutSVGEllipse::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGShape::StyleDidChange(diff, old_style);
+  LayoutSVGShape::StyleDidChange(diff, old_style, style_change_context);
 
   if (old_style && GeometryPropertiesChanged(*old_style, StyleRef())) {
     SetNeedsShapeUpdate();

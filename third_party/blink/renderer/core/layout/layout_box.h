@@ -1239,8 +1239,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void WillBeRemovedFromTree() override;
 
   void StyleWillChange(StyleDifference,
-                       const ComputedStyle& new_style) override;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+                       const ComputedStyle& new_style,
+                       StyleChangeContext&) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   virtual bool ShouldBeHandledAsFloating(const ComputedStyle& style) const;
   bool ShouldBeHandledAsFloating() const {
     NOT_DESTROYED();

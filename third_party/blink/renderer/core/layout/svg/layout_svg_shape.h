@@ -143,7 +143,9 @@ class LayoutSVGShape : public LayoutSVGModelObject {
  protected:
   explicit LayoutSVGShape(SVGGeometryElement*);
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   void WillBeDestroyed() override;
 
   RasterEffectOutset VisualRectOutsetForRasterEffects() const override;

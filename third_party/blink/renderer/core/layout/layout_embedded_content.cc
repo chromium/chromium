@@ -306,10 +306,12 @@ bool LayoutEmbeddedContent::NodeAtPoint(
                                             accumulated_offset, phase);
 }
 
-void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
-                                           const ComputedStyle* old_style) {
+void LayoutEmbeddedContent::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutReplaced::StyleDidChange(diff, old_style);
+  LayoutReplaced::StyleDidChange(diff, old_style, style_change_context);
   const ComputedStyle& new_style = StyleRef();
 
   if (Frame* frame = GetFrameOwnerElement()->ContentFrame())

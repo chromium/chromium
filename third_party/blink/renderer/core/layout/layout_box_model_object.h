@@ -438,8 +438,11 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return ShouldBeHandledAsInline(StyleRef());
   }
   void StyleWillChange(StyleDifference,
-                       const ComputedStyle& new_style) override;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+                       const ComputedStyle& new_style,
+                       StyleChangeContext&) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   virtual bool ComputeCanCompositeBackgroundAttachmentFixed() const {
     NOT_DESTROYED();
     return false;

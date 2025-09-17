@@ -214,8 +214,11 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
                        HitTestPhase) override;
 
   void StyleWillChange(StyleDifference,
-                       const ComputedStyle& new_style) override;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+                       const ComputedStyle& new_style,
+                       StyleChangeContext&) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   bool RespectsCSSOverflow() const override;
 
  protected:

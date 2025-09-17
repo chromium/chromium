@@ -27,7 +27,9 @@ class LayoutMathMLBlock : public LayoutBlock {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const final;
   bool CanHaveChildren() const final;
-  void StyleDidChange(StyleDifference, const ComputedStyle*) final;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle*,
+                      const StyleChangeContext&) final;
 
   bool IsMonolithic() const final {
     NOT_DESTROYED();

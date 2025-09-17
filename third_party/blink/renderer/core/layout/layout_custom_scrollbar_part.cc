@@ -236,10 +236,12 @@ void LayoutCustomScrollbarPart::UpdateFromStyle() {
   SetFloating(false);
 }
 
-void LayoutCustomScrollbarPart::StyleDidChange(StyleDifference diff,
-                                               const ComputedStyle* old_style) {
+void LayoutCustomScrollbarPart::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutReplaced::StyleDidChange(diff, old_style);
+  LayoutReplaced::StyleDidChange(diff, old_style, style_change_context);
   if (old_style &&
       (diff.NeedsNormalPaintInvalidation() || diff.NeedsLayout())) {
     SetNeedsPaintInvalidation();

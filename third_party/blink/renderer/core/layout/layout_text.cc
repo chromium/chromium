@@ -202,7 +202,8 @@ bool LayoutText::IsWordBreak() const {
 }
 
 void LayoutText::StyleWillChange(StyleDifference diff,
-                                 const ComputedStyle& new_style) {
+                                 const ComputedStyle& new_style,
+                                 StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
 
   if (const ComputedStyle* current_style = Style()) {
@@ -216,8 +217,10 @@ void LayoutText::StyleWillChange(StyleDifference diff,
   }
 }
 
-void LayoutText::StyleDidChange(StyleDifference diff,
-                                const ComputedStyle* old_style) {
+void LayoutText::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   // There is no need to ever schedule paint invalidations from a style change
   // of a text run, since we already did this for the parent of the text run.

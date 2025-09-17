@@ -80,7 +80,8 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
   void StyleDidChange(StyleDifference diff,
-                      const ComputedStyle* old_style) override;
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   std::optional<GridPlacementData> cached_placement_data_;
   std::optional<const SubgridMinMaxSizesCache> cached_subgrid_min_max_sizes_;

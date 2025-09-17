@@ -337,7 +337,9 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   LayoutViewTransitionRoot* GetViewTransitionRoot() const;
 
  private:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   int ViewLogicalWidthForBoxSizing() const {
     NOT_DESTROYED();
     return ViewLogicalWidth(kIncludeScrollbars);

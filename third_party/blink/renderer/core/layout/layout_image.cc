@@ -82,10 +82,12 @@ void GetImageSizeChangeTracingData(perfetto::TracedValue context,
   dict.Add("frameId", IdentifiersFactory::FrameId(frame));
 }
 
-void LayoutImage::StyleDidChange(StyleDifference diff,
-                                 const ComputedStyle* old_style) {
+void LayoutImage::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutReplaced::StyleDidChange(diff, old_style);
+  LayoutReplaced::StyleDidChange(diff, old_style, style_change_context);
 
   RespectImageOrientationEnum old_orientation =
       old_style ? old_style->ImageOrientation()

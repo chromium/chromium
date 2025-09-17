@@ -183,10 +183,12 @@ bool LayoutSVGForeignObject::UpdateAfterSVGLayout(
   return UpdateTransformAfterLayout(layout_info, bounds_changed);
 }
 
-void LayoutSVGForeignObject::StyleDidChange(StyleDifference diff,
-                                            const ComputedStyle* old_style) {
+void LayoutSVGForeignObject::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGBlock::StyleDidChange(diff, old_style);
+  LayoutSVGBlock::StyleDidChange(diff, old_style, style_change_context);
 
   float old_zoom = old_style ? old_style->EffectiveZoom()
                              : ComputedStyleInitialValues::InitialZoom();

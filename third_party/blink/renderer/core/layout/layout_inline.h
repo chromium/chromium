@@ -227,7 +227,9 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void InLayoutNGInlineFormattingContextWillChange(bool) final;
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   void InvalidateDisplayItemClients(PaintInvalidationReason) const override;
 

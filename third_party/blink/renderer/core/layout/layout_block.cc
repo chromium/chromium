@@ -117,10 +117,11 @@ void LayoutBlock::WillBeDestroyed() {
 }
 
 void LayoutBlock::StyleWillChange(StyleDifference diff,
-                                  const ComputedStyle& new_style) {
+                                  const ComputedStyle& new_style,
+                                  StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   SetIsAtomicInlineLevel(ShouldBeHandledAsInline(new_style));
-  LayoutBox::StyleWillChange(diff, new_style);
+  LayoutBox::StyleWillChange(diff, new_style, style_change_context);
 }
 
 // Compute a local version of the "font size scale factor" used by SVG
@@ -134,8 +135,10 @@ static double ComputeSquaredLocalFontSizeScalingFactor(
   return affine.XScaleSquared() + affine.YScaleSquared();
 }
 
-void LayoutBlock::StyleDidChange(StyleDifference diff,
-                                 const ComputedStyle* old_style) {
+void LayoutBlock::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   // Computes old scaling factor before PaintLayer::UpdateTransform()
   // updates Layer()->Transform().
@@ -145,7 +148,7 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
         ComputeSquaredLocalFontSizeScalingFactor(Layer()->Transform());
   }
 
-  LayoutBox::StyleDidChange(diff, old_style);
+  LayoutBox::StyleDidChange(diff, old_style, style_change_context);
 
   const ComputedStyle& new_style = StyleRef();
 

@@ -78,10 +78,12 @@ void LayoutQuote::WillBeRemovedFromTree() {
   }
 }
 
-void LayoutQuote::StyleDidChange(StyleDifference diff,
-                                 const ComputedStyle* old_style) {
+void LayoutQuote::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutInline::StyleDidChange(diff, old_style);
+  LayoutInline::StyleDidChange(diff, old_style, style_change_context);
   UpdateText();
 }
 

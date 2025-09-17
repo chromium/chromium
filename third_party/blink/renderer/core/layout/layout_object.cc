@@ -326,8 +326,6 @@ struct SameSizeAsLayoutObject : public GarbageCollected<SameSizeAsLayoutObject>,
 
 ASSERT_SIZE(LayoutObject, SameSizeAsLayoutObject);
 
-bool LayoutObject::affects_parent_block_ = false;
-
 LayoutObject* LayoutObject::CreateObject(Element* element,
                                          const ComputedStyle& style) {
   DCHECK(IsAllowedToModifyLayoutTreeStructure(element->GetDocument()));
@@ -2810,7 +2808,9 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
   // animation affecting that property may require paint invalidation.
   diff = AdjustForCompositableAnimationPaint(style_, style, GetNode(), diff);
 
-  StyleWillChange(diff, *style);
+  StyleChangeContext style_change_context;
+
+  StyleWillChange(diff, *style, style_change_context);
 
   const ComputedStyle* old_style = std::move(style_);
   SetStyleInternal(std::move(style));
@@ -2821,7 +2821,7 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
 
   bool does_not_need_layout_or_paint_invalidation = !parent_;
 
-  StyleDidChange(diff, old_style);
+  StyleDidChange(diff, old_style, style_change_context);
 
   // FIXME: |this| might be destroyed here. This can currently happen for a
   // LayoutTextFragment when its first-letter block gets an update in
@@ -2980,7 +2980,8 @@ void LayoutObject::UpdateFirstLineImageObservers(
 }
 
 void LayoutObject::StyleWillChange(StyleDifference diff,
-                                   const ComputedStyle& new_style) {
+                                   const ComputedStyle& new_style,
+                                   StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (style_) {
     bool visibility_changed = style_->Visibility() != new_style.Visibility();
@@ -3031,7 +3032,7 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
           *this);
     }
 
-    affects_parent_block_ =
+    style_change_context.became_normal_flow =
         IsFloatingOrOutOfFlowPositioned() &&
         ((!new_style.IsFloating() ||
           new_style.IsInsideDisplayIgnoringFloatingChildren()) &&
@@ -3045,8 +3046,6 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
       SetFloating(false);
       ClearPositionedState();
     }
-  } else {
-    affects_parent_block_ = false;
   }
 
   // Elements with non-auto touch-action will send a SetTouchAction message
@@ -3140,8 +3139,10 @@ bool LayoutObject::BelongsToElementChangingOverflowBehaviour() const {
          IsA<HTMLImageElement>(element);
 }
 
-void LayoutObject::StyleDidChange(StyleDifference diff,
-                                  const ComputedStyle* old_style) {
+void LayoutObject::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (HasHiddenBackface()) {
     if (Parent() && Parent()->StyleRef().UsedTransformStyle3D() ==
@@ -3215,8 +3216,9 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
   // it's not affected.
   SetOutlineMayBeAffectedByDescendants(style_->HasOutline());
 
-  if (affects_parent_block_)
+  if (style_change_context.became_normal_flow) {
     HandleDynamicFloatPositionChange(this);
+  }
 
   if (diff.NeedsFullLayout()) {
     // If the in-flow state of an element is changed, disable scroll

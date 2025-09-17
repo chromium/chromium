@@ -300,10 +300,13 @@ bool LayoutSVGResourceClipper::FindCycleFromSelf() const {
   return LayoutSVGResourceContainer::FindCycleFromSelf();
 }
 
-void LayoutSVGResourceClipper::StyleDidChange(StyleDifference diff,
-                                              const ComputedStyle* old_style) {
+void LayoutSVGResourceClipper::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGResourceContainer::StyleDidChange(diff, old_style);
+  LayoutSVGResourceContainer::StyleDidChange(diff, old_style,
+                                             style_change_context);
   if (diff.TransformChanged())
     MarkAllClientsForInvalidation(kClipCacheInvalidation | kPaintInvalidation);
 }

@@ -39,7 +39,9 @@ class LayoutSVGResourcePaintServer : public LayoutSVGResourceContainer {
                            cc::PaintFlags&) = 0;
 
  protected:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 };
 
 template <>

@@ -141,7 +141,9 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   void WillBeDestroyed() override;
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   bool CanBeSelectionLeafInternal() const final {
     NOT_DESTROYED();

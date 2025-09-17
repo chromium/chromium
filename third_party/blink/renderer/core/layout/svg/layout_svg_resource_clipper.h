@@ -61,7 +61,9 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
   PaintRecord CreatePaintRecord();
 
  private:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   void CalculateLocalClipBounds();
   bool FindCycleFromSelf() const override;

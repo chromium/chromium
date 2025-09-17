@@ -74,7 +74,9 @@ class LayoutSVGInline : public LayoutInline {
 
  private:
   void WillBeDestroyed() final;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) final;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) final;
 
   void AddChild(LayoutObject* child,
                 LayoutObject* before_child = nullptr) final;

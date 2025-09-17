@@ -94,8 +94,9 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
 
 void LayoutTextControlInnerEditor::StyleDidChange(
     StyleDifference diff,
-    const ComputedStyle* old_style) {
-  LayoutBlockFlow::StyleDidChange(diff, old_style);
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
+  LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
 
   if (RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled() && old_style &&
       old_style->UsedUserModify() != StyleRef().UsedUserModify() &&

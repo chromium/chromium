@@ -59,7 +59,8 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
   }
 
   void StyleDidChange(StyleDifference diff,
-                      const ComputedStyle* old_style) final;
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) final;
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) final;
 

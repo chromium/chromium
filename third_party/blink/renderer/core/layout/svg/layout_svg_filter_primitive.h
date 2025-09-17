@@ -44,7 +44,9 @@ class LayoutSVGFilterPrimitive final : public LayoutObject {
   }
 
   void WillBeDestroyed() override;
-  void StyleDidChange(StyleDifference, const ComputedStyle*) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle*,
+                      const StyleChangeContext&) override;
   SVGLayoutResult UpdateSVGLayout(const SVGLayoutInfo&) override;
 
   const char* GetName() const override {

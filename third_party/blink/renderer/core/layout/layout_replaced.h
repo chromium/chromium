@@ -143,7 +143,9 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const PhysicalRect& base_content_rect,
       const PhysicalNaturalSizingInfo& sizing_info) const;
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 

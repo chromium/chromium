@@ -65,10 +65,12 @@ void LayoutSVGInlineText::TextDidChange() {
     UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
 }
 
-void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
-                                         const ComputedStyle* old_style) {
+void LayoutSVGInlineText::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutText::StyleDidChange(diff, old_style);
+  LayoutText::StyleDidChange(diff, old_style, style_change_context);
   UpdateScaledFont();
 
   const bool new_collapse = StyleRef().ShouldCollapseWhiteSpaces();

@@ -19,8 +19,10 @@ LayoutTable* LayoutTableCaption::Table() const {
   return nullptr;
 }
 
-void LayoutTableCaption::StyleDidChange(StyleDifference diff,
-                                        const ComputedStyle* old_style) {
+void LayoutTableCaption::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (LayoutTable* table = Table()) {
     // Modifying the `caption-side` property means that the structure of the
@@ -30,7 +32,7 @@ void LayoutTableCaption::StyleDidChange(StyleDifference diff,
       table->SetShouldDoFullPaintInvalidation();
     }
   }
-  LayoutBlockFlow::StyleDidChange(diff, old_style);
+  LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
 }
 
 }  // namespace blink

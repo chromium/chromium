@@ -121,8 +121,10 @@ void LayoutBoxModelObject::WillBeDestroyed() {
   DCHECK(!Layer());
 }
 
-void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
-                                           const ComputedStyle& new_style) {
+void LayoutBoxModelObject::StyleWillChange(
+    StyleDifference diff,
+    const ComputedStyle& new_style,
+    StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   // Change of stacked/stacking context status may cause change of this or
   // descendant PaintLayer's PaintingContainer, so we need to eagerly
@@ -136,12 +138,14 @@ void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
     ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
   }
 
-  LayoutObject::StyleWillChange(diff, new_style);
+  LayoutObject::StyleWillChange(diff, new_style, style_change_context);
 }
 
 DISABLE_CFI_PERF
-void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
-                                          const ComputedStyle* old_style) {
+void LayoutBoxModelObject::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   bool had_transform_related_property = HasTransformRelatedProperty();
   bool had_filter_inducing_property = HasFilterInducingProperty();
@@ -151,7 +155,7 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   bool could_contain_fixed = CanContainFixedPositionObjects();
   bool could_contain_absolute = CanContainAbsolutePositionObjects();
 
-  LayoutObject::StyleDidChange(diff, old_style);
+  LayoutObject::StyleDidChange(diff, old_style, style_change_context);
   UpdateFromStyle();
 
   // When an out-of-flow-positioned element changes its display between block

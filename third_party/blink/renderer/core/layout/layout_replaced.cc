@@ -77,10 +77,12 @@ void LayoutReplaced::WillBeDestroyed() {
   LayoutBox::WillBeDestroyed();
 }
 
-void LayoutReplaced::StyleDidChange(StyleDifference diff,
-                                    const ComputedStyle* old_style) {
+void LayoutReplaced::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBox::StyleDidChange(diff, old_style);
+  LayoutBox::StyleDidChange(diff, old_style, style_change_context);
 
   // Replaced elements can have border-radius clips without clipping overflow;
   // the overflow clipping case is already covered in LayoutBox::StyleDidChange

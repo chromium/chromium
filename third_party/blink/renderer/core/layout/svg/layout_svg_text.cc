@@ -49,13 +49,15 @@ LayoutSVGText::LayoutSVGText(Element* element)
   DCHECK(IsA<SVGTextElement>(element));
 }
 
-void LayoutSVGText::StyleDidChange(StyleDifference diff,
-                                   const ComputedStyle* old_style) {
+void LayoutSVGText::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (needs_text_metrics_update_ && diff.HasDifference() && old_style) {
     diff.SetNeedsFullLayout();
   }
-  LayoutSVGBlock::StyleDidChange(diff, old_style);
+  LayoutSVGBlock::StyleDidChange(diff, old_style, style_change_context);
   SVGResources::UpdatePaints(*this, old_style, StyleRef());
 
   if (old_style) {

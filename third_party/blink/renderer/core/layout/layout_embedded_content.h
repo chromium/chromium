@@ -93,7 +93,9 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
 
   PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) final;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) final;
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
   CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const final;

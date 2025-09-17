@@ -36,8 +36,10 @@ void LayoutCustom::RemoveChild(LayoutObject* child) {
   LayoutBlock::RemoveChild(child);
 }
 
-void LayoutCustom::StyleDidChange(StyleDifference diff,
-                                  const ComputedStyle* old_style) {
+void LayoutCustom::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   if (state_ == kUnloaded) {
     const AtomicString& name = StyleRef().DisplayLayoutCustomName();
     LayoutWorklet* worklet = LayoutWorklet::From(*GetDocument().domWindow());
@@ -63,7 +65,7 @@ void LayoutCustom::StyleDidChange(StyleDifference diff,
 
   // TODO(ikilpatrick): Investigate reducing the properties which
   // LayoutBlockFlow::StyleDidChange invalidates upon. (For example margins).
-  LayoutBlockFlow::StyleDidChange(diff, old_style);
+  LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
 }
 
 }  // namespace blink

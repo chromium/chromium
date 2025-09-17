@@ -67,8 +67,10 @@ void LayoutSVGFilterPrimitive::WillBeDestroyed() {
   LayoutObject::WillBeDestroyed();
 }
 
-void LayoutSVGFilterPrimitive::StyleDidChange(StyleDifference diff,
-                                              const ComputedStyle* old_style) {
+void LayoutSVGFilterPrimitive::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (!old_style)
     return;

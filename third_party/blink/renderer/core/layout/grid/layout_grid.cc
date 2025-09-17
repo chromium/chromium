@@ -73,10 +73,12 @@ bool NamedGridLinesDefinitionDidChange(const ComputedStyle& new_style,
 
 }  // namespace
 
-void LayoutGrid::StyleDidChange(StyleDifference diff,
-                                const ComputedStyle* old_style) {
+void LayoutGrid::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBlock::StyleDidChange(diff, old_style);
+  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
   if (!old_style)
     return;
 

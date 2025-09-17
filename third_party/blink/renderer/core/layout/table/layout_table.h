@@ -150,7 +150,8 @@ class CORE_EXPORT LayoutTable : public LayoutBlock {
   void RemoveChild(LayoutObject*) override;
 
   void StyleDidChange(StyleDifference diff,
-                      const ComputedStyle* old_style) override;
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;

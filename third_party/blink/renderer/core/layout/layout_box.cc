@@ -558,7 +558,8 @@ void LayoutBox::WillBeRemovedFromTree() {
 }
 
 void LayoutBox::StyleWillChange(StyleDifference diff,
-                                const ComputedStyle& new_style) {
+                                const ComputedStyle& new_style,
+                                StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   const ComputedStyle* old_style = Style();
   if (old_style) {
@@ -632,13 +633,14 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
     View()->SetShouldDoFullPaintInvalidation();
   }
 
-  LayoutBoxModelObject::StyleWillChange(diff, new_style);
+  LayoutBoxModelObject::StyleWillChange(diff, new_style, style_change_context);
 }
 
 void LayoutBox::StyleDidChange(StyleDifference diff,
-                               const ComputedStyle* old_style) {
+                               const ComputedStyle* old_style,
+                               const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBoxModelObject::StyleDidChange(diff, old_style);
+  LayoutBoxModelObject::StyleDidChange(diff, old_style, style_change_context);
 
   // Reflection works through PaintLayer. Some child classes e.g. LayoutSVGBlock
   // don't create layers and ignore reflections.

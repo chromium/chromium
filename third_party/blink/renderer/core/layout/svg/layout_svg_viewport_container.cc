@@ -177,9 +177,10 @@ AffineTransform LayoutSVGViewportContainer::ComputeViewboxTransform() const {
 
 void LayoutSVGViewportContainer::StyleDidChange(
     StyleDifference diff,
-    const ComputedStyle* old_style) {
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGContainer::StyleDidChange(diff, old_style);
+  LayoutSVGContainer::StyleDidChange(diff, old_style, style_change_context);
   const ComputedStyle& style = StyleRef();
 
   if (old_style && (SVGLayoutSupport::IsOverflowHidden(*old_style) !=

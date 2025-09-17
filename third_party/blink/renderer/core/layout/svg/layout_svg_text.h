@@ -56,7 +56,9 @@ class LayoutSVGText final : public LayoutSVGBlock {
                                const LayoutBoxModelObject* ancestor,
                                MapCoordinatesFlags) const override;
   gfx::RectF LocalBoundingBoxRectForAccessibility() const override;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   void WillBeDestroyed() override;
   bool NodeAtPoint(HitTestResult& result,
                    const HitTestLocation& hit_test_location,
