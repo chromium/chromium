@@ -3441,6 +3441,11 @@ test("content_unittests") {
       sources +=
           [ "../browser/media/capture/desktop_capture_device_unittest.cc" ]
     }
+
+    if (is_android) {
+      sources +=
+          [ "../browser/media/capture/desktop_capturer_android_unittest.cc" ]
+    }
   }
 
   if (is_linux || is_chromeos) {

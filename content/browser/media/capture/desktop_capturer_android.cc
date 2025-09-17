@@ -15,6 +15,27 @@
 
 namespace content {
 
+namespace {
+
+class DesktopCapturerAndroidJni : public DesktopCapturerAndroidJniInterface {
+ public:
+  ~DesktopCapturerAndroidJni() override = default;
+  base::android::ScopedJavaLocalRef<jobject> Create(JNIEnv* env,
+                                                    jlong native_ptr) override {
+    return Java_ScreenCapture_create(env, native_ptr);
+  }
+  jboolean StartCapture(JNIEnv* env,
+                        const base::android::JavaRef<jobject>& obj) override {
+    return Java_ScreenCapture_startCapture(env, obj);
+  }
+  void Destroy(JNIEnv* env,
+               const base::android::JavaRef<jobject>& obj) override {
+    Java_ScreenCapture_destroy(env, obj);
+  }
+};
+
+}  // namespace
+
 DesktopCapturerAndroid::PlaneInfo::PlaneInfo() = default;
 
 DesktopCapturerAndroid::PlaneInfo::~PlaneInfo() = default;
@@ -25,11 +46,18 @@ DesktopCapturerAndroid::PlaneInfo& DesktopCapturerAndroid::PlaneInfo::operator=(
     PlaneInfo&& other) = default;
 
 DesktopCapturerAndroid::DesktopCapturerAndroid(
-    const webrtc::DesktopCaptureOptions& options) {}
+    const webrtc::DesktopCaptureOptions& options)
+    : DesktopCapturerAndroid(options,
+                             std::make_unique<DesktopCapturerAndroidJni>()) {}
+
+DesktopCapturerAndroid::DesktopCapturerAndroid(
+    const webrtc::DesktopCaptureOptions& options,
+    std::unique_ptr<DesktopCapturerAndroidJniInterface> jni_interface)
+    : jni_interface_(std::move(jni_interface)) {}
 
 DesktopCapturerAndroid::~DesktopCapturerAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ScreenCapture_destroy(env, screen_capture_);
+  jni_interface_->Destroy(env, screen_capture_);
 }
 
 void DesktopCapturerAndroid::Start(Callback* callback) {
@@ -37,9 +65,9 @@ void DesktopCapturerAndroid::Start(Callback* callback) {
 
   JNIEnv* env = base::android::AttachCurrentThread();
   screen_capture_.Reset(
-      Java_ScreenCapture_create(env, reinterpret_cast<intptr_t>(this)));
+      jni_interface_->Create(env, reinterpret_cast<intptr_t>(this)));
 
-  if (!Java_ScreenCapture_startCapture(env, screen_capture_)) {
+  if (!jni_interface_->StartCapture(env, screen_capture_)) {
     // Error immediately if we can't start capture.
     finishing_ = true;
   }
