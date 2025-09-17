@@ -165,7 +165,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Restores state configured in SetUp().
   void TearDown() override;
 
-  using SetUpBrowserFunction = bool(const Browser*);
+  using SetUpBrowserFunction = bool(const BrowserWindowInterface*);
 
   // Sets a function that is called from InProcessBrowserTest::SetUp() with the
   // first browser. This is intended to set up state applicable to all tests

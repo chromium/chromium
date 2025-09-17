@@ -402,11 +402,12 @@ namespace chrome {
 namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-const extensions::Extension* GetExtensionForBrowser(Browser* browser) {
-  return extensions::ExtensionRegistry::Get(browser->profile())
-      ->GetExtensionById(
-          web_app::GetAppIdFromApplicationName(browser->app_name()),
-          extensions::ExtensionRegistry::EVERYTHING);
+const extensions::Extension* GetExtensionForBrowser(
+    BrowserWindowInterface* browser) {
+  return extensions::ExtensionRegistry::Get(browser->GetProfile())
+      ->GetExtensionById(web_app::GetAppIdFromApplicationName(
+                             browser->GetBrowserForMigrationOnly()->app_name()),
+                         extensions::ExtensionRegistry::EVERYTHING);
 }
 #endif
 
@@ -461,11 +462,11 @@ WebContents* GetTabAndRevertIfNecessary(Browser* browser,
   return GetTabAndRevertIfNecessaryHelper(browser, disposition, activate_tab);
 }
 
-void RecordReloadWithCookieBlocking(const Browser* browser,
+void RecordReloadWithCookieBlocking(BrowserWindowInterface* browser,
                                     WebContents* web_contents) {
   // Figure out if 3P cookies are blocked for this page.
   scoped_refptr<const content_settings::CookieSettings> cookie_settings =
-      CookieSettingsFactory::GetForProfile(browser->profile());
+      CookieSettingsFactory::GetForProfile(browser->GetProfile());
 
   // For this metric, we define "cookies blocked in settings" based on the
   // global opt-in to third-party cookie blocking as well as no overriding
@@ -491,17 +492,16 @@ void RecordReloadWithCookieBlocking(const Browser* browser,
       .Record(ukm::UkmRecorder::Get());
 }
 
-void ReloadInternal(Browser* browser,
+void ReloadInternal(BrowserWindowInterface* browser,
                     WindowOpenDisposition disposition,
                     bool bypass_cache) {
-  const WebContents* const active_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+  WebContents* const active_contents = tab_strip_model->GetActiveWebContents();
 
   std::vector<WebContents*> tabs_to_reload;
 
   if (base::FeatureList::IsEnabled(features::kReloadSelectionModel)) {
-    tabs_to_reload.push_back(
-        browser->tab_strip_model()->GetActiveWebContents());
+    tabs_to_reload.push_back(active_contents);
   } else {
     // Reloading a tab may change the selection (see crbug.com/339061099), so
     // take
@@ -509,9 +509,9 @@ void ReloadInternal(Browser* browser,
     // WebContents* so we can follow the tabs as they shift within the same
     // tabstrip (e.g. if `disposition` is NEW_BACKGROUND_TAB).
     for (const int selected_index :
-         browser->tab_strip_model()->selection_model().selected_indices()) {
+         tab_strip_model->selection_model().selected_indices()) {
       tabs_to_reload.push_back(
-          browser->tab_strip_model()->GetWebContentsAt(selected_index));
+          tab_strip_model->GetWebContentsAt(selected_index));
     }
   }
 
@@ -522,13 +522,12 @@ void ReloadInternal(Browser* browser,
     // Skip this tab if it is no longer part of this tabstrip. N.B. we do this
     // instead of using WeakPtr<WebContents> because we do not want to reload
     // tabs that move to another browser.
-    if (browser->tab_strip_model()->GetIndexOfWebContents(tab) ==
-        TabStripModel::kNoTab) {
+    if (tab_strip_model->GetIndexOfWebContents(tab) == TabStripModel::kNoTab) {
       continue;
     }
 
-    WebContents* const new_tab =
-        GetTabAndRevertIfNecessaryHelper(browser, disposition, tab);
+    WebContents* const new_tab = GetTabAndRevertIfNecessaryHelper(
+        browser->GetBrowserForMigrationOnly(), disposition, tab);
 
     // If the `tab` is the activated page, give the focus to it, as this is
     // caused by a user action
@@ -849,7 +848,8 @@ void NavigateToIndexWithDisposition(Browser* browser,
   controller->GoToIndex(index);
 }
 
-void Reload(Browser* browser, WindowOpenDisposition disposition) {
+void Reload(BrowserWindowInterface* browser,
+            WindowOpenDisposition disposition) {
   base::RecordAction(UserMetricsAction("Reload"));
   ReloadInternal(browser, disposition, false);
 }
@@ -981,12 +981,13 @@ void Stop(Browser* browser) {
   browser->tab_strip_model()->GetActiveWebContents()->Stop();
 }
 
-void NewWindow(Browser* browser) {
-  Profile* const profile = browser->profile();
+void NewWindow(BrowserWindowInterface* browser) {
+  Profile* const profile = browser->GetProfile();
 #if BUILDFLAG(IS_MAC)
   // Web apps should open a window to their launch page.
-  if (browser->app_controller()) {
-    const webapps::AppId app_id = browser->app_controller()->app_id();
+  if (web_app::AppBrowserController* const app_browser_controller =
+          browser->GetFeatures().app_browser_controller()) {
+    const webapps::AppId app_id = app_browser_controller->app_id();
 
     auto launch_container = apps::LaunchContainer::kLaunchContainerWindow;
 
@@ -1025,9 +1026,9 @@ void NewIncognitoWindow(Profile* profile) {
   NewEmptyWindow(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 }
 
-void CloseWindow(Browser* browser) {
+void CloseWindow(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("CloseWindow"));
-  browser->window()->Close();
+  browser->GetWindow()->Close();
 }
 
 content::WebContents& NewTab(Browser* browser) {

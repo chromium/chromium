@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,8 +25,9 @@ namespace ui_test_utils {
 
 namespace {
 
-bool GetNativeWindow(const Browser* browser, gfx::NativeWindow* native_window) {
-  BrowserWindow* window = browser->window();
+bool GetNativeWindow(const BrowserWindowInterface* browser,
+                     gfx::NativeWindow* native_window) {
+  const ui::BaseWindow* const window = browser->GetWindow();
   if (!window) {
     return false;
   }
@@ -36,17 +38,17 @@ bool GetNativeWindow(const Browser* browser, gfx::NativeWindow* native_window) {
 
 }  // namespace
 
-BrowserActivationWaiter::BrowserActivationWaiter(const Browser* browser) {
+BrowserActivationWaiter::BrowserActivationWaiter(
+    const BrowserWindowInterface* browser) {
   // When the active browser closes, the next "last active browser" in the
   // BrowserList might not be immediately activated. So we need to wait for the
   // "last active browser" to actually be active.
-  if (chrome::FindLastActive() == browser && browser->window()->IsActive()) {
+  if (chrome::FindLastActive() == browser && browser->GetWindow()->IsActive()) {
     observed_ = true;
     return;
   }
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  browser_view->frame()->AddObserver(this);
+  BrowserView::GetBrowserViewForBrowser(browser)->frame()->AddObserver(this);
 }
 
 BrowserActivationWaiter::~BrowserActivationWaiter() = default;
@@ -107,7 +109,7 @@ void BrowserDeactivationWaiter::OnBrowserNoLongerActive(Browser* browser) {
   }
 }
 
-bool BringBrowserWindowToFront(const Browser* browser) {
+bool BringBrowserWindowToFront(const BrowserWindowInterface* browser) {
   BrowserActivationWaiter waiter(browser);
 
   gfx::NativeWindow window = gfx::NativeWindow();
@@ -123,7 +125,7 @@ bool BringBrowserWindowToFront(const Browser* browser) {
   return true;
 }
 
-bool SendKeyPressSync(const Browser* browser,
+bool SendKeyPressSync(const BrowserWindowInterface* browser,
                       ui::KeyboardCode key,
                       bool control,
                       bool shift,

@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -448,9 +449,9 @@ Browser* FindWebAppBrowser(Profile* profile, const webapps::AppId& app_id) {
   return nullptr;
 }
 
-void CloseAndWait(Browser* browser) {
+void CloseAndWait(BrowserWindowInterface* browser) {
   BrowserWaiter waiter(browser);
-  browser->window()->Close();
+  browser->GetWindow()->Close();
   waiter.AwaitRemoved();
 }
 
@@ -483,7 +484,7 @@ std::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url) {
   return policy_app_id;
 }
 
-BrowserWaiter::BrowserWaiter(Browser* filter) : filter_(filter) {
+BrowserWaiter::BrowserWaiter(BrowserWindowInterface* filter) : filter_(filter) {
   BrowserList::AddObserver(this);
 }
 

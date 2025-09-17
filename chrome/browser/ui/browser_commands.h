@@ -97,15 +97,15 @@ void GoForward(content::WebContents* web_contents);
 void NavigateToIndexWithDisposition(Browser* browser,
                                     int index,
                                     WindowOpenDisposition disposition);
-void Reload(Browser* browser, WindowOpenDisposition disposition);
+void Reload(BrowserWindowInterface* browser, WindowOpenDisposition disposition);
 void ReloadBypassingCache(Browser* browser, WindowOpenDisposition disposition);
 bool CanReload(const Browser* browser);
 void Home(Browser* browser, WindowOpenDisposition disposition);
 base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser);
 void Stop(Browser* browser);
-void NewWindow(Browser* browser);
+void NewWindow(BrowserWindowInterface* browser);
 void NewIncognitoWindow(Profile* profile);
-void CloseWindow(Browser* browser);
+void CloseWindow(BrowserWindowInterface* browser);
 content::WebContents& NewTab(Browser* browser);
 void NewTabToRight(Browser* browser);
 void CloseTab(Browser* browser);

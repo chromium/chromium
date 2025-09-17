@@ -109,7 +109,7 @@ namespace ui_test_utils {
 
 namespace {
 
-Browser* WaitForBrowserNotInSet(
+BrowserWindowInterface* WaitForBrowserNotInSet(
     std::set<BrowserWindowInterface*> excluded_browsers) {
   BrowserWindowInterface* new_browser = GetBrowserNotInSet(excluded_browsers);
   if (!new_browser) {
@@ -117,7 +117,7 @@ Browser* WaitForBrowserNotInSet(
     // The new browser should never be in |excluded_browsers|.
     DCHECK(!base::Contains(excluded_browsers, new_browser));
   }
-  return new_browser->GetBrowserForMigrationOnly();
+  return new_browser;
 }
 
 class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
@@ -269,14 +269,18 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
 
   AllBrowserTabAddedWaiter tab_added_waiter;
 
-  WebContents* web_contents =
-      browser->OpenURL(OpenURLParams(url, Referrer(), disposition,
-                                     ui::PAGE_TRANSITION_TYPED, false),
-                       /*navigation_handle_callback=*/{});
-  if (browser_test_flags & BROWSER_TEST_WAIT_FOR_BROWSER)
+  WebContents* const web_contents =
+      browser->GetBrowserForMigrationOnly()->OpenURL(
+          OpenURLParams(url, Referrer(), disposition, ui::PAGE_TRANSITION_TYPED,
+                        false),
+          /*navigation_handle_callback=*/{});
+  if (browser_test_flags & BROWSER_TEST_WAIT_FOR_BROWSER) {
     browser = WaitForBrowserNotInSet(initial_browsers);
-  if (browser_test_flags & BROWSER_TEST_WAIT_FOR_TAB)
+    tab_strip = browser->GetTabStripModel();
+  }
+  if (browser_test_flags & BROWSER_TEST_WAIT_FOR_TAB) {
     tab_added_waiter.Wait();
+  }
   if (!(browser_test_flags & BROWSER_TEST_WAIT_FOR_LOAD_STOP)) {
     // Some other flag caused the wait prior to this.
     return nullptr;
@@ -292,8 +296,7 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
              (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) ||
              (disposition == WindowOpenDisposition::SINGLETON_TAB)) {
     // The tab we navigated should be the active one.
-    EXPECT_EQ(web_contents,
-              browser->GetTabStripModel()->GetActiveWebContents());
+    EXPECT_EQ(web_contents, tab_strip->GetActiveWebContents());
   }
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     same_tab_observer.Wait();
