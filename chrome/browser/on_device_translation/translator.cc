@@ -14,8 +14,10 @@
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/live_caption/translation_util.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
@@ -27,7 +29,7 @@ namespace {
 
 // Define a feature flag to implement sentence split for translateStreaming.
 BASE_FEATURE(kTranslateStreamingBySentence,
-             "kTranslateStreamingBySentence",
+             "TranslateStreamingBySentence",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTranslatableCharacter(char character) {
@@ -53,20 +55,16 @@ Translator::Translator(
 
 Translator::~Translator() = default;
 
-void Translator::Translate(
+bool Translator::VerifyPrerequisites(
     const std::string& input,
-    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-        pending_responder) {
-  CHECK(browser_context_);
-  mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
-      std::move(pending_responder));
+    mojo::Remote<blink::mojom::ModelStreamingResponder>& responder) {
   if (!Profile::FromBrowserContext(browser_context_.get())
            ->GetPrefs()
            ->GetBoolean(prefs::kTranslatorAPIAllowed)) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
         /*quota_error_info=*/nullptr);
-    return;
+    return false;
   }
 
   RecordTranslationAPICallForLanguagePair("Translate", source_lang_,
@@ -81,6 +79,20 @@ void Translator::Translate(
   if (!ContainsTranslatableContent(input)) {
     responder->OnStreaming(input);
     responder->OnCompletion(/*context_info=*/nullptr);
+    return false;
+  }
+  return true;
+}
+
+void Translator::Translate(
+    const std::string& input,
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder) {
+  CHECK(browser_context_);
+  mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
+      std::move(pending_responder));
+
+  if (!VerifyPrerequisites(input, responder)) {
     return;
   }
 
@@ -99,7 +111,7 @@ void Translator::Translate(
                         /*quota_error_info=*/nullptr);
                     return;
                   }
-                  responder->OnStreaming(*output);
+                  responder->OnStreaming(output.value());
                   responder->OnCompletion(/*context_info=*/nullptr);
                 },
                 std::move(responder)),
@@ -111,16 +123,83 @@ void Translator::Translate(
   }
 }
 
+void Translator::TranslateStreamingCallback(
+    mojo::RemoteSetElementId responder_id,
+    const std::optional<std::string>& output) {
+  auto it = pending_translations_.find(responder_id);
+  if (it == pending_translations_.end()) {
+    NOTREACHED() << "Received a callback for a non-existent responder_id.";
+  }
+
+  blink::mojom::ModelStreamingResponder* responder_ptr =
+      responder_set_.Get(responder_id);
+
+  if (!responder_ptr) {
+    pending_translations_.erase(it);
+    return;
+  }
+
+  if (!output) {
+    responder_ptr->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
+        /*quota_error_info=*/nullptr);
+    responder_set_.Remove(responder_id);
+    pending_translations_.erase(it);
+    return;
+  }
+
+  responder_ptr->OnStreaming(output.value());
+
+  if (--it->second == 0) {
+    responder_ptr->OnCompletion(/*context_info=*/nullptr);
+    responder_set_.Remove(responder_id);
+    pending_translations_.erase(it);
+  }
+}
+
 void Translator::TranslateStreaming(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  // TODO(crbug.com/429260073): Implement custom sentence split streaming.
-  if (base::FeatureList::IsEnabled(kTranslateStreamingBySentence)) {
-    VLOG(1) << "Need to implement translate streaming";
+  CHECK(browser_context_);
+  if (!base::FeatureList::IsEnabled(kTranslateStreamingBySentence)) {
+    Translate(input, std::move(pending_responder));
     return;
   }
-  Translate(input, std::move(pending_responder));
+  mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
+      std::move(pending_responder));
+
+  if (!VerifyPrerequisites(input, responder)) {
+    return;
+  }
+
+  std::vector<std::string> sentences =
+      captions::SplitSentences(input, source_lang_);
+
+  if (sentences.empty()) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
+        /*quota_error_info=*/nullptr);
+    return;
+  }
+
+  if (!translator_remote_.is_connected()) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
+        /*quota_error_info=*/nullptr);
+    return;
+  }
+
+  mojo::RemoteSetElementId responder_id =
+      responder_set_.Add(std::move(responder));
+
+  pending_translations_[responder_id] = sentences.size();
+
+  for (const auto& sentence : sentences) {
+    translator_remote_->Translate(
+        sentence, base::BindOnce(&Translator::TranslateStreamingCallback,
+                                 weak_ptr_factory_.GetWeakPtr(), responder_id));
+  }
 }
 
 }  // namespace on_device_translation
