@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_view_ios.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_thumbnail_button.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -53,21 +54,10 @@ const CGFloat kClearButtonInset = 4.0f;
 const CGFloat kClearButtonImageSize = 17.0f;
 const CGFloat kClearButtonSize = 28.0f;
 
-/// Creates and configures the text field.
-UIView<OmniboxTextInput>* CreateTextInput(
-    CGRect frame,
-    UIColor* text_color,
-    UIColor* tint_color,
-    OmniboxPresentationContext presentation_context) {
-  OmniboxTextFieldIOS* text_field =
-      [[OmniboxTextFieldIOS alloc] initWithFrame:frame
-                                       textColor:text_color
-                                       tintColor:tint_color
-                             presentationContext:presentation_context];
-  text_field.translatesAutoresizingMaskIntoConstraints = NO;
-  // Do not use the system clear button. Use a custom view instead.
-  text_field.clearButtonMode = UITextFieldViewModeNever;
-  return text_field;
+/// Whether the omnibox is using the text view instead of the text field.
+bool UseTextView(OmniboxPresentationContext presentation_context) {
+  return base::FeatureList::IsEnabled(kIOSOmniboxUseTextView) &&
+         presentation_context == OmniboxPresentationContext::kAIMPrototype;
 }
 
 /// Creates and configures the leading image view.
@@ -167,13 +157,12 @@ UIButton* CreateClearButton() {
   self = [super initWithFrame:frame];
   if (self) {
     _presentationContext = presentationContext;
-    _textInputView =
-        CreateTextInput(frame, textColor, textInputTint, presentationContext);
     _leadingImageView = CreateLeadingImageView(iconTint);
     self.clearButton = CreateClearButton();
+    [self createAndAddTextInputViewWithTextColor:textColor
+                                   textInputTint:textInputTint];
 
     [self addSubview:_leadingImageView];
-    [self addSubview:_textInputView];
     [self addSubview:self.clearButton];
 
     // Constraints.
@@ -183,6 +172,9 @@ UIButton* CreateClearButton() {
                                             UILayoutConstraintAxisHorizontal];
     [_textInputView setContentHuggingPriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
+
+    NSLayoutAnchor* referenceCenterYAnchor =
+        _textInputView.viewForVerticalAlignment.centerYAnchor;
 
     CGFloat leadingImageLeadingOffset =
         _presentationContext == OmniboxPresentationContext::kLensOverlay
@@ -194,11 +186,11 @@ UIButton* CreateClearButton() {
           constraintEqualToAnchor:self.leadingAnchor
                          constant:leadingImageLeadingOffset],
       [_leadingImageView.centerYAnchor
-          constraintEqualToAnchor:self.centerYAnchor],
+          constraintEqualToAnchor:referenceCenterYAnchor],
       [_textInputView.topAnchor constraintEqualToAnchor:self.topAnchor],
       [_textInputView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
       [self.clearButton.centerYAnchor
-          constraintEqualToAnchor:self.centerYAnchor],
+          constraintEqualToAnchor:referenceCenterYAnchor],
       [self.clearButton.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor
                          constant:-kTextInputViewClearButtonTrailingOffset],
@@ -215,7 +207,7 @@ UIButton* CreateClearButton() {
             constraintEqualToAnchor:_leadingImageView.trailingAnchor
                            constant:kThumbnailImageLeadingMargin],
         [_thumbnailButton.centerYAnchor
-            constraintEqualToAnchor:self.centerYAnchor],
+            constraintEqualToAnchor:referenceCenterYAnchor]
       ]];
 
       // The textInputView can be anchored to the thumbnail (if visible) or the
@@ -289,6 +281,40 @@ UIButton* CreateClearButton() {
 
 - (UIView*)textFieldView {
   return _textInputView;
+}
+
+#pragma mark - Private
+
+/// Creates the text input view and adds it to the view hierarchy.
+- (void)createAndAddTextInputViewWithTextColor:(UIColor*)textColor
+                                 textInputTint:(UIColor*)textInputTint {
+  if (UseTextView(_presentationContext)) {
+    OmniboxTextViewIOS* textView =
+        [[OmniboxTextViewIOS alloc] initWithFrame:CGRectZero
+                                        textColor:textColor
+                                        tintColor:textInputTint
+                              presentationContext:_presentationContext];
+    textView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:textView];
+    // The placeholder must be added as a sibling to the textview. Constraints
+    // are handled internally in the text view.
+    UILabel* placeholderLabel = [[UILabel alloc] init];
+    placeholderLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:placeholderLabel];
+    textView.placeholderLabel = placeholderLabel;
+    _textInputView = textView;
+  } else {
+    OmniboxTextFieldIOS* textField =
+        [[OmniboxTextFieldIOS alloc] initWithFrame:CGRectZero
+                                         textColor:textColor
+                                         tintColor:textInputTint
+                               presentationContext:_presentationContext];
+    // Do not use the system clear button. Use a custom view instead.
+    textField.clearButtonMode = UITextFieldViewModeNever;
+    textField.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:textField];
+    _textInputView = textField;
+  }
 }
 
 @end

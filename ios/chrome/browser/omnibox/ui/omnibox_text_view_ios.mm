@@ -1,8 +1,8 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_view_ios.h"
 
 #import <CoreText/CoreText.h>
 
@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -44,19 +45,8 @@
 
 using enum OmniboxKeyboardAction;
 
-namespace {
-
-/// The default omnibox text color (used while editing).
-UIColor* TextColor() {
-  return [UIColor colorNamed:kTextPrimaryColor];
-}
-
-NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
-
-}  // namespace
-
-@interface OmniboxTextFieldIOS () <UIGestureRecognizerDelegate,
-                                   UITextFieldDelegate>
+@interface OmniboxTextViewIOS () <UIGestureRecognizerDelegate,
+                                  UITextViewDelegate>
 
 @property(nonatomic, assign, getter=isPreEditing) BOOL preEditing;
 
@@ -65,7 +55,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 @end
 
-@implementation OmniboxTextFieldIOS {
+@implementation OmniboxTextViewIOS {
   /// Length of autocomplete text.
   NSUInteger _autocompleteTextLength;
   /// Tap gesture recognizer for this view.
@@ -73,23 +63,17 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   /// Whether the pasteboard currently has strings.
   BOOL _pasteboardHasStrings;
   OmniboxPresentationContext _presentationContext;
+  /// The default foreground color for text.
+  UIColor* _defaultTextColor;
 }
 
 @synthesize omniboxTextInputDelegate = _omniboxTextInputDelegate;
 @synthesize omniboxKeyboardDelegate = _omniboxKeyboardDelegate;
 @synthesize clearingPreEditText = _clearingPreEditText;
 @synthesize allowsReturnKeyWithEmptyText = _allowsReturnKeyWithEmptyText;
+@synthesize editing = _editing;
 
 #pragma mark - Public methods
-
-// Overload to allow for code-based initialization.
-- (instancetype)initWithFrame:(CGRect)frame
-          presentationContext:(OmniboxPresentationContext)presentationContext {
-  return [self initWithFrame:frame
-                   textColor:TextColor()
-                   tintColor:nil
-         presentationContext:presentationContext];
-}
 
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
@@ -97,33 +81,32 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
           presentationContext:(OmniboxPresentationContext)presentationContext {
   self = [super initWithFrame:frame];
   if (self) {
+    self.backgroundColor = [UIColor clearColor];
     if (tintColor) {
       [self setTintColor:tintColor];
     }
     _presentationContext = presentationContext;
+    _defaultTextColor = textColor;
     self.textColor = textColor;
     self.autocorrectionType = UITextAutocorrectionTypeNo;
     self.autocapitalizationType = UITextAutocapitalizationTypeNone;
     self.enablesReturnKeyAutomatically = YES;
     self.returnKeyType = UIReturnKeyGo;
-    self.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.spellCheckingType = UITextSpellCheckingTypeNo;
     self.textAlignment = NSTextAlignmentNatural;
     self.keyboardType = UIKeyboardTypeWebSearch;
     self.smartQuotesType = UITextSmartQuotesTypeNo;
-    // Prevent the text from overlapping the clear text button.
-    // (crbug.com/1403031)
-    self.textInputView.clipsToBounds = YES;
+    self.textContainer.lineFragmentPadding = 0;
+    self.contentInsetAdjustmentBehavior =
+        UIScrollViewContentInsetAdjustmentNever;
 
     // Disable drag on iPhone because there's nowhere to drag to
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       self.textDragInteraction.enabled = NO;
     }
 
-    // Force initial layout of internal text label.  Needed for omnibox
-    // animations that will otherwise animate the text label from origin {0, 0}.
+    // Force initial layout of internal text label.
     self.font = self.currentFont;
-    [super setText:@" "];
 
     _tapGestureRecognizer =
         [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -139,7 +122,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
     [self pasteboardDidChange:nil];
 
-    // Similar logic as `omnibox_view_controller.mm`.
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(applicationDidBecomeActive:)
@@ -147,9 +129,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
              object:nil];
 
     self.delegate = self;
-    [self addTarget:self
-                  action:@selector(textFieldDidChange:)
-        forControlEvents:UIControlEventEditingChanged];
 
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
         @[ UITraitPreferredContentSizeCategory.class ]);
@@ -163,8 +142,24 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   NOTREACHED();
 }
 
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+- (void)setPlaceholderLabel:(UILabel*)placeholderLabel {
+  placeholderLabel.font = self.font;
+  placeholderLabel.textColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  _placeholderLabel = placeholderLabel;
+
+  // Align placeholder with the text view's content area by constraining it
+  // directly to the text view's frame and then adding the internal insets.
+  UIEdgeInsets textInsets = self.textContainerInset;
+  CGFloat linePadding = self.textContainer.lineFragmentPadding;
+  [NSLayoutConstraint activateConstraints:@[
+    [placeholderLabel.topAnchor constraintEqualToAnchor:self.topAnchor
+                                               constant:textInsets.top],
+    [placeholderLabel.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor
+                       constant:textInsets.left + linePadding],
+    [placeholderLabel.trailingAnchor
+        constraintEqualToAnchor:self.trailingAnchor],
+  ]];
 }
 
 - (void)setAllowsReturnKeyWithEmptyText:(BOOL)allowsReturnKeyWithEmptyText {
@@ -218,9 +213,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   }
 
   NSRange selectedNSRange = [self selectedNSRange];
-  if (!self.delegate || [self.delegate textField:self
-                            shouldChangeCharactersInRange:selectedNSRange
-                                        replacementString:text]) {
+  if (!self.delegate || [self.delegate textView:self
+                            shouldChangeTextInRange:selectedNSRange
+                                    replacementText:text]) {
     [self replaceRange:[self selectedTextRange] withText:text];
   }
 }
@@ -369,6 +364,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   } else {
     [self setTextAlignment:NSTextAlignmentNatural];
   }
+  self.placeholderLabel.textAlignment = self.textAlignment;
 }
 
 #pragma mark - UI Refresh animation public helpers
@@ -404,11 +400,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   self.preEditing = YES;
 
   NSMutableDictionary<NSAttributedStringKey, id>* attributes =
-      self.defaultTextAttributes.mutableCopy;
+      self.typingAttributes.mutableCopy;
   [attributes setValue:self.currentFont forKey:NSFontAttributeName];
   [attributes setValue:self.selectedTextBackgroundColor
                 forKey:NSBackgroundColorAttributeName];
-  self.defaultTextAttributes = attributes;
+  self.typingAttributes = attributes;
 
   self.clearsOnInsertion = YES;
 }
@@ -422,14 +418,14 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   self.clearsOnInsertion = NO;
 
   NSMutableDictionary<NSAttributedStringKey, id>* attributes =
-      self.defaultTextAttributes.mutableCopy;
+      self.typingAttributes.mutableCopy;
   [attributes setValue:self.currentFont forKey:NSFontAttributeName];
   [attributes setValue:UIColor.clearColor
                 forKey:NSBackgroundColorAttributeName];
-  self.defaultTextAttributes = attributes;
+  self.typingAttributes = attributes;
 }
 
-#pragma mark - UITextField
+#pragma mark - UITextView
 
 // Ensures that attributedText always uses the proper style attributes.
 - (void)setAttributedText:(NSAttributedString*)attributedText {
@@ -450,7 +446,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
           0, mutableText.length - self.attributedAdditionalText.length);
     }
     [mutableText addAttribute:NSForegroundColorAttributeName
-                        value:self.textColor
+                        value:_defaultTextColor
                         range:foregroundColorRange];
   } else {
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
@@ -476,31 +472,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (void)setPlaceholder:(NSString*)placeholder {
-  if (placeholder) {
-    NSDictionary* attributes = @{
-      NSForegroundColorAttributeName :
-          [UIColor colorNamed:kTextfieldPlaceholderColor]
-    };
-    self.attributedPlaceholder =
-        [[NSAttributedString alloc] initWithString:placeholder
-                                        attributes:attributes];
-  } else {
-    [super setPlaceholder:placeholder];
-  }
+  self.placeholderLabel.text = placeholder;
 }
 
 - (void)setText:(NSString*)text {
   NSAttributedString* as = [[NSAttributedString alloc] initWithString:text];
   [self setTextInternal:as autocompleteLength:0];
-}
-
-- (CGRect)textRectForBounds:(CGRect)bounds {
-  CGRect newBounds = [super textRectForBounds:bounds];
-
-  LayoutRect textRectLayout =
-      LayoutRectForRectInBoundingRect(newBounds, bounds);
-
-  return LayoutRectGetRect(textRectLayout);
 }
 
 - (CGRect)caretRectForPosition:(UITextPosition*)position {
@@ -1076,6 +1053,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   // baseline changes so text is out of alignment.
   [self setFont:self.currentFont];
   [self updateTextDirection];
+  [self updatePlaceholderVisibility];
 }
 
 /// Returns the background color for selected text.
@@ -1102,9 +1080,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 // Resets Omnibox's the font and attributed text when a UITrait is modified.
 - (void)updateTextProperitesOnTraitChange {
   // Reset the fonts to the appropriate ones in this size class.
-  [self setFont:self.currentFont];
-  // Reset the attributed text to apply the new font.
+  self.font = self.currentFont;
+  self.placeholderLabel.font = self.font;
   [self setAttributedText:self.attributedText];
+}
+
+- (void)updatePlaceholderVisibility {
+  self.placeholderLabel.hidden = self.text.length > 0;
 }
 
 #pragma mark - OmniboxTextInput
@@ -1114,42 +1096,49 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (UIView*)viewForVerticalAlignment {
-  return self;
+  return self.placeholderLabel ? self.placeholderLabel : self;
 }
 
 - (UIResponder<UITextInput>*)scribbleInput {
   return self;
 }
 
-#pragma mark - UITextFieldDelegate
-
-- (void)textFieldDidChange:(id)sender {
-  [self.omniboxTextInputDelegate textInputDidChange:self];
+- (NSString*)placeholder {
+  return self.placeholderLabel.text;
 }
 
-- (BOOL)textField:(UITextField*)textField
-    shouldChangeCharactersInRange:(NSRange)range
-                replacementString:(NSString*)string {
+#pragma mark - UITextViewDelegate
+
+- (void)textViewDidChange:(UITextView*)textView {
+  [self.omniboxTextInputDelegate textInputDidChange:self];
+  [self updatePlaceholderVisibility];
+}
+
+- (BOOL)textView:(UITextView*)textView
+    shouldChangeTextInRange:(NSRange)range
+            replacementText:(NSString*)text {
+  // Prevent new lines.
+  if ([text isEqualToString:@"\n"]) {
+    return [self.omniboxTextInputDelegate textInputShouldReturn:self];
+  }
   return [self.omniboxTextInputDelegate textInput:self
                           shouldChangeTextInRange:range
-                                replacementString:string];
+                                replacementString:text];
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField*)textField {
-  return [self.omniboxTextInputDelegate textInputShouldReturn:self];
+- (void)textViewDidBeginEditing:(UITextView*)textView {
+  _editing = YES;
+  [self.omniboxTextInputDelegate textInputDidBeginEditing:self];
 }
 
-- (void)textFieldDidBeginEditing:(UITextField*)textField {
-  return [self.omniboxTextInputDelegate textInputDidBeginEditing:self];
+- (void)textViewDidEndEditing:(UITextView*)textView {
+  [self.omniboxTextInputDelegate textInputDidEndEditing:self];
+  _editing = NO;
 }
 
-- (void)textFieldDidEndEditing:(UITextField*)textField {
-  return [self.omniboxTextInputDelegate textInputDidEndEditing:self];
-}
-
-- (UIMenu*)textField:(UITextField*)textField
-    editMenuForCharactersInRange:(NSRange)range
-                suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions {
+- (UIMenu*)textView:(UITextView*)textView
+    editMenuForTextInRange:(NSRange)range
+          suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions {
   return [self.omniboxTextInputDelegate textInput:self
                      editMenuForCharactersInRange:range
                                  suggestedActions:suggestedActions];

@@ -49,6 +49,9 @@
 /// Returns the underlying view of the text input.
 - (UIView*)view;
 
+/// Returns the view used for aligning the icon, thumbnail and clear button.
+- (UIView*)viewForVerticalAlignment;
+
 /// Returns the text input responder for Scribble.
 - (UIResponder<UITextInput>*)scribbleInput;
 
