@@ -149,15 +149,6 @@ bool HasPermissionToInjectIntoFrame(const PermissionsData& permissions,
         web_contents->GetController().GetPendingEntry();
     if (!pending_entry) {
       *error = manifest_errors::kCannotAccessPage;
-      if (frame->IsActive()) {
-        // If page has no pending committed load, but already transitioned away
-        // from kPendingCommit because it is in "Active" state, then this means
-        // the page was loaded, became active, and then was discarded. In this
-        // case, we inform the caller of the page's discarded state.
-        *error = manifest_errors::kCannotAccessDiscardedPage;
-      } else {
-        *error = manifest_errors::kCannotAccessPage;
-      }
       return false;
     }
     GURL pending_url = pending_entry->GetURL();
