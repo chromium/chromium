@@ -980,8 +980,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
     ASSERT_TRUE(prefs->is_dict());
     ASSERT_TRUE(prefs->GetDict().RemoveByDottedPath(
         syncer::prefs::internal::kSelectedTypesPerAccount));
-    ASSERT_TRUE(base::JSONWriter::Write(*prefs, &json));
-    ASSERT_TRUE(base::WriteFile(json_path, json));
+    std::optional<std::string> new_json = base::WriteJson(prefs.value());
+    ASSERT_TRUE(new_json.has_value());
+    ASSERT_TRUE(base::WriteFile(json_path, new_json.value()));
   }
 
   ASSERT_TRUE(SetupClients());

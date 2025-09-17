@@ -81,9 +81,9 @@ constexpr char kTestUploadUrlPath[] = "/upload_webrtc_log";
 constexpr char kTestReportId[] = "report_id";
 
 std::string ParamsToString(const base::Value::List& parameters) {
-  std::string parameter_string;
-  EXPECT_TRUE(base::JSONWriter::Write(parameters, &parameter_string));
-  return parameter_string;
+  std::optional<std::string> parameters_string = base::WriteJson(parameters);
+  EXPECT_TRUE(parameters_string.has_value());
+  return parameters_string.value_or("");
 }
 
 void InitializeTestMetaData(base::Value::List& parameters) {

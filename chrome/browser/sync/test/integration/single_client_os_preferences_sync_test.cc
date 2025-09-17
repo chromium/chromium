@@ -33,10 +33,7 @@ class SingleClientOsPreferencesSyncTest : public SyncTest {
 
  protected:
   static std::string ConvertToSyncedPrefValue(const base::Value& value) {
-    std::string result;
-    bool success = base::JSONWriter::Write(value, &result);
-    DCHECK(success);
-    return result;
+    return base::WriteJson(value).value();
   }
 
   sync_pb::PreferenceSpecifics* GetPreferenceSpecifics(
