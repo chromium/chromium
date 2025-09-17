@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -79,6 +80,30 @@ void ComposeboxHandler::NotifySessionAbandoned() {
 
 void ComposeboxHandler::SubmitQuery(const std::string& query_text,
                                     WindowOpenDisposition disposition) {
+  // Update the query controller state to reflect any deleted contexts.
+  std::erase_if(deleted_context_tokens_,
+                [this](const base::UnguessableToken& context_token) {
+                  ComposeboxQueryController::FileInfo* file_info =
+                      query_controller_->GetFileInfo(context_token);
+
+                  if (file_info == nullptr) {
+                    return false;
+                  }
+
+                  lens::MimeType file_type = file_info
+                                                 ? file_info->mime_type_
+                                                 : lens::MimeType::kUnknown;
+                  FileUploadStatus file_status =
+                      file_info ? file_info->GetFileUploadStatus()
+                                : FileUploadStatus::kNotUploaded;
+
+                  bool success = query_controller_->DeleteFile(context_token);
+                  metrics_recorder_->RecordFileDeletedMetrics(
+                      success, file_type, file_status);
+
+                  return success;
+                });
+
   // This is the time that the user clicked the submit button, however optional
   // autocomplete logic may be run before this if there was a match associated
   // with the query.
@@ -174,21 +199,11 @@ void ComposeboxHandler::AddTabContext(int32_t tab_id,
 }
 
 void ComposeboxHandler::DeleteContext(
-    const base::UnguessableToken& file_token) {
-  ComposeboxQueryController::FileInfo* file_info =
-      query_controller_->GetFileInfo(file_token);
-  lens::MimeType file_type =
-      file_info ? file_info->mime_type_ : lens::MimeType::kUnknown;
-  FileUploadStatus file_status = file_info ? file_info->GetFileUploadStatus()
-                                           : FileUploadStatus::kNotUploaded;
-
-  // If an UnguessabledToken that wasn't in the cache was sent, delete fails.
-  // Report a bad message.
-  bool success = query_controller_->DeleteFile(file_token);
-  metrics_recorder_->RecordFileDeletedMetrics(success, file_type, file_status);
-  if (!success) {
-    handler_.ReportBadMessage("An invalid token was sent to DeleteContext");
-  }
+    const base::UnguessableToken& context_token) {
+  // It is possible to receive a call to delete a context before that context
+  // has been created in the query controller. We queue all context tokens for
+  // deletion at query submission time.
+  deleted_context_tokens_.insert(context_token);
 }
 
 void ComposeboxHandler::OnGetTabPageContext(
@@ -199,6 +214,7 @@ void ComposeboxHandler::OnGetTabPageContext(
 }
 
 void ComposeboxHandler::ClearFiles() {
+  deleted_context_tokens_.clear();
   query_controller_->ClearFiles();
 }
 

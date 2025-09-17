@@ -406,7 +406,7 @@ TEST_F(ComposeboxHandlerTest, AddFile_Image) {
             image_upload.image_compression_quality());
 }
 
-TEST_F(ComposeboxHandlerTest, DeleteFile_Success) {
+TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
   std::string file_type = ".Image";
   std::string file_status = ".NotUploaded";
   std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
@@ -430,19 +430,11 @@ TEST_F(ComposeboxHandlerTest, DeleteFile_Success) {
 
   handler().DeleteContext(delete_file_token);
 
+  SubmitQueryAndWaitForNavigation();
+
   EXPECT_EQ(delete_file_token, token_arg);
   histogram_tester().ExpectTotalCount(
       kComposeboxFileDeleted + file_type + file_status, 1);
-}
-
-TEST_F(ComposeboxHandlerTest, DeleteFile_FailureThrowsMessage) {
-  mojo::FakeMessageDispatchContext context;
-  mojo::test::BadMessageObserver obs;
-  EXPECT_CALL(query_controller(), DeleteFile).WillOnce(testing::Return(false));
-  handler().DeleteContext(base::UnguessableToken::Create());
-
-  EXPECT_EQ("An invalid token was sent to DeleteContext",
-            obs.WaitForBadMessage());
 }
 
 TEST_F(ComposeboxHandlerTest, ClearFiles) {
