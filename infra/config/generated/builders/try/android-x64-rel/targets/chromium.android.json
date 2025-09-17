@@ -1092,7 +1092,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 455
+          "shards": 45
         },
         "test": "components_browsertests",
         "test_id_prefix": "ninja://components:components_browsertests/"
