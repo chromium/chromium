@@ -695,6 +695,15 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledV2",
+                    "params": {
+                        "v2_enabled": "true"
+                    },
+                    "enable_features": [
+                        "AndroidComposeplate"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "AndroidComposeplate"
