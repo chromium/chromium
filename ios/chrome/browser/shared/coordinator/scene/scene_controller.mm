@@ -164,6 +164,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/credential_exchange_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -3203,6 +3204,10 @@ using UserFeedbackDataCallback =
       return ^{
         [weakSelf searchShareExtensionImageWithLens];
       };
+    case CREDENTIAL_EXCHANGE_IMPORT:
+      return ^{
+        [weakSelf importCredentials];
+      };
     default:
       return nil;
   }
@@ -3416,6 +3421,15 @@ using UserFeedbackDataCallback =
       ReadingListBrowserAgent::FromBrowser(self.currentInterface.browser);
 
   readingListBrowserAgent->BulkAddURLsToReadingListWithViewSnackbar(URLs);
+}
+
+- (void)importCredentials {
+  id<CredentialExchangeCommands> credentialExchangeCommands =
+      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                         CredentialExchangeCommands);
+  [credentialExchangeCommands
+      showCredentialExchangeImport:self.startupParameters
+                                       .credentialExchangeImportUUID];
 }
 
 #pragma mark - TabOpening implementation.

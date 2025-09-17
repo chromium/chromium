@@ -49,6 +49,7 @@ enum TabOpeningPostOpeningAction {
   ADD_READING_LIST_ITEMS,
   EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS,
   START_LENS_FROM_SHARE_EXTENSION,
+  CREDENTIAL_EXCHANGE_IMPORT,
 };
 
 // Represents the status of a request to change the application mode.
@@ -100,6 +101,9 @@ class GURL;
 @property(nonatomic, readwrite, copy) NSString* textQuery;
 // Data for UIImage for image query that should be executed on startup.
 @property(nonatomic, readwrite, strong) NSData* imageSearchData;
+// Token received from the OS during the app launch for the credential exchange
+// import, needed to be passed back to the OS to receive the credential data.
+@property(nonatomic, readwrite, copy) NSUUID* credentialExchangeImportUUID;
 // Boolean to track if the app is open in an user unexpected mode.
 // When a certain enterprise policy has been set, it's possible that one browser
 // mode is disabled. When the user intends to open an unavailable mode of

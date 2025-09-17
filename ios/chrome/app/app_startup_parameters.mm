@@ -237,6 +237,7 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
     case SHOW_DEFAULT_BROWSER_SETTINGS:
     case EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS:
     case SEARCH_PASSWORDS:
+    case CREDENTIAL_EXCHANGE_IMPORT:
       return YES;
 
       // Lens action are valid on empty URLs, in addition to

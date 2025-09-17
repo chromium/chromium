@@ -1,0 +1,15 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "credential_import_coordinator.h",
+    "credential_import_coordinator.mm",
+    "credential_import_mediator.h",
+    "credential_import_mediator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [ "//ios/chrome/browser/webauthn/model" ]
+  frameworks = [ "Foundation.framework" ]
+}

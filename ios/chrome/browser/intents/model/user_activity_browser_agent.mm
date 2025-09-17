@@ -26,6 +26,7 @@
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/intents/model/intent_type.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -47,6 +48,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/webauthn/model/credential_import_manager_swift.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
 #import "ios/chrome/common/intents/AddReadingListItemToChromeIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
@@ -127,6 +129,17 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     BOOL application_is_active) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSURL* webpage_url = user_activity.webpageURL;
+
+  // Credential exchange activity should only be handled in iOS 26 with the
+  // compile-time flag controlling the feature enabled.
+  BOOL isCredentialExchangeActivity = NO;
+  if (@available(iOS 26, *)) {
+    isCredentialExchangeActivity =
+        CredentialExchangeEnabled() &&
+        [user_activity.activityType
+            isEqualToString:[CredentialImportManager
+                                credentialExchangeActivity]];
+  }
 
   if ([user_activity.activityType
           isEqualToString:handoff::kChromeHandoffActivityType] ||
@@ -487,6 +500,24 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     [connection_information_
         setStartupParameters:StartupParametersForOpeningNewTab(
                                  OPEN_CLEAR_BROWSING_DATA_DIALOG)];
+  } else if (isCredentialExchangeActivity) {
+    id UUID;
+    if (@available(iOS 26, *)) {
+      UUID = [user_activity.userInfo
+          objectForKey:[CredentialImportManager credentialImportToken]];
+    }
+    if (![UUID isKindOfClass:[NSUUID class]]) {
+      return NO;
+    }
+
+    AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+         initWithExternalURL:GURL()
+                 completeURL:GURL()
+             applicationMode:ApplicationModeForTabOpening::NORMAL
+        forceApplicationMode:NO];
+    startup_params.postOpeningAction = CREDENTIAL_EXCHANGE_IMPORT;
+    startup_params.credentialExchangeImportUUID = (NSUUID*)UUID;
+    [connection_information_ setStartupParameters:startup_params];
   } else {
     // Do nothing for unknown activity type.
     return NO;

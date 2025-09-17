@@ -24,6 +24,7 @@ source_set("commands") {
     "contextual_panel_entrypoint_iph_commands.h",
     "contextual_sheet_commands.h",
     "country_code_picker_commands.h",
+    "credential_exchange_commands.h",
     "credential_provider_promo_commands.h",
     "docking_promo_commands.h",
     "download_list_commands.h",

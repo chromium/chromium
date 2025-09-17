@@ -8,11 +8,14 @@ source_set("model") {
   sources = [
     "credential_exporter.h",
     "credential_exporter.mm",
+    "credential_importer.h",
+    "credential_importer.mm",
     "ios_passkey_model_factory.cc",
     "ios_passkey_model_factory.h",
   ]
   deps = [
     ":credential_export_manager_swift",
+    ":credential_import_manager_swift",
     "//base",
     "//components/affiliations/core/browser:affiliations",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
@@ -28,6 +31,14 @@ source_set("model") {
 
 swift_source_set("credential_export_manager_swift") {
   sources = [ "credential_export_manager.swift" ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "Foundation.framework",
+  ]
+}
+
+swift_source_set("credential_import_manager_swift") {
+  sources = [ "credential_import_manager.swift" ]
   frameworks = [
     "AuthenticationServices.framework",
     "Foundation.framework",
