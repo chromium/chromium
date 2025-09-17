@@ -143,10 +143,6 @@ class RegionalCapabilitiesService : public KeyedService {
   // more details.
   CountryIdHolder GetCountryId();
 
-  // Clears the caches to be able to change countries multiple times
-  // in tests.
-  void ClearCacheForTesting();
-
   // Returns the metrics enum for the active regional program. This is used for
   // logging only.
   ActiveRegionalProgram GetActiveProgramForMetrics();
@@ -154,24 +150,40 @@ class RegionalCapabilitiesService : public KeyedService {
   // Returns an opaque `int` value representing the program.
   int GetSerializedActiveProgram();
 
+  // -- Test Utils & Accessors ------------------------------------------------
+
+  // Clears the caches to be able to change countries multiple times in tests.
+  void ClearCacheForTesting();
+
   // Tests can control ProgramSettings in one of two ways:
-  // 1. Overriding the country via the `switches::kSearchEngineChoiceCountry`,
-  //    in which case the program settings are determined based on the full
-  //    country/platform/form factor combination.
-  // 2. Defining the exact program settings via this setter. This allows tests
-  //    more fine-grained control over the particular attributes they are
-  //    testing, and means they are not constrained by the particular platforms
-  //    a particular program is supported on.
+  // 1. Specifying a value via the `switches::kSearchEngineChoiceCountry`
+  //    command line argument, in which case the program settings are not cached
+  //    and entirely depend how this command line is parsed. It could be
+  //    directly setting a program, or rely on the full country / platform /
+  //    form factor combination. See the argument's documentation for more info.
+  // 2. Defining the exact country and program settings via this setter. This
+  // allows tests more fine-grained control over
+  //    the particular attributes they are testing, and means they are not
+  //    constrained by dependencies or the particular platforms a particular
+  //    program is supported on.
   //
-  // Overriding program settings will prevent restoring the country override,
-  // and vice versa. This is enforced by a CHECK in
-  // `SetActiveProgramSettingsForTesting()`.
-  void SetActiveProgramSettingsForTesting(const ProgramSettings&);
+  // Overriding program settings will prevent using the command line country
+  // override, and vice versa. This is enforced by a CHECK in
+  // `SetCacheForTesting()`.
+  void SetCacheForTesting(country_codes::CountryId, const ProgramSettings&);
+
+  // Forwards to `SetCacheForTesting(CountryId, const ProgramSettings&)`,
+  // deriving from the `ProgramSettings`'s associated countries. If no country
+  // is available, the invalid `CountryId()` will be used.
+  void SetCacheForTesting(const ProgramSettings&);
+
   const ProgramSettings& GetActiveProgramSettingsForTesting();
 
-#if BUILDFLAG(IS_ANDROID)
-  // -- JNI Interface ---------------------------------------------------------
+  // Returns a reference to the client.
+  Client& GetClientForTesting();
 
+  // -- JNI Interface ---------------------------------------------------------
+#if BUILDFLAG(IS_ANDROID)
   // Returns a reference to the Java-side `RegionalCapabilitiesService`, lazily
   // creating it if needed.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
@@ -181,12 +193,8 @@ class RegionalCapabilitiesService : public KeyedService {
 
   // See `IsInEeaCountry()`.
   jboolean IsInEeaCountry(JNIEnv* env);
-
-  // -- JNI Interface End -----------------------------------------------------
 #endif
-
-  // Returns a reference to the client, for tests.
-  Client& GetClientForTesting();
+  // -- JNI Interface End ----------------------------------------------------
 
  private:
   // Returns how features should adjust themselves based on the active country

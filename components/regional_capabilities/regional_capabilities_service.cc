@@ -489,14 +489,22 @@ void RegionalCapabilitiesService::ClearCacheForTesting() {
   program_settings_cache_.reset();
 }
 
-void RegionalCapabilitiesService::SetActiveProgramSettingsForTesting(
+void RegionalCapabilitiesService::SetCacheForTesting(
+    country_codes::CountryId country_id,
     const ProgramSettings& program_settings) {
   CHECK(!GetSearchEngineCountryOverride().has_value())
       << "Override either country or program settings, not both.";
-  country_id_cache_ = program_settings.associated_countries.empty()
-                          ? country_codes::CountryId()
-                          : program_settings.associated_countries.front();
+  ClearCacheForTesting();
+  country_id_cache_ = country_id;
   program_settings_cache_ = program_settings;
+}
+
+void RegionalCapabilitiesService::SetCacheForTesting(
+    const ProgramSettings& program_settings) {
+  SetCacheForTesting(program_settings.associated_countries.empty()
+                         ? country_codes::CountryId()
+                         : program_settings.associated_countries.front(),
+                     program_settings);
 }
 
 const ProgramSettings&

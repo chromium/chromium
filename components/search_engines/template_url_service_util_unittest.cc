@@ -14,15 +14,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
-#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -218,12 +217,6 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
   TemplateURLServiceUtilLoadTest()
       : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
             /*is_sync_for_unittests=*/true)) {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(https://crbug.com/438133907): Reenable once supported by the test
-    // environment.
-    scoped_feature_list_.InitAndDisableFeature(
-        switches::kResolveRegionalCapabilitiesFromDevice);
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   // Type used both as input and output of test helpers, to represent the
@@ -265,12 +258,14 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 
   // For country samples, using Belgium and France for EEA, and the United
   // States for non-EEA.
-  const CountryIdHolder kEeaCountryId =
-      CountryIdHolder(country_codes::CountryId("BE"));
+  const country_codes::CountryId kRawEeaCountryId =
+      country_codes::CountryId("BE");
+  const CountryIdHolder kEeaCountryId = CountryIdHolder(kRawEeaCountryId);
   const CountryIdHolder kOtherEeaCountryId =
       CountryIdHolder(country_codes::CountryId("FR"));
-  const CountryIdHolder kNonEeaCountryId =
-      CountryIdHolder(country_codes::CountryId("US"));
+  const country_codes::CountryId kRawNonEeaCountryId =
+      country_codes::CountryId("US");
+  const CountryIdHolder kNonEeaCountryId = CountryIdHolder(kRawNonEeaCountryId);
 
   // Sets up dependencies and calls `GetSearchProvidersUsingLoadedEngines()`.
   // As with the wrapped function, `template_urls` will be updated with the
@@ -345,10 +340,6 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     };
   }
 
-  PrefService& prefs() {
-    return search_engines_test_environment_.pref_service();
-  }
-
   search_engines::SearchEngineChoiceService& search_engine_choice_service() {
     return search_engines_test_environment_.search_engine_choice_service();
   }
@@ -363,14 +354,13 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TemplateURLServiceUtilLoadTest,
        GetSearchProvidersUsingLoadedEngines_OutOfEea) {
-  regional_capabilities_service().ClearCacheForTesting();
-  prefs().SetInteger(regional_capabilities::prefs::kCountryIDAtInstall,
-                     kNonEeaCountryId.GetForTesting().Serialize());
+  regional_capabilities_service().SetCacheForTesting(
+      kRawNonEeaCountryId, regional_capabilities::GetSettingsForProgram(
+                               regional_capabilities::Program::kDefault));
 
   const KeywordTestMetadata kDefaultUpdatedState = {
       .data_version = kCurrentDataVersion,
@@ -412,9 +402,9 @@ TEST_F(TemplateURLServiceUtilLoadTest,
 
 TEST_F(TemplateURLServiceUtilLoadTest,
        GetSearchProvidersUsingLoadedEngines_InEea) {
-  regional_capabilities_service().ClearCacheForTesting();
-  prefs().SetInteger(regional_capabilities::prefs::kCountryIDAtInstall,
-                     kEeaCountryId.GetForTesting().Serialize());
+  regional_capabilities_service().SetCacheForTesting(
+      kRawEeaCountryId, regional_capabilities::GetSettingsForProgram(
+                            regional_capabilities::Program::kWaffle));
   const size_t kEeaKeywordEnginesCount =
       TemplateURLPrepopulateData::kRegionalSettings
           .find(kEeaCountryId.GetForTesting())

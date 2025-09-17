@@ -540,8 +540,7 @@ class SearchEngineChoiceEligibilityOverriddenProgramSettingsTest
 
   void SetProgram(
       const regional_capabilities::ProgramSettings& program_settings) {
-    regional_capabilities_service().SetActiveProgramSettingsForTesting(
-        program_settings);
+    regional_capabilities_service().SetCacheForTesting(program_settings);
   }
 
   void SignIn(signin::Tribool can_make_choice_capability) {
