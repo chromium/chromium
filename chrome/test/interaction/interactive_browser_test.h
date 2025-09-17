@@ -92,11 +92,16 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // (may be empty for tests that take only one screenshot) and `baseline_cl`,
   // which should be set to match the CL number when a screenshot should change.
   //
+  // If `clip_rect` is specified, it is the rectangle in `element`'s local
+  // bounds to capture, otherwise all of `element` will be captured.
+  //
   // Currently, is somewhat unreliable for WebUI embedded in bubbles or dialogs
   // (e.g. Tab Search dropdown) but should work fairly well in most other cases.
+  template <typename T = std::optional<gfx::Rect>>
   [[nodiscard]] MultiStep Screenshot(ElementSpecifier element,
                                      const std::string& screenshot_name,
-                                     const std::string& baseline_cl);
+                                     const std::string& baseline_cl,
+                                     T&& clip_rect = std::nullopt);
 
   // Takes a screenshot of a specific element `where` inside a WebContents
   // `webcontents_id`. See `Screenshot()` for more information.
@@ -588,6 +593,34 @@ class InteractiveBrowserTestT : public T, public InteractiveBrowserTestApi {
 using InteractiveBrowserTest = InteractiveBrowserTestT<InProcessBrowserTest>;
 
 // Template definitions:
+
+template <typename T>
+InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::Screenshot(
+    ElementSpecifier element,
+    const std::string& screenshot_name,
+    const std::string& baseline_cl,
+    T&& clip_rect) {
+  StepBuilder builder;
+  builder.SetDescription("Compare Screenshot");
+  builder.SetElement(element);
+  builder.SetStartCallback(base::BindOnce(
+      [](InteractiveBrowserTestApi* test, std::string screenshot_name,
+         std::string baseline_cl, std::remove_cvref_t<T> clip_rect,
+         ui::InteractionSequence* seq, ui::TrackedElement* el) {
+        const auto result = InteractionTestUtilBrowser::CompareScreenshot(
+            el, screenshot_name, baseline_cl,
+            ui::test::internal::UnwrapArgument<T>(clip_rect));
+        test->test_impl().HandleActionResult(seq, el, "Screenshot", result);
+      },
+      base::Unretained(this), screenshot_name, baseline_cl,
+      std::forward<T>(clip_rect)));
+
+  auto steps = Steps(MaybeWaitForPaint(element), std::move(builder),
+                     MaybeWaitForUserToDismiss(element));
+  AddDescriptionPrefix(steps, base::StrCat({"Screenshot( \"", screenshot_name,
+                                            "\", \"", baseline_cl, "\" )"}));
+  return steps;
+}
 
 // static
 template <typename T>

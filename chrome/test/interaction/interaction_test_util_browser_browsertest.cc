@@ -80,6 +80,18 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, CompareScreenshot_View) {
                              /*baseline_cl=*/"3924454"));
 }
 
+IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
+                       CompareScreenshot_ViewWithClipBounds) {
+  RunTestSequence(SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                          kSkipPixelTestsReason),
+                  // This adds a callback that calls
+                  // InteractionTestUtilBrowser::CompareScreenshot().
+                  Screenshot(kToolbarAppMenuButtonElementId,
+                             /*screenshot_name=*/"AppMenuButton",
+                             /*baseline_cl=*/"6956367",
+                             []() { return gfx::Rect(4, 4, 20, 20); }));
+}
+
 class ScreenshotSurfaceTestDialog : public views::BubbleDialogDelegateView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitleElementId);

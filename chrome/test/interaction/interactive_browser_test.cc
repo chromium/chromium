@@ -138,30 +138,6 @@ void InteractiveBrowserTestApi::EnableWebUICodeCoverage() {
   test_impl().MaybeStartWebUICodeCoverage();
 }
 
-InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::Screenshot(
-    ElementSpecifier element,
-    const std::string& screenshot_name,
-    const std::string& baseline_cl) {
-  StepBuilder builder;
-  builder.SetDescription("Compare Screenshot");
-  builder.SetElement(element);
-  builder.SetStartCallback(base::BindOnce(
-      [](InteractiveBrowserTestApi* test, std::string screenshot_name,
-         std::string baseline_cl, ui::InteractionSequence* seq,
-         ui::TrackedElement* el) {
-        const auto result = InteractionTestUtilBrowser::CompareScreenshot(
-            el, screenshot_name, baseline_cl);
-        test->test_impl().HandleActionResult(seq, el, "Screenshot", result);
-      },
-      base::Unretained(this), screenshot_name, baseline_cl));
-
-  auto steps = Steps(MaybeWaitForPaint(element), std::move(builder),
-                     MaybeWaitForUserToDismiss(element));
-  AddDescriptionPrefix(steps, base::StrCat({"Screenshot( \"", screenshot_name,
-                                            "\", \"", baseline_cl, "\" )"}));
-  return steps;
-}
-
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::ScreenshotWebUi(
     ElementSpecifier element,
     const DeepQuery& where,
