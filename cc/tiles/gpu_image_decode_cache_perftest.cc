@@ -21,10 +21,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkSize.h"
-#include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
-#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 namespace cc {
 namespace {
@@ -160,10 +157,6 @@ INSTANTIATE_TEST_SUITE_P(P,
                          testing::Values(TestMode::kGpu));
 
 TEST_P(GpuImageDecodeCachePerfTestNoSw, DecodeWithMips) {
-  // Surface to render into.
-  auto surface = SkSurfaces::RenderTarget(
-      context_provider_->GrContext(), skgpu::Budgeted::kNo,
-      SkImageInfo::MakeN32Premul(2048, 2048));
   auto gfx_size = GetNormalImageSize();
   timer_.Reset();
   do {
