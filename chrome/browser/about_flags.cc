@@ -13006,7 +13006,8 @@ const FeatureEntry kFeatureEntries[] = {
          kSafetyHubUnusedPermissionRevocationForAllSurfacesDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(
-         features::kSafetyHubUnusedPermissionRevocationForAllSurfaces)},
+         permissions::features::
+             kSafetyHubUnusedPermissionRevocationForAllSurfaces)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-data-importer-service",

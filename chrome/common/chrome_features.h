@@ -826,9 +826,6 @@ BASE_DECLARE_FEATURE(kSafetyHubExtensionsOffStoreTrigger);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyHubThreeDotDetails);
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kSafetyHubUnusedPermissionRevocationForAllSurfaces);
-
 // Automatically revoke disruptive notifications
 // in Safety Hub.
 COMPONENT_EXPORT(CHROME_FEATURES)

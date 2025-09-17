@@ -1134,9 +1134,6 @@ BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
 
 BASE_FEATURE(kSafetyHubThreeDotDetails, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafetyHubUnusedPermissionRevocationForAllSurfaces,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSafetyHubDisruptiveNotificationRevocation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

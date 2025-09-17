@@ -42,7 +42,6 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/url_identity.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -58,6 +57,7 @@
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -235,7 +235,8 @@ content_settings::ContentSettingConstraints CreateConstraintsForAutoRevocation(
   content_settings::ContentSettingConstraints constraints;
 
   if (base::FeatureList::IsEnabled(
-          features::kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
+          permissions::features::
+              kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
       content_settings::CanBeAutoRevokedAsUnusedPermission(
           content_type, content_settings::ContentSettingToValue(setting))) {
     constraints.set_track_last_visit_for_autoexpiration(true);

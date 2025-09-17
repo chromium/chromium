@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/blocked_content/blocked_window_params.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/content_settings/fake_owner.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -48,6 +47,7 @@
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/strings/grit/components_strings.h"
@@ -1592,7 +1592,8 @@ class ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest
  public:
   ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+        permissions::features::
+            kSafetyHubUnusedPermissionRevocationForAllSurfaces);
   }
 
  protected:
@@ -1851,7 +1852,8 @@ TEST_F(ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest,
        LastVisitedNotTracked_FeatureOff) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(
-      features::kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
 
   // Required for a system permission check in ChromeOS.
   system_permission_settings::MockPlatformHandle mock_platform_handle;

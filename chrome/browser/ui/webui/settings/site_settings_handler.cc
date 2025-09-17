@@ -64,7 +64,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -82,6 +81,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
+#include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
@@ -1656,7 +1656,8 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
     // Site Settings UI. This allows Safety Hub to auto-revoke the permission
     // if the site is not visited for a finite amount of time.
     if (base::FeatureList::IsEnabled(
-            features::kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
+            permissions::features::
+                kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
         content_settings::CanBeAutoRevokedAsUnusedPermission(
             content_type, content_settings::ContentSettingToValue(setting))) {
       constraints.set_track_last_visit_for_autoexpiration(true);
@@ -1884,7 +1885,8 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
   // Site Settings UI. This allows Safety Hub to auto-revoke the permission
   // if the site is not visited for a finite amount of time.
   if (base::FeatureList::IsEnabled(
-          features::kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
+          permissions::features::
+              kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
       content_settings::CanBeAutoRevokedAsUnusedPermission(
           content_type, content_settings::ContentSettingToValue(setting))) {
     constraints.set_track_last_visit_for_autoexpiration(true);

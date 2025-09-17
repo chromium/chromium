@@ -71,7 +71,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -97,6 +96,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
+#include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
@@ -6692,7 +6692,8 @@ class SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest
  public:
   SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest() {
     feature_list_.InitAndEnableFeature(
-        features::kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+        permissions::features::
+            kSafetyHubUnusedPermissionRevocationForAllSurfaces);
   }
 
  protected:
@@ -6776,7 +6777,8 @@ TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
        SetOriginPermissions_LastVisitedNotTracked_FeatureOff) {
   feature_list_.Reset();
   feature_list_.InitAndDisableFeature(
-      features::kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
 
   const GURL primary_url("https://example.com");
   const GURL secondary_url;
@@ -6890,7 +6892,8 @@ TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
        SetCategoryPermissionForPattern_LastVisitedTracked_FeatureOff) {
   feature_list_.Reset();
   feature_list_.InitAndDisableFeature(
-      features::kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
 
   constexpr char kOrigin[] = "https://www.google.com";
   const std::string primary_pattern(kOrigin);
