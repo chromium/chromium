@@ -93,7 +93,6 @@ std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::CreateUiResource(
       resource->shared_image_interface->GenVerifiedSyncToken();
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
-  resource->format = format;
   resource->ui_source_id = ui_source_id;
   resource->resource_size = size;
 

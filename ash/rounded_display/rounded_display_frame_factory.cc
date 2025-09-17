@@ -148,7 +148,6 @@ std::unique_ptr<UiResource> RoundedDisplayFrameFactory::CreateUiResource(
   resource->damaged = true;
   resource->ui_source_id = ui_source_id;
   resource->is_overlay_candidate = is_overlay;
-  resource->format = format;
   resource->resource_size = size;
 
   return resource;

@@ -133,7 +133,6 @@ std::unique_ptr<UiResource> CreateUiResource(
   resource->sync_token = sync_token;
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
-  resource->format = kFastInkSharedImageFormat;
   resource->ui_source_id = ui_source_id;
   resource->resource_size = size;
   return resource;

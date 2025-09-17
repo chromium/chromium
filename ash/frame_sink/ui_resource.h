@@ -37,7 +37,6 @@ class ASH_EXPORT UiResource {
 
   scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
   gpu::SyncToken sync_token;
-  viz::SharedImageFormat format;
   gfx::Size resource_size;
 
   // This id can be used to identify the resource back to the type of source

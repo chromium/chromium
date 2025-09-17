@@ -37,7 +37,8 @@ std::unique_ptr<UiResource> UiResourceManager::GetResourceToReuse(
     const auto& resource = it->second;
 
     if (resource->ui_source_id == ui_source_id &&
-        resource->resource_size == size && resource->format == format) {
+        resource->resource_size == size &&
+        resource->client_shared_image()->format() == format) {
       auto to_be_release_resource = std::move(it->second);
       available_resources_pool_.erase(it);
       return to_be_release_resource;
@@ -93,11 +94,8 @@ viz::TransferableResource UiResourceManager::OfferAndPrepareResourceForExport(
           viz::TransferableResource::ResourceSource::kUI, resource->sync_token,
           /*override=*/
           {
-              .format = resource->format,
               .size = resource->resource_size,
-              .texture_target = GL_TEXTURE_2D,
               .is_overlay_candidate = resource->is_overlay_candidate,
-              .color_space = gfx::ColorSpace(),
           });
 
   transferable_resource.id = id_generator_.GenerateNextId();

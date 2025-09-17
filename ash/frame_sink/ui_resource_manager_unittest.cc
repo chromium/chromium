@@ -40,7 +40,6 @@ class UiResourceManagerTest : public testing::Test {
         gpu::kNullSurfaceHandle);
     auto resource = std::make_unique<UiResource>(sii_, std::move(shared_image));
     resource->ui_source_id = ui_source_id;
-    resource->format = format;
     resource->resource_size = resource_size;
     return resource;
   }
@@ -96,7 +95,8 @@ TEST_F(UiResourceManagerTest, ReuseResource) {
   EXPECT_TRUE(resource);
 
   EXPECT_EQ(resource->ui_source_id, kTestUiSourceId_1);
-  EXPECT_EQ(resource->format, viz::SinglePlaneFormat::kBGRA_8888);
+  EXPECT_EQ(resource->client_shared_image()->format(),
+            viz::SinglePlaneFormat::kBGRA_8888);
   EXPECT_EQ(resource->resource_size, gfx::Size(10, 10));
 
   // When we have multiple matching resources, return any matching resource.
@@ -106,7 +106,8 @@ TEST_F(UiResourceManagerTest, ReuseResource) {
   EXPECT_TRUE(resource);
 
   EXPECT_EQ(resource->ui_source_id, kTestUiSourceId_2);
-  EXPECT_EQ(resource->format, viz::SinglePlaneFormat::kBGRA_8888);
+  EXPECT_EQ(resource->client_shared_image()->format(),
+            viz::SinglePlaneFormat::kBGRA_8888);
   EXPECT_EQ(resource->resource_size, gfx::Size(10, 20));
 }
 

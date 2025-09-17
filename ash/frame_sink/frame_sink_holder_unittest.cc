@@ -93,7 +93,6 @@ class FrameSinkHolderTest : public AshTestBase {
 
     auto resource = std::make_unique<UiResource>(sii_, std::move(shared_image));
     resource->ui_source_id = 1u;
-    resource->format = viz::SinglePlaneFormat::kBGRA_8888;
     resource->resource_size = kSize;
     return resource;
   }
