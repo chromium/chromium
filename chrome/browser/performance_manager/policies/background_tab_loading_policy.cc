@@ -313,8 +313,7 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
     }
 
     // Put the page in the queue for loading.
-    page_nodes_to_load_.push_back(std::make_unique<PageNodeToLoadData>(
-        page_node, page_node_data.site_engagement));
+    page_nodes_to_load_.emplace_back(page_node, page_node_data.site_engagement);
   }
 
   // Asynchronously determine whether pages added to `page_nodes_to_load_` are
@@ -324,7 +323,7 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
   // `OnUsedInBackgroundAvailable()`).
   for (size_t i = page_nodes_to_load_initial_size;
        i < page_nodes_to_load_.size(); ++i) {
-    SetUsedInBackgroundAsync(page_nodes_to_load_[i].get());
+    SetUsedInBackgroundAsync(page_nodes_to_load_[i].page_node);
   }
 
   // All restored tabs may be loaded.
@@ -378,12 +377,12 @@ bool BackgroundTabLoadingPolicy::PageNodeToLoadData::
 }
 
 struct BackgroundTabLoadingPolicy::ScoredTabComparator {
-  bool operator()(const std::unique_ptr<PageNodeToLoadData>& tab0,
-                  const std::unique_ptr<PageNodeToLoadData>& tab1) {
-    DCHECK(tab0->score.has_value());
-    DCHECK(tab1->score.has_value());
+  bool operator()(const PageNodeToLoadData& tab0,
+                  const PageNodeToLoadData& tab1) {
+    DCHECK(tab0.score.has_value());
+    DCHECK(tab1.score.has_value());
     // Greater scores sort first.
-    return tab0->score > tab1->score;
+    return tab0.score > tab1.score;
   }
 };
 
@@ -544,8 +543,7 @@ void BackgroundTabLoadingPolicy::ScoreTab(
 }
 
 void BackgroundTabLoadingPolicy::SetUsedInBackgroundAsync(
-    PageNodeToLoadData* page_node_to_load_data) {
-  const PageNode* page_node = page_node_to_load_data->page_node.get();
+    const PageNode* page_node) {
   SiteDataReader* reader = GetSiteDataReader(page_node);
   auto callback =
       base::BindOnce(&BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable,
@@ -668,8 +666,8 @@ void BackgroundTabLoadingPolicy::LoadNextTab() {
 
   // Find the next PageNode to load.
   while (!page_nodes_to_load_.empty()) {
-    const PageNode* page_node = page_nodes_to_load_.front()->page_node;
-    if (ShouldLoad(*page_nodes_to_load_.front())) {
+    const PageNode* page_node = page_nodes_to_load_.front().page_node;
+    if (ShouldLoad(page_nodes_to_load_.front())) {
       InitiateLoad(page_node);
       return;
     }
@@ -692,16 +690,17 @@ size_t BackgroundTabLoadingPolicy::GetFreePhysicalMemoryMib() const {
 
 bool BackgroundTabLoadingPolicy::ErasePageNodeToLoadData(
     const PageNode* page_node) {
-  for (auto& page_node_to_load_data : page_nodes_to_load_) {
-    if (page_node_to_load_data->page_node == page_node) {
-      if (page_node_to_load_data->score.has_value()) {
+  for (auto it = page_nodes_to_load_.begin(); it != page_nodes_to_load_.end();
+       ++it) {
+    if (it->page_node == page_node) {
+      if (it->score.has_value()) {
         // If the PageNode has already been scored, remove it from the
         // |tabs_scored_| count.
         DCHECK_GT(tabs_scored_, 0U);
         --tabs_scored_;
       }
 
-      std::erase(page_nodes_to_load_, page_node_to_load_data);
+      page_nodes_to_load_.erase(it);
       return true;
     }
   }
@@ -711,8 +710,8 @@ bool BackgroundTabLoadingPolicy::ErasePageNodeToLoadData(
 BackgroundTabLoadingPolicy::PageNodeToLoadData*
 BackgroundTabLoadingPolicy::FindPageNodeToLoadData(const PageNode* page_node) {
   for (auto& page_node_to_load_data : page_nodes_to_load_) {
-    if (page_node_to_load_data->page_node == page_node) {
-      return page_node_to_load_data.get();
+    if (page_node_to_load_data.page_node == page_node) {
+      return &page_node_to_load_data;
     }
   }
   return nullptr;
