@@ -94,8 +94,8 @@ void PageColorsController::SetRequestedPageColors(PageColors page_colors) {
 void PageColorsController::RecomputePageColors() {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
-  bool forced_colors = native_theme->forced_colors();
-  ui::NativeTheme::PageColors page_colors = native_theme->page_colors();
+  ui::ColorProviderKey::ForcedColors forced_colors =
+      native_theme->forced_colors();
   ui::NativeTheme::PreferredColorScheme preferred_color_scheme =
       native_theme->preferred_color_scheme();
   ui::NativeTheme::PreferredContrast preferred_contrast =
@@ -104,7 +104,7 @@ void PageColorsController::RecomputePageColors() {
   // Get the requested page colors.
   const int pref_value =
       profile_prefs_->GetInteger(prefs::kRequestedPageColors);
-  PageColors requested_page_colors =
+  PageColors page_colors =
       (pref_value < 0 ||
        pref_value > base::to_underlying(PageColors::kMaxValue))
           ? PageColors::kNoPreference
@@ -118,28 +118,27 @@ void PageColorsController::RecomputePageColors() {
   // increased contrast mode.
   if (only_on_increased_contrast &&
       preferred_contrast != ui::NativeTheme::PreferredContrast::kMore) {
-    requested_page_colors = PageColors::kNoPreference;
+    page_colors = PageColors::kNoPreference;
   }
 
-  if (requested_page_colors != PageColors::kNoPreference) {
+  if (page_colors != PageColors::kNoPreference) {
     static constexpr auto kColorMap =
-        base::MakeFixedFlatMap<PageColors, ui::NativeTheme::PageColors>(
-            {{PageColors::kOff, ui::NativeTheme::PageColors::kOff},
-             {PageColors::kDusk, ui::NativeTheme::PageColors::kDusk},
-             {PageColors::kDesert, ui::NativeTheme::PageColors::kDesert},
-             {PageColors::kNightSky, ui::NativeTheme::PageColors::kNightSky},
-             {PageColors::kAquatic, ui::NativeTheme::PageColors::kAquatic},
-             {PageColors::kWhite, ui::NativeTheme::PageColors::kWhite}});
-    page_colors = kColorMap.at(requested_page_colors);
-    if (requested_page_colors == PageColors::kOff) {
-      forced_colors = false;
+        base::MakeFixedFlatMap<PageColors, ui::ColorProviderKey::ForcedColors>(
+            {{PageColors::kOff, ui::ColorProviderKey::ForcedColors::kNone},
+             {PageColors::kDusk, ui::ColorProviderKey::ForcedColors::kDusk},
+             {PageColors::kDesert, ui::ColorProviderKey::ForcedColors::kDesert},
+             {PageColors::kNightSky,
+              ui::ColorProviderKey::ForcedColors::kNightSky},
+             {PageColors::kAquatic,
+              ui::ColorProviderKey::ForcedColors::kAquatic},
+             {PageColors::kWhite, ui::ColorProviderKey::ForcedColors::kWhite}});
+    forced_colors = kColorMap.at(page_colors);
+    if (page_colors == PageColors::kOff) {
       preferred_contrast = ui::NativeTheme::PreferredContrast::kNoPreference;
     } else {
-      forced_colors = true;
-      const bool is_dark_theme =
-          requested_page_colors == PageColors::kDusk ||
-          requested_page_colors == PageColors::kNightSky ||
-          requested_page_colors == PageColors::kAquatic;
+      const bool is_dark_theme = page_colors == PageColors::kDusk ||
+                                 page_colors == PageColors::kNightSky ||
+                                 page_colors == PageColors::kAquatic;
       preferred_color_scheme =
           is_dark_theme ? ui::NativeTheme::PreferredColorScheme::kDark
                         : ui::NativeTheme::PreferredColorScheme::kLight;
@@ -153,10 +152,6 @@ void PageColorsController::RecomputePageColors() {
   bool updated = false;
   if (web_theme->forced_colors() != forced_colors) {
     web_theme->set_forced_colors(forced_colors);
-    updated = true;
-  }
-  if (web_theme->page_colors() != page_colors) {
-    web_theme->set_page_colors(page_colors);
     updated = true;
   }
   if (web_theme->preferred_color_scheme() != preferred_color_scheme) {

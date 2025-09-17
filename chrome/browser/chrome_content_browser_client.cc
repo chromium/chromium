@@ -4116,7 +4116,8 @@ blink::mojom::PreferredContrast preferred_contrast(
 std::tuple<bool, bool> GetForcedColorsForWebContent(
     WebContents* web_contents,
     const ui::NativeTheme* native_theme) {
-  const bool in_forced_colors = native_theme->forced_colors();
+  const bool in_forced_colors = native_theme->forced_colors() !=
+                                ui::ColorProviderKey::ForcedColors::kNone;
   const bool is_forced_colors_disabled =
       ShouldDisableForcedColorsForWebContent(web_contents, in_forced_colors);
   return {in_forced_colors && !is_forced_colors_disabled,

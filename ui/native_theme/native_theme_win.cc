@@ -1219,7 +1219,8 @@ void NativeThemeWin::PaintImpl(cc::PaintCanvas* canvas,
 
 NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
     const {
-  if (!forced_colors() || IsForcedHighContrast()) {
+  if (forced_colors() == ColorProviderKey::ForcedColors::kNone ||
+      IsForcedHighContrast()) {
     return NativeTheme::CalculatePreferredContrast();
   }
 
@@ -1270,7 +1271,7 @@ NativeThemeWin::CalculatePreferredColorScheme() const {
     return PreferredColorScheme::kDark;
   }
 
-  if (forced_colors()) {
+  if (forced_colors() != ColorProviderKey::ForcedColors::kNone) {
     // According to the spec, the preferred color scheme for web content is
     // "dark" if the Canvas color has L<33% and "light" if L>67%, where "L" is
     // LAB lightness. The Canvas color is mapped to the Window system color.
@@ -1324,7 +1325,7 @@ NativeThemeWin::NativeThemeWin() {
     }
 
     if (!IsForcedHighContrast()) {
-      set_forced_colors(IsUsingHighContrastThemeInternal());
+      set_forced_colors(OsForcedColors());
     }
   }
 
@@ -1340,7 +1341,7 @@ NativeThemeWin::NativeThemeWin() {
     kMaxValue = kLight,
   };
   auto color_scheme = HighContrastColorScheme::kNone;
-  if (forced_colors()) {
+  if (forced_colors() != ColorProviderKey::ForcedColors::kNone) {
     color_scheme = (preferred_color_scheme() == PreferredColorScheme::kDark)
                        ? HighContrastColorScheme::kDark
                        : HighContrastColorScheme::kLight;
@@ -1360,11 +1361,14 @@ void NativeThemeWin::OnToolkitSettingsChanged(bool force_notify) {
   NativeTheme::OnToolkitSettingsChanged(force_notify);
 }
 
-bool NativeThemeWin::IsUsingHighContrastThemeInternal() const {
+ColorProviderKey::ForcedColors NativeThemeWin::OsForcedColors() const {
   HIGHCONTRAST result;
   result.cbSize = sizeof(HIGHCONTRAST);
-  return SystemParametersInfo(SPI_GETHIGHCONTRAST, result.cbSize, &result, 0) &&
-         (result.dwFlags & HCF_HIGHCONTRASTON) == HCF_HIGHCONTRASTON;
+  return (SystemParametersInfo(SPI_GETHIGHCONTRAST, result.cbSize, &result,
+                               0) &&
+          (result.dwFlags & HCF_HIGHCONTRASTON) == HCF_HIGHCONTRASTON)
+             ? ColorProviderKey::ForcedColors::kSystem
+             : ColorProviderKey::ForcedColors::kNone;
 }
 
 void NativeThemeWin::CloseHandlesInternal() {
@@ -1386,7 +1390,7 @@ void NativeThemeWin::OnWndProc(HWND hwnd,
   }
 
   if (!IsForcedHighContrast()) {
-    set_forced_colors(IsUsingHighContrastThemeInternal());
+    set_forced_colors(OsForcedColors());
   }
   set_preferred_color_scheme(CalculatePreferredColorScheme());
   SetPreferredContrast(CalculatePreferredContrast());

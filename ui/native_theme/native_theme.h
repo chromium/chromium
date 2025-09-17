@@ -112,20 +112,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     kNumStates = kPressed + 1,
   };
 
-  // Enum used for kPageColors pref. Page Colors is a browser setting that can
-  // be used to simulate forced colors mode. This enum should match its React
-  // counterpart.
-  enum PageColors {
-    kOff = 0,
-    kDusk = 1,
-    kDesert = 2,
-    kNightSky = 3,
-    kWhite = 4,
-    kHighContrast = 5,
-    kAquatic = 6,
-    kMaxValue = kAquatic,
-  };
-
   enum class PreferredColorScheme {
     kNoPreference = 0,
     kLight = 1,
@@ -472,11 +458,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     use_overlay_scrollbars_ = use_overlay_scrollbar;
   }
 
-  bool forced_colors() const { return forced_colors_; }
-  void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
-
-  PageColors page_colors() const { return page_colors_; }
-  void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
+  ColorProviderKey::ForcedColors forced_colors() const {
+    return forced_colors_;
+  }
+  void set_forced_colors(ColorProviderKey::ForcedColors forced_colors) {
+    forced_colors_ = forced_colors;
+  }
 
   PreferredColorScheme preferred_color_scheme() const {
     return preferred_color_scheme_;
@@ -578,8 +565,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   base::ObserverList<NativeThemeObserver> native_theme_observers_;
   const ui::SystemTheme system_theme_;
   bool use_overlay_scrollbars_ = false;
-  bool forced_colors_ = false;
-  PageColors page_colors_ = PageColors::kOff;
+  ColorProviderKey::ForcedColors forced_colors_ =
+      IsForcedHighContrast() ? ColorProviderKey::ForcedColors::kSystem
+                             : ColorProviderKey::ForcedColors::kNone;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
   bool prefers_reduced_transparency_ = false;

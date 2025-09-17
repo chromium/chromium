@@ -53,31 +53,6 @@ TEST(NativeThemeTest, TestOnNativeThemeUpdatedMetricsEmitted) {
       2);
 }
 
-TEST(NativeThemeTest, TestColorProviderKeyForcedColors) {
-  TestNativeTheme theme;
-
-  theme.set_forced_colors(true);
-  theme.set_page_colors(NativeTheme::PageColors::kDusk);
-  EXPECT_EQ(theme.GetForcedColorsKey(), ColorProviderKey::ForcedColors::kDusk);
-
-  theme.set_page_colors(NativeTheme::PageColors::kOff);
-  EXPECT_EQ(theme.GetForcedColorsKey(), ColorProviderKey::ForcedColors::kNone);
-
-  theme.set_page_colors(NativeTheme::PageColors::kHighContrast);
-  EXPECT_EQ(theme.GetForcedColorsKey(),
-            ColorProviderKey::ForcedColors::kSystem);
-
-  theme.set_forced_colors(false);
-  theme.set_page_colors(NativeTheme::PageColors::kOff);
-  EXPECT_EQ(theme.GetForcedColorsKey(), ColorProviderKey::ForcedColors::kNone);
-
-  theme.set_page_colors(NativeTheme::PageColors::kHighContrast);
-  EXPECT_EQ(theme.GetForcedColorsKey(), ColorProviderKey::ForcedColors::kNone);
-
-  theme.set_page_colors(NativeTheme::PageColors::kDusk);
-  EXPECT_EQ(theme.GetForcedColorsKey(), ColorProviderKey::ForcedColors::kNone);
-}
-
 TEST(NativeThemeTest, CaretBlinkInterval) {
   auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
   static constexpr auto kNewInterval = base::Milliseconds(42);

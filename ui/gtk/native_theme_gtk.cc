@@ -143,10 +143,6 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
     ui_theme->set_forced_colors(forced_colors());
     updated = true;
   }
-  if (ui_theme->page_colors() != page_colors()) {
-    ui_theme->set_page_colors(page_colors());
-    updated = true;
-  }
   if (ui_theme->preferred_color_scheme() != preferred_color_scheme()) {
     ui_theme->set_preferred_color_scheme(preferred_color_scheme());
     updated = true;

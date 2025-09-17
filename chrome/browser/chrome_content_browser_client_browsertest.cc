@@ -356,7 +356,9 @@ class ForcedColorsTest : public testing::WithParamInterface<bool>,
 };
 
 IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColors) {
-  test_theme_.set_forced_colors(ForcedColorsActive());
+  test_theme_.set_forced_colors(
+      ForcedColorsActive() ? ui::ColorProviderKey::ForcedColors::kSystem
+                           : ui::ColorProviderKey::ForcedColors::kNone);
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -372,7 +374,9 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColors) {
 }
 
 IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
-  test_theme_.set_forced_colors(ForcedColorsActive());
+  test_theme_.set_forced_colors(
+      ForcedColorsActive() ? ui::ColorProviderKey::ForcedColors::kSystem
+                           : ui::ColorProviderKey::ForcedColors::kNone);
 
   const char* url = "https://foo.com";
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));

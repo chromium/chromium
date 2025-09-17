@@ -273,7 +273,9 @@ class ColorProviderTest : public ThemeServiceTest,
     if (high_contrast) {
       preferred_color_scheme = ui::NativeTheme::PreferredColorScheme::kLight;
     }
-    native_theme_->set_forced_colors(high_contrast);
+    native_theme_->set_forced_colors(
+        high_contrast ? ui::ColorProviderKey::ForcedColors::kSystem
+                      : ui::ColorProviderKey::ForcedColors::kNone);
 #endif  // BUILDFLAG(IS_WIN)
     native_theme_->SetPreferredContrast(preferred_contrast());
     native_theme_->set_preferred_color_scheme(preferred_color_scheme);
@@ -338,7 +340,8 @@ class ColorProviderTest : public ThemeServiceTest,
   // Store the parameter values of the global NativeTheme for UI instance
   // configured during SetUp() to check if an update should be propagated and
   // to restore the NativeTheme to its original state in TearDown().
-  bool original_forced_colors_ = false;
+  ui::ColorProviderKey::ForcedColors original_forced_colors_ =
+      ui::ColorProviderKey::ForcedColors::kNone;
   ui::NativeTheme::PreferredContrast original_preferred_contrast_ =
       ui::NativeTheme::PreferredContrast::kNoPreference;
   ui::NativeTheme::PreferredColorScheme original_preferred_color_scheme_ =

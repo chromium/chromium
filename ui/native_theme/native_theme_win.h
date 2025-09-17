@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
  private:
   friend class base::NoDestructor<NativeThemeWin>;
 
-  bool IsUsingHighContrastThemeInternal() const;
+  ColorProviderKey::ForcedColors OsForcedColors() const;
   void CloseHandlesInternal();
 
   // Called by `hwnd_subscription_`.

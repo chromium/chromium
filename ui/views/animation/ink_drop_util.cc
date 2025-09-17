@@ -60,7 +60,8 @@ bool UsingPlatformHighContrastInkDrop(const View* view) {
   }
   const ui::NativeTheme* const native_theme = view->GetNativeTheme();
   CHECK(native_theme);
-  return native_theme->forced_colors() &&
+  return native_theme->forced_colors() !=
+             ui::ColorProviderKey::ForcedColors::kNone &&
          native_theme->preferred_contrast() ==
              ui::NativeTheme::PreferredContrast::kMore &&
          base::FeatureList::IsEnabled(

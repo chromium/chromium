@@ -24,7 +24,7 @@ class TestNativeThemeWin : public NativeThemeWin {
     return GetColorProviderKey(/*custom_theme=*/nullptr).color_mode;
   }
 
-  void SetForcedColors(bool forced_colors) {
+  void SetForcedColors(ColorProviderKey::ForcedColors forced_colors) {
     set_forced_colors(forced_colors);
     UpdateColorSchemeAndContrast();
   }
@@ -53,14 +53,14 @@ TEST(NativeThemeWinTest, CalculatePreferredColorScheme) {
 
   TestNativeThemeWin theme;
 
-  theme.SetForcedColors(false);
+  theme.SetForcedColors(ColorProviderKey::ForcedColors::kNone);
   theme.SetInDarkMode(true);
   EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kDark);
 
   theme.SetInDarkMode(false);
   EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kLight);
 
-  theme.SetForcedColors(true);
+  theme.SetForcedColors(ColorProviderKey::ForcedColors::kSystem);
   theme.SetSystemColor(kWindow, SK_ColorBLACK);
   EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kDark);
 
@@ -73,7 +73,7 @@ TEST(NativeThemeWinTest, CalculatePreferredColorScheme) {
   theme.SetSystemColor(kWindow, SK_ColorYELLOW);
   EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kLight);
 
-  theme.SetForcedColors(false);
+  theme.SetForcedColors(ColorProviderKey::ForcedColors::kNone);
   EXPECT_EQ(theme.preferred_color_scheme(), PrefScheme::kLight);
 }
 
@@ -83,10 +83,10 @@ TEST(NativeThemeWinTest, CalculatePreferredContrast) {
 
   TestNativeThemeWin theme;
 
-  theme.SetForcedColors(false);
+  theme.SetForcedColors(ColorProviderKey::ForcedColors::kNone);
   EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kNoPreference);
 
-  theme.SetForcedColors(true);
+  theme.SetForcedColors(ColorProviderKey::ForcedColors::kSystem);
   theme.SetSystemColor(kWindow, SK_ColorBLACK);
   theme.SetSystemColor(kWindowText, SK_ColorWHITE);
   EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kMore);
@@ -101,21 +101,21 @@ TEST(NativeThemeWinTest, CalculatePreferredContrast) {
   theme.SetSystemColor(kWindowText, SK_ColorYELLOW);
   EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kLess);
 
-  theme.SetForcedColors(false);
+  theme.SetForcedColors(ColorProviderKey::ForcedColors::kNone);
   EXPECT_EQ(theme.preferred_contrast(), PrefContrast::kNoPreference);
 }
 
 TEST(NativeThemeWinTest, TestColorProviderKeyColorMode) {
   TestNativeThemeWin theme;
 
-  theme.SetForcedColors(false);
+  theme.SetForcedColors(ColorProviderKey::ForcedColors::kNone);
   theme.SetInDarkMode(true);
   EXPECT_EQ(theme.GetColorMode(), ColorMode::kDark);
 
   theme.SetInDarkMode(false);
   EXPECT_EQ(theme.GetColorMode(), ColorMode::kLight);
 
-  theme.SetForcedColors(true);
+  theme.SetForcedColors(ColorProviderKey::ForcedColors::kSystem);
   theme.set_preferred_color_scheme(PrefScheme::kDark);
   EXPECT_EQ(theme.GetColorMode(), ColorMode::kDark);
 

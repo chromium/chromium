@@ -277,26 +277,6 @@ void NativeTheme::Paint(cc::PaintCanvas* canvas,
 ColorProviderKey NativeTheme::GetColorProviderKey(
     scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
     bool use_custom_frame) const {
-  const auto get_forced_colors_key = [](bool forced_colors,
-                                        PageColors page_colors) {
-    if (!forced_colors) {
-      return ColorProviderKey::ForcedColors::kNone;
-    }
-    static constexpr auto kForcedColorsMap =
-        base::MakeFixedFlatMap<PageColors, ColorProviderKey::ForcedColors>({
-            {PageColors::kOff, ColorProviderKey::ForcedColors::kNone},
-            {PageColors::kDusk, ColorProviderKey::ForcedColors::kDusk},
-            {PageColors::kDesert, ColorProviderKey::ForcedColors::kDesert},
-            {PageColors::kNightSky, ColorProviderKey::ForcedColors::kNightSky},
-            {PageColors::kWhite, ColorProviderKey::ForcedColors::kWhite},
-            {PageColors::kHighContrast,
-             ColorProviderKey::ForcedColors::kSystem},
-            {PageColors::kAquatic, ColorProviderKey::ForcedColors::kAquatic},
-        });
-
-    return kForcedColorsMap.at(page_colors);
-  };
-
   ui::ColorProviderKey key;
   key.color_mode = preferred_color_scheme() == PreferredColorScheme::kDark
                        ? ColorProviderKey::ColorMode::kDark
@@ -304,7 +284,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
   key.contrast_mode = preferred_contrast() == PreferredContrast::kMore
                           ? ColorProviderKey::ContrastMode::kHigh
                           : ColorProviderKey::ContrastMode::kNormal;
-  key.forced_colors = get_forced_colors_key(forced_colors(), page_colors_);
+  key.forced_colors = forced_colors();
   key.system_theme = system_theme();
   key.frame_type = use_custom_frame ? ColorProviderKey::FrameType::kChromium
                                     : ColorProviderKey::FrameType::kNative;
@@ -336,9 +316,6 @@ bool NativeTheme::IsForcedDarkMode() {
 
 NativeTheme::NativeTheme(ui::SystemTheme system_theme)
     : system_theme_(system_theme),
-      forced_colors_(IsForcedHighContrast()),
-      page_colors_(forced_colors_ ? PageColors::kHighContrast
-                                  : PageColors::kOff),
       preferred_color_scheme_(IsForcedDarkMode()
                                   ? PreferredColorScheme::kDark
                                   : PreferredColorScheme::kLight),
@@ -420,10 +397,6 @@ bool NativeTheme::UpdateWebInstance() const {
   }
   if (associated_web_instance_->forced_colors() != forced_colors()) {
     associated_web_instance_->forced_colors_ = forced_colors();
-    updated_web_instance = true;
-  }
-  if (associated_web_instance_->page_colors() != page_colors()) {
-    associated_web_instance_->page_colors_ = page_colors();
     updated_web_instance = true;
   }
   if (associated_web_instance_->preferred_color_scheme() !=
