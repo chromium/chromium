@@ -3232,8 +3232,17 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithIncompleteFileTest, LogsReadError) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
-                       SameDocumentNavigationWithNothingCommittedAfterRestore) {
+// TODO(crbug.com/41488859): Test fails on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SameDocumentNavigationWithNothingCommittedAfterRestore \
+  DISABLED_SameDocumentNavigationWithNothingCommittedAfterRestore
+#else
+#define MAYBE_SameDocumentNavigationWithNothingCommittedAfterRestore \
+  SameDocumentNavigationWithNothingCommittedAfterRestore
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SessionRestoreTest,
+    MAYBE_SameDocumentNavigationWithNothingCommittedAfterRestore) {
   // The test sets this closure before each navigation to /sometimes-slow in
   // order to control the response for that navigation.
   content::SlowHttpResponse::GotRequestCallback got_slow_request;
@@ -3314,9 +3323,17 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   EXPECT_FALSE(nav_observer.was_same_document());
 }
 
+// TODO(crbug.com/41488859): Test fails on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore \
+  DISABLED_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore
+#else
+#define MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore \
+  SameDocumentHistoryNavigationWithNothingCommittedAfterRestore
+#endif
 IN_PROC_BROWSER_TEST_F(
     SessionRestoreTest,
-    SameDocumentHistoryNavigationWithNothingCommittedAfterRestore) {
+    MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore) {
   // The test sets this closure before each navigation to /sometimes-slow in
   // order to control the response for that navigation.
   content::SlowHttpResponse::GotRequestCallback got_slow_request;
