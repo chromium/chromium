@@ -201,6 +201,8 @@ void ComposeboxHandler::AddTabContext(int32_t tab_id,
     return;
   }
 
+  RecordDuplicateTabTitleClickedMetric(tab);
+
   lens::TabContextualizationController* tab_contextualization_controller =
       tab->GetTabFeatures()->tab_contextualization_controller();
   auto token = base::UnguessableToken::Create();
@@ -209,6 +211,37 @@ void ComposeboxHandler::AddTabContext(int32_t tab_id,
                      weak_ptr_factory_.GetWeakPtr(), token));
 
   std::move(callback).Run(token);
+}
+
+void ComposeboxHandler::RecordDuplicateTabTitleClickedMetric(
+    tabs::TabInterface* const tab) {
+  bool has_duplicate_title = false;
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (browser_window_interface) {
+    auto* tab_strip_model = browser_window_interface->GetTabStripModel();
+    int tab_index = tab_strip_model->GetIndexOfTab(tab);
+    if (tab_index != TabStripModel::kNoTab) {
+      TabRendererData current_tab_renderer_data =
+          TabRendererData::FromTabInModel(tab_strip_model, tab_index);
+      const std::u16string& current_title = current_tab_renderer_data.title;
+
+      int title_count = 0;
+      for (int i = 0; i < tab_strip_model->count(); i++) {
+        TabRendererData tab_renderer_data =
+            TabRendererData::FromTabInModel(tab_strip_model, i);
+        if (tab_renderer_data.title == current_title) {
+          title_count++;
+        }
+      }
+      if (title_count > 1) {
+        has_duplicate_title = true;
+      }
+    }
+  }
+
+  UMA_HISTOGRAM_BOOLEAN("NewTabPage.Composebox.TabWithDuplicateTitleClicked",
+                        has_duplicate_title);
 }
 
 void ComposeboxHandler::DeleteContext(
