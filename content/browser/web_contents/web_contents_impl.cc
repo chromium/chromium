@@ -237,6 +237,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #include "base/check.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/android/nfc_host.h"
 #include "content/browser/android/selection/selection_popup_controller.h"
@@ -3748,7 +3749,8 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  bool is_request_android_desktop_site = false;
+  bool is_request_android_desktop_site =
+      !embedder_support::GetUserAgentMetadata().mobile;
 #endif
 
   if (GetController().GetVisibleEntry() &&
