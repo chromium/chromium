@@ -1335,7 +1335,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     // TODO(crbug.com/424472586): Pass supported tools to service from web
     // client.
-    glic_service_->FetchZeroStateSuggestions(
+    host().instance_delegate().FetchZeroStateSuggestions(
         is_fre.value_or(false),
         /*supported_tools=*/{},
         base::BindOnce(

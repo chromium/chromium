@@ -58,12 +58,18 @@ Host::PageHandlerInfo::PageHandlerInfo(PageHandlerInfo&&) = default;
 Host::PageHandlerInfo& Host::PageHandlerInfo::operator=(PageHandlerInfo&&) =
     default;
 
-// When no sharing manager provider is injected, we'll use the keyed service.
+// When no instance delegate or sharing manager provider is injected, we'll use
+// the keyed service.
 Host::Host(Profile* profile)
-    : profile_(profile), sharing_manager_provider_(nullptr) {}
+    : profile_(profile),
+      instance_delegate_(nullptr),
+      sharing_manager_provider_(nullptr) {}
 Host::Host(Profile* profile,
-           GlicSharingManagerProvider* sharing_manager_provider)
-    : profile_(profile), sharing_manager_provider_(sharing_manager_provider) {}
+           GlicSharingManagerProvider* sharing_manager_provider,
+           InstanceDelegate* instance_delegate)
+    : profile_(profile),
+      instance_delegate_(instance_delegate),
+      sharing_manager_provider_(sharing_manager_provider) {}
 Host::~Host() = default;
 
 void Host::Initialize(Delegate* delegate) {
@@ -163,6 +169,10 @@ GlicSharingManager& Host::sharing_manager() {
   return sharing_manager_provider_
              ? sharing_manager_provider_->sharing_manager()
              : glic_service().sharing_manager();
+}
+
+Host::InstanceDelegate& Host::instance_delegate() {
+  return instance_delegate_ ? *instance_delegate_ : glic_service();
 }
 
 GlicPageHandler* Host::page_handler() const {

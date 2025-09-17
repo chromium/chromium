@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/tabs/public/tab_interface.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace glic {
@@ -36,7 +39,7 @@ GlicInstanceImpl::GlicInstanceImpl(
     : profile_(profile),
       attachment_delegate_(attachment_delegate),
       id_(instance_id),
-      host_(std::make_unique<Host>(profile_, this)) {}
+      host_(std::make_unique<Host>(profile_, this, this)) {}
 
 GlicInstanceImpl::~GlicInstanceImpl() = default;
 
@@ -173,6 +176,55 @@ Host& GlicInstanceImpl::host() {
 
 const InstanceId& GlicInstanceImpl::id() const {
   return id_;
+}
+
+void GlicInstanceImpl::FetchZeroStateSuggestions(
+    bool is_first_run,
+    std::optional<std::vector<std::string>> supported_tools,
+    mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
+        callback) {
+  // TODO(crbug.com/444463509): Update this when we have per-instance
+  // sharing managers set up without auto-focus.
+  auto* active_web_contents =
+      sharing_manager().GetFocusedTabData().focus()
+          ? sharing_manager().GetFocusedTabData().focus()->GetContents()
+          : nullptr;
+
+  contextual_cueing::ContextualCueingService* contextual_cueing_service =
+      contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
+          profile_);
+
+  if (contextual_cueing_service && active_web_contents && IsShowing()) {
+    auto suggestions = mojom::ZeroStateSuggestions::New();
+    suggestions->tab_id = GetTabId(active_web_contents);
+    suggestions->tab_url = active_web_contents->GetLastCommittedURL();
+    contextual_cueing_service
+        ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+            active_web_contents, is_first_run, supported_tools,
+            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                base::BindOnce(&GlicInstanceImpl::OnZeroStateSuggestionsFetched,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(suggestions), std::move(callback)),
+                std::vector<std::string>({})));
+
+  } else {
+    std::move(callback).Run(nullptr);
+  }
+}
+
+void GlicInstanceImpl::OnZeroStateSuggestionsFetched(
+    mojom::ZeroStateSuggestionsPtr suggestions,
+    mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
+        callback,
+    std::vector<std::string> returned_suggestions) {
+  std::vector<mojom::SuggestionContentPtr> output_suggestions;
+  for (const std::string& suggestion_string : returned_suggestions) {
+    output_suggestions.push_back(
+        mojom::SuggestionContent::New(suggestion_string));
+  }
+  suggestions->suggestions = std::move(output_suggestions);
+
+  std::move(callback).Run(std::move(suggestions));
 }
 
 GlicInstanceImpl::EmbedderKey GlicInstanceImpl::GetEmbedderKey(

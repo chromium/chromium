@@ -88,7 +88,7 @@ class GlicInstanceImpl : public GlicInstance,
   Host& host() override;
   const InstanceId& id() const override;
 
-  // GlicInstance::Delegate:
+  // Host::InstanceDelegate:
   void CreateTab() override;
   void CreateTask() override;
   void PerformActions() override;
@@ -97,6 +97,11 @@ class GlicInstanceImpl : public GlicInstance,
   void ResumeActorTask() override;
   void GetZeroStateSuggestionsAndSubscribe() override;
   void GetZeroStateSuggestionsForFocusedTab() override;
+  void FetchZeroStateSuggestions(
+      bool is_first_run,
+      std::optional<std::vector<std::string>> supported_tools,
+      glic::mojom::WebClientHandler::
+          GetZeroStateSuggestionsForFocusedTabCallback callback) override;
 
  private:
   // A tag type to represent the floating embedder key.
@@ -125,6 +130,11 @@ class GlicInstanceImpl : public GlicInstance,
   void MaybeShowHostUi(GlicUiEmbedder* embedder);
   void OnAssociatedTabDestroyed(tabs::TabInterface* tab,
                                 const InstanceId& instance_id);
+  void OnZeroStateSuggestionsFetched(
+      mojom::ZeroStateSuggestionsPtr suggestions,
+      mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
+          callback,
+      std::vector<std::string> returned_suggestions);
 
   raw_ptr<Profile> profile_;
 

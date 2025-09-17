@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "components/tabs/public/tab_interface.h"
 
 class Profile;
@@ -80,6 +81,11 @@ class Host : public GlicSharingManagerProvider {
 
     virtual void GetZeroStateSuggestionsAndSubscribe() = 0;
     virtual void GetZeroStateSuggestionsForFocusedTab() = 0;
+    virtual void FetchZeroStateSuggestions(
+        bool is_first_run,
+        std::optional<std::vector<std::string>> supported_tools,
+        glic::mojom::WebClientHandler::
+            GetZeroStateSuggestionsForFocusedTabCallback callback) = 0;
   };
 
   class Observer : public base::CheckedObserver {
@@ -107,7 +113,8 @@ class Host : public GlicSharingManagerProvider {
   // When no sharing manager provider is supplied, GlicKeyedService is used.
   explicit Host(Profile* profile);
   explicit Host(Profile* profile,
-                GlicSharingManagerProvider* sharing_manager_provider);
+                GlicSharingManagerProvider* sharing_manager_provider,
+                InstanceDelegate* instance_delegate);
   Host(const Host&) = delete;
   ~Host() override;
   Host& operator=(const Host&) = delete;
@@ -143,6 +150,8 @@ class Host : public GlicSharingManagerProvider {
 
   // GlicSharingManagerProvider Implementation.
   GlicSharingManager& sharing_manager() override;
+
+  Host::InstanceDelegate& instance_delegate();
 
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   // Returns the WebUI web contents. May be null.
@@ -280,6 +289,9 @@ class Host : public GlicSharingManagerProvider {
   }
 
   raw_ptr<Profile> profile_;
+
+  // The instance that owns this host.
+  raw_ptr<InstanceDelegate> instance_delegate_;
 
   // Null before `Initialize()` and after `Shutdown()`.
   raw_ptr<Delegate> delegate_;

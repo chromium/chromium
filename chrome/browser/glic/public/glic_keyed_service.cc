@@ -248,6 +248,45 @@ void GlicKeyedService::PrepareForOpen() {
   }
 }
 
+GlicWindowController& GlicKeyedService::window_controller() const {
+  CHECK(window_controller_);
+  return *window_controller_.get();
+}
+
+GlicFreController& GlicKeyedService::fre_controller() {
+  CHECK(fre_controller_);
+  return *fre_controller_.get();
+}
+
+GlicSharingManager& GlicKeyedService::sharing_manager() {
+  return *sharing_manager_.get();
+}
+
+void GlicKeyedService::CreateTab() {
+  NOTIMPLEMENTED();
+}
+void GlicKeyedService::CreateTask() {
+  NOTIMPLEMENTED();
+}
+void GlicKeyedService::PerformActions() {
+  NOTIMPLEMENTED();
+}
+void GlicKeyedService::StopActorTask() {
+  NOTIMPLEMENTED();
+}
+void GlicKeyedService::PauseActorTask() {
+  NOTIMPLEMENTED();
+}
+void GlicKeyedService::ResumeActorTask() {
+  NOTIMPLEMENTED();
+}
+void GlicKeyedService::GetZeroStateSuggestionsAndSubscribe() {
+  NOTIMPLEMENTED();
+}
+void GlicKeyedService::GetZeroStateSuggestionsForFocusedTab() {
+  NOTIMPLEMENTED();
+}
+
 void GlicKeyedService::OnZeroStateSuggestionsFetched(
     mojom::ZeroStateSuggestionsPtr suggestions,
     mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
@@ -289,20 +328,6 @@ void GlicKeyedService::FetchZeroStateSuggestions(
   } else {
     std::move(callback).Run(nullptr);
   }
-}
-
-GlicWindowController& GlicKeyedService::window_controller() const {
-  CHECK(window_controller_);
-  return *window_controller_.get();
-}
-
-GlicFreController& GlicKeyedService::fre_controller() {
-  CHECK(fre_controller_);
-  return *fre_controller_.get();
-}
-
-GlicSharingManager& GlicKeyedService::sharing_manager() {
-  return *sharing_manager_.get();
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
