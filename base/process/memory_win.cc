@@ -72,4 +72,24 @@ void UncheckedFree(void* ptr) {
 #endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
 
+bool UncheckedAlignedAlloc(size_t size, size_t alignment, void** result) {
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  // Reach PartitionAlloc's allocator_shim::internal::AlignedAllocUnchecked by
+  // way of the shims when available.
+  *result = allocator_shim::UncheckedAlignedAlloc(size, alignment);
+#else
+  // Fall-back to the UCRT's _aligned_malloc otherwise.
+  *result = _aligned_malloc(size, alignment);
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  return *result != NULL;
+}
+
+void UncheckedAlignedFree(void* ptr) {
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  allocator_shim::UncheckedAlignedFree(ptr);
+#else
+  _aligned_free(ptr);
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+}
+
 }  // namespace base

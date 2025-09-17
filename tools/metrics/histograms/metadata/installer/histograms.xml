@@ -256,6 +256,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Setup.Install.UnbufferedFileWriter.{Operation}.Error"
+    enum="WinGetLastError" expires_after="2026-09-28">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The Windows error code for a failed {Operation} on an UnbufferedFileWriter.
+    Recorded once per operation that encounters an error.
+  </summary>
+  <token key="Operation">
+    <variant name="Allocate"/>
+    <variant name="ClearDelete"/>
+    <variant name="Create"/>
+    <variant name="GetInfo"/>
+    <variant name="SetInfo"/>
+    <variant name="Write"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

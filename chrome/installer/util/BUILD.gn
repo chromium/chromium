@@ -16,6 +16,8 @@ if (is_win) {
       "lzma_util.h",
       "self_cleaning_temp_dir.cc",
       "self_cleaning_temp_dir.h",
+      "unbuffered_file_writer.cc",
+      "unbuffered_file_writer.h",
     ]
     deps = [ "//third_party/lzma_sdk/google:seven_zip_reader" ]
     public_deps = [
@@ -343,6 +345,7 @@ if (is_win) {
       "self_cleaning_temp_dir_unittest.cc",
       "set_reg_value_work_item_unittest.cc",
       "shell_util_unittest.cc",
+      "unbuffered_file_writer_unittest.cc",
       "work_item_list_unittest.cc",
       "work_item_mocks.cc",
       "work_item_mocks.h",

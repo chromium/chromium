@@ -715,6 +715,23 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   EXPECT_TRUE(ptr == nullptr);
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(OutOfMemoryHandledTest, UncheckedAlignedAlloc) {
+  static constexpr size_t kAlignment = 32;
+  void* ptr;
+  EXPECT_TRUE(base::UncheckedAlignedAlloc(kSafeMallocSize, kAlignment, &ptr));
+  EXPECT_TRUE(ptr != nullptr);
+  EXPECT_TRUE(base::IsAligned(ptr, 32));
+  base::UncheckedAlignedFree(ptr);
+
+  // test_size_ is too big for the aligned case. Scale it back a bit.
+  const size_t test_size =
+      std::numeric_limits<std::ptrdiff_t>::max() - 3 * base::GetPageSize();
+  EXPECT_FALSE(base::UncheckedAlignedAlloc(test_size, kAlignment, &ptr));
+  EXPECT_TRUE(ptr == nullptr);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_OPENBSD) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
