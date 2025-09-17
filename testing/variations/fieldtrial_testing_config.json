@@ -9513,6 +9513,22 @@
             ]
         }
     ],
+    "EffectiveBindingState": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EffectiveBindingState"
+                    ]
+                }
+            ]
+        }
+    ],
     "En840AndFstDecoderParamsUpdate": [
         {
             "platforms": [
