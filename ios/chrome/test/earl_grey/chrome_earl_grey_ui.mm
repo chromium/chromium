@@ -12,12 +12,14 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -35,6 +37,7 @@
 #define EarlGrey [self earlGrey]
 #pragma clang diagnostic pop
 
+using base::test::ios::kWaitForClearBrowsingDataTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::BrowsingDataButtonMatcher;
@@ -175,15 +178,8 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
                 chrome_test_util::WindowWithNumber(windowNumber)];
   // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
-      onElementWithMatcher:chrome_test_util::
-                               WebStateScrollViewMatcherInWindowWithNumber(
-                                   windowNumber)] performAction:grey_tap()];
-  // TODO(crbug.com/41271101): Add webViewScrollView matcher so we don't have
-  // to always find it.
+  chrome_test_util::TapAtOffsetOf(kToolbarToolsMenuButtonIdentifier,
+                                  windowNumber, CGVectorMake(0.5, 0.5));
 }
 
 - (void)openSettingsMenu {
@@ -626,8 +622,8 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
                                ? @"Clear browsing data view was not visible"
                                : @"Clear browsing data view was visible";
   bool clearBrowsingDataViewVisibility =
-      base::test::ios::WaitUntilConditionOrTimeout(kWaitForUIElementTimeout,
-                                                   condition);
+      base::test::ios::WaitUntilConditionOrTimeout(
+          kWaitForClearBrowsingDataTimeout, condition);
   EG_TEST_HELPER_ASSERT_TRUE(clearBrowsingDataViewVisibility, errorMessage);
 }
 

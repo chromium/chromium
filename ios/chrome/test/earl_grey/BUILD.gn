@@ -374,6 +374,7 @@ source_set("eg_test_support+eg2") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/toolbar/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
     "//ios/chrome/browser/web/model:feature_flags",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/testing:http_server_bundle_data",

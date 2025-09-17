@@ -307,6 +307,24 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   [ChromeCoordinatorAppInterface reset];
 }
 
+// Tests clear browsing history.
+- (void)testClearBrowsingHistory {
+  [self addTestURLsToHistory];
+  [ChromeCoordinatorAppInterface startHistoryCoordinator];
+
+  // Assert that history displays three entries.
+  [[EarlGrey selectElementWithMatcher:HistoryEntry(_URL1, kTitle1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:HistoryEntry(_URL2, kTitle2)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:HistoryEntry(_URL3, _URL3.GetContent())]
+      assertWithMatcher:grey_notNil()];
+
+  [ChromeEarlGrey clearBrowsingHistory];
+  [ChromeEarlGreyUI assertHistoryHasNoEntries];
+  [ChromeCoordinatorAppInterface reset];
+}
+
 // Tests display and selection of 'Open in New Tab' in a context menu on a
 // history entry.
 - (void)testContextMenuOpenInNewTab {

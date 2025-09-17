@@ -306,18 +306,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests clear browsing history.
-// TODO(crbug.com/40888582): Fix flakiness.
-- (void)DISABLED_testClearBrowsingHistory {
-  [self addTestURLsToHistory];
-  [self openHistoryPanel];
-
-  [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      grey_accessibilityID(kHistoryTableViewIdentifier)];
-  [ChromeEarlGreyUI assertHistoryHasNoEntries];
-}
-
-// Tests clear browsing history.
 - (void)testClearBrowsingHistorySwipeDownDismiss {
   [self addTestURLsToHistory];
   [self openHistoryPanel];
@@ -420,12 +408,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #pragma mark Multiwindow
 
 - (void)testHistorySyncInMultiwindow {
-  if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    // History UI doesn't appear in the newly created window.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -436,8 +418,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Open history panel in a second window
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
-  [ChromeEarlGrey waitForForegroundWindowCount:2];
-
   [self openHistoryPanelInWindowWithNumber:1];
 
   // Assert that three history elements are present in second window.
@@ -467,6 +447,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
               _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
   // Open history panel in first window also.
+  [ChromeEarlGrey closeWindowWithNumber:1];
   [self openHistoryPanelInWindowWithNumber:0];
 
   // Assert that three history elements are present in first window.
