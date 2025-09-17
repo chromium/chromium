@@ -45,11 +45,15 @@ public class ComposeBoxQueryControllerBridge {
         ComposeBoxQueryControllerBridgeJni.get().notifySessionAbandoned(mNativeInstance);
     }
 
-    /** Add the given file to the current session. */
-    void addFile(String fileName, String fileType, byte[] fileData) {
+    /**
+     * Add the given file to the current session.
+     *
+     * @return unique token representig the file, used to manipulate added files.
+     */
+    String addFile(String fileName, String fileType, byte[] fileData) {
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(fileData.length);
         byteBuffer.put(fileData);
-        ComposeBoxQueryControllerBridgeJni.get()
+        return ComposeBoxQueryControllerBridgeJni.get()
                 .addFile(mNativeInstance, fileName, fileType, byteBuffer);
     }
 
@@ -71,7 +75,7 @@ public class ComposeBoxQueryControllerBridge {
         void notifySessionAbandoned(long nativeInstance);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
-        void addFile(
+        String addFile(
                 long nativeInstance,
                 @JniType("std::string") String fileName,
                 @JniType("std::string") String fileType,

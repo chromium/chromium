@@ -54,7 +54,8 @@ void ComposeboxQueryControllerBridge::NotifySessionAbandoned(JNIEnv* env) {
   query_controller_->NotifySessionAbandoned();
 }
 
-void ComposeboxQueryControllerBridge::AddFile(
+base::android::ScopedJavaLocalRef<jobject>
+ComposeboxQueryControllerBridge::AddFile(
     JNIEnv* env,
     std::string& file_name,
     std::string& file_type,
@@ -90,6 +91,8 @@ void ComposeboxQueryControllerBridge::AddFile(
       lens::ContextualInput(std::move(file_data_vector), mime_type));
   query_controller_->StartFileUploadFlow(file_token, std::move(input_data),
                                          std::move(image_options));
+
+  return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
 }
 
 GURL ComposeboxQueryControllerBridge::GetAimUrl(JNIEnv* env,
