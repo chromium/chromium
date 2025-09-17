@@ -421,10 +421,17 @@ enabled, this may be a security bug; please report any such bugs
 
 ### What privileges does the Debugger permission grant an extension? What privileges should it lack?
 
-The debugger permission should grant an extension the power to automate any
-website. This may extend to driving interactions with that site which are not
-possible using JavaScript on the site itself, but instead normally require
-user interaction with Chrome features.
+The debugger permission grants an extension with access to the Chrome DevTools
+Protocol, which is a powerful API surface that has many different capabilities.
+This allows an extension to automate or debug any website, and may extend to
+driving interactions with that site which are not possible using JavaScript on
+the site itself, but instead normally require user interaction with Chrome
+features.
+
+Through the use of certain methods in the Chrome DevTools Protocol, the
+debugger API *may* in some cases also sidestep other typical restrictions, such
+as host permissions or file access. This is the reason for the broad security
+warning associated with the debugger API.
 
 The debugger permission does not allow automating parts of the Chromium
 browser unrelated to websites. Automating WebUI or settings, installing
