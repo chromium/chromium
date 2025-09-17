@@ -6,9 +6,12 @@
 
 #include <set>
 
+#include "base/barrier_closure.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -110,9 +113,9 @@ void OnStartTracingDoneCallback(
 
 class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
  public:
-  explicit ProcessMemoryMetricsEmitterFake(base::RunLoop* run_loop,
+  explicit ProcessMemoryMetricsEmitterFake(base::OnceClosure quit_closure,
                                            ukm::TestUkmRecorder* recorder)
-      : run_loop_(run_loop), recorder_(recorder) {}
+      : quit_closure_(std::move(quit_closure)), recorder_(recorder) {}
 
   ProcessMemoryMetricsEmitterFake(const ProcessMemoryMetricsEmitterFake&) =
       delete;
@@ -129,31 +132,12 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
     EXPECT_TRUE(success);
     ProcessMemoryMetricsEmitter::ReceivedMemoryDump(std::move(process_infos),
                                                     success, std::move(ptr));
-    finished_memory_dump_ = true;
-    QuitIfFinished();
-  }
-
-  absl::flat_hash_map<base::ProcessId, ProcessInfo> ReceivedProcessInfos(
-      std::vector<ProcessInfo> process_infos) override {
-    auto process_info_map = ProcessMemoryMetricsEmitter::ReceivedProcessInfos(
-        std::move(process_infos));
-    finished_process_info_ = true;
-    QuitIfFinished();
-    return process_info_map;
-  }
-
-  void QuitIfFinished() {
-    if (!finished_memory_dump_ || !finished_process_info_)
-      return;
-    if (run_loop_)
-      run_loop_->Quit();
+    std::move(quit_closure_).Run();
   }
 
   ukm::UkmRecorder* GetUkmRecorder() override { return recorder_; }
 
-  raw_ptr<base::RunLoop> run_loop_;
-  bool finished_memory_dump_ = false;
-  bool finished_process_info_ = false;
+  base::OnceClosure quit_closure_;
   raw_ptr<ukm::TestUkmRecorder> recorder_;
 };
 
@@ -594,9 +578,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   // Intentionally let emitter leave scope to check that it correctly keeps
   // itself alive.
   {
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
   }
 
@@ -648,9 +631,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   // Intentionally let emitter leave scope to check that it correctly keeps
   // itself alive.
   {
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
   }
 
@@ -697,9 +679,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   // Intentionally let emitter leave scope to check that it correctly keeps
   // itself alive.
   {
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
   }
 
@@ -744,9 +725,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 
   {
     base::RunLoop run_loop;
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
 
     run_loop.Run();
@@ -788,10 +768,11 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   base::RunLoop run_loop;
 
   int count = 3;
+  // Only the last emitter should stop the run loop.
+  auto quit_closure = base::BarrierClosure(count, run_loop.QuitClosure());
   for (int i = 0; i < count; ++i) {
-    // Only the last emitter should stop the run loop.
     auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
-        (i == count - 1) ? &run_loop : nullptr, test_ukm_recorder_.get());
+        quit_closure, test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
   }
 
@@ -834,9 +815,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   base::HistogramTester histogram_tester;
   {
     base::RunLoop run_loop;
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
     run_loop.Run();
   }
@@ -853,9 +833,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   tab2->WasShown();
   {
     base::RunLoop run_loop;
-    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-        new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                            test_ukm_recorder_.get()));
+    auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+        run_loop.QuitClosure(), test_ukm_recorder_.get());
     emitter->FetchAndEmitProcessMemoryMetrics();
     run_loop.Run();
   }
@@ -904,9 +883,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
     base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     {
-      scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
-          new ProcessMemoryMetricsEmitterFake(&run_loop,
-                                              test_ukm_recorder_.get()));
+      auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+          run_loop.QuitClosure(), test_ukm_recorder_.get());
       emitter->FetchAndEmitProcessMemoryMetrics();
     }
 

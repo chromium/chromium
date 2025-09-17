@@ -13,7 +13,6 @@
 #include "base/allocator/buildflags.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
@@ -52,6 +51,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
@@ -76,6 +76,9 @@ using memory_instrumentation::GlobalMemoryDump;
 using memory_instrumentation::HistogramProcessType;
 using memory_instrumentation::HistogramProcessTypeToString;
 using memory_instrumentation::kMemoryHistogramPrefix;
+using performance_manager::FrameNode;
+using performance_manager::PageNode;
+using performance_manager::ProcessNode;
 using ukm::builders::Memory_Experimental;
 
 namespace {
@@ -1301,7 +1304,7 @@ void ProcessMemoryMetricsEmitter::FetchAndEmitProcessMemoryMetrics() {
   performance_manager::Graph* graph =
       performance_manager::PerformanceManager::GetGraph();
   absl::flat_hash_map<base::ProcessId, ProcessInfo> process_infos =
-      ReceivedProcessInfos(GetProcessToPageInfoMap(graph));
+      GetProcessToPageInfoMap(graph);
 
   // The callback keeps this object alive until the callback is invoked.
   auto callback =
@@ -1323,22 +1326,6 @@ void ProcessMemoryMetricsEmitter::FetchAndEmitProcessMemoryMetrics() {
 }
 
 ProcessMemoryMetricsEmitter::~ProcessMemoryMetricsEmitter() = default;
-
-absl::flat_hash_map<base::ProcessId, ProcessMemoryMetricsEmitter::ProcessInfo>
-ProcessMemoryMetricsEmitter::ReceivedProcessInfos(
-    std::vector<ProcessInfo> process_infos) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  absl::flat_hash_map<base::ProcessId, ProcessInfo> process_info_by_pid;
-  process_info_by_pid.reserve(process_infos.size());
-
-  // If there are duplicate pids, keep the latest ProcessInfo.
-  for (ProcessInfo& process_info : process_infos) {
-    base::ProcessId pid = process_info.pid;
-    process_info_by_pid[pid] = std::move(process_info);
-  }
-  return process_info_by_pid;
-}
 
 ukm::UkmRecorder* ProcessMemoryMetricsEmitter::GetUkmRecorder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1689,9 +1676,8 @@ namespace {
 
 // Returns true iff the given |process| is responsible for hosting the
 // main-frame of the given |page|.
-bool HostsMainFrame(const performance_manager::ProcessNode* process,
-                    const performance_manager::PageNode* page) {
-  const performance_manager::FrameNode* main_frame = page->GetMainFrameNode();
+bool HostsMainFrame(const ProcessNode* process, const PageNode* page) {
+  const FrameNode* main_frame = page->GetMainFrameNode();
   if (main_frame == nullptr) {
     // |process| can't host a frame that doesn't exist.
     return false;
@@ -1702,21 +1688,39 @@ bool HostsMainFrame(const performance_manager::ProcessNode* process,
 
 }  // namespace
 
-std::vector<ProcessMemoryMetricsEmitter::ProcessInfo>
+absl::flat_hash_map<base::ProcessId, ProcessMemoryMetricsEmitter::ProcessInfo>
 ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
     performance_manager::Graph* graph) {
-  std::vector<ProcessInfo> process_infos;
+  bool emit_metrics_for_all_processes = pid_scope_ == base::kNullProcessId;
+
   // Assign page nodes unique IDs within this lookup only.
-  base::flat_map<const performance_manager::PageNode*, uint64_t> page_id_map;
-  for (const performance_manager::ProcessNode* process_node :
-       graph->GetAllProcessNodes()) {
+  absl::flat_hash_map<const PageNode*, uint64_t> page_id_map;
+
+  const performance_manager::Graph::NodeSetView<const ProcessNode*>
+      process_nodes = graph->GetAllProcessNodes();
+
+  absl::flat_hash_map<base::ProcessId, ProcessInfo> process_infos;
+  process_infos.reserve(process_nodes.size());
+  for (const ProcessNode* process_node : process_nodes) {
     if (process_node->GetProcessId() == base::kNullProcessId)
       continue;
 
+    if (!emit_metrics_for_all_processes &&
+        pid_scope_ != process_node->GetProcessId()) {
+      continue;
+    }
+
     // First add all processes and their basic information.
-    ProcessInfo& process_info = process_infos.emplace_back();
+    ProcessInfo process_info;
     process_info.pid = process_node->GetProcessId();
     process_info.launch_time = process_node->GetLaunchTime();
+
+    // After this point always add `process_info` to the map before continuing
+    // the loop.
+    auto save_process_info = absl::Cleanup([&] {
+      // If there are duplicate pids, keep the latest ProcessInfo.
+      process_infos[process_node->GetProcessId()] = std::move(process_info);
+    });
 
     // Then add information about their associated page nodes. Only renderers
     // are associated with page nodes.
@@ -1724,13 +1728,24 @@ ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
       continue;
     }
 
-    base::flat_set<const performance_manager::PageNode*> page_nodes =
+    base::flat_set<const PageNode*> page_nodes =
         performance_manager::GraphOperations::GetAssociatedPageNodes(
             process_node);
+
+    // PageInfo is used for per-tab metrics, which are only emitted when
+    // measuring multiple processes, and some per-url metrics that are only
+    // emitted when there's a single page.
+    if (!emit_metrics_for_all_processes && page_nodes.size() != 1) {
+      continue;
+    }
+
     const base::TimeTicks now = base::TimeTicks::Now();
-    for (const performance_manager::PageNode* page_node : page_nodes) {
-      if (page_node->GetUkmSourceID() == ukm::kInvalidSourceId)
+
+    process_info.page_infos.reserve(page_nodes.size());
+    for (const PageNode* page_node : page_nodes) {
+      if (page_node->GetUkmSourceID() == ukm::kInvalidSourceId) {
         continue;
+      }
 
       // Get or generate the tab id.
       uint64_t& tab_id = page_id_map[page_node];

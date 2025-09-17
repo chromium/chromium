@@ -63,10 +63,9 @@ class ProcessMemoryMetricsEmitter
       bool success,
       std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
 
-  // Virtual for testing. Callback invoked when the performance_manager
-  // returns info for each process.
+  // Virtual for testing. Gets info about each process from performance_manager.
   virtual absl::flat_hash_map<base::ProcessId, ProcessInfo>
-  ReceivedProcessInfos(std::vector<ProcessInfo> process_infos);
+  GetProcessToPageInfoMap(performance_manager::Graph* graph);
 
   // Virtual for testing.
   virtual ukm::UkmRecorder* GetUkmRecorder();
@@ -83,9 +82,6 @@ class ProcessMemoryMetricsEmitter
 
  private:
   friend class base::RefCountedThreadSafe<ProcessMemoryMetricsEmitter>;
-
-  static std::vector<ProcessInfo> GetProcessToPageInfoMap(
-      performance_manager::Graph* graph);
 
   // Specify this pid_scope_ to only record the memory metrics of the specific
   // process.

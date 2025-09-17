@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -16,9 +17,10 @@
 #include "base/process/process_handle.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "components/performance_manager/test_support/graph_test_harness.h"
+#include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/test/browser_task_environment.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -26,6 +28,8 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
@@ -37,16 +41,17 @@ using HistogramProcessType = memory_instrumentation::HistogramProcessType;
 using ProcessMemoryDumpPtr =
     memory_instrumentation::mojom::ProcessMemoryDumpPtr;
 using OSMemDumpPtr = memory_instrumentation::mojom::OSMemDumpPtr;
-using PageInfo = ProcessMemoryMetricsEmitter::PageInfo;
 using ProcessType = memory_instrumentation::mojom::ProcessType;
-using ProcessInfo = ProcessMemoryMetricsEmitter::ProcessInfo;
-using ProcessInfoVector = std::vector<ProcessInfo>;
 
 namespace {
 
-using UkmEntry = ukm::builders::Memory_Experimental;
+using performance_manager::FrameNodeImpl;
+using performance_manager::PageNodeImpl;
+using performance_manager::TestNodeWrapper;
+using performance_manager::TestProcessNodeImpl;
 
 using MetricMap = base::flat_map<const char*, int64_t>;
+using UkmEntry = ukm::builders::Memory_Experimental;
 
 int GetResidentValue(const MetricMap& metric_map) {
   auto it = metric_map.find("Resident");
@@ -54,8 +59,8 @@ int GetResidentValue(const MetricMap& metric_map) {
   return it->second;
 }
 
-// Provide fake to surface ReceivedMemoryDump and ReceivedProcessInfos to public
-// visibility.
+// Provide fake to surface ReceivedMemoryDump and GetProcessToPageInfoMap to
+// public visibility.
 class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
  public:
   explicit ProcessMemoryMetricsEmitterFake(
@@ -73,19 +78,8 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
   ProcessMemoryMetricsEmitterFake& operator=(
       const ProcessMemoryMetricsEmitterFake&) = delete;
 
-  void ReceivedMemoryDump(
-      absl::flat_hash_map<base::ProcessId, ProcessInfo> process_infos,
-      bool success,
-      std::unique_ptr<GlobalMemoryDump> ptr) override {
-    ProcessMemoryMetricsEmitter::ReceivedMemoryDump(std::move(process_infos),
-                                                    success, std::move(ptr));
-  }
-
-  absl::flat_hash_map<base::ProcessId, ProcessInfo> ReceivedProcessInfos(
-      ProcessInfoVector process_infos) override {
-    return ProcessMemoryMetricsEmitter::ReceivedProcessInfos(
-        std::move(process_infos));
-  }
+  using ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap;
+  using ProcessMemoryMetricsEmitter::ReceivedMemoryDump;
 
   ukm::UkmRecorder* GetUkmRecorder() override { return ukm_recorder_; }
 
@@ -601,69 +595,11 @@ MetricMap GetExpectedProcessMetrics(HistogramProcessType ptype) {
   NOTREACHED();
 }
 
-ProcessInfoVector GetProcessInfo(ukm::TestUkmRecorder& ukm_recorder) {
-  ProcessInfoVector process_infos;
-
-  // Process 200 always has no URLs.
-  {
-    ProcessInfo process_info;
-    process_info.pid = 200;
-    process_infos.push_back(std::move(process_info));
-  }
-
-  // Process kTestRendererPid201 always has 1 URL
-  {
-    ProcessInfo process_info;
-    process_info.pid = kTestRendererPid201;
-    ukm::SourceId first_source_id = ukm::UkmRecorder::GetNewSourceID();
-    ukm_recorder.UpdateSourceURL(first_source_id,
-                                 GURL("http://www.url201.com/"));
-    PageInfo page_info;
-
-    page_info.ukm_source_id = first_source_id;
-    page_info.tab_id = 201;
-    page_info.hosts_main_frame = true;
-    page_info.is_visible = true;
-    page_info.time_since_last_visibility_change = base::Seconds(15);
-    page_info.time_since_last_navigation = base::Seconds(20);
-    process_info.page_infos.push_back(page_info);
-    process_infos.push_back(std::move(process_info));
-  }
-
-  // Process kTestRendererPid202 always has 2 URL
-  {
-    ProcessInfo process_info;
-    process_info.pid = kTestRendererPid202;
-    ukm::SourceId first_source_id = ukm::UkmRecorder::GetNewSourceID();
-    ukm::SourceId second_source_id = ukm::UkmRecorder::GetNewSourceID();
-    ukm_recorder.UpdateSourceURL(first_source_id,
-                                 GURL("http://www.url2021.com/"));
-    ukm_recorder.UpdateSourceURL(second_source_id,
-                                 GURL("http://www.url2022.com/"));
-    PageInfo page_info1;
-    page_info1.ukm_source_id = first_source_id;
-    page_info1.tab_id = 2021;
-    page_info1.hosts_main_frame = true;
-    page_info1.time_since_last_visibility_change = base::Seconds(11);
-    page_info1.time_since_last_navigation = base::Seconds(21);
-    PageInfo page_info2;
-    page_info2.ukm_source_id = second_source_id;
-    page_info2.tab_id = 2022;
-    page_info2.hosts_main_frame = true;
-    page_info2.time_since_last_visibility_change = base::Seconds(12);
-    page_info2.time_since_last_navigation = base::Seconds(22);
-    process_info.page_infos.push_back(std::move(page_info1));
-    process_info.page_infos.push_back(std::move(page_info2));
-
-    process_infos.push_back(std::move(process_info));
-  }
-  return process_infos;
-}
-
 }  // namespace
 
 class ProcessMemoryMetricsEmitterTest
-    : public testing::TestWithParam<HistogramProcessType> {
+    : public performance_manager::GraphTestHarness,
+      public ::testing::WithParamInterface<HistogramProcessType> {
  public:
   ProcessMemoryMetricsEmitterTest() = default;
 
@@ -675,6 +611,77 @@ class ProcessMemoryMetricsEmitterTest
   ~ProcessMemoryMetricsEmitterTest() override = default;
 
  protected:
+  // TestNodeWrapper<NodeType> classes don't have a common base class, so they
+  // need to be held in a variant.
+  using AnyNodeWrapper = std::variant<TestNodeWrapper<FrameNodeImpl>,
+                                      TestNodeWrapper<PageNodeImpl>,
+                                      TestNodeWrapper<TestProcessNodeImpl>>;
+
+  // Creates a set of graph nodes for complex tests.
+  std::vector<AnyNodeWrapper> CreateTestGraphNodes() {
+    std::vector<AnyNodeWrapper> nodes;
+
+    // Process 200 always has no URLs. Tests don't call PopulateRendererMetrics
+    // for this PID so it should never appear in memory dumps. (This tests that
+    // nothing gets confused if a process exists but doesn't appear in the
+    // dumps, such as if it was created but not registered with the memory
+    // instrumentation yet when the dump request was sent.)
+    {
+      auto process_node = CreateNode<TestProcessNodeImpl>();
+      process_node->SetProcessWithPid(200);
+      nodes.push_back(std::move(process_node));
+    }
+
+    // Process kTestRendererPid201 always has 1 URL
+    {
+      auto process_node = CreateNode<TestProcessNodeImpl>();
+      process_node->SetProcessWithPid(kTestRendererPid201);
+      ukm::SourceId first_source_id = ukm::UkmRecorder::GetNewSourceID();
+      test_ukm_recorder_.UpdateSourceURL(first_source_id,
+                                         GURL("http://www.url201.com/"));
+
+      auto page_node = CreateNode<PageNodeImpl>();
+      page_node->SetUkmSourceId(first_source_id);
+      page_node->SetIsVisible(true);
+      auto frame_node =
+          CreateFrameNodeAutoId(process_node.get(), page_node.get());
+
+      nodes.push_back(std::move(process_node));
+      nodes.push_back(std::move(page_node));
+      nodes.push_back(std::move(frame_node));
+    }
+
+    // Process kTestRendererPid202 always has 2 URL
+    {
+      auto process_node = CreateNode<TestProcessNodeImpl>();
+      process_node->SetProcessWithPid(kTestRendererPid202);
+      ukm::SourceId first_source_id = ukm::UkmRecorder::GetNewSourceID();
+      ukm::SourceId second_source_id = ukm::UkmRecorder::GetNewSourceID();
+      test_ukm_recorder_.UpdateSourceURL(first_source_id,
+                                         GURL("http://www.url2021.com/"));
+      test_ukm_recorder_.UpdateSourceURL(second_source_id,
+                                         GURL("http://www.url2022.com/"));
+
+      auto page_node1 = CreateNode<PageNodeImpl>();
+      page_node1->SetUkmSourceId(first_source_id);
+      auto frame_node1 =
+          CreateFrameNodeAutoId(process_node.get(), page_node1.get());
+
+      auto page_node2 = CreateNode<PageNodeImpl>();
+      page_node2->SetUkmSourceId(second_source_id);
+      auto frame_node2 =
+          CreateFrameNodeAutoId(process_node.get(), page_node2.get());
+
+      nodes.push_back(std::move(process_node));
+      nodes.push_back(std::move(page_node1));
+      nodes.push_back(std::move(frame_node1));
+      nodes.push_back(std::move(page_node2));
+      nodes.push_back(std::move(frame_node2));
+    }
+
+    return nodes;
+  }
+
   void CheckMemoryUkmEntryMetrics(const std::vector<MetricMap>& expected,
                                   size_t expected_total_memory_entries = 1u) {
     const auto& entries =
@@ -699,7 +706,6 @@ class ProcessMemoryMetricsEmitterTest
     EXPECT_EQ(expected.size() + expected_total_memory_entries, entries.size());
   }
 
-  content::BrowserTaskEnvironment task_environment_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 
@@ -713,7 +719,7 @@ TEST_P(ProcessMemoryMetricsEmitterTest, CollectsSingleProcessUKMs) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(ProcessInfoVector()), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   std::vector<MetricMap> expected_entries;
@@ -745,14 +751,13 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsExtensionProcessUKMs) {
 
   // Need a ProcessInfo with the correct PID for the GetProcessUptime fake,
   // which will override the `launch_time` with fixed test data.
-  ProcessInfoVector process_infos(1);
-  process_infos[0].pid = 401;
-  process_infos[0].launch_time = base::TimeTicks::Now();
+  auto process_node = CreateNode<TestProcessNodeImpl>();
+  process_node->SetProcessWithPid(401);
 
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(std::move(process_infos)), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   std::vector<MetricMap> expected_entries;
@@ -788,7 +793,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsSingleDump) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(ProcessInfoVector()), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   CheckMemoryUkmEntryMetrics(entries_metrics);
@@ -819,7 +824,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsManyDumps) {
       entries_metrics.push_back(expected_metrics);
     }
     emitter->ReceivedMemoryDump(
-        emitter->ReceivedProcessInfos(ProcessInfoVector()), true,
+        emitter->GetProcessToPageInfoMap(graph()), true,
         GlobalMemoryDump::MoveFrom(std::move(global_dump)));
   }
 
@@ -833,10 +838,12 @@ TEST_F(ProcessMemoryMetricsEmitterTest, GlobalDumpFailed) {
   AddPageMetrics(expected_metrics);
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid201);
 
+  auto nodes = CreateTestGraphNodes();
+
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), false,
+      emitter->GetProcessToPageInfoMap(graph()), false,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Should not record any metrics since the memory dump failed, and don't
@@ -853,10 +860,12 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsRendererProcessUKMs) {
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid202);
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid203);
 
+  auto nodes = CreateTestGraphNodes();
+
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
@@ -905,10 +914,12 @@ TEST_F(ProcessMemoryMetricsEmitterTest,
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid202);
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid203);
 
+  auto nodes = CreateTestGraphNodes();
+
   auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
       kTestRendererPid201, test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
@@ -938,10 +949,12 @@ TEST_F(ProcessMemoryMetricsEmitterTest,
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid202);
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid203);
 
+  auto nodes = CreateTestGraphNodes();
+
   auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
       kTestRendererPid202, test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Check that if there are two URLs, neither is emitted.
@@ -970,10 +983,12 @@ TEST_F(ProcessMemoryMetricsEmitterTest, SingleMeasurement_ProcessInfoNotFound) {
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid202);
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid203);
 
+  auto nodes = CreateTestGraphNodes();
+
   auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
       kTestRendererPid203, test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
@@ -1060,11 +1075,13 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
       "Memory.Total.RendererPrivateMemoryFootprintVisibleOrHigherPriority", 0);
 #endif
 
+  auto nodes = CreateTestGraphNodes();
+
   // Simulate some metrics emission.
-  scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter =
+  auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Check that the expected values have been emitted to histograms.
@@ -1145,12 +1162,13 @@ TEST_F(ProcessMemoryMetricsEmitterTest,
   // No histograms should have been recorded yet.
   histograms.ExpectTotalCount("Memory.Renderer.PrivateMemoryFootprint", 0);
 
+  auto nodes = CreateTestGraphNodes();
+
   // Simulate some metrics emission.
-  scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter =
-      base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(kTestRendererPid201,
-                                                            test_ukm_recorder_);
+  auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
+      kTestRendererPid201, test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Histograms should only be emitted when measuring all processes.
@@ -1168,11 +1186,13 @@ TEST_F(ProcessMemoryMetricsEmitterTest, GpuHistogramsAreRecorded) {
   MetricMap expected_metrics = GetExpectedGpuMetrics();
   PopulateGpuMetrics(global_dump, expected_metrics);
 
+  auto nodes = CreateTestGraphNodes();
+
   // Simulate some metrics emission.
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Check that the expected values have been emitted to histograms.
@@ -1190,6 +1210,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, MainFramePMFEmitted) {
   AddPageMetrics(expected_metrics);
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid201);
 
+  auto nodes = CreateTestGraphNodes();
+
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::Memory_TabFootprint::kEntryName);
   ASSERT_EQ(entries.size(), 0u);
@@ -1197,7 +1219,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, MainFramePMFEmitted) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   entries = test_ukm_recorder_.GetEntriesByName(
@@ -1216,6 +1238,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest,
   AddPageMetrics(expected_metrics);
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid201);
 
+  auto nodes = CreateTestGraphNodes();
+
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::Memory_TabFootprint::kEntryName);
   ASSERT_EQ(entries.size(), 0u);
@@ -1223,7 +1247,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest,
   auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
       kTestRendererPid201, test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_)), true,
+      emitter->GetProcessToPageInfoMap(graph()), true,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Per-tab UKM's should only be emitted when measuring all processes.
