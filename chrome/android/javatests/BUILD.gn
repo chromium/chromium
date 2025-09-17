@@ -1086,6 +1086,17 @@ android_library("chrome_test_java_org.chromium.chrome.browser.privacy") {
   deps = [ ":chrome_test_java_helper" ]
 }
 
+android_library("chrome_test_java_org.chromium.chrome.browser.prefs") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [ "src/org/chromium/chrome/browser/prefs/LocalStatePrefsTest.java" ]
+
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/prefs/android:java",
+  ]
+}
+
 android_library("chrome_test_java_org.chromium.chrome.browser.profiles") {
   resources_package = "org.chromium.chrome.test"
 

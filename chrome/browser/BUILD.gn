@@ -3445,6 +3445,7 @@ static_library("browser") {
       "//chrome/browser/policy/android:jni_headers",
       "//chrome/browser/preferences:android",
       "//chrome/browser/prefetch/android:jni_headers",
+      "//chrome/browser/prefs/android:jni_cc",
       "//chrome/browser/preloading/android:jni_headers",
       "//chrome/browser/privacy:jni_headers",
       "//chrome/browser/privacy_sandbox/android:jni_headers",
