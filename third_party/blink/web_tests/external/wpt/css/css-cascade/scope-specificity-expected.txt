@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] @scope (#main) { & .b {  } } and :where(#main) .b
+  assert_equals: unscoped + scoped expected "2" but got "1"
+Harness: the test ran to completion.
+

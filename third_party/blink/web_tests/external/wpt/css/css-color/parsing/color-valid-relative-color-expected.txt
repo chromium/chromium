@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['color'] = "oklab(from color-mix(in oklab, oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)" should set the property value
+  Colors do not match.\nActual:   oklab(from color-mix(in oklab, oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)\nExpected: oklab(from color-mix(oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha).\nError: assert_equals: Color format is correct. expected "oklab(from color-mix(oklab(  ), oklab(  )) l a b / alpha)" but got "oklab(from color-mix(in oklab, oklab(  ), oklab(  )) l a b / alpha)"
 [FAIL] e.style['color'] = "color(from color(display-p3-linear 0.7 0.5 0.3) display-p3-linear r g b)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from color(display-p3-linear 0.7 0.5 0.3) display-p3-linear r g b / alpha)" should set the property value

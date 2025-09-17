@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] properties of pseudo elements in update callback
+  assert_equals: ::view-transition expected "absolute" but got "fixed"
+[FAIL] properties of pseudo elements outside of transition
+  assert_equals: expected "absolute" but got "fixed"
+Harness: the test ran to completion.
+

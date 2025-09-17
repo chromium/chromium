@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test anchor's type getter when type attribute missing
+  assert_equals: expected (string) "" but got (undefined) undefined
+Harness: the test ran to completion.
+

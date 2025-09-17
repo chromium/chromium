@@ -1,0 +1,67 @@
+This is a wdspec test.
+[FAIL] test_params_contexts_invalid_type[42]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_invalid_type[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_invalid_type[None]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_invalid_type[foo]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_invalid_type[value4]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_empty_list
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_entry_invalid_type[42]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_entry_invalid_type[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_entry_invalid_type[None]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_entry_invalid_type[value3]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_entry_invalid_type[value4]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_entry_invalid_value
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_iframe
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_invalid_type[42]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_invalid_type[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_invalid_type[None]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_invalid_type[foo]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_invalid_type[value4]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_empty_list
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_entry_invalid_type[42]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_entry_invalid_type[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_entry_invalid_type[None]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_entry_invalid_type[value3]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_entry_invalid_type[value4]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_entry_invalid_value[]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_contexts_entry_invalid_value[somestring]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_contexts_and_user_contexts
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_agent_missing
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_agent_invalid_type[42]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_agent_invalid_type[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_agent_invalid_type[value2]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_params_user_agent_invalid_type[value3]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+Harness: the test ran to completion.
+

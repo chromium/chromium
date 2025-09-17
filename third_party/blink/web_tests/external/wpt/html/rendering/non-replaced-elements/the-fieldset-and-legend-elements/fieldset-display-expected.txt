@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] fieldset with display: run-in
-  assert_equals: display: run-in is not supported expected "run-in" but got "block"
 [FAIL] fieldset with display: ruby-base
   assert_equals: display: ruby-base is not supported expected "ruby-base" but got "block"
 [FAIL] fieldset with display: ruby-text

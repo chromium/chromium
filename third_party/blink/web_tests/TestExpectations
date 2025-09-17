@@ -2974,6 +2974,24 @@ crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-004.html [ Fail
 crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-005.html [ Failure ]
 crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-006.html [ Failure ]
 
+external/wpt/css/css-cascade/scope-visited.html [ Failure ]
+external/wpt/css/css-overflow/line-clamp/discard/discard-multicol-001.html [ Failure ]
+external/wpt/css/css-overflow/line-clamp/discard/discard-multicol-002.html [ Failure ]
+external/wpt/css/css-overflow/line-clamp/discard/discard-multicol-003.html [ Failure ]
+external/wpt/css/css-overflow/line-clamp/discard/discard-multicol-004.html [ Failure ]
+[ Mac15 ] external/wpt/css/css-text/text-autospace/text-autospace-004.html [ Failure ]
+[ Mac15-arm64 ] external/wpt/css/css-text/text-autospace/text-autospace-004.html [ Failure ]
+external/wpt/html/rendering/sections/headingoffset-and-headingreset.html [ Failure ]
+external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue_function/lang_object/lang_attribute.html [ Failure ]
+external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue_function/lang_object/lang_color.html [ Failure ]
+external/wpt/wai-aria/role/roles.html [ Timeout ]
+
+# [0915/215623.786515:FATAL:content/browser/renderer_host/render_frame_host_impl.cc:8979] DCHECK failed: has_before_unload_handler_ != present (0 vs. 0)
+external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_allow_top_navigation_by_user_activation_with_user_gesture.html [ Failure Crash ]
+external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_top_navigation_with_user_gesture_after_failure.tentative.html [ Failure Crash ]
+external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_top_navigation_with_user_gesture.tentative.html [ Failure Crash ]
+external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_top_navigation_without_user_gesture_same_site.tentative.html [ Failure Crash ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/444060885 [ Mac13 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Timeout ]
 crbug.com/443965740 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?9-last [ Crash Pass ]
@@ -8811,7 +8829,7 @@ crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-031.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-032.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-033.tentative.html [ Failure ]
-crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-035.tentative.html [ Failure ]
+crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-035.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-001.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-002.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-003.tentative.html [ Failure ]
@@ -8831,7 +8849,7 @@ crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-022.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-023.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-024.tentative.html [ Failure ]
-crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-025.tentative.html [ Failure ]
+crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-025.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-027.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-028.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-029.tentative.html [ Failure ]

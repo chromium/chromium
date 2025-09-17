@@ -1,0 +1,11 @@
+This is a wdspec test.
+[FAIL] test_contexts
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_multiple_contexts
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_iframe[same_origin]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+[FAIL] test_iframe[cross_origin]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'emulation.setUserAgentOverride'.)
+Harness: the test ran to completion.
+
