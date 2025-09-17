@@ -101,7 +101,7 @@ BASE_FEATURE(kDestroySystemProfiles, base::FEATURE_DISABLED_BY_DEFAULT);
 // certain KeyedServices before they are properly initialized, but is flagged
 // guarded in case it causes unexpected issues.
 BASE_FEATURE(kDelayOnProfileCreatedForFullBrowserTransition,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables showing the email of the flex org admin that setup CBCM in the
 // management disclosures.
