@@ -87,7 +87,9 @@ int main(int argc, char const* argv[]) {
     remoting::RemotingClient remoting_client(
         base::BindPostTask(io_task_executor.task_runner(),
                            run_loop.QuitClosure()),
-        &frame_consumer, url_loader_factory_owner.GetURLLoaderFactory());
+        &frame_consumer,
+        /*audio_stream_consumer=*/nullptr,
+        url_loader_factory_owner.GetURLLoaderFactory());
 
     CLIENT_LOG << "Starting session for support host: " << code;
     remoting_client.StartSession(code, {access_token, user_email});

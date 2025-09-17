@@ -62,7 +62,8 @@ void RemotingClientIOProxy::StartCrdClient(
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindOnce(&RemotingClientIOProxy::HandleCrdSessionEnded,
                          weak_factory_.GetWeakPtr())),
-      frame_consumer_.get(), shared_url_loader_factory_);
+      frame_consumer_.get(),
+      /*audio_stream_consumer=*/nullptr, shared_url_loader_factory_);
 
   VLOG(1) << "[Boca] Starting CRD client for teacher";
   remoting_client_->StartSession(crd_connection_code,

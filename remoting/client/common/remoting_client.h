@@ -35,6 +35,7 @@ class OAuthTokenGetter;
 class ClientStatusObserver;
 
 namespace protocol {
+class AudioStub;
 class ConnectionToHost;
 class FrameConsumer;
 class SessionManager;
@@ -49,6 +50,7 @@ class RemotingClient : public SignalStrategy::Listener,
   RemotingClient(
       base::OnceClosure quit_closure,
       protocol::FrameConsumer* frame_consumer,
+      base::WeakPtr<protocol::AudioStub> audio_stream_consumer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   RemotingClient(const RemotingClient&) = delete;
@@ -120,6 +122,7 @@ class RemotingClient : public SignalStrategy::Listener,
 
   // |frame_consumer_| must outlive |video_renderer_|.
   const raw_ptr<protocol::FrameConsumer> frame_consumer_;
+  base::WeakPtr<protocol::AudioStub> audio_stream_consumer_;
 
   // Session related members.
   std::unique_ptr<protocol::ConnectionToHost> connection_;

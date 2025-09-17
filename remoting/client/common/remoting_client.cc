@@ -16,6 +16,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/directory_service_client.h"
@@ -58,9 +60,11 @@ constexpr std::int32_t kMinBitrateBps = 10485760;
 RemotingClient::RemotingClient(
     base::OnceClosure quit_closure,
     protocol::FrameConsumer* frame_consumer,
+    base::WeakPtr<protocol::AudioStub> audio_stream_consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : quit_closure_(std::move(quit_closure)),
       frame_consumer_(frame_consumer),
+      audio_stream_consumer_(std::move(audio_stream_consumer)),
       url_loader_factory_(url_loader_factory) {
   CHECK(frame_consumer_);
 }
@@ -149,8 +153,10 @@ void RemotingClient::StartConnection() {
 
   CLIENT_LOG << "Creating session manager...";
   auto protocol_config = protocol::CandidateSessionConfig::CreateDefault();
-  protocol_config->DisableAudioChannel();
   protocol_config->set_webrtc_supported(true);
+  if (!audio_stream_consumer_) {
+    protocol_config->DisableAudioChannel();
+  }
   session_manager_ =
       std::make_unique<protocol::JingleSessionManager>(signal_strategy_.get());
   session_manager_->set_protocol_config(std::move(protocol_config));
@@ -179,6 +185,14 @@ void RemotingClient::StartConnection() {
   connection_->set_client_stub(this);
   connection_->set_clipboard_stub(this);
   connection_->set_video_renderer(video_renderer_.get());
+  if (audio_stream_consumer_) {
+    connection_->InitializeAudio(
+        /*audio_decode_task_runner=*/base::ThreadPool::
+            CreateSingleThreadTaskRunner(
+                {base::TaskPriority::HIGHEST},
+                base::SingleThreadTaskRunnerThreadMode::DEDICATED),
+        audio_stream_consumer_);
+  }
   connection_->Connect(std::move(session), transport_context, this);
   protocol::NetworkSettings network_settings{
       protocol::NetworkSettings::NAT_TRAVERSAL_FULL};
