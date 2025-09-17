@@ -15,6 +15,11 @@ Credential::Id GenerateCredentialId() {
 
 Credential::Credential() : id(GenerateCredentialId()) {}
 
-Credential::~Credential() = default;
+Credential::Credential(const Credential& other) = default;
+Credential::Credential(Credential&& other) = default;
 
+Credential& Credential::operator=(const Credential& credential) = default;
+Credential& Credential::operator=(Credential&& credential) = default;
+
+Credential::~Credential() = default;
 }  // namespace actor_login

@@ -13,6 +13,7 @@
 #include "base/types/id_type.h"
 #include "base/types/strong_alias.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace actor_login {
 
@@ -22,6 +23,13 @@ enum CredentialType {
 
 struct Credential {
   Credential();
+
+  Credential(const Credential& other);
+  Credential(Credential&& other);
+
+  Credential& operator=(const Credential& credential);
+  Credential& operator=(Credential&& credential);
+
   ~Credential();
 
   // A unique identifier for this credential. Used for internal tracking.
@@ -38,16 +46,22 @@ struct Credential {
   // We should either provide display and non-display values, or let the caller
   // format strings to display.
   std::u16string username;
+
   // The original website or application for which this credential was saved in
   // GPM. This filed may be presented to the user.
   // TODO(crbug.com/441231531): Clarify the format.
   // We should probably provide display and non-display values, or let the
   // caller format strings to display.
   std::u16string source_site_or_app;
+
+  // The origin for which this credential was requested.
+  url::Origin request_origin;
+
   // The type of the credential used for the login process.
   // It may be presented to a user if mapped to a user-friendly localized
   // descriptor string.
   CredentialType type = kPassword;
+
   // Signal of whether any sign-in fields were seen on the page, or if APIs
   // associated with this `CredentialType` report that this login is available
   // on the provided Tab.

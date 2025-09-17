@@ -99,7 +99,7 @@ void ActorLoginDelegateImpl::GetCredentials(CredentialsOrErrorReply callback) {
   }
 
   get_credentials_helper_ = std::make_unique<ActorLoginGetCredentialsHelper>(
-      GetWebContents().GetLastCommittedURL(), client_,
+      GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin(), client_,
       base::BindOnce(&ActorLoginDelegateImpl::OnGetCredentialsCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

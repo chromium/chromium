@@ -9,6 +9,7 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace password_manager {
 class PasswordManagerClient;
@@ -21,7 +22,7 @@ class ActorLoginGetCredentialsHelper
     : public password_manager::FormFetcher::Consumer {
  public:
   ActorLoginGetCredentialsHelper(
-      const GURL& url,
+      const url::Origin& origin,
       password_manager::PasswordManagerClient* client,
       CredentialsOrErrorReply callback);
 
@@ -36,6 +37,7 @@ class ActorLoginGetCredentialsHelper
   // password_manager::FormFetcher::Consumer:
   void OnFetchCompleted() override;
 
+  url::Origin request_origin_;
   CredentialsOrErrorReply callback_;
   std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
 };

@@ -12,12 +12,14 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "url/origin.h"
 
 namespace actor_login {
 
 namespace {
 
 Credential PasswordFormToCredential(
+    url::Origin request_origin,
     const password_manager::PasswordForm& form) {
   CHECK(form.match_type);
   CHECK_NE(form.match_type.value(),
@@ -25,6 +27,7 @@ Credential PasswordFormToCredential(
   Credential credential;
   credential.username = form.username_value;
   credential.source_site_or_app = GetSourceSiteOrAppFromUrl(form.url);
+  credential.request_origin = request_origin;
   // TODO(crbug.com/434165685): Use PasswordManager to set the real value here.
   credential.immediatelyAvailableToLogin = true;
   return credential;
@@ -33,13 +36,13 @@ Credential PasswordFormToCredential(
 }  // namespace
 
 ActorLoginGetCredentialsHelper::ActorLoginGetCredentialsHelper(
-    const GURL& url,
+    const url::Origin& origin,
     password_manager::PasswordManagerClient* client,
     CredentialsOrErrorReply callback)
-    : callback_(std::move(callback)) {
+    : request_origin_(origin), callback_(std::move(callback)) {
   password_manager::PasswordFormDigest form_digest(
       password_manager::PasswordForm::Scheme::kHtml,
-      password_manager_util::GetSignonRealm(url), url);
+      password_manager_util::GetSignonRealm(origin.GetURL()), origin.GetURL());
   form_fetcher_ = std::make_unique<password_manager::FormFetcherImpl>(
       std::move(form_digest), client,
       /*should_migrate_http_passwords=*/false);
@@ -51,8 +54,11 @@ ActorLoginGetCredentialsHelper::~ActorLoginGetCredentialsHelper() = default;
 
 void ActorLoginGetCredentialsHelper::OnFetchCompleted() {
   std::vector<Credential> result;
-  std::ranges::transform(form_fetcher_->GetBestMatches(),
-                         std::back_inserter(result), &PasswordFormToCredential);
+  std::ranges::transform(
+      form_fetcher_->GetBestMatches(), std::back_inserter(result),
+      [&](const password_manager::PasswordForm& form) -> Credential {
+        return PasswordFormToCredential(request_origin_, form);
+      });
   std::move(callback_).Run(std::move(result));
 }
 
