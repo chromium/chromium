@@ -11,6 +11,7 @@
 namespace ash::boca {
 class InvalidationServiceImpl;
 class InvalidationServiceDelegate;
+class SpotlightRemotingClientManager;
 }  // namespace ash::boca
 
 namespace google_apis {
@@ -37,6 +38,9 @@ class ReceiverHandlerDelegate {
   virtual std::unique_ptr<google_apis::RequestSender> CreateRequestSender(
       std::string_view requester_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) const = 0;
+
+  virtual std::unique_ptr<boca::SpotlightRemotingClientManager>
+  CreateRemotingClientManager() = 0;
 
   virtual bool IsAppEnabled(std::string_view url) = 0;
 

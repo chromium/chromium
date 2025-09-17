@@ -15,9 +15,11 @@ static_library("receiver") {
   deps = [
     "//base",
     "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/boca/spotlight",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/boca:invalidation_delegate",
     "//chromeos/ash/components/boca:invalidations",
+    "//chromeos/ash/components/boca:spotlight_lib",
     "//chromeos/ash/components/boca/receiver",
     "//chromeos/ash/components/boca/session_api",
     "//components/gcm_driver",

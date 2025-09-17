@@ -35,27 +35,50 @@ namespace ash::boca {
 
 class SpotlightRemotingClientManager {
  public:
-  SpotlightRemotingClientManager(
-      std::unique_ptr<SpotlightOAuthTokenFetcher> token_fetcher,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   SpotlightRemotingClientManager(const SpotlightRemotingClientManager&) =
       delete;
   SpotlightRemotingClientManager& operator=(
       const SpotlightRemotingClientManager&) = delete;
-  ~SpotlightRemotingClientManager();
 
+  virtual ~SpotlightRemotingClientManager() = default;
+
+  virtual void StartCrdClient(
+      std::string crd_connection_code,
+      base::OnceClosure crd_session_ended_callback,
+      SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
+      SpotlightCrdStateUpdatedCallback status_updated_callback) = 0;
+
+  virtual void StopCrdClient() = 0;
+
+  virtual std::string GetDeviceRobotEmail() = 0;
+
+ protected:
+  SpotlightRemotingClientManager() = default;
+};
+
+class SpotlightRemotingClientManagerImpl
+    : public SpotlightRemotingClientManager {
+ public:
+  SpotlightRemotingClientManagerImpl(
+      std::unique_ptr<SpotlightOAuthTokenFetcher> token_fetcher,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  SpotlightRemotingClientManagerImpl(
+      const SpotlightRemotingClientManagerImpl&) = delete;
+  SpotlightRemotingClientManagerImpl& operator=(
+      const SpotlightRemotingClientManagerImpl&) = delete;
+  ~SpotlightRemotingClientManagerImpl() override;
+
+  // SpotlightRemotingClientManager:
   // Starts a `remoting::RemotingClient` using the `task_runner_`.
   void StartCrdClient(
       std::string crd_connection_code,
       base::OnceClosure crd_session_ended_callback,
       SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
-      SpotlightCrdStateUpdatedCallback status_updated_callback);
-
+      SpotlightCrdStateUpdatedCallback status_updated_callback) override;
   // Forwards the request to stop the crd client to the
   // `remoting_client_io_proxy_`.
-  void StopCrdClient();
-
-  std::string GetDeviceRobotEmail();
+  void StopCrdClient() override;
+  std::string GetDeviceRobotEmail() override;
 
  private:
   // Receives the OAuth token on the main/UI thread and calls the
@@ -83,12 +106,12 @@ class SpotlightRemotingClientManager {
   SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback_;
   SpotlightCrdStateUpdatedCallback status_updated_callback_;
   std::unique_ptr<SpotlightOAuthTokenFetcher> token_fetcher_;
-  // The `SpotlightRemotingClientManager` is owned by the main/UI thread
+  // The `SpotlightRemotingClientManagerImpl` is owned by the main/UI thread
   // however the remoting_client/webrtc processes on the IO sequence.
   std::unique_ptr<base::SequenceBound<RemotingClientIOProxy>>
       remoting_client_io_proxy_;
 
-  base::WeakPtrFactory<SpotlightRemotingClientManager> weak_factory_{this};
+  base::WeakPtrFactory<SpotlightRemotingClientManagerImpl> weak_factory_{this};
 };
 
 }  // namespace ash::boca

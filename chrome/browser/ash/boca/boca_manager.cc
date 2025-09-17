@@ -154,7 +154,7 @@ BocaManager::BocaManager(Profile* profile,
   std::unique_ptr<boca::SpotlightRemotingClientManager> remoting_client_manager;
   if (ash::features::IsBocaSpotlightRobotRequesterEnabled() && !is_consumer) {
     remoting_client_manager =
-        std::make_unique<boca::SpotlightRemotingClientManager>(
+        std::make_unique<boca::SpotlightRemotingClientManagerImpl>(
             std::make_unique<boca::SpotlightOAuthTokenFetcherImpl>(
                 GetOAuthServiceForSpotlight()),
             profile->GetURLLoaderFactory());

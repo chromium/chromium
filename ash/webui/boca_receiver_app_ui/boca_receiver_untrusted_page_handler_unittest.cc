@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/receiver/receiver_handler_delegate.h"
 #include "chromeos/ash/components/boca/receiver/register_receiver_request.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
 #include "chromeos/ash/components/boca/util.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
@@ -87,6 +88,11 @@ class MockReceiverHandlerDelegate : public ReceiverHandlerDelegate {
               CreateRequestSender,
               (std::string_view, const net::NetworkTrafficAnnotationTag&),
               (const, override));
+
+  MOCK_METHOD(std::unique_ptr<boca::SpotlightRemotingClientManager>,
+              CreateRemotingClientManager,
+              (),
+              (override));
 
   MOCK_METHOD(bool, IsAppEnabled, (std::string_view), (override));
 };

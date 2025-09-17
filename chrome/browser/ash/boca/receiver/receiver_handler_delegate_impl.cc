@@ -8,12 +8,14 @@
 #include <optional>
 #include <string_view>
 
+#include "base/check_deref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/boca/spotlight/spotlight_oauth_token_fetcher_impl.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -23,6 +25,7 @@
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/receiver/boca_device_auth_token_service.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
@@ -73,6 +76,16 @@ ReceiverHandlerDelegateImpl::CreateRequestSender(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
       /*custom_user_agent=*/"", traffic_annotation);
+}
+
+std::unique_ptr<boca::SpotlightRemotingClientManager>
+ReceiverHandlerDelegateImpl::CreateRemotingClientManager() {
+  // TODO(crbug.com/445415017): Replace `SpotlightOAuthTokenFetcher` by
+  // `BocaDeviceAuthTokenService`
+  return std::make_unique<boca::SpotlightRemotingClientManagerImpl>(
+      std::make_unique<boca::SpotlightOAuthTokenFetcherImpl>(
+          CHECK_DEREF(DeviceOAuth2TokenServiceFactory::Get())),
+      Profile::FromWebUI(web_ui_)->GetURLLoaderFactory());
 }
 
 bool ReceiverHandlerDelegateImpl::IsAppEnabled(std::string_view url) {

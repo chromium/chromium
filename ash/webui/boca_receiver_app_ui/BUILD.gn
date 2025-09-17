@@ -50,6 +50,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:invalidation_delegate",
     "//chromeos/ash/components/boca:invalidations",
+    "//chromeos/ash/components/boca:spotlight_lib",
     "//chromeos/ash/components/boca/receiver",
     "//google_apis/common",
     "//google_apis/common:test_support",

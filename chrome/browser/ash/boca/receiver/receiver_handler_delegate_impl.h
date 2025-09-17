@@ -14,6 +14,7 @@
 namespace ash::boca {
 class InvalidationServiceImpl;
 class InvalidationServiceDelegate;
+class SpotlightRemotingClientManager;
 }  // namespace ash::boca
 
 namespace content {
@@ -49,6 +50,9 @@ class ReceiverHandlerDelegateImpl : public ReceiverHandlerDelegate {
       std::string_view requester_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation)
       const override;
+
+  std::unique_ptr<boca::SpotlightRemotingClientManager>
+  CreateRemotingClientManager() override;
 
   bool IsAppEnabled(std::string_view url) override;
 
