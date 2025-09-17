@@ -847,31 +847,35 @@ class OneTimeMessageHandlerGarbageCollectionTest
   OneTimeMessageHandlerGarbageCollectionTest& operator=(
       const OneTimeMessageHandlerGarbageCollectionTest&) = delete;
   ~OneTimeMessageHandlerGarbageCollectionTest() override = default;
+
+ protected:
+  // Tests that when a listener indicates an asynchronous response but never
+  // actually replies, the associated resources are cleaned up correctly upon
+  // garbage collection. It sets up a listener from `listener_script`, delivers
+  // a message, and then triggers garbage collection. It verifies that the
+  // message port is closed and any pending C++ callbacks are cleared to prevent
+  // memory leaks.
+  void RunTest(const char* listener_script,
+               int pending_callbacks_before_collection);
 };
 
-TEST_P(OneTimeMessageHandlerGarbageCollectionTest,
-       SendResponseAndPromiseRejectCallbacksGarbageCollected) {
+void OneTimeMessageHandlerGarbageCollectionTest::RunTest(
+    const char* listener_script,
+    int pending_callbacks_before_collection) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  constexpr char kRegisterListener[] =
-      "(function() {\n"
-      "  chrome.runtime.onMessage.addListener(\n"
-      "      function(message, sender, reply) {\n"
-      "        return true;  // Reply later\n"
-      "      });\n"
-      "})";
   v8::Local<v8::Function> add_listener =
-      FunctionFromString(context, kRegisterListener);
-  RunFunctionOnGlobal(add_listener, context, 0, nullptr);
+      FunctionFromString(context, listener_script);
+  RunFunctionOnGlobal(add_listener, context, /*argc=*/0, /*argv=*/nullptr);
 
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id(other_context_id, 0, false,
-                       mojom::SerializationFormat::kJson);
+  const PortId port_id(other_context_id, /*port_number=*/0,
+                       /*is_opener=*/false, mojom::SerializationFormat::kJson);
   mojo::PendingAssociatedRemote<mojom::MessagePort> message_port_remote;
   mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
       message_port_host_receiver;
-  MockMessagePortHost mock_message_port_host;
+  testing::StrictMock<MockMessagePortHost> mock_message_port_host;
 
   v8::Local<v8::Object> sender = v8::Object::New(isolate());
   message_handler()->AddReceiverForTesting(
@@ -881,29 +885,28 @@ TEST_P(OneTimeMessageHandlerGarbageCollectionTest,
   message_port_host_receiver.EnableUnassociatedUsage();
   mock_message_port_host.BindReceiver(std::move(message_port_host_receiver));
 
-  const Message message("\"Hi\"", mojom::SerializationFormat::kJson, false);
-  base::RunLoop run_loop;
+  const Message message("\"Hi\"", mojom::SerializationFormat::kJson,
+                        /*user_gesture=*/false);
+  base::RunLoop close_port_run_loop;
 
   EXPECT_CALL(mock_message_port_host, ResponsePending());
   EXPECT_CALL(mock_message_port_host,
               ClosePort(
                   /*close_channel=*/false,
                   /*error_message=*/testing::Eq(std::nullopt)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+      .WillOnce(base::test::RunClosure(close_port_run_loop.QuitClosure()));
   message_handler()->DeliverMessage(script_context(), message, port_id);
   EXPECT_TRUE(message_handler()->HasPort(script_context(), port_id));
-  // One callback is for the response function, the second is for the promise
-  // reject function (when the feature is enabled).
   EXPECT_EQ(
-      IsParamFeatureEnabled() ? 2 : 1,
+      pending_callbacks_before_collection,
       message_handler()->GetPendingCallbackCountForTest(script_context()));
 
-  // The listener didn't retain the reply callback and the listener didn't
-  // return a promise that could reject, so the JS callbacks should be garbage
-  // collected and the related pending callbacks for them should have been
-  // cleared as well so we don't leak them after the port closes.
+  // The listener didn't retain the reply callback, and if it returned a
+  // promise, it never settled. The JS callbacks should be garbage collected,
+  // and the related pending callbacks for them should be cleared so we don't
+  // leak them after the port closes.
   RunGarbageCollection();
-  run_loop.Run();
+  close_port_run_loop.Run();
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
   EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
@@ -911,7 +914,65 @@ TEST_P(OneTimeMessageHandlerGarbageCollectionTest,
       0, message_handler()->GetPendingCallbackCountForTest(script_context()));
 }
 
+// Tests that when a listener indicates an asynchronous response by returning
+// true, but never responds, we cleanup the C++ callback data stored when v8
+// garbage collects the v8 functions that would've called the C++ callbacks.
+TEST_P(OneTimeMessageHandlerGarbageCollectionTest,
+       DelayedCallbackCleanupOnReturnTrue) {
+  constexpr char kRegisterListener[] = R"(
+    (function() {
+      chrome.runtime.onMessage.addListener(
+        function(message, sender, reply) {
+          return true;
+      });
+    });
+  )";
+  // TODO(crbug.com/40753031): Let's not create the second callback unless we
+  // know a promise has been returned.
+  // When the listener returns `true`:
+  //   - Promise support disabled: creates one callback (`sendResponse`)
+  //   - Promise support enabled: creates two callbacks (`sendResponse`, and
+  //     speculatively a second in case a promise is returned)
+  RunTest(
+      kRegisterListener,
+      /*pending_callbacks_before_collection=*/IsParamFeatureEnabled() ? 2 : 1);
+}
+
+// A version of OneTimeMessageHandlerGarbageCollectionTest that only runs with
+// promise support for testing functionality that isn't relevant when the
+// feature is disabled.
+using OneTimeMessageHandlerGarbageCollectionTestWithPromises =
+    OneTimeMessageHandlerGarbageCollectionTest;
+
+// Tests that when a listener indicates an asynchronous response by returning
+// a promise, but the promise never settles, we cleanup the C++ callback data
+// stored when v8 garbage collects the v8 functions that would've called the
+// C++ callbacks. The promise feature being enabled means the returned promise
+// is treated as an asynchronous reply similar to returning true.
+TEST_P(OneTimeMessageHandlerGarbageCollectionTestWithPromises,
+       DelayedCallbackCleanupOnReturnPromise) {
+  constexpr char kRegisterListener[] = R"(
+    (function() {
+      chrome.runtime.onMessage.addListener(
+        function(message, sender, reply) {
+          return new Promise(() => {});
+      });
+    });
+  )";
+  // When the listener returns a promise and the feature is enabled, the
+  // port is kept open, and two callbacks are created (one for promise
+  // resolve, one for promise reject).
+  RunTest(kRegisterListener, /*pending_callbacks_before_collection=*/2);
+}
+
+// TODO(crbug.com/40753031): Test callbacks cleanup up when a synchronous and
+// asynchronously reply happens from the listener.
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     OneTimeMessageHandlerGarbageCollectionTest);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OneTimeMessageHandlerGarbageCollectionTestWithPromises,
+                         testing::Values(true));
 
 }  // namespace extensions
