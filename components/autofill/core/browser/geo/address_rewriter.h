@@ -5,10 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_ADDRESS_REWRITER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_ADDRESS_REWRITER_H_
 
+#include <memory>
 #include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
 
@@ -32,8 +37,18 @@ class AddressRewriter {
   std::u16string Rewrite(const std::u16string& text) const;
 
  private:
+  // Aliases for the types used by the compiled rules cache.
+  using CompiledRule = std::pair<std::unique_ptr<re2::RE2>, std::string>;
+  using CompiledRuleVector = std::vector<CompiledRule>;
+  using CompiledRuleCache = std::unordered_map<std::string, CompiledRuleVector>;
+
+  class Cache;
+
+  static void CompileRulesFromData(const std::string& data_string,
+                                   CompiledRuleVector* compiled_rules);
+
   // A handle to the internal rewrite rules this instance is using.
-  raw_ptr<const void> impl_ = nullptr;
+  raw_ptr<const CompiledRuleVector> impl_ = nullptr;
 };
 
 }  // namespace autofill

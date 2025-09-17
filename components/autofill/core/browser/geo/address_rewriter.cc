@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string_view>
-#include <unordered_map>
 
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
@@ -20,11 +19,6 @@
 
 namespace autofill {
 namespace {
-
-// Aliases for the types used by the compiled rules cache.
-using CompiledRule = std::pair<std::unique_ptr<re2::RE2>, std::string>;
-using CompiledRuleVector = std::vector<CompiledRule>;
-using CompiledRuleCache = std::unordered_map<std::string, CompiledRuleVector>;
 
 // Helper function to convert region to mapping key string.
 std::string GetMapKey(const std::string& region) {
@@ -49,9 +43,12 @@ std::string ExtractRegionRulesData(const std::string& region) {
   return std::string();
 }
 
+}  // namespace
+
 // Helper function to populate |compiled_rules| by parsing |data_string|.
-void CompileRulesFromData(const std::string& data_string,
-                          CompiledRuleVector* compiled_rules) {
+// static
+void AddressRewriter::CompileRulesFromData(const std::string& data_string,
+                                           CompiledRuleVector* compiled_rules) {
   std::string_view data = data_string;
   re2::RE2::Options options;
   options.set_encoding(RE2::Options::EncodingUTF8);
@@ -74,7 +71,7 @@ void CompileRulesFromData(const std::string& data_string,
 // The cache of compiled string replacement rules, keyed by region. This class
 // is a singleton that compiles the rules for a given region the first time
 // they are requested.
-class Cache {
+class AddressRewriter::Cache {
  public:
   // Return the singleton instance of the cache.
   static Cache* GetInstance() {
@@ -139,8 +136,6 @@ class Cache {
   friend class base::NoDestructor<Cache>;
 };
 
-}  // namespace
-
 // static
 std::u16string AddressRewriter::RewriteForCountryCode(
     const AddressCountryCode& country_code,
@@ -179,7 +174,7 @@ std::u16string AddressRewriter::Rewrite(const std::u16string& text) const {
   // whitespace during these passes because the patterns are all whitespace
   // tolerant regular expressions.
   std::string utf8_text = base::UTF16ToUTF8(text);
-  for (const auto& rule : *static_cast<const CompiledRuleVector*>(impl_)) {
+  for (const CompiledRule& rule : *impl_) {
     RE2::GlobalReplace(&utf8_text, *rule.first, rule.second);
   }
 
