@@ -77,12 +77,6 @@ RenderFrameHostTester* RenderFrameHostTester::For(RenderFrameHost* host) {
 }
 
 // static
-bool RenderFrameHostTester::TestOnMessageReceived(RenderFrameHost* rfh,
-                                                  const IPC::Message& msg) {
-  return static_cast<RenderFrameHostImpl*>(rfh)->OnMessageReceived(msg);
-}
-
-// static
 void RenderFrameHostTester::CommitPendingLoad(
     NavigationController* controller) {
   auto navigation = NavigationSimulator::CreateFromPending(*controller);

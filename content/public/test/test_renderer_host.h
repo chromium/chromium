@@ -98,11 +98,6 @@ class RenderFrameHostTester {
   // RenderViewHostTestEnabler instance (see below) to do this.
   static RenderFrameHostTester* For(RenderFrameHost* host);
 
-  // Calls the RenderFrameHost's private OnMessageReceived function with the
-  // given message.
-  static bool TestOnMessageReceived(RenderFrameHost* rfh,
-                                    const IPC::Message& msg);
-
   // Commit the load pending in the given |controller| if any.
   static void CommitPendingLoad(NavigationController* controller);
 
