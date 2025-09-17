@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.dom_distiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,6 +52,7 @@ public class ReaderModeBottomSheetCoordinatorTest {
     @Mock private Tab mTab;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Captor private ArgumentCaptor<ThemeColorProvider.ThemeColorObserver> mThemeColorObserverCaptor;
+    @Captor private ArgumentCaptor<ThemeColorProvider.TintObserver> mThemeTintObserverCaptor;
 
     private ReaderModeBottomSheetCoordinator mCoordinator;
     private Activity mActivity;
@@ -69,7 +69,7 @@ public class ReaderModeBottomSheetCoordinatorTest {
         DomDistillerServiceFactoryJni.setInstanceForTesting(mDomDistillerServiceFactoryJni);
         mCoordinator =
                 new ReaderModeBottomSheetCoordinator(
-                        mTab, mActivity, mProfile, mBottomSheetController, mThemeColorProvider);
+                        mActivity, mProfile, mBottomSheetController, mThemeColorProvider);
         mUserActionTester = new UserActionTester();
     }
 
@@ -80,7 +80,7 @@ public class ReaderModeBottomSheetCoordinatorTest {
 
     @Test
     public void testShow() {
-        mCoordinator.show(/* showFullSheet= */ false);
+        mCoordinator.show(mTab);
 
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
         verify(mBottomSheetController, times(0)).expandSheet();
@@ -90,36 +90,8 @@ public class ReaderModeBottomSheetCoordinatorTest {
     }
 
     @Test
-    public void testShow_fullSheet() {
-        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
-        mCoordinator.show(/* showFullSheet= */ true);
-
-        verify(mBottomSheetController).requestShowContent(any(), eq(true));
-        verify(mBottomSheetController).expandSheet();
-        Assert.assertEquals(
-                1,
-                mUserActionTester.getActionCount("DomDistiller.Android.DistilledPagePrefsOpened"));
-    }
-
-    @Test
-    public void testShow_alreadyShowing_expandsSheet() {
-        // Mock that the bottom sheet is already showing
-        when(mBottomSheetController.getCurrentSheetContent())
-                .thenReturn(mCoordinator.getBottomSheetContentForTesting());
-
-        // Show the bottom sheet again, but this time, ask it to be expanded.
-        mCoordinator.show(/* showFullSheet= */ true);
-
-        // Verify that the sheet was expanded
-        verify(mBottomSheetController).expandSheet();
-        Assert.assertEquals(
-                0,
-                mUserActionTester.getActionCount("DomDistiller.Android.DistilledPagePrefsOpened"));
-    }
-
-    @Test
     public void testBottomSheetContentsAreSwappable() {
-        mCoordinator.show(/* showFullSheet= */ false);
+        mCoordinator.show(mTab);
 
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
         BottomSheetContent bottomSheetContent = mCoordinator.getBottomSheetContentForTesting();
@@ -132,12 +104,10 @@ public class ReaderModeBottomSheetCoordinatorTest {
     public void testCreateDestroy() {
         // An observer should be added to the theme color provider on creation.
         verify(mThemeColorProvider).addThemeColorObserver(mThemeColorObserverCaptor.capture());
-        // The theme color provider should be queried on creation.
-        verify(mThemeColorProvider).getThemeColor();
-        verify(mThemeColorProvider).getBrandedColorScheme();
+        verify(mThemeColorProvider).addTintObserver(mThemeTintObserverCaptor.capture());
 
         mCoordinator.destroy();
-
         verify(mThemeColorProvider).removeThemeColorObserver(mThemeColorObserverCaptor.getValue());
+        verify(mThemeColorProvider).removeTintObserver(mThemeTintObserverCaptor.getValue());
     }
 }

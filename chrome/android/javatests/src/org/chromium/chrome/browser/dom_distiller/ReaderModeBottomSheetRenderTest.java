@@ -101,7 +101,6 @@ public class ReaderModeBottomSheetRenderTest {
                     mActivityTestRule.getActivity().setContentView(mContentView, params);
                     mCoordinator =
                             new ReaderModeBottomSheetCoordinator(
-                                    mActivityTestRule.getActivityTab(),
                                     mActivityTestRule.getActivity(),
                                     mActivityTestRule.getProfile(/* incognito= */ false),
                                     mActivityTestRule
@@ -109,6 +108,7 @@ public class ReaderModeBottomSheetRenderTest {
                                             .getRootUiCoordinatorForTesting()
                                             .getBottomSheetController(),
                                     mThemeColorProvider);
+                    mCoordinator.setTab(mActivityTestRule.getActivity().getActivityTabProvider().get());
                     mView = mCoordinator.getViewForTesting();
                     mContentView.addView(mView);
 

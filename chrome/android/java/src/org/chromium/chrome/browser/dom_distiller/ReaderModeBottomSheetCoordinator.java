@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.lifetime.DestroyChecker;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
@@ -43,15 +45,15 @@ public class ReaderModeBottomSheetCoordinator {
     private final ThemeColorProvider.ThemeColorObserver mThemeColorObserver;
     private final ThemeColorProvider.TintObserver mThemeTintObserver;
 
+    private @Nullable Tab mTab;
+
     /**
-     * @param tab The {@link Tab} associated with this coordinator.
      * @param context The {@link Context} associated with this coordinator.
      * @param profile The {@link Profile} associated with this coordinator.
      * @param bottomSheetController Allows displaying content in the bottom sheet.
      * @param themeColorProvider Provides the theme color for the bottom sheet.
      */
     public ReaderModeBottomSheetCoordinator(
-            Tab tab,
             Context context,
             Profile profile,
             BottomSheetController bottomSheetController,
@@ -80,37 +82,15 @@ public class ReaderModeBottomSheetCoordinator {
 
         mThemeColorObserver =
                 (color, shouldAnimate) -> {
-                    mPropertyModel.set(ReaderModeBottomSheetProperties.BACKGROUND_COLOR, color);
-                    mPropertyModel.set(
-                            ReaderModeBottomSheetProperties.SECONDARY_BACKGROUND_COLOR,
-                            ThemeUtils.getTextBoxColorForToolbarBackground(mContext, tab, color));
+                    updateThemeProperties();
                 };
         mThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
-        mThemeColorObserver.onThemeColorChanged(
-                mThemeColorProvider.getThemeColor(), /* shouldAnimate= */ false);
 
         mThemeTintObserver =
                 (tint, activityFocusTint, brandedColorScheme) -> {
-                    mPropertyModel.set(
-                            ReaderModeBottomSheetProperties.ICON_TINT,
-                            ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme));
-                    mPropertyModel.set(
-                            ReaderModeBottomSheetProperties.PRIMARY_TEXT_COLOR,
-                            OmniboxResourceProvider.getUrlBarPrimaryTextColor(
-                                    mContext, brandedColorScheme));
-                    mPropertyModel.set(
-                            ReaderModeBottomSheetProperties.SECONDARY_TEXT_COLOR,
-                            OmniboxResourceProvider.getUrlBarSecondaryTextColor(
-                                    mContext, brandedColorScheme));
-                    mPropertyModel.set(
-                            ReaderModeBottomSheetProperties.ICON_TINT,
-                            ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme));
+                    updateThemeProperties();
                 };
         mThemeColorProvider.addTintObserver(mThemeTintObserver);
-        mThemeTintObserver.onTintChanged(
-                mThemeColorProvider.getTint(),
-                mThemeColorProvider.getActivityFocusTint(),
-                mThemeColorProvider.getBrandedColorScheme());
 
         mBottomSheetContent = new ReaderModeBottomSheetContent(mReaderModeBottomSheetView);
     }
@@ -121,8 +101,9 @@ public class ReaderModeBottomSheetCoordinator {
      * @param showFullSheet Whether the bottomsheet should be shown fully, if false it's shown in a
      *     peeked state.
      */
-    public void show(boolean showFullSheet) {
+    public void show(Tab tab) {
         mDestroyChecker.checkNotDestroyed();
+        setTab(tab);
         // Only try to show the bottom sheet if it's not already showing. BottomSheetController
         // makes a copy of the sheet content, so equals comparison isn't useful here.
         boolean showing =
@@ -133,10 +114,6 @@ public class ReaderModeBottomSheetCoordinator {
             showing =
                     mBottomSheetController.requestShowContent(
                             mBottomSheetContent, /* animate= */ true);
-        }
-
-        if (showing && showFullSheet) {
-            mBottomSheetController.expandSheet();
         }
     }
 
@@ -238,6 +215,37 @@ public class ReaderModeBottomSheetCoordinator {
         public boolean hideOnScroll() {
             return true;
         }
+    }
+
+    void setTab(Tab tab) {
+        mTab = tab;
+        // Update the theme properties to handle the case where the bottom sheet is shown in both
+        // incognito and regular tabs.
+        updateThemeProperties();
+    }
+
+    private void updateThemeProperties() {
+        // A non-null tab is required to get the correct color for the toolbar. This could be called prior to showing the bottom sheet and in that case we want to early return.
+        if (mTab == null) return;
+        @ColorInt int color = mThemeColorProvider.getThemeColor();
+        @BrandedColorScheme int brandedColorScheme = mThemeColorProvider.getBrandedColorScheme();
+
+        mPropertyModel.set(ReaderModeBottomSheetProperties.BACKGROUND_COLOR, color);
+        mPropertyModel.set(
+                ReaderModeBottomSheetProperties.SECONDARY_BACKGROUND_COLOR,
+                ThemeUtils.getTextBoxColorForToolbarBackground(mContext, mTab, color));
+        mPropertyModel.set(
+                ReaderModeBottomSheetProperties.ICON_TINT,
+                ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme));
+        mPropertyModel.set(
+                ReaderModeBottomSheetProperties.PRIMARY_TEXT_COLOR,
+                OmniboxResourceProvider.getUrlBarPrimaryTextColor(mContext, brandedColorScheme));
+        mPropertyModel.set(
+                ReaderModeBottomSheetProperties.SECONDARY_TEXT_COLOR,
+                OmniboxResourceProvider.getUrlBarSecondaryTextColor(mContext, brandedColorScheme));
+        mPropertyModel.set(
+                ReaderModeBottomSheetProperties.ICON_TINT,
+                ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme));
     }
 
     // For testing methods.

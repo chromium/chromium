@@ -150,13 +150,12 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
         if (mCoordinator == null) {
             mCoordinator =
                     new ReaderModeBottomSheetCoordinator(
-                            tab,
                             mContext,
                             tab.getProfile(),
                             mBottomSheetController,
                             mThemeColorProvider);
         }
-        mCoordinator.show(/* showFullSheet= */ false);
+        mCoordinator.show(tab);
     }
 
     // Destroys the reader mode bottom sheet.
