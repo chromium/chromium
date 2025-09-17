@@ -47,7 +47,7 @@ class MailboxTextureBacking : public TextureBacking {
                   size_t dst_row_bytes,
                   int src_x,
                   int src_y) override;
-  void FlushPendingSkiaOps() override;
+  void FlushPendingSkiaOps() override {}
 
  private:
   const sk_sp<SkImage> sk_image_;

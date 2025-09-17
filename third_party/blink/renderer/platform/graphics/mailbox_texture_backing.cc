@@ -124,17 +124,4 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
   return false;
 }
 
-void MailboxTextureBacking::FlushPendingSkiaOps() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!context_provider_wrapper_ || !sk_image_) {
-    return;
-  }
-  GrDirectContext* ctx =
-      context_provider_wrapper_->ContextProvider().GetGrContext();
-  if (!ctx) {
-    return;
-  }
-  ctx->flushAndSubmit(sk_image_);
-}
-
 }  // namespace blink
