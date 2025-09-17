@@ -12,7 +12,10 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

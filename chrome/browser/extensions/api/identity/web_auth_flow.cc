@@ -30,13 +30,15 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-using content::WebContents;
-using content::WebContentsObserver;
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+using content::WebContents;
+using content::WebContentsObserver;
 
 namespace extensions {
 

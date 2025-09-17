@@ -26,6 +26,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -35,6 +36,8 @@
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_function.h"
 #include "chrome/browser/extensions/api/identity/identity_remove_cached_auth_token_function.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;

@@ -20,6 +20,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 class Profile;
 
 namespace base {

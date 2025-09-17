@@ -7,7 +7,10 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
