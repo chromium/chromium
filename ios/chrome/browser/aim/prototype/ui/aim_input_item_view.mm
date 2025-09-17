@@ -110,7 +110,12 @@ const CGFloat kPreviewImageSize = 40.0;
   [self addSubview:_previewImageView];
 
   // Close Button
-  _closeButton = [UIButton buttonWithType:UIButtonTypeClose];
+
+  _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  UIImage* image = SymbolWithPalette(
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kLeadingIconSize),
+      @[ [UIColor colorNamed:kTextSecondaryColor], UIColor.whiteColor ]);
+  [_closeButton setImage:image forState:UIControlStateNormal];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
   [_closeButton
       setContentCompressionResistancePriority:UILayoutPriorityRequired
