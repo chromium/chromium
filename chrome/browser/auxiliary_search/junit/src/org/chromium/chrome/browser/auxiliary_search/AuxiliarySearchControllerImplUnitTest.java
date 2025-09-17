@@ -283,7 +283,6 @@ public class AuxiliarySearchControllerImplUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
     public void testOnNonSensitiveTabsAvailable() {
         long now = TimeUtils.uptimeMillis();
 
@@ -309,7 +308,6 @@ public class AuxiliarySearchControllerImplUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
     public void testOnNonSensitiveDataAvailable() {
         long now = TimeUtils.uptimeMillis();
         int timeDelta = 50;
@@ -333,10 +331,7 @@ public class AuxiliarySearchControllerImplUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
     public void testOnNonSensitiveDataAvailable_AuxiliarySearchDataEntry() {
         long now = TimeUtils.uptimeMillis();
         int timeDelta = 50;
@@ -413,7 +408,6 @@ public class AuxiliarySearchControllerImplUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
     public void testOnNonSensitiveTabsAvailable_AfterDestroy() {
         long now = TimeUtils.uptimeMillis();
         int timeDelta = 50;

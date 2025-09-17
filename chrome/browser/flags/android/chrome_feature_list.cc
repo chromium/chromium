@@ -199,13 +199,10 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAdaptiveButtonInTopToolbarPageSummary,
     &kAllowTabClosingUponMinimization,
-    &kAndroidAppIntegration,
-    &kAndroidAppIntegrationV2,
     &kNewTabPageCustomization,
     &kNewTabPageCustomizationV2,
     &kNewTabPageCustomizationToolbarButton,
     &kNewTabPageCustomizationForMvt,
-    &kAndroidAppIntegrationWithFavicon,
     &kAndroidAppIntegrationMultiDataSource,
     &kAndroidAppearanceSettings,
     &kAndroidBookmarkBar,
@@ -543,10 +540,6 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary,
 BASE_FEATURE(kAllowTabClosingUponMinimization,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidAppIntegration, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidAppIntegrationV2, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAndroidAppIntegrationMultiDataSource,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -558,9 +551,6 @@ BASE_FEATURE(kNewTabPageCustomizationToolbarButton,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageCustomizationForMvt, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidAppIntegrationWithFavicon,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidAppearanceSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 

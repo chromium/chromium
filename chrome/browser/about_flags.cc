@@ -2881,56 +2881,6 @@ const FeatureEntry::FeatureVariation
          std::size(kPhotoPickerAdoptionStudyChromePickerWithoutBrowse),
          nullptr}};
 
-const FeatureEntry::FeatureParam
-    kAndroidAppIntegrationWithFavicon_UseLargeFavicon[] = {
-        {"use_large_favicon", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck[] = {
-        {"skip_device_check", "true"},
-        {"use_large_favicon", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipSchemaCheck[] = {
-        {"skip_schema_check", "true"},
-        {"use_large_favicon", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceAndSchemaChecks
-        [] = {{"skip_device_check", "true"},
-              {"skip_schema_check", "true"},
-              {"use_large_favicon", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidAppIntegrationWithFavicon_DelayTime200Ms[] = {
-        {"schedule_delay_time_ms", "200"}};
-const FeatureEntry::FeatureParam
-    kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon[] = {
-        {"schedule_delay_time_ms", "200"},
-        {"use_large_favicon", "true"}};
-
-const FeatureEntry::FeatureVariation kAndroidAppIntegrationWithFaviconVariations[] =
-    {{"Use large favicon (no delay)",
-      kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
-      std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon), nullptr},
-     {"Skip device check + use large favicon (no delay)",
-      kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck,
-      std::size(
-          kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck),
-      nullptr},
-     {"Skip schema check + use large favicon (no delay)",
-      kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipSchemaCheck,
-      std::size(
-          kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipSchemaCheck),
-      nullptr},
-     {"Skip both device and schema checks + use large favicon (no delay)",
-      kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceAndSchemaChecks,
-      std::size(
-          kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceAndSchemaChecks),
-      nullptr},
-     {"200ms delay", kAndroidAppIntegrationWithFavicon_DelayTime200Ms,
-      std::size(kAndroidAppIntegrationWithFavicon_DelayTime200Ms), nullptr},
-     {"200ms delay with large favicon",
-      kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon,
-      std::size(
-          kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon),
-      nullptr}};
 
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationModule_ForceCardShown_Pixel[] = {
@@ -6755,10 +6705,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-app-integration", flag_descriptions::kAndroidAppIntegrationName,
-     flag_descriptions::kAndroidAppIntegrationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegration)},
-
     {"android-app-integration-module",
      flag_descriptions::kAndroidAppIntegrationModuleName,
      flag_descriptions::kAndroidAppIntegrationModuleDescription, kOsAndroid,
@@ -6775,11 +6721,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kAndroidAppIntegrationMultiDataSource,
          kAndroidAppIntegrationMultiDataSourceVariations,
          "AndroidAppIntegrationMultiDataSource")},
-
-    {"android-app-integration-v2",
-     flag_descriptions::kAndroidAppIntegrationV2Name,
-     flag_descriptions::kAndroidAppIntegrationV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegrationV2)},
 
     {"new-tab-page-customization",
      flag_descriptions::kNewTabPageCustomizationName,
@@ -6808,15 +6749,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kNewTabPageCustomizationToolbarButton)},
-
-    {"android-app-integration-with-favicon",
-     flag_descriptions::kAndroidAppIntegrationWithFaviconName,
-     flag_descriptions::kAndroidAppIntegrationWithFaviconDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kAndroidAppIntegrationWithFavicon,
-         kAndroidAppIntegrationWithFaviconVariations,
-         "AndroidAppIntegrationWithFavicon")},
 
     {"android-bottom-toolbar", flag_descriptions::kAndroidBottomToolbarName,
      flag_descriptions::kAndroidBottomToolbarDescription, kOsAndroid,

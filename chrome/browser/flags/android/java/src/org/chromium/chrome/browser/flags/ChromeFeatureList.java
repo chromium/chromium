@@ -167,13 +167,9 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_ANIMATED_PROGRESS_BAR_IN_VIZ =
             "AndroidAnimatedProgressBarInViz";
     public static final String ANDROID_APPEARANCE_SETTINGS = "AndroidAppearanceSettings";
-    public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
     public static final String ANDROID_APP_INTEGRATION_MODULE = "AndroidAppIntegrationModule";
     public static final String ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE =
             "AndroidAppIntegrationMultiDataSource";
-    public static final String ANDROID_APP_INTEGRATION_V2 = "AndroidAppIntegrationV2";
-    public static final String ANDROID_APP_INTEGRATION_WITH_FAVICON =
-            "AndroidAppIntegrationWithFavicon";
     public static final String ANDROID_BOOKMARK_BAR = "AndroidBookmarkBar";
     public static final String ANDROID_BOTTOM_TOOLBAR = "AndroidBottomToolbar";
     public static final String ANDROID_BOTTOM_TOOLBAR_V2 = "AndroidBottomToolbarV2";
@@ -732,16 +728,10 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, true);
     public static final CachedFlag sAndroidAnimatedProgressBarInViz =
             newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_VIZ, false);
-    public static final CachedFlag sAndroidAppIntegration =
-            newCachedFlag(ANDROID_APP_INTEGRATION, true);
     public static final CachedFlag sAndroidAppIntegrationModule =
             newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, true);
     public static final CachedFlag sAndroidAppIntegrationMultiDataSource =
             newCachedFlag(ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE, true);
-    public static final CachedFlag sAndroidAppIntegrationV2 =
-            newCachedFlag(ANDROID_APP_INTEGRATION_V2, true);
-    public static final CachedFlag sAndroidAppIntegrationWithFavicon =
-            newCachedFlag(ANDROID_APP_INTEGRATION_WITH_FAVICON, true);
     public static final CachedFlag sAndroidBottomToolbar =
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR, true, true);
     public static final CachedFlag sAndroidBottomToolbarV2 =
@@ -1118,11 +1108,8 @@ public abstract class ChromeFeatureList {
                     sAllowTabClosingUponMinimization,
                     sAndroidAnimatedProgressBarInBrowser,
                     sAndroidAnimatedProgressBarInViz,
-                    sAndroidAppIntegration,
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationMultiDataSource,
-                    sAndroidAppIntegrationV2,
-                    sAndroidAppIntegrationWithFavicon,
                     sAndroidBottomToolbar,
                     sAndroidBottomToolbarV2,
                     sAndroidComposeplate,
@@ -1412,41 +1399,12 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "contextual_only", false);
     public static final IntCachedFeatureParam sCctAdaptiveButtonDefaultVariant =
             newIntCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "default_variant", 0);
-    public static final IntCachedFeatureParam sAndroidAppIntegrationV2ContentTtlHours =
-            newIntCachedFeatureParam(ANDROID_APP_INTEGRATION_V2, "content_ttl_hours", 168);
-
-    public static final IntCachedFeatureParam
-            sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours =
-                    newIntCachedFeatureParam(
-                            ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE,
-                            "history_content_ttl_hours",
-                            24);
-
-    public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconSkipDeviceCheck =
-            newBooleanCachedFeatureParam(
-                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "skip_device_check", false);
     public static final BooleanCachedFeatureParam sAndroidAppIntegrationModuleForceCardShow =
             newBooleanCachedFeatureParam(ANDROID_APP_INTEGRATION_MODULE, "force_card_shown", false);
 
     public static final BooleanCachedFeatureParam sAndroidAppIntegrationModuleShowThirdPartyCard =
             newBooleanCachedFeatureParam(
                     ANDROID_APP_INTEGRATION_MODULE, "show_third_party_card", false);
-
-    public static final IntCachedFeatureParam sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs =
-            newIntCachedFeatureParam(
-                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "schedule_delay_time_ms", 0);
-    public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconUseLargeFavicon =
-            newBooleanCachedFeatureParam(
-                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "use_large_favicon", true);
-    public static final IntCachedFeatureParam
-            sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber =
-                    newIntCachedFeatureParam(
-                            ANDROID_APP_INTEGRATION_WITH_FAVICON, "zero_state_favicon_number", 5);
-
-    public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconSkipSchemaCheck =
-            newBooleanCachedFeatureParam(
-                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "skip_schema_check", false);
-
     public static final BooleanCachedFeatureParam
             sAndroidAppIntegrationMultiDataSourceSkipSchemaCheck =
                     newBooleanCachedFeatureParam(
@@ -1814,15 +1772,8 @@ public abstract class ChromeFeatureList {
                     // keep-sorted start
                     sAndroidAppIntegrationModuleForceCardShow,
                     sAndroidAppIntegrationModuleShowThirdPartyCard,
-                    sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours,
                     sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck,
                     sAndroidAppIntegrationMultiDataSourceSkipSchemaCheck,
-                    sAndroidAppIntegrationV2ContentTtlHours,
-                    sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs,
-                    sAndroidAppIntegrationWithFaviconSkipDeviceCheck,
-                    sAndroidAppIntegrationWithFaviconSkipSchemaCheck,
-                    sAndroidAppIntegrationWithFaviconUseLargeFavicon,
-                    sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
                     sAndroidBookmarkBarShowBookmarkBar,
                     sAndroidBottomToolbarDefaultToTop,
                     sAndroidBottomToolbarV2ReverseOrderSuggestionsList,

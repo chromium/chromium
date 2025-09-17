@@ -3104,21 +3104,18 @@ public class ChromeTabbedActivity extends ChromeActivity {
             }
         }
 
-        if (ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled()) {
-            // The AuxiliarySearchControllerFactory#setIsTablet() must be called before using the
-            // builder which checks AuxiliarySearchControllerFactory#isEnabled().
-            AuxiliarySearchControllerFactory.getInstance()
-                    .setIsTablet(DeviceFormFactor.isWindowOnTablet(getWindowAndroid()));
-            AuxiliarySearchModuleBuilder auxiliarySearchModuleBuilder =
-                    new AuxiliarySearchModuleBuilder(
-                            this,
-                            () -> {
-                                SettingsNavigationFactory.createSettingsNavigation()
-                                        .startSettings(this, TabsSettings.class);
-                            });
-            moduleRegistry.registerModule(
-                    ModuleType.AUXILIARY_SEARCH, auxiliarySearchModuleBuilder);
-        }
+        // The AuxiliarySearchControllerFactory#setIsTablet() must be called before using the
+        // builder which checks AuxiliarySearchControllerFactory#isEnabled().
+        AuxiliarySearchControllerFactory.getInstance()
+                .setIsTablet(DeviceFormFactor.isWindowOnTablet(getWindowAndroid()));
+        AuxiliarySearchModuleBuilder auxiliarySearchModuleBuilder =
+                new AuxiliarySearchModuleBuilder(
+                        this,
+                        () -> {
+                            SettingsNavigationFactory.createSettingsNavigation()
+                                    .startSettings(this, TabsSettings.class);
+                        });
+        moduleRegistry.registerModule(ModuleType.AUXILIARY_SEARCH, auxiliarySearchModuleBuilder);
 
         mModuleRegistrySupplier.set(moduleRegistry);
     }

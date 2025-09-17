@@ -89,20 +89,11 @@ extern const char kAndroidAutofillUpdateContextForWebContentsName[];
 extern const char kAndroidAutofillUpdateContextForWebContentsDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
-extern const char kAndroidAppIntegrationName[];
-extern const char kAndroidAppIntegrationDescription[];
-
 extern const char kAndroidAppIntegrationMultiDataSourceName[];
 extern const char kAndroidAppIntegrationMultiDataSourceDescription[];
 
 extern const char kAndroidAppIntegrationModuleName[];
 extern const char kAndroidAppIntegrationModuleDescription[];
-
-extern const char kAndroidAppIntegrationV2Name[];
-extern const char kAndroidAppIntegrationV2Description[];
-
-extern const char kAndroidAppIntegrationWithFaviconName[];
-extern const char kAndroidAppIntegrationWithFaviconDescription[];
 
 extern const char kAccessibilityOnScreenModeName[];
 extern const char kAccessibilityOnScreenModeDescription[];

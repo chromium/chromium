@@ -15,7 +15,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
@@ -34,9 +33,7 @@ public class AuxiliarySearchBridge {
      * @param profile The Profile to retrieve the corresponding information.
      */
     public AuxiliarySearchBridge(Profile profile) {
-        if ((!ChromeFeatureList.sAndroidAppIntegration.isEnabled()
-                        && !ChromeFeatureList.sAndroidAppIntegrationV2.isEnabled())
-                || profile.isOffTheRecord()) {
+        if (profile.isOffTheRecord()) {
             mNativeBridge = 0;
         } else {
             mNativeBridge = AuxiliarySearchBridgeJni.get().getForProfile(profile);

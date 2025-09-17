@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -30,16 +29,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.MetaDataVersion;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,7 +56,6 @@ import java.util.List;
 /** Unit tests for {@link AuxiliarySearchProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
 public class AuxiliarySearchProviderUnitTest {
     private static final String TAB_TITLE = "tab";
     private static final String TAB_URL = "https://tab.google.com/";
@@ -163,44 +158,10 @@ public class AuxiliarySearchProviderUnitTest {
     }
 
     @Test
-    public void configuredTabsAgeCannotBeZero() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_APP_INTEGRATION,
-                AuxiliarySearchProvider.TAB_AGE_HOURS_PARAM,
-                0);
-        // Recreate provider to update the finch parameter.
-        mAuxiliarySearchProvider =
-                new AuxiliarySearchProvider(
-                        mContext, mProfile, mTabModelSelector, AuxiliarySearchHostType.CTA);
-
-        assertNotEquals(0L, mAuxiliarySearchProvider.getTabsMaxAgeMs());
-        assertEquals(
-                AuxiliarySearchProvider.DEFAULT_TAB_AGE_HOURS * 60 * 60 * 1000,
-                mAuxiliarySearchProvider.getTabsMaxAgeMs());
-    }
-
-    @Test
-    public void configuredTabsAge() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_APP_INTEGRATION,
-                AuxiliarySearchProvider.TAB_AGE_HOURS_PARAM,
-                10);
-        // Recreate provider to update the finch parameter.
-        mAuxiliarySearchProvider =
-                new AuxiliarySearchProvider(
-                        mContext, mProfile, mTabModelSelector, AuxiliarySearchHostType.CTA);
-        assertEquals(10 * 60 * 60 * 1000, mAuxiliarySearchProvider.getTabsMaxAgeMs());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
     public void testScheduleBackgroundTask() {
-        long expectedWindowStartTimeMs = 10;
         long expectedStartTimeMs = 1000;
 
-        TaskInfo taskInfo =
-                mAuxiliarySearchProvider.scheduleBackgroundTask(
-                        expectedWindowStartTimeMs, expectedStartTimeMs);
+        TaskInfo taskInfo = mAuxiliarySearchProvider.scheduleBackgroundTask(expectedStartTimeMs);
         var bundle = taskInfo.getExtras();
         assertEquals(
                 expectedStartTimeMs, bundle.getLong(AuxiliarySearchProvider.TASK_CREATED_TIME));

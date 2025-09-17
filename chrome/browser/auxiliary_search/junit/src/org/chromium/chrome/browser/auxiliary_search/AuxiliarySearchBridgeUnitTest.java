@@ -30,9 +30,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.JUnitTestGURLs;
@@ -43,7 +40,6 @@ import java.util.List;
 /** Unit tests for {@link AuxiliarySearchBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
 public final class AuxiliarySearchBridgeUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -70,14 +66,6 @@ public final class AuxiliarySearchBridgeUnitTest {
     @Test
     @SmallTest
     public void getForProfileTest() {
-        verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION)
-    @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_V2)
-    public void getForProfileTestV2() {
         verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
     }
 

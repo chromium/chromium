@@ -104,21 +104,11 @@ const char kAndroidAdaptiveFrameRateDescription[] =
     "does not support adaptive refresh rate.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
-const char kAndroidAppIntegrationDescription[] =
-    "If enabled, allows Chrome to integrate with the Android App Search.";
-
 const char kAndroidAppIntegrationModuleName[] =
     "Integrate with Android App Search and shows a notice card";
 const char kAndroidAppIntegrationModuleDescription[] =
     "If enabled, allows Chrome to show a notice card on the magic stack for "
     "Android App Search integration";
-
-const char kAndroidAppIntegrationV2Name[] =
-    "Integrate with Android App Search V2";
-const char kAndroidAppIntegrationV2Description[] =
-    "If enabled, allows Chrome to integrate with the Android App Search "
-    "directly without using internal library.";
 
 const char kNewContentForCheckerboardedScrollsName[] =
     "Change scrolling scheduling to reduce checkerboarding";
@@ -154,12 +144,6 @@ const char kNewTabPageCustomizationForMvtName[] =
 const char kNewTabPageCustomizationForMvtDescription[] =
     "Allows users to enable or disable the Most Visiteid Tiles section";
 #endif  // BUILDFLAG(IS_ANDROID)
-
-const char kAndroidAppIntegrationWithFaviconName[] =
-    "Integrate with Android App Search with favicons";
-const char kAndroidAppIntegrationWithFaviconDescription[] =
-    "If enabled, allows Chrome to integrate with the Android App Search with "
-    "favicons.";
 
 const char kAndroidAppIntegrationMultiDataSourceName[] =
     "Integrate with Android App Search with multiple data sources.";
