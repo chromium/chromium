@@ -14,6 +14,10 @@ export const spinnerDebounceTimeout = 150;
 export const playFromSelectionTimeout = spinnerDebounceTimeout + 25;
 export const toastDurationMs = 10000;
 
+// How long to delay before logging the empty state. If it's only shown briefly,
+// no need to log.
+export const LOG_EMPTY_DELAY_MS = 500;
+
 // Events emitted from the toolbar to the app
 export enum ToolbarEvent {
   LETTER_SPACING = 'letter-spacing-change',

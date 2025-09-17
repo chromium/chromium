@@ -255,6 +255,9 @@ export class FakeReadingMode {
   // Log when speech stops and why.
   logSpeechStop(_source: number) {}
 
+  // Log when the empty state page is shown.
+  logEmptyState(): void {}
+
   // Called when the highlight granularity is changed via the webui toolbar.
   turnedHighlightOn() {
     this.highlightGranularity = this.autoHighlighting;

@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, LOG_EMPTY_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, mockMetrics} from './common.js';
@@ -15,7 +16,6 @@ import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('EmptyState', () => {
   let app: AppElement;
-  let speechController: SpeechController;
   let metrics: TestMetricsBrowserProxy;
 
   function getEmptyState() {
@@ -31,8 +31,7 @@ suite('EmptyState', () => {
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    speechController = new SpeechController();
-    SpeechController.setInstance(speechController);
+    chrome.readingMode.rootId = 1;
     metrics = mockMetrics();
 
     app = await createApp();
@@ -50,28 +49,64 @@ suite('EmptyState', () => {
     assertStringContains(empty.imagePath, emptyPath);
   });
 
-  test('showEmpty logs empty state once', async () => {
+  test('showEmpty logs if still empty after delay', () => {
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
     app.showEmpty();
-    await microtasksFinished();
+    assertTrue(app.isEmptyState());
+    assertEquals(0, metrics.getCallCount('recordEmptyState'));
+
+    mockTimer.tick(LOG_EMPTY_DELAY_MS);
+    assertTrue(app.isEmptyState());
+    assertEquals(1, metrics.getCallCount('recordEmptyState'));
+
+    mockTimer.uninstall();
+  });
+
+  test('showEmpty does not log if not empty after delay', () => {
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    app.showEmpty();
+    assertEquals(0, metrics.getCallCount('recordEmptyState'));
+
+    app.updateContent();
+    mockTimer.tick(LOG_EMPTY_DELAY_MS);
+    assertEquals(0, metrics.getCallCount('recordEmptyState'));
+
+    mockTimer.uninstall();
+  });
+
+  test('showEmpty logs empty state once if still empty', () => {
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    app.showEmpty();
+    mockTimer.tick(LOG_EMPTY_DELAY_MS);
     assertEquals(1, metrics.getCallCount('recordEmptyState'));
     assertTrue(app.isEmptyState());
 
     app.showEmpty();
-    await microtasksFinished();
+    mockTimer.tick(LOG_EMPTY_DELAY_MS);
     assertEquals(1, metrics.getCallCount('recordEmptyState'));
     assertTrue(app.isEmptyState());
+
+    mockTimer.uninstall();
   });
 
   test('updateContent after loading with no content shows empty', async () => {
-    chrome.readingMode.rootId = 1;
     chrome.readingMode.getTextContent = () => '';
     app.showLoading();
     await microtasksFinished();
+    const mockTimer = new MockTimer();
+    mockTimer.install();
 
     app.updateContent();
-    await microtasksFinished();
+    mockTimer.tick(LOG_EMPTY_DELAY_MS);
 
     assertEquals(1, metrics.getCallCount('recordEmptyState'));
     assertTrue(app.isEmptyState());
+    mockTimer.uninstall();
   });
 });
