@@ -170,10 +170,13 @@ suite('AutofillSectionUiTest', function() {
     const workAddress = createAddressEntry();
     workAddress.metadata!.recordType =
         chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
+    const nameEmailAddress = createAddressEntry();
+    nameEmailAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL;
 
     const autofillManager = new TestAutofillManager();
     autofillManager.data.addresses =
-        [address, accountAddress, homeAddress, workAddress];
+        [address, accountAddress, homeAddress, workAddress, nameEmailAddress];
     autofillManager.data.accountInfo = {
       ...STUB_USER_ACCOUNT_INFO,
       isSyncEnabledForAutofillProfiles: true,
@@ -286,6 +289,39 @@ suite('AutofillSectionUiTest', function() {
       assertEquals(
           dialog.$.description.innerHTML, expectedMessage,
           `Work address delete confirmation view description is incorrect.`);
+      dialog.$.dialog.close();
+      // Make sure closing clean-ups are finished.
+      await eventToPromise('close', dialog.$.dialog);
+    }
+
+    await flushTasks();
+
+    {
+      const dialog = await initiateRemoving(section, 4);
+      const nameEmailUrl =
+          loadTimeData.getString('googleAccountNameEmailAddressEditUrl')
+              .replace(/&/g, '&amp;');
+      const expectedDescription = loadTimeData.getStringF(
+          'deleteNameEmailAddressNotice', nameEmailUrl,
+          STUB_USER_ACCOUNT_INFO.email);
+      assertEquals(
+          dialog.$.description.innerHTML, expectedDescription,
+          `Name email delete confirmation view description is incorrect.`);
+
+      const title = dialog.shadowRoot!.querySelector<HTMLElement>('#title');
+      assertTrue(!!title);
+      assertEquals(
+          title.innerHTML,
+          loadTimeData.getString('removeNameEmailAddressConfirmationTitle'),
+          `Name email delete confirmation view title is incorrect.`);
+
+      const removeButton =
+          dialog.shadowRoot!.querySelector<HTMLElement>('#remove');
+      assertTrue(!!removeButton);
+      assertEquals(
+          removeButton.innerText,
+          loadTimeData.getString('removeAddressFromChrome'),
+          `Name email delete confirmation remove button label is incorrect.`);
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
@@ -551,6 +587,32 @@ suite('AutofillSectionAddressTests', function() {
 
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('googleAccountWorkAddressUrl'));
+  });
+
+  test('verifyAccountNameEmailAddressEdit', async function() {
+    const openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    const nameEmailAddress = createAddressEntry();
+    nameEmailAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL;
+    const section = await createAutofillSection([nameEmailAddress], {});
+
+    const addressList = section.$.addressList;
+    const row = addressList.children[0];
+    assertTrue(!!row);
+    const menuButton = row.querySelector<HTMLElement>('.address-menu');
+    assertTrue(!!menuButton);
+    menuButton.click();
+    flush();
+
+    const editButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+    assertTrue(!!editButton);
+    editButton.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(
+        url, loadTimeData.getString('googleAccountNameEmailAddressEditUrl'));
   });
 
   test('verifyAddAddressDialog', function() {

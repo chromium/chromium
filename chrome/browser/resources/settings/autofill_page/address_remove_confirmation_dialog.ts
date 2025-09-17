@@ -87,8 +87,12 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
       return this.i18n('removeHomeAddressConfirmationTitle');
     }
 
-    return this.isAccountWorkAddress_() ?
-        this.i18n('removeWorkAddressConfirmationTitle') :
+    if (this.isAccountWorkAddress_()) {
+      return this.i18n('removeWorkAddressConfirmationTitle');
+    }
+
+    return this.isAccountNameEmailAddress_() ?
+        this.i18n('removeNameEmailAddressConfirmationTitle') :
         this.i18n('removeAddressConfirmationTitle');
   }
 
@@ -117,6 +121,13 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
           accountInfo?.email || ''));
     }
 
+    if (this.isAccountNameEmailAddress_()) {
+      return sanitizeInnerHtml(loadTimeData.getStringF(
+          'deleteNameEmailAddressNotice',
+          loadTimeData.getString('googleAccountNameEmailAddressEditUrl'),
+          accountInfo?.email || ''));
+    }
+
     const isSyncEnabled = !!accountInfo?.isSyncEnabledForAutofillProfiles;
     return sanitizeInnerHtml(this.i18n(
         isSyncEnabled ? 'removeSyncAddressConfirmationDescription' :
@@ -124,7 +135,8 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
   }
 
   private computeRemoveButtonLabel_(): string {
-    return this.isAccountHomeAddress_() || this.isAccountWorkAddress_() ?
+    return this.isAccountHomeAddress_() || this.isAccountWorkAddress_() ||
+            this.isAccountNameEmailAddress_() ?
         this.i18n('removeAddressFromChrome') :
         this.i18n('removeAddress');
   }
@@ -137,6 +149,11 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
   private isAccountWorkAddress_(): boolean {
     return this.address?.metadata?.recordType ===
         chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
+  }
+
+  private isAccountNameEmailAddress_(): boolean {
+    return this.address?.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL;
   }
 
   private onRemoveClick() {
