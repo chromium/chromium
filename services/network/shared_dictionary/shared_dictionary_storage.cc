@@ -39,22 +39,31 @@ class DictionaryHeaderInfo {
   DictionaryHeaderInfo(std::string match,
                        std::set<network::mojom::RequestDestination> match_dest,
                        std::string type,
-                       std::string id)
+                       std::string id,
+                       std::optional<base::TimeDelta> ttl)
       : match(std::move(match)),
         match_dest(std::move(match_dest)),
         type(std::move(type)),
-        id(std::move(id)) {}
+        id(std::move(id)),
+        ttl(std::move(ttl)) {}
   ~DictionaryHeaderInfo() = default;
 
   std::string match;
   std::set<network::mojom::RequestDestination> match_dest;
   std::string type;
   std::string id;
+  std::optional<base::TimeDelta> ttl;
 };
 
 base::TimeDelta CalculateExpiration(const net::HttpResponseHeaders& headers,
                                     const base::Time request_time,
-                                    const base::Time response_time) {
+                                    const base::Time response_time,
+                                    const std::optional<base::TimeDelta>& ttl) {
+  // An explicit "ttl" value overrides the calculated expiration from the HTTP
+  // caching headers.
+  if (ttl) {
+    return ttl.value();
+  }
   // Use the freshness lifetime calculated from the response header.
   net::HttpResponseHeaders::FreshnessLifetimes lifetimes =
       headers.GetFreshnessLifetimes(response_time);
@@ -83,6 +92,7 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
   std::set<network::mojom::RequestDestination> match_dest_values;
   std::string type_value = std::string(kDefaultTypeRaw);
   std::string id_value;
+  std::optional<base::TimeDelta> ttl;
   for (const auto& entry : dictionary.value()) {
     if (entry.first == shared_dictionary::kOptionNameMatch) {
       if ((entry.second.member.size() != 1u) ||
@@ -130,6 +140,20 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
         return base::unexpected(
             mojom::SharedDictionaryError::kWriteErrorTooLongIdField);
       }
+    } else if (entry.first == shared_dictionary::kOptionNameTTL &&
+               base::FeatureList::IsEnabled(
+                   features::kCompressionDictionaryTTL)) {
+      if ((entry.second.member.size() != 1u) ||
+          !entry.second.member.front().item.is_integer()) {
+        return base::unexpected(
+            mojom::SharedDictionaryError::kWriteErrorNonIntegerTTLField);
+      }
+      int64_t ttl_seconds = entry.second.member.front().item.GetInteger();
+      if (ttl_seconds <= 0) {
+        return base::unexpected(
+            mojom::SharedDictionaryError::kWriteErrorInvalidTTLField);
+      }
+      ttl = base::Seconds(ttl_seconds);
     }
   }
   if (!match_value) {
@@ -137,9 +161,9 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
         mojom::SharedDictionaryError::kWriteErrorNoMatchField);
   }
 
-  return DictionaryHeaderInfo(std::move(*match_value),
-                              std::move(match_dest_values),
-                              std::move(type_value), std::move(id_value));
+  return DictionaryHeaderInfo(
+      std::move(*match_value), std::move(match_dest_values),
+      std::move(type_value), std::move(id_value), std::move(ttl));
 }
 
 }  // namespace
@@ -198,18 +222,19 @@ SharedDictionaryStorage::MaybeCreateWriter(
   // registration.
   CHECK_NE(mojom::FetchResponseType::kOpaque, response_tainting);
 
-  base::TimeDelta expiration =
-      CalculateExpiration(headers, request_time, response_time);
-  if (expiration <= base::TimeDelta()) {
-    return base::unexpected(
-        mojom::SharedDictionaryError::kWriteErrorExpiredResponse);
-  }
-
   base::expected<DictionaryHeaderInfo, mojom::SharedDictionaryError> info =
       ParseDictionaryHeaderInfo(use_as_dictionary_header);
   if (!info.has_value()) {
     return base::unexpected(info.error());
   }
+
+  base::TimeDelta expiration =
+      CalculateExpiration(headers, request_time, response_time, info->ttl);
+  if (expiration <= base::TimeDelta()) {
+    return base::unexpected(
+        mojom::SharedDictionaryError::kWriteErrorExpiredResponse);
+  }
+
   if (info->type != kDefaultTypeRaw) {
     // Currently we only support `raw` type.
     return base::unexpected(
@@ -224,7 +249,7 @@ SharedDictionaryStorage::MaybeCreateWriter(
   if (was_fetched_via_cache &&
       storage->UpdateLastFetchTimeIfAlreadyRegistered(
           url, response_time, expiration, info->match, info->match_dest,
-          info->id, last_fetch_time)) {
+          info->id, info->ttl, last_fetch_time)) {
     return base::unexpected(
         mojom::SharedDictionaryError::kWriteErrorAlreadyRegistered);
   }

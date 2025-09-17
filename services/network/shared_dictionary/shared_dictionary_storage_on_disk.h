@@ -101,6 +101,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
       const std::string& id,
+      const std::optional<base::TimeDelta>& ttl,
       base::Time last_fetch_time) override;
 
   // Called from `SharedDictionaryManagerOnDisk` when dictionary has been

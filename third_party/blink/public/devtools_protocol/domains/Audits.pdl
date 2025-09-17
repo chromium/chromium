@@ -309,8 +309,10 @@ experimental domain Audits
       WriteErrorInsufficientResources
       WriteErrorInvalidMatchField
       WriteErrorInvalidStructuredHeader
+      WriteErrorInvalidTTLField
       WriteErrorNavigationRequest
       WriteErrorNoMatchField
+      WriteErrorNonIntegerTTLField
       WriteErrorNonListMatchDestField
       WriteErrorNonSecureContext
       WriteErrorNonStringIdField

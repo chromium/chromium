@@ -8477,6 +8477,7 @@ from previous Chrome versions.
   <int value="-2030255112" label="Bruschetta:disabled"/>
   <int value="-2030217301" label="password-export:disabled"/>
   <int value="-2029912304" label="StaleWhileRevalidate2:enabled"/>
+  <int value="-2029381098" label="CompressionDictionaryTTL:enabled"/>
   <int value="-2028961033" label="SanitizerAPIv0:disabled"/>
   <int value="-2028402892" label="EnableIkev2Vpn:enabled"/>
   <int value="-2028336995" label="VirtualKeyboardDarkMode:disabled"/>
@@ -12364,6 +12365,7 @@ from previous Chrome versions.
   <int value="-639070391" label="FreezeUserAgent:disabled"/>
   <int value="-639026783" label="disable-gpu-appcontainer"/>
   <int value="-638952203" label="RendererSideResourceScheduler:disabled"/>
+  <int value="-638938520" label="CompressionDictionaryTTL:disabled"/>
   <int value="-638764080" label="EncryptedClientHello:disabled"/>
   <int value="-638349846" label="OmniboxWarmRecycledViewPool:disabled"/>
   <int value="-638177392" label="FuseBoxDebug:enabled"/>

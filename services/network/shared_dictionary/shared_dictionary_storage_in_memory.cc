@@ -131,11 +131,18 @@ bool SharedDictionaryStorageInMemory::UpdateLastFetchTimeIfAlreadyRegistered(
     const std::string& match,
     const std::set<mojom::RequestDestination>& match_dest,
     const std::string& id,
+    const std::optional<base::TimeDelta>& ttl,
     base::Time last_fetch_time) {
   DictionaryInfo* matched_info = FindRegisteredInDictionaryInfoMap(
       dictionary_info_map_, url, response_time, expiration, match, match_dest,
-      id);
+      id, ttl);
   if (matched_info) {
+    if (ttl) {
+      // If there is an explicit ttl, it is relative to the last time the
+      // resource was fetched so we reset the base time of the response to
+      // be the last fetch.
+      matched_info->set_response_time(last_fetch_time);
+    }
     matched_info->set_last_fetch_time(last_fetch_time);
     return true;
   }

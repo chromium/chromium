@@ -3156,6 +3156,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-compression-dictionary-ttl",
+    "owners": [ "pmeenan@chromium.org", "net-dev@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-container-type-no-layout-containment",
     "owners": [ "ikilpatrick@chromium.org" ],
     "expiry_milestone": 140

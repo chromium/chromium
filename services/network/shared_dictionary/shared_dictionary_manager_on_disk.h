@@ -101,7 +101,8 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       base::OnceCallback<void(net::SharedDictionaryInfo)> callback);
 
   void UpdateDictionaryLastFetchTime(net::SharedDictionaryInfo& info,
-                                     base::Time last_fetch_time);
+                                     base::Time last_fetch_time,
+                                     const std::optional<base::TimeDelta>& ttl);
   void UpdateDictionaryLastUsedTime(net::SharedDictionaryInfo& info);
 
   // Posts a MismatchingEntryDeletionTask if this method is called for the first

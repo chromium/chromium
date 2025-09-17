@@ -239,12 +239,14 @@ bool SharedDictionaryStorageOnDisk::UpdateLastFetchTimeIfAlreadyRegistered(
     const std::string& match,
     const std::set<mojom::RequestDestination>& match_dest,
     const std::string& id,
+    const std::optional<base::TimeDelta>& ttl,
     base::Time last_fetch_time) {
   WrappedDictionaryInfo* matched_info = FindRegisteredInDictionaryInfoMap(
       dictionary_info_map_, url, response_time, expiration, match, match_dest,
-      id);
+      id, ttl);
   if (matched_info) {
-    manager_->UpdateDictionaryLastFetchTime(*matched_info, last_fetch_time);
+    manager_->UpdateDictionaryLastFetchTime(*matched_info, last_fetch_time,
+                                            ttl);
     return true;
   }
   return false;

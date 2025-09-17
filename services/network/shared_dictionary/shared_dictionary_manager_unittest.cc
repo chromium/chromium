@@ -174,6 +174,8 @@ class SharedDictionaryManagerTest
       delete;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        network::features::kCompressionDictionaryTTL);
     if (GetManagerType() == TestManagerType::kOnDisk) {
       ASSERT_TRUE(tmp_directory_.CreateUniqueTempDir());
       database_path_ = tmp_directory_.GetPath().Append(FILE_PATH_LITERAL("db"));
@@ -249,6 +251,7 @@ class SharedDictionaryManagerTest
   base::ScopedTempDir tmp_directory_;
   base::FilePath database_path_;
   base::FilePath cache_directory_path_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -655,6 +658,241 @@ TEST_P(SharedDictionaryManagerTest, DictionaryLifetimeFromCacheControlHeader) {
     ASSERT_EQ(1u, result.size());
     EXPECT_EQ(*testcase.expected_expiration, result[0]->expiration);
   }
+}
+
+TEST_P(SharedDictionaryManagerTest, DictionaryLifetimeFromTTLOption) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  struct {
+    std::string header_string;
+    base::expected<base::TimeDelta, mojom::SharedDictionaryError>
+        expected_expiration_or_error_status;
+  } kTestCases[] = {
+      // Missing (default to cache-control)
+      {"match=\"test\"", kDefaultExpiration},
+      // Valid value
+      {"match=\"test\", ttl=100", base::Seconds(100)},
+      // Wrong type
+      {"match=\"test\", ttl=token",
+       base::unexpected(
+           mojom::SharedDictionaryError::kWriteErrorNonIntegerTTLField)},
+      // Invalid value (negative)
+      {"match=\"test\", ttl=-1",
+       base::unexpected(
+           mojom::SharedDictionaryError::kWriteErrorInvalidTTLField)},
+      // Invalid value (zero)
+      {"match=\"test\", ttl=0",
+       base::unexpected(
+           mojom::SharedDictionaryError::kWriteErrorInvalidTTLField)},
+  };
+  for (const auto& testcase : kTestCases) {
+    SCOPED_TRACE(base::StringPrintf("header_string: %s",
+                                    testcase.header_string.c_str()));
+    scoped_refptr<net::HttpResponseHeaders> headers =
+        net::HttpResponseHeaders::TryToCreate(base::StrCat(
+            {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+             ": ", testcase.header_string, "\n", kDefaultCacheControlHeader,
+             "\n"}));
+    ASSERT_TRUE(headers);
+    base::expected<scoped_refptr<SharedDictionaryWriter>,
+                   mojom::SharedDictionaryError>
+        writer = SharedDictionaryStorage::MaybeCreateWriter(
+            testcase.header_string, /*shared_dictionary_writer_enabled=*/true,
+            storage.get(), mojom::RequestMode::kSameOrigin,
+            mojom::FetchResponseType::kBasic,
+            GURL("https://origin1.test/testfile.txt"),
+            /*request_time=*/base::Time::Now(),
+            /*response_time=*/base::Time::Now(), *headers,
+            /*was_fetched_via_cache=*/false,
+            /*access_allowed_check_callback=*/base::BindOnce([]() {
+              return true;
+            }));
+    if (!testcase.expected_expiration_or_error_status.has_value()) {
+      EXPECT_FALSE(writer.has_value());
+      EXPECT_EQ(writer.error(),
+                testcase.expected_expiration_or_error_status.error());
+      continue;
+    }
+    ASSERT_TRUE(writer.has_value());
+    ASSERT_TRUE(*writer);
+    (*writer)->Append(base::as_byte_span(kTestData1));
+    (*writer)->Finish();
+    if (GetManagerType() == TestManagerType::kOnDisk) {
+      FlushCacheTasks();
+      continue;
+    }
+    std::vector<network::mojom::SharedDictionaryInfoPtr> result =
+        GetSharedDictionaryInfo(manager.get(), isolation_key);
+    ASSERT_EQ(1u, result.size());
+    EXPECT_EQ(*testcase.expected_expiration_or_error_status,
+              result[0]->expiration);
+  }
+}
+
+TEST_P(SharedDictionaryManagerTest,
+       DictionaryLifetimeNotExtendedOnFetchWithoutTTL) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  GURL dictionary_url = GURL("https://origin1.test/testfile.txt");
+  base::Time response_time = base::Time::Now();
+  const std::string use_as_dictionary_header = "match=\"/test\"";
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      net::HttpResponseHeaders::TryToCreate(base::StrCat(
+          {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+           ": ", use_as_dictionary_header, "\ncache-control:max-age=100\n\n"}));
+  ASSERT_TRUE(headers);
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer1 = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/response_time,
+          /*response_time=*/response_time, *headers,
+          /*was_fetched_via_cache=*/false,
+          /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+            return true;
+          }));
+  ASSERT_TRUE(writer1.has_value());
+  ASSERT_TRUE(*writer1);
+  (*writer1)->Append(base::as_byte_span(kTestData1));
+  (*writer1)->Finish();
+  if (GetManagerType() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+  task_environment_.FastForwardBy(base::Seconds(1));
+  base::Time last_fetch_time = base::Time::Now();
+
+  // Before re-fetching the ttl-configured dictionary from cache,
+  // make sure the response_time is the original response_time
+  // from when it was created. For dictionary entries not using "ttl"
+  // it shouldn't change when the resource is re-fetched.
+  std::vector<network::mojom::SharedDictionaryInfoPtr> before =
+      GetSharedDictionaryInfo(manager.get(), isolation_key);
+  ASSERT_EQ(1u, before.size());
+  EXPECT_EQ(response_time, before[0]->response_time);
+  EXPECT_NE(last_fetch_time, before[0]->response_time);
+
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer2 = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/response_time,
+          /*response_time=*/response_time, *headers,
+          /*was_fetched_via_cache=*/true,
+          /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+            return true;
+          }));
+  // MaybeCreateWriter must return false for same dictionary from the disk
+  // cache.
+  EXPECT_FALSE(writer2.has_value());
+  EXPECT_EQ(writer2.error(),
+            mojom::SharedDictionaryError::kWriteErrorAlreadyRegistered);
+  if (GetManagerType() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  // Check to make sure the response time was not updated to the
+  // "last_fetch_time".
+  std::vector<network::mojom::SharedDictionaryInfoPtr> after =
+      GetSharedDictionaryInfo(manager.get(), isolation_key);
+  ASSERT_EQ(1u, after.size());
+  EXPECT_EQ(response_time, before[0]->response_time);
+  EXPECT_NE(last_fetch_time, before[0]->response_time);
+}
+
+TEST_P(SharedDictionaryManagerTest, DictionaryLifetimeExtendedOnFetchWithTTL) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  GURL dictionary_url = GURL("https://origin1.test/testfile.txt");
+  base::Time response_time = base::Time::Now();
+  const std::string use_as_dictionary_header = "match=\"/test\", ttl=100";
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      net::HttpResponseHeaders::TryToCreate(base::StrCat(
+          {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+           ": ", use_as_dictionary_header, "\ncache-control:max-age=100\n\n"}));
+  ASSERT_TRUE(headers);
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer1 = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/response_time,
+          /*response_time=*/response_time, *headers,
+          /*was_fetched_via_cache=*/false,
+          /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+            return true;
+          }));
+  ASSERT_TRUE(writer1.has_value());
+  ASSERT_TRUE(*writer1);
+  (*writer1)->Append(base::as_byte_span(kTestData1));
+  (*writer1)->Finish();
+  if (GetManagerType() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+  task_environment_.FastForwardBy(base::Seconds(1));
+  base::Time last_fetch_time = base::Time::Now();
+
+  // Before re-fetching the ttl-configured dictionary from cache,
+  // make sure the response_time is the original response_time
+  // from when it was created. It will be updated to the last_fetch_time
+  // every time it is fetched since the "ttl" parameter sets a
+  // dictionary expiration relative to the last fetch time.
+  std::vector<network::mojom::SharedDictionaryInfoPtr> before =
+      GetSharedDictionaryInfo(manager.get(), isolation_key);
+  ASSERT_EQ(1u, before.size());
+  EXPECT_EQ(response_time, before[0]->response_time);
+  EXPECT_NE(last_fetch_time, before[0]->response_time);
+
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer2 = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/response_time,
+          /*response_time=*/response_time, *headers,
+          /*was_fetched_via_cache=*/true,
+          /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+            return true;
+          }));
+  // MaybeCreateWriter must return false for same dictionary from the disk
+  // cache.
+  EXPECT_FALSE(writer2.has_value());
+  EXPECT_EQ(writer2.error(),
+            mojom::SharedDictionaryError::kWriteErrorAlreadyRegistered);
+  if (GetManagerType() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  // Check to make sure the response time was updated to the "last_fetch_time"
+  std::vector<network::mojom::SharedDictionaryInfoPtr> after =
+      GetSharedDictionaryInfo(manager.get(), isolation_key);
+  ASSERT_EQ(1u, after.size());
+  EXPECT_NE(response_time, after[0]->response_time);
+  EXPECT_EQ(last_fetch_time, after[0]->response_time);
 }
 
 TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {

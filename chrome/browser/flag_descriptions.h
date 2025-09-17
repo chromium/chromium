@@ -770,6 +770,9 @@ extern const char kCollaborationSharedTabGroupAccountDataDescription[];
 extern const char kCompressionDictionaryTransportName[];
 extern const char kCompressionDictionaryTransportDescription[];
 
+extern const char kCompressionDictionaryTTLName[];
+extern const char kCompressionDictionaryTTLDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kContextualSearchWithCredentialsForDebugName[];
 extern const char kContextualSearchWithCredentialsForDebugDescription[];

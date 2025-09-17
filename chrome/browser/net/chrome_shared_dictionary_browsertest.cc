@@ -756,7 +756,8 @@ class SharedDictionaryDevToolsBrowserTest
     if (enable_feature) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {network::features::kCompressionDictionaryTransport},
+          {network::features::kCompressionDictionaryTransport,
+           network::features::kCompressionDictionaryTTL},
           /*disabled_features=*/
           {});
     } else {
@@ -1088,6 +1089,17 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
                        WriteErrorNonTokenTypeField) {
   RunCustomHeaderTest("WriteErrorNonTokenTypeField",
                       "match=\"/test/*\", type=\"raw\"");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNonIntegerTTLField) {
+  RunCustomHeaderTest("WriteErrorNonIntegerTTLField",
+                      "match=\"/test/*\", ttl=token");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorInvalidTTLField) {
+  RunCustomHeaderTest("WriteErrorInvalidTTLField", "match=\"/test/*\", ttl=0");
 }
 
 IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,

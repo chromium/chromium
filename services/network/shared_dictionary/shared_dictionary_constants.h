@@ -43,6 +43,9 @@ COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameId[];
 // The max length of dictionary id.
 inline constexpr uint64_t kDictionaryIdMaxLength = 1024;
 
+// The dictionary option name of "ttl".
+COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameTTL[];
+
 }  // namespace network::shared_dictionary
 
 #endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_CONSTANTS_H_

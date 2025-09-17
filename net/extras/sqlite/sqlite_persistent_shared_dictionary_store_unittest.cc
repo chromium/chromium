@@ -682,6 +682,23 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return error_out;
   }
 
+  SQLitePersistentSharedDictionaryStore::Error
+  UpdateDictionaryResponseTimeAndLastFetchTime(
+      const int64_t primary_key_in_database,
+      const base::Time new_time) {
+    base::RunLoop run_loop;
+    SQLitePersistentSharedDictionaryStore::Error error_out;
+    store_->UpdateDictionaryResponseTimeAndLastFetchTime(
+        primary_key_in_database, new_time,
+        base::BindLambdaForTesting(
+            [&](SQLitePersistentSharedDictionaryStore::Error result_error) {
+              error_out = result_error;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return error_out;
+  }
+
   void CorruptDatabaseFile() {
     // Execute CreateStore(), ClearAllDictionaries() and DestroyStore() to
     // create a database file.
@@ -2182,6 +2199,49 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
+TEST_F(
+    SQLitePersistentSharedDictionaryStoreTest,
+    UpdateDictionaryResponseTimeAndLastFetchTimeErrorDatabaseInitializationFailure) {
+  CorruptDatabaseFile();
+  CreateStore();
+  EXPECT_EQ(
+      SQLitePersistentSharedDictionaryStore::Error::kFailedToInitializeDatabase,
+      UpdateDictionaryResponseTimeAndLastFetchTime(
+          /*primary_key_in_database=*/0,
+          /*last_fetch_time=*/base::Time::Now()));
+  DestroyStore();
+  CheckStoreRecovered();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       UpdateDictionaryResponseTimeAndLastFetchTimeErrorInvalidSql) {
+  ManipulateDatabase({"CREATE TABLE dictionaries (dummy TEST NOT NULL)"});
+  CreateStore();
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kInvalidSql,
+            UpdateDictionaryResponseTimeAndLastFetchTime(
+                /*primary_key_in_database=*/0,
+                /*last_fetch_time=*/base::Time::Now()));
+}
+
+#if !BUILDFLAG(IS_FUCHSIA)
+// MakeFileUnwritable() doesn't cause the failure on Fuchsia. So disabling the
+// test on Fuchsia.
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       UpdateDictionaryResponseTimeAndLastFetchTimeErrorSqlExecutionFailure) {
+  CreateStore();
+  auto register_dictionary_result =
+      RegisterDictionary(isolation_key_, dictionary_info_);
+  DestroyStore();
+  MakeFileUnwritable();
+  CreateStore();
+  EXPECT_EQ(
+      SQLitePersistentSharedDictionaryStore::Error::kFailedToInitializeDatabase,
+      UpdateDictionaryResponseTimeAndLastFetchTime(
+          register_dictionary_result.primary_key_in_database(),
+          /*last_fetch_time=*/base::Time::Now()));
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 TEST_F(SQLitePersistentSharedDictionaryStoreTest, InvalidHash) {
   CreateStore();
   auto register_dictionary_result =
@@ -3096,6 +3156,36 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   EXPECT_EQ(dicts1[0].last_fetch_time(), dictionary_info_.last_fetch_time());
   EXPECT_EQ(dicts2[0].last_fetch_time(), updated_last_fetch_time);
   EXPECT_NE(dicts1[0].last_fetch_time(), dicts2[0].last_fetch_time());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       UpdateDictionaryResponseTimeAndLastFetchTime) {
+  CreateStore();
+  auto register_dictionary_result =
+      RegisterDictionary(isolation_key_, dictionary_info_);
+
+  std::vector<SharedDictionaryInfo> dicts1 = GetDictionaries(isolation_key_);
+  ASSERT_EQ(1u, dicts1.size());
+
+  // Move the clock forward by 1 second.
+  FastForwardBy(base::Seconds(1));
+
+  const base::Time updated_time = base::Time::Now();
+  // Update the last fetch time.
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kOk,
+            UpdateDictionaryResponseTimeAndLastFetchTime(
+                register_dictionary_result.primary_key_in_database(),
+                /*last_fetch_time=*/updated_time));
+
+  std::vector<SharedDictionaryInfo> dicts2 = GetDictionaries(isolation_key_);
+  ASSERT_EQ(1u, dicts2.size());
+
+  EXPECT_EQ(dicts1[0].last_fetch_time(), dictionary_info_.last_fetch_time());
+  EXPECT_EQ(dicts2[0].last_fetch_time(), updated_time);
+  EXPECT_NE(dicts1[0].last_fetch_time(), dicts2[0].last_fetch_time());
+  EXPECT_EQ(dicts1[0].response_time(), dictionary_info_.response_time());
+  EXPECT_EQ(dicts2[0].response_time(), updated_time);
+  EXPECT_NE(dicts1[0].response_time(), dicts2[0].response_time());
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,

@@ -10458,6 +10458,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCompressionDictionaryTransportDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kCompressionDictionaryTransport)},
 
+    {"enable-compression-dictionary-ttl",
+     flag_descriptions::kCompressionDictionaryTTLName,
+     flag_descriptions::kCompressionDictionaryTTLDescription, kOsAll,
+     FEATURE_VALUE_TYPE(network::features::kCompressionDictionaryTTL)},
+
     {"enable-container-type-no-layout-containment",
      flag_descriptions::kContainerTypeNoLayoutContainmentName,
      flag_descriptions::kContainerTypeNoLayoutContainmentDescription, kOsAll,

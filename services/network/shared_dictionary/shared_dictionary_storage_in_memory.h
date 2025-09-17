@@ -78,6 +78,9 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     const net::SHA256HashValue& hash() const { return dictionary_->hash(); }
     const SimpleUrlPatternMatcher* matcher() const { return matcher_.get(); }
 
+    void set_response_time(base::Time response_time) {
+      response_time_ = response_time;
+    }
     void set_last_fetch_time(base::Time last_fetch_time) {
       last_fetch_time_ = last_fetch_time;
     }
@@ -138,6 +141,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
       const std::string& id,
+      const std::optional<base::TimeDelta>& ttl,
       base::Time last_fetch_time) override;
 
   const std::map<

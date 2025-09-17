@@ -377,6 +377,8 @@ protocol::String BuildSharedDictionaryError(
       return SharedDictionaryErrorEnum::WriteErrorInvalidMatchField;
     case SharedDictionaryError::kWriteErrorInvalidStructuredHeader:
       return SharedDictionaryErrorEnum::WriteErrorInvalidStructuredHeader;
+    case SharedDictionaryError::kWriteErrorInvalidTTLField:
+      return SharedDictionaryErrorEnum::WriteErrorInvalidTTLField;
     case SharedDictionaryError::kWriteErrorNavigationRequest:
       return SharedDictionaryErrorEnum::WriteErrorNavigationRequest;
     case SharedDictionaryError::kWriteErrorNoMatchField:
@@ -401,6 +403,8 @@ protocol::String BuildSharedDictionaryError(
       return SharedDictionaryErrorEnum::WriteErrorTooLongIdField;
     case SharedDictionaryError::kWriteErrorUnsupportedType:
       return SharedDictionaryErrorEnum::WriteErrorUnsupportedType;
+    case SharedDictionaryError::kWriteErrorNonIntegerTTLField:
+      return SharedDictionaryErrorEnum::WriteErrorNonIntegerTTLField;
   }
 }
 

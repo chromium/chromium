@@ -106,6 +106,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
       const std::string& id,
+      const std::optional<base::TimeDelta>& ttl,
       base::Time last_fetch_time) = 0;
 };
 
@@ -164,7 +165,8 @@ DictionaryInfoType* FindRegisteredInDictionaryInfoMap(
     base::TimeDelta expiration,
     const std::string& match,
     const std::set<mojom::RequestDestination>& match_dest,
-    const std::string& id) {
+    const std::string& id,
+    const std::optional<base::TimeDelta>& ttl) {
   auto it1 = dictionary_info_map.find(url::SchemeHostPort(url));
   if (it1 == dictionary_info_map.end()) {
     return nullptr;
@@ -173,8 +175,10 @@ DictionaryInfoType* FindRegisteredInDictionaryInfoMap(
   if (it2 == it1->second.end()) {
     return nullptr;
   }
+  // The response_time can update on every fetch if "ttl" is used so only
+  // check for the exact match of response_time if a ttl isn't present.
   if (it2->second.url() == url &&
-      it2->second.response_time() == response_time &&
+      (ttl || it2->second.response_time() == response_time) &&
       it2->second.expiration() == expiration && it2->second.id() == id) {
     return &it2->second;
   } else {

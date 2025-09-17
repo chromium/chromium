@@ -1321,6 +1321,12 @@ const char kCompressionDictionaryTransportName[] =
 const char kCompressionDictionaryTransportDescription[] =
     "Enables compression dictionary transport.";
 
+const char kCompressionDictionaryTTLName[] =
+    "Compression dictionary transport ttl";
+const char kCompressionDictionaryTTLDescription[] =
+    "Enables support for the 'ttl' parameter in the 'use-as-dictionary' HTTP "
+    "response header.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kContextMenuEmptySpaceName[] = "Context menu at empty space";
 const char kContextMenuEmptySpaceDescription[] =
