@@ -617,10 +617,8 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnVideoTaskRunner(
   OnCaptureVersion(frame->metadata().capture_version);
 
   if (frame->metadata().capture_version < capture_version_) {
-    // TODO(crbug.com/394794490): Introduce and use `kOldCaptureVersion`
-    // instead of `kSubCaptureTargetVersionNotCurrent`.
     OnFrameDroppedOnVideoTaskRunner(
-        media::VideoCaptureFrameDropReason::kSubCaptureTargetVersionNotCurrent);
+        media::VideoCaptureFrameDropReason::kOldCaptureVersion);
     return;
   }
 

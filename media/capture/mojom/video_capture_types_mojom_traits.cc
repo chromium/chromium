@@ -1583,9 +1583,10 @@ EnumTraits<media::mojom::VideoCaptureFrameDropReason,
     case media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed:
       return media::mojom::VideoCaptureFrameDropReason::
           kGpuMemoryBufferMapFailed;
-    case media::VideoCaptureFrameDropReason::kSubCaptureTargetVersionNotCurrent:
+    case media::VideoCaptureFrameDropReason::
+        kSubCaptureTargetVersionNotCurrent_DEPRECATED:
       return media::mojom::VideoCaptureFrameDropReason::
-          kSubCaptureTargetVersionNotCurrent;
+          kSubCaptureTargetVersionNotCurrent_DEPRECATED;
     case media::VideoCaptureFrameDropReason::kPostProcessingFailed:
       return media::mojom::VideoCaptureFrameDropReason::kPostProcessingFailed;
     case media::VideoCaptureFrameDropReason::
@@ -1600,6 +1601,8 @@ EnumTraits<media::mojom::VideoCaptureFrameDropReason,
         kResolutionAdapterConvertAndScaleFailed:
       return media::mojom::VideoCaptureFrameDropReason::
           kResolutionAdapterConvertAndScaleFailed;
+    case media::VideoCaptureFrameDropReason::kOldCaptureVersion:
+      return media::mojom::VideoCaptureFrameDropReason::kOldCaptureVersion;
   }
   NOTREACHED();
 }
@@ -1741,9 +1744,9 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
       *output = media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed;
       return true;
     case media::mojom::VideoCaptureFrameDropReason::
-        kSubCaptureTargetVersionNotCurrent:
+        kSubCaptureTargetVersionNotCurrent_DEPRECATED:
       *output = media::VideoCaptureFrameDropReason::
-          kSubCaptureTargetVersionNotCurrent;
+          kSubCaptureTargetVersionNotCurrent_DEPRECATED;
       return true;
     case media::mojom::VideoCaptureFrameDropReason::kPostProcessingFailed:
       *output = media::VideoCaptureFrameDropReason::kPostProcessingFailed;
@@ -1762,6 +1765,9 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
         kResolutionAdapterConvertAndScaleFailed:
       *output = media::VideoCaptureFrameDropReason::
           kResolutionAdapterConvertAndScaleFailed;
+      return true;
+    case media::mojom::VideoCaptureFrameDropReason::kOldCaptureVersion:
+      *output = media::VideoCaptureFrameDropReason::kOldCaptureVersion;
       return true;
   }
   NOTREACHED();

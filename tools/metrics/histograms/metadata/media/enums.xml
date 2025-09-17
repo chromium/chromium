@@ -2385,11 +2385,12 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="kRendererSinkFrameDelivererIsNotStarted"/>
   <int value="27" label="kCropVersionNotCurrent_DEPRECATED"/>
   <int value="28" label="kGpuMemoryBufferMapFailed"/>
-  <int value="29" label="kSubCaptureTargetVersionNotCurrent"/>
+  <int value="29" label="kSubCaptureTargetVersionNotCurrent_DEPRECATED"/>
   <int value="30" label="kPostProcessingFailed"/>
   <int value="31" label="kResolutionAdapterFrameIsNotMappable"/>
   <int value="32" label="kResolutionAdapterCannotCreateConvertFrame"/>
   <int value="33" label="kResolutionAdapterConvertAndScaleFailed"/>
+  <int value="34" label="kOldCaptureVersion"/>
 </enum>
 
 <enum name="VideoCaptureStartOutcome">

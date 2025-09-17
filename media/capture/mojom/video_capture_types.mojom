@@ -303,11 +303,12 @@ enum VideoCaptureFrameDropReason {
   kRendererSinkFrameDelivererIsNotStarted,
   [MinVersion=1] kCropVersionNotCurrent_DEPRECATED,
   [MinVersion=5] kGpuMemoryBufferMapFailed,
-  [MinVersion=12] kSubCaptureTargetVersionNotCurrent,
+  [MinVersion=12] kSubCaptureTargetVersionNotCurrent_DEPRECATED,
   [MinVersion=13] kPostProcessingFailed,
   [MinVersion=14] kResolutionAdapterFrameIsNotMappable,
   [MinVersion=14] kResolutionAdapterCannotCreateConvertFrame,
   [MinVersion=14] kResolutionAdapterConvertAndScaleFailed,
+  [MinVersion=15] kOldCaptureVersion,
 };
 
 [Stable]

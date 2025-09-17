@@ -247,12 +247,13 @@ enum class VideoCaptureFrameDropReason {
   kRendererSinkFrameDelivererIsNotStarted = 26,
   kCropVersionNotCurrent_DEPRECATED = 27,
   kGpuMemoryBufferMapFailed = 28,
-  kSubCaptureTargetVersionNotCurrent = 29,
+  kSubCaptureTargetVersionNotCurrent_DEPRECATED = 29,
   kPostProcessingFailed = 30,
   kResolutionAdapterFrameIsNotMappable = 31,
   kResolutionAdapterCannotCreateConvertFrame = 32,
   kResolutionAdapterConvertAndScaleFailed = 33,
-  kMaxValue = kResolutionAdapterConvertAndScaleFailed
+  kOldCaptureVersion = 34,
+  kMaxValue = kOldCaptureVersion
 };
 
 // Assert that the int:frequency mapping is correct.
