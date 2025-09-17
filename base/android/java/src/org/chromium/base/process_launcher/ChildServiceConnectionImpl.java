@@ -76,7 +76,7 @@ import java.util.concurrent.Executor;
             if (onStateChangeCallback != null) {
                 onStateChangeCallback.run();
             }
-            mContext.unbindService(this);
+            BindService.doUnbindService(mContext, this);
         }
     }
 
@@ -98,7 +98,7 @@ import java.util.concurrent.Executor;
         }
         if (BindService.supportVariableConnections()) {
             try {
-                mContext.updateServiceGroup(this, group, importanceInGroup);
+                BindService.doUpdateServiceGroup(mContext, this, group, importanceInGroup);
                 return true;
             } catch (IllegalArgumentException e) {
                 // There is an unavoidable race here binding might be removed for example due to a
