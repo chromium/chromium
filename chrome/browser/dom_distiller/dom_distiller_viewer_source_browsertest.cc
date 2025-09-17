@@ -100,7 +100,10 @@ class PrefChangeObserver : public DistilledPagePrefs::Observer {
   void OnChangeFontFamily(mojom::FontFamily font_family) override {
     callback_.Run();
   }
-  void OnChangeTheme(mojom::Theme theme) override { callback_.Run(); }
+  void OnChangeTheme(mojom::Theme theme,
+                     ThemeSettingsUpdateSource source) override {
+    callback_.Run();
+  }
   void OnChangeFontScaling(float scaling) override { callback_.Run(); }
 
  private:

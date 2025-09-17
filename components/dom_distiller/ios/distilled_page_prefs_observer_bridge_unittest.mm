@@ -48,9 +48,18 @@ TEST_F(DistilledPagePrefsObserverBridgeTest, OnChangeFontFamily) {
             dom_distiller::mojom::FontFamily::kSerif);
 }
 
-// Tests that the observer is notified of theme changes.
-TEST_F(DistilledPagePrefsObserverBridgeTest, OnChangeTheme) {
-  observer_bridge_.OnChangeTheme(dom_distiller::mojom::Theme::kDark);
+// Tests that the observer is notified of user preference theme changes.
+TEST_F(DistilledPagePrefsObserverBridgeTest, OnChangeUserPreferenceTheme) {
+  observer_bridge_.OnChangeTheme(
+      dom_distiller::mojom::Theme::kDark,
+      dom_distiller::ThemeSettingsUpdateSource::kUserPreference);
+  EXPECT_EQ([observer_ notifiedTheme], dom_distiller::mojom::Theme::kDark);
+}
+
+// Tests that the observer is notified of system theme changes.
+TEST_F(DistilledPagePrefsObserverBridgeTest, OnChangeSystemTheme) {
+  observer_bridge_.OnChangeTheme(dom_distiller::mojom::Theme::kDark,
+                                 dom_distiller::ThemeSettingsUpdateSource::kSystem);
   EXPECT_EQ([observer_ notifiedTheme], dom_distiller::mojom::Theme::kDark);
 }
 

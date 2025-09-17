@@ -192,11 +192,20 @@ void ReaderModeMetricsHelper::OnChangeFontFamily(
                                 ConvertMojomFontFamily(font));
 }
 
-void ReaderModeMetricsHelper::OnChangeTheme(dom_distiller::mojom::Theme theme) {
-  base::UmaHistogramEnumeration(kReaderModeCustomizationHistogram,
-                                ReaderModeCustomizationType::kTheme);
-  base::UmaHistogramEnumeration(kReaderModeThemeCustomizationHistogram,
-                                ConvertMojomTheme(theme));
+void ReaderModeMetricsHelper::OnChangeTheme(
+    dom_distiller::mojom::Theme theme,
+    dom_distiller::ThemeSettingsUpdateSource source) {
+  switch (source) {
+    case dom_distiller::ThemeSettingsUpdateSource::kSystem:
+      break;
+    case dom_distiller::ThemeSettingsUpdateSource::kUserPreference: {
+      base::UmaHistogramEnumeration(kReaderModeCustomizationHistogram,
+                                    ReaderModeCustomizationType::kTheme);
+      base::UmaHistogramEnumeration(kReaderModeThemeCustomizationHistogram,
+                                    ConvertMojomTheme(theme));
+      break;
+    }
+  }
 }
 
 void ReaderModeMetricsHelper::OnChangeFontScaling(float scaling) {

@@ -16,13 +16,20 @@ class PrefService;
 
 namespace dom_distiller {
 
+// The source for updates to the distiller theme settings.
+enum class ThemeSettingsUpdateSource {
+  kSystem,
+  kUserPreference,
+};
+
 // Interface for preferences used for distilled page.
 class DistilledPagePrefs {
  public:
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnChangeFontFamily(mojom::FontFamily font) = 0;
-    virtual void OnChangeTheme(mojom::Theme theme) = 0;
+    virtual void OnChangeTheme(mojom::Theme theme,
+                               ThemeSettingsUpdateSource source) = 0;
     virtual void OnChangeFontScaling(float scaling) = 0;
   };
 
@@ -63,7 +70,7 @@ class DistilledPagePrefs {
   // Notifies all Observers of new font family.
   void NotifyOnChangeFontFamily();
   // Notifies all Observers of new theme.
-  void NotifyOnChangeTheme();
+  void NotifyOnChangeTheme(ThemeSettingsUpdateSource source);
   // Notifies all Observers of new font scaling.
   void NotifyOnChangeFontScaling();
 

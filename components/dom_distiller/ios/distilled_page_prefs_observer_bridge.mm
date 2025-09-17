@@ -16,7 +16,8 @@ void DistilledPagePrefsObserverBridge::OnChangeFontFamily(
 }
 
 void DistilledPagePrefsObserverBridge::OnChangeTheme(
-    dom_distiller::mojom::Theme theme) {
+    dom_distiller::mojom::Theme theme,
+    dom_distiller::ThemeSettingsUpdateSource source) {
   [observer_ onChangeTheme:theme];
 }
 

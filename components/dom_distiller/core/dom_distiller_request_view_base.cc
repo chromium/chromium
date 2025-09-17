@@ -107,7 +107,9 @@ void DomDistillerRequestViewBase::OnArticleUpdated(
   }
 }
 
-void DomDistillerRequestViewBase::OnChangeTheme(mojom::Theme new_theme) {
+void DomDistillerRequestViewBase::OnChangeTheme(
+    mojom::Theme new_theme,
+    ThemeSettingsUpdateSource source) {
   SendJavaScript(viewer::GetDistilledPageThemeJs(new_theme));
 }
 

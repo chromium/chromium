@@ -54,7 +54,9 @@ class ReaderModeMetricsHelper
 
   // dom_distiller::DistilledPagePrefs::Observer implementation.
   void OnChangeFontFamily(dom_distiller::mojom::FontFamily font) override;
-  void OnChangeTheme(dom_distiller::mojom::Theme theme) override;
+  void OnChangeTheme(
+      dom_distiller::mojom::Theme theme,
+      dom_distiller::ThemeSettingsUpdateSource source) override;
   void OnChangeFontScaling(float scaling) override;
 
  private:

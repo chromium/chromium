@@ -99,7 +99,9 @@ void DistilledPagePrefsObserverAndroid::OnChangeFontFamily(
       env, java_ref_, (int)new_font_family);
 }
 
-void DistilledPagePrefsObserverAndroid::OnChangeTheme(mojom::Theme new_theme) {
+void DistilledPagePrefsObserverAndroid::OnChangeTheme(
+    mojom::Theme new_theme,
+    ThemeSettingsUpdateSource source) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_DistilledPagePrefsObserverWrapper_onChangeTheme(env, java_ref_,
                                                        (int)new_theme);

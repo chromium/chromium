@@ -156,23 +156,18 @@ TEST_F(ReaderModeMetricsHelperTest, OnThemeChanged) {
       BucketsAre(Bucket(ReaderModeTheme::kDark, 1)));
 }
 
-// Tests that changing the default theme multiple times only counts once in
+// Tests that changing the default theme multiple times does not impact
 // user preference customization metrics.
 TEST_F(ReaderModeMetricsHelperTest, OnDefaultThemeChangedMultipleTimes) {
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 
-  // The default theme is light, this should not change the count.
   distilled_page_prefs_->SetDefaultTheme(dom_distiller::mojom::Theme::kLight);
   distilled_page_prefs_->SetDefaultTheme(dom_distiller::mojom::Theme::kDark);
   distilled_page_prefs_->SetDefaultTheme(dom_distiller::mojom::Theme::kDark);
   task_environment_.RunUntilIdle();
 
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),
-      BucketsAre(Bucket(ReaderModeCustomizationType::kTheme, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(kReaderModeThemeCustomizationHistogram),
-      BucketsAre(Bucket(ReaderModeTheme::kDark, 1)));
+  histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kReaderModeThemeCustomizationHistogram, 0);
 }
 
 // Tests that setting the same user preference multiple times to the same value
@@ -182,7 +177,7 @@ TEST_F(ReaderModeMetricsHelperTest, OnUserPrefThemeChangedMultipleTimes) {
 
   distilled_page_prefs_->SetUserPrefTheme(dom_distiller::mojom::Theme::kDark);
   distilled_page_prefs_->SetUserPrefTheme(dom_distiller::mojom::Theme::kDark);
-  task_environment_.AdvanceClock(base::Seconds(1));
+  task_environment_.RunUntilIdle();
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),

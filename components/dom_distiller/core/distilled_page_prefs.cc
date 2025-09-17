@@ -36,7 +36,8 @@ DistilledPagePrefs::DistilledPagePrefs(PrefService* pref_service)
   pref_change_registrar_.Add(
       prefs::kTheme,
       base::BindRepeating(&DistilledPagePrefs::NotifyOnChangeTheme,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          ThemeSettingsUpdateSource::kUserPreference));
   pref_change_registrar_.Add(
       prefs::kFontScale,
       base::BindRepeating(&DistilledPagePrefs::NotifyOnChangeFontScaling,
@@ -90,7 +91,8 @@ void DistilledPagePrefs::SetDefaultTheme(mojom::Theme default_theme) {
   default_theme_ = default_theme;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeTheme,
-                                weak_ptr_factory_.GetWeakPtr()));
+                                weak_ptr_factory_.GetWeakPtr(),
+                                ThemeSettingsUpdateSource::kSystem));
 }
 
 mojom::Theme DistilledPagePrefs::GetTheme() {
@@ -141,10 +143,11 @@ void DistilledPagePrefs::NotifyOnChangeFontFamily() {
     observer.OnChangeFontFamily(new_font_family);
 }
 
-void DistilledPagePrefs::NotifyOnChangeTheme() {
+void DistilledPagePrefs::NotifyOnChangeTheme(
+    ThemeSettingsUpdateSource source) {
   mojom::Theme new_theme = GetTheme();
   for (Observer& observer : observers_)
-    observer.OnChangeTheme(new_theme);
+    observer.OnChangeTheme(new_theme, source);
 }
 
 void DistilledPagePrefs::NotifyOnChangeFontScaling() {
