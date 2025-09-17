@@ -175,7 +175,7 @@ void SyncAuthManager::RegisterForAuthNotifications() {
   // local state. Note that (as of 2021-01) this shouldn't happen in practice:
   // Auth errors are not persisted, so it's unlikely that at this point in time
   // (early during browser startup) an auth error has already been detected.
-  GoogleServiceAuthError token_error =
+  const GoogleServiceAuthError token_error =
       identity_manager_->GetErrorStateOfRefreshTokenForAccount(
           sync_account_.Get().account_info.account_id);
   if (token_error.IsPersistentError()) {
@@ -378,7 +378,7 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
   // Compute the validity of the new refresh token: The identity code sets an
   // account's refresh token to be invalid if the user signs out of that account
   // on the web.
-  GoogleServiceAuthError token_error =
+  const GoogleServiceAuthError token_error =
       identity_manager_->GetErrorStateOfRefreshTokenForAccount(
           account_info.account_id);
 
