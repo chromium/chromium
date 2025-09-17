@@ -136,6 +136,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
         doReturn(1.0f).when(mDisplayAndroid).getDipScale();
         doReturn(true).when(mActivityLifecycleDispatcher).isNativeInitializationFinished();
+
         mToolbarLongPressMenuHandler =
                 new ToolbarLongPressMenuHandler(
                         mActivity,
@@ -328,6 +329,22 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
         assertEquals("url", clipCaptor.getValue().getDescription().getLabel());
         assertEquals(mUrl.getSpec(), clipCaptor.getValue().getItemAt(0).getText());
+    }
+
+    @Test
+    @SmallTest
+    public void testHandleCopyLink_nullUrl() {
+        Clipboard clipboard = Clipboard.getInstance();
+        ClipboardManager clipboardManager = mock(ClipboardManager.class);
+        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
+        mUrl = null;
+        mToolbarLongPressMenuHandler.handleMenuClick(
+                ToolbarLongPressMenuHandler.MenuItemType.COPY_LINK);
+
+        ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
+        verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
+        assertEquals("url", clipCaptor.getValue().getDescription().getLabel());
+        assertEquals("", clipCaptor.getValue().getItemAt(0).getText());
     }
 
     @Test
