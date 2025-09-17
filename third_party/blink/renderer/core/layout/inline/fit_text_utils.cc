@@ -160,7 +160,8 @@ float ComputeAdditionalPaintTimeScale(const InlineItemsData& items_data,
   LayoutUnit remaining_space =
       available_width - (flexible_total_size + static_total_size);
   return remaining_space.Abs() >= epsilon
-             ? (flexible_total_size + remaining_space) / flexible_total_size
+             ? (flexible_total_size + remaining_space).ToFloat() /
+                   flexible_total_size.ToFloat()
              : 1.0f;
 }
 
@@ -289,7 +290,8 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
         remaining_space + flexible_total_size <= LayoutUnit()) {
       continue;
     }
-    float scale = (remaining_space + flexible_total_size) / flexible_total_size;
+    float scale = (remaining_space + flexible_total_size).ToFloat() /
+                  flexible_total_size.ToFloat();
     if (scale < minimum_scale) {
       minimum_scale = scale;
       if (fit_text.Method() == FitTextMethod::kFontSize) {
@@ -362,7 +364,8 @@ float LineFitter::MeasureScale() {
     return std::numeric_limits<float>::infinity();
   }
 
-  return (container_width - static_total_size) / flexible_total_size;
+  return (container_width - static_total_size).ToFloat() /
+         flexible_total_size.ToFloat();
 }
 
 bool LineFitter::FitLine(float scale_factor,
@@ -430,8 +433,8 @@ bool LineFitter::FitLine(float scale_factor,
           // FitTextTarget::kPerLine case:
           LayoutUnit container_width = line_info_.AvailableWidth();
           if ((container_width - line_info_.ComputeWidth()).Abs() >= epsilon_) {
-            scale_factor =
-                (container_width - static_total_size) / flexible_total_size;
+            scale_factor = (container_width - static_total_size).ToFloat() /
+                           flexible_total_size.ToFloat();
             ScaleLine(is_grow, scale_factor, /* is_scaled_inline_only */ false,
                       limit, line_info_);
           }
