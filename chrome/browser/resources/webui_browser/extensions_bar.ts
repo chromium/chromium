@@ -25,6 +25,14 @@ export class ExtensionsBar extends CrLitElement {
     return getCss();
   }
 
+  static override get properties() {
+    return {
+      visible: {type: Boolean, reflect: true},
+    };
+  }
+
+  accessor visible: boolean = false;
+
   private callbackRouter: PageCallbackRouter = new PageCallbackRouter();
   private handler: PageHandlerRemote = new PageHandlerRemote();
 
@@ -85,6 +93,7 @@ export class ExtensionsBar extends CrLitElement {
 
       extensionButton.requestUpdate();
     }
+    this.updateVisibility();
   }
 
   private actionRemoved(actionId: string) {
@@ -92,12 +101,17 @@ export class ExtensionsBar extends CrLitElement {
     assert(extensionButton);
     this.buttons.delete(actionId);
     extensionButton.remove();
+    this.updateVisibility();
   }
 
   private actionPoppedOut() {
     // TODO(webium): If we have an animation (which we ought to); this should
     // probably consider its timing.
     return {};
+  }
+
+  private updateVisibility() {
+    this.visible = (this.buttons.size !== 0);
   }
 
   onClick(id: string) {

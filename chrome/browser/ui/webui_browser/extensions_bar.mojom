@@ -19,7 +19,6 @@ struct ExtensionActionInfo {
   // True if button is visible for any reason; e.g. pinned, or popped out
   // because the user is interacting with this extension.
   bool is_visible;
-  bool is_enabled;
   url.mojom.Url data_url_for_icon;
 };
 

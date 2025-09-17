@@ -8,6 +8,10 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  display: none;
+}
+
+:host([visible]) {
   display: flex;
 }
 

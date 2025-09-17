@@ -18,10 +18,22 @@
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
+#include "ui/base/models/image_model_utils.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+
+namespace {
+
+GURL GetDataUrlForImageModel(ui::ImageModel icon_model,
+                             const WebUIBrowserWindow& window) {
+  return GURL(webui::EncodePNGAndMakeDataURI(
+      icon_model.Rasterize(window.GetColorProvider()),
+      window.GetWebUIBrowserUI()->web_ui()->GetDeviceScaleFactor()));
+}
+
+}  // namespace
 
 class WebUIBrowserExtensionsContainer::ActionInfo
     : public ToolbarActionViewDelegateViews {
@@ -44,7 +56,10 @@ class WebUIBrowserExtensionsContainer::ActionInfo
     extensions_container_->NotifyOfOneAction(controller_->GetId());
   }
 
-  void ShowContextMenuAsFallback() override { NOTIMPLEMENTED(); }
+  void ShowContextMenuAsFallback() override {
+    extensions_container_->ShowContextMenu(ui::mojom::MenuSourceType::kNone,
+                                           controller()->GetId());
+  }
 
   // ToolbarActionViewDelegateViews:
   views::FocusManager* GetFocusManagerForAccelerator() override {
@@ -73,25 +88,24 @@ class WebUIBrowserExtensionsContainer::ActionInfo
     result->tooltip = base::UTF16ToUTF8(controller_->GetTooltip(web_contents));
     result->is_visible =
         extensions_container_->IsActionVisibleOnToolbar(result->id);
-    result->is_enabled = controller_->IsEnabled(web_contents);
 
-    ui::ImageModel icon_model =
-        controller_->GetIcon(web_contents, gfx::Size(20, 20));
-    if (cached_icon_model_ != icon_model || !cached_icon_url_.has_value()) {
-      cached_icon_model_ = std::move(icon_model);
-      cached_icon_url_ = GURL(webui::EncodePNGAndMakeDataURI(
-          cached_icon_model_->Rasterize(window.GetColorProvider()),
-          window.GetWebUIBrowserUI()->web_ui()->GetDeviceScaleFactor()));
+    if (result->is_visible) {
+      ui::ImageModel icon_model =
+          controller_->GetIcon(web_contents, gfx::Size(20, 20));
+      if (!controller_->IsEnabled(web_contents)) {
+        icon_model = ui::GetDefaultDisabledIconFromImageModel(
+            icon_model, window.GetColorProvider());
+      }
+      result->data_url_for_icon = GetDataUrlForImageModel(icon_model, window);
+    } else {
+      result->data_url_for_icon = GURL("data:,");
     }
-    result->data_url_for_icon = *cached_icon_url_;
     return result;
   }
 
  private:
   const raw_ref<WebUIBrowserExtensionsContainer> extensions_container_;
   const raw_ref<Browser> browser_;
-  mutable std::optional<ui::ImageModel> cached_icon_model_;
-  mutable std::optional<GURL> cached_icon_url_;
   std::unique_ptr<ExtensionActionViewController> controller_;
 };
 
