@@ -18,12 +18,6 @@ namespace performance_manager::features {
 BASE_FEATURE(kBackgroundTabLoadingFromPerformanceManager,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(size_t,
-                   kBackgroundTabLoadingMinSiteEngagement,
-                   &kBackgroundTabLoadingFromPerformanceManager,
-                   "min_site_engagement",
-                   0);
-
 BASE_FEATURE(kPerformanceControlsPPMSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(base::TimeDelta,

@@ -21,7 +21,6 @@
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy_helpers.h"
 #include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/features.h"
@@ -29,11 +28,7 @@
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
-#include "components/site_engagement/content/site_engagement_service.h"
-#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
@@ -51,22 +46,6 @@ namespace {
 BackgroundTabLoadingPolicy* g_background_tab_loading_policy = nullptr;
 
 const char kDescriberName[] = "BackgroundTabLoadingPolicy";
-
-size_t GetSiteEngagementScore(content::WebContents* contents) {
-  // Get the active navigation entry. Restored tabs should always have one.
-  auto& controller = contents->GetController();
-  auto* nav_entry =
-      controller.GetEntryAtIndex(controller.GetCurrentEntryIndex());
-  DCHECK(nav_entry);
-
-  auto* engagement_svc = site_engagement::SiteEngagementService::Get(
-      Profile::FromBrowserContext(contents->GetBrowserContext()));
-  double engagement =
-      engagement_svc->GetDetails(nav_entry->GetURL()).total_score;
-
-  // Return the engagement as an integer.
-  return engagement;
-}
 
 }  // namespace
 
@@ -138,10 +117,6 @@ void ScheduleLoadForRestoredTabs(
     page_node_data_vector.emplace_back(
         PerformanceManager::GetPrimaryPageNodeForWebContents(content),
         content->GetLastCommittedURL(), notification_permission);
-    if (features::kBackgroundTabLoadingMinSiteEngagement.Get() > 0) {
-      page_node_data_vector.back().site_engagement =
-          GetSiteEngagementScore(content);
-    }
   }
 
   auto* policy = BackgroundTabLoadingPolicy::GetInstance();
@@ -313,7 +288,7 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
     }
 
     // Put the page in the queue for loading.
-    page_nodes_to_load_.emplace_back(page_node, page_node_data.site_engagement);
+    page_nodes_to_load_.emplace_back(page_node);
   }
 
   // Asynchronously determine whether pages added to `page_nodes_to_load_` are
@@ -363,9 +338,8 @@ BackgroundTabLoadingPolicy* BackgroundTabLoadingPolicy::GetInstance() {
 }
 
 BackgroundTabLoadingPolicy::PageNodeToLoadData::PageNodeToLoadData(
-    const PageNode* page_node,
-    std::optional<size_t> site_engagement)
-    : page_node(page_node), site_engagement(site_engagement) {}
+    const PageNode* page_node)
+    : page_node(page_node) {}
 
 BackgroundTabLoadingPolicy::PageNodeToLoadData::~PageNodeToLoadData() = default;
 
@@ -430,19 +404,6 @@ bool BackgroundTabLoadingPolicy::ShouldLoad(
       base::TimeTicks::Now() -
       page_node_data.page_node->GetLastVisibilityChangeTime();
   if (time_since_last_visibility_change > kMaxTimeSinceLastUseToLoad) {
-    return false;
-  }
-
-  // Enforce a minimum site engagement score if applicable.
-  // Only enforce the site engagement score for tabs that don't make use of
-  // background communication mechanisms. These sites often have low engagements
-  // because they are only used very sporadically, but it is important that they
-  // are loaded because if not loaded the user can miss important messages.
-  const size_t min_site_engagement =
-      features::kBackgroundTabLoadingMinSiteEngagement.Get();
-  if (!page_node_data.UsesBackgroundCommunication() &&
-      page_node_data.site_engagement.value_or(min_site_engagement) <
-          min_site_engagement) {
     return false;
   }
 

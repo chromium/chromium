@@ -72,7 +72,6 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     base::WeakPtr<PageNode> page_node;
     GURL main_frame_url;
     blink::mojom::PermissionStatus notification_permission_status;
-    std::optional<size_t> site_engagement;
   };
 
   // Schedules the PageNodes in |page_node_and_permission_vector| to be loaded
@@ -95,8 +94,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
 
   // Holds data about a PageNode waiting to be loaded by this policy.
   struct PageNodeToLoadData {
-    PageNodeToLoadData(const PageNode* page_node,
-                       std::optional<size_t> site_engagement);
+    explicit PageNodeToLoadData(const PageNode* page_node);
     ~PageNodeToLoadData();
 
     // Move-only.
@@ -119,8 +117,6 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     // Initialized to nullopt and set asynchronously with the proper value from
     // the sites database.
     std::optional<bool> updates_title_or_favicon_in_bg;
-
-    std::optional<size_t> site_engagement;
   };
 
   // Comparator used to sort PageNodeToLoadData.
