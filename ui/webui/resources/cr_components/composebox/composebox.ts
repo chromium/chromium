@@ -564,7 +564,7 @@ export class ComposeboxElement extends I18nMixinLit
       if ((e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
         return;
       }
-      // TODO(crbug.com/444495048): Add test for tab selection logic.
+
       if (e.key === 'Tab') {
         // If focus leaves the input, unselect the first match.
         if (e.shiftKey && this.selectedMatchIndex_ === 0) {
