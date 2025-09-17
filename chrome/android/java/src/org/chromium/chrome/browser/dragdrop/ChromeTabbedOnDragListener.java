@@ -159,7 +159,6 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         }
 
         // Reject cross-model drops if incognito is opened as a new window.
-        // TODO(crbug.com/444221919): Add toast to explain why drop failed.
         boolean draggedTabIncognito = draggedTab.isIncognitoBranded();
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()
                 && !ChromeDragDropUtils.doesBelongToCurrentModel(
@@ -205,7 +204,6 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         }
 
         // Reject cross-model drops if incognito is opened as a new window.
-        // TODO(crbug.com/444221919): Add toast to explain why drop failed.
         boolean draggedTabsIncognito = draggedTabs.get(0).isIncognitoBranded();
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()
                 && !ChromeDragDropUtils.doesBelongToCurrentModel(
@@ -248,7 +246,6 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         }
 
         // Reject cross-model drops if incognito is opened as a new window.
-        // TODO(crbug.com/444221919): Add toast to explain why drop failed.
         boolean draggedTabGroupIncognito = tabGroupMetadata.isIncognito;
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()
                 && !ChromeDragDropUtils.doesBelongToCurrentModel(

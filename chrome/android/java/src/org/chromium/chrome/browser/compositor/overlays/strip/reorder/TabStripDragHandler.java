@@ -435,7 +435,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         // Move tab to another window.
         if (!tabDraggedBelongToCurrentModel) {
             // Reject cross-model drops if incognito is opened as a new window.
-            // TODO(crbug.com/444221919): Add toast to explain why drop failed.
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
 
             mMultiInstanceManager.moveTabsToWindow(
@@ -476,7 +475,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         // Move tabs to another window.
         if (!tabsDraggedBelongToCurrentModel) {
             // Reject cross-model drops if incognito is opened as a new window.
-            // TODO(crbug.com/444221919): Add toast to explain why drop failed.
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
 
             mMultiInstanceManager.moveTabsToWindow(
@@ -525,7 +523,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         // Move tab group to another window.
         if (!tabGroupDraggedBelongToCurrentModel) {
             // Reject cross-model drops if incognito is opened as a new window.
-            // TODO(crbug.com/444221919): Add toast to explain why drop failed.
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
 
             mMultiInstanceManager.moveTabGroupToWindow(
