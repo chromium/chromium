@@ -83,6 +83,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
 
   void set_version(int version) { version_ = version; }
 
+  // The Windows WebaAuthn API behaves differently under RDP. This sets whether
+  // we emulate that behaviour or not.
+  // In particular, this will cause credential enumeration to always return an
+  // empty list.
+  void set_simulate_rdp(bool simulate_rdp) { simulate_rdp_ = simulate_rdp; }
+
   // Returns a pointer to a copy of the last get credentials options passed to
   // the fake.
   WEBAUTHN_GET_CREDENTIALS_OPTIONS* last_get_credentials_options() {
@@ -160,6 +166,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   int large_blob_result_ = WEBAUTHN_CRED_LARGE_BLOB_STATUS_SUCCESS;
   bool large_blob_supported_ = true;
   int preferred_attachment_ = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
+  bool simulate_rdp_ = false;
   HRESULT result_override_ = S_OK;
 
   // Owns a copy of the last get credentials options to have been passed to the

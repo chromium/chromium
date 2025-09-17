@@ -73,6 +73,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/fake_webauthn_api.h"
+#include "device/fido/win/util.h"
 #include "device/fido/win/webauthn_api.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -348,6 +349,13 @@ class WinWebAuthnBrowserTest
             e => 'error ' + e);
   })())";
 
+  WinWebAuthnBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnHelloSignal,
+         device::kWebAuthenticationFixWindowsHelloRdp},
+        /*disabled_features=*/{});
+  }
+
   void SetUpOnMainThread() override {
     WebAuthnBrowserTest::SetUpOnMainThread();
     signal_unknown_credential_run_loop_ = std::make_unique<base::RunLoop>();
@@ -393,8 +401,7 @@ class WinWebAuthnBrowserTest
   device::FakeWinWebAuthnApi win_api_;
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override_{&win_api_};
   std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnHelloSignal};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Integration test for Large Blob on Windows.
@@ -520,6 +527,39 @@ IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest,
                 GetSignalAllAcceptedCredentials(kCredentialID2, user_id)));
   WaitForSignalAllAcceptedCredentials();
   EXPECT_TRUE(win_api_.registrations().empty());
+}
+
+// Tests getting an assertion with an allow-list containing internal credentials
+// under simulated RDP on Windows 11.
+// Regression test for crbug.com/443001325.
+IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, WinGetAssertionRdp) {
+  constexpr char kGetAssertionInternalCredID1234[] = R"((() => {
+    let cred_id = new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
+    return navigator.credentials.get({ publicKey: {
+      challenge: cred_id,
+      timeout: 10000,
+      userVerification: 'discouraged',
+      allowCredentials: [{
+        type: 'public-key',
+        id: cred_id,
+        transports: ['internal']
+      }],
+    }}).then(c => 'webauthn: OK',
+            e => 'error ' + e);
+  })())";
+
+  device::fido::win::ScopedIsRdpSessionOverride rdp_override(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  win_api_.set_version(WEBAUTHN_API_VERSION_4);
+  win_api_.set_is_uvpaa(true);
+  win_api_.set_supports_silent_discovery(true);
+  win_api_.set_simulate_rdp(true);
+  win_api_.InjectNonDiscoverableCredential(kCredentialID, "www.example.com");
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kGetAssertionInternalCredID1234));
 }
 
 #endif  // BUILDFLAG(IS_WIN)

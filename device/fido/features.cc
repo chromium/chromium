@@ -195,4 +195,8 @@ BASE_FEATURE(kWebAuthnNewRefreshFlow,
              "WebAuthenticationNewRefreshFlow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabled by default in M142. Remove in or after M145.
+BASE_FEATURE(kWebAuthenticationFixWindowsHelloRdp,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

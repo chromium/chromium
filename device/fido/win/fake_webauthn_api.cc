@@ -487,6 +487,9 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
   if (result_override_ != S_OK) {
     return result_override_;
   }
+  if (simulate_rdp_) {
+    return NTE_NOT_FOUND;
+  }
   auto credential_list = std::make_unique<CredentialInfoList>();
   for (const auto& registration : registrations_) {
     if (!registration.second.is_resident) {

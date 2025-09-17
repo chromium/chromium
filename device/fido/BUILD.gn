@@ -301,6 +301,7 @@ component("fido") {
         "win/webauthn_api.cc",
         "win/webauthn_api.h",
       ]
+      libs = [ "wtsapi32.lib" ]
     }
 
     if (is_chromeos) {

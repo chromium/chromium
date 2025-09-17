@@ -143,6 +143,12 @@ BASE_DECLARE_FEATURE(kAuthenticatorPasswordsOnlyImmediateRequests);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewRefreshFlow);
 
+// If enabled, treats an empty enumeration of Windows Hello credentials the same
+// as enumeration not being supported. This works around an issue where Windows
+// Hello fails to enumerate credentials under RDP.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthenticationFixWindowsHelloRdp);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
