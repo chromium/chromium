@@ -228,6 +228,11 @@ inline constexpr char kCannotAccessExtensionUrl[] =
 // This deliberately does not contain a URL. Otherwise an extension can parse
 // error messages and determine the URLs of open tabs without having appropriate
 // permissions to see these URLs.
+inline constexpr char kCannotAccessDiscardedPage[] =
+    "Cannot access contents of a discarded page.";
+// This deliberately does not contain a URL. Otherwise an extension can parse
+// error messages and determine the URLs of open tabs without having appropriate
+// permissions to see these URLs.
 inline constexpr char kCannotAccessPage[] =
     "Cannot access contents of the page. "
     "Extension manifest must request permission to access the respective host.";

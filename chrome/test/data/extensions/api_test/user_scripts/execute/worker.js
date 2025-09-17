@@ -219,6 +219,36 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Tests that an error is returned for a discarded page.
+  async function invalidTarget_discardedPage() {
+    await chrome.userScripts.unregister();
+    const tab = await navigateToRequestedUrl();
+    await chrome.tabs.discard(tab.id);
+
+    const script = {js: [{file: 'script.js'}], target: {tabId: tab.id}};
+    // The test can pass with either of these two errors depending on timing.
+    let cannotAccessDiscardedPageError =
+        'Cannot access contents of a discarded page.';
+    let noTabWithIdError = `No tab with id: ${tab.id}.`;
+    let thrownError = null;
+
+    try {
+      await chrome.userScripts.execute(script);
+      // This should not be reached.
+      chrome.test.fail('Script executed unexpectedly on a discarded tab.');
+    } catch (e) {
+      thrownError = e.message;
+    }
+
+    chrome.test.assertTrue(
+        thrownError === cannotAccessDiscardedPageError ||
+            thrownError === noTabWithIdError,
+        `Expected error to be '${cannotAccessDiscardedPageError}' or ` +
+            `'${noTabWithIdError}', but got '${thrownError}'.`);
+
+    chrome.test.succeed();
+  },
+
   async function invalidWorldId_UnderscoreError() {
     await chrome.userScripts.unregister();
 
