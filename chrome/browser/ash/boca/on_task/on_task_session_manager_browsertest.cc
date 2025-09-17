@@ -12,6 +12,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/boca/boca_manager.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
+#include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -185,9 +187,9 @@ class OnTaskSessionManagerBrowserTest
 // TODO(https://crbug.com/445300633): Re-enable this test
 IN_PROC_BROWSER_TEST_F(
     OnTaskSessionManagerBrowserTest,
-    DISABLE_ShouldEnforceDomainNavRestrictionOnHomepageOnSessionStart) {
-  content::TestNavigationObserver navigation_observer(
-      (GURL(kChromeBocaAppUntrustedIndexURL)));
+    ShouldEnforceDomainNavRestrictionOnHomepageOnSessionStart) {
+  const GURL boca_url(kChromeBocaAppUntrustedIndexURL);
+  content::TestNavigationObserver navigation_observer(boca_url);
   navigation_observer.StartWatchingNewWebContents();
 
   // Start OnTask session to spin up the SWA and the homepage.
@@ -199,10 +201,17 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
   auto* const tab_strip_model = boca_app_browser->tab_strip_model();
   ASSERT_EQ(tab_strip_model->count(), 1);
+  ASSERT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            boca_url);
+
+  // Trigger an explicit URL blocklist refresh to ensure the nav restriction has
+  // been applied on the homepage. This is not an issue in the real world
+  // because tab interactions trigger this refresh.
+  LockedSessionWindowTrackerFactory::GetForBrowserContext(profile())
+      ->RefreshUrlBlocklist();
+  content::RunAllTasksUntilIdle();
 
   // Attempt to navigate away on the home tab and verify it does not go through.
-  // Wait until nav restrictions have been applied on the tab.
-  content::RunAllTasksUntilIdle();
   const GURL test_url(kTestUrl1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, test_url));
   EXPECT_NE(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
