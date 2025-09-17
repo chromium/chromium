@@ -13,7 +13,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "services/device/wake_lock/wake_lock_context.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #endif
 
 namespace device {

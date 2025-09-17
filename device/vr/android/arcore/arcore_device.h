@@ -22,7 +22,7 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 class WindowAndroid;

@@ -6,6 +6,7 @@
 #define DEVICE_VR_ANDROID_CARDBOARD_CARDBOARD_RENDER_LOOP_H_
 
 #include <memory>
+
 #include "base/android/java_handler_thread.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/vr/android/cardboard/scoped_cardboard_objects.h"
@@ -17,7 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/display/display.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gl {
 class GLSurface;

@@ -530,10 +530,7 @@ group("native_widget_types") {
 source_set("native_widget_types_sources") {
   visibility = [ ":*" ]  # Depend on through ":native_widget_types".
 
-  public = [
-    "native_ui_types.h",
-    "native_widget_types.h",
-  ]
+  public = [ "native_ui_types.h" ]
 
   public_deps = [ "//base" ]
 

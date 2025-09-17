@@ -16,7 +16,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/native_drawing_context.h"
 #include "printing/print_settings.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace printing {
 
