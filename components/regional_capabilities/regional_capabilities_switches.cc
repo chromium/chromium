@@ -31,6 +31,19 @@ BASE_FEATURE(kUseFinchPermanentCountryForFetchCountryId,
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kTaiyaki, base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
+constexpr base::FeatureParam<RegionalCapabilitiesChoiceScreenSurface>::Option
+    kChoiceScreenSurfaceOptions[] = {
+        {RegionalCapabilitiesChoiceScreenSurface::kAll, "all"},
+        {RegionalCapabilitiesChoiceScreenSurface::kInFreOnly, "fre_only"}};
+}  // namespace
+
+const base::FeatureParam<RegionalCapabilitiesChoiceScreenSurface>
+    kTaiyakiChoiceScreenSurface{
+        &kTaiyaki, "choice_screen_surface",
+        RegionalCapabilitiesChoiceScreenSurface::kAll,
+        &kChoiceScreenSurfaceOptions};
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kDynamicProfileCountry, base::FEATURE_DISABLED_BY_DEFAULT);

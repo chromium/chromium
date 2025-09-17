@@ -268,6 +268,7 @@ regional_capabilities::FunnelStage ToFunnelStage(
     case SearchEngineChoiceScreenConditions::kUsingPersistedGuestSessionChoice:
     case SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation:
     case SearchEngineChoiceScreenConditions::kAccountNotEligible:
+    case SearchEngineChoiceScreenConditions::kIneligibleSurface:
       return regional_capabilities::FunnelStage::kNotEligible;
   }
   NOTREACHED();
@@ -529,6 +530,20 @@ void SearchEngineChoiceService::RecordProfileLoadEligibility(
 void SearchEngineChoiceService::RecordLegacyStaticEligibility(
     SearchEngineChoiceScreenConditions condition) {
   RecordLegacyStaticEligibilityInternal(*client_.get(), condition);
+}
+
+bool SearchEngineChoiceService::IsSurfaceEligible(
+    bool is_first_run_experience_surface) const {
+  if (!regional_capabilities_service_->GetChoiceScreenEligibilityConfig()
+           .has_value()) {
+    return false;
+  }
+
+  // Either the surface is FRE so the choice screen should be presented anyway,
+  // or the restriction to FRE is not requested.
+  return is_first_run_experience_surface ||
+         !regional_capabilities_service_->GetChoiceScreenEligibilityConfig()
+              ->restrict_surfaces_to_fre_only;
 }
 #endif  // BUILDFLAG(IS_IOS)
 

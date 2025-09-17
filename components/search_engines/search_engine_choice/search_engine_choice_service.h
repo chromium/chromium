@@ -28,7 +28,7 @@ class VariationsService;
 namespace regional_capabilities {
 class RegionalCapabilitiesService;
 struct ChoiceScreenEligibilityConfig;
-}
+}  // namespace regional_capabilities
 namespace TemplateURLPrepopulateData {
 class Resolver;
 }
@@ -131,6 +131,10 @@ class SearchEngineChoiceService : public KeyedService {
   // the legacy histograms are not recorded by `RecordProfileLoadEligibility()`
   void RecordLegacyStaticEligibility(
       SearchEngineChoiceScreenConditions condition);
+
+  // Indicates whether the choice screen can be shown on a surface with a
+  // particular "first run experience" status.
+  bool IsSurfaceEligible(bool is_first_run_experience_surface) const;
 #endif  // BUILDFLAG(IS_IOS)
 
   // Records the specified choice screen condition for relevant navigations.

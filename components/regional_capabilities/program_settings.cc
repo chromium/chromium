@@ -31,6 +31,7 @@ constexpr ProgramSettings kWaffleSettings{
             .should_preserve_imported_choice = false,
             .should_preserve_non_google_dse = true,
             .restrict_to_associated_countries = false,
+            .restrict_surfaces_to_fre_only = false,
         },
 };
 
@@ -47,8 +48,17 @@ constexpr ProgramSettings kTaiyakiSettings{
             .should_preserve_imported_choice = true,
             .should_preserve_non_google_dse = false,
             .restrict_to_associated_countries = true,
+            .restrict_surfaces_to_fre_only = false,
         },
 };
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+constexpr ProgramSettings kTaiyakiSettingsFreOnly = []() {
+  ProgramSettings ret = kTaiyakiSettings;
+  ret.choice_screen_eligibility_config->restrict_surfaces_to_fre_only = true;
+  return ret;
+}();
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
 constexpr ProgramSettings kDefaultSettings{
     .program = Program::kDefault,
@@ -119,11 +129,23 @@ const ProgramSettings& GetSettingsForProgram(Program program) {
   switch (program) {
     case Program::kTaiyaki:
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-      if (base::FeatureList::IsEnabled(switches::kTaiyaki)) {
-        return kTaiyakiSettings;
+      if (!base::FeatureList::IsEnabled(switches::kTaiyaki)) {
+        return kNoOpTaiyakiSettings;
       }
-#endif
+
+      switch (switches::kTaiyakiChoiceScreenSurface.Get()) {
+        case switches::RegionalCapabilitiesChoiceScreenSurface::kInFreOnly:
+          return kTaiyakiSettingsFreOnly;
+        case switches::RegionalCapabilitiesChoiceScreenSurface::kAll:
+          return kTaiyakiSettings;
+      }
+      NOTREACHED() << "Unknown choice screen surface: "
+                   << static_cast<int>(
+                          switches::kTaiyakiChoiceScreenSurface.Get());
+
+#else
       return kNoOpTaiyakiSettings;
+#endif
     case Program::kWaffle:
       return kWaffleSettings;
     case Program::kDefault:

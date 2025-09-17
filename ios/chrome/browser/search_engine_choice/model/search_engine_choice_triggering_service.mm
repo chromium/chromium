@@ -32,6 +32,12 @@ search_engines::SearchEngineChoiceScreenConditions
 SearchEngineChoiceTriggeringService::EvaluateTriggeringConditions(
     bool is_first_run_entrypoint,
     bool app_started_via_external_intent) {
+  if (!search_engine_choice_service_->IsSurfaceEligible(
+          is_first_run_entrypoint)) {
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kIneligibleSurface;
+  }
+
   if (auto conditions =
           search_engine_choice_service_->GetStaticChoiceScreenConditions(
               policy_service_.get(), template_url_service_.get());

@@ -59,6 +59,8 @@ struct ChoiceScreenEligibilityConfig {
   // current country is not available (unknown country is not considered an
   // associated country).
   bool restrict_to_associated_countries;
+  // If true, the choice screen is only eligible to be shown in FRE.
+  bool restrict_surfaces_to_fre_only;
 };
 
 // Describes how features should adjust themselves based on the program.

@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -59,8 +60,23 @@ BASE_DECLARE_FEATURE(kUseFinchPermanentCountryForFetchCountryId);
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+// Describes UI surfaces that can receive the choice screen.
+enum class RegionalCapabilitiesChoiceScreenSurface : int {
+  // The choice screen should always be shown.
+  kAll = 0,
+  // The choice screen should only be shown in FRE.
+  kInFreOnly = 1,
+};
+
 COMPONENT_EXPORT(REGIONAL_CAPABILITIES_SWITCHES)
 BASE_DECLARE_FEATURE(kTaiyaki);
+
+// For kTaiyaki enabled, defines which UI surfaces the choice screen can be
+// shown on. Only used if kTaiyaki is enabled.
+extern const base::FeatureParam<RegionalCapabilitiesChoiceScreenSurface>
+    kTaiyakiChoiceScreenSurface;
+
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Updates profile country preference stored in preferences

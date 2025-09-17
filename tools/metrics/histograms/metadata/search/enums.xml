@@ -430,6 +430,11 @@ chromium-metrics-reviews@google.com.
     The account is not eligible based on its account capabilities. See
     go/capability-registry/chrome/canmakechromesearchenginechoicescreenchoice.
   </int>
+  <int value="20" label="Non-FRE trigger">
+    The choice screen could not be presented because this is not an FRE entry
+    point. Recorded on iOS only, for programs where the choice screen is
+    currently enabled only in the First Run Experience.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:SearchEngineChoiceScreenConditions) -->
