@@ -35,7 +35,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_function.h"
