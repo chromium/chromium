@@ -125,27 +125,7 @@ crbug.com/1379766 [ mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_ContentHint_av01.0.04M.08_detail [ Failure ]
 crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodeColorSpace_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_ContentHint_av01.0.04M.08_motion [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_ContentHint_av01.0.04M.08_text [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_Encode_arraybuffer_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_Encode_camera_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_Encode_capture_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_Encode_hw_decoder_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_Encode_offscreen_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_Encode_sw_decoder_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_arraybuffer_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_camera_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_capture_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_hw_decoder_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_offscreen_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodeDecode_sw_decoder_av01.0.04M.08 [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_constant_quality [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_constant_realtime [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_variable_quality [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_variable_realtime [ Failure ]
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_MixedSourceEncoding_av01.0.04M.08 [ Failure ]
 crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_arraybuffer [ Failure ]
 crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_camera [ Failure ]
 crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_capture [ Failure ]
@@ -337,8 +317,6 @@ crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_Manua
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_avc1.42001E_prefer-* [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_* [ Failure ]
 
-# Windows 11 failures that started with temporal SVC support
-crbug.com/40275246 [ nvidia-0x2184 win11 ] WebCodecs_D3D12_SVC_avc1.42001E_layers_2 [ Failure ]
 
 
 #######################################################################
