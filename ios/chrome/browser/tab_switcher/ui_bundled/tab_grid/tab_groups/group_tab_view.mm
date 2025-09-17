@@ -19,6 +19,7 @@
 namespace {
 
 const CGFloat kFaviconViewScaleFactor = 0.5;
+const CGFloat kFaviconViewWidth = 18;
 const NSInteger kTabGridButtonFontSize = 14;
 const CGFloat kBottomFaviconViewWidthAndHeightAnchor = 24;
 const CGFloat kBottomFaviconBottomTrailingOffset = 4;
@@ -326,10 +327,15 @@ const CGFloat kFaviconCornerRadius = 8;
     [_viewList[i] addSubview:_imageViewList[i]];
     AddSameCenterConstraints(_viewList[i], _imageViewList[i]);
 
+    NSLayoutConstraint* widthConstraint =
+        IsTabGridEmptyThumbnailUIEnabled()
+            ? [_imageViewList[i].widthAnchor
+                  constraintEqualToConstant:kFaviconViewWidth]
+            : [_imageViewList[i].widthAnchor
+                  constraintEqualToAnchor:_viewList[i].widthAnchor
+                               multiplier:kFaviconViewScaleFactor];
     [NSLayoutConstraint activateConstraints:@[
-      [_imageViewList[i].widthAnchor
-          constraintEqualToAnchor:_viewList[i].widthAnchor
-                       multiplier:kFaviconViewScaleFactor],
+      widthConstraint,
       [_imageViewList[i].heightAnchor
           constraintEqualToAnchor:_imageViewList[i].widthAnchor],
     ]];
