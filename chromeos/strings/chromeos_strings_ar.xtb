@@ -695,7 +695,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">اختيار ألبوم "<ph name="TITLE" />":<ph name="DESC" /></translation>
 <translation id="4111761024568264522">‏لوحة لمس USB</translation>
-<translation id="4113067922640381334">يمكنك الآن الوصول إلى <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />خلفيات<ph name="END_LINK_WALLPAPER_SUBPAGE" /> جديدة</translation>
+<translation id="4113067922640381334">يمكنك الآن الوصول إلى <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />خلفيات<ph name="END_LINK_WALLPAPER_SUBPAGE" /> جديدة.</translation>
 <translation id="4117637339509843559">الوضع الداكن</translation>
 <translation id="4126551873361000548">ترجيع بمقدار 10 ثوانٍ</translation>
 <translation id="4128271910628504223">يُرجى إدخال طلب، مثل "رسم غابة ضبابية"</translation>
@@ -748,7 +748,7 @@
 <translation id="4269815121975886860">الإعدادات المفضَّلة لبدء التشغيل</translation>
 <translation id="4271957103967917607">عرض بملء الشاشة</translation>
 <translation id="4275663329226226506">الوسائط</translation>
-<translation id="4278766082079064416">يتم استخدام هذا الاختصار حاليًا لتنفيذ الإجراء "<ph name="CONFLICT_ACCEL_NAME" />". يُرجى تعديل الاختصار أو إزالته لحلّ مشكلة التعارض.</translation>
+<translation id="4278766082079064416">سبق استخدام هذا الاختصار لتنفيذ الإجراء "<ph name="CONFLICT_ACCEL_NAME" />". يُرجى تعديل الاختصار أو إزالته لحلّ مشكلة التعارض.</translation>
 <translation id="4285999655021474887">أرجواني</translation>
 <translation id="4289540628985791613">نظرة عامة</translation>
 <translation id="4289849978083912975">عرض الشرائح</translation>

@@ -248,7 +248,7 @@
 <translation id="1952728750904661634">تسجيل الدخول باستخدام حساب مُدار</translation>
 <translation id="1955773397805078763">إضافة طريقة دفع</translation>
 <translation id="1956138802718275401">كلمات المرور متاحة لك من الشاشة الرئيسية</translation>
-<translation id="1959441496380398824">النقر مع الاستمرار على تاريخ.</translation>
+<translation id="1959441496380398824">انقر مع الاستمرار على تاريخ.</translation>
 <translation id="1962348300797608157">لقد تلقيّت من <ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">قفل الشاشة</translation>
 <translation id="1963976881984600709">الحماية العادية</translation>
@@ -663,7 +663,7 @@
 <translation id="3587885837929752825">‏تفرض مؤسستك قيودًا على ما يمكنك حفظه في حسابك على Google.</translation>
 <translation id="3588820906588687999">فتح الصورة في علامة تبويب جديدة</translation>
 <translation id="3595252146048399851">‏يمكنك متى شئت اختيار البيانات التي تريد مزامنتها، وذلك من خلال <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
-<translation id="3602260545951981695">اختيار "الحماية المحسَّنة"</translation>
+<translation id="3602260545951981695">اختَر "الحماية المحسَّنة"</translation>
 <translation id="3610041351087301930">إخفاء "وضع القارئ"</translation>
 <translation id="3610866916973186448">نعم، أريد حذفه</translation>
 <translation id="3622175633937495219">سجلّ البحث (عدد النتائج المطابقة: <ph name="COUNT" />)</translation>
@@ -705,7 +705,7 @@
 <translation id="3818293389945649617">العثور على النتيجة التالية</translation>
 <translation id="3819183753496523827">لا يتوفّر اتصال بالإنترنت. يُرجى التحقّق من الاتصال بالإنترنت، ثم إعادة المحاولة</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{طريقة دفع واحدة}zero{‫# طريقة دفع}two{طريقتا دفع}few{‫# طُرق دفع}many{‫# طريقة دفع}other{‫# طريقة دفع}}</translation>
-<translation id="3831560640878483188">هل مطلوب إغلاق رسالة التحذير؟</translation>
+<translation id="3831560640878483188">هل تريد إغلاق رسالة التحذير؟</translation>
 <translation id="3832419617903252251">تم حفظ كلمة المرور على هذا الجهاز فقط.</translation>
 <translation id="3835964409414434850">الانتقال إلى علامة التبويب التالية</translation>
 <translation id="3838691874161539578">يُرجى التحقّق من كلمات المرور المحفوظة لتعزيز مستوى الحماية وتصفُّح الإنترنت بأمان.</translation>
@@ -1246,7 +1246,7 @@
 <translation id="5868644772996939262">الملء التلقائي لكلمات المرور ومفاتيح المرور</translation>
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
 <translation id="5873179562631407582">انقر مع الاستمرار على أي علامة تبويب مفتوحة</translation>
-<translation id="5878899964490256268">‫<ph name="EMAIL" />. تُدير مؤسستك هذا الحساب.</translation>
+<translation id="5878899964490256268">‫<ph name="EMAIL" />. تتم إدارة الحساب من خلال مؤسستك.</translation>
 <translation id="5887400589839399685">تم حفظ البطاقة</translation>
 <translation id="5888889603768021126">تم تسجيل الدخول باستخدام</translation>
 <translation id="5889333064153755823">حذف بيانات التصفّح</translation>
@@ -1691,7 +1691,7 @@
 <translation id="7567579665882069209">الإشارات المرجعية مخفية</translation>
 <translation id="7577900504646297215">إدارة الاهتمامات</translation>
 <translation id="7582666837709186351">يمكنك ترجمة النصوص في صورك أو التي تراها حولك بالكاميرا.</translation>
-<translation id="7582857256643797524">هذا الخيار مفعَّل على جهازك</translation>
+<translation id="7582857256643797524">هذه الإعدادات مفعَّلة على جهازك</translation>
 <translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="7588149553568293500">إليك معلومات عن الخيارات المتاحة.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{هل تريد إغلاق علامة تبويب واحدة ({COUNT}) غير نشطة؟}zero{هل تريد إغلاق {COUNT} علامة تبويب غير نشطة؟}two{هل تريد إغلاق علامتَي تبويب ({COUNT}) غير نشطتَين؟}few{هل تريد إغلاق {COUNT} علامات تبويب غير نشطة؟}many{هل تريد إغلاق {COUNT} علامة تبويب غير نشطة؟}other{هل تريد إغلاق {COUNT} علامة تبويب غير نشطة؟}}</translation>
@@ -1805,7 +1805,7 @@
 <translation id="7982789257301363584">الشبكة</translation>
 <translation id="7987685713885608670">‏لزيادة الأمان، يمكنك تشفير كلمات المرور على جهازك قبل حفظها ضمن "مدير كلمات المرور" في Google.</translation>
 <translation id="798991908416757345">مجموعات علامات التبويب غير متاحة</translation>
-<translation id="7993170188789685695">يرجى النقر مرّتين لإغلاق هذا الإشعار.</translation>
+<translation id="7993170188789685695">انقر مرّتين لإغلاق هذا الإشعار.</translation>
 <translation id="7996239959906074962">إعداد…</translation>
 <translation id="8001561107130904792">مشاركة محتوى الصفحة</translation>
 <translation id="800361585186029508">‏فتح عناوين URL التي تم إدخالها في Google Chrome</translation>
@@ -1845,7 +1845,7 @@
 <translation id="8114753159095730575">أصبح بالإمكان تنزيل الملف. يمكنك مراجعة الخيارات في أسفل الشاشة.</translation>
 <translation id="8123502380991596210">إخفاء الميزات الجديدة</translation>
 <translation id="8123953306357309250">هل المطلوب إلغاء المزامنة؟ يمكنك تفعيل المزامنة في أي وقت من الإعدادات.</translation>
-<translation id="81313319706244542">‏2‏. يمكنك النقر على Passwords (كلمات المرور)</translation>
+<translation id="81313319706244542">‏2‏. انقر على Passwords (كلمات المرور).</translation>
 <translation id="8131740175452115882">تأكيد</translation>
 <translation id="8132598642024322408">السعر الآن <ph name="PRICE" /> بعدما كان <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">يرجى استخدام كلمة مرور فريدة لكل موقع إلكتروني أو تطبيق. فإذا اكتشف أحدهم كلمة مرور مستخدَمة لعدة حسابات، يمكنه استخدامها للدخول إلى حساباتك الأخرى. يرجى النقر لفتح الموقع الإلكتروني وتغيير كلمة المرور الآن.</translation>
@@ -2050,7 +2050,7 @@
 <translation id="8863431381414769983">‏الحصول على الاتجاهات والمعلومات المحلية من "خرائط Google"</translation>
 <translation id="8871974300055371298">إعدادات المحتوى</translation>
 <translation id="8877788021141246043">ضبط تذكير</translation>
-<translation id="8879604564928138696">النقر مرّتين للتجربة</translation>
+<translation id="8879604564928138696">انقر مرّتين للتجربة</translation>
 <translation id="8879952635974818770">محتوى مخصّص</translation>
 <translation id="8887595428614802520">إغلاق كل علامات التبويب والمجموعات</translation>
 <translation id="8888595487174963247">إزالة التذكير</translation>

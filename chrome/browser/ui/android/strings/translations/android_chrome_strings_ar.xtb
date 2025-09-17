@@ -136,7 +136,7 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{إزالة العنصر المحدّد}zero{إزالة # عنصر محدّد}two{إزالة عنصرَين (#) محدّدَين}few{إزالة # عناصر محدّدة}many{إزالة # عنصرًا محدّدًا}other{إزالة # عنصر محدّد}}</translation>
 <translation id="1639239467298939599">جارٍ التحميل</translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
-<translation id="164269334534774161">يتم عرض نسخة لهذه الصفحة متاحة بلا اتصال إنترنت، وتاريخها <ph name="CREATION_TIME" /></translation>
+<translation id="164269334534774161">أنت تعرض نسخة بلا اتصال لهذه الصفحة من <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1645262572857218659">يمكنك تسجيل الدخول باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1671236975893690980">التنزيل معلّق...</translation>
@@ -283,7 +283,7 @@
 <translation id="2367818124433749493">اختصارات المطوّرين</translation>
 <translation id="2385605401818128172">يمكنك مراجعة المواقع الإلكترونية التي ترسل الكثير من الإشعارات ومنعها من إرسال المزيد في المستقبل</translation>
 <translation id="2386938421315164605">إخفاء المواضيع وإظهارها</translation>
-<translation id="2390510615457643724">هل المطلوب تنزيل <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> مرة أخرى؟</translation>
+<translation id="2390510615457643724">هل تريد تنزيل <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> مرة أخرى؟</translation>
 <translation id="2410754283952462441">اختيار حساب</translation>
 <translation id="2413014528833954543">تعذَّر التحقّق من كلمات المرور على هذا الجهاز</translation>
 <translation id="2414886740292270097">داكن</translation>
@@ -603,7 +603,7 @@
 <translation id="3870908470613821006">سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع الأجهزة</translation>
 <translation id="3873174561423636563">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> مع هذا الموقع الإلكتروني. ويُرجى الاطّلاع على <ph name="BEGIN_LINK1" />بنود الخدمة<ph name="END_LINK1" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
-<translation id="3898498281932368596">الحظر والمغادرة</translation>
+<translation id="3898498281932368596">حظر الحساب ومغادرة المجموعة</translation>
 <translation id="3899682235662194879">إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي</translation>
 <translation id="3900966090527141178">تصدير كلمات المرور</translation>
 <translation id="3902562446536395999">جارٍ الترتيب أبجديًا من أ إلى ي</translation>
@@ -711,7 +711,7 @@
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{لم يتم استخدام علامات التبويب ومجموعاتها لمدة يوم واحد أو أكثر}zero{لم يتم استخدام علامات التبويب ومجموعاتها لمدة # يوم أو أكثر}two{لم يتم استخدام علامات التبويب ومجموعاتها لمدة يومَين أو أكثر}few{لم يتم استخدام علامات التبويب ومجموعاتها لمدة # أيام أو أكثر}many{لم يتم استخدام علامات التبويب ومجموعاتها لمدة # يومًا أو أكثر}other{لم يتم استخدام علامات التبويب ومجموعاتها لمدة # يوم أو أكثر}}</translation>
 <translation id="4402611456429872546">جارٍ تنزيل حزمة اللغة <ph name="LANG" />…</translation>
 <translation id="4404568932422911380">ليست هناك إشارات مرجعية.</translation>
-<translation id="4405224443901389797">نقل إلى…</translation>
+<translation id="4405224443901389797">نقل إلى...</translation>
 <translation id="4405636711880428279">إزالة بطاقتك الإفتراضية؟</translation>
 <translation id="4408965460206576430">يحتوي هذا الملف على برامج ضارة أو برامج من موقع إلكتروني مريب.</translation>
 <translation id="4409014848144759297">‫<ph name="WEBSITE_TITLE" /> و<ph name="TAB_COUNT" /> علامة تبويب أخرى</translation>
@@ -906,7 +906,7 @@
 <translation id="5212800876504289412">‏يجب إعادة تشغيل Chrome لإكمال هذا التغيير. وتتم إعادة فتح علامات التبويب تلقائيًا عند إعادة التشغيل.</translation>
 <translation id="5215957675041756913">التحكّم في بياناتك وحسابك</translation>
 <translation id="5218324087477576825">رقم البطاقة، مطلوب إدخاله</translation>
-<translation id="5221437554987713282">‏<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وأذونات أخرى <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات إذ لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا</translation>
+<translation id="5221437554987713282">‏<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وأذونات أخرى <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنك لم تزُر هذا الموقع الإلكتروني مؤخرًا</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="5226378907213531272">سيفتح قفل شاشتك كلما استخدمت السيارة.</translation>
 <translation id="5227554086496586518">النقر للاطّلاع على نتائج البحث</translation>
@@ -936,7 +936,7 @@
 <translation id="5375374982898812658">ستفقد على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع أجهزتك</translation>
 <translation id="5375577065097716013">‏يمكنك البحث في الصور عبر "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771">يريد <ph name="WEBSITE_ORIGIN" /> استخدام معلومات شخصية من محفظتك الرقمية. يُرجى المتابعة فقط إذا كان لديك ثقة في هذا الموقع الإلكتروني. قد تحاول المواقع الإلكترونية الخطيرة خداعك لكي تكشف عن معلومات مثل اسمك القانوني أو رقم بطاقتك الشخصية.</translation>
-<translation id="5394331612381306435">الخروج من "وضع التصفّح المتخفي"</translation>
+<translation id="5394331612381306435">الخروج من وضع التصفّح المتخفي</translation>
 <translation id="5395376160638294582">‏يُرجى التأكُّد من أنّه يمكنك استخدام بيانات Chrome في حسابك على Google في أي وقت</translation>
 <translation id="539881862970320163">تم اقتراح كلمة مرور قوية. لوحة المفاتيح مخفية.</translation>
 <translation id="5409881200985013443">هل المطلوب إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="CLIENT_NAME" />؟</translation>
@@ -1817,7 +1817,7 @@
 <translation id="9168847423516963845">نقل شريط العناوين إلى الأسفل</translation>
 <translation id="9169507124922466868">سجلّ التنقل مفتوح جزئيًا</translation>
 <translation id="9189607089796819144">هل المطلوب تنزيل "<ph name="FILE_NAME" />" ‏(<ph name="FILE_SIZE" />) على أي حال؟</translation>
-<translation id="9190276265094487094">سيظهر لك سجل على كل الأجهزة التي تمت مزامنتها مع حسابك، ما يعني أنه يمكنك مواصلة التصفّح من حيث توقفت</translation>
+<translation id="9190276265094487094">سيظهر لك سجل التصفّح على جميع الأجهزة التي تتم مزامنة حسابك معها، ما يعني أنه يمكنك مواصلة التصفّح من حيث توقفت.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{تمّ إجراء عملية التحقُّق قبل دقيقة واحدة.}zero{تمّ إجراء عملية التحقُّق قبل # دقيقة.}two{تمّ إجراء عملية التحقُّق قبل دقيقتَين.}few{تمّ إجراء عملية التحقُّق قبل # دقائق.}many{تمّ إجراء عملية التحقُّق قبل # دقيقة.}other{تمّ إجراء عملية التحقُّق قبل # دقيقة.}}</translation>
 <translation id="9204836675896933765">ملف واحد متبقٍ</translation>
 <translation id="9205933215779845960">لم نتمكّن من العثور على تلك الصفحة. يُرجى التحقّق من تهجئة الكلمات أو البحث على <ph name="SEARCH_ENGINE" />.</translation>
