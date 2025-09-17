@@ -44,6 +44,7 @@ import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -1784,295 +1785,119 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void testTwaFullscreenDisplayMode_ResolveToFullscreen() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
+        checkResolvedDisplayMode(
                 new TrustedWebActivityDisplayMode.ImmersiveMode(
-                                /* isSticky= */ false,
-                                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
-                        .toBundle());
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to fullscreen display mode",
-                DisplayMode.FULLSCREEN,
-                dataProvider.getResolvedDisplayMode());
+                        false, WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT),
+                null,
+                DisplayMode.FULLSCREEN);
     }
 
     @Test
     public void testTwaStandaloneDisplayMode_ResolveToStandalone() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.DefaultMode().toBundle());
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to standalone display mode",
-                DisplayMode.STANDALONE,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                new TrustedWebActivityDisplayMode.DefaultMode(), null, DisplayMode.STANDALONE);
     }
 
     @Test
     public void testTwaStandaloneDisplayOverride_ResolveToImmersive() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_OVERRIDE,
-                new ArrayList<Bundle>(
-                        Arrays.asList(
-                                new TrustedWebActivityDisplayMode.ImmersiveMode(
-                                                /* isSticky= */ false,
-                                                WindowManager.LayoutParams
-                                                        .LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
-                                        .toBundle())));
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to fullscreen display mode",
-                DisplayMode.FULLSCREEN,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                null,
+                Collections.singletonList(
+                        new TrustedWebActivityDisplayMode.ImmersiveMode(
+                                false,
+                                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)),
+                DisplayMode.FULLSCREEN);
     }
 
     @Test
     public void testTwaStandaloneDisplayOverride_BrowserIgnored() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.DefaultMode().toBundle());
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_OVERRIDE,
-                new ArrayList<Bundle>(
-                        Arrays.asList(new TrustedWebActivityDisplayMode.BrowserMode().toBundle())));
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to standalone display mode",
-                DisplayMode.STANDALONE,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                new TrustedWebActivityDisplayMode.DefaultMode(),
+                Collections.singletonList(new TrustedWebActivityDisplayMode.BrowserMode()),
+                DisplayMode.STANDALONE);
     }
 
     @Test
     public void testTwaStandaloneDisplayOverride_OverridePrioritized() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.DefaultMode().toBundle());
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_OVERRIDE,
-                new ArrayList<Bundle>(
-                        Arrays.asList(
-                                new TrustedWebActivityDisplayMode.ImmersiveMode(
-                                                /* isSticky= */ false,
-                                                WindowManager.LayoutParams
-                                                        .LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
-                                        .toBundle())));
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to fullscreen display mode",
-                DisplayMode.FULLSCREEN,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                new TrustedWebActivityDisplayMode.DefaultMode(),
+                Collections.singletonList(
+                        new TrustedWebActivityDisplayMode.ImmersiveMode(
+                                false,
+                                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)),
+                DisplayMode.FULLSCREEN);
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testTwaMinUiEnabledDisplayMode_ResolveToMinimalUi() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
-
         // on sdk < 35 min ui is not supported
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to standalone display mode",
-                DisplayMode.STANDALONE,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                new TrustedWebActivityDisplayMode.MinimalUiMode(), null, DisplayMode.STANDALONE);
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     @DisableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testTwaMinUiDisabledDisplayMode_ResolveToStandalone() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to standalone display mode",
-                DisplayMode.STANDALONE,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                new TrustedWebActivityDisplayMode.MinimalUiMode(), null, DisplayMode.STANDALONE);
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testTwaBrowserModeWithEnabledMinUI_ResolveToMinimalUi() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.BrowserMode().toBundle());
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to minimal ui display mode",
-                DisplayMode.MINIMAL_UI,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                new TrustedWebActivityDisplayMode.BrowserMode(), null, DisplayMode.MINIMAL_UI);
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testTwaBrowserModeWithEnabledMinUI_ResolveDisplayOverrideToMinimalUi() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_OVERRIDE,
-                new ArrayList<Bundle>(
-                        Arrays.asList(
-                                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle())));
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to minimal ui display mode",
-                DisplayMode.MINIMAL_UI,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                null,
+                Collections.singletonList(new TrustedWebActivityDisplayMode.MinimalUiMode()),
+                DisplayMode.MINIMAL_UI);
     }
 
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testTwaBrowserModeWithEnabledMinUiPreSdk35_ResolveToMinimalUi() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.BrowserMode().toBundle());
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to standalone display mode",
-                DisplayMode.STANDALONE,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                new TrustedWebActivityDisplayMode.BrowserMode(), null, DisplayMode.STANDALONE);
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     @DisableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testTwaBrowserModeWithDisabledMinimalUi_ResolveToStandalone() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.BrowserMode().toBundle());
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to standalone display mode",
-                DisplayMode.STANDALONE,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                new TrustedWebActivityDisplayMode.BrowserMode(), null, DisplayMode.STANDALONE);
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     @DisableFeatures({ChromeFeatureList.ANDROID_WINDOW_CONTROLS_OVERLAY})
     public void testTwaBrowserModeWithDisabledWindowControlsOverlay_ResolveToStandalone() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_OVERRIDE,
-                new ArrayList<Bundle>(
-                        Arrays.asList(
-                                new TrustedWebActivityDisplayMode.WindowControlsOverlayMode()
-                                        .toBundle())));
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to standalone display mode",
-                DisplayMode.STANDALONE,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                null,
+                Collections.singletonList(
+                        new TrustedWebActivityDisplayMode.WindowControlsOverlayMode()),
+                DisplayMode.STANDALONE);
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     @EnableFeatures({ChromeFeatureList.ANDROID_WINDOW_CONTROLS_OVERLAY})
     public void testTwaBrowserModeWithEnableWindowControlsOverlay_ResolveToWindowControlsOverlay() {
-        CustomTabsSession session =
-                CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(mContext, ChromeLauncherActivity.class));
-        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_OVERRIDE,
-                new ArrayList<Bundle>(
-                        Arrays.asList(
-                                new TrustedWebActivityDisplayMode.WindowControlsOverlayMode()
-                                        .toBundle())));
-
-        BrowserServicesIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals(
-                "Should resolve to window controls overlay display mode",
-                DisplayMode.WINDOW_CONTROLS_OVERLAY,
-                dataProvider.getResolvedDisplayMode());
+        checkResolvedDisplayMode(
+                null,
+                Collections.singletonList(
+                        new TrustedWebActivityDisplayMode.WindowControlsOverlayMode()),
+                DisplayMode.WINDOW_CONTROLS_OVERLAY);
     }
 
     @Test
@@ -2080,20 +1905,39 @@ public class CustomTabIntentDataProviderTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_WINDOW_CONTROLS_OVERLAY})
     public void
             testTwaBrowserModeWithEnableWindowControlsOverlay_IgnoreWindowControlsOverlayNotInDisplayOverride() {
+        checkResolvedDisplayMode(
+                new TrustedWebActivityDisplayMode.WindowControlsOverlayMode(),
+                null,
+                DisplayMode.STANDALONE);
+    }
+
+    private void checkResolvedDisplayMode(
+            @Nullable TrustedWebActivityDisplayMode displayMode,
+            @Nullable List<TrustedWebActivityDisplayMode> displayOverrides,
+            @DisplayMode.EnumType int expectedDisplayMode) {
         CustomTabsSession session =
                 CustomTabsSession.createMockSessionForTesting(
                         new ComponentName(mContext, ChromeLauncherActivity.class));
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.WindowControlsOverlayMode().toBundle());
+
+        if (displayMode != null) {
+            intent.putExtra(
+                    TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE, displayMode.toBundle());
+        }
+        if (displayOverrides != null) {
+            ArrayList<Bundle> bundles = new ArrayList<>();
+            for (TrustedWebActivityDisplayMode mode : displayOverrides) {
+                bundles.add(mode.toBundle());
+            }
+            intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_OVERRIDE, bundles);
+        }
 
         BrowserServicesIntentDataProvider dataProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
-                "Should resolve to standalone display mode",
-                DisplayMode.STANDALONE,
+                "Display mode resolution mismatch",
+                expectedDisplayMode,
                 dataProvider.getResolvedDisplayMode());
     }
 
