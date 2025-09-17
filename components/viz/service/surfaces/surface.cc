@@ -825,6 +825,12 @@ void Surface::SetActiveFrameForViewTransition(CompositorFrame frame) {
   CHECK(active_frame_data_.has_value());
 
   active_frame_data_->frame = std::move(frame);
+
+  if (features::ShouldAckCOREarlyForViewTransition()) {
+    // We need to recompute these as there can be undrawn surfaces as referenced
+    // surfaces for cross-doc view transitions on shared element replacement.
+    RecomputeActiveReferencedSurfaces();
+  }
 }
 
 const CompositorFrame& Surface::GetPendingFrame() {

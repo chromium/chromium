@@ -80,6 +80,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       const base::flat_map<blink::ViewTransitionToken,
                            std::unique_ptr<SurfaceAnimationManager>>*
           token_to_animation_manager,
+      base::flat_set<SurfaceId>* original_surfaces,
       const DrawQuad& quad,
       CompositorRenderPass& copy_pass);
 
@@ -105,6 +106,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   TransferableResourceTracker transferable_resource_tracker_;
 
   SurfaceSavedFrame saved_frame_;
+  SurfaceId surface_id_;
   base::flat_set<ViewTransitionElementResourceId> empty_resource_ids_;
 
   std::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;

@@ -214,6 +214,12 @@ const base::FeatureParam<int> kCALayerNewLimitManyVideos{&kCALayerNewLimit,
 BASE_FEATURE(kVSyncAlignedPresent, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Sends a CopyOutputRequest completion Ack early for view transitions so it can
+// proceed with navigation. ViewTransition Animate still waits though for
+// CopyOutputRequests to be actually fulfilled.
+BASE_FEATURE(kAckCopyOutputRequestEarlyForViewTransition,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
 #if BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -562,5 +568,10 @@ bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
   return base::Contains(allowlist, soc);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+bool ShouldAckCOREarlyForViewTransition() {
+  return base::FeatureList::IsEnabled(
+      features::kAckCopyOutputRequestEarlyForViewTransition);
+}
 
 }  // namespace features
