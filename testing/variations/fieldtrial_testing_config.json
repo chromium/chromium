@@ -10611,26 +10611,6 @@
             ]
         }
     ],
-    "FastPathNoRaster": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux",
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FastPathNoRaster"
-                    ]
-                }
-            ]
-        }
-    ],
     "FasterBackgroundFreezing": [
         {
             "platforms": [

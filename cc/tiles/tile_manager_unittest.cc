@@ -1824,9 +1824,8 @@ TEST_F(TileManagerTest, AllWorkFinished) {
   }
 }
 
-// Same test as `AllWorkFinished` above, but with kFastPathNoRaster enabled.
+// Tests the "no work" fast path.
 TEST_F(TileManagerTest, FastPathWhenNoRasterWork) {
-  base::test::ScopedFeatureList feature_list{features::kFastPathNoRaster};
   base::HistogramTester histogram_tester;
 
   host_impl()->tile_manager()->DisbleMetricsSubsamplingForTesting();

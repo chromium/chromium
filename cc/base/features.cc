@@ -152,7 +152,7 @@ BASE_FEATURE(kRenderThrottleFrameRate, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kRenderThrottledFrameIntervalHz{
     &kRenderThrottleFrameRate, "render-throttled-frame-interval-hz", 30};
 
-BASE_FEATURE(kFastPathNoRaster, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFastPathNoRaster, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInternalBeginFrameSourceOnManyDidNotProduceFrame,
              base::FEATURE_DISABLED_BY_DEFAULT);
