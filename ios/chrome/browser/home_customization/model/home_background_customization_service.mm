@@ -112,7 +112,10 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
     return;
   }
 
-  for (const base::Value& background_value : recently_used_backgrounds_list) {
+  // recently_used_backgrounds_ is an LRU cache, so the items need to be added
+  // in reverse order, so the oldest item is added first.
+  for (const base::Value& background_value :
+       base::Reversed(recently_used_backgrounds_list)) {
     if (background_value.is_string()) {
       recently_used_backgrounds_.Put(
           DecodeThemeSpecificsIos(background_value.GetString()));
@@ -345,7 +348,7 @@ void HomeBackgroundCustomizationService::StoreRecentlyUsedBackgroundsList() {
 
   base::Value::List recently_used_backgrounds_list;
   for (const RecentlyUsedBackgroundInternal& background :
-       base::Reversed(recently_used_backgrounds_)) {
+       recently_used_backgrounds_) {
     if (std::holds_alternative<sync_pb::ThemeSpecificsIos>(background)) {
       sync_pb::ThemeSpecificsIos theme =
           std::get<sync_pb::ThemeSpecificsIos>(background);
