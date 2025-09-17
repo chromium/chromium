@@ -145,7 +145,8 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
             resolved_target.point);
     const blink::WebElement hit_element = hit_test_result.GetElement();
     // The action target from APC is not as granular as the live DOM hit test.
-    if (!target_node.Contains(&hit_element)) {
+    // Include shadow host element as the hit test would land on those.
+    if (!target_node.ContainsIncludingHostElements(&hit_element)) {
       journal_->Log(task_id_, "TimeOfUseValidation",
                     JournalDetailsBuilder()
                         .Add("target_id", target_node.GetDomNodeId())

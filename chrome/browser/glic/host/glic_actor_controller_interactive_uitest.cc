@@ -1552,6 +1552,30 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, TimeOfUseCheckOnTextNode) {
   // clang-format on
 }
 
+// Ensure the time-of-use check can succeed when a click is dispatched to an
+// element within a shadow DOM that overlaps its host.
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, TimeOfUseCheckOnShadowDom) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kClickableButtonLabel = "clickable";
+
+  // Load the new page that contains the element with a shadow DOM.
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_shadow_dom.html");
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      GetPageContextFromFocusedTab(),
+      ClickAction(kClickableButtonLabel,
+                  ClickAction::LEFT, ClickAction::SINGLE),
+      WaitForJsResult(kNewActorTabId, "() => button_clicked === true")
+  );
+  // clang-format on
+}
+
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
                        ActuationSucceedsOnBackgroundTabAfterPauseAndResume) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
