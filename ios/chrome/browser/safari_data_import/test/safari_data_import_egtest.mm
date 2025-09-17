@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -21,12 +22,24 @@
 
 @implementation SafariDataImportTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
+/// Helper method creating an instance of AppLaunchConfiguration that enables
+/// the Safari import feature by default. No other behavior is overridden.
+- (AppLaunchConfiguration)appConfigurationNoOverrideBehavior {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kImportPasswordsFromSafari);
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  return config;
+}
+
+/// App configuration for this test suite, which ensures that the Safari import
+/// entry point displays on app startup in non-first-run launches. This reduces
+/// the time it takes for each test case by removing the need to go through FRE
+/// screens or go into Settings.
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [self appConfigurationNoOverrideBehavior];
   config.additional_args.push_back("-NextPromoForDisplayOverride");
   config.additional_args.push_back(
       "promos_manager::Promo::SafariImportRemindMeLater");
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
 }
 
@@ -35,7 +48,8 @@
 - (void)testFirstRunAndReminder {
   if (@available(iOS 18.2, *)) {
     [[self class] testForStartup];
-    AppLaunchConfiguration firstRunConfig = [super appConfigurationForTestCase];
+    AppLaunchConfiguration firstRunConfig =
+        [self appConfigurationNoOverrideBehavior];
     /// Show the First Run UI at startup.
     firstRunConfig.additional_args.push_back("-FirstRunForceEnabled");
     firstRunConfig.additional_args.push_back("true");
@@ -62,7 +76,8 @@
 
     /// Restart in IPH demo mode. If the reminder is successfully registered, it
     /// will be displayed on restart.
-    AppLaunchConfiguration iphConfig = [super appConfigurationForTestCase];
+    AppLaunchConfiguration iphConfig =
+        [self appConfigurationNoOverrideBehavior];
     iphConfig.iph_feature_enabled = "IPH_iOSSafariImportFeature";
     iphConfig.relaunch_policy = ForceRelaunchByCleanShutdown;
     [[AppLaunchManager sharedManager]
@@ -78,7 +93,8 @@
     ScopedSynchronizationDisabler disabler;
     /// Clean restart without experimental settings.
     [[AppLaunchManager sharedManager]
-        ensureAppLaunchedWithConfiguration:[super appConfigurationForTestCase]];
+        ensureAppLaunchedWithConfiguration:
+            [self appConfigurationNoOverrideBehavior]];
     [ChromeEarlGreyUI openSettingsMenu];
     [[[EarlGrey selectElementWithMatcher:
                     grey_allOf(grey_accessibilityID(
