@@ -177,6 +177,7 @@ ImageServiceImpl::ImageServiceImpl(
         autocomplete_scheme_classifier)
     : template_url_service_(template_url_service),
       remote_suggestions_service_(remote_suggestions_service),
+      opt_guide_(opt_guide),
       history_consent_helper_(std::make_unique<ImageServiceConsentHelper>(
           sync_service,
           syncer::DataType::HISTORY_DELETE_DIRECTIVES)),
@@ -184,12 +185,7 @@ ImageServiceImpl::ImageServiceImpl(
           sync_service,
           syncer::DataType::BOOKMARKS)),
       autocomplete_scheme_classifier_(
-          std::move(autocomplete_scheme_classifier)) {
-  if (opt_guide && base::FeatureList::IsEnabled(
-                       kImageServiceOptimizationGuideSalientImages)) {
-    opt_guide_ = opt_guide;
-  }
-}
+          std::move(autocomplete_scheme_classifier)) {}
 
 ImageServiceImpl::OptGuideRequest::OptGuideRequest() = default;
 ImageServiceImpl::OptGuideRequest::~OptGuideRequest() = default;
@@ -276,9 +272,7 @@ void ImageServiceImpl::OnConsentResult(mojom::ClientId client_id,
     }
   }
 
-  if (options.optimization_guide_images && opt_guide_ &&
-      base::FeatureList::IsEnabled(
-          kImageServiceOptimizationGuideSalientImages)) {
+  if (options.optimization_guide_images && opt_guide_) {
     UmaHistogramEnumerationForClient(
         kBackendHistogramName, PageImageServiceBackend::kOptimizationGuide,
         client_id);

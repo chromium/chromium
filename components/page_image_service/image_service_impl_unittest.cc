@@ -78,9 +78,7 @@ class ImageServiceImplTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {kImageService, kImageServiceSuggestPoweredImages,
-         kImageServiceOptimizationGuideSalientImages},
-        {});
+        {kImageService, kImageServiceSuggestPoweredImages}, {});
 
     remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
         /*document_suggestions_service=*/nullptr,
@@ -469,44 +467,6 @@ TEST_F(ImageServiceImplTest, OptimizationGuideBatchingRespectsMaxUrls) {
                                 base::BindOnce(&AppendResponse, &responses));
   EXPECT_EQ(test_opt_guide_->requests_received_, 1U)
       << "Expect that making more request restarts the queue.";
-}
-
-class DisabledOptGuideImageServiceImplTest : public ImageServiceImplTest {
- public:
-  DisabledOptGuideImageServiceImplTest() = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kImageService, kImageServiceSuggestPoweredImages},
-        /*disabled_features=*/{kImageServiceOptimizationGuideSalientImages});
-
-    remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
-        /*document_suggestions_service=*/nullptr,
-        /*enterprise_search_aggregator_suggestions_service=*/nullptr,
-        test_url_loader_factory_.GetSafeWeakWrapper());
-    test_opt_guide_ =
-        std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
-    test_sync_service_ = std::make_unique<syncer::TestSyncService>();
-    image_service_ = std::make_unique<ImageServiceImpl>(
-        search_engines_test_environment_.template_url_service(),
-        remote_suggestions_service_.get(), test_opt_guide_.get(),
-        test_sync_service_.get(), std::make_unique<TestSchemeClassifier>());
-  }
-};
-
-TEST_F(DisabledOptGuideImageServiceImplTest, DoesNotFetch) {
-  mojom::Options options;
-  options.suggest_images = false;
-  options.optimization_guide_images = true;
-
-  GURL image_url_response;
-  image_service_->FetchImageFor(
-      mojom::ClientId::Journeys, GURL("https://page-url.com"), options,
-      base::BindOnce(&StoreImageUrlResponse, &image_url_response));
-
-  // Verify that the OptimizationGuide backend did not get called.
-  EXPECT_EQ(test_opt_guide_->requests_received_, 0U);
-  EXPECT_EQ(image_url_response, GURL());
 }
 
 }  // namespace page_image_service

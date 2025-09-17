@@ -771,9 +771,6 @@ extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
 extern const char kPageContextAnchorTagsName[];
 extern const char kPageContextAnchorTagsDescription[];
 
-extern const char kPageImageServiceSalientImageName[];
-extern const char kPageImageServiceSalientImageDescription[];
-
 extern const char kPageInfoLastVisitedIOSName[];
 extern const char kPageInfoLastVisitedIOSDescription[];
 
