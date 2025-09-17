@@ -886,6 +886,17 @@ class IDLSchema:
     idl_type = GetTypeName(attributes[0])
 
     namespace_node = GetChildWithName(self.idl, idl_type)
+
+    # If the API interface is a partial interface, it means it's part of a
+    # nested interface (an API name with a dot in it) and we need to go another
+    # layer deeper.
+    while namespace_node.GetProperty('PARTIAL'):
+      attributes = namespace_node.GetListOf('Attribute')
+      api_name += '.' + attributes[0].GetName()
+      idl_type = GetTypeName(attributes[0])
+
+      namespace_node = GetChildWithName(self.idl, idl_type)
+
     namespace = Namespace(
         api_name,
         namespace_node,

@@ -524,6 +524,36 @@ class WebIdlSchemaTest(unittest.TestCase):
   def testNodocUnspecifiedOnNamespace(self):
     self.assertFalse(self.idl_basics['nodoc'])
 
+  # Test loading a schema for an API with a nested namespace comes through with
+  # a dot separator in its name after processing (nested.example).
+  def testNestedNamespaceName(self):
+    idl = web_idl_schema.Load('test/web_idl/nested_namespace.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    self.assertEqual('nested.example', schema['namespace'])
+    self.assertEqual(
+        'Schema to test nested namespacee names types in IDL (API names with a'
+        ' dot in them). API should end up on `<Browser>.nested.example`.',
+        schema['description'],
+    )
+
+  # Similar to above, but testing a triple nested namespace with 2 dots
+  # (multi.nested.example).
+  def testMultiNestedNamespaceName(self):
+    idl = web_idl_schema.Load('test/web_idl/multi_nested_namespace.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    self.assertEqual('multi.nested.example', schema['namespace'])
+    self.assertEqual(
+        'Schema to test triple nested namespacee names types in IDL (API names'
+        ' with 2 dots in them). API should end up on `<Browser>.multi.nested.'
+        'example`.',
+        schema['description'],
+    )
+
+
   # TODO(crbug.com/340297705): This will eventually be relaxed when adding
   # support for shared types to the new parser.
   def testMissingBrowserInterfaceError(self):
