@@ -77,6 +77,18 @@ found in the LICENSE file.
         android:text="@string/text_on" />
 
     <TextView
+        android:id="@+id/feed_switch_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/ntp_customization_feed_switch_description"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:layout_marginTop="@dimen/ntp_customization_feed_switch_description_margin_top"
+        app:layout_constraintTop_toBottomOf="@id/feed_switch_button"
+        app:layout_constraintStart_toStartOf="@id/feed_switch_button"
+        app:layout_constraintEnd_toEndOf="@id/feed_switch_button"
+        android:focusable="true"/>
+
+    <TextView
         android:id="@+id/feed_list_items_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -85,7 +97,7 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/ntp_customization_feed_list_items_title_margin_top"
         android:layout_marginStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         android:layout_marginEnd="@dimen/ntp_customization_edit_icon_margin"
-        app:layout_constraintTop_toBottomOf="@id/feed_switch_button"
+        app:layout_constraintTop_toBottomOf="@id/feed_switch_description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:focusable="true"

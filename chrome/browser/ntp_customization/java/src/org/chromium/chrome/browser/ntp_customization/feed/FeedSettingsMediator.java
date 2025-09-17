@@ -101,7 +101,7 @@ public class FeedSettingsMediator {
                 (compoundButton, isChecked) -> onFeedSwitchToggled(isChecked));
         mFeedSettingsPropertyModel.set(
                 SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID,
-                R.string.ntp_customization_turn_on_feed_settings);
+                R.string.ntp_customization_feed_switch_description);
         mFeedSettingsPropertyModel.set(
                 LEARN_MORE_BUTTON_CLICK_LISTENER, FeedSettingsMediator::handleLearnMoreClick);
 

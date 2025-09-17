@@ -1389,6 +1389,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CLOSED" desc="Accessibility string that describes a new tab page customization bottom sheet is closed">
         Customize your new tab page bottom sheet closed
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_SWITCH_DESCRIPTION" desc="Title of the list items in the new tab page customization discover feed bottom sheet">
+        Get suggested articles on the New Tab page
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_FEED_LIST_ITEMS_TITLE" desc="Title of the list items in the new tab page customization discover feed bottom sheet">
         Manage your feed
       </message>
@@ -1403,9 +1406,6 @@
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_FEED_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the feed bottom sheet.">
         Discover feed bottom sheet
-      </message>
-      <message name="IDS_NTP_CUSTOMIZATION_TURN_ON_FEED_SETTINGS" desc="Accessibility string to announce the currently selected item is a toggle to control the visibility of the discover feed section." is_accessibility_with_no_ui="true">
-        Turn on discover feed
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_TURN_ON_MVT_SETTINGS" desc="Accessibility string to announce the currently selected item is a toggle to control the visibility of the most visited tiles section." is_accessibility_with_no_ui="true">
         Turn on shortcuts
