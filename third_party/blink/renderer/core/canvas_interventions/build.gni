@@ -9,6 +9,8 @@ blink_core_sources_canvas_interventions = [
   "noise_hash.h",
   "noise_helper.cc",
   "noise_helper.h",
+  "canvas_interventions_test.cc",
+  "canvas_interventions_test.h",
 ]
 
 blink_core_tests_canvas_interventions = [ "noise_helper_unittest.cc" ]

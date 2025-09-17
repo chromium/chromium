@@ -881,6 +881,12 @@
       name: "CanvasHDR",
       status: "experimental",
     },
+    // This flag exists only for testing and should not be changed to stable.
+    // Used for canvas noising tests.
+    {
+      name: "CanvasInterventionsTest",
+      is_protected_feature: "true",
+    },
     {
       // crbug.com/389726691.
       name: "CanvasTextCacheLimit",
