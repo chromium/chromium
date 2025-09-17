@@ -14,6 +14,7 @@
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -43,7 +44,7 @@ class EventDispatchHelper {
                                    content::RenderProcessHost* process,
                                    int64_t service_worker_version_id,
                                    int worker_thread_id,
-                                   const Event& event,
+                                   std::unique_ptr<Event> event,
                                    const base::Value::Dict* listener_filter,
                                    bool did_enqueue)>;
 
@@ -60,6 +61,16 @@ class EventDispatchHelper {
       const ExtensionId& restrict_to_extension_id,
       const GURL& restrict_to_url,
       std::unique_ptr<Event> event);
+
+  // Returns true if the feature for the given `event` is available to the
+  // listener's context.
+  static bool CheckFeatureAvailability(
+      const Event& event,
+      const Extension* extension,
+      const GURL& listener_url,
+      content::RenderProcessHost& process,
+      content::BrowserContext& listener_context,
+      mojom::ContextType target_context_type);
 
  private:
   EventDispatchHelper(const ExtensionRegistry& extension_registry,
@@ -112,11 +123,23 @@ class EventDispatchHelper {
 
   // Possibly loads given extension's background page or extension Service
   // Worker in preparation to dispatch an event. Returns true if the event was
-  // queued for subsequent dispatch, false otherwise.
+  // handled (either queued for subsequent dispatch or canceled), false
+  // otherwise.
   bool TryQueueEventDispatch(Event& event,
                              const LazyContextId& dispatch_context,
                              const Extension* extension,
                              const base::Value::Dict* listener_filter);
+
+  // Creates a copy of `event` for dispatching to a specific listener context.
+  // If `event` has a `will_dispatch_callback`, it is run before copying. If the
+  // callback cancels the event, returns nullptr. Otherwise, returns a copy of
+  // the event with any modifications applied by the callback.
+  std::unique_ptr<Event> CreateEventForDispatch(
+      const Event& event,
+      const base::Value::Dict* listener_filter,
+      const Extension* extension,
+      content::BrowserContext& listener_context,
+      mojom::ContextType target_context_type);
 
   // Records that an event has been queued for dispatch to a lazy listener to
   // avoid dispatching it again to a non-lazy listener.

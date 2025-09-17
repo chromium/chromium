@@ -150,12 +150,6 @@ class EventRouter : public KeyedService,
                              base::Value::List event_args,
                              mojom::EventFilteringInfoPtr info);
 
-  // Returns false when the event is scoped to a context and the listening
-  // extension does not have access to events from that context.
-  static bool CanDispatchEventToBrowserContext(content::BrowserContext* context,
-                                               const Extension* extension,
-                                               const Event& event);
-
   static void BindForRenderer(
       int process_id,
       mojo::PendingAssociatedReceiver<mojom::EventRouter> receiver);
@@ -458,7 +452,7 @@ class EventRouter : public KeyedService,
                               content::RenderProcessHost* process,
                               int64_t service_worker_version_id,
                               int worker_thread_id,
-                              const Event& event,
+                              std::unique_ptr<Event> event,
                               const base::Value::Dict* listener_filter,
                               bool did_enqueue);
 
@@ -675,6 +669,13 @@ struct Event {
         base::TimeTicks dispatch_start_time = base::TimeTicks{});
 
   ~Event();
+
+  // Creates a copy of this event, selectively choosing whether to also copy the
+  // event arguments and filtering info.
+  // If `copy_event_args` or `copy_filter_info` are false, the respective
+  // members will be initialized to empty values.
+  std::unique_ptr<Event> CopySelectively(bool copy_event_args,
+                                         bool copy_filter_info) const;
 
   // Makes a deep copy of this instance.
   std::unique_ptr<Event> DeepCopy() const;

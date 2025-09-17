@@ -9,20 +9,98 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/browser_process_context_data.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/lazy_context_id.h"
+#include "extensions/browser/process_map.h"
+#include "extensions/common/extension_api.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 using content::BrowserContext;
 
 namespace extensions {
+
+namespace {
+
+// Returns whether an event would cross the incognito boundary. e.g.
+// incognito->regular or regular->incognito. This is allowed for some extensions
+// that enable spanning-mode but is always disallowed for webUI.
+// `context` refers to the BrowserContext of the receiver of the event.
+bool CrossesIncognito(const BrowserContext& context, const Event& event) {
+  return event.restrict_to_browser_context &&
+         &context != event.restrict_to_browser_context;
+}
+
+// Returns false when the event is scoped to a context and the listening
+// extension does not have access to events from that context.
+bool CanDispatchEventToBrowserContext(BrowserContext& context,
+                                      const Extension* extension,
+                                      const Event& event) {
+  // Is this event from a different browser context than the renderer (ie, an
+  // incognito tab event sent to a normal process, or vice versa).
+  bool crosses_incognito = CrossesIncognito(context, event);
+  if (!crosses_incognito) {
+    return true;
+  }
+  return ExtensionsBrowserClient::Get()->CanExtensionCrossIncognito(extension,
+                                                                    &context);
+}
+
+// Returns true if the listener has permission to receive the given `event`.
+//
+// For extensions, this checks for host permissions to the event's URL and
+// whether the extension can receive events from the event's browser context
+// (e.g., an incognito event sent to a regular process).
+//
+// For non-extension listeners (e.g., WebUI), this primarily checks that the
+// event does not cross the incognito boundary.
+bool CheckPermissions(const Extension* extension,
+                      const Event& event,
+                      BrowserContext& listener_context,
+                      mojom::ContextType target_context_type) {
+  if (extension) {
+    // Extension-specific checks.
+    // Firstly, if the event is for a URL, the Extension must have permission
+    // to access that URL.
+    if (!event.event_url.is_empty() &&
+        event.event_url.host() != extension->id() &&  // event for self is ok
+        !extension->permissions_data()
+             ->active_permissions()
+             .HasEffectiveAccessToURL(event.event_url)) {
+      return false;
+    }
+    // Secondly, if the event is for incognito mode, the Extension must be
+    // enabled in incognito mode.
+    if (!CanDispatchEventToBrowserContext(listener_context, extension, event)) {
+      return false;
+    }
+  } else {
+    // Non-extension (e.g. WebUI and web pages) checks. In general we don't
+    // allow context-bound events to cross the incognito barrier.
+    if (CrossesIncognito(listener_context, event)) {
+      return false;
+    }
+  }
+
+  // Don't dispatch an event when target context doesn't match the restricted
+  // context type.
+  if (event.restrict_to_context_type.has_value() &&
+      event.restrict_to_context_type.value() != target_context_type) {
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
 
 EventDispatchHelper::EventDispatchHelper(
     const ExtensionRegistry& extension_registry,
@@ -55,6 +133,37 @@ void EventDispatchHelper::DispatchEvent(
                       dispatch_function, dispatch_to_process_function)
       .DispatchEventImpl(restrict_to_extension_id, restrict_to_url,
                          std::move(event));
+}
+
+// static
+bool EventDispatchHelper::CheckFeatureAvailability(
+    const Event& event,
+    const Extension* extension,
+    const GURL& listener_url,
+    content::RenderProcessHost& process,
+    BrowserContext& listener_context,
+    mojom::ContextType target_context_type) {
+  // We shouldn't be dispatching an event to a webpage, since all such events
+  // (e.g. messaging) don't go through EventRouter. The exceptions to this are
+  // the new chrome webstore domain, which has permission to receive extension
+  // events and features with delegated availability checks, such as Controlled
+  // Frame which runs within Isolated Web Apps and appear as web pages.
+  Feature::Availability availability =
+      ExtensionAPI::GetSharedInstance()->IsAvailable(
+          event.event_name, extension, target_context_type, listener_url,
+          CheckAliasStatus::ALLOWED,
+          util::GetBrowserContextId(&listener_context),
+          BrowserProcessContextData(&process));
+  if (!availability.is_available()) {
+    // TODO(crbug.com/40255138): Ideally it shouldn't be possible to reach here,
+    // because access is checked on registration. However, we don't always
+    // refresh the list of events an extension has registered when other factors
+    // which affect availability change (e.g. API allowlists changing). Those
+    // situations should be identified and addressed.
+    return false;
+  }
+
+  return true;
 }
 
 void EventDispatchHelper::DispatchEventImpl(
@@ -96,10 +205,6 @@ void EventDispatchHelper::DispatchEventToLazyListener(
     return;
   }
 
-  // TODO(richardzh): Move cross browser context check (by calling
-  // EventRouter::CanDispatchEventToBrowserContext) to here. So the check
-  // happens before instead of during the dispatch.
-
   // Lazy listeners don't have a process, take the stored browser context
   // for lazy context.
   TryQueueEventForLazyListener(
@@ -129,17 +234,45 @@ void EventDispatchHelper::DispatchEventToActiveListener(
     return;
   }
 
-  // Non-lazy listeners take the process browser context for
-  // lazy context.
-  if (IsAlreadyQueued(LazyContextIdForListener(
-          listener, *listener->process()->GetBrowserContext()))) {
+  // Non-lazy listeners take the process browser context for context.
+  content::RenderProcessHost* process = listener->process();
+  BrowserContext* listener_context = process->GetBrowserContext();
+
+  if (IsAlreadyQueued(LazyContextIdForListener(listener, *listener_context))) {
+    return;
+  }
+
+  // Determine the target context type.
+  ProcessMap* listener_process_map = ProcessMap::Get(listener_context);
+  const Extension* extension = GetExtension(listener->extension_id());
+  const GURL* url = listener->service_worker_version_id() ==
+                            blink::mojom::kInvalidServiceWorkerVersionId
+                        ? &listener->listener_url()
+                        : nullptr;
+  auto context_type = listener_process_map->GetMostLikelyContextType(
+      extension, process->GetDeprecatedID(), url);
+
+  if (!CheckPermissions(extension, event, *listener_context, context_type) ||
+      !CheckFeatureAvailability(event, extension, listener->listener_url(),
+                                *process, *listener_context, context_type)) {
+    return;
+  }
+
+  // Prepare the event for dispatch, running the `will_dispatch_callback` if
+  // any. TODO(andreaorru): This is so that we can take modified `event_args`
+  // into consideration when de-duplicating events.
+  std::unique_ptr<Event> dispatched_event = CreateEventForDispatch(
+      event, listener->filter(), extension, *listener_context, context_type);
+
+  if (!dispatched_event) {
+    // The event has been canceled.
     return;
   }
 
   dispatch_to_process_function_.Run(
-      listener->extension_id(), listener->listener_url(), listener->process(),
+      listener->extension_id(), listener->listener_url(), process,
       listener->service_worker_version_id(), listener->worker_thread_id(),
-      event, listener->filter(), false /* did_enqueue */);
+      std::move(dispatched_event), listener->filter(), /*did_enqueue=*/false);
 }
 
 void EventDispatchHelper::TryQueueEventForLazyListener(
@@ -165,51 +298,35 @@ bool EventDispatchHelper::TryQueueEventDispatch(
     const LazyContextId& dispatch_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter) {
-  if (!EventRouter::CanDispatchEventToBrowserContext(
-          dispatch_context.browser_context(), extension, event)) {
+  if (IsAlreadyQueued(dispatch_context)) {
     return false;
   }
 
-  if (IsAlreadyQueued(dispatch_context)) {
+  // The only lazy listeners belong to an extension's background context (either
+  // an event page or a service worker), which are always kPrivilegedExtension
+  // contexts.
+  auto context_type = mojom::ContextType::kPrivilegedExtension;
+  BrowserContext* browser_context = dispatch_context.browser_context();
+
+  if (!CheckPermissions(extension, event, *browser_context, context_type)) {
     return false;
   }
 
   LazyContextTaskQueue* queue = dispatch_context.GetTaskQueue();
   event.lazy_background_active_on_dispatch =
-      queue->IsReadyToRunTasks(dispatch_context.browser_context(), extension);
-  if (!queue->ShouldEnqueueTask(dispatch_context.browser_context(),
-                                extension)) {
+      queue->IsReadyToRunTasks(browser_context, extension);
+  if (!queue->ShouldEnqueueTask(browser_context, extension)) {
     return false;
   }
 
-  // TODO(devlin): This results in a copy each time we dispatch events to
-  // ServiceWorkers and inactive event pages. It'd be nice to avoid that.
-  std::unique_ptr<Event> dispatched_event = event.DeepCopy();
+  // Prepare the event for dispatch, running the `will_dispatch_callback` if
+  // any. We do this now (rather than dispatch time) to avoid lifetime issues.
+  std::unique_ptr<Event> dispatched_event = CreateEventForDispatch(
+      event, listener_filter, extension, *browser_context, context_type);
 
-  // If there's a dispatch callback, call it now (rather than dispatch time)
-  // to avoid lifetime issues. Use a separate copy of the event args, so they
-  // last until the event is dispatched.
-  if (!dispatched_event->will_dispatch_callback.is_null()) {
-    std::optional<base::Value::List> modified_event_args;
-    mojom::EventFilteringInfoPtr modified_event_filter_info;
-    if (!dispatched_event->will_dispatch_callback.Run(
-            dispatch_context.browser_context(),
-            // The only lazy listeners belong to an extension's background
-            // context (either an event page or a service worker), which are
-            // always kPrivilegedExtension contexts
-            extensions::mojom::ContextType::kPrivilegedExtension, extension,
-            listener_filter, modified_event_args, modified_event_filter_info)) {
-      // The event has been canceled.
-      return true;
-    }
-    if (modified_event_args) {
-      dispatched_event->event_args = std::move(*modified_event_args);
-    }
-    if (modified_event_filter_info) {
-      dispatched_event->filter_info = std::move(modified_event_filter_info);
-    }
-    // Ensure we don't call it again at dispatch time.
-    dispatched_event->will_dispatch_callback.Reset();
+  if (!dispatched_event) {
+    // The event has been canceled.
+    return true;
   }
 
   queue->AddPendingTask(
@@ -217,6 +334,47 @@ bool EventDispatchHelper::TryQueueEventDispatch(
       base::BindOnce(dispatch_function_, std::move(dispatched_event)));
 
   return true;
+}
+
+std::unique_ptr<Event> EventDispatchHelper::CreateEventForDispatch(
+    const Event& event,
+    const base::Value::Dict* listener_filter,
+    const Extension* extension,
+    BrowserContext& listener_context,
+    mojom::ContextType target_context_type) {
+  if (event.will_dispatch_callback.is_null()) {
+    return event.DeepCopy();
+  }
+
+  // Run the callback before copying the event.
+  // TODO(andreaorru): This is so that we can take modified `event_args` into
+  // consideration when de-duplicating events.
+  std::optional<base::Value::List> modified_event_args;
+  mojom::EventFilteringInfoPtr modified_event_filter_info;
+  if (!event.will_dispatch_callback.Run(
+          &listener_context, target_context_type, extension, listener_filter,
+          modified_event_args, modified_event_filter_info)) {
+    // The event has been canceled.
+    return nullptr;
+  }
+
+  // If `event_args` or `filter_info` are modified, we avoid cloning the
+  // original ones (which can be costly) by using a selective copy mechanism.
+  const bool is_event_args_modified = modified_event_args.has_value();
+  const bool is_filter_info_modified = !!modified_event_filter_info;
+  std::unique_ptr<Event> dispatched_event = event.CopySelectively(
+      /*copy_event_args=*/!is_event_args_modified,
+      /*copy_filter_info=*/!is_filter_info_modified);
+
+  if (is_event_args_modified) {
+    dispatched_event->event_args = std::move(*modified_event_args);
+  }
+  if (is_filter_info_modified) {
+    dispatched_event->filter_info = std::move(modified_event_filter_info);
+  }
+  dispatched_event->will_dispatch_callback.Reset();
+
+  return dispatched_event;
 }
 
 void EventDispatchHelper::RecordAlreadyQueued(
