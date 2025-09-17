@@ -36,6 +36,8 @@ enum class PageContextWrapperError {
   kForceDetachError,
   // The Page Context retrieval timed out.
   kTimeout,
+  // innerText was expected, but none was extracted.
+  kInnerTextError,
 };
 
 using PageContextWrapperCallbackResponse =
@@ -103,6 +105,11 @@ using PageContextWrapperCallbackResponse =
 // with their descendents keeping their relative (WRT to their parent
 // cross-origin iframes) hierarchy.
 @property(nonatomic, assign) BOOL shouldGetAnnotatedPageContent;
+
+// Whether the entire webpage's innerText should be fetched. This includes the
+// innerText of all of the webpage's iframes as the information is aggregated
+// while the AnnotatedPageContent (APC) tree is built.
+@property(nonatomic, assign) BOOL shouldGetInnerText;
 
 @end
 

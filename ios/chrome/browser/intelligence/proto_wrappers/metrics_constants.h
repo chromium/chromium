@@ -13,6 +13,7 @@ extern const char kPageContextLatencyHistogramOverallTask[];
 extern const char kPageContextLatencyHistogramScreenshotTask[];
 extern const char kPageContextLatencyHistogramAPCTask[];
 extern const char kPageContextLatencyHistogramPDFTask[];
+extern const char kPageContextLatencyHistogramInnerTextTask[];
 
 extern const char kPageContextLatencyHistogramSuccessStatus[];
 extern const char kPageContextLatencyHistogramFailureStatus[];

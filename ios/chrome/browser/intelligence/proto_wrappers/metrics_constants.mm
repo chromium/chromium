@@ -11,6 +11,7 @@ const char kPageContextLatencyHistogramOverallTask[] = ".Overall";
 const char kPageContextLatencyHistogramScreenshotTask[] = ".Screenshot";
 const char kPageContextLatencyHistogramAPCTask[] = ".AnnotatedPageContent";
 const char kPageContextLatencyHistogramPDFTask[] = ".PDF";
+const char kPageContextLatencyHistogramInnerTextTask[] = ".InnerText";
 
 const char kPageContextLatencyHistogramSuccessStatus[] = ".Success";
 const char kPageContextLatencyHistogramFailureStatus[] = ".Failure";

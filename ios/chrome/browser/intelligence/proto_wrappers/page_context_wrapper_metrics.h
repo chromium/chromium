@@ -17,6 +17,8 @@ enum class PageContextTask {
   kAnnotatedPageContent,
   // PDF retrieval task execution.
   kPDF,
+  // innerText retrieval task execution.
+  kInnerText,
 };
 
 // PageContextWrapperMetrics's different possible PageContext execution

@@ -24,6 +24,8 @@ const char* PageContextTaskToString(PageContextTask task) {
       return kPageContextLatencyHistogramAPCTask;
     case PageContextTask::kPDF:
       return kPageContextLatencyHistogramPDFTask;
+    case PageContextTask::kInnerText:
+      return kPageContextLatencyHistogramInnerTextTask;
   }
 }
 
