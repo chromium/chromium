@@ -421,10 +421,6 @@ bool CanvasResourceProviderSharedImage::ShouldReplaceTargetBuffer(
   return !resource_->HasOneRef();
 }
 
-void CanvasResourceProviderSharedImage::FlushGrContext() {
-  // TODO(crbug.com/391648152): Remove this method entirely.
-}
-
 void CanvasResourceProviderSharedImage::EnsureWriteAccess() {
   DCHECK(resource_);
   // In software mode, we don't need write access to the resource during
@@ -464,9 +460,6 @@ void CanvasResourceProviderSharedImage::EndWriteAccess() {
     mode_ = SkSurface::kRetain_ContentChangeMode;
 
     if (!use_oop_rasterization_) {
-      // Issue any skia work using this resource before releasing write
-      // access.
-      FlushGrContext();
       resource()->EndWriteAccess();
     }
   } else {
@@ -1035,11 +1028,6 @@ class CanvasResourceProviderSharedImageImpl
     }
 
     GetFlushForImageListener()->RemoveObserver(this);
-    // Issue any skia work using this resource before destroying any buffer
-    // that may have a reference in skia.
-    if (is_accelerated_ && !use_oop_rasterization_) {
-      FlushGrContext();
-    }
   }
 
   base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr() override {

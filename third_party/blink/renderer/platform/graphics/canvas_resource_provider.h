@@ -650,7 +650,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
   void EnsureWriteAccess();
   void EndWriteAccess();
-  void FlushGrContext();
   void WillDrawInternal(bool write_to_local_texture);
   void WillDraw() override;
   bool IsSoftwareSharedImageGpuChannelLost() const override;
