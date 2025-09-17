@@ -169,6 +169,11 @@ DatabaseError CreateDefaultError() {
       u"Internal error opening backing store for indexedDB.open.");
 }
 
+// Killswitch for a fix to infinite growth of the `pending_connections_` list.
+// TODO(crbug.com/381086791): Clean up the feature no later than M145.
+BASE_FEATURE(kFixIndexedDBPendingConnectionLeak,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 // TODO(crbug.com/40253999): Move to blink when needed there.
@@ -312,6 +317,8 @@ void BucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
 
 void BucketContext::OnConnectionPriorityUpdated() {
   if (!updateable_task_runner_) {
+    CHECK(!base::FeatureList::IsEnabled(kFixIndexedDBPendingConnectionLeak) ||
+          pending_connections_.empty());
     return;
   }
   base::TaskPriority priority = CalculateSchedulingPriority() == 0
@@ -614,7 +621,19 @@ void BucketContext::Open(
     database_ptr = it->second.get();
   }
 
-  pending_connections_.push_back(connection->weak_factory.GetWeakPtr());
+  if (updateable_task_runner_ ||
+      !base::FeatureList::IsEnabled(kFixIndexedDBPendingConnectionLeak)) {
+    // `pending_connections_` is never accessed if `updateable_task_runner_` is
+    // nullptr (see OnConnectionPriorityUpdated). Don't add `connection` to
+    // `pending_connections_` in that case, as it wouldn't be used, and it also
+    // wouldn't be cleaned up, leading to a memory leak.
+    //
+    // TODO(crbug.com/381086791): Consider removing `pending_connections_` if
+    // the feature `IdbExpediteBackendProcessingForForegroundClients` doesn't
+    // ship, as it's not used otherwise.
+    pending_connections_.push_back(connection->weak_factory.GetWeakPtr());
+  }
+
   database_ptr->ScheduleOpenConnection(std::move(connection));
   OnConnectionPriorityUpdated();
 }
