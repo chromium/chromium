@@ -55,17 +55,13 @@ void SVGStringListBase::ParseInternal(const base::span<const CharType> chars,
                                       char list_delimiter) {
   size_t position = 0;
   while (position < chars.size()) {
-    const size_t start = position;
-    while (position < chars.size() && chars[position] != list_delimiter &&
-           !IsHTMLSpace<CharType>(chars[position])) {
-      ++position;
-    }
-    if (position == start) {
+    auto token = TokenUntilSvgSpaceOrDelimiter(chars, position, list_delimiter);
+    if (token.empty()) {
       break;
     }
-    values_.push_back(String(chars.subspan(start, position - start)));
-    position =
-        SkipOptionalSVGSpacesOrDelimiter(chars, position, list_delimiter);
+    values_.push_back(String(token));
+    position = SkipOptionalSVGSpacesOrDelimiter(chars, position + token.size(),
+                                                list_delimiter);
   }
 }
 

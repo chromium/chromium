@@ -42,24 +42,18 @@ SVGParsingError SVGLengthList::ParseInternal(
     const base::span<const CharType> chars) {
   for (size_t position = 0; position < chars.size();
        position = SkipOptionalSVGSpacesOrDelimiter(chars, position)) {
-    size_t start = position;
     // TODO(shanmuga.m): Enable calc for SVGLengthList
-    while (position < chars.size() && chars[position] != ',' &&
-           !IsHTMLSpace<CharType>(chars[position])) {
-      ++position;
-    }
-    if (position == start) {
+    auto token = TokenUntilSvgSpaceOrDelimiter(chars, position, ',');
+    if (token.empty()) {
       break;
     }
-    String value_string(chars.subspan(start, position - start));
-    if (value_string.empty())
-      break;
 
     auto* length = MakeGarbageCollected<SVGLength>(mode_);
     SVGParsingError length_parse_status =
-        length->SetValueAsString(value_string);
+        length->SetValueAsString(String(token));
     if (length_parse_status != SVGParseStatus::kNoError)
-      return length_parse_status.OffsetWith(start);
+      return length_parse_status.OffsetWith(position);
+    position += token.size();
     Append(length);
   }
   return SVGParseStatus::kNoError;

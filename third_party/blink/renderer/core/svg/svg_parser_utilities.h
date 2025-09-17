@@ -118,6 +118,20 @@ constexpr inline bool SkipOptionalSVGSpacesOrDelimiter(
   return !span.empty();
 }
 
+// Scans `chars` from `position` until it finds a space or `delimiter`, and
+// returns a span of the characters scanned. This is used for tokenizing lists
+// of values in SVG attributes.
+//
+// Callers typically should do `position += span.size()` after calling this.
+[[nodiscard]] base::span<const LChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const LChar> chars,
+    size_t position,
+    char delimiter);
+[[nodiscard]] base::span<const UChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const UChar> chars,
+    size_t position,
+    char delimiter);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_

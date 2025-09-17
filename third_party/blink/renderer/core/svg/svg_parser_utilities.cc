@@ -230,4 +230,31 @@ bool ParseNumberOptionalNumber(const String& string, float& x, float& y) {
   });
 }
 
+template <typename CharType>
+base::span<const CharType> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const CharType> chars,
+    size_t position,
+    char delimiter) {
+  size_t start = position;
+  while (position < chars.size() && chars[position] != delimiter &&
+         !IsHTMLSpace<CharType>(chars[position])) {
+    ++position;
+  }
+  return chars.subspan(start, position - start);
+}
+
+base::span<const LChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const LChar> chars,
+    size_t position,
+    char delimiter) {
+  return TokenUntilSvgSpaceOrDelimiter<LChar>(chars, position, delimiter);
+}
+
+base::span<const UChar> TokenUntilSvgSpaceOrDelimiter(
+    const base::span<const UChar> chars,
+    size_t position,
+    char delimiter) {
+  return TokenUntilSvgSpaceOrDelimiter<UChar>(chars, position, delimiter);
+}
+
 }  // namespace blink
