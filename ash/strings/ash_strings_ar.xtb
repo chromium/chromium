@@ -111,7 +111,7 @@
 <translation id="1306549533752902673">تطبيقات مقترحة</translation>
 <translation id="1310396869741602366">تغيير أسلوب النص</translation>
 <translation id="1312604459020188865">قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="1314113845887519729">تم تحديد مقبض الحافة العلوية. يمكنك استخدام مفاتيح الأسهم لتحريكه</translation>
+<translation id="1314113845887519729">مقبض الحافة العلوية المحدَّد، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="1316069254387866896">عرض الرف دائمًا</translation>
 <translation id="132346741904777634">تم توجيه الكاميرا إلى الزاوية العلوية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="132415371743256095">إغلاق "<ph name="DESK_NAME" />" والنوافذ</translation>
@@ -185,7 +185,7 @@
 <translation id="1550523713251050646">يُرجى النقر ليظهر المزيد من الخيارات</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="1557622599341396706">إظهار اسم سطح المكتب</translation>
-<translation id="1569384531973824928">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا والميكروفون لجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن. قد يكون هناك حاجة إلى إعادة تحميل صفحة الويب أو إعادة تشغيل التطبيق.</translation>
+<translation id="1569384531973824928">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا والميكروفون لجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن. قد تحتاج إلى إعادة تحميل صفحة الويب أو إعادة تشغيل التطبيق.</translation>
 <translation id="1571697193564730395">تبديل حالة "عدم الإزعاج": <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">مقبض الحافة اليمنى المحدَّد، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="1576623706766186887">التصغير عندما يكون المكبِّر مفعّلاً</translation>
@@ -412,7 +412,7 @@
 <translation id="240006516586367791">عناصر التحكُّم في الوسائط</translation>
 <translation id="240155812475001919">‏مستند Google</translation>
 <translation id="2402411679569069051">‏لفتح قفل جهاز Chromebook، يمكنك استخدام بصمة إصبعك أو فتح قفل هاتفك</translation>
-<translation id="240545663114741956">‏الضغط على ‎<ph name="ACCELERATOR" /> مرتين للخروج.</translation>
+<translation id="240545663114741956">‏اضغط على ‎<ph name="ACCELERATOR" /> مرتين للخروج.</translation>
 <translation id="2405664212338326887">غير متصلة</translation>
 <translation id="2406710117564540804">تفعيل ميزة "عدم الإزعاج" أو إيقافها</translation>
 <translation id="2408955596600435184">إدخال رقم التعريف الشخصي</translation>
@@ -585,7 +585,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">هل المطلوب السماح بالوصول إلى الميكروفون؟</translation>
 <translation id="296762781903199866">يتعذّر تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
-<translation id="2968761508099987738">الميزة غير متاحة حاليًا في موقعك الجغرافي.</translation>
+<translation id="2968761508099987738">الميزة غير متاحة حاليًا في موقعك الجغرافي الحالي.</translation>
 <translation id="2970920913501714344">تثبيت التطبيقات والإضافات والتصاميم</translation>
 <translation id="2977598380246111477">الرقم التالي</translation>
 <translation id="2980700224869191055">الرمز المعبّر "<ph name="EMOTICON_NAME" />"</translation>
@@ -1882,7 +1882,7 @@
 <translation id="709015856939120012">تكبير الصفحة</translation>
 <translation id="7098389117866926363">‏جهاز USB-C (المنفذ الأيسر في الخلف)</translation>
 <translation id="7100906357717321275">إظهار الملفات المخفية في تطبيق "الملفات"</translation>
-<translation id="7108254681523785542">‏يمكنك اختيار عنصر من أجل لصقه. ويمكنك الاطّلاع على الحافظة من خلال الضغط على مفتاح ‎<ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
+<translation id="7108254681523785542">‏اختَر عنصرًا من أجل لصقه. ويمكنك الاطّلاع على الحافظة بالضغط على مفتاح ‎<ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="7116969082764510092">سطح المكتب 11</translation>
 <translation id="7118268675952955085">لقطة شاشة</translation>
 <translation id="7118597077555700347">فتح "<ph name="SEARCH_RESULT_TEXT" />"</translation>
@@ -1978,7 +1978,7 @@
 <translation id="7466449121337984263">يُرجى لمس جهاز الاستشعار.</translation>
 <translation id="7477793887173910789">التحكم في الموسيقى والفيديوهات وغير ذلك</translation>
 <translation id="7488762544858401571">النسخة المُعدَّلة</translation>
-<translation id="7489261257412536105">تفعيل وضع "ملء الشاشة" أو الخروج منه</translation>
+<translation id="7489261257412536105">الدخول إلى وضع "ملء الشاشة" أو الخروج منه</translation>
 <translation id="7490157877815329797">‏يمكنك استخدام YouTube Music Premium للاستمتاع بتجربة من دون إعلانات والاستماع إلى فنّانك المفضّل</translation>
 <translation id="7490360161041035804">‏يمكنك تثبيت الملفات المهمة، بما فيها ملفات Google Drive. لبدء عملية التثبيت، يمكنك تمرير مؤشر الماوس فوق أحد الملفات أو فتح تطبيق "الملفات" والنقر بزر الماوس الأيمن على أحد الملفات.</translation>
 <translation id="7497767806359279797">اختيار اللغة ولوحة المفاتيح</translation>
@@ -2085,7 +2085,7 @@
 <translation id="7787212146956232129">تم ضبط أجهزة الإدخال والإخراج. يُرجى الانتقال إلى "الإعدادات" لتغيير ذلك.</translation>
 <translation id="7792590255364786396">مرئية</translation>
 <translation id="7796735576426975947">تم إخفاء إشعار جديد</translation>
-<translation id="7798302898096527229">‏يمكن الضغط على مفتاح البحث أو مفتاح Shift للإلغاء.</translation>
+<translation id="7798302898096527229">‏اضغط على مفتاح البحث أو المفتاح Shift للإلغاء.</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
 <translation id="7807067443225230855">البحث والمساعدة</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> و<ph name="MINUTE" /></translation>
@@ -2142,7 +2142,7 @@
 <translation id="7944023924886109030">عرض جميع الأحداث لهذا اليوم</translation>
 <translation id="7945357288295809525">عرض إعدادات تسهيل الاستخدام، الميزة المفعَّلة حاليًا: <ph name="ENABLED_FEATURES" /></translation>
 <translation id="7946681191253332687">تتوفّر تحديثات أمان ممتدة</translation>
-<translation id="7947798320695032612">‫"<ph name="APP_NAME" />" بحاجة إلى استخدام <ph name="DEVICE_NAME" /></translation>
+<translation id="7947798320695032612">‫"<ph name="APP_NAME" />" بحاجة إلى استخدام <ph name="DEVICE_NAME" />.</translation>
 <translation id="7951630946012935453">تعتيم لوحة المفاتيح</translation>
 <translation id="7953176344218790168">استخدام أحرف كبيرة</translation>
 <translation id="7953994493035617347">هل المطلوب تأكيد درجة الدقة الجديدة؟</translation>
@@ -2293,7 +2293,7 @@
 <translation id="8468806060683421065">‏الموعد المحدّد للتسليم هو ‎<ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">عرض إعدادات المقياس</translation>
 <translation id="8473301994082929012">الميزة <ph name="FEATURE_NAME" /> حالتها <ph name="FEATURE_STATE" /> في <ph name="ORGANIZATION_NAME" />.</translation>
-<translation id="8477270416194247200">‏الضغط على Alt+مفتاح البحث، أو على مفتاح Shift للإلغاء.</translation>
+<translation id="8477270416194247200">‏اضغط على Alt+مفتاح البحث، أو اضغط على المفتاح Shift للإلغاء.</translation>
 <translation id="8480418399907765580">إظهار شريط أدوات</translation>
 <translation id="8487660088084188539">‏عند تفعيل هذه الميزات، قد يتم إرسال الإدخالات النصية ومحتوى المستندات وعنوان URL لصفحة الويب إلى خوادم Google. وتُستخدم هذه المعلومات لإنشاء اقتراحات الكتابة والملخّصات والإجابة عن الأسئلة وتحسين المنتج، وذلك بما يتوافق مع <ph name="LINK_TO_SERVICE_TERMS" />. يُرجى عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.</translation>
 <translation id="8487699605742506766">نقطة الاتصال</translation>
@@ -2433,7 +2433,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ملف واحد}zero{‫# ملف}two{ملفان}few{‫# ملفات}many{‫# ملفًا}other{‫# ملف}}</translation>
 <translation id="8936501819958976551">غير مفعّلة</translation>
 <translation id="8938800817013097409">‏جهاز USB-C (المنفذ الأيمن في الخلف)</translation>
-<translation id="8939855324412367560">إنّ مصدر إدخال الصوت هو "<ph name="INPUT_DEVICE_NAME" />" ومصدر إخراجه هو "<ph name="OUTPUT_DEVICE_NAME" />". يُرجى الانتقال إلى "الإعدادات" لتغييرهما.</translation>
+<translation id="8939855324412367560">إنّ مصدر إدخال الصوت هو "<ph name="INPUT_DEVICE_NAME" />" ومصدر إخراجه هو "<ph name="OUTPUT_DEVICE_NAME" />". انتقِل إلى "الإعدادات" لتغييرهما.</translation>
 <translation id="8940956008527784070">طاقة البطارية منخفضة (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8945508919180478719">ميكروفون بنمط الاستوديو</translation>
 <translation id="894774083269346314">لم يتم وضع علامة في مربّع اختيار الملف الشخصي "<ph name="PROFILE_NAME" />" وعنوان بريده الإلكتروني <ph name="EMAIL" />.</translation>

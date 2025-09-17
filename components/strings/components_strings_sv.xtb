@@ -882,9 +882,9 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2441854154602066476">De tillgängliga betalningsmetoderna som kan fyllas i med ett tryck. Tangentbordet är dolt.</translation>
 <translation id="2442865686365739754">Följande sparas <ph name="BEGIN_EMPHASIS" />inte<ph name="END_EMPHASIS" /> i Chrome:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Din webbhistorik
-          <ph name="LIST_ITEM" />Cookies och webbplatsdata
-          <ph name="LIST_ITEM" />Uppgifter som anges i formulär
+          <ph name="LIST_ITEM" />din webbhistorik
+          <ph name="LIST_ITEM" />cookies och webbplatsdata
+          <ph name="LIST_ITEM" />uppgifter som anges i formulär.
         <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Kringutrustning som är ansluten till enheten när du är inloggad</translation>
 <translation id="2450019289047528273">Betalningsmetoder och annan information från Google Wallet</translation>
@@ -3298,7 +3298,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6437647869369934905">Google Teckningar</translation>
 <translation id="643917412048333145">Klänningar</translation>
 <translation id="6440503408713884761">Ignoreras</translation>
-<translation id="6443406338865242315">Vilka tillägg och pluginprogram som du har installerat</translation>
+<translation id="6443406338865242315">Vilka tillägg och plugins som du har installerat</translation>
 <translation id="6444329331928531170">Pension</translation>
 <translation id="6445051938772793705">Land</translation>
 <translation id="6446608382365791566">Lägg till mer information</translation>

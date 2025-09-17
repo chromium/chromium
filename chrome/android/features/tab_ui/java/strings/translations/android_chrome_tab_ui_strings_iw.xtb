@@ -138,7 +138,7 @@
 <translation id="6228793724645064692">(דירוג החנות)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{הוספת כרטיסייה לקבוצה חדשה}one{הוספת כרטיסיות לקבוצה חדשה}two{הוספת כרטיסיות לקבוצה חדשה}other{הוספת כרטיסיות לקבוצה חדשה}}</translation>
 <translation id="6333260925957816943">מידע על החנות הזו</translation>
-<translation id="6381032505162537930">כל קבוצות הכרטיסיות יופיעו כאן</translation>
+<translation id="6381032505162537930">קבוצות הכרטיסיות יופיעו כאן</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ביטול הקיבוץ של הכרטיסייה (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}two{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}other{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}}</translation>
 <translation id="6499296376514955580">ההודעה על השינויים בקבוצת הכרטיסיות המשותפת נסגרה</translation>
 <translation id="6527303717912515753">שיתוף</translation>

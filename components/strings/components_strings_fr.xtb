@@ -141,7 +141,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1232569758102978740">Sans titre</translation>
 <translation id="1236081509407217141">Autoriser la RV ?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
-<translation id="1240347957665416060">Nom de votre appareil</translation>
+<translation id="1240347957665416060">Le nom de votre appareil</translation>
 <translation id="124116460088058876">Autres langues</translation>
 <translation id="1243027604378859286">Auteur :</translation>
 <translation id="1246424317317450637">Gras</translation>
@@ -947,7 +947,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2535585790302968248">Ouvrez un nouvel onglet de navigation privée pour naviguer de manière anonyme</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
 <translation id="2536110899380797252">Ajouter une adresse</translation>
-<translation id="2537931901612099523">Vous pouvez naviguer plus en privé, car les autres utilisateurs de cet appareil ne voient pas votre activité. Cela ne change pas comment les sites Web et les services qu'ils utilisent, y compris Google, collectent les données. Les téléchargements et favoris sont enregistrés.</translation>
+<translation id="2537931901612099523">Vous pouvez naviguer plus confidentiellement, car les autres utilisateurs de cet appareil ne voient pas votre activité. Cela ne change pas la façon dont les sites Web et les services qu'ils utilisent, y compris Google, collectent les données. Les téléchargements et favoris sont enregistrés.</translation>
 <translation id="2541219929084442027">Les pages consultées dans les onglets de navigation privée ne sont pas enregistrées dans l'historique de votre navigateur, dans les cookies ni dans l'historique des recherches une fois que vous avez fermé tous les onglets de navigation privée. Les fichiers téléchargés et les favoris ajoutés sont conservés.</translation>
 <translation id="2542106216580219892">Surf</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – Pour quitter le plein écran, appuyez de manière prolongée sur |<ph name="ACCELERATOR" />|</translation>
@@ -4355,7 +4355,7 @@ Informations supplémentaires :
 <translation id="8202370299023114387">Conflit</translation>
 <translation id="8207625368992715508">Sport automobile</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
-<translation id="8208629719488976364">Le contenu des pages que vous imprimez et les informations concernant votre imprimante sont envoyés à Google Cloud ou à des tiers pour analyse Il peut par exemple être analysé pour rechercher des données sensibles, être stocké conformément aux règles de l'entreprise et être visible par votre administrateur.</translation>
+<translation id="8208629719488976364">Le contenu des pages que vous imprimez et les informations concernant votre imprimante sont envoyés à Google Cloud ou à des tiers pour analyse. Il peut par exemple être analysé pour rechercher des données sensibles, être stocké conformément aux règles de l'entreprise et être visible par votre administrateur.</translation>
 <translation id="8210490490377416373">Sélectionner un nom de règle</translation>
 <translation id="8211406090763984747">La connexion est sécurisée</translation>
 <translation id="8213853114485953510">JIS Exec</translation>

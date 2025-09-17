@@ -1292,7 +1292,7 @@
 <translation id="6045460247888249350">הוספת כותרת</translation>
 <translation id="6052269326659653305">מעבר לפרופיל אחר</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6059103953801602038">‏אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. אפשר לנהל אותם בהגדרות של Discover.</translation>
+<translation id="6059103953801602038">‏אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. ניתן לנהל אותם בהגדרות של Discover.</translation>
 <translation id="6059830886158432458">כאן אפשר לנהל את הסטוריז והפעילות שלך</translation>
 <translation id="6066301408025741299">יש ללחוץ כדי לבטל.</translation>
 <translation id="6074656473835429958">קבלת התראות</translation>
@@ -1311,7 +1311,7 @@
 <translation id="611361228753138223">אתרים שביקרת בהם לאחרונה במכשיר הזה</translation>
 <translation id="611705554202268369">כדי להוסיף כרטיסייה לקבוצת כרטיסיות, לוחצים לחיצה ארוכה</translation>
 <translation id="6122191549521593678">אונליין</translation>
-<translation id="6122831415929794347">להשבית את "גלישה בטוחה"?</translation>
+<translation id="6122831415929794347">להשבית את 'גלישה בטוחה'?</translation>
 <translation id="6123514585040403489">הכרטיסיות ייסגרו</translation>
 <translation id="6127379762771434464">הפריט הוסר</translation>
 <translation id="6136914049981179737">שניות</translation>
@@ -1354,7 +1354,7 @@
 <translation id="623755660902014047">מצב קריאה</translation>
 <translation id="6247557882553405851">‏מנהל הסיסמאות של Google</translation>
 <translation id="6251835855431997163">מילוי אוטומטי של <ph name="VALUE" /></translation>
-<translation id="6254066287920239840">פתיחת קישורים באפליקציה במקום הדפדפן.</translation>
+<translation id="6254066287920239840">פתיחת קישורים באפליקציה ולא בדפדפן.</translation>
 <translation id="6259928806013786178">מצב הקריאה לא הופעל</translation>
 <translation id="6268773951964630964">חיפוש תמונה שהועתקה</translation>
 <translation id="6271462272606946663">הסתרת האפשרות 'בקשת אתר שמותאם לנייד'</translation>
@@ -1505,7 +1505,7 @@
 <translation id="672735642903863329">גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
 <translation id="6729493062119577923">פעילות בקבוצת הכרטיסיות המשותפת</translation>
 <translation id="6732087373923685049">מצלמה</translation>
-<translation id="6746338529702829275">בדיקת הנתונים החשבון</translation>
+<translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
 <translation id="6750456911389438250">{count,plural, =1{יובא פריט אחד ({count}) בהיסטוריה}one{יובאו {count} פריטים בהיסטוריה}two{יובאו {count} פריטים בהיסטוריה}other{יובאו {count} פריטים בהיסטוריה}}</translation>
 <translation id="6755200887046212842">נהל חשבונות</translation>
 <translation id="6755733078693946548">גישה לסיסמאות ולמפתחות הגישה מכל אפליקציה</translation>
@@ -1707,7 +1707,7 @@
 <translation id="7582857256643797524">ההגדרה הזו מופעלת במכשיר</translation>
 <translation id="7583004045319035904">ביטול הנעילה של כרטיסיות מצב אנונימי יתבצע באמצעות <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7588149553568293500">כאן מפורטות כל האפשרויות שקשורות לשמירת נתונים.</translation>
-<translation id="7596103009408415410">{COUNT,plural, =1{לסגור את הכרטיסייה הלא פעילה (כרטיסייה {COUNT})?}one{לסגור {COUNT} כרטיסיות לא פעילות?}two{לסגור {COUNT} כרטיסיות לא פעילות?}other{לסגור {COUNT} כרטיסיות לא פעילות?}}</translation>
+<translation id="7596103009408415410">{COUNT,plural, =1{לסגור את הכרטיסייה הלא פעילה ({COUNT})?}one{לסגור {COUNT} כרטיסיות לא פעילות?}two{לסגור {COUNT} כרטיסיות לא פעילות?}other{לסגור {COUNT} כרטיסיות לא פעילות?}}</translation>
 <translation id="7598439272585186139">רוצה לשפר את האבטחה?</translation>
 <translation id="7600965453749440009">לא לתרגם <ph name="LANGUAGE" /> אף פעם</translation>
 <translation id="7603308509262646847">מילוי אוטומטי של שם בעל הכרטיס: <ph name="NAME" /></translation>
@@ -2093,7 +2093,7 @@
 <translation id="8960979149015305">סגירת סרגל ההורדה</translation>
 <translation id="8961092256396236619">ההגנה המשופרת מושבתת</translation>
 <translation id="8962863356073277855">‏כתובת ה-URL צריכה להיות בפורמט https://www.example.com</translation>
-<translation id="8968766641738584599">לשמור את הכרטיס?</translation>
+<translation id="8968766641738584599">שמירת הכרטיס</translation>
 <translation id="8974714402877957201">1. צריך לפתוח את הגדרות האייפד</translation>
 <translation id="8975015774710126284">נתוני הגלישה נמחקו</translation>
 <translation id="8976382372951310360">עזרה</translation>

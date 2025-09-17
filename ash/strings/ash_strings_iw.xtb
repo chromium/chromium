@@ -64,7 +64,7 @@
 <translation id="118532027333893379">כדי לצלם את המסך המלא, יש ללחוץ במקום כלשהו</translation>
 <translation id="1190609913194133056">מרכז התראות</translation>
 <translation id="1195412055398077112">סריקת יתר</translation>
-<translation id="1195667586424773550">גרירת הקישור אל סרגל הכתובות של הכרטיסייה</translation>
+<translation id="1195667586424773550">גרירת הקישור אל שורת כתובת האתר של הכרטיסייה</translation>
 <translation id="119944043368869598">ניקוי הכול</translation>
 <translation id="1199716647557067911">לכבות גישה באמצעות מתג?</translation>
 <translation id="1201402288615127009">הבא</translation>
@@ -479,7 +479,7 @@
 <translation id="2612072250312279703">מעקב אחר הפעילות</translation>
 <translation id="261210853165551493">העתקה עם העיצוב</translation>
 <translation id="2612614436418177118">העברה של סמל אפליקציה בתצוגת האפליקציות</translation>
-<translation id="2619052155095999743">הוספה</translation>
+<translation id="2619052155095999743">הוסף</translation>
 <translation id="2619326010008283367">שלב <ph name="STEP" /> מתוך <ph name="TOTAL_STEPS" /> בסיור. אפשר למצוא את הגדרות המכשיר במרכז האפליקציות. כדאי לנסות להתאים אישית את <ph name="PRODUCT_NAME" /> בהגדרות, למשל להחליף את הטפט או להגדיר שומר מסך.</translation>
 <translation id="2620016719323068571">חיפוש ב<ph name="CATEGORY" />, בקבצים, באפליקציות ועוד…</translation>
 <translation id="2620436844016719705">מערכת</translation>
@@ -867,7 +867,7 @@
 <translation id="3879748587602334249">מנהל ההורדות</translation>
 <translation id="3884007280698606545">‏חיברת את המספר המקסימלי של התקני USB</translation>
 <translation id="3886872229787704059">נפתח היום</translation>
-<translation id="3891340733213178823">‏אפשר ללחוץ פעמיים על Ctrl+Shift+Q כדי לצאת.</translation>
+<translation id="3891340733213178823">‏יש להקיש פעמיים על Ctrl+Shift+Q כדי לצאת.</translation>
 <translation id="3892148308691398805">העתקת טקסט</translation>
 <translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
 <translation id="3897533311200664389">הפעלה של שאילתה בהקלדה</translation>
@@ -1776,7 +1776,7 @@
 <translation id="6737983188036277605">המצלמה והמיקרופון נמצאים בשימוש</translation>
 <translation id="6739144137573853180">מעבר להגדרות</translation>
 <translation id="6747985245839783873">רמת הטעינה של הסוללה היא <ph name="PERCENTAGE" /> אחוזים. התכונה 'חיסכון בסוללה' פועלת.</translation>
-<translation id="6751052314767925245">האדמין מחייב שימוש בתכונה הזו</translation>
+<translation id="6751052314767925245">התכונה הזו נאכפת על ידי מנהל המערכת</translation>
 <translation id="6751826523481687655">מעקב הביצועים פועל</translation>
 <translation id="6752912906630585008">שולחן העבודה <ph name="REMOVED_DESK" /> הוסר ושולב עם שולחן העבודה <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">כרטיסיות</translation>
@@ -1907,7 +1907,7 @@
 <translation id="7189412385142492784">מה המרחק בין כדור הארץ לנוגה</translation>
 <translation id="7198435252016571249">המצלמה מוצמדת לפינה השמאלית התחתונה. התנגשות עם תצוגת המערכת.</translation>
 <translation id="7219573373513695352">אין מכשירים מחוברים</translation>
-<translation id="7228968829656641943">‏כדי לחפש, צריך לסמן אזור במסך. כדי לנווט באמצעות המקלדת, צריך ללחוץ על מקש Tab ואז על מקש הרווח.</translation>
+<translation id="7228968829656641943">‏בחירה כדי לחפש במסך שלי. כדי לנווט באמצעות המקלדת, מקישים על מקש Tab ואז על מקש הרווח.</translation>
 <translation id="7229029500464092426">זיכרון פנוי: <ph name="AVAILABLE_MEMORY" /> | סה"כ: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">שני כפתורי העכבר</translation>
 <translation id="7240636904654154599">‏נוצר גיליון אלקטרוני ב-Google Sheets</translation>
@@ -2507,7 +2507,7 @@
 <translation id="9195990613383871904">מחר</translation>
 <translation id="9198992156681343238">הרזולוציה של <ph name="DISPLAY_NAME" /> שונתה ל-<ph name="RESOLUTION" />. לשמירת השינויים, צריך ללחוץ על "אישור". ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">‏צריך לחבר את <ph name="NAME" /> ל-Chromebook הזה</translation>
-<translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, הרשת מנוהלת על ידי האדמין שלך</translation>
+<translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
 <translation id="9207682216934703221">‏כך <ph name="APP_NAME" />,‏ <ph name="APP2_NAME" /> וכל האפליקציות והאתרים עם הרשאת המיקום ו-ChromeOS יוכלו להשתמש במיקום ב-Wi-Fi וברשתות סלולריות.</translation>
 <translation id="9210037371811586452">‏יציאה ממצב Unified Desktop</translation>
 <translation id="9211490828691860325">כל שולחנות העבודה הווירטואליים</translation>

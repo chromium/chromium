@@ -70,7 +70,7 @@
 <translation id="2576431527583832481">‏‫Chrome ממשיך להשתפר! קיימת גירסה חדשה.</translation>
 <translation id="257708665678654955">‏רוצה ש-Google Chrome יציע בפעם הבאה לתרגם דפים בשפה <ph name="LANGUAGE_NAME" /> מהאתר הזה?</translation>
 <translation id="2668242166988961773">‏חיפוש קולי ב-Chrome.</translation>
-<translation id="2689064829982324496">‏כדי לצאת מחשבון Google שלך בכל האתרים, צריך<ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
+<translation id="2689064829982324496">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">‏Chrome לא הצליח לחפש עדכונים. אפשר לנסות שוב בהמשך.</translation>
 <translation id="2703746758996815929">‏כדי לקבל טיפים מועילים ל-Chrome, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="2728851697704606655">‏תרגום באמצעות Google Lens</translation>
@@ -186,7 +186,7 @@
 <translation id="5833027901704861726">‏חלק מהנתונים ב-Chrome עדיין לא נשמרו בחשבון <ph name="EMAIL" />.
 כדאי לחכות כמה דקות לפני שמחליפים חשבונות. אם החשבונות יוחלפו עכשיו, הנתונים האלה יימחקו.</translation>
 <translation id="5998675059699164418">‏לפי דרישת הארגון, צריך להיכנס לחשבון כדי להשתמש ב-Chrome.</translation>
-<translation id="6021312115739110405">‏פיד מותאם אישית שנוצר במיוחד בשבילכם על ידי Google. כולל חדשות, ספורט ומזג אוויר.</translation>
+<translation id="6021312115739110405">‏פיד מותאם אישית שנוצר במיוחד בשבילך על ידי Google. כולל חדשות, ספורט ומזג אוויר.</translation>
 <translation id="6022659036123304283">‏להתאים אישית את Chrome. בדרך שלך.</translation>
 <translation id="6132075343662013154">‏‫Chrome יציע לשמור את הסיסמה</translation>
 <translation id="6132149203299792222">‏כניסה באמצעות חשבון Google כדי לסנכרן את הסיסמאות, הסימניות ועוד.</translation>

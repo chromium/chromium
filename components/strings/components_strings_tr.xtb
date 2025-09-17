@@ -91,7 +91,7 @@
 <translation id="1163507966173624031">Folklor ve Halk Müziği</translation>
 <translation id="11635448457105324">Adresleri yönet düğmesi, Chrome ayarlarında adres ekleyip yönetmek için etkinleştirin</translation>
 <translation id="1165039591588034296">Hata</translation>
-<translation id="1165174597379888365">Sayfa ziyaret edildi</translation>
+<translation id="1165174597379888365">Sayfa ziyaret etme</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Yok}=1{1 siteden (Google Hesabınızın oturumu açık kalır)}other{# siteden (Google Hesabınızın oturumu açık kalır)}}</translation>
 <translation id="1167877250265821930"><ph name="LANGUAGE" /> indirilemedi</translation>
 <translation id="1173894706177603556">Yeniden adlandır</translation>
@@ -734,7 +734,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2210794033760923560">Rapor yükle</translation>
 <translation id="2212735316055980242">Politika bulunamadı</translation>
 <translation id="2213606439339815911">Girişler getiriliyor...</translation>
-<translation id="2213612003795704869">Sayfa yazdırıldı</translation>
+<translation id="2213612003795704869">Sayfa yazdırma</translation>
 <translation id="2214086901479959524">Ortak sekme gruplarınızı kullanmaya devam etmek için Chrome'u güncelleyin</translation>
 <translation id="2215368073167343359">Google ile otomatik doldur</translation>
 <translation id="2215539479425228550">Tırmanma ve Dağcılık</translation>
