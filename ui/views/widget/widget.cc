@@ -1949,7 +1949,19 @@ void Widget::OnNativeWidgetDestroyed() {
   // Mark the widget as closed so that DeleteDelegate() won't call
   // InvalidateLayout().
   widget_closed_ = true;
+  // HandleWidgetDestroyed() may cause the destruction of `this`. Save `this`
+  // as a WeakPtr in order to later check whether `this` has been destroyed.
+  auto weak_this = GetWeakPtr();
   HandleWidgetDestroyed();
+  // The following will ensure that a Widget is always destroyed synchronously
+  // along with the NativeWidget even if the NativeWidget is being destroyed by
+  // a parent Widget or the platform. If `override_close_` is set, the client
+  // is intending to make the closing process synchronous. If the callback
+  // does not reset the Widget, the Widget will be left in a closed, zombie-like
+  // state. It is strongly recommended to reset the Widget within the callback.
+  if (weak_this && override_close_) {
+    std::move(override_close_).Run(ClosedReason::kUnspecified);
+  }
 }
 
 void Widget::OnNativeWidgetParentChanged(gfx::NativeView parent) {
