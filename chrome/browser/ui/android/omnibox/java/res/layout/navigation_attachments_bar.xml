@@ -29,7 +29,7 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:constraint_referenced_ids="location_bar_attachments_add,location_bar_attachments_settings,location_bar_navigation_type_label,location_bar_navigation_type"/>
+        app:constraint_referenced_ids="location_bar_attachments_add,location_bar_navigation_type_label,location_bar_navigation_type"/>
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/location_bar_attachments_add"
@@ -53,6 +53,7 @@ found in the LICENSE file.
         android:clickable="true"
         android:focusable="true"
         android:background="@null"
+        android:visibility="gone"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintStart_toEndOf="@id/location_bar_attachments_add"
         app:layout_constraintBottom_toBottomOf="parent"
