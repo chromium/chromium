@@ -329,6 +329,7 @@ source_set("model_execution") {
         "model_execution/android/model_broker_android.cc",
         "model_execution/android/model_broker_android.h",
       ]
+      deps += [ "//services/on_device_model/android" ]
     }
   }
 }
@@ -727,6 +728,10 @@ source_set("model_execution_unit_tests") {
     ]
     if (is_android) {
       sources += [ "model_execution/android/model_broker_android_unittest.cc" ]
+      deps += [
+        "//services/on_device_model/android",
+        "//services/on_device_model/android:test_support",
+      ]
     }
   }
 

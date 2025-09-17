@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+#include "services/on_device_model/android/on_device_model_bridge_native_unittest_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -58,7 +59,9 @@ class ModelBrokerAndroidFeatureList {
 
 class ModelBrokerAndroidTest : public testing::Test {
  public:
-  ModelBrokerAndroidTest() = default;
+  ModelBrokerAndroidTest() {
+    java_helper_.SetMockAiCoreFactory();
+  }
   ~ModelBrokerAndroidTest() override = default;
 
   ModelBrokerAndroid& EnsureBroker() {
@@ -89,7 +92,8 @@ class ModelBrokerAndroidTest : public testing::Test {
   ModelProviderRegistry provider_{&logger_};
   std::optional<ModelBrokerAndroid> broker_;
   OnDeviceBaseModelSpec spec_{
-      "Test", "0.0.1", proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY};
+      "Test", "0.0.1", proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED};
+  on_device_model::OnDeviceModelBridgeNativeUnitTestHelper java_helper_;
   FakeAdaptationAsset test_asset_{{
       .config = UnsafeTestFeatureConfig(),
       .metadata = MatchingMetadata(spec_),
@@ -114,9 +118,8 @@ TEST_F(ModelBrokerAndroidTest, PendingClient) {
   EXPECT_TRUE(client.HasSubscriber(mojom::ModelBasedCapabilityKey::kTest));
 }
 
-// Verify that CreateSession works when all the assets are provided.
-TEST_F(ModelBrokerAndroidTest, ReadyWithSetupClient) {
-  // TODO(crbug.com/441578339) - Fake AICore to return the "spec_".
+// Verify that CreateSession works when the download succeeds.
+TEST_F(ModelBrokerAndroidTest, DownloadSuccess) {
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote(),
                            CreateSessionArgs(nullptr, FailOnRemoteFallback()));
@@ -125,7 +128,40 @@ TEST_F(ModelBrokerAndroidTest, ReadyWithSetupClient) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
                        future.GetCallback());
-  ASSERT_TRUE(future.Take());
+  base::test::RunUntil([&]() {
+    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+               .unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingAssets;
+  });
+  java_helper_.TriggerDownloaderOnAvailable(spec_.model_name,
+                                            spec_.model_version);
+  EXPECT_NE(future.Get(), nullptr);
+}
+
+// Verify that when download fails, the client is notified.
+TEST_F(ModelBrokerAndroidTest, DownloadFailure) {
+  InstallTestFeatureConfig();
+  ModelBrokerClient client(BindAndPassRemote(),
+                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+
+  // Requesting the feature we've provided assets for should fail.
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
+                       future.GetCallback());
+  base::test::RunUntil([&]() {
+    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+               .unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingAssets;
+  });
+  java_helper_.TriggerDownloaderOnUnavailable(
+      on_device_model::ModelDownloaderAndroid::DownloadFailureReason::
+          kUnknownError);
+  base::test::RunUntil([&]() {
+    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+               .unavailable_reason() ==
+           mojom::ModelUnavailableReason::kNotSupported;
+  });
+  EXPECT_EQ(future.Get(), nullptr);
 }
 
 }  // namespace

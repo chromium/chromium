@@ -718,6 +718,8 @@ test("components_unittests") {
       "//content/public/browser",
       "//gin:v8_snapshot_assets",
       "//net",
+      "//services/on_device_model/android:java",
+      "//services/on_device_model/android:native_java_unittests_java",
       "//ui/android:ui_java",
       "//ui/base",
       "//ui/gfx",

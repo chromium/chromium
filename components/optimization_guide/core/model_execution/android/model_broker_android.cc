@@ -16,11 +16,16 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
+#include "services/on_device_model/android/model_downloader_android.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace optimization_guide {
 
 namespace {
+
+using BaseModelSpec = on_device_model::ModelDownloaderAndroid::BaseModelSpec;
+using DownloadFailureReason =
+    on_device_model::ModelDownloaderAndroid::DownloadFailureReason;
 
 class SolutionImpl : public ModelBrokerImpl::Solution {
  public:
@@ -107,8 +112,9 @@ class ModelBrokerAndroid::SolutionFactory final
       ModelBasedCapabilityKey feature) override;
 
   // Called when an AICore model was found (or not supported).
-  // TODO: crbug.com/441578339 - Add appropriate params.
-  void OnAICoreModelUpdated(ModelBasedCapabilityKey feature);
+  void OnAICoreModelUpdated(
+      ModelBasedCapabilityKey feature,
+      base::expected<BaseModelSpec, DownloadFailureReason> result);
 
   // Updates the model adaptation for the feature.
   void MaybeUpdateModelAdaptation(ModelBasedCapabilityKey feature,
@@ -125,6 +131,12 @@ class ModelBrokerAndroid::SolutionFactory final
 
   // The current model adaptation assets.
   AdaptationMetadataMap adaptation_metadata_;
+
+  // Map from feature to the downloader for the base model. The downloader is
+  // not null if and only if a download is ongoing.
+  absl::flat_hash_map<ModelBasedCapabilityKey,
+                      std::unique_ptr<on_device_model::ModelDownloaderAndroid>>
+      model_downloaders_;
 
   base::WeakPtrFactory<ModelBrokerAndroid::SolutionFactory> weak_ptr_factory_{
       this};
@@ -146,19 +158,37 @@ ModelBrokerAndroid::SolutionFactory::~SolutionFactory() {
 
 void ModelBrokerAndroid::SolutionFactory::OnDeviceEligibleFeatureFirstUsed(
     ModelBasedCapabilityKey feature) {
-  // TODO: crbug.com/441578339 - Start AI core model download
-  OnAICoreModelUpdated(feature);
+  // If there is an ongoing download, do nothing.
+  if (model_downloaders_.contains(feature)) {
+    return;
+  }
+  model_downloaders_[feature] =
+      std::make_unique<on_device_model::ModelDownloaderAndroid>(
+          ToModelExecutionFeatureProto(feature));
+  model_downloaders_[feature]->StartDownload(
+      base::BindOnce(&SolutionFactory::OnAICoreModelUpdated,
+                     weak_ptr_factory_.GetWeakPtr(), feature));
   UpdateSolutionProvider(feature);
 }
 
 void ModelBrokerAndroid::SolutionFactory::OnAICoreModelUpdated(
-    ModelBasedCapabilityKey feature) {
-  // TODO: crbug.com/441578339 - Get the spec for a model and set it.
-  OnDeviceBaseModelSpec dummy_spec{
-      "Test", "0.0.1", proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY};
-  loader_map_.MaybeRegisterModelDownload(
-      feature, dummy_spec,
-      parent_->usage_tracker_.WasOnDeviceEligibleFeatureRecentlyUsed(feature));
+    ModelBasedCapabilityKey feature,
+    base::expected<BaseModelSpec, DownloadFailureReason> result) {
+  // The download has completed, so the downloader can be removed.
+  model_downloaders_.erase(feature);
+  if (result.has_value()) {
+    // Performance hint is not supported on Android.
+    OnDeviceBaseModelSpec spec{
+        result->name, result->version,
+        proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED};
+    loader_map_.MaybeRegisterModelDownload(
+        feature, spec,
+        parent_->usage_tracker_.WasOnDeviceEligibleFeatureRecentlyUsed(
+            feature));
+  } else {
+    MaybeUpdateModelAdaptation(
+        feature, base::unexpected(AdaptationUnavailability::kNotSupported));
+  }
 }
 
 void ModelBrokerAndroid::SolutionFactory::MaybeUpdateModelAdaptation(
