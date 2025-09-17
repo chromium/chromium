@@ -526,7 +526,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 - (void)updateButtonsForUserInterfaceStyle:(UIUserInterfaceStyle)style {
   // Variations containing MIA entry point force disable colors in the icons.
-  const BOOL forceDisableColors = self.shouldShowMIAEntrypoint;
+  const BOOL aimInQuickActions = GetNTPMIAEntrypointVariation() ==
+                                 NTPMIAEntrypointVariation::kAIMInQuickAction;
+  const BOOL forceDisableColors =
+      self.shouldShowMIAEntrypoint || aimInQuickActions;
   const BOOL darkUIStyle = style == UIUserInterfaceStyleDark;
   const BOOL useColorIcon = !darkUIStyle && !forceDisableColors;
 
