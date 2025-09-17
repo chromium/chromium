@@ -60,7 +60,6 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
@@ -423,18 +422,7 @@ bool CanvasResourceProviderSharedImage::ShouldReplaceTargetBuffer(
 }
 
 void CanvasResourceProviderSharedImage::FlushGrContext() {
-  DCHECK(is_accelerated_);
-
-  // The resource may have been imported and used in skia. Make sure any
-  // operations using this resource are flushed to the underlying context.
-  // Note that its not sufficient to flush the SkSurface here since it will
-  // only perform a GrContext flush if that SkSurface has any pending ops. And
-  // this resource may be written to or read from skia without using the
-  // SkSurface here.
-  if (IsGpuContextLost()) {
-    return;
-  }
-  GetGrContext()->flushAndSubmit();
+  // TODO(crbug.com/391648152): Remove this method entirely.
 }
 
 void CanvasResourceProviderSharedImage::EnsureWriteAccess() {
@@ -913,10 +901,10 @@ sk_sp<SkSurface> CanvasResourceProviderSharedImage::CreateSkSurface() const {
 
   const auto props = GetSkSurfaceProps();
   if (is_accelerated_) {
-    return SkSurfaces::WrapBackendTexture(
-        GetGrContext(), CreateGrTextureForResource(), kTopLeft_GrSurfaceOrigin,
-        0 /* msaa_sample_count */, GetSkImageInfo().colorType(),
-        GetSkImageInfo().refColorSpace(), &props);
+    // No longer supported post-OOP-C.
+    // TODO(crbug.com/391648152): Replace this conditional with a
+    // CHECK.
+    return nullptr;
   }
 
   // For software raster path, we render into cpu memory managed internally
@@ -1161,25 +1149,9 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
 
   sk_sp<SkSurface> CreateSkSurface() const override {
     TRACE_EVENT0("blink", "CanvasResourceProviderSwapChain::CreateSkSurface");
-    if (IsGpuContextLost() || !resource_)
-      return nullptr;
 
-    GrGLTextureInfo texture_info = {};
-    texture_info.fID = resource_->GetBackBufferTextureId();
-    texture_info.fTarget =
-        resource_->GetBackBufferClientSharedImage()->GetTextureTarget();
-    texture_info.fFormat =
-        ContextProviderWrapper()->ContextProvider().GetGrGLTextureFormat(
-            GetSharedImageFormat());
-
-    auto backend_texture = GrBackendTextures::MakeGL(
-        Size().width(), Size().height(), skgpu::Mipmapped::kNo, texture_info);
-
-    const auto props = GetSkSurfaceProps();
-    return SkSurfaces::WrapBackendTexture(
-        GetGrContext(), backend_texture, kTopLeft_GrSurfaceOrigin,
-        0 /* msaa_sample_count */, GetSkImageInfo().colorType(),
-        GetSkImageInfo().refColorSpace(), &props);
+    // No longer supported post-OOP-C.
+    return nullptr;
   }
 
   void RasterRecord(cc::PaintRecord last_recording) override {
@@ -1222,11 +1194,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     if (needs_flush_) {
       // This only flushes recorded draw ops.
       FlushCanvas(reason);
-      // Call flushAndSubmit() explicitly so that any non-draw-op rendering by
-      // Skia is flushed to GL.  This is needed specifically for WritePixels().
-      if (!use_oop_rasterization_)
-        GetGrContext()->flushAndSubmit();
-
       needs_flush_ = false;
     }
   }
@@ -1889,13 +1856,6 @@ gpu::raster::RasterInterface* CanvasResourceProvider::RasterInterface() const {
   if (!context_provider_wrapper_)
     return nullptr;
   return context_provider_wrapper_->ContextProvider().RasterInterface();
-}
-
-GrDirectContext* CanvasResourceProvider::GetGrContext() const {
-  // ContextProvider no longer has a GrDirectContext following shipping of
-  // OOP-R.
-  // TODO(crbug.com/391648152): Eliminate this method entirely.
-  return nullptr;
 }
 
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {

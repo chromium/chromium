@@ -32,8 +32,6 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
-class GrDirectContext;
-
 namespace cc {
 class ImageDecodeCache;
 class PaintCanvas;
@@ -393,7 +391,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   gpu::gles2::GLES2Interface* ContextGL() const;
   gpu::raster::RasterInterface* RasterInterface() const;
-  GrDirectContext* GetGrContext() const;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const {
     return context_provider_wrapper_;
