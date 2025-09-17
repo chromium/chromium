@@ -548,7 +548,7 @@ void FrameCaptionButtonContainerView::ChildPreferredSizeChanged(View* child) {
   // the layout cache of `LayoutManagerBase`.
   //
   // Here, we call `Layout` in
-  // `BrowserNonClientFrameViewChromeOS::ChildPreferredSizeChanged`.
+  // `BrowserFrameViewChromeOS::ChildPreferredSizeChanged`.
   InvalidateLayout();
   PreferredSizeChanged();
 }

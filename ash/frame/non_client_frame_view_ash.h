@@ -36,7 +36,7 @@ class NonClientFrameViewAshImmersiveHelper;
 // client view takes up the entire widget and the window header is an overlay.
 // The window header overlay slides onscreen when the user hovers the mouse at
 // the top of the screen. See also views::DefaultFrameView and
-// BrowserNonClientFrameViewAsh.
+// BrowserFrameViewAsh.
 class ASH_EXPORT NonClientFrameViewAsh
     : public chromeos::NonClientFrameViewBase,
       public FrameContextMenuController::Delegate,
