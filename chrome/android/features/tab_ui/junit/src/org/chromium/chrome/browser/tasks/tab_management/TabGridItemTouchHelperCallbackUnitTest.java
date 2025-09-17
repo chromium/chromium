@@ -26,6 +26,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ANIMATION_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_PINNED;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.graphics.Canvas;
@@ -816,11 +817,19 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void messageItemSwipeable_archivedTabsMessageNotSwipable() {
+    public void messageItemSwipeable_archivedTabsMessageNotSwipeable() {
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(MESSAGE_TYPE)).thenReturn(MessageType.ARCHIVED_TABS_MESSAGE);
         when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.ARCHIVED_TABS_MESSAGE);
         mMockViewHolder1.model = model;
+
+        setupItemTouchHelperCallback(false);
+        assertFalse(mItemTouchHelperCallback.hasSwipeFlag(mRecyclerView, mMockViewHolder1));
+    }
+
+    @Test
+    public void messageItemSwipeable_pinnedTabNotSwipeable() {
+        mMockViewHolder1.model.set(IS_PINNED, true);
 
         setupItemTouchHelperCallback(false);
         assertFalse(mItemTouchHelperCallback.hasSwipeFlag(mRecyclerView, mMockViewHolder1));

@@ -215,13 +215,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         final int dragFlags = isMessageType(viewHolder) ? 0 : mDragFlags;
-        final int swipeFlags;
-        if (viewHolder.getItemViewType() == UiType.ARCHIVED_TABS_MESSAGE || mIsMouseInputSource) {
-            // The archived tabs message can't be dismissed.
-            swipeFlags = 0;
-        } else {
-            swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-        }
+        final int swipeFlags =
+                isSwipeable(viewHolder) ? ItemTouchHelper.START | ItemTouchHelper.END : 0;
 
         mRecyclerViewSupplier.set(recyclerView);
         return makeMovementFlags(dragFlags, swipeFlags);
@@ -852,5 +847,34 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     private boolean isArchivedMessageCard(PropertyModel model) {
         return model.get(CARD_TYPE) == MESSAGE
                 && model.get(MESSAGE_TYPE) == MessageType.ARCHIVED_TABS_MESSAGE;
+    }
+
+    private boolean isSwipeable(RecyclerView.ViewHolder viewHolder) {
+        if (mIsMouseInputSource) {
+            return false;
+        }
+
+        // The archived tabs message can't be dismissed.
+        if (viewHolder.getItemViewType() == UiType.ARCHIVED_TABS_MESSAGE) {
+            return false;
+        }
+
+        // Pinned tabs can't be dismissed.
+        if (isPinnedRegularTab(viewHolder)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isPinnedRegularTab(RecyclerView.ViewHolder viewHolder) {
+        if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
+            PropertyModel model = simpleViewHolder.model;
+            if (model != null && model.get(CARD_TYPE) == TAB) {
+                return model.get(TabProperties.IS_PINNED);
+            }
+        }
+
+        return false;
     }
 }
