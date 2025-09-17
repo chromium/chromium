@@ -166,64 +166,6 @@ public class SurfaceColorUpdateUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
-    public void testGtsTabSearchBoxBackgroundColor_FlagEnabled() {
-        @ColorInt
-        int searchBoxBgColor =
-                SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
-                        mContext, /* isIncognito= */ false);
-        assertEquals(SemanticColorUtils.getColorSurface(mContext), searchBoxBgColor);
-
-        @ColorInt
-        int searchBoxBgColorIncognito =
-                SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
-                        mContext, /* isIncognito= */ true);
-        assertEquals(
-                ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_dark),
-                searchBoxBgColorIncognito);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
-    public void testGtsTabSearchBoxBackgroundColor_FlagDisabled() {
-        @ColorInt
-        int searchBoxBgColor =
-                SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
-                        mContext, /* isIncognito= */ false);
-        assertEquals(SemanticColorUtils.getColorSurfaceContainerHigh(mContext), searchBoxBgColor);
-
-        @ColorInt
-        int searchBoxBgColorIncognito =
-                SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
-                        mContext, /* isIncognito= */ true);
-        assertEquals(
-                ContextCompat.getColor(
-                        mContext, R.color.gm3_baseline_surface_container_highest_dark),
-                searchBoxBgColorIncognito);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
-    public void testMessageCardBackgroundColor_FlagEnabled() {
-        @ColorInt
-        int messageCardBackgroundColor =
-                SurfaceColorUpdateUtils.getMessageCardBackgroundColor(mContext);
-        assertEquals(
-                SemanticColorUtils.getColorSurfaceContainerLow(mContext),
-                messageCardBackgroundColor);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
-    public void testMessageCardBackgroundColor_FlagDisabled() {
-        @ColorInt
-        int messageCardBackgroundColor =
-                SurfaceColorUpdateUtils.getMessageCardBackgroundColor(mContext);
-        assertEquals(
-                SemanticColorUtils.getCardBackgroundColor(mContext), messageCardBackgroundColor);
-    }
-
-    @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
     @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testGetCardViewBackgroundColor_NewGm3TabGroupColorsEnabled_WithColorId() {

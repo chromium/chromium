@@ -20,4 +20,6 @@ found in the LICENSE file.
 
     <color name="incognito_tab_action_button_color">@color/baseline_neutral_variant_80</color>
 
+    <color name="incognito_hub_search_box_bg_color">@color/gm3_baseline_surface_container_highest_dark</color>
+
 </resources>

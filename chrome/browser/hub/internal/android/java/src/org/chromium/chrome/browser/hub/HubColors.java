@@ -163,11 +163,10 @@ public final class HubColors {
             Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
-                        context, /* isIncognito= */ false);
+                return ContextCompat.getColor(context, R.color.hub_search_box_bg_color);
             case HubColorScheme.INCOGNITO:
-                return SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
-                        context, /* isIncognito= */ true);
+                return ContextCompat.getColor(
+                        context, R.color.incognito_hub_search_box_bg_color);
             default:
                 assert false;
                 return ContextCompat.getColor(context, Resources.ID_NULL);

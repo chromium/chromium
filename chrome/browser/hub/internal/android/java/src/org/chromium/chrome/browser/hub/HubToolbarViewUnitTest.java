@@ -384,23 +384,6 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
-    public void testUpdateSearchBoxColorScheme_gtsSurfaceColorUpdateEnabled() {
-        forceSetColorScheme(HubColorScheme.INCOGNITO);
-
-        GradientDrawable backgroundDrawable = (GradientDrawable) mSearchBox.getBackground();
-        assertEquals(
-                ColorStateList.valueOf(
-                        ContextCompat.getColor(mActivity, R.color.gm3_baseline_surface_dark)),
-                backgroundDrawable.getColor());
-
-        forceSetColorScheme(HubColorScheme.DEFAULT);
-        assertEquals(
-                ColorStateList.valueOf(SemanticColorUtils.getColorSurface(mActivity)),
-                backgroundDrawable.getColor());
-    }
-
-    @Test
     public void testHubSearchEnabledState() {
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, false);
         assertFalse(mSearchBox.isEnabled());

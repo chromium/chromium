@@ -23,7 +23,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -56,7 +56,7 @@ public class ArchivedTabsCardView extends FrameLayout {
 
         mEndIconView.setScaleX(isLayoutRtl() ? -1 : 1);
         GradientDrawable cardViewBg = (GradientDrawable) mCardContainer.getBackground().mutate();
-        cardViewBg.setColor(SurfaceColorUpdateUtils.getMessageCardBackgroundColor(getContext()));
+        cardViewBg.setColor(SemanticColorUtils.getCardBackgroundColor(getContext()));
     }
 
     public void setIconHighlight(boolean isHighlighted) {

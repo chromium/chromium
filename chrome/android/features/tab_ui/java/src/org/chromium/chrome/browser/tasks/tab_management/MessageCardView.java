@@ -17,9 +17,9 @@ import android.widget.LinearLayout;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.OutlineOverlayHelper;
@@ -181,7 +181,7 @@ class MessageCardView extends LinearLayout {
         // Set dynamic color.
         LayerDrawable drawable = (LayerDrawable) getBackground();
         drawable.findDrawableByLayerId(R.id.card_background_base)
-                .setTint(SurfaceColorUpdateUtils.getMessageCardBackgroundColor(getContext()));
+                .setTint(SemanticColorUtils.getCardBackgroundColor(getContext()));
     }
 
     /**

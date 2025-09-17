@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
 
@@ -30,7 +29,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsMessageService.ArchivedTabsMessageData;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -48,7 +46,6 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE)
 public class ArchivedTabsCardRenderTest {
     @ParameterAnnotations.ClassParameter
     public static List<ParameterSet> sClassParams =
