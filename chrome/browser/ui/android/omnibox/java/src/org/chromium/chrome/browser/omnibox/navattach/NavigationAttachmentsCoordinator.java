@@ -26,12 +26,12 @@ import org.chromium.url.GURL;
 /** Coordinator for the Navigation Attachments component. */
 @NullMarked
 public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener {
-    private final @Nullable NavigationAttachmentsMediator mMediator;
     private final @Nullable NavigationAttachmentsViewHolder mViewHolder;
     private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
     private final ObservableSupplierImpl<@NavigationFulfillmentType Integer>
             mNavigationFulfillmentTypeSupplier =
                     new ObservableSupplierImpl<>(NavigationFulfillmentType.DEFAULT);
+    private @Nullable NavigationAttachmentsMediator mMediator;
 
     public NavigationAttachmentsCoordinator(
             Context context,
@@ -79,6 +79,7 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
     public void destroy() {
         if (mMediator != null) {
             mMediator.destroy();
+            mMediator = null;
         }
     }
 
@@ -89,18 +90,25 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
 
         int pageClass = mLocationBarDataProvider.getPageClassification(false);
 
-        boolean shouldShowToolbar =
-                hasFocus
-                        && (pageClass
-                                        == PageClassification
-                                                .INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE
-                                || pageClass == PageClassification.OTHER_VALUE);
+        boolean isSupportedPageClass =
+                switch (pageClass) {
+                    case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
+                            PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
+                            PageClassification.OTHER_VALUE -> true;
+                    default -> false;
+                };
+
+        boolean shouldShowToolbar = hasFocus && isSupportedPageClass;
 
         mMediator.setToolbarVisible(shouldShowToolbar);
     }
 
     @Nullable NavigationAttachmentsViewHolder getViewHolderForTesting() {
         return mViewHolder;
+    }
+
+    void setMediatorForTesting(NavigationAttachmentsMediator mediator) {
+        mMediator = mediator;
     }
 
     /**

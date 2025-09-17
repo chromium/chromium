@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -41,6 +42,9 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /** Unit tests for {@link NavigationAttachmentsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NavigationAttachmentsCoordinatorUnitTest {
@@ -50,6 +54,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     private @Mock ComposeBoxQueryControllerBridge.Natives mControllerMock;
     private @Mock Profile mProfileMock;
     private @Mock LocationBarDataProvider mLocationBarDataProvider;
+    private @Mock NavigationAttachmentsMediator mMediator;
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -159,5 +164,37 @@ public class NavigationAttachmentsCoordinatorUnitTest {
         // Click the add button again to hide the popup.
         addButton.performClick();
         assertFalse(popup.isShowing());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testToolbarVisibility_basedOnPageClassification() {
+        mCoordinator =
+                new NavigationAttachmentsCoordinator(
+                        mActivity,
+                        mWindowAndroid,
+                        mParent,
+                        mProfileSupplier,
+                        mLocationBarDataProvider);
+        mCoordinator.setMediatorForTesting(mMediator);
+        mProfileSupplier.set(mProfileMock);
+
+        final Set<PageClassification> supportedPageClassifications =
+                EnumSet.of(
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                        PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+                        PageClassification.OTHER);
+
+        for (PageClassification pageClass : PageClassification.values()) {
+            Mockito.reset(mMediator);
+            doReturn(pageClass.getNumber())
+                    .when(mLocationBarDataProvider)
+                    .getPageClassification(anyBoolean());
+
+            mCoordinator.onUrlFocusChange(true);
+
+            boolean shouldBeVisible = supportedPageClassifications.contains(pageClass);
+            Mockito.verify(mMediator).setToolbarVisible(shouldBeVisible);
+        }
     }
 }
