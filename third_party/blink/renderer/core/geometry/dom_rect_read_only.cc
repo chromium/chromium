@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
-#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -52,10 +51,5 @@ DOMRectReadOnly::DOMRectReadOnly(double x,
                                  double width,
                                  double height)
     : x_(x), y_(y), width_(width), height_(height) {}
-
-gfx::PointF DOMRectReadOnly::Center() const {
-  return gfx::PointF(left() + std::fabs(width_) / 2.0,
-                     top() + std::fabs(height_) / 2.0);
-}
 
 }  // namespace blink

@@ -1815,6 +1815,8 @@ void Element::DefaultEventHandler(Event& event) {
       // built-in delay. Just show interest immediately in this case. This
       // follows the same path used by context-menu activations on link
       // elements.
+      // TODO(crbug.com/364669918): Touchscreen / long-press still needs a
+      // unit test.
       ShowInterestNow();
     }
   }
