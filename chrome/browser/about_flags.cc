@@ -11563,6 +11563,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPermissionsAIv4Description, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv4)},
 
+    {"permissions-ai-v5", flag_descriptions::kPermissionsAIv5Name,
+     flag_descriptions::kPermissionsAIv5Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv5)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"exclude-display-in-mirror-mode",
      flag_descriptions::kExcludeDisplayInMirrorModeName,

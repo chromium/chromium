@@ -12015,6 +12015,7 @@ from previous Chrome versions.
   <int value="-761870200" label="CaptureModeDemoTools:disabled"/>
   <int value="-761814801" label="NtpRealboxCr23HoverFillShape:disabled"/>
   <int value="-761538347" label="AutofillEnableVerveCardSupport:enabled"/>
+  <int value="-761383128" label="PermissionsAIv5:enabled"/>
   <int value="-761009829" label="FedCmAlternativeIdentifiers:disabled"/>
   <int value="-760729135"
       label="AutofillEnableCardArtServerSideStretching:disabled"/>
@@ -19769,6 +19770,7 @@ from previous Chrome versions.
   <int value="2003568209" label="TouchpadAndWheelScrollLatching:disabled"/>
   <int value="2003811018" label="enable-touch-support-for-screen-magnifier"/>
   <int value="2004483175" label="multi-instance-merge-tabs"/>
+  <int value="2004540127" label="PermissionsAIv5:disabled"/>
   <int value="2004604350" label="AutofillGetPaymentsIdentityFromSync:enabled"/>
   <int value="2004630146" label="ProtectedTabsAndroid:enabled"/>
   <int value="2004651603" label="NativeFileSystemAPI:disabled"/>

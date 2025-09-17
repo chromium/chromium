@@ -8064,6 +8064,15 @@
     "expiry_milestone": 150
   },
   {
+    "name": "permissions-ai-v5",
+    "owners": [
+      "elklm@chromium.org",
+      "hempjudith@google.com",
+      "//components/permissions/PERMISSIONS_OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "permissive-usb-passthrough",
     "owners": [
       "drmasquatch@chromium.org"
