@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -31,7 +31,7 @@
 #import "url/gurl.h"
 
 @interface AddPasswordCoordinator () <AddPasswordMediatorDelegate,
-                                      ReauthenticationCoordinatorDelegate,
+                                      LocalReauthenticationCoordinatorDelegate,
                                       UIAdaptivePresentationControllerDelegate>
 
 // Main view controller for this coordinator.
@@ -45,7 +45,8 @@
 
 // Used for requiring authentication after the browser comes from the background
 // with Add Password open.
-@property(nonatomic, strong) ReauthenticationCoordinator* reauthCoordinator;
+@property(nonatomic, strong)
+    LocalReauthenticationCoordinator* reauthCoordinator;
 
 @end
 
@@ -150,15 +151,15 @@
                                                     coordinator:self];
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   // No-op.
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
@@ -173,7 +174,7 @@
 // Local authentication is required every time the current
 // scene is backgrounded and foregrounded until reauthCoordinator is stopped.
 - (void)startReauthCoordinator {
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
                 reauthenticationModule:nil

@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_presentation_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_slide_transition_animator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/reauth_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -53,7 +53,7 @@
     ConsistencyDefaultAccountCoordinatorDelegate,
     ConsistencyPromoSigninMediatorDelegate,
     ConsistencyLayoutDelegate,
-    ReauthCoordinatorDelegate,
+    SigninReauthCoordinatorDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
@@ -73,7 +73,7 @@
 // Coordinator to add an account to the device.
 @property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;
 // Coordinator to show a reauth screen.
-@property(nonatomic, strong) ReauthCoordinator* reauthCoordinator;
+@property(nonatomic, strong) SigninReauthCoordinator* reauthCoordinator;
 
 @property(nonatomic, strong)
     ConsistencyPromoSigninMediator* consistencyPromoSigninMediator;
@@ -289,7 +289,7 @@
     return;
   }
   [self.reauthCoordinator stop];
-  self.reauthCoordinator = [[ReauthCoordinator alloc]
+  self.reauthCoordinator = [[SigninReauthCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
                          account:account
@@ -497,7 +497,7 @@
   return self.navigationController.displayStyle;
 }
 
-#pragma mark - ReauthCoordinatorDelegate
+#pragma mark - SigninReauthCoordinatorDelegate
 
 - (void)reauthFinishedWithResult:(ReauthResult)result {
   [self stopReauthCoordinator];

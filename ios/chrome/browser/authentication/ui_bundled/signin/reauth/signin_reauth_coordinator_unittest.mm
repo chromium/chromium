@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/reauth_coordinator.h"
-
 #import <concepts>
 #import <type_traits>
 
@@ -16,6 +14,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -62,9 +61,9 @@ class ArgumentCaptor {
 
 }  // namespace
 
-class ReauthCoordinatorTest : public PlatformTest {
+class SigninReauthCoordinatorTest : public PlatformTest {
  public:
-  ReauthCoordinatorTest() {
+  SigninReauthCoordinatorTest() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
@@ -80,12 +79,12 @@ class ReauthCoordinatorTest : public PlatformTest {
         }));
   }
 
-  ~ReauthCoordinatorTest() override {
+  ~SigninReauthCoordinatorTest() override {
     EXPECT_OCMOCK_VERIFY(mock_interaction_manager_);
     EXPECT_OCMOCK_VERIFY(mock_delegate_);
   }
 
-  OCMockObject<ReauthCoordinatorDelegate>* mock_delegate() {
+  OCMockObject<SigninReauthCoordinatorDelegate>* mock_delegate() {
     return mock_delegate_;
   }
 
@@ -109,21 +108,22 @@ class ReauthCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   OCMockObject<SystemIdentityInteractionManager>* mock_interaction_manager_ =
       OCMStrictProtocolMock(@protocol(SystemIdentityInteractionManager));
-  OCMockObject<ReauthCoordinatorDelegate>* mock_delegate_ =
-      OCMStrictProtocolMock(@protocol(ReauthCoordinatorDelegate));
+  OCMockObject<SigninReauthCoordinatorDelegate>* mock_delegate_ =
+      OCMStrictProtocolMock(@protocol(SigninReauthCoordinatorDelegate));
 };
 
-TEST_F(ReauthCoordinatorTest, ReauthCompletedSuccessfully) {
+TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfully) {
   base::HistogramTester histogram_tester;
   id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
   AccountInfo account = MakeIdentityAvailable(identity);
 
-  __block ReauthCoordinator* reauth_coordinator = [[ReauthCoordinator alloc]
-      initWithBaseViewController:GetAnyKeyWindow().rootViewController
-                         browser:browser_.get()
-                         account:account
-               signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
-  __weak ReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
+  __block SigninReauthCoordinator* reauth_coordinator =
+      [[SigninReauthCoordinator alloc]
+          initWithBaseViewController:GetAnyKeyWindow().rootViewController
+                             browser:browser_.get()
+                             account:account
+                   signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
+  __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
   reauth_coordinator.delegate = mock_delegate_;
 
   ArgumentCaptor<SigninCompletionBlock> signin_completion_block_captor;
@@ -152,17 +152,18 @@ TEST_F(ReauthCoordinatorTest, ReauthCompletedSuccessfully) {
                                       1);
 }
 
-TEST_F(ReauthCoordinatorTest, ReauthCancelledByUser) {
+TEST_F(SigninReauthCoordinatorTest, ReauthCancelledByUser) {
   base::HistogramTester histogram_tester;
   AccountInfo account =
       MakeIdentityAvailable([FakeSystemIdentity fakeIdentity1]);
 
-  __block ReauthCoordinator* reauth_coordinator = [[ReauthCoordinator alloc]
-      initWithBaseViewController:GetAnyKeyWindow().rootViewController
-                         browser:browser_.get()
-                         account:account
-               signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
-  __weak ReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
+  __block SigninReauthCoordinator* reauth_coordinator =
+      [[SigninReauthCoordinator alloc]
+          initWithBaseViewController:GetAnyKeyWindow().rootViewController
+                             browser:browser_.get()
+                             account:account
+                   signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
+  __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
   reauth_coordinator.delegate = mock_delegate_;
 
   ArgumentCaptor<SigninCompletionBlock> signin_completion_block_captor;
@@ -194,17 +195,18 @@ TEST_F(ReauthCoordinatorTest, ReauthCancelledByUser) {
                                       1);
 }
 
-TEST_F(ReauthCoordinatorTest, ReauthInterrupted) {
+TEST_F(SigninReauthCoordinatorTest, ReauthInterrupted) {
   base::HistogramTester histogram_tester;
   AccountInfo account =
       MakeIdentityAvailable([FakeSystemIdentity fakeIdentity1]);
 
-  __block ReauthCoordinator* reauth_coordinator = [[ReauthCoordinator alloc]
-      initWithBaseViewController:GetAnyKeyWindow().rootViewController
-                         browser:browser_.get()
-                         account:account
-               signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
-  __weak ReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
+  __block SigninReauthCoordinator* reauth_coordinator =
+      [[SigninReauthCoordinator alloc]
+          initWithBaseViewController:GetAnyKeyWindow().rootViewController
+                             browser:browser_.get()
+                             account:account
+                   signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
+  __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
   reauth_coordinator.delegate = mock_delegate_;
 
   OCMExpect([mock_interaction_manager_
@@ -230,18 +232,19 @@ TEST_F(ReauthCoordinatorTest, ReauthInterrupted) {
                                       1);
 }
 
-TEST_F(ReauthCoordinatorTest, ReauthCompletedSuccessfullyInExplicitFlow) {
+TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfullyInExplicitFlow) {
   base::HistogramTester histogram_tester;
   id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
   AccountInfo account = MakeIdentityAvailable(identity);
 
-  __block ReauthCoordinator* reauth_coordinator = [[ReauthCoordinator alloc]
-      initWithBaseViewController:GetAnyKeyWindow().rootViewController
-                         browser:browser_.get()
-                         account:account
-               reauthAccessPoint:signin_metrics::ReauthAccessPoint::
-                                     kAccountMenu];
-  __weak ReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
+  __block SigninReauthCoordinator* reauth_coordinator =
+      [[SigninReauthCoordinator alloc]
+          initWithBaseViewController:GetAnyKeyWindow().rootViewController
+                             browser:browser_.get()
+                             account:account
+                   reauthAccessPoint:signin_metrics::ReauthAccessPoint::
+                                         kAccountMenu];
+  __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
   reauth_coordinator.delegate = mock_delegate_;
 
   ArgumentCaptor<SigninCompletionBlock> signin_completion_block_captor;

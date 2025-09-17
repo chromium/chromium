@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "reauth_coordinator\.mm": [
+  "signin_reauth_coordinator\.mm": [
     "+absl/functional/overload.h",
   ],
 }

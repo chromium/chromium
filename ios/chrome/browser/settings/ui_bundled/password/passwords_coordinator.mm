@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_settings_commands.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -58,7 +58,7 @@
     PasswordSettingsCoordinatorDelegate,
     PasswordsSettingsCommands,
     PasswordManagerViewControllerPresentationDelegate,
-    ReauthenticationCoordinatorDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     TrustedVaultReauthenticationCoordinatorDelegate,
     WidgetPromoInstructionsCoordinatorDelegate>
 
@@ -91,7 +91,8 @@
 
 // Coordinator for blocking password manager until successful Local
 // Authentication.
-@property(nonatomic, strong) ReauthenticationCoordinator* reauthCoordinator;
+@property(nonatomic, strong)
+    LocalReauthenticationCoordinator* reauthCoordinator;
 
 // Coordinator that presents the instructions on how to install the Password
 // Manager widget.
@@ -472,10 +473,10 @@
   [self restartReauthCoordinator];
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   DCHECK_EQ(_reauthCoordinator, coordinator);
 
   [_visitsRecorder maybeRecordVisitMetric];
@@ -493,7 +494,7 @@
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
 
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
@@ -561,7 +562,7 @@
   // triggering reauth at the same time with undefined behavior.
   DCHECK(!_reauthCoordinator);
 
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
                 reauthenticationModule:_reauthModule
@@ -582,7 +583,7 @@
   // Popping the view controller in case Local Authentication was triggered
   // outside reauthCoordinator before starting the child coordinator. Local
   // Authentication changes the scene state which triggers the presentation of
-  // the ReauthenticationViewController by reauthCoordinator. Ideally
+  // the LocalReauthenticationViewController by reauthCoordinator. Ideally
   // reauthCoordinator would be stopped when Local Authentication is triggered
   // outside of it but still defending against that scenario to avoid leaving an
   // unintended view controller in the navigation stack.

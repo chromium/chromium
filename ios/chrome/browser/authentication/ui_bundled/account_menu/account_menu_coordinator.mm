@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/reauth_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -92,7 +92,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 @interface AccountMenuCoordinator () <
     AccountMenuMediatorDelegate,
     SettingsNavigationControllerDelegate,
-    ReauthCoordinatorDelegate,
+    SigninReauthCoordinatorDelegate,
     SyncErrorSettingsCommandHandler,
     SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
     TrustedVaultReauthenticationCoordinatorDelegate,
@@ -123,7 +123,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   // The child signin coordinator if it’s open.
   SigninCoordinator* _addAccountSigninCoordinator;
   // Reauth coordinator for the reauthentication flow if it's open.
-  ReauthCoordinator* _reauthCoordinator;
+  SigninReauthCoordinator* _reauthCoordinator;
   // Clicked view, used to anchor the menu to it when using
   // UIModalPresentationPopover mode
   UIView* _anchorView;
@@ -488,7 +488,7 @@ void maybeShowSettingsIPH(Browser* browser) {
     // A sign-out was triggered in the meantime, don't do anything.
     return;
   }
-  _reauthCoordinator = [[ReauthCoordinator alloc]
+  _reauthCoordinator = [[SigninReauthCoordinator alloc]
       initWithBaseViewController:_navigationController
                          browser:self.browser
                          account:account
@@ -625,7 +625,7 @@ void maybeShowSettingsIPH(Browser* browser) {
                                            completion:completion];
 }
 
-#pragma mark - ReauthCoordinatorDelegate
+#pragma mark - SigninReauthCoordinatorDelegate
 
 - (void)reauthFinishedWithResult:(ReauthResult)result {
   [self stopReauthCoordinator];

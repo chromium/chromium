@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_screen/account_picker_screen_slide_transition_animator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/reauth_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -40,7 +40,7 @@
     AccountPickerLayoutDelegate,
     AccountPickerSelectionScreenCoordinatorDelegate,
     AccountPickerScreenPresentationControllerDelegate,
-    ReauthCoordinatorDelegate,
+    SigninReauthCoordinatorDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
@@ -52,7 +52,7 @@
 @implementation AccountPickerCoordinator {
   SigninCoordinator* _addAccountSigninCoordinator;
   // Coordinator to show a reauth screen.
-  __strong ReauthCoordinator* _reauthCoordinator;
+  __strong SigninReauthCoordinator* _reauthCoordinator;
   signin_metrics::AccessPoint _accessPoint;
 
   // Navigation controller for the account picker.
@@ -236,7 +236,7 @@
     return;
   }
   [self stopReauthCoordinator];
-  _reauthCoordinator = [[ReauthCoordinator alloc]
+  _reauthCoordinator = [[SigninReauthCoordinator alloc]
       initWithBaseViewController:_navigationController
                          browser:self.browser
                          account:account
@@ -251,7 +251,7 @@
   _reauthCoordinator = nil;
 }
 
-#pragma mark - ReauthCoordinatorDelegate
+#pragma mark - SigninReauthCoordinatorDelegate
 
 - (void)reauthFinishedWithResult:(ReauthResult)result {
   [self stopReauthCoordinator];

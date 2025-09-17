@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -32,7 +32,7 @@
 @interface ManualFillAllPasswordCoordinator () <
     ManualFillPasswordMediatorDelegate,
     PasswordViewControllerDelegate,
-    ReauthenticationCoordinatorDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 
 // Fetches and filters the passwords for the view controller.
@@ -48,7 +48,7 @@
   // Used for requiring Local Authentication before revealing the password list.
   // Authentication is also required when the app is backgrounded/foregrounded
   // with this surface opened.
-  ReauthenticationCoordinator* _reauthCoordinator;
+  LocalReauthenticationCoordinator* _reauthCoordinator;
 
   // Navigation controller presented by this coordinator.
   TableViewNavigationController* _navigationController;
@@ -179,15 +179,15 @@
   [handler openURLInNewTab:command];
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   // No-op.
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
   [self.manualFillAllPasswordCoordinatorDelegate
       manualFillAllPasswordCoordinatorWantsToBeDismissed:self];
@@ -212,7 +212,7 @@
 // and requires authentication when the scene is backgrounded and then
 // foregrounded while the surface is is opened.
 - (void)startReauthCoordinator {
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_navigationController
                                browser:self.browser
                 reauthenticationModule:nil

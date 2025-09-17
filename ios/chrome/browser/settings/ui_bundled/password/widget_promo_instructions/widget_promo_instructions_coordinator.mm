@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -14,7 +14,7 @@
 @interface WidgetPromoInstructionsCoordinator () <
     UIAdaptivePresentationControllerDelegate,
     ConfirmationAlertActionHandler,
-    ReauthenticationCoordinatorDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     SettingsNavigationControllerDelegate>
 
 // Password Manager widget promo instructions view controller.
@@ -30,7 +30,7 @@
 @implementation WidgetPromoInstructionsCoordinator {
   // Used for requiring authentication after the browser comes from the
   // background with this screen open.
-  ReauthenticationCoordinator* _reauthCoordinator;
+  LocalReauthenticationCoordinator* _reauthCoordinator;
   // Whether local authentication failed and thus the whole Password Manager UI
   // is being dismissed.
   BOOL _authDidFail;
@@ -115,15 +115,15 @@
   return nil;
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   // No-op.
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
   _authDidFail = YES;
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
@@ -139,7 +139,7 @@
 // Local authentication is required every time the current
 // scene is backgrounded and foregrounded until reauthCoordinator is stopped.
 - (void)startReauthCoordinator {
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_settingsNavigationController
                                browser:self.browser
                 reauthenticationModule:nil

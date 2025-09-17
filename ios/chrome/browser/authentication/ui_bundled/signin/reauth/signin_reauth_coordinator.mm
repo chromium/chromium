@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/reauth_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
 
 #import <string>
 #import <variant>
@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
-@implementation ReauthCoordinator {
+@implementation SigninReauthCoordinator {
   raw_ptr<Browser> _browser;
   CoreAccountInfo _account;
   std::variant<signin_metrics::ReauthAccessPoint, signin_metrics::AccessPoint>

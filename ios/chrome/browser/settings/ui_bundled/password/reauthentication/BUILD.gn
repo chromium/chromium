@@ -4,8 +4,8 @@
 
 source_set("reauthentication") {
   sources = [
-    "reauthentication_coordinator.h",
-    "reauthentication_coordinator.mm",
+    "local_reauthentication_coordinator.h",
+    "local_reauthentication_coordinator.mm",
   ]
 
   deps = [
@@ -33,8 +33,8 @@ source_set("reauthentication") {
 
 source_set("reauthentication_ui") {
   sources = [
-    "reauthentication_view_controller.h",
-    "reauthentication_view_controller.mm",
+    "local_reauthentication_view_controller.h",
+    "local_reauthentication_view_controller.mm",
   ]
 
   deps = [
@@ -53,8 +53,8 @@ source_set("reauthentication_ui") {
 
 source_set("reauthentication_constants") {
   sources = [
-    "reauthentication_constants.h",
-    "reauthentication_constants.mm",
+    "local_reauthentication_constants.h",
+    "local_reauthentication_constants.mm",
   ]
   frameworks = [ "Foundation.framework" ]
 }
@@ -67,7 +67,7 @@ source_set("reauthentication_delegate") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "reauthentication_coordinator_unittest.mm" ]
+  sources = [ "local_reauthentication_coordinator_unittest.mm" ]
 
   deps = [
     ":reauthentication",

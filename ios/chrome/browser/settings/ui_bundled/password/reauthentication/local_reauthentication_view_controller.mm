@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_view_controller.h"
 
 #import "base/check.h"
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
@@ -16,7 +16,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@implementation ReauthenticationViewController {
+@implementation LocalReauthenticationViewController {
   id<ReauthenticationProtocol> _reauthModule;
   BOOL _reauthUponPresentation;
 }
@@ -73,7 +73,7 @@
   }
 }
 
-#pragma mark - ReauthenticationViewController
+#pragma mark - LocalReauthenticationViewController
 
 - (void)requestAuthentication {
   [self recordAuthenticationEvent:ReauthenticationEvent::kAttempt];

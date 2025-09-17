@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 
 #import <UIKit/UIKit.h>
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -26,7 +26,7 @@ using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 @interface FakeReauthenticationCoordinatorDelegate
-    : NSObject <ReauthenticationCoordinatorDelegate>
+    : NSObject <LocalReauthenticationCoordinatorDelegate>
 
 // Set when `successfulReauthenticationWithCoordinator` is called.
 @property(nonatomic) BOOL successfulReauth;
@@ -42,7 +42,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @implementation FakeReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   self.successfulReauth = YES;
 }
 
@@ -51,13 +51,13 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   _dismissUICalled = YES;
 }
 
 @end
 
-// Test fixture for ReauthenticationCoordinator.
+// Test fixture for LocalReauthenticationCoordinator.
 class ReauthenticationCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -79,7 +79,7 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
         initWithRootViewController:[[UIViewController alloc] init]];
     mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
     delegate_ = [[FakeReauthenticationCoordinatorDelegate alloc] init];
-    coordinator_ = [[ReauthenticationCoordinator alloc]
+    coordinator_ = [[LocalReauthenticationCoordinator alloc]
         initWithBaseNavigationController:base_navigation_controller_
                                  browser:browser_.get()
                   reauthenticationModule:mock_reauth_module_
@@ -96,7 +96,7 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  // Verifies that the ReauthenticationViewController was pushed in the
+  // Verifies that the LocalReauthenticationViewController was pushed in the
   // navigation controller.
   void CheckReauthenticationViewControllerIsPresented() {
     // Check that reauth vc was pushed to navigation vc.
@@ -105,7 +105,7 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
           return base_navigation_controller_.viewControllers.count == 2LU;
         }));
     ASSERT_TRUE([base_navigation_controller_.topViewController
-        isKindOfClass:[ReauthenticationViewController class]]);
+        isKindOfClass:[LocalReauthenticationViewController class]]);
     EXPECT_TRUE(delegate_.willPushReauthVCCalled);
   }
 
@@ -117,7 +117,7 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
           return base_navigation_controller_.viewControllers.count == 1LU;
         }));
     ASSERT_FALSE([base_navigation_controller_.topViewController
-        isKindOfClass:[ReauthenticationViewController class]]);
+        isKindOfClass:[LocalReauthenticationViewController class]]);
   }
 
   // Tests the auth flow works correctly when backgrounding/foregrounding the
@@ -161,7 +161,7 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
   MockReauthenticationModule* mock_reauth_module_ = nil;
   FakeReauthenticationCoordinatorDelegate* delegate_ = nil;
   id mocked_application_commands_handler_;
-  ReauthenticationCoordinator* coordinator_ = nil;
+  LocalReauthenticationCoordinator* coordinator_ = nil;
 };
 
 // Tests the auth flow works correctly when backgrounding/foregrounding the
@@ -243,8 +243,8 @@ TEST_F(ReauthenticationCoordinatorTest,
   ASSERT_FALSE(delegate_.successfulReauth);
 }
 
-// Tests that ReauthenticationCoordinator dismissed its view controller after a
-// successful reauthentication before the scene is foregrounded.
+// Tests that LocalReauthenticationCoordinator dismissed its view controller
+// after a successful reauthentication before the scene is foregrounded.
 TEST_F(ReauthenticationCoordinatorTest,
        ReauthViewControllerDismissedBeforeTheSceneIsForegrounded) {
   CheckReauthenticationViewControllerNotPresented();
@@ -283,8 +283,8 @@ TEST_F(ReauthenticationCoordinatorTest,
   CheckReauthenticationViewControllerNotPresented();
 }
 
-// Tests that ReauthenticationCoordinator dismissed its view controller after a
-// successful reauthentication before the scene is foregrounded.
+// Tests that LocalReauthenticationCoordinator dismissed its view controller
+// after a successful reauthentication before the scene is foregrounded.
 TEST_F(
     ReauthenticationCoordinatorTest,
     ReauthViewControllerNotDismissedAfterBackgroundedWithPendingAuthentication) {

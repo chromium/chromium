@@ -33,7 +33,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -133,7 +133,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
     PasswordExportHandler,
     PasswordsInOtherAppsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
-    ReauthenticationCoordinatorDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     SettingsNavigationControllerDelegate>
 
 @end
@@ -162,7 +162,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   // passed. Used for requiring authentication when opening Password Settings
   // from outside the Password Manager and when the app is
   // backgrounded/foregrounded with Password Settings opened.
-  ReauthenticationCoordinator* _reauthCoordinator;
+  LocalReauthenticationCoordinator* _reauthCoordinator;
 
   // Service which gives us a view on users' saved passwords.
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
@@ -667,15 +667,15 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   [self.delegate passwordSettingsCoordinatorDidRemove:self];
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   [_visitsRecorder maybeRecordVisitMetric];
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
@@ -761,7 +761,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
     [_reauthCoordinator stopAndPopViewController];
   }
 
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_settingsNavigationController
                                browser:self.browser
                 reauthenticationModule:_reauthModule

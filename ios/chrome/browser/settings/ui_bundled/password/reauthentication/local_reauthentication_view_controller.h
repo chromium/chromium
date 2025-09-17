@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_REAUTHENTICATION_REAUTHENTICATION_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_REAUTHENTICATION_REAUTHENTICATION_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_REAUTHENTICATION_LOCAL_REAUTHENTICATION_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_REAUTHENTICATION_LOCAL_REAUTHENTICATION_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
 @protocol ReauthenticationProtocol;
 
-@protocol ReauthenticationViewControllerDelegate <NSObject>
+@protocol LocalReauthenticationViewControllerDelegate <NSObject>
 
 // Displays an alert requesting the user to set up a passcode before getting
 // access to the Password Manager.
@@ -22,10 +22,12 @@
 
 // View controller that requests Local Authentication upon presentation and
 // forwards the result to its delegate.
-@interface ReauthenticationViewController : UIViewController
+@interface LocalReauthenticationViewController : UIViewController
 
-// Delegate of the view controller. Most likely a ReauthenticationCoordinator.
-@property(nonatomic, weak) id<ReauthenticationViewControllerDelegate> delegate;
+// Delegate of the view controller. Most likely a
+// LocalReauthenticationCoordinator.
+@property(nonatomic, weak) id<LocalReauthenticationViewControllerDelegate>
+    delegate;
 
 // Initializes the view controller with a `reauthenticationModule` for
 // triggering Local Authentication.
@@ -52,4 +54,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_REAUTHENTICATION_REAUTHENTICATION_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_REAUTHENTICATION_LOCAL_REAUTHENTICATION_VIEW_CONTROLLER_H_

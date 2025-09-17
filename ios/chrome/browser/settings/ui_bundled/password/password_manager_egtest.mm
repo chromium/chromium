@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"

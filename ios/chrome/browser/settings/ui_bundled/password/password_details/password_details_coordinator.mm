@@ -33,7 +33,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_first_run_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_first_run_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_metrics.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -59,7 +59,7 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 @interface PasswordDetailsCoordinator () <
     PasswordDetailsHandler,
     PasswordDetailsMediatorDelegate,
-    ReauthenticationCoordinatorDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     PasswordSharingCoordinatorDelegate,
     PasswordSharingFirstRunCoordinatorDelegate>
 
@@ -91,7 +91,8 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 
 // Coordinator for blocking password details until Local Authentication is
 // successful.
-@property(nonatomic, strong) ReauthenticationCoordinator* reauthCoordinator;
+@property(nonatomic, strong)
+    LocalReauthenticationCoordinator* reauthCoordinator;
 
 @end
 
@@ -444,15 +445,15 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   [self stopPasswordSharingFirstRunCoordinatorWithCompletion:nil];
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   [_visitsRecorder maybeRecordVisitMetric];
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
 
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
@@ -529,7 +530,7 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 // when the scene is backgrounded and then foregrounded while Password Details
 // is opened.
 - (void)startReauthCoordinator {
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
                 reauthenticationModule:_reauthenticationModule

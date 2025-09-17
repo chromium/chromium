@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 
 #import <UIKit/UIKit.h>
 
@@ -11,8 +11,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -43,7 +43,7 @@ bool IsPasscodeSettingsAvailable() {
 // Enum describing the state of the authentication flow.
 enum class ReauthenticationState {
   // Authentication required next time the App comes back to the foreground or
-  // when `ReauthenticationCoordinator` starts.
+  // when `LocalReauthenticationCoordinator` starts.
   kReauthenticationRequired,
   // The reauth view controller was presented and reauthentication was
   // requested. Waiting for the reauthentication result.
@@ -56,8 +56,8 @@ enum class ReauthenticationState {
 
 }  // namespace
 
-@interface ReauthenticationCoordinator () <
-    ReauthenticationViewControllerDelegate,
+@interface LocalReauthenticationCoordinator () <
+    LocalReauthenticationViewControllerDelegate,
     SceneStateObserver>
 
 // Module used for requesting Local Authentication.
@@ -68,7 +68,7 @@ enum class ReauthenticationState {
 
 // The view controller presented by the coordinator.
 @property(nonatomic, strong)
-    ReauthenticationViewController* reauthViewController;
+    LocalReauthenticationViewController* reauthViewController;
 
 // Coordinator for displaying an alert requesting the user to set up a
 // passcode.
@@ -80,7 +80,7 @@ enum class ReauthenticationState {
 
 @end
 
-@implementation ReauthenticationCoordinator {
+@implementation LocalReauthenticationCoordinator {
   // Status of the reauthentication flow. Indicates if we need to request
   // authentication, are waiting for an authentication result or the user is
   // already authenticated.
@@ -132,14 +132,14 @@ enum class ReauthenticationState {
   _reauthViewController = nil;
 }
 
-#pragma mark - ReauthenticationCoordinator
+#pragma mark - LocalReauthenticationCoordinator
 
 - (void)stopAndPopViewController {
   [self popReauthenticationViewController];
   [self stop];
 }
 
-#pragma mark - ReauthenticationViewControllerDelegate
+#pragma mark - LocalReauthenticationViewControllerDelegate
 
 // Creates and displays an alert requesting the user to set a passcode.
 - (void)showSetUpPasscodeDialog {
@@ -273,9 +273,9 @@ enum class ReauthenticationState {
 
 #pragma mark - Private
 
-// Pushes the ReauthenticationViewController in the navigation stack and stores
-// it in `_reauthViewController`. Returns YES if the controller was successfully
-// pushed in the stack.
+// Pushes the LocalReauthenticationViewController in the navigation stack and
+// stores it in `_reauthViewController`. Returns YES if the controller was
+// successfully pushed in the stack.
 - (BOOL)pushReauthenticationViewControllerWithRequestAuth:(BOOL)requestAuth {
   [_delegate willPushReauthenticationViewController];
 
@@ -294,7 +294,7 @@ enum class ReauthenticationState {
                            completion:nil];
   }
 
-  _reauthViewController = [[ReauthenticationViewController alloc]
+  _reauthViewController = [[LocalReauthenticationViewController alloc]
       initWithReauthenticationModule:_reauthModule
               reauthUponPresentation:requestAuth];
   _reauthViewController.delegate = self;
@@ -313,7 +313,7 @@ enum class ReauthenticationState {
   return YES;
 }
 
-// Pops the ReauthenticationViewController from the navigation stack.
+// Pops the LocalReauthenticationViewController from the navigation stack.
 - (void)popReauthenticationViewController {
   // No op if vc was already dismissed. This happens when auth is triggered
   // which moves the scene to foreground inactive, then both successful auth and
@@ -338,7 +338,7 @@ enum class ReauthenticationState {
 
 // Closes the UI and open the support page on setting up a passcode.
 - (void)openPasscodeHelpPage {
-  // TODO(crbug.com/40274927): Move to ReauthenticationCoordinatorDelegate.
+  // TODO(crbug.com/40274927): Move to LocalReauthenticationCoordinatorDelegate.
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
   [_dispatcher closePresentedViewsAndOpenURL:command];
