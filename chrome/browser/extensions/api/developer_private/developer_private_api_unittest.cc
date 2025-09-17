@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -97,6 +99,11 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/extensions/extension_install_ui.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/android/content_uri_test_utils.h"
+#include "chrome/browser/ui/android/extensions/extension_util_bridge.h"
+#endif
 
 namespace extensions {
 
@@ -585,8 +592,6 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
   }
 }
 
-// TODO(crbug.com/439448250): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
     const base::Value::List& args,
     api::developer_private::PackStatus expected_status,
@@ -621,7 +626,6 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
 
   return testing::AssertionSuccess();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 void DeveloperPrivateApiUnitTest::UpdateProfileConfigurationDevMode(
     bool dev_mode) {
@@ -789,8 +793,6 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateReload) {
   EXPECT_EQ(extension_id, reloaded_extension->id());
 }
 
-// TODO(crbug.com/439448250): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test developerPrivate.packDirectory.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   // Use a temp dir isolating the extension dir and its generated files.
@@ -799,6 +801,21 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   base::FilePath root_path = data_dir().AppendASCII("simple_with_popup");
   ASSERT_TRUE(base::CopyDirectory(root_path, temp_dir.GetPath(), true));
 
+#if BUILDFLAG(IS_ANDROID)
+  // Android will pack extension under downloads.
+  base::FilePath temp_root_path =
+      *base::test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(
+          temp_dir.GetPath().Append(root_path.BaseName()));
+
+  std::optional<base::FilePath> optional_crx_path =
+      GetFileUnderDownloads("simple_with_popup.crx");
+  std::optional<base::FilePath> optional_pem_path =
+      GetFileUnderDownloads("simple_with_popup.pem");
+
+  // Shouldn't exist now.
+  EXPECT_FALSE(optional_crx_path.has_value());
+  EXPECT_FALSE(optional_pem_path.has_value());
+#else
   base::FilePath temp_root_path =
       temp_dir.GetPath().Append(root_path.BaseName());
   base::FilePath crx_path =
@@ -810,6 +827,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
       << "crx should not exist before the test is run!";
   EXPECT_FALSE(base::PathExists(pem_path))
       << "pem should not exist before the test is run!";
+#endif
 
   // First, test a directory that should pack properly.
   base::Value::List pack_args;
@@ -817,10 +835,27 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   EXPECT_TRUE(TestPackExtensionFunction(
       pack_args, api::developer_private::PackStatus::kSuccess, 0));
 
+#if BUILDFLAG(IS_ANDROID)
+  // Query again
+  optional_crx_path = GetFileUnderDownloads("simple_with_popup.crx");
+  optional_pem_path = GetFileUnderDownloads("simple_with_popup.pem");
+  EXPECT_TRUE(optional_crx_path.has_value());
+  EXPECT_TRUE(optional_pem_path.has_value());
+
+  base::FilePath crx_path = optional_crx_path.value();
+  base::FilePath pem_path = optional_pem_path.value();
+  // Make sure the crx is packed and the key is generated. Since Android will
+  // create the content URI during the whole process whether the packing is
+  // successful or not. Apply a size check here.
+  std::optional<int64_t> crx_file_size = base::GetFileSize(crx_path);
+  std::optional<int64_t> pem_file_size = base::GetFileSize(pem_path);
+  EXPECT_TRUE(crx_file_size.has_value() && crx_file_size.value() > 0);
+  EXPECT_TRUE(pem_file_size.has_value() && pem_file_size.value() > 0);
+#else
   // Should have created crx file and pem file.
   EXPECT_TRUE(base::PathExists(crx_path));
   EXPECT_TRUE(base::PathExists(pem_path));
-
+#endif
   // Deliberately don't cleanup the files, and append the pem path.
   pack_args.Append(pem_path.AsUTF8Unsafe());
 
@@ -841,8 +876,18 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   pack_args.erase(pack_args.begin() + 1, pack_args.begin() + 3);
   EXPECT_TRUE(TestPackExtensionFunction(
       pack_args, api::developer_private::PackStatus::kError, 0));
+
+// In Android, even if the process fails, two empty files are still
+// created under downloads. In this teardown, we clean up these files
+// to prevent them from impacting subsequent tests.
+#if BUILDFLAG(IS_ANDROID)
+  // Needs to query crx_path again to get the latest content URI for newly
+  // created empty file.
+  optional_crx_path = GetFileUnderDownloads("simple_with_popup.crx");
+  base::DeleteFile(optional_crx_path.value());
+  base::DeleteFile(pem_path);
+#endif
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test developerPrivate.choosePath.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {

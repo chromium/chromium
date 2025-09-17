@@ -29,8 +29,32 @@ import java.util.List;
 @NullMarked
 @JNINamespace("extensions")
 public class ExtensionUtilBridge {
+    private static final Uri DOWNLOADS =
+            MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+
     private ExtensionUtilBridge() {
         assert false;
+    }
+
+    /**
+     * Get the file under Downloads by name.
+     *
+     * @param fileName the complete file name with extension, e.g., foo.crx
+     * @return a content URI if the file exists; otherwise, the empty string
+     */
+    @CalledByNative
+    static @JniType("std::string") String getFileUnderDownloads(
+            @JniType("std::string") String fileName) {
+        if (fileName.isEmpty()) return "";
+
+        Context context = ContextUtils.getApplicationContext();
+        ContentResolver resolver = context.getContentResolver();
+
+        Uri uri = getMediaFileUriByName(resolver, fileName, DOWNLOADS);
+        if (uri == null) {
+            return "";
+        }
+        return uri.toString();
     }
 
     /**
@@ -83,8 +107,7 @@ public class ExtensionUtilBridge {
             ContentResolver resolver, String name) {
         ContentValues contentValues = new ContentValues();
 
-        Uri collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-        Uri existedUri = getFileUriUnderDownloadsByName(resolver, name, collection);
+        Uri existedUri = getMediaFileUriByName(resolver, name, DOWNLOADS);
         if (existedUri != null) {
             return existedUri;
         }
@@ -93,13 +116,13 @@ public class ExtensionUtilBridge {
         contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
 
         try {
-            return resolver.insert(collection, contentValues);
+            return resolver.insert(DOWNLOADS, contentValues);
         } catch (Exception e) {
             return null;
         }
     }
 
-    private static @Nullable Uri getFileUriUnderDownloadsByName(
+    private static @Nullable Uri getMediaFileUriByName(
             ContentResolver resolver, String name, Uri collection) {
         String[] projection =
                 new String[] {MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DISPLAY_NAME};

@@ -16,6 +16,20 @@
 
 namespace extensions {
 
+std::optional<base::FilePath> GetFileUnderDownloads(
+    const std::string& file_name) {
+  if (file_name.empty()) {
+    return std::nullopt;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::string uri =
+      Java_ExtensionUtilBridge_getFileUnderDownloads(env, file_name);
+  if (uri.empty()) {
+    return std::nullopt;
+  }
+  return base::FilePath(uri);
+}
+
 std::optional<std::vector<base::FilePath>> GetOrCreateEmptyFilesUnderDownloads(
     const base::FilePath& file_for_basename,
     const std::vector<std::string>& dot_extensions) {

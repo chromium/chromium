@@ -13,6 +13,10 @@
 
 namespace extensions {
 
+// Get file under downloads by file name. If it doesn't exist, return nullopt.
+std::optional<base::FilePath> GetFileUnderDownloads(
+    const std::string& file_name);
+
 // Get files under Downloads. If they don't exist, create empty ones. The name
 // of the given file is concatenated to the extensions to determine the names of
 // the files to be queried or created. For example if the given file has the
