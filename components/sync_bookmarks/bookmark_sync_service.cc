@@ -17,7 +17,7 @@ BookmarkSyncService::BookmarkSyncService(
 
 BookmarkSyncService::~BookmarkSyncService() = default;
 
-std::string BookmarkSyncService::EncodeBookmarkSyncMetadata() {
+std::string BookmarkSyncService::EncodeBookmarkSyncMetadata() const {
   return bookmark_data_type_processor_.EncodeSyncMetadata();
 }
 
@@ -43,7 +43,8 @@ bool BookmarkSyncService::IsTrackingMetadata() const {
          is_tracking_metadata_for_testing_;
 }
 
-sync_bookmarks::BookmarkModelView* BookmarkSyncService::bookmark_model_view() {
+sync_bookmarks::BookmarkModelView* BookmarkSyncService::bookmark_model_view()
+    const {
   return bookmark_model_view_.get();
 }
 

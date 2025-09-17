@@ -87,7 +87,7 @@ class ScopedRemoteUpdateBookmarks {
 
 std::string ComputeServerDefinedUniqueTagForDebugging(
     const bookmarks::BookmarkNode* node,
-    BookmarkModelView* model) {
+    const BookmarkModelView* model) {
   if (node == model->bookmark_bar_node()) {
     return "bookmark_bar";
   }
@@ -100,7 +100,7 @@ std::string ComputeServerDefinedUniqueTagForDebugging(
   return "";
 }
 
-size_t CountSyncableBookmarksFromModel(BookmarkModelView* model) {
+size_t CountSyncableBookmarksFromModel(const BookmarkModelView* model) {
   size_t count = 0;
   ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
       model->root_node());
