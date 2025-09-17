@@ -926,7 +926,6 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
   // added logic into this class, rather than modifying the client to not call
   // Close().
   if (override_close_) {
-    base::WeakPtr<Widget> weak_this = weak_ptr_factory_.GetWeakPtr();
     std::move(override_close_).Run(closed_reason);
     return;
   }

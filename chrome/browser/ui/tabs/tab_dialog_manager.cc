@@ -173,7 +173,7 @@ bool GetWidgetVisibility(
     bool minimized,
     TabDialogManager::ShouldShowCallback& should_show_callback) {
   bool should_show = true;
-  if (should_show_callback) {
+  if (activated && !minimized && should_show_callback) {
     should_show_callback.Run(should_show);
   }
   return activated && !minimized && should_show;
