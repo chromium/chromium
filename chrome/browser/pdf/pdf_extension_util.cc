@@ -43,10 +43,13 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(ENABLE_PDF_INK2) || BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+#include "chrome/browser/profiles/profile.h"
+#endif  // BUILDFLAG(ENABLE_PDF_INK2) || BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 namespace pdf_extension_util {
 
@@ -315,8 +318,10 @@ base::Value::Dict GetAdditionalData(content::BrowserContext* context) {
       base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchifySave));
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
-  dict.Set("pdfSaveToDrive",
-           base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSaveToDrive));
+  const bool save_to_drive_enabled =
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSaveToDrive) &&
+      !Profile::FromBrowserContext(context)->IsIncognitoProfile();
+  dict.Set("pdfSaveToDrive", save_to_drive_enabled);
   dict.Set("pdfSaveToDriveHelpCenterURL",
            chrome::kPdfViewerSaveToDriveHelpCenterURL);
 #endif
