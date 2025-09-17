@@ -3563,6 +3563,10 @@ class MockMacScrollbarAnimator : public MacScrollbarAnimator {
 
 TEST_P(ScrollbarsTestWithVirtualTimer,
        FadeInOverlayScrollbarWhenMouseWheelEventMayBeginPhase) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kFadeInScrollbarWhenMouseWheelMayBegin);
+
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -3592,9 +3596,7 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
       HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
   testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kFadeInScrollbarWhenMouseWheelMayBegin);
+  feature_list.Reset();
 
   bool did_fade_in = false;
   auto fade_in_scrollbar = [&did_fade_in]() -> bool { return did_fade_in; };
