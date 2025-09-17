@@ -26131,7 +26131,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "V8PreconfigureOldGenSize": "32"
+                        "V8PreconfigureOldGenSize": "16"
                     },
                     "enable_features": [
                         "V8PreconfigureOldGen"
