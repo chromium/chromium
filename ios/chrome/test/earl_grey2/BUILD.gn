@@ -235,7 +235,6 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/reading_list/ui_bundled:eg2_tests",
     "//ios/chrome/browser/recent_tabs/ui_bundled:eg2_tests",
     "//ios/chrome/browser/sad_tab/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/safari_data_import/test:eg2_tests",
     "//ios/chrome/browser/safe_mode/ui_bundled:eg2_tests",
     "//ios/chrome/browser/save_to_drive/ui_bundled:eg2_tests",
     "//ios/chrome/browser/search_engine_choice/ui_bundled:eg2_tests",

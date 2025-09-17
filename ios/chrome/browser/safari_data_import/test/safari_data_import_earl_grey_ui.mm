@@ -9,37 +9,19 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-namespace {
-
-/// Visibility of Safari data import entry point.
-bool IsSafariDataImportEntryPointVisible(bool verify_visibility) {
+void DismissSafariDataImportEntryPoint(bool verify_visibility) {
   bool visible = [ChromeEarlGrey
       testUIElementAppearanceWithMatcher:
           grey_accessibilityID(
               GetSafariDataEntryPointAccessibilityIdentifier())];
-  if (verify_visibility) {
-    GREYAssertTrue(visible, @"Safari import landing page is not found.");
-  }
-  return visible;
-}
-
-}  // namespace
-
-void DismissSafariDataImportEntryPoint(bool verify_visibility) {
-  if (IsSafariDataImportEntryPointVisible(verify_visibility)) {
+  if (visible) {
     [[EarlGrey
         selectElementWithMatcher:
             grey_accessibilityID(
                 kConfirmationAlertSecondaryActionAccessibilityIdentifier)]
         performAction:grey_tap()];
   }
-}
-
-void SetReminderOnSafariDataImportEntryPoint() {
-  if (IsSafariDataImportEntryPointVisible(true)) {
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       kConfirmationAlertTertiaryActionAccessibilityIdentifier)]
-        performAction:grey_tap()];
+  if (verify_visibility) {
+    GREYAssertTrue(visible, @"Safari import landing page is not found.");
   }
 }

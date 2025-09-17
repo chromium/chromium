@@ -11,7 +11,4 @@
 /// verification.
 void DismissSafariDataImportEntryPoint(bool verify_visibility);
 
-/// Tap "Remind Me Later" on Safari data import entry point displayed.
-void SetReminderOnSafariDataImportEntryPoint();
-
 #endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_TEST_SAFARI_DATA_IMPORT_EARL_GREY_UI_H_
