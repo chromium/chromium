@@ -1129,7 +1129,8 @@ public class ToolbarManager
                         mConstraintsProxy,
                         onLongClickListener,
                         progressBar,
-                        historyDelegate);
+                        historyDelegate,
+                        topControlsStacker);
         mTabStripHeightSupplier = new ObservableSupplierImpl<>(mToolbar.getTabStripHeight());
         mActionModeController =
                 new ActionModeController(
@@ -1874,7 +1875,8 @@ public class ToolbarManager
             ObservableSupplier<Integer> constraintsSupplier,
             OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar,
-            NavigationPopup.HistoryDelegate historyDelegate) {
+            NavigationPopup.HistoryDelegate historyDelegate,
+            TopControlsStacker topControlsStacker) {
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
                         controlContainer,
@@ -1911,7 +1913,8 @@ public class ToolbarManager
                         mIsNewTabPageCustomizationToolbarButtonEnabled
                                 ? mHomePageButtonsCoordinator
                                 : mHomeButtonCoordinator,
-                        mExtensionToolbarCoordinator);
+                        mExtensionToolbarCoordinator,
+                        topControlsStacker);
 
         mHomepageStateListener =
                 () -> {

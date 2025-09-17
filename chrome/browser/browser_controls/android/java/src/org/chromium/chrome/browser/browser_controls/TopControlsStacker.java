@@ -193,6 +193,34 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         // Add more implementations here when necessary (e.g. offset calculation)
     }
 
+    /**
+     * Returns true when the given control type is at the bottom of the set of top controls. We
+     * define the bottom as the point in the stack that has no non-null, visible,
+     * height-contributing layers beyond it.
+     *
+     * @param controlType Type of control to query for.
+     * @return Whether or not the control is at the bottom.
+     */
+    public boolean isLayerAtBottom(@TopControlType int controlType) {
+        // A null layer (not in the map) cannot be at the bottom.
+        if (mControls.get(controlType) == null) return false;
+
+        // Find the bottom-most visible layer that contributes to the total height of the top
+        // controls (i.e. the first we encounter). If it is the same as the given |controlType|,
+        // then that type is the bottom layer.
+        for (int i = STACK_ORDER.length - 1; i >= 0; i--) {
+            @TopControlType int currentType = STACK_ORDER[i];
+            TopControlLayer layer = mControls.get(currentType);
+
+            if (layer != null && layer.getTopControlVisibility() == TopControlVisibility.VISIBLE) {
+                return currentType == controlType;
+            }
+        }
+
+        // No visible, height-contributing layers were found, so this layer cannot be the bottom.
+        return false;
+    }
+
     private void recalculateHeights() {
         int totalHeight = 0;
         int minHeight = 0;

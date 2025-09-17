@@ -22,6 +22,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -150,6 +151,7 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param onLongClickListener OnLongClickListener for the toolbar.
      * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
      *     home button(s). Should be null on custom tabs.
+     * @param topControlsStacker The TopControlsStacker for child objects to check state from.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -185,7 +187,8 @@ public class TopToolbarCoordinator implements Toolbar {
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             @Nullable HomeButtonDisplay homeButtonDisplay,
-            @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator) {
+            @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
+            TopControlsStacker topControlsStacker) {
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
         mControlContainer = controlContainer;
@@ -239,7 +242,8 @@ public class TopToolbarCoordinator implements Toolbar {
                 compositorInMotionSupplier,
                 browserStateBrowserControlsVisibilityDelegate,
                 layoutStateProviderSupplier,
-                fullscreenManager);
+                fullscreenManager,
+                topControlsStacker);
         mToolbarLayout.initialize(
                 toolbarDataProvider,
                 tabController,
