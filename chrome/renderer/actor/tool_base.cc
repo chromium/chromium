@@ -4,12 +4,14 @@
 
 #include "chrome/renderer/actor/tool_base.h"
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -131,10 +133,14 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                         .Add("target", NodeToDebugSring(target_node))
                         .AddError("Wrong Node At Location")
                         .Build());
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
-                     "The element at the target location is not the same as "
-                     "the one observed."));
+      if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
+        return base::unexpected(
+            MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
+                       "The element at the target location is not the same as "
+                       "the one observed."));
+      } else {
+        return resolved_target;
+      }
     }
   } else {
     CHECK(target_->is_dom_node_id());

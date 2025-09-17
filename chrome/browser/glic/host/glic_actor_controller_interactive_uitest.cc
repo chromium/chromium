@@ -108,6 +108,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   GlicActorControllerUiTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicActor,
+                              features::kGlicActorToctouValidation,
                               optimization_guide::features::
                                   kAnnotatedPageContentWithActionableElements},
         /*disabled_features=*/{});
