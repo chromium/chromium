@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_page_action_controller.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -19,10 +25,40 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
+
+void RecordOpenedAction(bool icon_visible, CookieControlsState controls_state) {
+  if (!icon_visible) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.Bubble.UnknownState.Opened"));
+  }
+
+  switch (controls_state) {
+    case CookieControlsState::kBlocked3pc:
+      base::RecordAction(base::UserMetricsAction(
+          "CookieControls.Bubble.CookiesBlocked.Opened"));
+      break;
+    case CookieControlsState::kAllowed3pc:
+      base::RecordAction(base::UserMetricsAction(
+          "CookieControls.Bubble.CookiesAllowed.Opened"));
+      break;
+    case CookieControlsState::kActiveTp:
+      base::RecordAction(base::UserMetricsAction(
+          "TrackingProtections.Bubble.ProtectionsActive.Opened"));
+      break;
+    case CookieControlsState::kPausedTp:
+      base::RecordAction(base::UserMetricsAction(
+          "TrackingProtections.Bubble.ProtectionsPaused.Opened"));
+      break;
+    case CookieControlsState::kHidden:
+      // Handled as part of `icon_visible` check above.
+      DUMP_WILL_BE_NOTREACHED();
+  }
+}
 
 class BubbleDelegateImpl
     : public CookieControlsPageActionController::BubbleDelegate {
@@ -38,6 +74,14 @@ class BubbleDelegateImpl
   }
 
   bool HasBubble() override { return GetBubbleCoordinator().GetBubble(); }
+
+  void ShowBubble(
+      ToolbarButtonProvider* toolbar_button_provider,
+      content::WebContents* web_contents,
+      content_settings::CookieControlsController* controller) override {
+    return GetBubbleCoordinator().ShowBubble(toolbar_button_provider,
+                                             web_contents, controller);
+  }
 
  private:
   CookieControlsBubbleCoordinator& GetBubbleCoordinator() {
@@ -79,25 +123,41 @@ const gfx::VectorIcon& GetVectorIcon(CookieControlsState controls_state) {
 }
 }  // namespace
 
-// TODO(crbug.com/376283777): This class needs further work to achieve full
-// parity with the legacy page action, including:
-// - Implement the logic for executing the page action.
-// - Add metrics reporting.
-// - Hook up to `CookieControlsController`.
 CookieControlsPageActionController::CookieControlsPageActionController(
     tabs::TabInterface& tab_interface,
+    Profile& profile,
     page_actions::PageActionController& page_action_controller)
     : tab_(tab_interface),
       page_action_controller_(page_action_controller),
+      cookie_controls_controller_(
+          std::make_unique<content_settings::CookieControlsController>(
+              CookieSettingsFactory::GetForProfile(&profile),
+              profile.IsOffTheRecord() ? CookieSettingsFactory::GetForProfile(
+                                             profile.GetOriginalProfile())
+                                       : nullptr,
+              HostContentSettingsMapFactory::GetForProfile(&profile),
+              TrackingProtectionSettingsFactory::GetForProfile(&profile),
+              profile.IsIncognitoProfile())),
       bubble_delegate_(std::make_unique<BubbleDelegateImpl>(tab_interface)) {
-  // TODO(crbug.com/376283777): A fresh icon status should be set once
-  // `CookieControlsController` is hooked up to this.
-  icon_status_.controls_state = CookieControlsState::kHidden;
   CHECK(IsPageActionMigrated(PageActionIconType::kCookieControls));
 }
 
 CookieControlsPageActionController::~CookieControlsPageActionController() =
     default;
+
+void CookieControlsPageActionController::Init() {
+  controller_observation_.Observe(cookie_controls_controller_.get());
+  cookie_controls_controller_->Update(tab_->GetContents());
+
+  will_discard_contents_subscription_ =
+      tab_->RegisterWillDiscardContents(base::BindRepeating(
+          [](content_settings::CookieControlsController& cookies_controller,
+             tabs::TabInterface* tab, content::WebContents* old_contents,
+             content::WebContents* new_contents) {
+            cookies_controller.Update(new_contents);
+          },
+          std::ref(*cookie_controls_controller_)));
+}
 
 void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
     bool icon_visible,
@@ -246,4 +306,22 @@ void CookieControlsPageActionController::MaybeShowIPH(
   // Since most of the time the result should come back quickly, and if it
   // doesn't, it's because the user is doing something else or there is another
   // promo showing, for now, we choose the later option.
+}
+
+void CookieControlsPageActionController::ExecutePageAction(
+    ToolbarButtonProvider* toolbar_button_provider) {
+  CHECK(ShouldShowIcon());
+  if (auto* user_education = BrowserUserEducationInterface::From(
+          tab_->GetBrowserWindowInterface())) {
+    // Need to close IPH before opening bubble view, as on some platforms
+    // closing the IPH bubble can cause activation to move between windows, and
+    // cookie control bubble is close-on-deactivate.
+    user_education->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHCookieControlsFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+  bubble_delegate_->ShowBubble(toolbar_button_provider, tab_->GetContents(),
+                               cookie_controls_controller_.get());
+
+  RecordOpenedAction(icon_status_.icon_visible, icon_status_.controls_state);
 }
