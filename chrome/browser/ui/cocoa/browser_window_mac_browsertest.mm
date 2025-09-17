@@ -153,7 +153,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
 
   // Retrieve and initialize the menu items for
   // IDC_BOOKMARK_ALL_TABS / IDC_PRINT / IDC_SAVE_PAGE.
-  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL("chrome://newtab/"), ui::PAGE_TRANSITION_TYPED));
   NSMenuItem* bookmark_all_tabs_item =
       [[[[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU] submenu]
           itemWithTag:IDC_BOOKMARK_ALL_TABS];
