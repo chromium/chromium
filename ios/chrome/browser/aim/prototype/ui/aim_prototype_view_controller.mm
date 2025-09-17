@@ -35,7 +35,7 @@ const CGFloat kInputPlateShadowRadius = 20.0f;
 /// The spacing between items in the carousel.
 const CGFloat kCarouselItemSpacing = 12.0f;
 /// The height of the carousel view.
-const CGFloat kCarouselHeight = 70.0f;
+const CGFloat kCarouselHeight = 42.0f;
 /// The height of the AIM mode button.
 const CGFloat kAIMButtonHeight = 32.0f;
 /// The width of the AIM mode button.
@@ -43,7 +43,7 @@ const CGFloat kAIMButtonWidth = 94.0f;
 /// The spacing for the horizontal buttons stack view.
 const CGFloat kButtonsStackViewSpacing = 18.0f;
 /// The spacing for the main vertical input plate stack view.
-const CGFloat kInputPlateStackViewSpacing = 6.0f;
+const CGFloat kInputPlateStackViewSpacing = 16.0f;
 /// The padding for the close button.
 const CGFloat kCloseButtonPadding = 16.0f;
 /// The horizontal and bottom padding for the input plate container.
@@ -70,6 +70,8 @@ const CGFloat kGlowEffectWidth = 4.0f;
 const CGFloat kCloseButtonSize = 30.0f;
 /// The alpha for the close button.
 const CGFloat kCloseButtonAlpha = 0.6f;
+/// The fade view width.
+const CGFloat kFadeViewWidth = 30.0f;
 }
 
 @interface AIMPrototypeViewController () <UITextViewDelegate>
@@ -101,7 +103,10 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   UIButton* _aimButton;
   /// The glow effect around the input plate container.
   UIView<GlowEffect>* _glowEffectView;
-
+  /// The fade view for the carousel.
+  UIView* _carouselFadeView;
+  /// The carousel container.
+  UIView* _carouselContainer;
   /// Container for the omnibox.
   UIView* _omniboxContainer;
   /// Container for the omnibox popup.
@@ -196,7 +201,6 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   _carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                      collectionViewLayout:layout];
   _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
-  _carouselView.hidden = YES;
   _carouselView.backgroundColor = UIColor.clearColor;
   [_carouselView registerClass:[AIMInputItemCell class]
       forCellWithReuseIdentifier:kItemCellReuseIdentifier];
@@ -205,6 +209,40 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   [_carouselView.heightAnchor constraintEqualToConstant:kCarouselHeight]
       .active = YES;
   _carouselView.showsHorizontalScrollIndicator = NO;
+
+  // Carousel container and fade view.
+  _carouselContainer = [[UIView alloc] init];
+  _carouselContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  _carouselContainer.hidden = YES;
+  [_carouselContainer addSubview:_carouselView];
+  AddSameConstraints(_carouselContainer, _carouselView);
+
+  _carouselFadeView = [[UIView alloc] init];
+  _carouselFadeView.translatesAutoresizingMaskIntoConstraints = NO;
+  _carouselFadeView.userInteractionEnabled = NO;
+  _carouselFadeView.hidden = YES;
+  [_carouselContainer addSubview:_carouselFadeView];
+
+  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
+  gradientLayer.colors = @[
+    (id)[[UIColor colorNamed:kPrimaryBackgroundColor]
+        colorWithAlphaComponent:0.0]
+        .CGColor,
+    (id)[UIColor colorNamed:kPrimaryBackgroundColor].CGColor
+  ];
+  gradientLayer.startPoint = CGPointMake(0.0, 0.5);
+  gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+  [_carouselFadeView.layer insertSublayer:gradientLayer atIndex:0];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_carouselFadeView.trailingAnchor
+        constraintEqualToAnchor:_carouselContainer.trailingAnchor],
+    [_carouselFadeView.topAnchor
+        constraintEqualToAnchor:_carouselContainer.topAnchor],
+    [_carouselFadeView.bottomAnchor
+        constraintEqualToAnchor:_carouselContainer.bottomAnchor],
+    [_carouselFadeView.widthAnchor constraintEqualToConstant:kFadeViewWidth]
+  ]];
 
   // Action buttons
   UIButton* plusButton =
@@ -296,7 +334,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 
   // Main vertical stack view
   _inputPlateStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _omniboxContainer, _carouselView, buttonsStackView
+    _omniboxContainer, _carouselContainer, buttonsStackView
   ]];
   _inputPlateStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
@@ -340,6 +378,14 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   ]];
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  // Update the gradient layer's frame.
+  _carouselFadeView.layer.sublayers.firstObject.frame =
+      _carouselFadeView.bounds;
+  [self updateCarouselFade];
+}
+
 #pragma mark - Public
 
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
@@ -377,12 +423,17 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 #pragma mark - AIMPrototypeConsumer
 
 - (void)setItems:(NSArray<AIMInputItem*>*)items {
-  _carouselView.hidden = items.count == 0;
+  _carouselContainer.hidden = items.count == 0;
   NSDiffableDataSourceSnapshot<NSString*, AIMInputItem*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kMainSectionIdentifier ]];
   [snapshot appendItemsWithIdentifiers:items];
-  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+  __weak __typeof__(self) weakSelf = self;
+  [_dataSource applySnapshot:snapshot
+        animatingDifferences:YES
+                  completion:^{
+                    [weakSelf updateCarouselFade];
+                  }];
 }
 
 - (void)updateState:(AIMInputItemState)state
@@ -469,6 +520,13 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 
 - (void)stopGlowEffect {
   [_glowEffectView stopGlow];
+}
+
+- (void)updateCarouselFade {
+  // Checks if the carousel is scrollable.
+  BOOL shouldShowFade =
+      _carouselView.contentSize.width > _carouselView.bounds.size.width;
+  _carouselFadeView.hidden = !shouldShowFade;
 }
 
 #pragma mark - Private

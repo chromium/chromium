@@ -9,6 +9,11 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
+namespace {
+/// The cell's max height.
+const CGFloat kMaxCellHeight = 42;
+}  // namespace
+
 @implementation AIMInputItemCell {
   AimInputItemView* _inputItemView;
   UIActivityIndicatorView* _loadingIndicator;
@@ -49,6 +54,7 @@
     AddSameConstraints(self.contentView, _scrimView);
 
     [NSLayoutConstraint activateConstraints:@[
+      [self.heightAnchor constraintLessThanOrEqualToConstant:kMaxCellHeight],
       [_loadingIndicator.centerXAnchor
           constraintEqualToAnchor:self.contentView.centerXAnchor],
       [_loadingIndicator.centerYAnchor

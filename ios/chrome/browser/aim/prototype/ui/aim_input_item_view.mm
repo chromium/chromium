@@ -11,6 +11,8 @@
 namespace {
 // The input item max width.
 const CGFloat kInputItemMaxWidth = 250.0f;
+// The input item height.
+const CGFloat kInputItemHeight = 42.0f;
 // The input item padding.
 const CGFloat kPadding = 10.0;
 // The leading icon size.
@@ -22,7 +24,9 @@ const CGFloat kLeadingIconCornerRadius = 6.0;
 // Labels font size.
 const CGFloat kLabelFontSize = 13.0;
 // The preview image size.
-const CGFloat kPreviewImageSize = 40.0;
+const CGFloat kPreviewImageSize = 30.0;
+// The preview image top and bottom padding.
+const CGFloat kPreviewImageTopBottomPadding = 6.0;
 }  // namespace
 
 @implementation AimInputItemView {
@@ -130,6 +134,7 @@ const CGFloat kPreviewImageSize = 40.0;
 - (void)setupConstraints {
   [NSLayoutConstraint activateConstraints:@[
     [self.widthAnchor constraintLessThanOrEqualToConstant:kInputItemMaxWidth],
+    [self.heightAnchor constraintEqualToConstant:kInputItemHeight],
     // leading icon ImageView
     [_leadingIconImageView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
@@ -168,10 +173,12 @@ const CGFloat kPreviewImageSize = 40.0;
     // Leading Image View
     [_previewImageView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
                                                     constant:kPadding],
-    [_previewImageView.topAnchor constraintEqualToAnchor:self.topAnchor
-                                                constant:kPadding],
-    [_previewImageView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
-                                                   constant:-kPadding],
+    [_previewImageView.topAnchor
+        constraintEqualToAnchor:self.topAnchor
+                       constant:kPreviewImageTopBottomPadding],
+    [_previewImageView.bottomAnchor
+        constraintEqualToAnchor:self.bottomAnchor
+                       constant:-kPreviewImageTopBottomPadding],
     [_previewImageView.widthAnchor constraintEqualToConstant:kPreviewImageSize],
     [_previewImageView.heightAnchor
         constraintEqualToConstant:kPreviewImageSize],
