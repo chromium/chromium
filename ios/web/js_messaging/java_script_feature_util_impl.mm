@@ -11,11 +11,13 @@
 #import "base/logging.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/annotations/annotations_java_script_feature.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/favicon/favicon_java_script_feature.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
+#import "ios/web/js_features/clipboard/clipboard_java_script_feature.h"
 #import "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 #import "ios/web/js_features/error_page/error_page_java_script_feature.h"
 #import "ios/web/js_features/fullscreen/fullscreen_java_script_feature.h"
@@ -95,6 +97,11 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       NavigationJavaScriptFeature::GetInstance(),
       WebUIMessagingJavaScriptFeature::GetInstance(),
       AnnotationsJavaScriptFeature::GetInstance()};
+
+  if (base::FeatureList::IsEnabled(
+          data_controls::kEnableClipboardDataControlsIOS)) {
+    features.push_back(ClipboardJavaScriptFeature::GetInstance());
+  }
 
   auto frames_manager_features = WebFramesManagerJavaScriptFeature::
       AllContentWorldFeaturesFromBrowserState(browser_state);

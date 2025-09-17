@@ -185,6 +185,7 @@ test("ios_web_unittests") {
     "//ios/web/download:download_unittests",
     "//ios/web/favicon:unittests",
     "//ios/web/find_in_page:find_in_page_unittests",
+    "//ios/web/js_features/clipboard:unittests",
     "//ios/web/js_features/context_menu:unittests",
     "//ios/web/js_features/fullscreen:unittests",
     "//ios/web/js_features/window_error:unittests",

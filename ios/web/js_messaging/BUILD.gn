@@ -111,10 +111,12 @@ source_set("java_script_feature_util") {
   deps = [
     ":js_messaging",
     "//base",
+    "//ios/components/enterprise/data_controls:features",
     "//ios/web/annotations",
     "//ios/web/common",
     "//ios/web/favicon",
     "//ios/web/find_in_page",
+    "//ios/web/js_features/clipboard",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_features/error_page",
     "//ios/web/js_features/fullscreen",
