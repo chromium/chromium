@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_modal_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
+#include "chrome/browser/ui/views/webid/webid_utils.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -201,7 +202,7 @@ bool FedCmAccountSelectionView::Show(
     Close(/*notify_delegate=*/false, /*hide_widget=*/false);
   }
 
-  CreateViewAndWidgetIfNeeded(rp_data, idp_title, rp_context, rp_mode,
+  CreateOrUpdateViewAndWidget(rp_data, idp_title, rp_context, rp_mode,
                               has_modal_support);
 
   if (!new_accounts.empty()) {
@@ -348,7 +349,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
     Close(/*notify_delegate=*/false, /*hide_widget=*/false);
   }
 
-  CreateViewAndWidgetIfNeeded(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
+  CreateOrUpdateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
                               rp_context, rp_mode, has_modal_support);
 
   account_selection_view_->ShowFailureDialog(
@@ -383,7 +384,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
     Close(/*notify_delegate=*/false, /*hide_widget=*/false);
   }
 
-  CreateViewAndWidgetIfNeeded(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
+  CreateOrUpdateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
                               rp_context, rp_mode, has_modal_support);
 
   account_selection_view_->ShowErrorDialog(base::UTF8ToUTF16(idp_etld_plus_one),
@@ -407,7 +408,7 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   state_ = State::LOADING;
   ResetDialogWidgetStateOnAnyShow();
 
-  CreateViewAndWidgetIfNeeded(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
+  CreateOrUpdateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
                               rp_context, rp_mode,
                               /*has_modal_support=*/true);
 
@@ -451,7 +452,7 @@ bool FedCmAccountSelectionView::ShowVerifyingDialog(
   // While the verifying UI may not need to show RP and IdP data in case of
   // auto reauthn, we need them anyway to prepare for potential error UI
   // afterwards.
-  CreateViewAndWidgetIfNeeded(rp_data,
+  CreateOrUpdateViewAndWidget(rp_data,
                               base::UTF8ToUTF16(idp_data->idp_for_display),
                               idp_data->rp_context, rp_mode,
                               /*has_modal_support=*/true);
@@ -509,13 +510,14 @@ void FedCmAccountSelectionView::SetInputEventActivationProtectorForTesting(
   input_protector_ = std::move(input_protector);
 }
 
-void FedCmAccountSelectionView::CreateViewAndWidgetIfNeeded(
+void FedCmAccountSelectionView::CreateOrUpdateViewAndWidget(
     const content::RelyingPartyData& rp_data,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
     bool has_modal_support) {
   if (account_selection_view_ && dialog_widget_) {
+    account_selection_view_->UpdateTitleAndSubtitle(rp_data);
     return;
   }
 

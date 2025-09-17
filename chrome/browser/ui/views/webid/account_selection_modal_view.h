@@ -104,6 +104,10 @@ class AccountSelectionModalView : public views::BoxLayoutView,
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
   views::View* GetInitiallyFocusedView();
+
+  void UpdateTitleAndSubtitle(
+      const content::RelyingPartyData& rp_data) override;
+
   std::u16string GetQueuedAnnouncementForTesting();
 
  private:
@@ -245,6 +249,12 @@ class AccountSelectionModalView : public views::BoxLayoutView,
   // The announcement that should be made upon view focus, if screen reader is
   // turned on.
   std::u16string queued_announcement_;
+
+  // The IDP for use in the title; nullopt in case of multi-IDP.
+  std::optional<std::u16string> idp_title_;
+
+  // The RP context to use in the title (e.g. "Sign In", "Use").
+  blink::mojom::RpContext rp_context_;
 
   // The title for the modal dialog.
   std::u16string title_;

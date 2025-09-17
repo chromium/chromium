@@ -208,6 +208,8 @@ class AccountSelectionViewBase {
   // Gets the subtitle of the dialog, if any.
   virtual std::optional<std::string> GetDialogSubtitle() const = 0;
 
+  virtual void UpdateTitleAndSubtitle(const content::RelyingPartyData& rp_data);
+
  protected:
   void SetLabelProperties(views::Label* label);
 

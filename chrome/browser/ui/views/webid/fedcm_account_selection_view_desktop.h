@@ -422,7 +422,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Creates account_selection_view_ (different subclasses for
   // bubble/modal) and dialog_widget_ if it hasn't been created yet.
-  void CreateViewAndWidgetIfNeeded(
+  // Otherwise, updates the view's title if any data has changed.
+  void CreateOrUpdateViewAndWidget(
       const content::RelyingPartyData& rp_data,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,

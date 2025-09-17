@@ -338,6 +338,11 @@ AccountSelectionViewBase::AccountSelectionViewBase(
 
 AccountSelectionViewBase::~AccountSelectionViewBase() = default;
 
+void AccountSelectionViewBase::UpdateTitleAndSubtitle(
+    const content::RelyingPartyData& rp_data) {
+  rp_data_ = rp_data;
+}
+
 void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -548,19 +553,23 @@ AccountSelectionViewBase::GetErrorDialogText(
   std::string code = error ? error->code : "";
   GURL url = error ? error->url : GURL();
 
+  std::u16string frame_in_title = rp_data_.iframe_for_display.empty()
+                                      ? rp_data_.rp_for_display
+                                      : rp_data_.iframe_for_display;
+
   std::u16string summary;
   std::u16string description;
 
   if (code == kInvalidRequest) {
     summary = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_SUMMARY,
-        rp_data_.rp_for_display, idp_for_display);
+        IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_SUMMARY, frame_in_title,
+        idp_for_display);
     description = l10n_util::GetStringUTF16(
         IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_DESCRIPTION);
   } else if (code == kUnauthorizedClient) {
     summary = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_SUMMARY,
-        rp_data_.rp_for_display, idp_for_display);
+        IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_SUMMARY, frame_in_title,
+        idp_for_display);
     description = l10n_util::GetStringUTF16(
         IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_DESCRIPTION);
   } else if (code == kAccessDenied) {
@@ -577,7 +586,7 @@ AccountSelectionViewBase::GetErrorDialogText(
   } else if (code == kServerError) {
     summary = l10n_util::GetStringUTF16(IDS_SIGNIN_SERVER_ERROR_DIALOG_SUMMARY);
     description = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_SERVER_ERROR_DIALOG_DESCRIPTION, rp_data_.rp_for_display);
+        IDS_SIGNIN_SERVER_ERROR_DIALOG_DESCRIPTION, frame_in_title);
     // Extra description is not needed for kServerError.
     return {summary, description};
   } else {
