@@ -659,7 +659,7 @@ crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-i
 crbug.com/630800 [ angle-opengl intel mac ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
 crbug.com/630800 [ angle-opengl intel mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/1289803 [ angle-opengl arch-x86_64 mac ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
-crbug.com/407622671 [ mac asan graphite-disabled ] deqp/functional/gles3/clipping.html [ RetryOnFailure ]
+crbug.com/407622671 [ amd-0x7340 asan graphite-disabled mac ] deqp/functional/gles3/clipping.html [ RetryOnFailure ]
 
 ## Mac AMD ##
 
@@ -956,7 +956,6 @@ crbug.com/1399117 [ linux intel display-server-wayland no-passthrough ] WebglExt
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] WebglExtension_WEBGL_provoking_vertex [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/ext-disjoint-timer-query-webgl2.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
