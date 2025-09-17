@@ -29,6 +29,9 @@ source_set("pdf_viewer_private") {
     "//url",
   ]
   if (enable_pdf_save_to_drive) {
-    deps += [ "//chrome/browser/save_to_drive" ]
+    deps += [
+      "//chrome/browser/save_to_drive",
+      "//chrome/browser/ui/save_to_drive",
+    ]
   }
 }

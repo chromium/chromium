@@ -27,6 +27,7 @@
 #include "chrome/browser/save_to_drive/pdf_content_reader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/save_to_drive_flow.h"
+#include "chrome/browser/ui/save_to_drive/get_account.h"
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 namespace extensions {
@@ -182,10 +183,10 @@ PdfViewerPrivateSaveToDriveFunction::RunSaveToDriveFlow(
   }
   auto content_reader = std::make_unique<save_to_drive::PDFContentReader>(
       render_frame_host(), ToMojomSaveRequestType(request_type));
-  save_to_drive::SaveToDriveFlow::CreateForCurrentDocument(
+  auto account_chooser = std::make_unique<save_to_drive::AccountChooser>();
+  auto* flow = SaveToDriveFlow::Create(
       render_frame_host(), std::move(event_dispatcher),
-      std::move(content_reader));
-  auto* flow = SaveToDriveFlow::GetForCurrentDocument(render_frame_host());
+      std::move(content_reader), std::move(account_chooser));
   flow->Run();
   return RespondNow(NoArguments());
 }

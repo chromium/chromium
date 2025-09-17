@@ -24,14 +24,10 @@ struct SaveToDriveProgress;
 
 namespace save_to_drive {
 
+class AccountChooser;
 class ContentReader;
 class DriveUploader;
 class SaveToDriveEventDispatcher;
-
-// Invoked when the account chooser is closed with the account info if an
-// account is chosen, or `std::nullopt` if the account chooser is canceled.
-using AccountChooserCallback =
-    base::OnceCallback<void(std::optional<AccountInfo>)>;
 
 // This class is responsible for orchastrating the entire save to Drive flow
 // on the browser process from showing the account chooser, reading the file
@@ -41,16 +37,35 @@ using AccountChooserCallback =
 // This flow should only be called on the UI thread.
 class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
  public:
+  using CreateCallback = base::RepeatingCallback<SaveToDriveFlow*(
+      content::RenderFrameHost* render_frame_host,
+      std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
+      std::unique_ptr<ContentReader> content_reader,
+      std::unique_ptr<AccountChooser> account_chooser)>;
+
+  // Factory method to create a new instance of `SaveToDriveFlow`. This is
+  // used to allow for creating a mock flow in tests through
+  // `SetCreateCallbackForTesting`.
+  static SaveToDriveFlow* Create(
+      content::RenderFrameHost* render_frame_host,
+      std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
+      std::unique_ptr<ContentReader> content_reader,
+      std::unique_ptr<AccountChooser> account_chooser);
+
+  // Sets the callback to create a new instance of `SaveToDriveFlow`. This
+  // is used to create a mock flow in tests.
+  static void SetCreateCallbackForTesting(CreateCallback* callback);
+
   SaveToDriveFlow(const SaveToDriveFlow&) = delete;
   SaveToDriveFlow& operator=(const SaveToDriveFlow&) = delete;
   ~SaveToDriveFlow() override;
 
-  // Starts the save to Drive flow.
-  void Run();
+  // Starts the save to Drive flow. Marked virtual for testing.
+  virtual void Run();
 
   // Cleans up the flow and its resources. This is called when the flow is
-  // aborted or completed.
-  void Stop();
+  // aborted or completed. Marked virtual for testing.
+  virtual void Stop();
 
   class TestApi {
    public:
@@ -64,16 +79,18 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
     const DriveUploader* drive_uploader() const;
     // It will never return `nullptr' before the `flow_` runs.
     const SaveToDriveEventDispatcher* event_dispatcher() const;
-    // Simulates the account chooser being closed with an `AccountInfo`.
-    // `std::nullopt` means the account chooser was canceled. It only simulates
-    // the action for the first call to the account chooser following it.
-    void SimulateAccountChooserAction(std::optional<AccountInfo> account_info);
     // It will never return `nullptr` before the `flow_` runs.
     content::RenderFrameHost* rfh();
 
    private:
     base::WeakPtr<SaveToDriveFlow> flow_;
   };
+
+ protected:
+  SaveToDriveFlow(content::RenderFrameHost* render_frame_host,
+                  std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
+                  std::unique_ptr<ContentReader> content_reader,
+                  std::unique_ptr<AccountChooser> account_chooser);
 
  private:
   friend class content::DocumentUserData<SaveToDriveFlow>;
@@ -88,12 +105,6 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
     // the account is a dasher account and show the correct manage storage URL.
     bool is_managed = false;
   };
-
-  SaveToDriveFlow(content::RenderFrameHost* render_frame_host,
-                  std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
-                  std::unique_ptr<ContentReader> content_reader);
-
-  void ShowAccountChooser(AccountChooserCallback callback);
   void OnAccountChosen(std::optional<AccountInfo> account_info);
   void OnOpenContent(AccountInfo account_info, bool success);
   void OnUploadProgress(
@@ -102,11 +113,7 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
   std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher_;
   std::unique_ptr<ContentReader> content_reader_;
   std::unique_ptr<DriveUploader> drive_uploader_;
-
-  // Used for testing to simulate the account chooser being closed with an
-  // account info. `nullptr` means it was not set, while `std::nullopt` means
-  // the account chooser was canceled.
-  std::unique_ptr<std::optional<AccountInfo>> account_info_for_testing_;
+  std::unique_ptr<AccountChooser> account_chooser_;
 
   // This is set when an account is chosen.
   std::optional<SaveToDriveAccountInfo> save_to_drive_account_info_;

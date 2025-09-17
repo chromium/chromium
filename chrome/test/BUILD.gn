@@ -10151,6 +10151,7 @@ test("unit_tests") {
       deps += [
         "//chrome/browser/save_to_drive",
         "//chrome/browser/save_to_drive:unit_tests",
+        "//chrome/browser/ui/save_to_drive",
         "//chrome/browser/ui/views/save_to_drive:unit_tests",
       ]
       allow_circular_includes_from +=

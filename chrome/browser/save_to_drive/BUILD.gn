@@ -38,8 +38,10 @@ source_set("save_to_drive") {
   deps = [
     "//base",
     "//chrome/browser/download:status_text_builder_utils",
+    "//chrome/browser/extensions",
     "//chrome/browser/pdf",
     "//chrome/browser/signin",
+    "//chrome/browser/ui/save_to_drive",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
     "//components/drive",
@@ -62,6 +64,7 @@ source_set("browser_tests") {
   deps = [
     ":save_to_drive",
     "//chrome/browser/pdf:pdf_extension_test_utils",
+    "//chrome/browser/ui/save_to_drive",
     "//chrome/common/extensions/api",
     "//chrome/test:test_support",
     "//content/test:test_support",
@@ -83,6 +86,7 @@ source_set("unit_tests") {
   deps = [
     ":save_to_drive",
     "//chrome/browser/pdf:pdf_extension_test_utils",
+    "//chrome/browser/ui/save_to_drive",
     "//chrome/common/extensions/api",
     "//chrome/test:test_support",
     "//content/test:test_support",

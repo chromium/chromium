@@ -8,18 +8,29 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "components/signin/public/identity_manager/account_info.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
+struct AccountInfo;
+
 namespace save_to_drive {
 
-void LaunchAccountChooserAndGetAccount(
-    content::WebContents* web_contents,
-    base::OnceCallback<void(std::optional<AccountInfo>)>
-        on_account_selected_callback);
+class AccountChooser {
+ public:
+  AccountChooser() = default;
+  AccountChooser(const AccountChooser&) = delete;
+  AccountChooser& operator=(const AccountChooser&) = delete;
+  virtual ~AccountChooser() = default;
+
+  // Launches AccountChooser flow and calls `on_account_chosen_callback` once an
+  // account has been chosen. If the account chooser is canceled, the callback
+  // will be called with a `std::nullopt`.
+  virtual void GetAccount(content::WebContents* web_contents,
+                          base::OnceCallback<void(std::optional<AccountInfo>)>
+                              on_account_chosen_callback);
+};
 
 }  // namespace save_to_drive
 

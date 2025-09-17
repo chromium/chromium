@@ -21,6 +21,7 @@
 #include "chrome/browser/save_to_drive/resumable_drive_uploader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/time_remaining_calculator.h"
+#include "chrome/browser/ui/save_to_drive/get_account.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -51,6 +52,16 @@ AccountInfo CreateAccountInfo() {
 }
 
 }  // namespace
+
+class MockAccountChooser : public AccountChooser {
+ public:
+  MOCK_METHOD(void,
+              GetAccount,
+              (content::WebContents * web_contents,
+               base::OnceCallback<void(std::optional<AccountInfo>)>
+                   on_account_selected_callback),
+              (override));
+};
 
 class MockSaveToDriveEventDispatcher : public SaveToDriveEventDispatcher {
  public:
@@ -104,14 +115,19 @@ class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
             std::make_unique<TimeRemainingCalculator>());
     auto content_reader =
         std::make_unique<testing::StrictMock<MockContentReader>>();
+    auto account_chooser =
+        std::make_unique<testing::StrictMock<MockAccountChooser>>();
+    account_chooser_ = account_chooser.get();
 
     SaveToDriveFlow::CreateForCurrentDocument(rfh, std::move(event_dispatcher),
-                                              std::move(content_reader));
+                                              std::move(content_reader),
+                                              std::move(account_chooser));
     test_api_ = std::make_unique<SaveToDriveFlow::TestApi>(
         SaveToDriveFlow::GetForCurrentDocument(rfh));
   }
 
   void TearDownOnMainThread() override {
+    account_chooser_ = nullptr;
     test_api_.reset();
     PDFExtensionTestBase::TearDownOnMainThread();
   }
@@ -128,11 +144,22 @@ class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
   content::RenderFrameHost* rfh() { return test_api_->rfh(); }
 
   void SimulateAccountChooserAction(std::optional<AccountInfo> account_info) {
-    test_api_->SimulateAccountChooserAction(std::move(account_info));
+    EXPECT_CALL(*account_chooser_, GetAccount)
+        .WillOnce(
+            [account_info = std::move(account_info), this](
+                content::WebContents* web_contents,
+                base::OnceCallback<void(std::optional<AccountInfo>)> callback) {
+              // The callback could kill the flow, which would destroy the
+              // account chooser. It needs to be reset to avoid a dangling
+              // pointer.
+              account_chooser_ = nullptr;
+              std::move(callback).Run(std::move(account_info));
+            });
   }
 
  protected:
   std::unique_ptr<SaveToDriveFlow::TestApi> test_api_;
+  raw_ptr<MockAccountChooser> account_chooser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, AccountChooserCanceled) {
@@ -160,6 +187,14 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, ContentReadFails) {
                                  SaveToDriveStatus::kInitiated),
                            Field(&SaveToDriveProgress::error_type,
                                  SaveToDriveErrorType::kNoError))));
+  EXPECT_CALL(
+      event_dispatcher(),
+      Notify(AllOf(Field(&SaveToDriveProgress::status,
+                         SaveToDriveStatus::kAccountSelected),
+                   Field(&SaveToDriveProgress::error_type,
+                         SaveToDriveErrorType::kNoError),
+                   Field(&SaveToDriveProgress::account_email, "test@mail.com"),
+                   Field(&SaveToDriveProgress::account_is_managed, true))));
 
   EXPECT_CALL(content_reader(), Open)
       .WillOnce(base::test::RunOnceCallback<0>(/*success=*/false));
@@ -183,6 +218,14 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
                                  SaveToDriveStatus::kInitiated),
                            Field(&SaveToDriveProgress::error_type,
                                  SaveToDriveErrorType::kNoError))));
+  EXPECT_CALL(
+      event_dispatcher(),
+      Notify(AllOf(Field(&SaveToDriveProgress::status,
+                         SaveToDriveStatus::kAccountSelected),
+                   Field(&SaveToDriveProgress::error_type,
+                         SaveToDriveErrorType::kNoError),
+                   Field(&SaveToDriveProgress::account_email, "test@mail.com"),
+                   Field(&SaveToDriveProgress::account_is_managed, false))));
 
   // Since IdentityManager is not set up, the OAuth fetch will fail.
   EXPECT_CALL(
@@ -213,6 +256,14 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
                                  SaveToDriveStatus::kInitiated),
                            Field(&SaveToDriveProgress::error_type,
                                  SaveToDriveErrorType::kNoError))));
+  EXPECT_CALL(
+      event_dispatcher(),
+      Notify(AllOf(Field(&SaveToDriveProgress::status,
+                         SaveToDriveStatus::kAccountSelected),
+                   Field(&SaveToDriveProgress::error_type,
+                         SaveToDriveErrorType::kNoError),
+                   Field(&SaveToDriveProgress::account_email, "test@mail.com"),
+                   Field(&SaveToDriveProgress::account_is_managed, false))));
   // Since IdentityManager is not set up, the OAuth fetch will fail.
   EXPECT_CALL(
       event_dispatcher(),

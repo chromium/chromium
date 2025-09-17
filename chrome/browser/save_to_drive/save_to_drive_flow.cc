@@ -10,53 +10,90 @@
 #include <utility>
 
 #include "base/byte_count.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/save_to_drive/drive_uploader.h"
 #include "chrome/browser/save_to_drive/multipart_drive_uploader.h"
 #include "chrome/browser/save_to_drive/resumable_drive_uploader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/save_to_drive/save_to_drive_utils.h"
+#include "chrome/browser/ui/save_to_drive/get_account.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 
 namespace save_to_drive {
 namespace {
 
+using content::RenderFrameHost;
+using content::WebContents;
 using extensions::api::pdf_viewer_private::SaveToDriveErrorType;
 using extensions::api::pdf_viewer_private::SaveToDriveProgress;
 using extensions::api::pdf_viewer_private::SaveToDriveStatus;
 
 constexpr base::ByteCount kMultipartUploadThreshold = base::MiB(5);
 
-signin::IdentityManager* GetIdentityManagerFromRenderFrameHost(
-    content::RenderFrameHost* render_frame_host) {
-  auto* profile =
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  return profile ? IdentityManagerFactory::GetForProfile(profile) : nullptr;
+WebContents* GetTabWebContents(RenderFrameHost* render_frame_host) {
+  auto stream = GetStreamWeakPtr(render_frame_host);
+  WebContents* web_contents = nullptr;
+  if (stream) {
+    extensions::ExtensionTabUtil::GetTabById(
+        stream->tab_id(), render_frame_host->GetBrowserContext(),
+        /*include_incognito=*/false, &web_contents);
+  }
+  return web_contents;
 }
+
+SaveToDriveFlow::CreateCallback* g_create_callback_for_testing = nullptr;
 
 }  // namespace
 
 SaveToDriveFlow::SaveToDriveFlow(
-    content::RenderFrameHost* render_frame_host,
+    RenderFrameHost* render_frame_host,
     std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
-    std::unique_ptr<ContentReader> content_reader)
+    std::unique_ptr<ContentReader> content_reader,
+    std::unique_ptr<AccountChooser> account_chooser)
     : content::DocumentUserData<SaveToDriveFlow>(render_frame_host),
       event_dispatcher_(std::move(event_dispatcher)),
-      content_reader_(std::move(content_reader)) {
+      content_reader_(std::move(content_reader)),
+      account_chooser_(std::move(account_chooser)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 SaveToDriveFlow::~SaveToDriveFlow() = default;
+
+// static
+SaveToDriveFlow* SaveToDriveFlow::Create(
+    content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
+    std::unique_ptr<ContentReader> content_reader,
+    std::unique_ptr<AccountChooser> account_chooser) {
+  if (g_create_callback_for_testing) {
+    return g_create_callback_for_testing->Run(
+        render_frame_host, std::move(event_dispatcher),
+        std::move(content_reader), std::move(account_chooser));
+  }
+
+  SaveToDriveFlow::CreateForCurrentDocument(
+      render_frame_host, std::move(event_dispatcher), std::move(content_reader),
+      std::move(account_chooser));
+  return SaveToDriveFlow::GetForCurrentDocument(render_frame_host);
+}
+
+// static
+void SaveToDriveFlow::SetCreateCallbackForTesting(CreateCallback* callback) {
+  CHECK_IS_TEST();
+  g_create_callback_for_testing = callback;
+}
 
 void SaveToDriveFlow::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -65,39 +102,16 @@ void SaveToDriveFlow::Run() {
   progress.error_type = SaveToDriveErrorType::kNoError;
   OnUploadProgress(std::move(progress));
 
-  ShowAccountChooser(base::BindOnce(&SaveToDriveFlow::OnAccountChosen,
-                                    weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SaveToDriveFlow::ShowAccountChooser(AccountChooserCallback callback) {
-  if (account_info_for_testing_) {
-    CHECK_IS_TEST();
-    // Invoking the `callback` can cause the `SaveToDriveFlow` to be destroyed.
-    // Hence, reset the `account_info_for_testing_` before invoking the
-    // callback.
-    auto account_info = std::move(*account_info_for_testing_);
-    account_info_for_testing_.reset();
-    std::move(callback).Run(std::move(account_info));
-    return;
-  }
-  // TODO(crbug.com/434686397): Call the account chooser and get the selected
-  // account. For now, just use the primary account.
-  auto* identity_manager =
-      GetIdentityManagerFromRenderFrameHost(&render_frame_host());
-  if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
-  std::move(callback).Run(std::move(account_info));
+  WebContents* contents = GetTabWebContents(&render_frame_host());
+  CHECK(contents);
+  account_chooser_->GetAccount(contents,
+                               base::BindOnce(&SaveToDriveFlow::OnAccountChosen,
+                                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SaveToDriveFlow::OnAccountChosen(std::optional<AccountInfo> account_info) {
+  SaveToDriveProgress progress;
   if (!account_info) {
-    SaveToDriveProgress progress;
     progress.status = SaveToDriveStatus::kUploadFailed;
     progress.error_type = SaveToDriveErrorType::kAccountChooserCanceled;
     OnUploadProgress(std::move(progress));
@@ -107,6 +121,10 @@ void SaveToDriveFlow::OnAccountChosen(std::optional<AccountInfo> account_info) {
       .email = account_info->email,
       .is_managed = account_info->IsManaged() == signin::Tribool::kTrue,
   };
+  progress.status = SaveToDriveStatus::kAccountSelected;
+  progress.error_type = SaveToDriveErrorType::kNoError;
+  OnUploadProgress(std::move(progress));
+
   auto open_content_callback = base::BindOnce(&SaveToDriveFlow::OnOpenContent,
                                               weak_ptr_factory_.GetWeakPtr(),
                                               std::move(account_info.value()));
@@ -121,8 +139,7 @@ void SaveToDriveFlow::OnOpenContent(AccountInfo account_info, bool success) {
     OnUploadProgress(std::move(progress));
     return;
   }
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  auto* web_contents = WebContents::FromRenderFrameHost(&render_frame_host());
   std::string title = base::UTF16ToUTF8(web_contents->GetTitle());
 
   auto upload_progress_callback = base::BindRepeating(
@@ -179,15 +196,7 @@ const SaveToDriveEventDispatcher* SaveToDriveFlow::TestApi::event_dispatcher()
   return flow_ ? flow_->event_dispatcher_.get() : nullptr;
 }
 
-void SaveToDriveFlow::TestApi::SimulateAccountChooserAction(
-    std::optional<AccountInfo> account_info) {
-  if (flow_) {
-    flow_->account_info_for_testing_ =
-        std::make_unique<std::optional<AccountInfo>>(std::move(account_info));
-  }
-}
-
-content::RenderFrameHost* SaveToDriveFlow::TestApi::rfh() {
+RenderFrameHost* SaveToDriveFlow::TestApi::rfh() {
   return flow_ ? &flow_->render_frame_host() : nullptr;
 }
 
