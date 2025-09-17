@@ -19,6 +19,11 @@ found in the LICENSE file.
         <item name="listItemIconTextSpacing">@dimen/list_menu_item_start_icon_end_margin</item>
         <item name="listDividerHeight">@dimen/list_divider_layout_height</item>
 
+        <!-- Popup attributes. -->
+        <item name="popupBg">@drawable/popup_bg_24dp</item>
+        <item name="popupBgCornerRadius">@dimen/popup_bg_corner_radius_24dp</item>
+        <item name="zeroRadius">0dp</item>
+
         <!-- Text dimensions. -->
         <item name="textLargeSize">@dimen/text_size_large</item>
         <item name="textLargeLeading">@dimen/text_size_large_leading</item>

@@ -16,7 +16,7 @@ found in the LICENSE file.
         <shape
             android:shape="rectangle">
             <solid android:color="@color/menu_bg_color"/>
-            <corners android:radius="@dimen/app_menu_corner_size" />
+            <corners android:radius="?attr/popupBgCornerRadius" />
             <padding
                 android:top="@dimen/app_menu_padding"
                 android:left="@dimen/app_menu_shadow_length"

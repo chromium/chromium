@@ -73,12 +73,20 @@ found in the LICENSE file.
         <attr name="spanBackgroundStrokeColor" format="color"/>
     </declare-styleable>
 
+    <!-- Density related attributes -->
     <attr name="minInteractTargetSize" format="dimension" />
+
     <attr name="listItemHeight" format="dimension" />
     <attr name="listItemIconSize" format="dimension" />
     <attr name="listItemIconPadding" format="dimension" />
     <attr name="listItemIconTextSpacing" format="dimension" />
     <attr name="listDividerHeight" format="dimension" />
+
+    <attr name="popupBg" format="reference" />
+    <attr name="popupBgCornerRadius" format="dimension" />
+    <!-- This attr is only ever set to 0 to work around an issue in shape drawables where hardcoded
+         or @dimen radius values are ignored when used in combination with attrs. -->
+    <attr name="zeroRadius" format="dimension" />
 
     <attr name="textLargeSize" format="dimension"/>
     <attr name="textLargeLeading" format="dimension"/>

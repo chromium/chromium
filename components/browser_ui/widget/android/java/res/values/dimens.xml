@@ -199,7 +199,6 @@ found in the LICENSE file.
     <dimen name="chip_list_side_padding">16dp</dimen>
 
     <!-- Misc. app menu dimens -->
-    <dimen name="app_menu_corner_size">24dp</dimen>
     <dimen name="app_menu_shadow_length">6dp</dimen>
     <dimen name="app_menu_elevation">3dp</dimen>
     <!-- app_menu_shadow_length + padding(4dp) -->

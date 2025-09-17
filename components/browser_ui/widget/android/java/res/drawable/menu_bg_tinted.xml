@@ -8,12 +8,12 @@ found in the LICENSE file.
 <!-- LINT.IfChange -->
 <layer-list
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/popup_bg_24dp"/>
+    <item android:drawable="?attr/popupBg"/>
     <item>
         <shape
             android:shape="rectangle">
             <solid android:color="@color/menu_bg_color"/>
-            <corners android:radius="@dimen/popup_bg_corner_radius_24dp" />
+            <corners android:radius="?attr/popupBgCornerRadius" />
             <padding
                 android:top="@dimen/popup_bg_padding"
                 android:bottom="@dimen/popup_bg_padding" />

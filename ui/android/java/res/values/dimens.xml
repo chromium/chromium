@@ -83,6 +83,8 @@ found in the LICENSE file.
     <dimen name="popup_bg_corner_radius_24dp">24dp</dimen>
     <dimen name="popup_bg_padding">4dp</dimen>
 
+    <dimen name="popup_bg_corner_radius_16dp">16dp</dimen>
+
     <!--
          Fallback values if the corresponding com.android.internal.R dimensions
          cannot be retrieved by name.
