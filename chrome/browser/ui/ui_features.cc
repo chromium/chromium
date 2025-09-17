@@ -200,6 +200,16 @@ BASE_FEATURE_PARAM(double,
                    &kSideBySideDropTargetNudge,
                    "drop_target_nudge_show_ratio",
                    0.4f);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetNudgeShownLimit,
+                   &kSideBySideDropTargetNudge,
+                   "drop_target_nudge_shown_limit",
+                   6);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetNudgeUsedLimit,
+                   &kSideBySideDropTargetNudge,
+                   "drop_target_nudge_used_limit",
+                   1);
 
 constexpr base::FeatureParam<MiniToolbarActiveConfiguration>::Option
     kMiniToolbarActiveConfigurationOptions[] = {

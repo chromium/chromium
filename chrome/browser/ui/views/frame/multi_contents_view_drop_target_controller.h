@@ -10,12 +10,15 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view.h"
 
 namespace content {
 struct DropData;
 }  // namespace content
+
+class PrefService;
 
 // `MultiContentsViewDropTargetController` is responsible for handling
 // the drag-entrypoint of a single `MultiContentsView`. This includes dragging
@@ -42,7 +45,8 @@ class MultiContentsViewDropTargetController final
 
   MultiContentsViewDropTargetController(
       MultiContentsDropTargetView& drop_target_view,
-      DropDelegate& drop_delegate);
+      DropDelegate& drop_delegate,
+      PrefService* prefs);
   ~MultiContentsViewDropTargetController() override;
   MultiContentsViewDropTargetController(
       const MultiContentsViewDropTargetController&) = delete;
@@ -121,6 +125,16 @@ class MultiContentsViewDropTargetController final
   // show. Only returns true if the browser is maximized.
   bool PointOverlapsWithOSDropTarget(const gfx::Point& point_in_view);
 
+  // Keeps the value of nudge_shown_count_ in sync with the pref.
+  void OnDragAndDropNudgeShownCountChange();
+
+  // Keeps the value of nudge_used_count_ in sync with the pref.
+  void OnDragAndDropNudgeUsedCountChange();
+
+  // Whether the nudge should be shown, based on the number of times it has been
+  // shown/used in the past.
+  bool ShouldShowNudge();
+
   // This timer is used for showing the drop target a delay, and may be
   // canceled in case a drag exits the drop area before the target is shown.
   std::optional<DropTargetShowTimer> show_drop_target_timer_ = std::nullopt;
@@ -134,6 +148,14 @@ class MultiContentsViewDropTargetController final
   const raw_ref<DropDelegate> drop_delegate_;
 
   base::OnceClosureList on_will_destroy_callback_list_;
+
+  // Used to read/write the nudge count pref.
+  raw_ptr<PrefService> prefs_;
+  PrefChangeRegistrar pref_change_registrar_;
+  // Tracks the value of prefs::kSplitViewDragAndDropNudgeShownCount.
+  int nudge_shown_count_;
+  // Tracks the value of prefs::kSplitViewDragAndDropNudgeUsedCount.
+  int nudge_used_count_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DROP_TARGET_CONTROLLER_H_

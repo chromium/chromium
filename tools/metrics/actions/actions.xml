@@ -46451,6 +46451,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Tabs.SplitView.NudgeShown">
+  <owner>agale@chromium.org</owner>
+  <owner>edwardjung@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the nudge is shown for the split tab drop target during a link
+    drag operation.
+  </description>
+</action>
+
+<action name="Tabs.SplitView.NudgeUsed">
+  <owner>agale@chromium.org</owner>
+  <owner>edwardjung@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user drops a link into the split tab drop target if the
+    nudge had previously been shown during the drag.
+  </description>
+</action>
+
 <action name="TabsSearch.SuggestedActions.OpenTabs">
   <owner>michaeldo@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>

@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -83,7 +84,7 @@ MultiContentsView::MultiContentsView(
       AddChildView(std::make_unique<MultiContentsDropTargetView>());
   drop_target_controller_ =
       std::make_unique<MultiContentsViewDropTargetController>(
-          *drop_target_view_, *delegate_);
+          *drop_target_view_, *delegate_, g_browser_process->local_state());
 
   contents_separators_.top_separator =
       AddChildView(ContentsSeparator::CreateLayerBasedContentsSeparator());

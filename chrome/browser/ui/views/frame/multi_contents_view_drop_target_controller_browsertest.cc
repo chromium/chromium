@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -53,7 +54,8 @@ class MultiContentsViewDropTargetControllerBrowserTest
     }
     delegate_ = std::make_unique<MultiContentsViewDelegateImpl>(*browser());
     controller_ = std::make_unique<MultiContentsViewDropTargetController>(
-        *drop_target_view(), *delegate_.get());
+        *drop_target_view(), *delegate_.get(),
+        g_browser_process->local_state());
   }
 
   void TearDownOnMainThread() override {
