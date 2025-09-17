@@ -60,7 +60,7 @@ void ReaderModeContentTabHelper::AttachSupportedTabHelpers(
   AttachTabHelpers(web_state(), TabHelperFilter::kReaderMode);
 
   web_state_delegate_ = std::make_unique<ReaderModeWebStateDelegate>(
-      original_web_state->GetDelegate());
+      original_web_state, original_web_state->GetDelegate());
   web_state()->SetDelegate(web_state_delegate_.get());
 }
 
