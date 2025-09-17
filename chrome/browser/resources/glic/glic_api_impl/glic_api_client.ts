@@ -475,7 +475,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableGetPageMetadata) {
       this.getPageMetadata = undefined;
     }
-
   }
 
   webClientInitialized(
@@ -557,6 +556,16 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const result = await this.sender.requestWithResponse(
         'glicBrowserGetModelQualityClientId', undefined);
     return result.modelQualityClientId;
+  }
+
+  async switchConversation(conversationId: string): Promise<void> {
+    await this.sender.requestWithResponse(
+        'glicBrowserSwitchConversation', {conversationId});
+  }
+
+  async registerConversation(conversationId: string): Promise<void> {
+    await this.sender.requestWithResponse(
+        'glicBrowserRegisterConversation', {conversationId});
   }
 
   async getContextFromFocusedTab(options: TabContextOptions):

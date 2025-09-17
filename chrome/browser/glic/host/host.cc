@@ -83,20 +83,30 @@ void Host::CreateContents(bool initially_hidden) {
   }
 }
 
-// TODO(crbug.com/437140901): Send the CurrentView to the panel about to open.
-void Host::PanelWillOpen(mojom::InvocationSource invocation_source) {
+Host::PanelWillOpenOptions::PanelWillOpenOptions() = default;
+Host::PanelWillOpenOptions::~PanelWillOpenOptions() = default;
+Host::PanelWillOpenOptions::PanelWillOpenOptions(PanelWillOpenOptions&&) =
+    default;
+Host::PanelWillOpenOptions& Host::PanelWillOpenOptions::operator=(
+    PanelWillOpenOptions&&) = default;
+
+void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
+                         PanelWillOpenOptions options) {
   CHECK(delegate_);
   invocation_source_ = invocation_source;
   if (handler_info_ && handler_info_->web_client) {
     handler_info_->web_client->PanelWillOpen(
         mojom::PanelOpeningData::New(delegate_->GetPanelState().Clone(),
-                                     invocation_source),
+                                     invocation_source,
+                                     std::move(options.conversation_id)),
         base::BindOnce(
             &Host::PanelWillOpenComplete,
             // Unretained is safe because web client is owned by `contents_`.
-            base::Unretained(this),
-            // Unretained is safe because web_client is calling us.
-            base::Unretained(handler_info_->web_client)));
+            base::Unretained(this), handler_info_->web_client.get()));
+  } else {
+    pending_panel_open_options_ = std::move(options);
+    // TODO(crbug.com/426792593): Queue up the panel open event and send it
+    // when the web client is created.
   }
 }
 
@@ -220,9 +230,15 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
   CHECK(web_client);
   handler_info_->web_client = web_client;
   if (invocation_source_ && web_client) {
+    std::optional<std::string> conversation_id;
+    if (pending_panel_open_options_) {
+      conversation_id = std::move(pending_panel_open_options_->conversation_id);
+      pending_panel_open_options_.reset();
+    }
     web_client->PanelWillOpen(
         mojom::PanelOpeningData::New(delegate_->GetPanelState().Clone(),
-                                     *invocation_source_),
+                                     *invocation_source_,
+                                     std::move(conversation_id)),
         base::BindOnce(
             &Host::PanelWillOpenComplete,
             // Unretained is safe because web client is owned by `contents_`.

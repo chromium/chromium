@@ -138,6 +138,30 @@ class WebClient implements GlicWebClient {
     $.enableDragResizeCheckbox.disabled =
         browser.enableDragResize === undefined;
 
+    $.switchConversationBtn.addEventListener('click', async () => {
+      if (this.browser?.switchConversation) {
+        const conversationId = $.conversationIdInput.value;
+        try {
+          await this.browser.switchConversation(conversationId);
+          logMessage(`switchConversation(${conversationId})`);
+        } catch (e) {
+          logMessage(`switchConversation(${conversationId}) failed: ${e}`);
+        }
+      }
+    });
+
+    $.registerConversationBtn.addEventListener('click', async () => {
+      if (this.browser?.registerConversation) {
+        const conversationId = $.conversationIdInput.value;
+        try {
+          await this.browser.registerConversation(conversationId);
+          logMessage(`registerConversation(${conversationId})`);
+        } catch (e) {
+          logMessage(`registerConversation(${conversationId}) failed: ${e}`);
+        }
+      }
+    });
+
     this.initialized = true;
     const cbs = this.onInitializedCallbacks;
     this.onInitializedCallbacks = [];
@@ -157,6 +181,10 @@ class WebClient implements GlicWebClient {
     delete (panelOpeningData as Partial<PanelState>).windowId;
     logMessage(`notifyPanelWillOpen(${JSON.stringify(panelOpeningData)})`);
     this.browser!.setContextAccessIndicator!($.contextAccessIndicator.checked);
+
+    if (panelOpeningData.conversationId) {
+      $.conversationId.value = panelOpeningData.conversationId;
+    }
 
     return {
       startingMode: WebClientMode.TEXT,

@@ -91,6 +91,20 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserSwitchConversation: {
+    request: {
+      conversationId: string,
+    },
+    response: {},
+    backgroundAllowed: true,
+  },
+  glicBrowserRegisterConversation: {
+    request: {
+      conversationId: string,
+    },
+    response: {},
+    backgroundAllowed: true,
+  },
   glicBrowserGetContextFromFocusedTab: {
     request: {
       options: TabContextOptions,
@@ -618,7 +632,7 @@ export type HostRequestEnumNamesType = {
   [K in keyof HostRequestTypes as RemoveStringPrefix<K, 'glicBrowser'>]: number;
 };
 
-// LINT.IfChange(HOST_REQUEST_TYPES)
+// LINT.IfChange(ApiRequestType)
 // New values here must be added to histograms.xml and to enums.xml.
 export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
     (() => {
@@ -686,6 +700,8 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         PerformActions: 61,
         OnViewChanged: 62,
         SubscribeToPageMetadata: 63,
+        SwitchConversation: 64,
+        RegisterConversation: 65,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

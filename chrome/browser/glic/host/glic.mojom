@@ -506,7 +506,7 @@ interface WebClientHandler {
   ShowProfilePicker();
 
   // Returns the current model quality client id.
-   [RuntimeFeature=glic.mojom.features.kGlicAppendModelQualityClientId]
+  [RuntimeFeature=glic.mojom.features.kGlicAppendModelQualityClientId]
   GetModelQualityClientId() => (string model_quality_client_id);
 
   // Returns the context from the currently active tab.
@@ -772,6 +772,30 @@ interface WebClientHandler {
   // names array to stop receiving notifications.
   SubscribeToPageMetadata(int32 tab_id, array<string> names)
       => (bool success);
+
+  // Switches the active conversation in the web client.
+  // `conversation_id` must be non-empty to be considered valid.
+  SwitchConversation(string conversation_id)
+      => (SwitchConversationErrorReason? error_reason);
+
+  // Registers a conversation in the web client.
+  // `conversation_id` must be non-empty to be considered valid.
+  RegisterConversation(string conversation_id)
+      => (RegisterConversationErrorReason? error_reason);
+};
+
+// Reason for failure when switching a conversation.
+[Stable, Extensible]
+enum SwitchConversationErrorReason {
+  [Default] kUnknown = 0,
+};
+
+// Reason for failure when registering a conversation.
+[Stable, Extensible]
+enum RegisterConversationErrorReason {
+  [Default] kUnknown = 0,
+  // The instance already has a conversation ID.
+  kInstanceAlreadyHasConversationId = 1,
 };
 
 // Data sent from the browser to the web client with panel opening information.
@@ -780,6 +804,12 @@ struct PanelOpeningData {
   PanelState panel_state;
   // Indicates the entry point used to trigger the opening of the panel.
   InvocationSource invocation_source;
+  // The ID of the conversation to open. If unset, the web client will open a
+  // new conversation. This field is used only when the `MULTI_INSTANCE`
+  // capability is present.
+  // If set, `conversation_id` will be a string with length >0. Empty
+  // conversation IDs are not supported.
+  string? conversation_id;
 };
 
 // State of the glic panel.

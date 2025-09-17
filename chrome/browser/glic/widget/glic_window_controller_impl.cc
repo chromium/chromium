@@ -683,7 +683,7 @@ void GlicWindowControllerImpl::AfterViewShown() {
   // `NotifyIfPanelStateChanged()` first, so that the host will receive the
   // correct panel state.
   NotifyIfPanelStateChanged();
-  host().PanelWillOpen(opening_source_.value());
+  host().PanelWillOpen(opening_source_.value(), {});
 
   if (login_page_committed_) {
     // This indicates that we've warmed the web client and it has hit a login

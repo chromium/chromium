@@ -153,6 +153,7 @@ chromium-metrics-reviews@google.com.
     <variant name="PerformActions"/>
     <variant name="PinTabs"/>
     <variant name="RefreshSignInCookies"/>
+    <variant name="RegisterConversation"/>
     <variant name="ResizeWindow"/>
     <variant name="ResumeActorTask"/>
     <variant name="ScrollTo"/>
@@ -170,6 +171,7 @@ chromium-metrics-reviews@google.com.
     <variant name="StopActorTask"/>
     <variant name="SubscribeToPageMetadata"/>
     <variant name="SubscribeToPinCandidates"/>
+    <variant name="SwitchConversation"/>
     <variant name="UnpinAllTabs"/>
     <variant name="UnpinTabs"/>
     <variant name="UnsubscribeFromPinCandidates"/>

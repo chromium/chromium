@@ -572,8 +572,31 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.showProfilePicker();
   }
 
-  glicBrowserGetModelQualityClientId(): Promise<{modelQualityClientId: string}> {
+  glicBrowserGetModelQualityClientId():
+      Promise<{modelQualityClientId: string}> {
     return this.handler.getModelQualityClientId();
+  }
+
+  async glicBrowserSwitchConversation(request: {conversationId: string}):
+      Promise<{}> {
+    const {errorReason} =
+        await this.handler.switchConversation(request.conversationId);
+    if (errorReason !== undefined) {
+      throw new ErrorWithReasonImpl(
+          'switchConversation', errorReason as number);
+    }
+    return {};
+  }
+
+  async glicBrowserRegisterConversation(request: {conversationId: string}):
+      Promise<{}> {
+    const {errorReason} =
+        await this.handler.registerConversation(request.conversationId);
+    if (errorReason !== undefined) {
+      throw new ErrorWithReasonImpl(
+          'registerConversation', errorReason as number);
+    }
+    return {};
   }
 
   async glicBrowserGetContextFromFocusedTab(
@@ -1782,6 +1805,7 @@ function panelOpeningDataToClient(panelOpeningData: PanelOpeningDataMojo):
   return {
     panelState: panelStateToClient(panelOpeningData.panelState),
     invocationSource: panelOpeningData.invocationSource as number,
+    conversationId: optionalToClient(panelOpeningData.conversationId),
   };
 }
 
@@ -1792,8 +1816,8 @@ function panelStateToClient(panelState: PanelStateMojo): PanelState {
   };
 }
 
-function pageMetadataToClient(metadata: PageMetadataMojo|
-                              null): PageMetadata|null {
+function pageMetadataToClient(metadata: PageMetadataMojo|null): PageMetadata|
+    null {
   if (!metadata) {
     return null;
   }
@@ -1811,9 +1835,8 @@ function timeDeltaFromClient(durationMs: number = 0): TimeDelta {
   return {microseconds: BigInt(Math.floor(durationMs * 1000))};
 }
 
-function tabContextToClient(
-    tabContext: TabContextMojo,
-    extras: ResponseExtras): TabContextResultPrivate {
+function tabContextToClient(tabContext: TabContextMojo, extras: ResponseExtras):
+    TabContextResultPrivate {
   const tabDataResult: TabDataPrivate =
       tabDataToClient(tabContext.tabData, extras);
   const webPageData = tabContext.webPageData;
@@ -1868,7 +1891,7 @@ function tabContextToClient(
     if (tabContext.annotatedPageData.metadata) {
       metadata = {
         frameMetadata: tabContext.annotatedPageData.metadata.frameMetadata.map(
-          m => replaceProperties(m, {url: urlToClient(m.url)})),
+            m => replaceProperties(m, {url: urlToClient(m.url)})),
       };
     }
     annotatedPageData = {annotatedPageContent, metadata};

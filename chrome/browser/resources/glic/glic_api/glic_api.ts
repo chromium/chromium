@@ -702,6 +702,31 @@ export declare interface GlicBrowserHost {
    */
   selectUserConfirmationDialogRequestHandler?
       (): Observable<UserConfirmationDialogRequest>;
+
+  /**
+   * Switches to a use a different instance that shows the conversation
+   * represented by the provided id.
+   *
+   * If there are no other surfaces bound to the existing conversation, that
+   * web client will be destroyed.
+   *
+   * The returned promise will resolve when the conversation switch is complete
+   * on the browser side. The promise will be rejected if the switch fails.
+   * The only possible error reason is `UNKNOWN`.
+   */
+  switchConversation?(conversationId: string): Promise<void>;
+
+  /**
+   * Registers a conversation in the web client.
+   *
+   * The returned promise will resolve when the conversation is successfully
+   * registered with the browser. The promise will be rejected if registration
+   * fails. Possible error reasons are:
+   *  - `INSTANCE_ALREADY_HAS_CONVERSATION_ID`: The instance already has a
+   *    conversation ID.
+   *  - `UNKNOWN`: An unknown error occurred.
+   */
+  registerConversation?(conversationId: string): Promise<void>;
 }
 /** Fields of interest from the system settings page. */
 export type OsPermissionType = 'media'|'geolocation';
@@ -964,6 +989,12 @@ export declare interface PanelOpeningData {
    * before, even though the user did not, for example, click a button again.
    */
   invocationSource?: InvocationSource;
+  /**
+   * The ID of the conversation to open. If unset, the web client will open a
+   * new conversation. This field is used only when the `MULTI_INSTANCE`
+   * capability is present.
+   */
+  conversationId?: string;
 }
 
 /** Entry points that can trigger the opening of the panel. */
@@ -1291,6 +1322,8 @@ export declare interface ErrorReasonTypes {
   actInFocusedTab: ActInFocusedTabErrorReason;
   createTask: CreateTaskErrorReason;
   performActions: PerformActionsErrorReason;
+  switchConversation: SwitchConversationErrorReason;
+  registerConversation: RegisterConversationErrorReason;
 }
 
 /** Reason why the web client could not initialize. */
@@ -1368,6 +1401,18 @@ export enum PerformActionsErrorReason {
 
   /** The serialized Actions proto failed to parse. */
   INVALID_ACTION_PROTO = 1,
+}
+
+/** Reason for failure when switching a conversation. */
+export enum SwitchConversationErrorReason {
+  UNKNOWN = 0,
+}
+
+/** Reason for failure when registering a conversation. */
+export enum RegisterConversationErrorReason {
+  UNKNOWN = 0,
+  /** The instance already has a conversation ID. */
+  INSTANCE_ALREADY_HAS_CONVERSATION_ID = 1,
 }
 
 /**

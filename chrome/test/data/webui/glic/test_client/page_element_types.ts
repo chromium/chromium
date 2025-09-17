@@ -149,6 +149,10 @@ export interface PageElementTypes {
   viewChangedAutomaticallyAccept: HTMLInputElement;
   mqlsClientIdBtn: HTMLButtonElement;
   multiTabFetchScreenshot: HTMLInputElement;
+  conversationIdInput: HTMLInputElement;
+  switchConversationBtn: HTMLButtonElement;
+  registerConversationBtn: HTMLButtonElement;
+  conversationId: HTMLInputElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

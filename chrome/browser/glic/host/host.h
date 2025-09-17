@@ -114,7 +114,18 @@ class Host : public GlicSharingManagerProvider {
 
   void Initialize(Delegate* delegate);
 
-  void PanelWillOpen(mojom::InvocationSource invocation_source);
+  struct PanelWillOpenOptions {
+    PanelWillOpenOptions();
+    ~PanelWillOpenOptions();
+    PanelWillOpenOptions(PanelWillOpenOptions&&);
+    PanelWillOpenOptions& operator=(PanelWillOpenOptions&&);
+
+    // The ID of the conversation to open. If unset, the web client will open a
+    // new conversation.
+    std::optional<std::string> conversation_id;
+  };
+  void PanelWillOpen(mojom::InvocationSource invocation_source,
+                     PanelWillOpenOptions options);
 
   void PanelWasClosed();
 
@@ -277,6 +288,7 @@ class Host : public GlicSharingManagerProvider {
   // The invocation source if the panel is open. nullopt while the panel is
   // closed.
   std::optional<mojom::InvocationSource> invocation_source_;
+  std::optional<PanelWillOpenOptions> pending_panel_open_options_;
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
 
   std::optional<PageHandlerInfo> handler_info_;
