@@ -48,16 +48,17 @@ TestAuthenticatorRequestDelegate::TestAuthenticatorRequestDelegate(
     base::OnceClosure action_callbacks_registered_callback,
     base::OnceClosure started_over_callback,
     bool simulate_user_cancelled,
-    std::optional<bool>* enclave_authenticator_should_be_discovered,
-    base::flat_set<device::FidoTransportProtocol>* discovered_transports)
+    base::RepeatingCallback<void(bool)> enclave_discovered_callback,
+    base::RepeatingCallback<void(const base::flat_set<device::FidoTransportProtocol>&)>
+        transports_discovered_callback)
     : action_callbacks_registered_callback_(
           std::move(action_callbacks_registered_callback)),
       started_over_callback_(std::move(started_over_callback)),
       does_block_request_on_failure_(!started_over_callback_.is_null()),
       simulate_user_cancelled_(simulate_user_cancelled),
-      enclave_authenticator_should_be_discovered_(
-          enclave_authenticator_should_be_discovered),
-      discovered_transports_(discovered_transports) {}
+      enclave_discovered_callback_(std::move(enclave_discovered_callback)),
+      transports_discovered_callback_(
+          std::move(transports_discovered_callback)) {}
 
 TestAuthenticatorRequestDelegate::~TestAuthenticatorRequestDelegate() = default;
 
@@ -85,8 +86,8 @@ void TestAuthenticatorRequestDelegate::RegisterActionCallbacks(
 
 void TestAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo transport_info) {
-  if (discovered_transports_) {
-    *discovered_transports_ = transport_info.available_transports;
+  if (transports_discovered_callback_) {
+    transports_discovered_callback_.Run(transport_info.available_transports);
   }
   // Simulate the behaviour of Chrome's |AuthenticatorRequestDialogModel|
   // which shows a specific error when no transports are available and lets
@@ -118,9 +119,8 @@ void TestAuthenticatorRequestDelegate::ConfigureDiscoveries(
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* fido_discovery_factory) {
-  if (enclave_authenticator_should_be_discovered_) {
-    *enclave_authenticator_should_be_discovered_ =
-        is_enclave_authenticator_available;
+  if (enclave_discovered_callback_) {
+    enclave_discovered_callback_.Run(is_enclave_authenticator_available);
   }
 }
 
@@ -349,8 +349,24 @@ TestAuthenticatorContentBrowserClient::GetWebAuthenticationRequestDelegate(
       action_callbacks_registered_callback
           ? std::move(action_callbacks_registered_callback)
           : base::DoNothing(),
-      std::move(started_over_callback_), simulate_user_cancelled_,
-      &enclave_authenticator_should_be_discovered_, &discovered_transports_);
+      std::move(started_over_callback_),
+      simulate_user_cancelled_,
+      base::BindRepeating(
+          [](base::WeakPtr<TestAuthenticatorContentBrowserClient> self,
+             bool discovered) {
+            if (self) {
+              self->enclave_authenticator_should_be_discovered_ = discovered;
+            }
+          },
+          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          [](base::WeakPtr<TestAuthenticatorContentBrowserClient> self,
+             const base::flat_set<device::FidoTransportProtocol>& transports) {
+            if (self) {
+              self->discovered_transports_ = transports;
+            }
+          },
+          weak_factory_.GetWeakPtr()));
 }
 
 AuthenticatorTestBase::AuthenticatorTestBase()

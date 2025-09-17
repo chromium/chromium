@@ -3227,8 +3227,8 @@ class MockAuthenticatorRequestDelegateObserver
             base::DoNothing() /* did_start_request_callback */,
             /*started_over_callback=*/base::OnceClosure(),
             /*simulate_user_cancelled=*/false,
-            /*enclave_authenticator_should_be_discovered=*/nullptr,
-            /*discovered_transports=*/nullptr),
+            /*enclave_discovered_callback=*/base::DoNothing(),
+            /*transports_discovered_callback=*/base::DoNothing()),
         failure_reasons_callback_(std::move(failure_reasons_callback)) {}
 
   MockAuthenticatorRequestDelegateObserver(

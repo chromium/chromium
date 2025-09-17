@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/content_browser_client.h"
@@ -219,8 +220,9 @@ class TestAuthenticatorRequestDelegate
       base::OnceClosure action_callbacks_registered_callback,
       base::OnceClosure started_over_callback,
       bool simulate_user_cancelled,
-      std::optional<bool>* enclave_authenticator_should_be_discovered,
-      base::flat_set<device::FidoTransportProtocol>* discovered_transports);
+      base::RepeatingCallback<void(bool)> enclave_discovered_callback,
+      base::RepeatingCallback<void(const base::flat_set<device::FidoTransportProtocol>&)>
+          transports_discovered_callback);
 
   TestAuthenticatorRequestDelegate(const TestAuthenticatorRequestDelegate&) =
       delete;
@@ -266,9 +268,9 @@ class TestAuthenticatorRequestDelegate
   base::OnceClosure start_over_callback_;
   bool does_block_request_on_failure_ = false;
   bool simulate_user_cancelled_ = false;
-  bool browser_provided_passkeys_available_ = false;
-  raw_ptr<std::optional<bool>> enclave_authenticator_should_be_discovered_;
-  raw_ptr<base::flat_set<device::FidoTransportProtocol>> discovered_transports_;
+  base::RepeatingCallback<void(bool)> enclave_discovered_callback_;
+  base::RepeatingCallback<void(const base::flat_set<device::FidoTransportProtocol>&)>
+      transports_discovered_callback_;
 };
 
 // TestWebAuthenticationRequestProxy is a test fake implementation of the
@@ -485,6 +487,9 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
 
   // The set of transports allowed for a request.
   base::flat_set<device::FidoTransportProtocol> discovered_transports_;
+
+ private:
+  base::WeakPtrFactory<TestAuthenticatorContentBrowserClient> weak_factory_{this};
 };
 
 class AuthenticatorTestBase : public RenderViewHostTestHarness {
