@@ -82,6 +82,9 @@ export interface BidiCommandParameterParser {
   parseSetClientWindowStateParameters(
     params: unknown,
   ): Browser.SetClientWindowStateParameters;
+  parseSetDownloadBehaviorParameters(
+    params: unknown,
+  ): Browser.SetDownloadBehaviorParameters;
   // keep-sorted end
 
   // Browsing Context module

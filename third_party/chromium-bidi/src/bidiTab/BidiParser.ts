@@ -115,6 +115,11 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Browser.SetClientWindowStateParameters {
     return Parser.Browser.parseSetClientWindowStateParameters(params);
   }
+  parseSetDownloadBehaviorParameters(
+    params: unknown,
+  ): Browser.SetDownloadBehaviorParameters {
+    return Parser.Browser.parseSetDownloadBehaviorParameters(params);
+  }
   // keep-sorted end
 
   // Browsing Context module

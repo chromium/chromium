@@ -75,6 +75,14 @@ export namespace Browser {
       WebDriverBidi.Browser.SetClientWindowStateParametersSchema,
     );
   }
+  export function parseSetDownloadBehaviorParameters(
+    params: unknown,
+  ): Protocol.Browser.SetDownloadBehaviorParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Browser.SetDownloadBehaviorParametersSchema,
+    ) as Protocol.Browser.SetDownloadBehaviorParameters;
+  }
   // keep-sorted end
 }
 

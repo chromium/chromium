@@ -114,6 +114,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Browser.SetClientWindowStateParameters {
     return params as Browser.SetClientWindowStateParameters;
   }
+  parseSetDownloadBehaviorParameters(
+    params: unknown,
+  ): Browser.SetDownloadBehaviorParameters {
+    return params as Browser.SetDownloadBehaviorParameters;
+  }
   // keep-sorted end
 
   // Browsing Context module
