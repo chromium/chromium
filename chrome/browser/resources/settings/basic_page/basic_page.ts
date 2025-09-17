@@ -81,6 +81,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
               this, '#incognitoTrackingProtectionsLinkRow'));
     }
 
+    if (routes.PRIVACY_GUIDE) {
+      map.set(
+          routes.PRIVACY_GUIDE.path,
+          focusInPrivacyPage.bind(this, '#privacyGuideLinkRow'));
+    }
+
     if (routes.PRIVACY_SANDBOX) {
       map.set(
           routes.PRIVACY_SANDBOX.path,

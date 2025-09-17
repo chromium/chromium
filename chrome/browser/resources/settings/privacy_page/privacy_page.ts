@@ -9,19 +9,13 @@
  */
 import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
-import '../safety_hub/safety_hub_module.js';
 import '../settings_page/settings_animated_pages.js';
-import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
-import '../site_settings/settings_category_default_radio_group.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -32,19 +26,13 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BaseMixin} from '../base_mixin.js';
-import type {FocusConfig} from '../focus_config.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
-import type {SafetyHubBrowserProxy} from '../safety_hub/safety_hub_browser_proxy.js';
-import {SafetyHubBrowserProxyImpl} from '../safety_hub/safety_hub_browser_proxy.js';
-import {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode} from '../site_settings/constants.js';
-import type {SiteSettingsPrefsBrowserProxy} from '../site_settings/site_settings_prefs_browser_proxy.js';
-import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import {CookieControlsMode} from '../site_settings/constants.js';
 
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide/privacy_guide_availability_mixin.js';
 import {getTemplate} from './privacy_page.html.js';
@@ -58,7 +46,7 @@ export interface SettingsPrivacyPageElement {
 }
 
 const SettingsPrivacyPageElementBase = PrivacyGuideAvailabilityMixin(
-    RouteObserverMixin(I18nMixin(PrefsMixin(BaseMixin(PolymerElement)))));
+    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   static get is() {
@@ -71,27 +59,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   static get properties() {
     return {
-      isGuest_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isGuest');
-        },
-      },
-
       showClearBrowsingDataDialog_: Boolean,
       showPrivacyGuideDialog_: Boolean,
 
       enableDeleteBrowsingDataRevamp_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableDeleteBrowsingDataRevamp'),
-      },
-
-      enableExperimentalWebPlatformFeatures_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'enableExperimentalWebPlatformFeatures');
-        },
       },
 
       isPrivacySandboxRestricted_: {
@@ -103,45 +76,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
-      },
-
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-
-          if (routes.PRIVACY_GUIDE) {
-            map.set(routes.PRIVACY_GUIDE.path, '#privacyGuideLinkRow');
-          }
-
-          return map;
-        },
-      },
-
-      searchFilter_: String,
-
-      /**
-       * Expose ContentSettingsTypes enum to HTML bindings.
-       */
-      contentSettingsTypesEnum_: {
-        type: Object,
-        value: ContentSettingsTypes,
-      },
-
-      /**
-       * Expose ContentSetting enum to HTML bindings.
-       */
-      contentSettingEnum_: {
-        type: Object,
-        value: ContentSetting,
-      },
-
-      /**
-       * Expose ChooserType enum to HTML bindings.
-       */
-      chooserTypeEnum_: {
-        type: Object,
-        value: ChooserType,
       },
 
       enableIncognitoTrackingProtections_: {
@@ -164,25 +98,17 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     };
   }
 
-  declare private isGuest_: boolean;
   declare private showClearBrowsingDataDialog_: boolean;
   declare private showPrivacyGuideDialog_: boolean;
   declare private enableDeleteBrowsingDataRevamp_: boolean;
-  declare private enableExperimentalWebPlatformFeatures_: boolean;
+  declare private enableIncognitoTrackingProtections_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
   declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
-  private privateStateTokensEnabled_: boolean;
-  declare private focusConfig_: FocusConfig;
-  declare private searchFilter_: string;
-  private metricsBrowserProxy_: MetricsBrowserProxy =
-      MetricsBrowserProxyImpl.getInstance();
-  private siteSettingsPrefsBrowserProxy_: SiteSettingsPrefsBrowserProxy =
-      SiteSettingsPrefsBrowserProxyImpl.getInstance();
-  private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
-      SafetyHubBrowserProxyImpl.getInstance();
-  declare private enableIncognitoTrackingProtections_: boolean;
   declare private dbdDeletionConfirmationToastLabel_: string;
   declare private shouldShowDbdDeletionConfirmationToast_: boolean;
+
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override currentRouteChanged() {
     this.showClearBrowsingDataDialog_ =
@@ -391,8 +317,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'privacySandboxTopics':
         triggerId = 'privacySandboxLinkRow';
         break;
-      // TODO(crbug.com/424223101): Add more child view IDs as they
-      // are migrated to the new architecture.
       default:
         assertNotReached();
     }
