@@ -4972,7 +4972,7 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.h
 
 # CSSDisplayAnimation makes display animateable changing the expectation that it's not.
 crbug.com/1395394 external/wpt/css/css-display/animations/display-interpolation.html [ Failure ]
-crbug.com/1395394 fast/css-generated-content/pseudo-animation-display.html [ Failure ]
+crbug.com/1395394 fast/css-generated-content/pseudo-animation-display.html [ Failure Timeout ]
 
 # [css-transitions]
 crbug.com/1289685 external/wpt/css/css-transitions/properties-value-inherit-001.html [ Failure Pass ]
