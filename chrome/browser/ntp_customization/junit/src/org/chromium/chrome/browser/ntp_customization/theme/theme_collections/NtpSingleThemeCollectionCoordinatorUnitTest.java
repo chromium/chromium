@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
@@ -43,6 +44,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -64,6 +67,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private NtpThemeBridge mNtpThemeBridge;
     @Mock private ImageFetcher mImageFetcher;
+    @Mock private BottomSheetController mBottomSheetController;
     @Captor private ArgumentCaptor<Callback<List<CollectionImage>>> mCallbackCaptor;
 
     private NtpSingleThemeCollectionCoordinator mCoordinator;
@@ -77,6 +81,8 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
 
+        when(mBottomSheetDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
+
         mCoordinator =
                 new NtpSingleThemeCollectionCoordinator(
                         mContext,
@@ -84,7 +90,8 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                         mNtpThemeBridge,
                         mImageFetcher,
                         TEST_COLLECTION_ID,
-                        TEST_COLLECTION_TITLE);
+                        TEST_COLLECTION_TITLE,
+                        SheetState.FULL);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
@@ -176,13 +183,15 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         mCoordinator.setNtpThemeCollectionsAdapterForTesting(spiedAdapter);
 
         // Title should not be updated with the same title.
-        mCoordinator.updateThemeCollection(TEST_COLLECTION_ID, TEST_COLLECTION_TITLE);
+        mCoordinator.updateThemeCollection(
+                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, SheetState.FULL);
         // `getBackgroundImages` is called once in `setUp()`. No new call should be made.
         verify(mNtpThemeBridge, times(1)).getBackgroundImages(any(), any());
         verify(spiedAdapter, times(0)).setItems(any());
 
         // Title should be updated with a new title.
-        mCoordinator.updateThemeCollection(NEW_TEST_COLLECTION_ID, NEW_TEST_COLLECTION_TITLE);
+        mCoordinator.updateThemeCollection(
+                NEW_TEST_COLLECTION_ID, NEW_TEST_COLLECTION_TITLE, SheetState.FULL);
         assertEquals(NEW_TEST_COLLECTION_TITLE, title.getText().toString());
         verify(mNtpThemeBridge)
                 .getBackgroundImages(eq(NEW_TEST_COLLECTION_ID), mCallbackCaptor.capture());
@@ -197,5 +206,31 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                         JUnitTestGURLs.URL_1));
         mCallbackCaptor.getValue().onResult(images);
         verify(spiedAdapter).setItems(eq(images));
+    }
+
+    @Test
+    public void testFetchImagesForCollection_expandSheet() {
+        // Case 1: isInitiative is true.
+        verify(mNtpThemeBridge)
+                .getBackgroundImages(eq(TEST_COLLECTION_ID), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(new ArrayList<>());
+        verify(mBottomSheetController).expandSheet();
+
+        // Case 2: previous bottom sheet state is HALF.
+        mCoordinator.updateThemeCollection(
+                NEW_TEST_COLLECTION_ID, NEW_TEST_COLLECTION_TITLE, SheetState.HALF);
+        verify(mNtpThemeBridge)
+                .getBackgroundImages(eq(NEW_TEST_COLLECTION_ID), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(new ArrayList<>());
+        verify(mBottomSheetController, times(2)).expandSheet();
+
+        // Case 3: previous bottom sheet state is not HALF and not initiative.
+        mCoordinator.updateThemeCollection(
+                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, SheetState.FULL);
+        verify(mNtpThemeBridge, times(2))
+                .getBackgroundImages(eq(TEST_COLLECTION_ID), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(new ArrayList<>());
+        // expandSheet should still be called only twice from previous cases.
+        verify(mBottomSheetController, times(2)).expandSheet();
     }
 }

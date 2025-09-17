@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link NtpThemeCollectionsCoordinator}. */
@@ -61,6 +62,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
+    @Mock private BottomSheetController mBottomSheetController;
     @Mock private NtpSingleThemeCollectionCoordinator mNtpSingleThemeCollectionCoordinator;
     @Mock private NtpThemeBridge.Natives mNtpThemeBridgeJniMock;
     @Captor private ArgumentCaptor<Callback<Object[]>> mCallbackCaptor;
@@ -78,6 +80,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
 
         NtpThemeBridgeJni.setInstanceForTesting(mNtpThemeBridgeJniMock);
         when(mNtpThemeBridgeJniMock.init(mProfile)).thenReturn(1L);
+        when(mBottomSheetDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
 
         mCoordinator = new NtpThemeCollectionsCoordinator(mContext, mBottomSheetDelegate, mProfile);
 
@@ -119,7 +122,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
 
         // Verify LayoutManager
         assertTrue(recyclerView.getLayoutManager() instanceof GridLayoutManager);
-        assertEquals(2, ((GridLayoutManager) recyclerView.getLayoutManager()).getSpanCount());
+        assertEquals(3, ((GridLayoutManager) recyclerView.getLayoutManager()).getSpanCount());
 
         // Verify Adapter
         assertTrue(recyclerView.getAdapter() instanceof NtpThemeCollectionsAdapter);
@@ -159,6 +162,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                 new BackgroundCollection(
                         TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, JUnitTestGURLs.EXAMPLE_URL);
         mCallbackCaptor.getValue().onResult(collections);
+        verify(mBottomSheetController).expandSheet();
 
         // Force the RecyclerView to create and bind views.
         RecyclerView recyclerView =
@@ -174,6 +178,8 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
 
         // On first click, a new single theme coordinator is created and the sheet is shown.
         assertNull(mCoordinator.getNtpSingleThemeCollectionCoordinatorForTesting());
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.FULL);
         themeCollectionView.performClick();
         assertNotNull(mCoordinator.getNtpSingleThemeCollectionCoordinatorForTesting());
         verify(mBottomSheetDelegate).showBottomSheet(eq(BottomSheetType.SINGLE_THEME_COLLECTION));
@@ -183,7 +189,10 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                 mNtpSingleThemeCollectionCoordinator);
         themeCollectionView.performClick();
         verify(mNtpSingleThemeCollectionCoordinator)
-                .updateThemeCollection(eq(TEST_COLLECTION_ID), eq(TEST_COLLECTION_TITLE));
+                .updateThemeCollection(
+                        eq(TEST_COLLECTION_ID),
+                        eq(TEST_COLLECTION_TITLE),
+                        eq(BottomSheetController.SheetState.FULL));
         verify(mBottomSheetDelegate, times(2))
                 .showBottomSheet(eq(BottomSheetType.SINGLE_THEME_COLLECTION));
     }

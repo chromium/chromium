@@ -22,6 +22,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.image_fetcher.ImageFetcher;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class NtpSingleThemeCollectionCoordinator {
     // TODO(crbug.com/423579377): Update the url for learn more button.
     private static final String LEARN_MORE_CLICK_URL =
             "https://support.google.com/chrome/?p=new_tab";
+    private static final int RECYCLE_VIEW_SPAN_COUNT = 3;
 
     private String mThemeCollectionId;
     private String mThemeCollectionTitle;
@@ -47,6 +49,7 @@ public class NtpSingleThemeCollectionCoordinator {
     private NtpThemeCollectionsAdapter mNtpThemeCollectionsAdapter;
     private final NtpThemeBridge mNtpThemeBridge;
     private final ImageFetcher mImageFetcher;
+    private final BottomSheetDelegate mBottomSheetDelegate;
 
     /**
      * Constructor for the single theme collection coordinator.
@@ -57,6 +60,8 @@ public class NtpSingleThemeCollectionCoordinator {
      * @param imageFetcher The fetcher to retrieve images.
      * @param collectionId The ID of the current theme collection to display.
      * @param themeCollectionTitle The title of the current theme collection.
+     * @param previousBottomSheetState The bottom sheet state in the previous theme collections
+     *     bottom sheet.
      */
     NtpSingleThemeCollectionCoordinator(
             Context context,
@@ -64,7 +69,9 @@ public class NtpSingleThemeCollectionCoordinator {
             NtpThemeBridge ntpThemeBridge,
             ImageFetcher imageFetcher,
             String collectionId,
-            String themeCollectionTitle) {
+            String themeCollectionTitle,
+            @SheetState int previousBottomSheetState) {
+        mBottomSheetDelegate = delegate;
         mNtpThemeBridge = ntpThemeBridge;
         mImageFetcher = imageFetcher;
         mThemeCollectionId = collectionId;
@@ -78,12 +85,13 @@ public class NtpSingleThemeCollectionCoordinator {
                                 null,
                                 false);
 
-        delegate.registerBottomSheetLayout(
+        mBottomSheetDelegate.registerBottomSheetLayout(
                 SINGLE_THEME_COLLECTION, mNtpSingleThemeCollectionBottomSheetView);
 
         // Add the back press handler of the back button in the bottom sheet.
         mBackButton = mNtpSingleThemeCollectionBottomSheetView.findViewById(R.id.back_button);
-        mBackButton.setOnClickListener(v -> delegate.showBottomSheet(THEME_COLLECTIONS));
+        mBackButton.setOnClickListener(
+                v -> mBottomSheetDelegate.showBottomSheet(THEME_COLLECTIONS));
 
         // Manage the learn more button in the theme collections bottom sheet.
         mLearnMoreButton =
@@ -100,7 +108,7 @@ public class NtpSingleThemeCollectionCoordinator {
                 mNtpSingleThemeCollectionBottomSheetView.findViewById(
                         R.id.single_theme_collection_recycler_view);
         mSingleThemeCollectionBottomSheetRecyclerView.setLayoutManager(
-                new GridLayoutManager(context, /* spanCount= */ 3));
+                new GridLayoutManager(context, RECYCLE_VIEW_SPAN_COUNT));
         mNtpThemeCollectionsAdapter =
                 new NtpThemeCollectionsAdapter(
                         mThemeCollectionImageList,
@@ -110,7 +118,7 @@ public class NtpSingleThemeCollectionCoordinator {
         mSingleThemeCollectionBottomSheetRecyclerView.setAdapter(mNtpThemeCollectionsAdapter);
 
         // Fetches the images for the current collection.
-        fetchImagesForCollection();
+        fetchImagesForCollection(previousBottomSheetState, /* isDisplayedFirstTime= */ true);
     }
 
     void destroy() {
@@ -125,7 +133,10 @@ public class NtpSingleThemeCollectionCoordinator {
     /**
      * Updates the single theme collection bottom sheet based on the given theme collection type.
      */
-    void updateThemeCollection(String collectionId, String themeCollectionTitle) {
+    void updateThemeCollection(
+            String collectionId,
+            String themeCollectionTitle,
+            @SheetState int previousBottomSheetState) {
         if (mThemeCollectionTitle.equals(themeCollectionTitle)) {
             return;
         }
@@ -134,15 +145,23 @@ public class NtpSingleThemeCollectionCoordinator {
         mThemeCollectionTitle = themeCollectionTitle;
 
         mTitle.setText(mThemeCollectionTitle);
-        fetchImagesForCollection();
+        fetchImagesForCollection(previousBottomSheetState, /* isDisplayedFirstTime= */ false);
     }
 
     void handleLearnMoreClick(View view) {
         launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
     }
 
-    /** Fetches the images for the current collection and updates the adapter. */
-    private void fetchImagesForCollection() {
+    /**
+     * Fetches the images for the current collection and updates the adapter.
+     *
+     * @param previousBottomSheetState The bottom sheet state in the previous theme collections
+     *     bottom sheet.
+     * @param isDisplayedFirstTime True if the single theme collection bottom sheet is displayed for
+     *     the first time.
+     */
+    private void fetchImagesForCollection(
+            @SheetState int previousBottomSheetState, boolean isDisplayedFirstTime) {
         mNtpThemeBridge.getBackgroundImages(
                 mThemeCollectionId,
                 (images) -> {
@@ -153,6 +172,13 @@ public class NtpSingleThemeCollectionCoordinator {
                         mThemeCollectionImageList.addAll(images);
                     }
                     mNtpThemeCollectionsAdapter.setItems(mThemeCollectionImageList);
+
+                    if (previousBottomSheetState == SheetState.HALF || isDisplayedFirstTime) {
+                        // The single theme collection bottom sheet will be shown in a half state if
+                        // it's either displayed for the first time or if the previous theme
+                        // collections bottom sheet was in a half state.
+                        mBottomSheetDelegate.getBottomSheetController().expandSheet();
+                    }
                 });
     }
 

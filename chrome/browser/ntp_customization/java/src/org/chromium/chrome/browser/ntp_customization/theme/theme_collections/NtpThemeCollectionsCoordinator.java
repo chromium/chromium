@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -38,6 +39,7 @@ public class NtpThemeCollectionsCoordinator {
     // TODO(crbug.com/423579377): Update the url for learn more button.
     private static final String LEARN_MORE_CLICK_URL =
             "https://support.google.com/chrome/?p=new_tab";
+    private static final int RECYCLE_VIEW_SPAN_COUNT = 3;
 
     private final List<BackgroundCollection> mThemeCollectionsList = new ArrayList<>();
     private final BottomSheetDelegate mBottomSheetDelegate;
@@ -86,7 +88,7 @@ public class NtpThemeCollectionsCoordinator {
                 mNtpThemeCollectionsBottomSheetView.findViewById(
                         R.id.theme_collections_recycler_view);
         mThemeCollectionsBottomSheetRecyclerView.setLayoutManager(
-                new GridLayoutManager(context, /* spanCount= */ 2));
+                new GridLayoutManager(context, RECYCLE_VIEW_SPAN_COUNT));
         mNtpThemeCollectionsAdapter =
                 new NtpThemeCollectionsAdapter(
                         mThemeCollectionsList,
@@ -103,6 +105,8 @@ public class NtpThemeCollectionsCoordinator {
                         mThemeCollectionsList.addAll(collections);
                     }
                     mNtpThemeCollectionsAdapter.setItems(mThemeCollectionsList);
+                    // Once items are loaded, expand to the half state.
+                    delegate.getBottomSheetController().expandSheet();
                 });
     }
 
@@ -131,9 +135,12 @@ public class NtpThemeCollectionsCoordinator {
         String collectionId = collection.id;
         String themeCollectionTitle = collection.label;
 
+        @SheetState
+        int currentBottomSheetState =
+                mBottomSheetDelegate.getBottomSheetController().getSheetState();
         if (mNtpSingleThemeCollectionCoordinator != null) {
             mNtpSingleThemeCollectionCoordinator.updateThemeCollection(
-                    collectionId, themeCollectionTitle);
+                    collectionId, themeCollectionTitle, currentBottomSheetState);
         } else {
             mNtpSingleThemeCollectionCoordinator =
                     new NtpSingleThemeCollectionCoordinator(
@@ -142,7 +149,8 @@ public class NtpThemeCollectionsCoordinator {
                             mNtpThemeBridge,
                             mImageFetcher,
                             collectionId,
-                            themeCollectionTitle);
+                            themeCollectionTitle,
+                            currentBottomSheetState);
         }
 
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.SINGLE_THEME_COLLECTION);

@@ -5,11 +5,15 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ntp_customization_feed_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom">
@@ -100,3 +104,5 @@ found in the LICENSE file.
     </org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

@@ -72,6 +72,7 @@ android_library("java") {
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/ui/android/omnibox:java_resources",
     "//chrome/browser/util:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:java_resources",

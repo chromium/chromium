@@ -10,6 +10,10 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ntp_customization_theme_bottom_sheet_layout"
     android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom">
 
@@ -66,5 +70,7 @@ found in the LICENSE file.
       app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title"
       app:layout_constraintStart_toStartOf="parent">
     </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 </org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBottomSheetView>

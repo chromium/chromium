@@ -1353,20 +1353,38 @@
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page customization main bottom sheet is fully opened.">
         Customize your new tab page bottom sheet opened at full height
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_OPENED_HALF" desc="Accessibility string that describes the new tab page customization main bottom sheet is fully opened.">
+        Customize your new tab page bottom sheet opened at half height
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_MVT_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the mvt bottom sheet is fully opened." is_accessibility_with_no_ui="true">
         my shortcuts bottom sheet opened at full height
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MVT_BOTTOM_SHEET_OPENED_HALF" desc="Accessibility string that describes the mvt bottom sheet is fully opened." is_accessibility_with_no_ui="true">
+        my shortcuts bottom sheet opened at half height
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_NTP_CARDS_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page cards bottom sheet is fully opened.">
         New tab page cards bottom sheet opened at full height
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_NTP_CARDS_BOTTOM_SHEET_OPENED_HALF" desc="Accessibility string that describes the new tab page cards bottom sheet is fully opened.">
+        New tab page cards bottom sheet opened at half height
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_FEED_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the feed bottom sheet is fully opened.">
         Discover feed bottom sheet opened at full height
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_BOTTOM_SHEET_OPENED_HALF" desc="Accessibility string that describes the feed bottom sheet is fully opened.">
+        Discover feed bottom sheet opened at half height
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_THEME_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page appearance bottom sheet is fully opened.">
         New tab page appearance bottom sheet opened at full height
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_BOTTOM_SHEET_OPENED_HALF" desc="Accessibility string that describes the new tab page appearance bottom sheet is fully opened.">
+        New tab page appearance bottom sheet opened at half height
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_CHROME_COLORS_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page appearance bottom sheet is fully opened.">
         Chrome colors bottom sheet opened at full height
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_CHROME_COLORS_BOTTOM_SHEET_OPENED_HALF" desc="Accessibility string that describes the new tab page appearance bottom sheet is fully opened.">
+        Chrome colors bottom sheet opened at half height
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CLOSED" desc="Accessibility string that describes a new tab page customization bottom sheet is closed">
         Customize your new tab page bottom sheet closed
@@ -1421,6 +1439,9 @@
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page appearance theme collections bottom sheet is fully opened.">
         New tab page appearance theme collections bottom sheet opened at full height
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_BOTTOM_SHEET_OPENED_HALF" desc="Accessibility string that describes the new tab page appearance theme collections bottom sheet is fully opened.">
+        New tab page appearance theme collections bottom sheet opened at half height
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_DAILY_UPDATE" desc="Title of the toggle switch for updating theme collection background daily">
         Refresh daily

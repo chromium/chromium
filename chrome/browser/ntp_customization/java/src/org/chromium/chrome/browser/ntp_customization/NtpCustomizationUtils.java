@@ -151,6 +151,34 @@ public class NtpCustomizationUtils {
         }
     }
 
+    /**
+     * Returns the resource ID for the accessibility string announced when the bottom sheet is half
+     * expanded.
+     */
+    public static int getSheetHalfHeightAccessibilityStringId(
+            @NtpCustomizationCoordinator.BottomSheetType int type) {
+        switch (type) {
+            case MAIN:
+                return R.string.ntp_customization_main_bottom_sheet_opened_half;
+            case MVT:
+                return R.string.ntp_customization_mvt_bottom_sheet_opened_half;
+            case NTP_CARDS:
+                return R.string.ntp_customization_ntp_cards_bottom_sheet_opened_half;
+            case FEED:
+                return R.string.ntp_customization_feed_bottom_sheet_opened_half;
+            case THEME:
+                return R.string.ntp_customization_theme_bottom_sheet_opened_half;
+            case THEME_COLLECTIONS:
+            case SINGLE_THEME_COLLECTION:
+                return R.string.ntp_customization_theme_collections_bottom_sheet_opened_half;
+            case CHROME_COLORS:
+                return R.string.ntp_customization_chrome_colors_bottom_sheet_opened_half;
+            default:
+                assert false : "Bottom sheet type not supported!";
+                return -1;
+        }
+    }
+
     // Launch a new activity in the same task with the given uri as a CCT.
     public static void launchUriActivity(Context context, String uri) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();

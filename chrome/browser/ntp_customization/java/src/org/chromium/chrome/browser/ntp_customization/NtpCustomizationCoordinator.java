@@ -49,6 +49,7 @@ public class NtpCustomizationCoordinator {
     private final BottomSheetDelegate mDelegate;
 
     private final Context mContext;
+    private final BottomSheetController mBottomSheetController;
     private final Supplier<Profile> mProfileSupplier;
     private final int mBottomSheetType;
     private NtpCustomizationMediator mMediator;
@@ -118,6 +119,7 @@ public class NtpCustomizationCoordinator {
             Supplier<Profile> profileSupplier,
             @BottomSheetType int bottomSheetType) {
         mContext = context;
+        mBottomSheetController = bottomSheetController;
         mProfileSupplier = profileSupplier;
         mBottomSheetType = bottomSheetType;
         View contentView =
@@ -182,6 +184,8 @@ public class NtpCustomizationCoordinator {
     NtpCustomizationBottomSheetContent initBottomSheetContent(View contentView) {
         return new NtpCustomizationBottomSheetContent(
                 contentView,
+                () -> mBottomSheetController.getContainerHeight(),
+                () -> mBottomSheetController.getMaxSheetWidth(),
                 mBottomSheetType == MAIN
                         ? () -> mMediator.backPressOnCurrentBottomSheet()
                         : () -> mMediator.dismissBottomSheet(/* animate= */ true),
@@ -293,6 +297,11 @@ public class NtpCustomizationCoordinator {
             @Override
             public void showBottomSheet(@BottomSheetType int type) {
                 mMediator.showBottomSheet(type);
+            }
+
+            @Override
+            public BottomSheetController getBottomSheetController() {
+                return mBottomSheetController;
             }
         };
     }

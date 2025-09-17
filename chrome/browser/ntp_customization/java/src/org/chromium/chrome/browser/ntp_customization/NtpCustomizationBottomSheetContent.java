@@ -4,13 +4,19 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 import java.util.function.Supplier;
@@ -18,22 +24,36 @@ import java.util.function.Supplier;
 /** Bottom sheet content of the NTP customization. */
 @NullMarked
 public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
+
+    public static final float MAX_HEIGHT_RATIO = (float) (2.0 / 3);
     private final View mContentView;
     private final Runnable mBackPressRunnable;
     private final Runnable mOnDestroyRunnable;
     private ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier;
     private Supplier<Integer> mCurrentBottomSheetTypeSupplier;
+    private final Supplier<Integer> mContainerHeightSupplier;
+    private final Supplier<Integer> mMaxSheetWidthSupplier;
+    private final int mNtpCustomizationBottomSheetBottomPadding;
 
     NtpCustomizationBottomSheetContent(
             View contentView,
+            Supplier<Integer> containerHeightSupplier,
+            Supplier<Integer> maxSheetWidthSupplier,
             Runnable backPressRunnable,
             Runnable onDestroy,
             Supplier<Integer> currentBottomSheetTypeSupplier) {
         mContentView = contentView;
+        mContainerHeightSupplier = containerHeightSupplier;
+        mMaxSheetWidthSupplier = maxSheetWidthSupplier;
         mBackPressRunnable = backPressRunnable;
         mBackPressStateChangedSupplier = new ObservableSupplierImpl<>();
         mOnDestroyRunnable = onDestroy;
         mCurrentBottomSheetTypeSupplier = currentBottomSheetTypeSupplier;
+        mNtpCustomizationBottomSheetBottomPadding =
+                mContentView
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.ntp_customization_bottom_sheet_layout_padding_bottom);
     }
 
     @Override
@@ -48,7 +68,12 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
-        return mContentView.findViewById(R.id.bottom_sheet_container).getScrollY();
+        RecyclerView recyclerView = getActiveRecyclerView();
+        if (recyclerView != null) {
+            return recyclerView.computeVerticalScrollOffset();
+        }
+
+        return mContentView.findViewById(R.id.ntp_customization_view_flipper).getScrollY();
     }
 
     @Override
@@ -67,7 +92,36 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public float getHalfHeightRatio() {
+        float containerHeight = mContainerHeightSupplier.get();
+
+        assert containerHeight != 0;
+
+        RecyclerView recyclerView = getActiveRecyclerView();
+        if (recyclerView != null) {
+            float contentRatio = getContentHeight(recyclerView) / containerHeight;
+            if (contentRatio > 0.5) {
+                return 0.5f;
+            }
+        }
+
+        return HeightMode.DISABLED;
+    }
+
+    @Override
     public float getFullHeightRatio() {
+        float containerHeight = mContainerHeightSupplier.get();
+
+        assert containerHeight != 0;
+
+        RecyclerView recyclerView = getActiveRecyclerView();
+        if (recyclerView != null) {
+            float contentRatio = getContentHeight(recyclerView) / containerHeight;
+            if (contentRatio > 0.5) {
+                return Math.min(contentRatio, MAX_HEIGHT_RATIO);
+            }
+        }
+
         return BottomSheetContent.HeightMode.WRAP_CONTENT;
     }
 
@@ -96,9 +150,8 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        // Half-height is disabled so no need for an accessibility string.
-        assert false : "This method should not be called";
-        return Resources.ID_NULL;
+        return NtpCustomizationUtils.getSheetHalfHeightAccessibilityStringId(
+                mCurrentBottomSheetTypeSupplier.get());
     }
 
     @Override
@@ -124,6 +177,84 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
         // Sets the value in the supplier to false to indicate that back press should not be handled
         // by the bottom sheet.
         mBackPressStateChangedSupplier.set(false);
+    }
+
+    /**
+     * Calculates the height of the content view and adjusts the RecyclerView's bottom padding to
+     * ensure content doesn't overflow the maximum allowed height.
+     *
+     * @param recyclerView The RecyclerView currently displayed in the bottom sheet.
+     */
+    private int getContentHeight(RecyclerView recyclerView) {
+        int containerHeight = mContainerHeightSupplier.get();
+
+        int widthSpec =
+                View.MeasureSpec.makeMeasureSpec(
+                        mMaxSheetWidthSupplier.get(), View.MeasureSpec.EXACTLY);
+        int heightSpec =
+                View.MeasureSpec.makeMeasureSpec(
+                        containerHeight - mNtpCustomizationBottomSheetBottomPadding,
+                        View.MeasureSpec.AT_MOST);
+        mContentView.measure(widthSpec, heightSpec);
+
+        int recyclerViewBottomPadding = 0;
+        if (getRecycleViewBottom() > getMaxHeight()) {
+            recyclerViewBottomPadding = (int) Math.ceil(getRecycleViewBottom() - getMaxHeight());
+        }
+        recyclerView.setPaddingRelative(
+                recyclerView.getPaddingStart(),
+                recyclerView.getPaddingTop(),
+                recyclerView.getPaddingEnd(),
+                recyclerViewBottomPadding);
+
+        return mContentView.getMeasuredHeight();
+    }
+
+    /**
+     * Calculates the maximum height the bottom sheet content should occupy, based on the container
+     * height and a predefined maximum ratio.
+     */
+    private float getMaxHeight() {
+        float containerHeight = mContainerHeightSupplier.get();
+        return MAX_HEIGHT_RATIO * containerHeight;
+    }
+
+    /** Calculates the position of the recycler view's bottom edge. */
+    private int getRecycleViewBottom() {
+        @BottomSheetType int bottomSheetType = mCurrentBottomSheetTypeSupplier.get();
+        View header = null;
+        // TODO(crbug.com/423579377): Pass in a delegate here will make it easier to support other
+        // bottom sheets later on.
+        if (bottomSheetType == THEME_COLLECTIONS) {
+            header = mContentView.findViewById(R.id.theme_collections_bottom_sheet_header);
+        } else if (bottomSheetType == SINGLE_THEME_COLLECTION) {
+            header = mContentView.findViewById(R.id.single_theme_collection_bottom_sheet_header);
+        }
+
+        RecyclerView recyclerView = getActiveRecyclerView();
+
+        assert header != null;
+        assert recyclerView != null;
+
+        ViewGroup.MarginLayoutParams recyclerViewMarginLayoutParams =
+                (ViewGroup.MarginLayoutParams) recyclerView.getLayoutParams();
+
+        return header.getMeasuredHeight()
+                + recyclerView.getMeasuredHeight()
+                + recyclerViewMarginLayoutParams.topMargin;
+    }
+
+    /** Retrieves the currently active RecyclerView based on the bottom sheet's state. */
+    @Nullable RecyclerView getActiveRecyclerView() {
+        // TODO(crbug.com/423579377): Pass in a delegate here will make it easier to support other
+        // bottom sheets later on.
+        @BottomSheetType int bottomSheetType = mCurrentBottomSheetTypeSupplier.get();
+        if (bottomSheetType == THEME_COLLECTIONS) {
+            return mContentView.findViewById(R.id.theme_collections_recycler_view);
+        } else if (bottomSheetType == SINGLE_THEME_COLLECTION) {
+            return mContentView.findViewById(R.id.single_theme_collection_recycler_view);
+        }
+        return null;
     }
 
     void setBackPressStateChangedSupplierForTesting(ObservableSupplierImpl<Boolean> supplier) {

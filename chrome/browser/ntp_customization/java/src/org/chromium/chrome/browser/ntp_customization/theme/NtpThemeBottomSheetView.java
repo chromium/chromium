@@ -16,8 +16,8 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.N
 
 /** The view of the "New tab page appearance" bottom sheet. */
 @NullMarked
-public class NtpThemeBottomSheetView extends ConstraintLayout {
+public class NtpThemeBottomSheetView extends ScrollView {
     private NtpThemeListItemView mChromeDefaultSection;
     private NtpThemeListItemView mUploadImageSection;
     private NtpThemeListItemView mChromeColorsSection;
