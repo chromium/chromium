@@ -271,6 +271,15 @@ export class TraceRecorderElement extends CrLitElement {
     return this.isCategoryForced(category);
   }
 
+  protected canonicalCategoryName(category: TraceCategory): string {
+    const disabledPrefix = 'disabled-by-default-';
+    if (category.name.startsWith(disabledPrefix)) {
+      const mainPart = category.name.substring(disabledPrefix.length);
+      return `${mainPart} (disabled-by-default)`;
+    }
+    return category.name;
+  }
+
   protected isCategoryForced(category: TraceCategory): boolean {
     for (const tag of category.tags) {
       if (this.disabledTags.has(tag)) {

@@ -171,7 +171,7 @@ function getTrackEventCategoriesCardHtml(this: TraceRecorderElement) {
                 .checked="${this.isCategoryEnabled(category)}"
                 @change="${
                   (e: Event) => this.onCategoryChange_(e, category.name)}"/>
-              <div>${category.name}</div>
+              <div>${this.canonicalCategoryName(category)}</div>
               <div>${category.tags.join(', ')}</div>
               <div>${category.description}</div>
             </div>
