@@ -1567,6 +1567,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          chrome::kGoogleAccountHomeAddressURL);
   html_source->AddString("googleAccountWorkAddressUrl",
                          chrome::kGoogleAccountWorkAddressURL);
+  html_source->AddString("googleAccountNameEmailAddressEditUrl",
+                         chrome::kGoogleAccountNameEmailAddressEditURL);
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

@@ -110,7 +110,7 @@
       </div>
     </div>
     <cr-action-menu id="addressSharedMenu" role-description="$i18n{menu}">
-      <template is="dom-if" if="[[isHomeOrWorkAddress]]" restamp>
+      <template is="dom-if" if="[[isGoogleProfileAddress]]" restamp>
         <button
             id="menuEditAddress"
             class="dropdown-item external-link-style"
@@ -127,7 +127,7 @@
         </button>
       </template>
 
-      <template is="dom-if" if="[[!isHomeOrWorkAddress]]" restamp>
+      <template is="dom-if" if="[[!isGoogleProfileAddress]]" restamp>
         <button id="menuEditAddress" class="dropdown-item"
             on-click="onMenuEditAddressClick_">$i18n{edit}</button>
 
