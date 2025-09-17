@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/cancelable_callback.h"
 #include "base/feature_list.h"
@@ -49,6 +50,8 @@ class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
 
+// LINT.IfChange(ShouldShowChromeSigninBubbleWithReason)
+
 // This enum gets the result of `MaybeShouldShowChromeSigninBubble()`, which
 // could be `ShouldShow` or `ShouldNotShow`. When the result is `ShouldNotShow`
 // the reason is also added to differentiate the cases of not showing the
@@ -66,9 +69,12 @@ enum class ShouldShowChromeSigninBubbleWithReason {
   kShouldNotShowUnknownAccessPoint = 4,
   kShouldNotShowNotFromWebSignin = 5,
   kShouldNotShowUserChoice = 6,
+  kShouldNotShowSigninDisallowed = 7,
 
-  kMaxValue = kShouldNotShowUserChoice,
+  kMaxValue = kShouldNotShowSigninDisallowed,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ShouldShowChromeSigninBubbleWithReason)
 
 // Supervision state of the user who is shown the sign-in intercept bubble.
 // These values are logged to UMA. Entries should not be renumbered and
@@ -265,7 +271,8 @@ class DiceWebSigninInterceptor : public KeyedService,
       const AccountInfo& intercepted_account_info) const;
   bool ShouldShowMultiUserBubble(
       const AccountInfo& intercepted_account_info) const;
-  bool ShouldShowChromeSigninBubble(const GaiaId& gaia_id);
+  bool ShouldShowChromeSigninBubble(const GaiaId& gaia_id,
+                                    const std::string& email);
 
   // Helper function to call `delegate_->ShowSigninInterceptionBubble()`.
   void ShowSigninInterceptionBubble(

@@ -71,6 +71,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -1484,6 +1485,44 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetChromeSigninUserChoicePref(info),
             ChromeSigninUserChoice::kAlwaysAsk);
 }
+
+// Test fixture for the parameterized `SigninNotAllowedByPattern` test.
+struct SigninNotAllowedByPatternTestParams {
+  const char* const email;
+  const bool expect_bubble_shown;
+};
+
+class DiceWebSigninInterceptorSigninNotAllowedByPatternBrowserTest
+    : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest,
+      public testing::WithParamInterface<SigninNotAllowedByPatternTestParams> {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+};
+
+IN_PROC_BROWSER_TEST_P(
+    DiceWebSigninInterceptorSigninNotAllowedByPatternBrowserTest,
+    SigninNotAllowedByPattern) {
+  const SigninNotAllowedByPatternTestParams& params = GetParam();
+  // Set the signin pattern to allow only @example.com accounts.
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, ".*@example.com");
+
+  // Create an account with the email from the test parameters.
+  AccountInfo account_info =
+      MakeAccountInfoAvailableAndUpdate(params.email, kNoHostedDomainFound);
+  FakeDiceWebSigninInterceptorDelegate* delegate =
+      ShowSigninBubble(account_info, /*expected_result=*/std::nullopt);
+
+  EXPECT_EQ(delegate->intercept_bubble_shown(), params.expect_bubble_shown);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DiceWebSigninInterceptorSigninNotAllowedByPatternBrowserTest,
+    testing::Values(
+        SigninNotAllowedByPatternTestParams{"test@gmail.com", false},
+        SigninNotAllowedByPatternTestParams{"test@example.com", true}));
 
 // Test Suite where PRE_* tests are with explicit signin disabled, and regular
 // test with explicit signin enabled, simulating users transitioning in to
