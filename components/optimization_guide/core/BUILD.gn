@@ -324,6 +324,12 @@ source_set("model_execution") {
       "//third_party/re2",
       "//third_party/tflite:buildflags",
     ]
+    if (is_android) {
+      sources += [
+        "model_execution/android/model_broker_android.cc",
+        "model_execution/android/model_broker_android.h",
+      ]
+    }
   }
 }
 
@@ -719,6 +725,9 @@ source_set("model_execution_unit_tests") {
       "//services/on_device_model/public/mojom",
       "//third_party/tflite:buildflags",
     ]
+    if (is_android) {
+      sources += [ "model_execution/android/model_broker_android_unittest.cc" ]
+    }
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
