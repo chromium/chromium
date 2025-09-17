@@ -56,7 +56,6 @@ class WebGraphicsContext3DProviderForTests
   gpu::gles2::GLES2Interface* ContextGL() override { return gl_.get(); }
   gpu::raster::RasterInterface* RasterInterface() override { return nullptr; }
   bool IsContextLost() override { return false; }
-  GrDirectContext* GetGrContext() override { return nullptr; }
   gpu::webgpu::WebGPUInterface* WebGPUInterface() override {
     return webgpu_.get();
   }

@@ -50,7 +50,6 @@ class WebGraphicsContext3DProviderImpl
   gpu::webgpu::WebGPUInterface* WebGPUInterface() override;
   gpu::ContextSupport* ContextSupport() override;
   bool IsContextLost() override;
-  GrDirectContext* GetGrContext() override;
   const gpu::Capabilities& GetCapabilities() const override;
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
   const blink::WebglPreferences& GetWebglPreferences() const override;

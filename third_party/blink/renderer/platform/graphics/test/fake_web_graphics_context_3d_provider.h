@@ -71,8 +71,6 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
 
   ~FakeWebGraphicsContext3DProvider() override = default;
 
-  GrDirectContext* GetGrContext() override { return nullptr; }
-
   const gpu::Capabilities& GetCapabilities() const override {
     return capabilities_;
   }

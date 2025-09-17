@@ -68,13 +68,6 @@ bool WebGraphicsContext3DProviderImpl::IsContextLost() {
          RasterInterface()->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-GrDirectContext* WebGraphicsContext3DProviderImpl::GetGrContext() {
-  // Non-OOP-R is no longer supported, and ContextProviderCommandBuffer does
-  // not hold a GrDirectContext.
-  // TODO(crbug.com/391648152): Eliminate this method entirely.
-  return nullptr;
-}
-
 const gpu::Capabilities& WebGraphicsContext3DProviderImpl::GetCapabilities()
     const {
   return provider_->ContextCapabilities();
