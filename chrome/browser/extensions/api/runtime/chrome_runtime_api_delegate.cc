@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -33,6 +34,7 @@
 #include "extensions/browser/warning_set.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -385,7 +387,12 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
     NOTREACHED();
   }
 
-  info->nacl_arch = GetPlatformInfoNaClArch();
+  // Only include nacl_arch in the info if it's supported. The field is
+  // optional in the schema specification, so it's okay to omit it.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kApiRuntimeGetPlatformInfoNaClArch)) {
+    info->nacl_arch = GetPlatformInfoNaClArch();
+  }
 
   return true;
 }

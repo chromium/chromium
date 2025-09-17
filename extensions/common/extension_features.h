@@ -69,6 +69,10 @@ BASE_DECLARE_FEATURE(kApiOdfsConfigPrivate);
 // `enterprise.reportingPrivate.onDataMaskingRulesTriggered` API.
 BASE_DECLARE_FEATURE(kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered);
 
+// Controls the availability of the deprecated nacl_arch in
+// runtime.getPlatformInfo() API.
+BASE_DECLARE_FEATURE(kApiRuntimeGetPlatformInfoNaClArch);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////

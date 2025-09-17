@@ -5,6 +5,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -44,6 +45,7 @@
 #include "extensions/browser/script_executor.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -78,7 +80,7 @@ class RuntimeApiTest : public ExtensionApiTest,
   }
 };
 
-// Android only supports MV3 and later, therefor don't need to test for
+// Android only supports MV3 and later, therefore don't need to test for
 // persistent background context.
 #if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -119,9 +121,54 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUninstallURL) {
   ASSERT_TRUE(RunExtensionTest("runtime/uninstall_url")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(RuntimeApiTest, GetPlatformInfo) {
-  ASSERT_TRUE(RunExtensionTest("runtime/get_platform_info")) << message_;
+class RuntimeGetPlatformInfoTest
+    : public ExtensionApiTest,
+      public testing::WithParamInterface<std::tuple<ContextType, bool>> {
+ public:
+  RuntimeGetPlatformInfoTest()
+      : ExtensionApiTest(std::get<ContextType>(GetParam())) {
+    if (std::get<bool>(GetParam())) {
+      feature_list_.InitAndEnableFeature(
+          extensions_features::kApiRuntimeGetPlatformInfoNaClArch);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          extensions_features::kApiRuntimeGetPlatformInfoNaClArch);
+    }
+  }
+  ~RuntimeGetPlatformInfoTest() override = default;
+  RuntimeGetPlatformInfoTest(const RuntimeGetPlatformInfoTest&) = delete;
+  RuntimeGetPlatformInfoTest& operator=(const RuntimeGetPlatformInfoTest&) =
+      delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(RuntimeGetPlatformInfoTest, GetPlatformInfo) {
+  {
+    if (!std::get<bool>(GetParam())) {
+      SetCustomArg("NaCl Arch unavailable");
+    }
+    ASSERT_TRUE(RunExtensionTest("runtime/get_platform_info")) << message_;
+  }
 }
+
+// Android only supports MV3 and later, therefore don't need to test for
+// persistent background context.
+#if !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackground,
+    RuntimeGetPlatformInfoTest,
+    ::testing::Values(std::make_tuple(ContextType::kPersistentBackground, true),
+                      std::make_tuple(ContextType::kPersistentBackground,
+                                      false)));
+#endif
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    RuntimeGetPlatformInfoTest,
+    ::testing::Values(std::make_tuple(ContextType::kServiceWorker, true),
+                      std::make_tuple(ContextType::kServiceWorker, false)));
 
 namespace {
 
@@ -192,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeOpenOptionsPageError) {
   ASSERT_TRUE(RunExtensionTest("runtime/open_options_page_error"));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeGetPlatformInfo) {
+IN_PROC_BROWSER_TEST_P(RuntimeGetPlatformInfoTest,
+                       ChromeRuntimeGetPlatformInfo) {
   base::Value::Dict dict =
       api_test_utils::ToDict(api_test_utils::RunFunctionAndReturnSingleResult(
           new RuntimeGetPlatformInfoFunction(), "[]", profile()));
@@ -202,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeGetPlatformInfo) {
   // Native Client had never supported RISC-V ISA or Android OS.
   EXPECT_FALSE(dict.contains("nacl_arch"));
 #else
-  EXPECT_TRUE(dict.contains("nacl_arch"));
+  EXPECT_EQ(dict.contains("nacl_arch"), std::get<bool>(GetParam()));
 #endif
 }
 
