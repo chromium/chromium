@@ -40,6 +40,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
@@ -1808,6 +1809,44 @@ public class BookmarkTest {
                                     : 0;
                     assertEquals(bottomInset, recyclerView.getPaddingBottom());
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    public void testEdgeToEdge_editView() throws Exception {
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
+        openBookmarkManager();
+        BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
+
+        // Click the edit button for the bookmark.
+        ImprovedBookmarkRow row = getNthBookmarkRow(1);
+        View more = row.findViewById(R.id.more);
+        runOnUiThreadBlocking(more::callOnClick);
+        onView(withText("Edit")).perform(click());
+
+        // Get the BookmarkEditActivity.
+        final BookmarkEditActivity editActivity =
+                (BookmarkEditActivity) ApplicationStatus.getLastTrackedFocusedActivity();
+
+        // Check the padding.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ScrollView scrollView = editActivity.getScrollViewForTesting();
+                    ObservableSupplier<EdgeToEdgeController> supplier =
+                            editActivity.getEdgeToEdgeSupplier();
+                    EdgeToEdgeController edgeToEdgeController =
+                            supplier == null ? null : supplier.get();
+                    int bottomInset =
+                            edgeToEdgeController != null && edgeToEdgeController.isDrawingToEdge()
+                                    ? edgeToEdgeController.getBottomInsetPx()
+                                    : 0;
+                    assertEquals(bottomInset, scrollView.getPaddingBottom());
+                });
+
+        // Need to manually finish the edit activity to fully clean up the test.
+        editActivity.finish();
     }
 
     private void openBookmarkManager() throws InterruptedException {

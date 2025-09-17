@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
@@ -38,12 +39,14 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowViewBinder;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
@@ -71,6 +74,8 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private BookmarkTextInputLayout mUrlEditText;
     private @Nullable MenuItem mDeleteButton;
     private FrameLayout mFolderPickerRowContainer;
+
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
             new BookmarkUiPrefs.Observer() {
@@ -152,7 +157,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
                         ShoppingServiceFactory.getForProfile(profile));
 
         mFolderPickerRowContainer = findViewById(R.id.folder_row_container);
-
+        mEdgeToEdgePadAdjuster =
+                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                        scrollView, getEdgeToEdgeSupplier());
         updateViewContent(false);
     }
 
@@ -229,6 +236,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
         if (mBookmarkUiPrefs != null) {
             mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
         }
+        if (mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
+        }
         super.onDestroy();
     }
 
@@ -245,6 +255,10 @@ public class BookmarkEditActivity extends SnackbarActivity {
     @VisibleForTesting
     @Nullable MenuItem getDeleteButton() {
         return mDeleteButton;
+    }
+
+    ScrollView getScrollViewForTesting() {
+        return findViewById(R.id.scroll_view);
     }
 
     private void updateFolderPickerRow(@BookmarkRowDisplayPref int displayPref) {
