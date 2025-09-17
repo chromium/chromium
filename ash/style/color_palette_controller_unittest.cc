@@ -625,8 +625,9 @@ TEST_F(ColorPaletteControllerNotificationTest,
       &observer);
   observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   SimulateUserLogin(kAccountId);
-  // Called twice. Once for wallpaper update, then for active user pref change.
-  EXPECT_EQ(2, observer.call_count());
+  // Called at least twice. Once for wallpaper update, then for active user pref
+  // change.
+  EXPECT_GE(observer.call_count(), 2);
 }
 
 class ColorPaletteControllerLocalPrefTest

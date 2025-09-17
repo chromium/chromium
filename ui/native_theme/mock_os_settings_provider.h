@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/os_settings_provider.h"
 
@@ -27,30 +28,41 @@ class COMPONENT_EXPORT(NATIVE_THEME) MockOsSettingsProvider
 
   // OsSettingsProvider:
   bool DarkColorSchemeAvailable() const override;
+  ColorProviderKey::UserColorSource PreferredColorSource() const override;
   NativeTheme::PreferredContrast PreferredContrast() const override;
   bool PrefersReducedTransparency() const override;
   bool PrefersInvertedColors() const override;
   bool ForcedColorsActive() const override;
+  std::optional<SkColor> AccentColor() const override;
   std::optional<SkColor> Color(ColorId color_id) const override;
+  std::optional<ColorProviderKey::SchemeVariant> SchemeVariant() const override;
   base::TimeDelta CaretBlinkInterval() const override;
 
   // Setters for all the above settings.
   void SetDarkColorSchemeAvailable(bool dark_color_scheme_available);
+  void SetPreferredColorSource(
+      ColorProviderKey::UserColorSource preferred_color_source);
   void SetPreferredContrast(NativeTheme::PreferredContrast preferred_contrast);
   void SetPrefersReducedTransparency(bool prefers_reduced_transparency);
   void SetPrefersInvertedColors(bool prefers_inverted_colors);
   void SetForcedColorsActive(bool forced_colors_active);
+  void SetAccentColor(SkColor accent_color);
   void SetColor(ColorId color_id, SkColor color);
+  void SetSchemeVariant(ColorProviderKey::SchemeVariant scheme_variant);
   void SetCaretBlinkInterval(base::TimeDelta caret_blink_interval);
 
  private:
   bool dark_color_scheme_available_ = true;
+  ColorProviderKey::UserColorSource preferred_color_source_ =
+      ColorProviderKey::UserColorSource::kBaseline;
   NativeTheme::PreferredContrast preferred_contrast_ =
       NativeTheme::PreferredContrast::kNoPreference;
   bool prefers_reduced_transparency_ = false;
   bool prefers_inverted_colors_ = false;
   bool forced_colors_active_ = false;
+  std::optional<SkColor> accent_color_;
   base::flat_map<ColorId, SkColor> colors_;
+  std::optional<ColorProviderKey::SchemeVariant> scheme_variant_;
   base::TimeDelta caret_blink_interval_ = kDefaultCaretBlinkInterval;
 };
 

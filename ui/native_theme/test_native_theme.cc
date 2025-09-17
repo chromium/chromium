@@ -6,7 +6,10 @@
 
 namespace ui {
 
-TestNativeTheme::TestNativeTheme() = default;
+TestNativeTheme::TestNativeTheme() {
+  BeginObservingOsSettingChanges();
+}
+
 TestNativeTheme::~TestNativeTheme() = default;
 
 void TestNativeTheme::SetPreferredColorScheme(

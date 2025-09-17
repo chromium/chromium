@@ -9,12 +9,9 @@
 
 #include <optional>
 
-#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "base/win/registry.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace ui {
@@ -61,17 +58,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   PreferredColorScheme CalculatePreferredColorScheme() const override;
   void CloseHandlesInternal();
 
-  // Updates `accent_color_`. If it changed, notifies callbacks.
-  void OnAccentColorMaybeChanged();
-
   void RegisterThemeRegkeyObserver();
   void UpdateDarkModeStatus();
 
   // Dark Mode registry key.
   base::win::RegKey hkcu_themes_regkey_;
-
-  // Accent color subscription.
-  base::CallbackListSubscription accent_color_subscription_;
 
   bool in_dark_mode_ = false;
 };

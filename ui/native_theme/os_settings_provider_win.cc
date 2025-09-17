@@ -18,6 +18,7 @@
 #include "base/win/dark_mode_support.h"
 #include "base/win/registry.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/win/accent_color_observer.h"
 #include "ui/color/win/native_color_mixers_win.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -57,6 +58,11 @@ bool OsSettingsProviderWin::DarkColorSchemeAvailable() const {
   return base::win::IsDarkModeAvailable();
 }
 
+ColorProviderKey::UserColorSource OsSettingsProviderWin::PreferredColorSource()
+    const {
+  return ColorProviderKey::UserColorSource::kBaseline;
+}
+
 bool OsSettingsProviderWin::PrefersReducedTransparency() const {
   return prefers_reduced_transparency_;
 }
@@ -67,6 +73,10 @@ bool OsSettingsProviderWin::PrefersInvertedColors() const {
 
 bool OsSettingsProviderWin::ForcedColorsActive() const {
   return forced_colors_active_;
+}
+
+std::optional<SkColor> OsSettingsProviderWin::AccentColor() const {
+  return accent_color_;
 }
 
 std::optional<SkColor> OsSettingsProviderWin::Color(ColorId color_id) const {
@@ -153,6 +163,13 @@ void OsSettingsProviderWin::UpdateForColorFilteringRegkey() {
   // 4 = Protanopia
   // 5 = Tritanopia
   prefers_inverted_colors_ = filter_type == 1;
+}
+
+void OsSettingsProviderWin::OnAccentColorMaybeChanged() {
+  const auto accent_color = AccentColorObserver::Get()->accent_color();
+  if (std::exchange(accent_color_, accent_color) != accent_color) {
+    NotifyOnSettingsChanged();
+  }
 }
 
 void OsSettingsProviderWin::UpdateColors() {

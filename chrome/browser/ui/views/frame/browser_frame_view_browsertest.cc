@@ -36,6 +36,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 namespace {
 
@@ -218,9 +219,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
 // Verifies that the incognito window frame is always the right color.
 IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, IncognitoIsCorrectColor) {
   // Set the color that's expected to be ignored.
-  auto* theme = ui::NativeTheme::GetInstanceForNativeUi();
-  theme->set_user_color(gfx::kGoogleBlue400);
-  theme->NotifyOnNativeThemeUpdated();
+  ui::MockOsSettingsProvider os_settings_provider;
+  os_settings_provider.SetAccentColor(gfx::kGoogleBlue400);
 
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
 

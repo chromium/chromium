@@ -83,6 +83,12 @@ TEST_F(NativeThemeTest, PreferredContrast) {
   EXPECT_EQ(native_theme->preferred_contrast(), kLess);
 }
 
+TEST_F(NativeThemeTest, UserColor) {
+  static constexpr auto kAccentColor = SkColorSetRGB(135, 115, 10);
+  os_settings_provider().SetAccentColor(kAccentColor);
+  EXPECT_EQ(kAccentColor, NativeTheme::GetInstanceForNativeUi()->user_color());
+}
+
 TEST_F(NativeThemeTest, CaretBlinkInterval) {
   auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
   static constexpr auto kNewInterval = base::Milliseconds(42);

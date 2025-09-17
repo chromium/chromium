@@ -6,6 +6,7 @@
 
 #include <array>
 #include <forward_list>
+#include <optional>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -17,6 +18,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -24,6 +26,8 @@
 // it in `Get()` below, we must have the full type definition.
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/native_theme/os_settings_provider_android.h"
+#elif BUILDFLAG(IS_CHROMEOS)
+#include "ui/native_theme/os_settings_provider_ash.h"
 #elif BUILDFLAG(IS_MAC)
 #include "ui/native_theme/os_settings_provider_mac.h"
 #elif BUILDFLAG(IS_WIN)
@@ -140,6 +144,11 @@ bool OsSettingsProvider::DarkColorSchemeAvailable() const {
   return true;
 }
 
+ColorProviderKey::UserColorSource OsSettingsProvider::PreferredColorSource()
+    const {
+  return ColorProviderKey::UserColorSource::kAccent;
+}
+
 NativeTheme::PreferredContrast OsSettingsProvider::PreferredContrast() const {
   if (ForcedColorsActive()) {
     // TODO(sartang@microsoft.com): Update the spec page at
@@ -196,7 +205,16 @@ bool OsSettingsProvider::ForcedColorsActive() const {
   return false;
 }
 
+std::optional<SkColor> OsSettingsProvider::AccentColor() const {
+  return std::nullopt;
+}
+
 std::optional<SkColor> OsSettingsProvider::Color(ColorId color_id) const {
+  return std::nullopt;
+}
+
+std::optional<ColorProviderKey::SchemeVariant>
+OsSettingsProvider::SchemeVariant() const {
   return std::nullopt;
 }
 

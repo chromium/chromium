@@ -488,19 +488,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     user_color_ = user_color;
   }
 
-  void set_should_use_system_accent_color(bool should_use_system_accent_color) {
-    should_use_system_accent_color_ = should_use_system_accent_color;
-  }
-  bool should_use_system_accent_color() const {
-    return should_use_system_accent_color_;
-  }
-
-  std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant() const {
+  std::optional<ColorProviderKey::SchemeVariant> scheme_variant() const {
     return scheme_variant_;
-  }
-  void set_scheme_variant(
-      std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant) {
-    scheme_variant_ = scheme_variant;
   }
 
   base::TimeDelta caret_blink_interval() const { return caret_blink_interval_; }
@@ -577,8 +566,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   bool prefers_reduced_transparency_ = false;
   bool inverted_colors_ = false;
   std::optional<SkColor> user_color_;
-  std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant_;
-  bool should_use_system_accent_color_ = true;
+  std::optional<ColorProviderKey::SchemeVariant> scheme_variant_;
+  ColorProviderKey::UserColorSource preferred_color_source_ =
+      ColorProviderKey::UserColorSource::kAccent;
   base::TimeDelta caret_blink_interval_;
 
   raw_ptr<NativeTheme> associated_web_instance_ = nullptr;

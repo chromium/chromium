@@ -37,6 +37,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/dynamic_color/palette_factory.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace content {
@@ -229,6 +230,10 @@ class ThemeColorPickerHandlerSetThemeTest
     : public ThemeColorPickerHandlerTest,
       public ::testing::WithParamInterface<ThemeUpdateSource> {
  protected:
+  ui::MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
+  }
+
   theme_color_picker::mojom::ThemePtr UpdateTheme() {
     // Flush any existing updates so the flush below only sees what results from
     // the update below.
@@ -259,6 +264,9 @@ class ThemeColorPickerHandlerSetThemeTest
     Mock::VerifyAndClearExpectations(&mock_client_);
     return theme;
   }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;
 };
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
@@ -386,7 +394,7 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingDeviceThemeGM3) {
       .WillByDefault(testing::Return(kUnusedColor));
   ON_CALL(mock_theme_service(), UsingDeviceTheme())
       .WillByDefault(testing::Return(true));
-  ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(kUsedColor);
+  os_settings_provider().SetAccentColor(kUsedColor);
 
   theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
   ASSERT_TRUE(theme);

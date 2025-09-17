@@ -62,6 +62,13 @@ component("native_theme") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "os_settings_provider_ash.cc",
+      "os_settings_provider_ash.h",
+    ]
+  }
+
   if (is_mac) {
     frameworks = [
       "Accessibility.framework",
@@ -89,7 +96,7 @@ component("native_theme") {
       "os_settings_provider_win.h",
     ]
 
-    deps += [ "//ui/color:accent_color_observer" ]
+    public_deps += [ "//ui/color:accent_color_observer" ]
 
     libs = [ "uxtheme.lib" ]
   }

@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace ui {
@@ -20,6 +21,9 @@ namespace ui {
 #if BUILDFLAG(IS_ANDROID)
 class OsSettingsProviderAndroid;
 using OsSettingsProviderImpl = OsSettingsProviderAndroid;
+#elif BUILDFLAG(IS_CHROMEOS)
+class OsSettingsProviderAsh;
+using OsSettingsProviderImpl = OsSettingsProviderAsh;
 #elif BUILDFLAG(IS_MAC)
 class OsSettingsProviderMac;
 using OsSettingsProviderImpl = OsSettingsProviderMac;
@@ -93,6 +97,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProvider {
   // theme; see comments on `PreferredColorScheme()` below.
   virtual bool DarkColorSchemeAvailable() const;
 
+  // Returns the appropriate material color palette source for this OS.
+  virtual ColorProviderKey::UserColorSource PreferredColorSource() const;
+
   // Returns OS-level preferred contrast, or `kNoPreference` if not
   // set/applicable. This is not affected by e.g.
   // `switches::kForceHighContrast`; that should be handled at the `NativeTheme`
@@ -113,8 +120,14 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProvider {
   // `NativeTheme` (i.e. caller) level.
   virtual bool ForcedColorsActive() const;
 
+  // Returns OS-level accent color, if any.
+  virtual std::optional<SkColor> AccentColor() const;
+
   // Returns OS-level colors, if available.
   virtual std::optional<SkColor> Color(ColorId color_id) const;
+
+  // Returns OS' current scheme variant, if any.
+  virtual std::optional<ColorProviderKey::SchemeVariant> SchemeVariant() const;
 
   // Returns the interval between caret blinks. If this is zero, the caret will
   // not blink.

@@ -256,13 +256,14 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   // even if the browser frame's color provider key does not change.
   //
   // When `ui::AccentColorObserver::accent_color()` itself changes, this happens
-  // anyway, because the change results in a call to
+  // anyway, because the change causes `ui::OsSettingsProviderWin` to call
   // `ui::NativeTheme::NotifyOnNativeThemeUpdated()`, which will also reset the
   // cache. However, changes to other accent-color-related state (e.g.
   // `ui::AccentColorObserver::accent_border_color()`) will not (and should not)
   // trigger this codepath, but can still affect the recipes below and thus
   // require a reset.
   EnsureColorProviderCacheWillBeResetWhenAccentColorStateChanges();
+
   ui::ColorMixer& mixer = provider->AddMixer();
 
   mixer[kColorAccentBorderActive] = {GetAccentBorderColor()};

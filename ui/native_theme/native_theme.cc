@@ -288,9 +288,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
   key.system_theme = system_theme();
   key.frame_type = use_custom_frame ? ColorProviderKey::FrameType::kChromium
                                     : ColorProviderKey::FrameType::kNative;
-  key.user_color_source = should_use_system_accent_color_
-                              ? ColorProviderKey::UserColorSource::kAccent
-                              : ColorProviderKey::UserColorSource::kBaseline;
+  key.user_color_source = preferred_color_source_;
   key.user_color = user_color();
   key.scheme_variant = scheme_variant();
   key.custom_theme = std::move(custom_theme);
@@ -376,12 +374,6 @@ bool NativeTheme::UpdateWebInstance() const {
   // Refactor to a settings struct or similar.
 
   bool updated_web_instance = false;
-  if (associated_web_instance_->should_use_system_accent_color() !=
-      should_use_system_accent_color()) {
-    associated_web_instance_->should_use_system_accent_color_ =
-        should_use_system_accent_color();
-    updated_web_instance = true;
-  }
   if (associated_web_instance_->forced_colors() != forced_colors()) {
     associated_web_instance_->forced_colors_ = forced_colors();
     updated_web_instance = true;
@@ -408,6 +400,15 @@ bool NativeTheme::UpdateWebInstance() const {
   }
   if (associated_web_instance_->user_color() != user_color()) {
     associated_web_instance_->user_color_ = user_color();
+    updated_web_instance = true;
+  }
+  if (associated_web_instance_->scheme_variant() != scheme_variant()) {
+    associated_web_instance_->scheme_variant_ = scheme_variant();
+    updated_web_instance = true;
+  }
+  if (associated_web_instance_->preferred_color_source_ !=
+      preferred_color_source_) {
+    associated_web_instance_->preferred_color_source_ = preferred_color_source_;
     updated_web_instance = true;
   }
   if (associated_web_instance_->caret_blink_interval() !=
@@ -460,14 +461,18 @@ bool NativeTheme::UpdateVariablesForToolkitSettings() {
 
   // Calculate updated values.
   const auto& os_settings_provider = OsSettingsProvider::Get();
-  const auto new_caret_blink_interval =
-      os_settings_provider.CaretBlinkInterval();
   const auto new_forced_colors = CalculateForcedColors();
   const auto new_preferred_color_scheme = CalculatePreferredColorScheme();
   const auto new_preferred_contrast = CalculatePreferredContrast();
   const auto new_prefers_reduced_transparency =
       os_settings_provider.PrefersReducedTransparency();
   const auto new_inverted_colors = os_settings_provider.PrefersInvertedColors();
+  const auto new_user_color = os_settings_provider.AccentColor();
+  const auto new_scheme_variant = os_settings_provider.SchemeVariant();
+  const auto new_preferred_color_source =
+      os_settings_provider.PreferredColorSource();
+  const auto new_caret_blink_interval =
+      os_settings_provider.CaretBlinkInterval();
 
   // Set updated values and see if anything changed.
   bool updated = false;
@@ -489,6 +494,18 @@ bool NativeTheme::UpdateVariablesForToolkitSettings() {
   }
   if (inverted_colors() != new_inverted_colors) {
     inverted_colors_ = new_inverted_colors;
+    updated = true;
+  }
+  if (user_color() != new_user_color) {
+    user_color_ = new_user_color;
+    updated = true;
+  }
+  if (scheme_variant() != new_scheme_variant) {
+    scheme_variant_ = new_scheme_variant;
+    updated = true;
+  }
+  if (preferred_color_source_ != new_preferred_color_source) {
+    preferred_color_source_ = new_preferred_color_source;
     updated = true;
   }
   if (caret_blink_interval() != new_caret_blink_interval) {
