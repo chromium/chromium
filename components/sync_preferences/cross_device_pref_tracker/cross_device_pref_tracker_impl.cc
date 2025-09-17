@@ -4,6 +4,11 @@
 
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker_impl.h"
 
+#include <algorithm>
+#include <functional>
+#include <iterator>
+#include <tuple>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
@@ -13,6 +18,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -54,9 +60,85 @@ constexpr char kUpdateTimeKey[] = "update_time";
 // values) and explicit local modifications.
 constexpr char kLastObservedChangeTimeKey[] = "last_observed_change_time";
 
+// Internal, sortable representation of a `TimestampedPrefValue`.
+//
+// This is a helper struct used to implement the tracker's Query API
+// (e.g., `GetValues()`, `GetMostRecentValue()`). It enables easier processing
+// of cross-device entries from the syncing pref dictionary before their
+// conversion to `TimestampedPrefValue` using `ToPublicApi()`.
+struct TimestampedPrefValueInternal {
+  // The stored preference value itself.
+  base::Value value;
+  // Timestamp indicating when the entry was last written to the dictionary.
+  base::Time update_timestamp;
+  // Timestamp indicating when the device info was last updated with the sync
+  // servers.
+  base::Time device_last_updated_timestamp;
+  // Timestamp indicating when the tracked pref was observed to change locally.
+  base::Time last_observed_change_time;
+
+  // Sort by most recent time. Primary key: `update_timestamp`. Secondary key:
+  // `device_last_updated_timestamp' (for tie-breakers).
+  auto operator<=>(const TimestampedPrefValueInternal& other) const {
+    return std::tie(update_timestamp, device_last_updated_timestamp) <=>
+           std::tie(other.update_timestamp,
+                    other.device_last_updated_timestamp);
+  }
+
+  // Converts the internal representation to the public API structure.
+  TimestampedPrefValue ToPublicApi() && {
+    return TimestampedPrefValue{std::move(value), last_observed_change_time};
+  }
+};
+
 // Helper to construct the cross-device pref name from a tracked pref name.
 std::string GetCrossDevicePrefName(std::string_view tracked_pref_name) {
+  CHECK(!tracked_pref_name.starts_with(kCrossDevicePrefPrefix))
+      << "Pref name '" << tracked_pref_name
+      << "' must not start with the reserved prefix '" << kCrossDevicePrefPrefix
+      << "'.";
+
   return base::StrCat({kCrossDevicePrefPrefix, tracked_pref_name});
+}
+
+// Helper to check if a `DeviceInfo` matches the provided filter criteria.
+bool DeviceMatchesFilter(const syncer::DeviceInfo& device_info,
+                         const CrossDevicePrefTracker::DeviceFilter& filter) {
+  if (filter.os_type.has_value() &&
+      device_info.os_type() != filter.os_type.value()) {
+    return false;
+  }
+
+  if (filter.form_factor.has_value() &&
+      device_info.form_factor() != filter.form_factor.value()) {
+    return false;
+  }
+
+  return true;
+}
+
+// Helper to parse a cross-device pref entry into the internal
+// `TimestampedPrefValueInternal` representation.
+std::optional<TimestampedPrefValueInternal> ParseCrossDevicePrefEntry(
+    const base::Value::Dict& cross_device_entry,
+    const syncer::DeviceInfo& device_info) {
+  const base::Value* value = cross_device_entry.Find(kValueKey);
+
+  std::optional<base::Time> update_timestamp =
+      base::ValueToTime(cross_device_entry.Find(kUpdateTimeKey));
+
+  if (!value || !update_timestamp.has_value()) {
+    return std::nullopt;
+  }
+
+  base::Time last_observed_change_time =
+      base::ValueToTime(cross_device_entry.Find(kLastObservedChangeTimeKey))
+          .value_or(base::Time());
+
+  // Populate all fields, including the tie-breaker.
+  return TimestampedPrefValueInternal{value->Clone(), update_timestamp.value(),
+                                      device_info.last_updated_timestamp(),
+                                      last_observed_change_time};
 }
 
 // Enforces the integrity of a pref mapping at startup to prevent runtime
@@ -184,6 +266,50 @@ void ApplyPrefChangeToCrossDevice(
   update->Set(cache_guid, std::move(entry));
 }
 
+// Retrieves, filters, and parses all valid cross-device pref entries that
+// match the provided `filter` criteria and are associated with known devices.
+std::vector<TimestampedPrefValueInternal>
+GetCrossDeviceEntriesMatchingDeviceFilter(
+    const PrefService& profile_pref_service,
+    syncer::DeviceInfoTracker* device_info_tracker,
+    std::string_view cross_device_pref_name,
+    const CrossDevicePrefTracker::DeviceFilter& filter) {
+  CHECK(device_info_tracker);
+
+  const PrefService::Preference* cross_device_pref =
+      profile_pref_service.FindPreference(cross_device_pref_name);
+
+  if (!cross_device_pref ||
+      cross_device_pref->GetType() != base::Value::Type::DICT) {
+    return {};
+  }
+
+  const base::Value::Dict& cross_device_dict =
+      profile_pref_service.GetDict(cross_device_pref_name);
+
+  std::vector<TimestampedPrefValueInternal> matching_cross_device_entries;
+
+  for (const auto [cache_guid, entry_value] : cross_device_dict) {
+    const syncer::DeviceInfo* device_info =
+        device_info_tracker->GetDeviceInfo(cache_guid);
+
+    if (!device_info || !DeviceMatchesFilter(*device_info, filter) ||
+        !entry_value.is_dict()) {
+      continue;
+    }
+
+    std::optional<TimestampedPrefValueInternal> parsed_cross_device_entry =
+        ParseCrossDevicePrefEntry(entry_value.GetDict(), *device_info);
+
+    if (parsed_cross_device_entry.has_value()) {
+      matching_cross_device_entries.push_back(
+          std::move(parsed_cross_device_entry.value()));
+    }
+  }
+
+  return matching_cross_device_entries;
+}
+
 }  // namespace
 
 CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
@@ -262,18 +388,56 @@ void CrossDevicePrefTrackerImpl::RemoveObserver(
 std::vector<TimestampedPrefValue> CrossDevicePrefTrackerImpl::GetValues(
     std::string_view pref_name,
     const DeviceFilter& filter) const {
-  // TODO(crbug.com/441330219): Implement the Query API.
+  CHECK(profile_pref_service_);
+  CHECK(device_info_sync_service_);
 
-  return {};
+  syncer::DeviceInfoTracker* device_info_tracker =
+      device_info_sync_service_->GetDeviceInfoTracker();
+
+  std::string cross_device_pref_name = GetCrossDevicePrefName(pref_name);
+
+  std::vector<TimestampedPrefValueInternal> matching_entries =
+      GetCrossDeviceEntriesMatchingDeviceFilter(*profile_pref_service_,
+                                                device_info_tracker,
+                                                cross_device_pref_name, filter);
+
+  std::sort(matching_entries.begin(), matching_entries.end(), std::greater<>());
+
+  std::vector<TimestampedPrefValue> results;
+  results.reserve(matching_entries.size());
+
+  for (auto& entry : matching_entries) {
+    results.push_back(std::move(entry).ToPublicApi());
+  }
+
+  return results;
 }
 
 std::optional<TimestampedPrefValue>
 CrossDevicePrefTrackerImpl::GetMostRecentValue(
     std::string_view pref_name,
     const DeviceFilter& filter) const {
-  // TODO(crbug.com/441330219): Implement the Query API.
+  CHECK(profile_pref_service_);
+  CHECK(device_info_sync_service_);
 
-  return std::nullopt;
+  syncer::DeviceInfoTracker* device_info_tracker =
+      device_info_sync_service_->GetDeviceInfoTracker();
+
+  std::string cross_device_pref_name = GetCrossDevicePrefName(pref_name);
+
+  std::vector<TimestampedPrefValueInternal> matching_entries =
+      GetCrossDeviceEntriesMatchingDeviceFilter(*profile_pref_service_,
+                                                device_info_tracker,
+                                                cross_device_pref_name, filter);
+
+  if (matching_entries.empty()) {
+    return std::nullopt;
+  }
+
+  auto most_recent_cross_device_entry =
+      std::max_element(matching_entries.begin(), matching_entries.end());
+
+  return std::move(*most_recent_cross_device_entry).ToPublicApi();
 }
 
 void CrossDevicePrefTrackerImpl::Shutdown() {
