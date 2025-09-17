@@ -595,7 +595,7 @@ __attribute__((always_inline)) uint8x16_t VectorReadGolombRiceSymbol(
             vshlq_u32(
                 vshlq_u32(accumulator[i], vreinterpretq_s32_u32(unary_len[i])),
                 vsubq_s32(vreinterpretq_s32_u32(binary_len[i]),
-                          dword_literal_32)));
+                          vreinterpretq_s32_u32(dword_literal_32))));
       },
       4)
 
@@ -752,7 +752,7 @@ __attribute__((always_inline)) uint8x16_t VectorFirstColPrediction(
   const uint8x16_t min_pred = vminq_u8(up, right);
   const uint8x16_t max_pred = vmaxq_u8(up, right);
   const uint8x16_t right_grad = vreinterpretq_u8_s8(vaddq_s8(
-      right, vsubq_s8(vreinterpretq_s8_u8(up), vreinterpretq_s8_u8(up_right))));
+      vreinterpretq_s8_u8(right), vsubq_s8(vreinterpretq_s8_u8(up), vreinterpretq_s8_u8(up_right))));
   const uint8x16_t up_right_above_max = vcgtq_u8(up_right, max_pred);
   const uint8x16_t up_right_below_min = vcltq_u8(up_right, min_pred);
   uint8x16_t pred = vbslq_u8(up_right_above_max, max_pred, min_pred);
