@@ -9,7 +9,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
@@ -18,38 +17,22 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 
-class Profile;
-class ToolbarButtonProvider;
-
-namespace content {
-class WebContents;
-}  // namespace content
-
-namespace content_settings {
-class CookieControlsController;
-}  // namespace content_settings
-
 // `CookieControlsPageActionController` is responsible for managing the cookie
 // controls page action, including logic for showing/hiding and executing the
 // page action.
 class CookieControlsPageActionController
     : public content_settings::CookieControlsObserver {
  public:
-  // An interface for interacting with the Cookie Controls bubble.
+  // An interface for fetching relevant Cookie Controls bubble state.
   class BubbleDelegate {
    public:
     virtual ~BubbleDelegate() = default;
     virtual bool IsReloading() = 0;
     virtual bool HasBubble() = 0;
-    virtual void ShowBubble(
-        ToolbarButtonProvider* toolbar_button_provider,
-        content::WebContents* web_contents,
-        content_settings::CookieControlsController* controller) = 0;
   };
 
   CookieControlsPageActionController(
       tabs::TabInterface& tab_interface,
-      Profile& profile,
       page_actions::PageActionController& page_action_controller);
 
   CookieControlsPageActionController(
@@ -58,8 +41,6 @@ class CookieControlsPageActionController
       const CookieControlsPageActionController&) = delete;
   ~CookieControlsPageActionController() override;
 
-  void Init();
-
   // CookieControlsObserver:
   void OnCookieControlsIconStatusChanged(
       bool icon_visible,
@@ -67,8 +48,6 @@ class CookieControlsPageActionController
       CookieBlocking3pcdStatus blocking_status,
       bool should_highlight) override;
   void OnFinishedPageReloadWithChangedSettings() override;
-
-  void ExecutePageAction(ToolbarButtonProvider* toolbar_button_provider);
 
   void set_bubble_delegate_for_testing(
       std::unique_ptr<BubbleDelegate> delegate) {
@@ -96,8 +75,6 @@ class CookieControlsPageActionController
 
   const raw_ref<tabs::TabInterface> tab_;
   const raw_ref<page_actions::PageActionController> page_action_controller_;
-  std::unique_ptr<content_settings::CookieControlsController>
-      cookie_controls_controller_;
   std::unique_ptr<BubbleDelegate> bubble_delegate_;
 
   // Tracks when an IPH is showing, ensuring the icon is highlighted.
@@ -105,11 +82,6 @@ class CookieControlsPageActionController
       std::nullopt;
 
   CookieControlsIconStatus icon_status_;
-
-  base::CallbackListSubscription will_discard_contents_subscription_;
-  base::ScopedObservation<content_settings::CookieControlsController,
-                          content_settings::CookieControlsObserver>
-      controller_observation_{this};
 
   base::WeakPtrFactory<CookieControlsPageActionController> weak_ptr_factory_{
       this};
