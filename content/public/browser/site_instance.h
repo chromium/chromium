@@ -52,11 +52,27 @@ using SiteInstanceGroupId = base::IdType32<class SiteInstanceGroupIdTag>;
 // and "registrable domain" (i.e., eTLD+1), not the full origin. For example,
 // https://dev.chromium.org would have a site of https://chromium.org. This
 // preserves compatibility with document.domain modifications, which allow
-// similar origin pages to script each other. (Note that there are many
-// exceptions, and the policy for determining site URLs is complex.) Meanwhile,
-// an "instance" is represented by the BrowsingInstance class, which includes
-// all frames that can find each other based on how they were created (e.g.,
-// window.open or targeted links).
+// same-site, cross-origin pages to script each other.
+//
+// Note that there are many exceptions to this eTLD+1 rule, and the policy for
+// determining site URLs is complex. In a growing number of cases, a
+// SiteInstance is keyed to its specific origin instead of its broader site.
+// For example:
+// 1. When the `Origin-Agent-Cluster: ?1` header is in effect.
+//    Note that it does not take effect if the page that serves the header
+//    wasn't the first page from that origin in the current BrowsingInstance.
+// 2. For content embedder declared origins that require dedicated processes via
+//    ContentBrowserClient::GetOriginsRequiringDedicatedProcess().
+// 3. For privileged internal schemes like `chrome://` and
+//    `chrome-extension://`.
+//    Note that having a origin-keyed SiteInstance does not mean each origin
+//    gets its own process in full site isolation mode. For example, WebUI pages
+//    from the `*.top-chrome` domains always share a process to reduce process
+//    startup delays.
+//
+// Meanwhile, an "instance" is represented by the BrowsingInstance class, which
+// includes all frames that can find each other based on how they were created
+// (e.g., window.open or targeted links).
 //
 // In practice, a SiteInstance may contain documents from more than a single
 // site, usually for compatibility or performance reasons. For example, on
