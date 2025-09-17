@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
@@ -125,7 +126,7 @@ class MockQueryController : public TestComposeboxQueryController {
               StartFileUploadFlow,
               (const base::UnguessableToken& file_token,
                std::unique_ptr<lens::ContextualInputData> contextual_input,
-               std::optional<composebox::ImageEncodingOptions> image_options));
+               std::optional<lens::ImageEncodingOptions> image_options));
   MOCK_METHOD(bool, DeleteFile, (const base::UnguessableToken&));
   MOCK_METHOD(void, ClearFiles, ());
   MOCK_METHOD(FileInfo*,
@@ -378,15 +379,14 @@ TEST_F(ComposeboxHandlerTest, AddFile_Image) {
   auto test_data_span = base::span<const uint8_t>(test_data);
   mojo_base::BigBuffer file_data(test_data_span);
 
-  std::optional<composebox::ImageEncodingOptions> image_options;
+  std::optional<lens::ImageEncodingOptions> image_options;
   base::UnguessableToken controller_file_info_token;
   EXPECT_CALL(query_controller(), StartFileUploadFlow)
-      .WillOnce(
-          [&](const base::UnguessableToken& file_token, auto,
-              std::optional<composebox::ImageEncodingOptions> options_arg) {
-            controller_file_info_token = file_token;
-            image_options = std::move(options_arg);
-          });
+      .WillOnce([&](const base::UnguessableToken& file_token, auto,
+                    std::optional<lens::ImageEncodingOptions> options_arg) {
+        controller_file_info_token = file_token;
+        image_options = std::move(options_arg);
+      });
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
   base::UnguessableToken callback_token;
   EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));

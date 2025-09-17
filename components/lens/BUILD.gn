@@ -74,10 +74,10 @@ static_library("lens") {
     "lens_bitmap_processing.cc",
     "lens_bitmap_processing.h",
   ]
-  deps += [
-    "//skia",
-    "//ui/gfx",
-  ]
+  deps += [ "//ui/gfx" ]
+  if (!is_ios) {
+    deps += [ "//skia" ]
+  }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_android) {
     sources += [

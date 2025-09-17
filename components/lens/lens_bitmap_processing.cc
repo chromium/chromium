@@ -14,11 +14,13 @@
 #include "base/numerics/safe_math.h"
 #include "build/build_config.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/size.h"
+
+#if !BUILDFLAG(IS_IOS)
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/webp_codec.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace lens {
 
@@ -52,7 +54,7 @@ gfx::Size GetPreferredSize(const gfx::Size& original_size,
 }
 
 void AddClientLogsForEncode(
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+    scoped_refptr<RefCountedLensOverlayClientLogs> client_logs,
     scoped_refptr<base::RefCountedBytes> output_bytes) {
   auto* encode_phase = client_logs->client_logs()
                            .mutable_phase_latencies_metadata()
@@ -62,7 +64,7 @@ void AddClientLogsForEncode(
 }
 
 void AddClientLogsForDownscale(
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+    scoped_refptr<RefCountedLensOverlayClientLogs> client_logs,
     const gfx::Size& original_pixel_size,
     const gfx::Size& downscaled_pixel_size) {
   auto* downscale_phase = client_logs->client_logs()
@@ -77,7 +79,7 @@ void AddClientLogsForDownscale(
 #if !BUILDFLAG(IS_IOS)
 
 void AddClientLogsForDownscale(
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+    scoped_refptr<RefCountedLensOverlayClientLogs> client_logs,
     const SkBitmap& original_image,
     const SkBitmap& downscaled_image) {
   auto* downscale_phase = client_logs->client_logs()
@@ -93,7 +95,7 @@ SkBitmap DownscaleImage(
     const SkBitmap& image,
     int target_width,
     int target_height,
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs) {
+    scoped_refptr<RefCountedLensOverlayClientLogs> client_logs) {
   auto size = gfx::Size(image.width(), image.height());
   auto preferred_size = GetPreferredSize(size, target_width, target_height);
   SkBitmap downscaled_image = skia::ImageOperations::Resize(
@@ -103,11 +105,10 @@ SkBitmap DownscaleImage(
   return downscaled_image;
 }
 
-bool EncodeImage(
-    const SkBitmap& image,
-    int compression_quality,
-    scoped_refptr<base::RefCountedBytes> output,
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs) {
+bool EncodeImage(const SkBitmap& image,
+                 int compression_quality,
+                 scoped_refptr<base::RefCountedBytes> output,
+                 scoped_refptr<RefCountedLensOverlayClientLogs> client_logs) {
   std::optional<std::vector<uint8_t>> encoded_image =
       gfx::JPEGCodec::Encode(image, compression_quality);
   if (encoded_image) {
@@ -122,7 +123,7 @@ bool EncodeImageMaybeWithTransparency(
     const SkBitmap& image,
     int compression_quality,
     scoped_refptr<base::RefCountedBytes> output,
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs) {
+    scoped_refptr<RefCountedLensOverlayClientLogs> client_logs) {
   if (image.isOpaque()) {
     return EncodeImage(image, compression_quality, output, client_logs);
   }
@@ -134,6 +135,45 @@ bool EncodeImageMaybeWithTransparency(
     return true;
   }
   return false;
+}
+
+SkBitmap DownscaleBitmap(
+    const SkBitmap& image,
+    scoped_refptr<RefCountedLensOverlayClientLogs> client_logs,
+    const ImageEncodingOptions& image_options) {
+  auto size = gfx::Size(image.width(), image.height());
+  if (ShouldDownscaleSize(size, image_options.max_size, image_options.max_width,
+                          image_options.max_height)) {
+    return DownscaleImage(image, image_options.max_width,
+                          image_options.max_height, client_logs);
+  }
+
+  // No downscaling needed.
+  return image;
+}
+
+ImageData DownscaleAndEncodeBitmap(
+    const SkBitmap& image,
+    scoped_refptr<RefCountedLensOverlayClientLogs> client_logs,
+    const ImageEncodingOptions& image_options) {
+  ImageData image_data;
+  scoped_refptr<base::RefCountedBytes> data =
+      base::MakeRefCounted<base::RefCountedBytes>();
+
+  auto resized_bitmap = DownscaleBitmap(image, client_logs, image_options);
+  if (image_options.enable_webp_encoding
+          ? EncodeImageMaybeWithTransparency(resized_bitmap,
+                                             image_options.compression_quality,
+                                             data, client_logs)
+          : EncodeImage(resized_bitmap, image_options.compression_quality, data,
+                        client_logs)) {
+    image_data.mutable_image_metadata()->set_height(resized_bitmap.height());
+    image_data.mutable_image_metadata()->set_width(resized_bitmap.width());
+
+    image_data.mutable_payload()->mutable_image_bytes()->assign(data->begin(),
+                                                                data->end());
+  }
+  return image_data;
 }
 
 #endif  // !BUILDFLAG(IS_IOS)

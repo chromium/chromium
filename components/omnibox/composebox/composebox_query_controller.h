@@ -15,6 +15,7 @@
 #include "base/unguessable_token.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_request_id_generator.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
@@ -56,17 +57,6 @@ enum class Channel;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
-
-namespace composebox {
-// Image encoding options for an uploaded image.
-struct ImageEncodingOptions {
-  bool enable_webp_encoding;
-  int max_size;
-  int max_height;
-  int max_width;
-  int compression_quality;
-};
-}  // namespace composebox
 
 // Callback type alias for the OAuth headers created.
 using OAuthHeadersCreatedCallback =
@@ -227,7 +217,7 @@ class ComposeboxQueryController {
   virtual void StartFileUploadFlow(
       const base::UnguessableToken& file_token,
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,
-      std::optional<composebox::ImageEncodingOptions> image_options);
+      std::optional<lens::ImageEncodingOptions> image_options);
 
   // Removes file from file cache.
   virtual bool DeleteFile(const base::UnguessableToken& file_token);
@@ -259,7 +249,7 @@ class ComposeboxQueryController {
   virtual void CreateImageUploadRequest(
       const base::UnguessableToken& file_token,
       const std::vector<uint8_t>& image_data,
-      std::optional<composebox::ImageEncodingOptions> options,
+      std::optional<lens::ImageEncodingOptions> options,
       RequestBodyProtoCreatedCallback callback);
 
   // Returns the EndpointFetcher to use with the given params. Protected to
@@ -335,11 +325,10 @@ class ComposeboxQueryController {
 #if !BUILDFLAG(IS_IOS)
   // Handler for when the image from an image file upload is decoded. Creates
   // the request body proto and calls the callback with the request.
-  void ProcessDecodedImageAndContinue(
-      lens::LensOverlayRequestId request_id,
-      const composebox::ImageEncodingOptions& options,
-      RequestBodyProtoCreatedCallback callback,
-      const SkBitmap& bitmap);
+  void ProcessDecodedImageAndContinue(lens::LensOverlayRequestId request_id,
+                                      const lens::ImageEncodingOptions& options,
+                                      RequestBodyProtoCreatedCallback callback,
+                                      const SkBitmap& bitmap);
 #endif  // !BUILDFLAG(IS_IOS)
 
   // Creates the request body protos for the file and viewport upload requests
@@ -347,7 +336,7 @@ class ComposeboxQueryController {
   void CreateUploadRequestBodiesAndContinue(
       const base::UnguessableToken& file_token,
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,
-      std::optional<composebox::ImageEncodingOptions> options);
+      std::optional<lens::ImageEncodingOptions> options);
 
   // Asynchronous handler for when an upload request body is ready.
   void OnUploadRequestBodyReady(const base::UnguessableToken& file_token,
