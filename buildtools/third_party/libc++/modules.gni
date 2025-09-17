@@ -11,7 +11,8 @@ if (is_win) {
 }
 
 configs_to_add = [
-  "//buildtools/third_party/libc++:config",
+  "//buildtools/third_party/libc++:extra_flags",
+  "//buildtools/third_party/libc++:stdver",
   "//build/config/compiler:no_chromium_code",
 ]
 
@@ -82,7 +83,10 @@ if (use_clang_modules) {
         ]
       }
       configs -= configs_to_remove
-      configs += configs_to_add
+
+      # The module needs to use the same version of -std that is used by the
+      # libraries depending on it. Otherwise we get a module config mismatch.
+      configs += configs_to_add - [ "//buildtools/third_party/libc++:stdver" ]
     }
   }
 
