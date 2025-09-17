@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/foundations/form_forest_util_inl.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -268,6 +269,8 @@ class FakeAutofillDriver : public TestAutofillDriver {
       FakeAutofillDriver* parent,
       SharedAutofillPolicy shared_autofill) {
     auto driver = base::WrapUnique(new FakeAutofillDriver(client, origin));
+    driver->set_autofill_manager(
+        std::make_unique<TestBrowserAutofillManager>(driver.get()));
     driver->SetParent(parent);
     driver->SetLocalFrameToken(test::MakeLocalFrameToken());
     if (parent && driver->origin() != parent->origin()) {
@@ -407,14 +410,14 @@ class FormForestTestWithMockedTree : public FormForestTest {
   void TearDown() override {
     test_api(mocked_forms_).Reset();
     test_api(flattened_forms_).Reset();
-    drivers_.clear();
     forms_.clear();
+    client_.GetAutofillDriverFactory().DeleteAll();
     FormForestTest::TearDown();
   }
 
   // Initializes the |mocked_forms_| according to the frame/form tree
   // |frame_info|.
-  FakeAutofillDriver* MockFormForest(
+  FakeAutofillDriver& MockFormForest(
       const FrameInfo& frame_info,
       FakeAutofillDriver* parent_driver = nullptr,
       FormData* parent_form = nullptr) {
@@ -422,10 +425,11 @@ class FormForestTestWithMockedTree : public FormForestTest {
     GURL url(!frame_info.url.empty() ? frame_info.url
              : !parent_driver        ? kMainUrl
                                      : kIframeUrl);
-    drivers_.push_back(FakeAutofillDriver::CreateChildFrame(
-        &client_, Origin(url), /*parent=*/parent_driver,
-        /*shared_autofill=*/frame_info.policy));
-    FakeAutofillDriver* driver = drivers_.back().get();
+    FakeAutofillDriver& driver = static_cast<FakeAutofillDriver&>(
+        client_.GetAutofillDriverFactory().TakeOwnership(
+            FakeAutofillDriver::CreateChildFrame(
+                &client_, Origin(url), /*parent=*/parent_driver,
+                /*shared_autofill=*/frame_info.policy)));
 
     std::vector<FormData> forms;
     for (const FormInfo& form_info : frame_info.forms) {
@@ -435,17 +439,17 @@ class FormForestTestWithMockedTree : public FormForestTest {
       for (FormFieldData& field : test_api(data).fields()) {
         field.set_name(base::StrCat({data.name(), u".", field.name()}));
       }
-      data = driver->Lift(data);
+      data = driver.Lift(data);
 
       // Creates the frames and set their predecessor field according to
       // FrameInfo::field_predecessor. By default, the frames come after all
       // fields.
       std::vector<FrameTokenWithPredecessor> child_frames;
       for (const FrameInfo& subframe_info : form_info.frames) {
-        FakeAutofillDriver* child =
-            MockFormForest(subframe_info, driver, &data);
+        FakeAutofillDriver& child =
+            MockFormForest(subframe_info, &driver, &data);
         child_frames.emplace_back();
-        child_frames.back().token = child->GetFrameToken();
+        child_frames.back().token = child.GetFrameToken();
         child_frames.back().predecessor =
             std::min(static_cast<int>(data.fields().size()),
                      subframe_info.field_predecessor);
@@ -459,12 +463,12 @@ class FormForestTestWithMockedTree : public FormForestTest {
       forms.push_back(data);
     }
 
-    auto frame_data = std::make_unique<FrameData>(driver->GetFrameToken());
+    auto frame_data = std::make_unique<FrameData>(driver.GetFrameToken());
     frame_data->child_forms = std::move(forms);
     if (parent_form) {
       frame_data->parent_form = parent_form->global_id();
     }
-    frame_data->driver = driver;
+    frame_data->driver = &driver;
     auto p = frame_datas(mocked_forms_).insert(std::move(frame_data));
     CHECK(p.second);
     return driver;
@@ -577,7 +581,6 @@ class FormForestTestWithMockedTree : public FormForestTest {
 
  private:
   TestAutofillClient client_;
-  std::vector<std::unique_ptr<FakeAutofillDriver>> drivers_;
   std::map<std::string, FormGlobalId, std::less<>> forms_;
 };
 
