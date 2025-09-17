@@ -30,6 +30,10 @@ void WrappableBase::Trace(cppgc::Visitor* visitor) const {
   visitor->Trace(wrapper_);
 }
 
+const v8::Object::WrapperTypeInfo* WrappableBase::GetWrapperTypeInfo() const {
+  return wrapper_info();
+}
+
 v8::MaybeLocal<v8::Object> WrappableBase::GetWrapper(v8::Isolate* isolate) {
   if (!wrapper_.IsEmpty()) {
     return wrapper_.Get(isolate);
