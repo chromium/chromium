@@ -220,6 +220,7 @@ component("bluetooth") {
       "//chromeos/ash/services/nearby/public/cpp/",
       "//chromeos/ash/services/secure_channel/public/cpp/shared",
       "//chromeos/constants",
+      "//device/bluetooth/bluez/ble_scan_parser",
     ]
   }
 
@@ -599,7 +600,6 @@ component("bluetooth") {
           "chromeos_platform_features.cc",
           "chromeos_platform_features.h",
         ]
-        deps += [ "//services/data_decoder/public/mojom" ]
       }
       if (use_dbus) {
         public_deps += [

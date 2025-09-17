@@ -50,14 +50,6 @@ source_set("lib") {
 
   public_deps = [ "//services/data_decoder/public/mojom" ]
 
-  if (is_chromeos) {
-    sources += [
-      "ble_scan_parser_impl.cc",
-      "ble_scan_parser_impl.h",
-    ]
-    deps += [ "//services/data_decoder/ble_scan_parser:parser" ]
-  }
-
   if (use_blink) {
     sources += [
       "image_decoder_impl.cc",
@@ -93,15 +85,6 @@ source_set("tests") {
     "//testing/gtest",
     "//ui/gfx",
   ]
-
-  if (is_chromeos) {
-    sources += [ "ble_scan_parser_impl_unittest.cc" ]
-
-    deps += [
-      "//services/data_decoder/ble_scan_parser:lib",
-      "//services/data_decoder/ble_scan_parser:parser",
-    ]
-  }
 
   if (is_ios) {
     deps += [ "//components/test:web_package_test_bundle_data" ]
@@ -155,16 +138,4 @@ fuzzer_test("xml_parser_fuzzer") {
   deps = [ ":xml_parser_fuzzer_deps" ]
   dict = "//third_party/libxml/fuzz/xml.dict"
   seed_corpus = "//third_party/libxml/fuzz/seed_corpus"
-}
-
-if (is_chromeos) {
-  fuzzer_test("ble_scan_parser_fuzzer") {
-    sources = [ "ble_scan_parser_impl_fuzzer.cc" ]
-    deps = [
-      ":lib",
-      "//services/data_decoder/ble_scan_parser:parser",
-    ]
-
-    seed_corpus = "//services/data_decoder/ble_scan_parser/data"
-  }
 }

@@ -18,7 +18,7 @@ pub mod ffi {
     }
 
     unsafe extern "C++" {
-        include!("services/data_decoder/ble_scan_parser/wrapper_functions.h");
+        include!("device/bluetooth/bluez/ble_scan_parser/wrapper_functions.h");
 
         pub type ScanRecord;
 

@@ -20,10 +20,6 @@
 #include "services/data_decoder/structured_headers_parser_impl.h"
 #include "services/data_decoder/xml_parser.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "services/data_decoder/ble_scan_parser_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(USE_BLINK)
 #include "services/data_decoder/image_decoder_impl.h"
 #endif
@@ -92,13 +88,5 @@ void DataDecoderService::BindPixCodeValidator(
       std::make_unique<payments::facilitated::PixCodeValidator>(),
       std::move(receiver));
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void DataDecoderService::BindBleScanParser(
-    mojo::PendingReceiver<mojom::BleScanParser> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<BleScanParserImpl>(),
-                              std::move(receiver));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace data_decoder

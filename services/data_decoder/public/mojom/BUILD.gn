@@ -24,11 +24,6 @@ mojom("mojom") {
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
-
-  if (is_chromeos) {
-    sources += [ "ble_scan_parser.mojom" ]
-    public_deps += [ "//device/bluetooth/public/mojom" ]
-  }
 }
 
 mojom("mojom_xml_parser") {

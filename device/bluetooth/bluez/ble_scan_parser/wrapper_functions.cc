@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/data_decoder/ble_scan_parser/wrapper_functions.h"
+#include "device/bluetooth/bluez/ble_scan_parser/wrapper_functions.h"
 
 #include <stdint.h>
 

@@ -59,7 +59,6 @@
 #include "device/bluetooth/dbus/fake_bluetooth_le_advertising_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -157,24 +156,6 @@ int GetDeviceIndexByAddress(const BluetoothAdapter::DeviceList& devices,
   }
   return -1;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-class FakeBleScanParserImpl : public data_decoder::mojom::BleScanParser {
- public:
-  FakeBleScanParserImpl() = default;
-
-  FakeBleScanParserImpl(const FakeBleScanParserImpl&) = delete;
-  FakeBleScanParserImpl& operator=(const FakeBleScanParserImpl&) = delete;
-
-  ~FakeBleScanParserImpl() override = default;
-
-  // mojom::BleScanParser:
-  void Parse(const std::vector<uint8_t>& advertisement_data,
-             ParseCallback callback) override {
-    std::move(callback).Run(nullptr);
-  }
-};
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using MockDBusErrorCallback = base::MockCallback<
     base::OnceCallback<void(const std::string&, const std::string&)>>;
@@ -327,29 +308,12 @@ class BluetoothBlueZTest : public testing::Test {
     dbus_setter->SetBluetoothGattServiceClient(
         std::make_unique<bluez::FakeBluetoothGattServiceClient>());
 
-#if BUILDFLAG(IS_CHROMEOS)
-    device::BluetoothAdapterFactory::SetBleScanParserCallback(
-        base::BindLambdaForTesting([&]() {
-          mojo::PendingRemote<data_decoder::mojom::BleScanParser>
-              ble_scan_parser;
-          mojo::MakeSelfOwnedReceiver(
-              std::make_unique<FakeBleScanParserImpl>(),
-              ble_scan_parser.InitWithNewPipeAndPassReceiver());
-          return ble_scan_parser;
-        }));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     callback_count_ = 0;
     error_callback_count_ = 0;
     last_client_error_ = "";
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    device::BluetoothAdapterFactory::SetBleScanParserCallback(
-        base::NullCallback());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     discovery_sessions_.clear();
     adapter_.reset();
     bluez::BluezDBusManager::Shutdown();

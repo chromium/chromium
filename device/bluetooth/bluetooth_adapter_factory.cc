@@ -136,20 +136,6 @@ bool BluetoothAdapterFactory::HasSharedInstanceForTesting() {
   return Get()->adapter_ != nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// static
-void BluetoothAdapterFactory::SetBleScanParserCallback(
-    BleScanParserCallback callback) {
-  Get()->ble_scan_parser_ = callback;
-}
-
-// static
-BluetoothAdapterFactory::BleScanParserCallback
-BluetoothAdapterFactory::GetBleScanParserCallback() {
-  return Get()->ble_scan_parser_;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 BluetoothAdapterFactory::GlobalOverrideValues::GlobalOverrideValues() = default;
 
 BluetoothAdapterFactory::GlobalOverrideValues::~GlobalOverrideValues() =

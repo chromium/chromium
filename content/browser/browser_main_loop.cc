@@ -393,16 +393,6 @@ std::unique_ptr<base::MemoryPressureMonitor> CreateMemoryPressureMonitor(
   return monitor;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-mojo::PendingRemote<data_decoder::mojom::BleScanParser> GetBleScanParser() {
-  static base::NoDestructor<data_decoder::DataDecoder> decoder;
-  mojo::PendingRemote<data_decoder::mojom::BleScanParser> ble_scan_parser;
-  decoder->GetService()->BindBleScanParser(
-      ble_scan_parser.InitWithNewPipeAndPassReceiver());
-  return ble_scan_parser;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 class OopDataDecoder : public data_decoder::ServiceProvider {
  public:
   OopDataDecoder() { data_decoder::ServiceProvider::Set(this); }
@@ -772,10 +762,7 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       sql::SqlMemoryDumpProvider::GetInstance(), "Sql", nullptr);
-#if BUILDFLAG(IS_CHROMEOS)
-  device::BluetoothAdapterFactory::SetBleScanParserCallback(
-      base::BindRepeating(&GetBleScanParser));
-#else
+#if !BUILDFLAG(IS_CHROMEOS)
   // Chrome Remote Desktop needs TransitionalURLLoaderFactoryOwner on ChromeOS.
   network::TransitionalURLLoaderFactoryOwner::DisallowUsageInProcess();
 #endif

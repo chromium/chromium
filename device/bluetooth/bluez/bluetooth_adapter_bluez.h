@@ -46,8 +46,6 @@
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "device/bluetooth/dbus/bluetooth_advertisement_monitor_manager_client.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace base {
@@ -111,11 +109,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   using ServiceRecordCallback = base::OnceCallback<void(uint32_t)>;
   using ServiceRecordErrorCallback =
       base::OnceCallback<void(BluetoothServiceRecordBlueZ::ErrorCode)>;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  using ScanRecordPtr = data_decoder::mojom::ScanRecordPtr;
-  using ScanRecordCallback = base::OnceCallback<void(ScanRecordPtr)>;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   static scoped_refptr<BluetoothAdapterBlueZ> CreateAdapter();
 
@@ -246,16 +239,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void NotifyDeviceAdvertisementReceived(BluetoothDeviceBlueZ* device,
                                          int16_t rssi,
                                          const std::vector<uint8_t>& eir);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Announce to observers advertisement received from |device|.
-  void OnAdvertisementReceived(std::string device_address,
-                               std::string device_name,
-                               uint8_t rssi,
-                               uint16_t device_appearance,
-                               const dbus::ObjectPath& device_path,
-                               ScanRecordPtr scan_record);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Announce to observers that |device| has changed its connected state.
   void NotifyDeviceConnectedStateChanged(BluetoothDeviceBlueZ* device,
@@ -642,9 +625,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // trials might not yet have been available. By scheduling a second update
   // sometime later, the field trials will be guaranteed to be present.
   base::OneShotTimer set_long_term_keys_after_first_time_install_timer_;
-
-  // Pointer for parsing BLE advertising packets out of process.
-  mojo::Remote<data_decoder::mojom::BleScanParser> ble_scan_parser_;
 
   std::unique_ptr<BluetoothAdvertisementMonitorApplicationServiceProvider>
       advertisement_monitor_application_provider_;
