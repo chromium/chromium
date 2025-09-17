@@ -54,12 +54,13 @@ void TabContextualizationController::PrimaryPageChanged(content::Page& page) {
 }
 
 void TabContextualizationController::OnEligibilityChecked(
-    bool is_page_context_eligible) {
+    bool is_page_context_eligible,
+    std::optional<optimization_guide::AIPageContentResult> apc) {
   is_page_context_eligible_ = is_page_context_eligible;
 }
 
 void TabContextualizationController::UpdatePageContextEligibility(
-    GetPageContextEligibilityCallback callback) {
+    GetApcResultCallback callback) {
   auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();
   if (!render_frame_host) {
     return;
@@ -82,7 +83,7 @@ void TabContextualizationController::GetAnnotatedPageContent(
 }
 
 void TabContextualizationController::OnAnnotatedPageContentReceived(
-    GetPageContextEligibilityCallback callback,
+    GetApcResultCallback callback,
     std::optional<optimization_guide::AIPageContentResult> result) {
   // The tab URL is used to check if the page is context eligible.
   const auto& tab_url = tab_->GetContents()->GetLastCommittedURL();
@@ -95,22 +96,43 @@ void TabContextualizationController::OnAnnotatedPageContentReceived(
         optimization_guide::GetFrameMetadataFromPageContent(result.value());
   }
 
-  IsPageContextEligible(tab_url, std::move(frame_metadata_structs),
-                        std::move(callback));
+  std::move(callback).Run(optimization_guide::IsPageContextEligible(
+                              tab_url.host(), tab_url.path(),
+                              std::move(frame_metadata_structs), nullptr),
+                          std::move(result));
 }
 
-void TabContextualizationController::IsPageContextEligible(
-    const GURL& main_frame_url,
-    std::vector<optimization_guide::FrameMetadata> frame_metadata,
-    GetPageContextEligibilityCallback callback) {
-  std::move(callback).Run(optimization_guide::IsPageContextEligible(
-      main_frame_url.host(), main_frame_url.path(), std::move(frame_metadata),
-      nullptr));
+void TabContextualizationController::
+    OnApcAndEligibilityReceivedForGetPageContext(
+        GetPageContextCallback callback,
+        std::unique_ptr<lens::ContextualInputData> data,
+        bool page_context_eligible,
+        std::optional<optimization_guide::AIPageContentResult> result) {
+  data->is_page_context_eligible = page_context_eligible;
+  data->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  data->context_input = std::vector<lens::ContextualInput>();
+  if (!page_context_eligible) {
+    // Early return if the page is not context eligible.
+    std::move(callback).Run(std::move(data));
+    return;
+  }
+
+  std::string serialized_apc;
+  result->proto.SerializeToString(&serialized_apc);
+  data->context_input->emplace_back(
+      std::vector<uint8_t>(serialized_apc.begin(), serialized_apc.end()),
+      lens::MimeType::kAnnotatedPageContent);
+
+  // TODO(crbug.com/443743308): Parallelize the screenshot capture with the
+  // webpage bytes fetch.
+  CaptureScreenshot(base::BindOnce(
+      &TabContextualizationController::OnScreenshotCaptured,
+      base::Unretained(this), std::move(callback), std::move(data)));
 }
 
 // TODO(crbug.com/439597165): Check tab eligibility
 void TabContextualizationController::GetInitialPageContextEligibility(
-    GetPageContextEligibilityCallback callback) {}
+    GetApcResultCallback callback) {}
 
 bool TabContextualizationController::GetCurrentPageContextEligibility() {
   return is_page_context_eligible_;
@@ -148,6 +170,15 @@ void TabContextualizationController::GetPageContext(
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+  // If the page is not a PDF, get the annotated page content.
+  GetAnnotatedPageContent(base::BindOnce(
+      &TabContextualizationController::OnAnnotatedPageContentReceived,
+      base::Unretained(this),
+      base::BindOnce(&TabContextualizationController::
+                         OnApcAndEligibilityReceivedForGetPageContext,
+                     base::Unretained(this), std::move(callback),
+                     std::move(contextual_input_data))));
 }
 
 #if BUILDFLAG(ENABLE_PDF)

@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
           .Then(run_loop.QuitClosure()));
   run_loop.Run();
 
-  controller->OnEligibilityChecked(false);
+  controller->OnEligibilityChecked(false, std::nullopt);
 
   EXPECT_FALSE(controller->GetCurrentPageContextEligibility());
 }
@@ -109,5 +109,30 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   run_loop.Run();
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       GetPageContextForWebpage) {
+  auto* controller = GetTabContextualizationController();
+
+  GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  base::RunLoop run_loop;
+  controller->GetPageContext(base::BindLambdaForTesting(
+      [&](std::unique_ptr<lens::ContextualInputData> data) {
+        EXPECT_EQ(data->page_url, url);
+        EXPECT_TRUE(data->page_title.has_value());
+        EXPECT_EQ(data->primary_content_type,
+                  lens::MimeType::kAnnotatedPageContent);
+        EXPECT_EQ(data->context_input->size(), 1u);
+        EXPECT_EQ(data->context_input->at(0).content_type_,
+                  lens::MimeType::kAnnotatedPageContent);
+        EXPECT_FALSE(data->context_input->at(0).bytes_.empty());
+        EXPECT_TRUE(data->viewport_screenshot.has_value());
+        EXPECT_TRUE(data->is_page_context_eligible);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
 
 }  // namespace lens
