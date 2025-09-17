@@ -72,6 +72,7 @@ struct GnomeDisplayConfig {
     MonitorMode(const MonitorMode&);
     MonitorMode& operator=(const MonitorMode&);
     ~MonitorMode();
+    bool operator==(const MonitorMode& other) const;
 
     std::string name;
     int width;
@@ -85,6 +86,7 @@ struct GnomeDisplayConfig {
     MonitorInfo(const MonitorInfo&);
     MonitorInfo& operator=(const MonitorInfo&);
     ~MonitorInfo();
+    bool operator==(const MonitorInfo& other) const;
 
     // Returns the first mode with is_current set, or nullptr.
     const MonitorMode* GetCurrentMode() const;
@@ -125,7 +127,6 @@ struct GnomeDisplayConfig {
   // Switches to the specified layout mode and recalculates monitor offsets.
   // Note that we currently only support horizontal and vertical display
   // layouts.
-  // TODO: crbug.com/432217140 - Add tests for this method.
   void SwitchLayoutMode(LayoutMode new_layout_mode);
 
   // Relayouts monitors. Closes gaps between monitors and removes overlaps. The

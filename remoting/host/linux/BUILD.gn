@@ -290,6 +290,7 @@ source_set("unit_tests") {
     "certificate_watcher_unittest.cc",
     "gdbus_connection_ref_unittest.cc",
     "gnome_display_config_dbus_client_unittest.cc",
+    "gnome_display_config_unittest.cc",
     "gvariant_ref_unittest.cc",
     "gvariant_type_unittest.cc",
     "unicode_to_keysym_unittest.cc",

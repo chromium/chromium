@@ -56,6 +56,8 @@ GnomeDisplayConfig::MonitorMode::MonitorMode(const MonitorMode&) = default;
 GnomeDisplayConfig::MonitorMode& GnomeDisplayConfig::MonitorMode::operator=(
     const MonitorMode&) = default;
 GnomeDisplayConfig::MonitorMode::~MonitorMode() = default;
+bool GnomeDisplayConfig::MonitorMode::operator==(
+    const MonitorMode& other) const = default;
 
 GnomeDisplayConfig::MonitorInfo::MonitorInfo() = default;
 GnomeDisplayConfig::MonitorInfo::MonitorInfo(
@@ -63,6 +65,8 @@ GnomeDisplayConfig::MonitorInfo::MonitorInfo(
 GnomeDisplayConfig::MonitorInfo& GnomeDisplayConfig::MonitorInfo::operator=(
     const GnomeDisplayConfig::MonitorInfo&) = default;
 GnomeDisplayConfig::MonitorInfo::~MonitorInfo() = default;
+bool GnomeDisplayConfig::MonitorInfo::operator==(
+    const GnomeDisplayConfig::MonitorInfo& other) const = default;
 
 const GnomeDisplayConfig::MonitorMode*
 GnomeDisplayConfig::MonitorInfo::GetCurrentMode() const {
@@ -271,7 +275,7 @@ GnomeDisplayConfig::LayoutDirection GnomeDisplayConfig::GetLayoutDirection()
   const MonitorInfo& monitor2 = std::next(monitors.begin())->second;
 
   // Determine the layout of the first two monitors, per the algorithm at
-  // //ui/gfx/x/x11_monitor_resizer.cc.
+  // //ui/gfx/x/x11_crtc_resizer.cc.
   int left1 = monitor1.x;
   int right1 = left1 + GetLayoutSize(monitor1, &MonitorMode::width);
 
