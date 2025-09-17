@@ -588,6 +588,9 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       bool* was_copy_performed = nullptr) override;
   void EndExternalWrite(
       const gpu::SyncToken& external_write_sync_token) override;
+  scoped_refptr<StaticBitmapImage> Snapshot(
+      FlushReason reason,
+      ImageOrientation = ImageOrientationEnum::kDefault) override;
 
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
@@ -658,8 +661,18 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void ExternalCanvasDrawHelper(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
       override;
+  void RasterRecord(cc::PaintRecord last_recording) override;
+  sk_sp<SkSurface> CreateSkSurface() const override;
+  GrBackendTexture CreateGrTextureForResource() const;
+  // For WebGpu RecyclableCanvasResource.
+  void OnAcquireRecyclableCanvasResource() override;
+  void OnDestroyRecyclableCanvasResource(
+      const gpu::SyncToken& sync_token) override;
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
  private:
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
+
   // `viz::ContextLostObserver` implementation.
   void OnContextLost() override;
 

@@ -836,6 +836,149 @@ void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
   draw_callback(Canvas());
 }
 
+scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
+    FlushReason reason,
+    ImageOrientation orientation) {
+  TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::Snapshot");
+  if (!IsValid()) {
+    return nullptr;
+  }
+
+  // We don't need to EndWriteAccess here since that's required to make the
+  // rendering results visible on the GpuMemoryBuffer while we return cpu
+  // memory, rendererd to by skia, here.
+  if (!is_accelerated_) {
+    return SnapshotInternal(orientation, reason);
+  }
+
+  if (!cached_snapshot_) {
+    // Getting the high entropy canvas operations should be done before
+    // flushing the canvas as flushing discards the recording (including the
+    // associated HighEntropyCanvasOpTypes).
+    HighEntropyCanvasOpType high_entropy_canvas_op_types =
+        GetRecorderHighEntropyCanvasOpTypes();
+    FlushCanvas(reason);
+    EndWriteAccess();
+    cached_snapshot_ = resource_->Bitmap();
+    if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
+                                                IsAccelerated())) {
+      cached_snapshot_->SetHighEntropyCanvasOpTypes(
+          high_entropy_canvas_op_types);
+    }
+
+    // We'll record its content_id to be used by the FlushForImageListener.
+    // This will be needed in WillDrawInternal, but we are doing it now, as we
+    // don't know if later on we will be in the same thread the
+    // cached_snapshot_ was created and we wouldn't be able to
+    // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
+    // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
+    // other contexts know to flush to avoid
+    // CanvasResourceProviderSharedImage::unnecessary copy-on-writes.
+    if (cached_snapshot_) {
+      cached_content_id_ =
+          cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(
+              0u);
+    }
+  }
+
+  DCHECK(cached_snapshot_);
+  DCHECK(!current_resource_has_write_access_);
+  return cached_snapshot_;
+}
+
+void CanvasResourceProviderSharedImage::RasterRecord(
+    cc::PaintRecord last_recording) {
+  if (!use_oop_rasterization_) {
+    CanvasResourceProvider::RasterRecord(std::move(last_recording));
+    return;
+  }
+  WillDrawInternal(true);
+  const bool needs_clear = !is_cleared_;
+  is_cleared_ = true;
+  RasterRecordOOP(std::move(last_recording), needs_clear,
+                  resource()->GetClientSharedImage()->mailbox());
+  resource()->GetSyncToken();
+}
+
+sk_sp<SkSurface> CanvasResourceProviderSharedImage::CreateSkSurface() const {
+  TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateSkSurface");
+  if (is_software_) {
+    const auto props = GetSkSurfaceProps();
+    return SkSurfaces::Raster(GetSkImageInfo(), &props);
+  }
+
+  if (IsGpuContextLost() || !resource_) {
+    return nullptr;
+  }
+
+  const auto props = GetSkSurfaceProps();
+  if (is_accelerated_) {
+    return SkSurfaces::WrapBackendTexture(
+        GetGrContext(), CreateGrTextureForResource(), kTopLeft_GrSurfaceOrigin,
+        0 /* msaa_sample_count */, GetSkImageInfo().colorType(),
+        GetSkImageInfo().refColorSpace(), &props);
+  }
+
+  // For software raster path, we render into cpu memory managed internally
+  // by SkSurface and copy the rendered results to the GMB before dispatching
+  // it to the display compositor.
+  return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
+}
+
+GrBackendTexture CanvasResourceProviderSharedImage::CreateGrTextureForResource()
+    const {
+  DCHECK(is_accelerated_);
+
+  return resource()->CreateGrTexture();
+}
+
+// For WebGpu RecyclableCanvasResource.
+void CanvasResourceProviderSharedImage::OnAcquireRecyclableCanvasResource() {
+  EnsureWriteAccess();
+}
+void CanvasResourceProviderSharedImage::OnDestroyRecyclableCanvasResource(
+    const gpu::SyncToken& sync_token) {
+  // RecyclableCanvasResource should be the only one that holds onto
+  // |resource_|.
+  DCHECK(resource_->HasOneRef());
+  resource_->WaitSyncToken(sync_token);
+}
+
+void CanvasResourceProviderSharedImage::OnFlushForImage(
+    cc::PaintImage::ContentId content_id) {
+  CanvasResourceProvider::OnFlushForImage(content_id);
+  if (cached_snapshot_ &&
+      cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
+          content_id) {
+    // This handles the case where the cached snapshot is referenced by an
+    // ImageBitmap that is being transferred to a worker.
+    cached_snapshot_.reset();
+  }
+}
+
+void CanvasResourceProviderSharedImage::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd) {
+  if (is_software_) {
+    // This class creates software SharedImages only on demand and might not
+    // have one here - invoke the base class implementation of this method
+    // instead.
+    CanvasResourceProvider::OnMemoryDump(pmd);
+    return;
+  }
+
+  std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
+                                        reinterpret_cast<uintptr_t>(this));
+
+  resource()->OnMemoryDump(pmd, path);
+
+  std::string cached_path = path + "/cached";
+  for (const auto& unused_resource : unused_resources_) {
+    auto* resource_pointer =
+        static_cast<CanvasResourceSharedImage*>(unused_resource.resource.get());
+    resource_pointer->OnMemoryDump(pmd, cached_path);
+  }
+}
+
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
 class CanvasResourceProviderSharedImageImpl
@@ -908,143 +1051,6 @@ class CanvasResourceProviderSharedImageImpl
     // that may have a reference in skia.
     if (is_accelerated_ && !use_oop_rasterization_) {
       FlushGrContext();
-    }
-  }
-
- protected:
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      FlushReason reason,
-      ImageOrientation orientation) override {
-    TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::Snapshot");
-    if (!IsValid())
-      return nullptr;
-
-    // We don't need to EndWriteAccess here since that's required to make the
-    // rendering results visible on the GpuMemoryBuffer while we return cpu
-    // memory, rendererd to by skia, here.
-    if (!is_accelerated_)
-      return SnapshotInternal(orientation, reason);
-
-    if (!cached_snapshot_) {
-      // Getting the high entropy canvas operations should be done before
-      // flushing the canvas as flushing discards the recording (including the
-      // associated HighEntropyCanvasOpTypes).
-      HighEntropyCanvasOpType high_entropy_canvas_op_types =
-          GetRecorderHighEntropyCanvasOpTypes();
-      FlushCanvas(reason);
-      EndWriteAccess();
-      cached_snapshot_ = resource_->Bitmap();
-      if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
-                                                  IsAccelerated())) {
-        cached_snapshot_->SetHighEntropyCanvasOpTypes(
-            high_entropy_canvas_op_types);
-      }
-
-      // We'll record its content_id to be used by the FlushForImageListener.
-      // This will be needed in WillDrawInternal, but we are doing it now, as we
-      // don't know if later on we will be in the same thread the
-      // cached_snapshot_ was created and we wouldn't be able to
-      // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
-      // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
-      // other contexts know to flush to avoid unnecessary copy-on-writes.
-      if (cached_snapshot_) {
-        cached_content_id_ =
-            cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(
-                0u);
-      }
-    }
-
-    DCHECK(cached_snapshot_);
-    DCHECK(!current_resource_has_write_access_);
-    return cached_snapshot_;
-  }
-
-  void RasterRecord(cc::PaintRecord last_recording) override {
-    if (!use_oop_rasterization_) {
-      CanvasResourceProvider::RasterRecord(std::move(last_recording));
-      return;
-    }
-    WillDrawInternal(true);
-    const bool needs_clear = !is_cleared_;
-    is_cleared_ = true;
-    RasterRecordOOP(std::move(last_recording), needs_clear,
-                    resource()->GetClientSharedImage()->mailbox());
-    resource()->GetSyncToken();
-  }
-
-  sk_sp<SkSurface> CreateSkSurface() const override {
-    TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateSkSurface");
-    if (is_software_) {
-      const auto props = GetSkSurfaceProps();
-      return SkSurfaces::Raster(GetSkImageInfo(), &props);
-    }
-
-    if (IsGpuContextLost() || !resource_) {
-      return nullptr;
-    }
-
-    const auto props = GetSkSurfaceProps();
-    if (is_accelerated_) {
-      return SkSurfaces::WrapBackendTexture(
-          GetGrContext(), CreateGrTextureForResource(),
-          kTopLeft_GrSurfaceOrigin, 0 /* msaa_sample_count */,
-          GetSkImageInfo().colorType(), GetSkImageInfo().refColorSpace(),
-          &props);
-    }
-
-    // For software raster path, we render into cpu memory managed internally
-    // by SkSurface and copy the rendered results to the GMB before dispatching
-    // it to the display compositor.
-    return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
-  }
-
-  GrBackendTexture CreateGrTextureForResource() const {
-    DCHECK(is_accelerated_);
-
-    return resource()->CreateGrTexture();
-  }
-
-  // For WebGpu RecyclableCanvasResource.
-  void OnAcquireRecyclableCanvasResource() override { EnsureWriteAccess(); }
-  void OnDestroyRecyclableCanvasResource(
-      const gpu::SyncToken& sync_token) override {
-    // RecyclableCanvasResource should be the only one that holds onto
-    // |resource_|.
-    DCHECK(resource_->HasOneRef());
-    resource_->WaitSyncToken(sync_token);
-  }
-
-  void OnFlushForImage(cc::PaintImage::ContentId content_id) override {
-    CanvasResourceProvider::OnFlushForImage(content_id);
-    if (cached_snapshot_ &&
-        cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
-            content_id) {
-      // This handles the case where the cached snapshot is referenced by an
-      // ImageBitmap that is being transferred to a worker.
-      cached_snapshot_.reset();
-    }
-  }
-
- private:
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override {
-    if (is_software_) {
-      // This class creates software SharedImages only on demand and might not
-      // have one here - invoke the base class implementation of this method
-      // instead.
-      CanvasResourceProvider::OnMemoryDump(pmd);
-      return;
-    }
-
-    std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
-                                          reinterpret_cast<uintptr_t>(this));
-
-    resource()->OnMemoryDump(pmd, path);
-
-    std::string cached_path = path + "/cached";
-    for (const auto& unused_resource : unused_resources_) {
-      auto* resource_pointer = static_cast<CanvasResourceSharedImage*>(
-          unused_resource.resource.get());
-      resource_pointer->OnMemoryDump(pmd, cached_path);
     }
   }
 
