@@ -578,6 +578,16 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void NotifyTexParamsModified(const CanvasResource* resource) override;
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       FlushReason reason) override;
+  bool IsValid() const override;
+  gpu::SharedImageUsageSet GetSharedImageUsageFlags() const override;
+  bool HasUnusedResourcesForTesting() const override;
+  scoped_refptr<gpu::ClientSharedImage>
+  GetBackingClientSharedImageForExternalWrite(
+      gpu::SharedImageUsageSet required_shared_image_usages,
+      gpu::SyncToken& internal_access_sync_token,
+      bool* was_copy_performed = nullptr) override;
+  void EndExternalWrite(
+      const gpu::SyncToken& external_write_sync_token) override;
 
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
@@ -643,6 +653,11 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void FlushGrContext();
   void WillDrawInternal(bool write_to_local_texture);
   void WillDraw() override;
+  bool IsSoftwareSharedImageGpuChannelLost() const override;
+  bool IsSingleBuffered() const override;
+  void ExternalCanvasDrawHelper(
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
+      override;
 
  private:
   // `viz::ContextLostObserver` implementation.

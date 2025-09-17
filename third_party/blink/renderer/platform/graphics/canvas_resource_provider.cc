@@ -742,6 +742,100 @@ CanvasResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
   return resource;
 }
 
+bool CanvasResourceProviderSharedImage::IsSoftwareSharedImageGpuChannelLost()
+    const {
+  if (!is_software_) {
+    return false;
+  }
+
+  return !shared_image_interface_provider_ ||
+         !shared_image_interface_provider_->SharedImageInterface();
+}
+
+bool CanvasResourceProviderSharedImage::IsValid() const {
+  if (is_software_) {
+    return !IsSoftwareSharedImageGpuChannelLost() && GetSkSurface();
+  }
+
+  if (!use_oop_rasterization_) {
+    return GetSkSurface() && !IsGpuContextLost();
+  } else {
+    return !IsGpuContextLost();
+  }
+}
+
+bool CanvasResourceProviderSharedImage::IsSingleBuffered() const {
+  return shared_image_usage_flags_.Has(
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
+}
+bool CanvasResourceProviderSharedImage::HasUnusedResourcesForTesting() const {
+  if (IsSingleBuffered()) {
+    return false;
+  }
+  return !unused_resources_.empty();
+}
+
+scoped_refptr<gpu::ClientSharedImage>
+CanvasResourceProviderSharedImage::GetBackingClientSharedImageForExternalWrite(
+    gpu::SharedImageUsageSet required_shared_image_usages,
+    gpu::SyncToken& internal_access_sync_token,
+    bool* was_copy_performed) {
+  // This may cause the current resource and all cached resources to become
+  // unusable. WillDrawInternal() will detect this case, drop all cached
+  // resources, and copy the current resource to a newly-created resource
+  // which will by definition be usable.
+  shared_image_usage_flags_.PutAll(required_shared_image_usages);
+
+  DCHECK(is_accelerated_);
+
+  if (IsGpuContextLost()) {
+    return nullptr;
+  }
+
+  // End the internal write access before calling WillDrawInternal(), which
+  // has a precondition that there should be no current write access on the
+  // resource.
+  EndWriteAccess();
+
+  const CanvasResource* const original_resource = resource_.get();
+  WillDrawInternal(false);
+  if (was_copy_performed != nullptr) {
+    *was_copy_performed = resource_.get() != original_resource;
+  }
+
+  // NOTE: The above invocation of WillDrawInternal() ensures that this
+  // invocation of GetSyncToken() will generate a new sync token.
+  internal_access_sync_token = resource_->GetSyncToken();
+
+  return resource_->GetClientSharedImage();
+}
+
+void CanvasResourceProviderSharedImage::EndExternalWrite(
+    const gpu::SyncToken& external_write_sync_token) {
+  resource()->EndExternalWrite(external_write_sync_token);
+}
+
+gpu::SharedImageUsageSet
+CanvasResourceProviderSharedImage::GetSharedImageUsageFlags() const {
+  return shared_image_usage_flags_;
+}
+
+void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
+    base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback) {
+  if (base::FeatureList::IsEnabled(blink::kSkipRedundantWillDraw)) {
+    cached_snapshot_.reset();
+  } else {
+    // TODO(crbug.com/40183122): Video frames don't work without this
+    // conditional WillDraw(), but we are getting memory leak on CreatePattern
+    // with it. There should be a better way to solve this.
+    if (cached_snapshot_) {
+      WillDraw();
+    }
+  }
+
+  draw_callback(Canvas());
+}
+
 // TODO(crbug.com/391648152): Fold this class into
 // CanvasResourceProviderSharedImage.
 class CanvasResourceProviderSharedImageImpl
@@ -790,8 +884,9 @@ class CanvasResourceProviderSharedImageImpl
     resource_ = NewOrRecycledResource();
     GetFlushForImageListener()->AddObserver(this);
 
-    if (resource_)
+    if (resource_) {
       EnsureWriteAccess();
+    }
   }
 
   ~CanvasResourceProviderSharedImageImpl() override {
@@ -811,99 +906,9 @@ class CanvasResourceProviderSharedImageImpl
     GetFlushForImageListener()->RemoveObserver(this);
     // Issue any skia work using this resource before destroying any buffer
     // that may have a reference in skia.
-    if (is_accelerated_ && !use_oop_rasterization_)
+    if (is_accelerated_ && !use_oop_rasterization_) {
       FlushGrContext();
-  }
-
-  bool IsSoftwareSharedImageGpuChannelLost() const override {
-    if (!is_software_) {
-      return false;
     }
-
-    return !shared_image_interface_provider_ ||
-           !shared_image_interface_provider_->SharedImageInterface();
-  }
-
-  bool IsValid() const final {
-    if (is_software_) {
-      return !IsSoftwareSharedImageGpuChannelLost() && GetSkSurface();
-    }
-
-    if (!use_oop_rasterization_)
-      return GetSkSurface() && !IsGpuContextLost();
-    else
-      return !IsGpuContextLost();
-  }
-
-  bool IsSingleBuffered() const override {
-    return shared_image_usage_flags_.Has(
-        gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-  }
-  bool HasUnusedResourcesForTesting() const override {
-    if (IsSingleBuffered()) {
-      return false;
-    }
-    return !unused_resources_.empty();
-  }
-
-  scoped_refptr<gpu::ClientSharedImage>
-  GetBackingClientSharedImageForExternalWrite(
-      gpu::SharedImageUsageSet required_shared_image_usages,
-      gpu::SyncToken& internal_access_sync_token,
-      bool* was_copy_performed) override {
-    // This may cause the current resource and all cached resources to become
-    // unusable. WillDrawInternal() will detect this case, drop all cached
-    // resources, and copy the current resource to a newly-created resource
-    // which will by definition be usable.
-    shared_image_usage_flags_.PutAll(required_shared_image_usages);
-
-    DCHECK(is_accelerated_);
-
-    if (IsGpuContextLost())
-      return nullptr;
-
-    // End the internal write access before calling WillDrawInternal(), which
-    // has a precondition that there should be no current write access on the
-    // resource.
-    EndWriteAccess();
-
-    const CanvasResource* const original_resource = resource_.get();
-    WillDrawInternal(false);
-    if (was_copy_performed != nullptr) {
-      *was_copy_performed = resource_.get() != original_resource;
-    }
-
-    // NOTE: The above invocation of WillDrawInternal() ensures that this
-    // invocation of GetSyncToken() will generate a new sync token.
-    internal_access_sync_token = resource_->GetSyncToken();
-
-    return resource_->GetClientSharedImage();
-  }
-
-  void EndExternalWrite(
-      const gpu::SyncToken& external_write_sync_token) override {
-    resource()->EndExternalWrite(external_write_sync_token);
-  }
-
-  gpu::SharedImageUsageSet GetSharedImageUsageFlags() const override {
-    return shared_image_usage_flags_;
-  }
-
-  void ExternalCanvasDrawHelper(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
-      override {
-    if (base::FeatureList::IsEnabled(blink::kSkipRedundantWillDraw)) {
-      cached_snapshot_.reset();
-    } else {
-      // TODO(crbug.com/40183122): Video frames don't work without this
-      // conditional WillDraw(), but we are getting memory leak on CreatePattern
-      // with it. There should be a better way to solve this.
-      if (cached_snapshot_) {
-        WillDraw();
-      }
-    }
-
-    draw_callback(Canvas());
   }
 
  protected:
