@@ -448,12 +448,8 @@ void TapDoneButtonOnInfobarModal() {
 }
 
 // Tests that permissions are reset after user navigation.
-- (void)testPermissionsAfterNavigation {
-  // TODO(crbug.com/40921852): Failing on iOS17.
-  if (@available(iOS 17.0, *)) {
-    XCTSkip(@"Failing on iOS17");
-  }
-
+// TODO(crbug.com/40921852): Re-enable the test.
+- (void)DISABLED_testPermissionsAfterNavigation {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL("/permissions/microphone_only.html")];
