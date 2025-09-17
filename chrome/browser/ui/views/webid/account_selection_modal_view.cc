@@ -593,6 +593,7 @@ void AccountSelectionModalView::ShowErrorDialog(
 
   title_ = summary_text;
   title_label_->SetText(title_);
+  title_label_->SetVisible(true);
   if (auto* widget = GetWidget()) {
     widget->widget_delegate()->SetTitle(title_);
   }
@@ -886,9 +887,17 @@ std::string AccountSelectionModalView::GetDialogTitle() const {
 void AccountSelectionModalView::UpdateTitleAndSubtitle(
     const content::RelyingPartyData& rp_data) {
   AccountSelectionViewBase::UpdateTitleAndSubtitle(rp_data);
+
+  // Don't set a title until we know the strings won't change anymore.
+  if (rp_data.display_strings_may_change) {
+    title_label_->SetVisible(false);
+    return;
+  }
+
   title_ = GetTitle(rp_data, idp_title_, rp_context_);
   subtitle_ = GetSubtitle(rp_data);
   title_label_->SetText(title_);
+  title_label_->SetVisible(true);
   if (body_label_) {
     body_label_->SetText(subtitle_);
     body_label_->SetVisible(true);
