@@ -30,6 +30,7 @@ struct CheckFilePrefixes {
   // `buffer` owns the memory for the strings in `prefix_map`.
   std::unique_ptr<llvm::MemoryBuffer> buffer;
   std::map<llvm::StringRef, char> prefix_map;
+  llvm::SmallVector<char> path_to_source_root_;
   bool check_buffers = true;
   bool check_libc_calls = false;
 };
@@ -258,10 +259,21 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       }
     }
 
-    // Drop the ../ prefixes.
-    while (cmp_filename.consume_front("./") ||
-           cmp_filename.consume_front("../"))
+    // Remove any leading ./ prefix.
+    while (cmp_filename.consume_front("./")) {
       continue;
+    }
+
+    // Resolve the ../../ prefixes.
+    llvm::StringRef path_to_source_root(
+        check_file_prefixes_.path_to_source_root_.data(),
+        check_file_prefixes_.path_to_source_root_.size());
+
+    if (!cmp_filename.consume_front(path_to_source_root)) {
+      llvm::errs() << "[unsafe-buffers] file '" << cmp_filename
+                   << "' testing against '" << path_to_source_root << "'\n";
+      return kSkip;
+    }
 
     Disposition should_check = kCheck;
     while (!cmp_filename.empty()) {
@@ -399,6 +411,14 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
       return false;
     }
 
+    check_file_prefixes_.path_to_source_root_.assign(path.begin(), path.end());
+    llvm::sys::path::remove_filename(check_file_prefixes_.path_to_source_root_);
+    if (!check_file_prefixes_.path_to_source_root_.empty()) {
+      if (check_file_prefixes_.path_to_source_root_.back() != '/') {
+        check_file_prefixes_.path_to_source_root_.append(1, '/');
+      }
+    }
+
     // Parse the contents of the path suppression file.
     //
     // The file format is as follows:
@@ -407,8 +427,11 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
     // * Active lines consist of a one-character command followed by data.
     // * A line beginning with a `.` lists diagnostics to enable. These
     //   are comma-separated and currently allow: `buffers`, `libc`.
-    // * A line beginning with '$' or '@' is silently ignored (reserved
-    //   for rolling in future features without breakage).
+    // * A line beginning with a `$` gives the path from this file to
+    //   the source tree root. Path prefixes in this file are interpreted
+    //   relative to this value (default is that this file is in the root).
+    // * A line beginning with ''@' is silently ignored (reserved for
+    //   rolling in future features without breakage).
     // * Every other line is a path prefix from the source tree root using
     //   unix-style delimiters:
     //   * Each line either removes a path from checks or adds a path to checks.
@@ -447,18 +470,23 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
         continue;
       }
       char symbol = active[0u];
+      llvm::StringRef operand = active.substr(1u);
       if (symbol == '.') {
         // A "dot" line contains directives to enable.
-        if (active.contains("buffers")) {
+        if (operand.contains("buffers")) {
           check_file_prefixes_.check_buffers = true;
         }
-        if (active.contains("libc")) {
+        if (operand.contains("libc")) {
           check_file_prefixes_.check_libc_calls = true;
         }
         continue;
       }
       if (symbol == '$') {
-        // Reserved for future expansion, path to root.
+        check_file_prefixes_.path_to_source_root_.append(operand.begin(),
+                                                         operand.end());
+        llvm::sys::path::remove_dots(check_file_prefixes_.path_to_source_root_,
+                                     true);
+        check_file_prefixes_.path_to_source_root_.append(1, '/');
         continue;
       }
       if (symbol == '@') {
@@ -470,7 +498,7 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
                      << "start with +/-: '" << line << "'\n";
         return false;
       }
-      llvm::StringRef prefix = active.substr(1u).rtrim('/');
+      llvm::StringRef prefix = operand.rtrim('/');
       if (prefix.empty()) {
         llvm::errs() << "[unsafe-buffers] Invalid line in paths file, path "
                      << "must immediately follow +/-: '" << line << "'\n";
