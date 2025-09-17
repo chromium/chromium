@@ -22,7 +22,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace features {
-BASE_FEATURE(kFontConfigFontationsIndexing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFontConfigFontationsIndexing, base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
 namespace gfx {
