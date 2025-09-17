@@ -661,11 +661,22 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     return ariaLabel(tabData);
   }
 
+  private getDisplayHostnameForUrl_(url: URL): string {
+    if (url.protocol === 'blob:') {
+      return loadTimeData.getString('blobUrlSource');
+    } else if (url.protocol === 'file:') {
+      return loadTimeData.getString('fileUrlSource');
+    } else {
+      return url.hostname;
+    }
+  }
+
   private tabData_(
       tab: Tab|RecentlyClosedTab, inActiveWindow: boolean, type: TabItemType,
       tabGroupsMap: Map<string, TabGroup>): TabData {
-    const tabData =
-        new TabData(tab, type, new URL(normalizeURL(tab.url.url)).hostname);
+    const tabData = new TabData(
+        tab, type,
+        this.getDisplayHostnameForUrl_(new URL(normalizeURL(tab.url.url))));
 
     if (tab.groupId) {
       tabData.tabGroup = tabGroupsMap.get(tokenToString(tab.groupId));

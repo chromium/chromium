@@ -4,6 +4,7 @@
 
 import 'chrome://tab-search.top-chrome/tab_search.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import type {ProfileData, RecentlyClosedTab, Tab, TabSearchItemElement, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {SEARCH_QUERY_MAX_LENGTH, TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
@@ -843,5 +844,43 @@ suite('TabSearchAppTest', () => {
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
     const [tabInfo] = await testProxy.whenCalled('switchToTab');
     assertEquals(1, tabInfo.tabId);
+  });
+
+  test('Handles file URLs', async () => {
+    await setupTest(createProfileData({
+      windows: [{
+        active: true,
+        isHostWindow: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs: [createTab({
+          title: 'My file',
+          url: {url: 'file:///home'},
+          lastActiveTimeTicks: {internalValue: BigInt(4)},
+        })],
+      }],
+    }));
+    const tabSearchItem =
+        tabSearchPage.$.tabsList.querySelector('tab-search-item')!;
+    assertEquals(
+        loadTimeData.getString('fileUrlSource'), tabSearchItem.data.hostname);
+  });
+
+  test('Handles blob URLs', async () => {
+    await setupTest(createProfileData({
+      windows: [{
+        active: true,
+        isHostWindow: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs: [createTab({
+          title: 'My blob',
+          url: {url: 'blob:null/foo'},
+          lastActiveTimeTicks: {internalValue: BigInt(4)},
+        })],
+      }],
+    }));
+    const tabSearchItem =
+        tabSearchPage.$.tabsList.querySelector('tab-search-item')!;
+    assertEquals(
+        loadTimeData.getString('blobUrlSource'), tabSearchItem.data.hostname);
   });
 });
