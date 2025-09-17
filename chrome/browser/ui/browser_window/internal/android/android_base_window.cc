@@ -142,7 +142,7 @@ void AndroidBaseWindow::SetBounds(const gfx::Rect& bounds) {
 }
 
 void AndroidBaseWindow::FlashFrame(bool flash) {
-  NOTREACHED();
+  // As of Sep 16, 2025, Android OS didn't support |FlashFrame|.
 }
 
 ui::ZOrderLevel AndroidBaseWindow::GetZOrderLevel() const {
