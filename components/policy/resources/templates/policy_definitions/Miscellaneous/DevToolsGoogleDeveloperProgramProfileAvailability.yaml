@@ -1,0 +1,39 @@
+caption: Enable Google Developer Program Profiles in <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>
+desc: |-
+  This policy controls the integration of the Google Developer Program with <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>. The user's Google Developer Program profile is shown in <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>, and users receive badges for performing specific actions within <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>.
+
+  Setting the policy to 0 - 'Enabled', or not setting any policy value, allows the integration of the Google Developer Program with <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>, and allows sharing of <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> tool usage in order to be able to award badges.
+
+  Setting the policy to 1 - 'Enabled without badges', allows the integration of the Google Developer Program with <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>, but does not allow sharing <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> tool usage with the Google Developer Program. No badges will be awarded.
+
+  Setting the policy to 2 - 'Disabled', does not allow the integration of the Google Developer Program with <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>.
+owners:
+- ergunsh@chromium.org
+- wolfi@chromium.org
+- chrome-devtools@google.com
+supported_on:
+- chrome.*:142-
+- chrome_os:142-
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: int-enum
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+items:
+- caption: Enable Google Developer Program integration in <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>.
+  name: Enabled
+  value: 0
+- caption: Enable Google Developer Program integration in <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>, but without sharing tool usage (for awarding badges).
+  name: EnabledWithoutBadges
+  value: 1
+- caption: Do not enable Google Developer Program integration in <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>.
+  name: Disabled
+  value: 2
+default: 0
+example_value: 2
+tags: []

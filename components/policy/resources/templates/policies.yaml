@@ -1389,6 +1389,7 @@ policies:
   1388: NTPShortcuts
   1389: AutoSignOutEnabled
   1390: ExtensionInstallCloudPolicyChecksEnabled
+  1391: DevToolsGoogleDeveloperProgramProfileAvailability
 atomic_groups:
   1: Homepage
   2: RemoteAccess

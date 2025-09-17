@@ -2270,6 +2270,7 @@ chromium-metrics-reviews@google.com.
   <int value="1388" label="NTPShortcuts"/>
   <int value="1389" label="AutoSignOutEnabled"/>
   <int value="1390" label="ExtensionInstallCloudPolicyChecksEnabled"/>
+  <int value="1391" label="DevToolsGoogleDeveloperProgramProfileAvailability"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

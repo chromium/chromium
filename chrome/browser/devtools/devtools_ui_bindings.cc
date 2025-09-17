@@ -1977,6 +1977,10 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
 #else
   gdp_profiles_availability_dict.Set("enabled", false);
 #endif
+  gdp_profiles_availability_dict.Set(
+      "enterprisePolicyValue",
+      profile_->GetPrefs()->GetInteger(
+          prefs::kDevToolsGoogleDeveloperProgramProfileAvailability));
   response_dict.Set("devToolsGdpProfilesAvailability",
                     std::move(gdp_profiles_availability_dict));
 

@@ -559,6 +559,9 @@ void DevToolsWindow::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kDevToolsGenAiSettings,
       static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow));
+  registry->RegisterIntegerPref(
+      prefs::kDevToolsGoogleDeveloperProgramProfileAvailability,
+      /* enabled */ 0);
 }
 
 // static

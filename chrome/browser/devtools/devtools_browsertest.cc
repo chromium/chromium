@@ -4356,6 +4356,69 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   CloseDevToolsWindow();
 }
 
+class DevToolsGdpProfilesTest : public DevToolsTest {
+ public:
+  DevToolsGdpProfilesTest() {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  ~DevToolsGdpProfilesTest() override = default;
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+
+  const base::DictValue getGdpProfilesAvailability() {
+    OpenDevToolsWindow(kDebuggerTestPage, false);
+    LoadLegacyFilesInFrontend(window_);
+    WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+    const auto result = content::EvalJs(wc, content::JsReplace(R"(
+      (async function() {
+        return new Promise(resolve => {
+          Host.InspectorFrontendHost.getHostConfig(resolve);
+        });
+      })();
+    )"))
+                            .TakeValue()
+                            .TakeDict();
+    CloseDevToolsWindow();
+    return result.FindDict("devToolsGdpProfilesAvailability")->Clone();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsGdpProfilesTest,
+                       ReflectsEnterprisePolicyInHostConfig) {
+  const base::DictValue configGdpAvailability1 =
+      this->getGdpProfilesAvailability();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(configGdpAvailability1.FindBool("enabled").value());
+#else
+  EXPECT_FALSE(configGdpAvailability1.FindBool("enabled").value());
+#endif
+  EXPECT_EQ(configGdpAvailability1.FindInt("enterprisePolicyValue").value(), 0);
+
+  // Disable via enterprise policy.
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDevToolsGoogleDeveloperProgramProfileAvailability,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(/* disabled */ 2),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  const base::DictValue configGdpAvailability2 =
+      this->getGdpProfilesAvailability();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(configGdpAvailability2.FindBool("enabled").value());
+#else
+  EXPECT_FALSE(configGdpAvailability2.FindBool("enabled").value());
+#endif
+  EXPECT_EQ(configGdpAvailability2.FindInt("enterprisePolicyValue").value(), 2);
+}
+
 class DevToolsSelfXssTest : public DevToolsTest {
  public:
   DevToolsSelfXssTest() = default;

@@ -2541,6 +2541,9 @@ inline constexpr char kDevToolsSyncedPreferencesSyncDisabled[] =
 
 inline constexpr char kDevToolsGenAiSettings[] = "devtools.gen_ai_settings";
 
+inline constexpr char kDevToolsGoogleDeveloperProgramProfileAvailability[] =
+    "devtools.google_developer_program_profile_availability";
+
 #if !BUILDFLAG(IS_ANDROID)
 // Tracks the number of times the dice signin promo has been shown in the user
 // menu.

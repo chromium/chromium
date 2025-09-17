@@ -212,7 +212,6 @@ avoid validation errors.
 * Google Tasks: `<ph name="GOOGLE_TASKS_NAME">Google Tasks</ph>`
 * Google Update: `<ph name="GOOGLE_UPDATE_NAME">Google Update</ph>`
 * Google Workspace: `<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>`
-* Google Developer Program `<ph name="GDP_NAME">Google Developer Program</ph>`
 
 #### Operating System
 
