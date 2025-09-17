@@ -8084,6 +8084,7 @@
                         "zero_suggest_trigger": "true"
                     },
                     "enable_features": [
+                        "CheckHitEligibility",
                         "Prerender2ReuseHost",
                         "Prewarm",
                         "ReusePrerenderingProcessForMainFrames"
