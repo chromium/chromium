@@ -144,17 +144,6 @@ bool PrefetchMatchMetrics::IsActualMatch() const {
   return !!prefetch_container_metrics;
 }
 
-// static
-std::unique_ptr<PreloadServingMetrics>
-PreloadServingMetrics::TakeFromNavigationHandle(
-    NavigationHandle& navigation_handle) {
-  CHECK(PreloadServingMetricsCapsule::IsFeatureEnabled());
-
-  return PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
-             navigation_handle)
-      ->Take();
-}
-
 const PrefetchMatchMetrics*
 PreloadServingMetrics::GetMeaningfulPrefetchMatchMetrics() const {
   // There is no `PrefetchMatchMetrics` if an interceptor ahead of

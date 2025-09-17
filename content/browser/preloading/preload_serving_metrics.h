@@ -118,14 +118,6 @@ struct CONTENT_EXPORT PrefetchMatchMetrics final {
 //
 // The members are filled by `PreloadServingMetrics`.
 struct CONTENT_EXPORT PreloadServingMetrics final {
-  // Take `PreloadServingMetrics` from `PreloadServingMetricsHolder` of
-  // `NavigationHandle`.
-  //
-  // See
-  // https://chromium.googlesource.com/chromium/src/+/main/content/browser/preloading/preload_serving_metrics.md#life-of-PreloadServingMetrics
-  static std::unique_ptr<PreloadServingMetrics> TakeFromNavigationHandle(
-      NavigationHandle& navigation_handle);
-
   PreloadServingMetrics();
   ~PreloadServingMetrics();
 
@@ -171,6 +163,9 @@ class CONTENT_EXPORT PreloadServingMetricsCapsuleImpl final
  public:
   // Take `PreloadServingMetrics` from `PreloadServingMetricsHolder` of
   // `NavigationHandle`.
+  //
+  // See
+  // https://chromium.googlesource.com/chromium/src/+/main/content/browser/preloading/preload_serving_metrics.md#life-of-PreloadServingMetrics
   static std::unique_ptr<PreloadServingMetricsCapsule> TakeFromNavigationHandle(
       NavigationHandle& navigation_handle);
 
