@@ -1,0 +1,8 @@
+Tests that document is updated after a BFCache navigation
+hasFocus(before emulation):false
+hasFocus(after emulation):true
+hasFocus(after regular navigation):true
+BackForwardCacheRestore
+hasFocus(after bfcache navigation):true
+hasFocus(after reload):true
+

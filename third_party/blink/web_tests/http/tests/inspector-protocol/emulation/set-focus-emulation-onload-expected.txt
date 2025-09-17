@@ -1,0 +1,6 @@
+Tests that page focus emulation is correct while loading a document
+hasFocus(before emulation):false
+hasFocus(before navigation):true
+hasFocus(after navigation):true
+had focus while loading:true
+

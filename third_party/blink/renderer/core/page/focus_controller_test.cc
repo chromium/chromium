@@ -363,6 +363,40 @@ TEST_F(FocusControllerTest, FocusHasChangedShouldInvalidateFocusStyle) {
             style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
+TEST_F(FocusControllerTest, FocusCanBeEmulated) {
+  SetBodyInnerHTML("<div id=host></div>");
+  auto& controller = GetFocusController();
+  controller.SetFocused(false);
+  EXPECT_FALSE(controller.IsDocumentFocused(GetDocument()));
+
+  controller.SetFocusEmulationEnabled(true);
+  EXPECT_TRUE(controller.IsDocumentFocused(GetDocument()));
+}
+
+TEST_F(FocusControllerTest, FocusIsRestoredAfterEmulation) {
+  SetBodyInnerHTML("<div id=host></div>");
+  auto& controller = GetFocusController();
+  controller.SetFocused(false);
+  controller.SetFocusEmulationEnabled(true);
+  EXPECT_TRUE(controller.IsDocumentFocused(GetDocument()));
+
+  controller.SetFocusEmulationEnabled(false);
+  EXPECT_FALSE(controller.IsDocumentFocused(GetDocument()));
+}
+
+TEST_F(FocusControllerTest, FocusIsRestoredAfterNavigation) {
+  SetBodyInnerHTML("<div id=host></div>");
+  auto& controller = GetFocusController();
+  controller.SetFocused(false);
+  controller.SetFocusEmulationEnabled(true);
+  EXPECT_TRUE(controller.IsDocumentFocused(GetDocument()));
+  // This is similar to what happens during a navigation.
+  controller.SetFocusedFrame(nullptr);
+  controller.UpdateFocusOnNavigationCommit(GetDocument().GetFrame(), false);
+  // The navigation logic ends.
+  EXPECT_TRUE(controller.IsDocumentFocused(GetDocument()));
+}
+
 class FocusControllerTestWithIframes : public RenderingTest {
  public:
   FocusControllerTestWithIframes()

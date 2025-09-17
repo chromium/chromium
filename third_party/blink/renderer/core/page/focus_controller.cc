@@ -1427,8 +1427,9 @@ FocusController::FocusController(Page* page)
 
 void FocusController::SetFocusedFrame(Frame* frame, bool notify_embedder) {
   DCHECK(!frame || frame->GetPage() == page_);
-  if (focused_frame_ == frame || (is_changing_focused_frame_ && frame))
+  if (focused_frame_ == frame || (is_changing_focused_frame_ && frame)) {
     return;
+  }
 
   is_changing_focused_frame_ = true;
 
@@ -1622,6 +1623,17 @@ void FocusController::SetFocusEmulationEnabled(bool emulate_focus) {
     ActiveHasChanged();
   if (focused != IsFocused())
     FocusHasChanged();
+}
+
+void FocusController::UpdateFocusOnNavigationCommit(Frame* frame,
+                                                    bool was_focused) {
+  if (was_focused) {
+    SetFocusedFrame(frame);
+    return;
+  }
+  if (is_emulating_focus_ && frame->IsOutermostMainFrame()) {
+    SetFocusedFrame(frame);
+  }
 }
 
 bool FocusController::SetInitialFocus(mojom::blink::FocusType type) {

@@ -115,6 +115,8 @@ class CORE_EXPORT FocusController final
 
   void SetFocusEmulationEnabled(bool);
 
+  void UpdateFocusOnNavigationCommit(Frame*, bool was_focused);
+
   void RegisterFocusChangedObserver(FocusChangedObserver*);
 
   static int AdjustedTabIndex(const Element&);
