@@ -29,6 +29,7 @@ import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
@@ -508,7 +509,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /* package */ void setToolbarPosition(@ControlsPosition int toolbarPosition) {
-        mToolbarOnTop = toolbarPosition != ControlsPosition.BOTTOM;
+        mToolbarOnTop =
+                !(ChromeFeatureList.sAndroidBottomToolbarV2ReverseOrderSuggestionsList.getValue()
+                        && toolbarPosition != ControlsPosition.BOTTOM);
         mLayoutScrollListener.setToolbarPosition(mToolbarOnTop);
 
         var params = (FrameLayout.LayoutParams) getLayoutParams();

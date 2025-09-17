@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
@@ -239,7 +240,9 @@ class DropdownItemViewInfoListBuilder {
             result.add(new DropdownItemViewInfo(mGroupSeparatorProcessor, model, groupDetails));
         }
 
-        boolean toolbarOnBottom = mToolbarPositionSupplier.get() == ControlsPosition.BOTTOM;
+        boolean toolbarOnBottom =
+                ChromeFeatureList.sAndroidBottomToolbarV2ReverseOrderSuggestionsList.getValue()
+                        && mToolbarPositionSupplier.get() == ControlsPosition.BOTTOM;
         var roundingStartEdge =
                 toolbarOnBottom
                         ? DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED

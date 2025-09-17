@@ -1479,6 +1479,11 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidBottomToolbarDefaultToTop =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_TOOLBAR, "default_to_top", true);
 
+    public static final BooleanCachedFeatureParam
+            sAndroidBottomToolbarV2ReverseOrderSuggestionsList =
+                    newBooleanCachedFeatureParam(
+                            ANDROID_BOTTOM_TOOLBAR_V2, "reverse_order_suggestions_list", false);
+
     public static final IntCachedFeatureParam sBackgroundThreadPoolFieldTrialConfig =
             newIntCachedFeatureParam(BACKGROUND_THREAD_POOL_FIELD_TRIAL, "config", 4);
 
@@ -1825,6 +1830,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
                     sAndroidBookmarkBarShowBookmarkBar,
                     sAndroidBottomToolbarDefaultToTop,
+                    sAndroidBottomToolbarV2ReverseOrderSuggestionsList,
                     sAndroidComposeplateHideIncognitoButton,
                     sAndroidComposeplateSkipLocaleCheck,
                     sAndroidComposeplateV2Enabled,

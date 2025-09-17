@@ -693,6 +693,13 @@ const FeatureEntry::FeatureVariation
          std::size(kCCTSingleDeckerBottomBarWithButtonsOnRightParam), nullptr},
 };
 
+const FeatureEntry::FeatureParam kAndroidBottomToolbarV2ReverseListParam[] = {
+    {"reverse_order_suggestions_list", "true"}};
+
+const FeatureEntry::FeatureVariation kAndroidBottomToolbarV2Variations[] = {
+    {"Reverse List", kAndroidBottomToolbarV2ReverseListParam,
+     std::size(kAndroidBottomToolbarV2ReverseListParam), nullptr}};
+
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kReaderModeHeuristicsMarkup,
@@ -6820,7 +6827,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-bottom-toolbar-v2",
      flag_descriptions::kAndroidBottomToolbarV2Name,
      flag_descriptions::kAndroidBottomToolbarV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidBottomToolbarV2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidBottomToolbarV2,
+                                    kAndroidBottomToolbarV2Variations,
+                                    "BottomToolbarV2")},
 
     {"auxiliary-search-donation",
      flag_descriptions::kAuxiliarySearchDonationName,
