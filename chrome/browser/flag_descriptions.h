@@ -3349,6 +3349,9 @@ extern const char kNtpCalendarModuleDescription[];
 extern const char kNtpComposeboxName[];
 extern const char kNtpComposeboxDescription[];
 
+extern const char kNtpComposeboxUsesChromeComposeClientName[];
+extern const char kNtpComposeboxUsesChromeComposeClientDescription[];
+
 extern const char kNtpSearchboxComposeEntrypointName[];
 extern const char kNtpSearchboxComposeEntrypointDescription[];
 

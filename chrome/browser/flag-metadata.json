@@ -1841,6 +1841,11 @@
     "expiry_milestone": 144
   },
   {
+    "name": "composebox-uses-chrome-compose-client",
+    "owners": ["niharm@google.com", "chrome-desktop-ntp@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "conch",
     "owners": ["hsuanling@google.com", "chromeos-recorder-app@google.com"],
     "expiry_milestone": 145

@@ -399,6 +399,11 @@ BASE_FEATURE(kHideAimEntrypointOnUserInput,
              "OmniboxHideAimEntrypointOnUserInput",
              DISABLED);
 
+// Controls whether the composebox
+BASE_FEATURE(kComposeboxUsesChromeComposeClient,
+             "ComposeboxUsesChromeComposeClient",
+             DISABLED);
+
 #if BUILDFLAG(IS_ANDROID)
 // Accelerates time from cold start to focused Omnibox on low-end devices,
 // prioritizing Omnibox focus and background initialization.
