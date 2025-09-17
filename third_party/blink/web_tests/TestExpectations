@@ -8678,13 +8678,12 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-ident.html [ Failure Pass ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure Pass ]
 
-# WebDriver BiDi WPT network interception tests are not stable yet.
-# https://github.com/GoogleChromeLabs/chromium-bidi/issues/2045.
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/capture_screenshot.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/invalid.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/browsing_context/create/background.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
-external/wpt/webdriver/tests/bidi/network/remove_intercept/remove_intercept.py [ Failure Pass Timeout ]
+# WebDriver BiDi WPT network interception tests are not stable yet.
+# https://github.com/GoogleChromeLabs/chromium-bidi/issues/2045.
 [ Linux ] external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.py [ Failure Pass Timeout ]
 
 # Gardener 2024-03-21 (PST)

@@ -146,6 +146,20 @@ TEST(Switches, Value) {
   ASSERT_EQ("--hello=there", switches.ToString());
 }
 
+TEST(Switches, Multivalued) {
+  Switches switches;
+  switches.SetMultivaluedSwitch("my-switch", "value1", ",");
+  ASSERT_EQ("value1", switches.GetSwitchValue("my-switch"));
+  switches.SetMultivaluedSwitch("my-switch", "value2", ",");
+  ASSERT_EQ("value1,value2", switches.GetSwitchValue("my-switch"));
+  // Test that trailing commas are removed.
+  switches.SetMultivaluedSwitch("my-switch", "value3,", ",");
+  ASSERT_EQ("value1,value2,value3,", switches.GetSwitchValue("my-switch"));
+  switches.SetMultivaluedSwitch("my-switch", "value4", ",");
+  ASSERT_EQ("value1,value2,value3,value4",
+            switches.GetSwitchValue("my-switch"));
+}
+
 TEST(Switches, FromOther) {
   Switches switches;
   switches.SetSwitch("a", "1");
@@ -157,6 +171,20 @@ TEST(Switches, FromOther) {
 
   switches.SetFromSwitches(switches2);
   ASSERT_EQ("--a=1 --b=2 --c=2", switches.ToString());
+}
+
+TEST(Switches, FromOtherMultivalued) {
+  Switches switches;
+  switches.SetSwitch("enable-features", "one");
+
+  Switches switches2;
+  switches2.SetSwitch("enable-features", "two");
+
+  switches.SetFromSwitches(switches2);
+
+  // `enable-features` is a multivalued switch, so the values should be
+  // joined with commas.
+  ASSERT_EQ("one,two", switches.GetSwitchValue("enable-features"));
 }
 
 TEST(Switches, Remove) {

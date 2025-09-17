@@ -88,6 +88,8 @@ const char* const kCommonSwitches[] = {
     embedder_support::kDisablePopupBlocking,
     "enable-automation",
     "allow-pre-commit-input",
+    // https://crbug.com/445332809.
+    "disable-features=IgnoreDuplicateNavs",
 };
 
 const char* const kDesktopSwitches[] = {
