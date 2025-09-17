@@ -123,15 +123,19 @@ Actions MakeMouseMove(RenderFrameHost& rfh, int content_node_id) {
   move->mutable_target()->mutable_document_identifier()->set_serialized_token(
       *DocumentIdentifierUserData::GetDocumentIdentifier(
           rfh.GetGlobalFrameToken()));
+  auto* tab = TabInterface::GetFromContents(
+      content::WebContents::FromRenderFrameHost(&rfh));
+  move->set_tab_id(tab->GetHandle().raw_value());
   return actions;
 }
 
-Actions MakeMouseMove(const gfx::Point& move_point) {
+Actions MakeMouseMove(TabHandle tab_handle, const gfx::Point& move_point) {
   Actions actions;
   MoveMouseAction* move = actions.add_actions()->mutable_move_mouse();
   Coordinate* coordinate = move->mutable_target()->mutable_coordinate();
   coordinate->set_x(move_point.x());
   coordinate->set_y(move_point.y());
+  move->set_tab_id(tab_handle.raw_value());
   return actions;
 }
 

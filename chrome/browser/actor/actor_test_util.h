@@ -74,7 +74,8 @@ optimization_guide::proto::Actions MakeHistoryForward(
     tabs::TabHandle tab_handle);
 optimization_guide::proto::Actions MakeMouseMove(content::RenderFrameHost& rfh,
                                                  int content_node_id);
-optimization_guide::proto::Actions MakeMouseMove(const gfx::Point& move_point);
+optimization_guide::proto::Actions MakeMouseMove(tabs::TabHandle tab_handle,
+                                                 const gfx::Point& move_point);
 optimization_guide::proto::Actions MakeNavigate(tabs::TabHandle tab_handle,
                                                 std::string_view target_url);
 optimization_guide::proto::Actions MakeCreateTab(SessionID window_id,

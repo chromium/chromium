@@ -102,6 +102,8 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   using ExpectedErrorResult = std::variant<std::monostate,
                                            actor::mojom::ActionResultCode,
                                            mojom::PerformActionsErrorReason>;
+  static constexpr int32_t kNonExistentContentNodeId =
+      std::numeric_limits<int32_t>::max();
 
   GlicActorControllerUiTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -318,6 +320,28 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
                    ExpectedErrorResult expected_result = {}) {
     return ClickAction(coordinate, click_type, click_count, task_id_,
                        tab_handle_, std::move(expected_result));
+  }
+
+  auto MouseMoveAction(std::string_view label,
+                       actor::TaskId& task_id,
+                       TabHandle& tab_handle,
+                       ExpectedErrorResult expected_result = {}) {
+    auto move_provider =
+        base::BindLambdaForTesting([this, &task_id, &tab_handle, label]() {
+          int32_t node_id = SearchAnnotatedPageContent(label);
+          RenderFrameHost* frame =
+              tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
+          Actions action = actor::MakeMouseMove(*frame, node_id);
+          action.set_task_id(task_id.value());
+          return EncodeActionProto(action);
+        });
+    return ExecuteAction(std::move(move_provider), std::move(expected_result));
+  }
+
+  auto MouseMoveAction(std::string_view label,
+                       ExpectedErrorResult expected_result = {}) {
+    return MouseMoveAction(label, task_id_, tab_handle_,
+                           std::move(expected_result));
   }
 
   auto NavigateAction(GURL url,
@@ -985,8 +1009,6 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
 
   auto click_provider = base::BindLambdaForTesting([this]() {
-    constexpr int32_t kNonExistentContentNodeId =
-        std::numeric_limits<int32_t>::max();
     RenderFrameHost* frame =
         tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
     Actions action = actor::MakeClick(*frame, kNonExistentContentNodeId,
@@ -1000,6 +1022,110 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       ExecuteAction(std::move(click_provider),
                     actor::mojom::ActionResultCode::kInvalidDomNodeId));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       MouseMoveTool_NonExistentNode) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',') }", ""),
+      ExecuteAction(
+          base::BindLambdaForTesting([this]() {
+            RenderFrameHost* frame =
+                tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
+            Actions action =
+                actor::MakeMouseMove(*frame, kNonExistentContentNodeId);
+            action.set_task_id(task_id_.value());
+            return EncodeActionProto(action);
+          }),
+          actor::mojom::ActionResultCode::kInvalidDomNodeId));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, MouseMoveTool_Events) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',')}", ""),
+      MouseMoveAction("first"),
+      WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',')}",
+                      "mouseenter[DIV#first],mousemove[DIV#first]"),
+      ExecuteJs(kNewActorTabId, "()=>{ event_log = []; }"),
+      MouseMoveAction("second"),
+      WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',')}",
+                      "mouseleave[DIV#first],mouseenter[DIV#second],mousemove["
+                      "DIV#second]"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       MouseMoveTool_TargetOutsideViewport) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',')}", ""),
+      WaitForJsResult(kNewActorTabId, "()=>{ return window.scrollY == 0 }"),
+      MouseMoveAction("offscreen"),
+      WaitForJsResult(kNewActorTabId, "()=>{ return window.scrollY > 0 }"),
+      WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',')}",
+                      "mouseenter[DIV#offscreen],mousemove[DIV#offscreen]"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       MouseMoveTool_MoveToCoordinate) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+  gfx::Rect first_bounds;
+  auto move_provider = base::BindLambdaForTesting([this, &first_bounds]() {
+    Actions action =
+        actor::MakeMouseMove(tab_handle_, first_bounds.CenterPoint());
+    action.set_task_id(task_id_.value());
+    return EncodeActionProto(action);
+  });
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',') }", ""),
+      GetClientRect(kNewActorTabId, "first", first_bounds),
+      ExecuteAction(std::move(move_provider)),
+      WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',') }",
+                      "mouseenter[DIV#first],mousemove[DIV#first]"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       MouseMoveTool_MoveToCoordinateOffScreen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+  gfx::Rect offscreen_bounds;
+  auto move_provider = base::BindLambdaForTesting([this, &offscreen_bounds]() {
+    Actions action =
+        actor::MakeMouseMove(tab_handle_, offscreen_bounds.CenterPoint());
+    action.set_task_id(task_id_.value());
+    return EncodeActionProto(action);
+  });
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      GetClientRect(kNewActorTabId, "offscreen", offscreen_bounds),
+      ExecuteAction(std::move(move_provider),
+                    // While we would expect kCoordinatesOutOfBounds, we don't
+                    // keep observation state for coordinates outside of the
+                    // viewport. So we treat it as stale.
+                    actor::mojom::ActionResultCode::
+                        kFrameLocationChangedSinceObservation));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, HistoryTool) {

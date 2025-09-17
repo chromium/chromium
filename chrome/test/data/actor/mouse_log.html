@@ -11,10 +11,10 @@
     </style>
   </head>
   <body>
-    <div class="target" id="first"></div>
+    <div class="target" id="first" aria-label="first"></div>
     <p>Line Break</p>
-    <div class="target" id="second"></div>
-    <div class="target" id="offscreen" style="position:relative; top:200vh"></div>
+    <div class="target" id="second" aria-label="second"></div>
+    <div class="target" id="offscreen" aria-label="offscreen" style="position:relative; top:200vh"></div>
   </body>
   <script>
     let event_log = [];
@@ -22,7 +22,6 @@
     // Log all mouse events in the format: Event[Element#ID]
     const log_handler =
         e => event_log.push(`${e.type}[${e.target.tagName}#${e.target.id}]`);
-
     const targets = document.querySelectorAll('.target');
     for (let t of targets) {
       t.addEventListener('click', log_handler);
@@ -32,6 +31,5 @@
       t.addEventListener('mouseenter', log_handler);
       t.addEventListener('mouseleave', log_handler);
     }
-
   </script>
 </html>
