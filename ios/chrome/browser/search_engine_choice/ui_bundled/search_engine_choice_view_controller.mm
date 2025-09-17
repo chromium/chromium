@@ -597,15 +597,12 @@ CGFloat GetSubtitleMarginDistance() {
          selector:@selector(accessibilityElementFocusedNotification:)
              name:UIAccessibilityElementFocusedNotification
            object:nil];
-
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-      UITraitPreferredContentSizeCategory.class, UITraitVerticalSizeClass.class,
-      UITraitHorizontalSizeClass.class
-    ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateUIOnTraitChange)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+    UITraitPreferredContentSizeCategory.class, UITraitVerticalSizeClass.class,
+    UITraitHorizontalSizeClass.class
+  ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateUIOnTraitChange)];
 }
 
 - (void)viewIsAppearing:(BOOL)animated {
@@ -632,19 +629,6 @@ CGFloat GetSubtitleMarginDistance() {
   _searchEngines = searchEngines;
   [self loadSearchEngineButtons];
 }
-
-#pragma mark - UITraitEnvironment
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateUIOnTraitChange];
-}
-#endif
 
 #pragma mark - Private
 
