@@ -4,6 +4,7 @@
 
 #include "services/webnn/ort/ort_tensor.h"
 
+#include <functional>
 #include <numeric>
 #include <ostream>
 

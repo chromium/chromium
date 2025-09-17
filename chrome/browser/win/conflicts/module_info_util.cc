@@ -8,6 +8,7 @@
 
 #include <tlhelp32.h>
 
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <string>

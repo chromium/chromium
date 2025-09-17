@@ -5,6 +5,7 @@
 #ifndef BASE_STRINGS_STRING_NUMBER_CONVERSIONS_WIN_H_
 #define BASE_STRINGS_STRING_NUMBER_CONVERSIONS_WIN_H_
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 

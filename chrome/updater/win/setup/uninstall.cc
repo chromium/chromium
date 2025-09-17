@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 #include "base/base_paths.h"

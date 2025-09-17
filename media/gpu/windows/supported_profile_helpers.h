@@ -7,6 +7,8 @@
 
 #include <initguid.h>
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/video_codecs.h"

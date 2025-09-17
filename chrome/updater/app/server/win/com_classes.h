@@ -10,6 +10,7 @@
 #include <wrl/implements.h>
 
 #include <string>
+#include <typeinfo>
 
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"

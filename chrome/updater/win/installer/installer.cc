@@ -18,6 +18,7 @@
 
 #include <optional>
 #include <string>
+#include <typeinfo>
 
 #include "base/check.h"
 #include "base/command_line.h"

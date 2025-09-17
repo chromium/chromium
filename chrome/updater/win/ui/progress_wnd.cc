@@ -8,6 +8,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <typeinfo>
 
 #include "base/check_op.h"
 #include "base/logging.h"

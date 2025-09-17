@@ -10,6 +10,7 @@
 #define CHROME_CHROME_ELF_SHA1_SHA1_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <array>
 #include <string>

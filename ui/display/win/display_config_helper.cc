@@ -4,6 +4,7 @@
 
 #include "ui/display/win/display_config_helper.h"
 
+#include <cstdint>
 #include <vector>
 
 #include "base/compiler_specific.h"

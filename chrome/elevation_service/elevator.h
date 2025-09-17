@@ -9,6 +9,7 @@
 
 #include <wrl/implements.h>
 
+#include <cstdint>
 #include <string>
 
 #include "base/gtest_prod_util.h"

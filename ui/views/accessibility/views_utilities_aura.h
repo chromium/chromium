@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_VIEWS_UTILITIES_AURA_H_
 #define UI_VIEWS_ACCESSIBILITY_VIEWS_UTILITIES_AURA_H_
 
+#include <cstdint>
 #include <string_view>
 #include <vector>
 

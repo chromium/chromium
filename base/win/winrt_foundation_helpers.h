@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <type_traits>
 #include <vector>
 
 #include "base/check.h"
