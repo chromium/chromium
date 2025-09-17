@@ -332,9 +332,11 @@ bool IsDefaultANGLEVulkan() {
 
   const auto& active_gpu = system_info.gpus[system_info.activeGPUIndex];
 
-  // Vulkan 1.1 is required by ANGLE.
-  if (active_gpu.driverApiVersion < VK_VERSION_1_1)
+  // Vulkan 1.1 is ANGLE's minimum requirement, but drivers older than 1.3 are
+  // rarely reliable enough.
+  if (active_gpu.driverApiVersion < VK_VERSION_1_3) {
     return false;
+  }
 
   // If |dirverId| is 0, the driver lacks VK_KHR_driver_properties.
   // Consider this driver too old to be usable.
