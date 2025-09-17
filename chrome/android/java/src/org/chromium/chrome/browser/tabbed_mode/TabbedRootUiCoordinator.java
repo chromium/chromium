@@ -1294,11 +1294,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void updateTopControlsHeight() {
+        updateTopControlsHeight(/* allowAnimations= */ true);
+    }
+
+    private void updateTopControlsHeight(boolean allowAnimations) {
         if (mToolbarManager == null) return;
 
         // TODO(crbug/331844971): Do a smooth transition head into DW mode.
         final boolean animate =
-                !sDisableTopControlsAnimationForTesting
+                allowAnimations
+                        && !sDisableTopControlsAnimationForTesting
                         && !AppHeaderUtils.isAppInDesktopWindow(getDesktopWindowStateManager());
         if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
             mTopControlsStacker.requestLayerUpdate(animate);
@@ -1816,7 +1821,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mFullscreenManager,
                             mCompositorViewHolderSupplier.get().getResourceManager(),
                             mBrowserControlsManager,
-                            /* heightChangeCallback= */ result -> updateTopControlsHeight(),
+                            /* heightChangeCallback= */ result -> updateTopControlsHeight(false),
                             mProfileSupplier,
                             /* viewStub= */ mActivity.findViewById(R.id.bookmark_bar_stub),
                             mActivityTabProvider.get(),
@@ -1835,7 +1840,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarCoordinator.setVisibility(true);
             // When toggling the visibility of the existing view, the LayoutChangeListener will not
             // be triggered as it is on instantiation, so we update the top controls height here.
-            updateTopControlsHeight();
+            updateTopControlsHeight(false);
         }
 
         if (mToolbarManager != null) {
@@ -1857,7 +1862,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         } else {
             if (mBookmarkBarCoordinator != null) {
                 mBookmarkBarCoordinator.setVisibility(false);
-                updateTopControlsHeight();
+                updateTopControlsHeight(false);
                 if (mToolbarManager != null) {
                     mToolbarManager.setProgressBarAnchorView(R.id.control_container);
                 }
