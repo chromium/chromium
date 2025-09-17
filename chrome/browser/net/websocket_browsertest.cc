@@ -39,6 +39,9 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -229,7 +232,7 @@ class WebSocketBrowserConnectToTest : public WebSocketBrowserTest {
     ConnectTo(host, url, "/websocket/connect_to.html");
   }
 
-  // Supply a ws: or wss: URL to connect to via loading `host`/connect_to.html.
+  // Supply a ws: or wss: URL to connect to via loading `resource`
   void ConnectTo(const std::string& host,
                  const GURL& url,
                  const std::string& resource) {
@@ -287,13 +290,22 @@ class WebSocketBrowserHTTPSConnectToTest
   net::EmbeddedTestServer https_server_;
 };
 
-// TODO(crbug.com/434744665): add more tests for websockets opened from all the
-// worker types (dedicated workers, shared workers, service workers).
+// TODO(crbug.com/434744665): add tests for websockets opened from shared
+// workers.
 class LocalNetworkAccessWebSocketsBrowserTest
     : public WebSocketBrowserHTTPSConnectToTest {
  public:
+  using enum permissions::PermissionRequestManager::AutoResponseType;
+
   permissions::MockPermissionPromptFactory* bubble_factory() {
     return mock_permission_prompt_factory_.get();
+  }
+
+  void ConnectToLNAWebSocket(const std::string& resource) {
+    ConnectTo(kHostB,
+              net::test_server::GetWebSocketURL(wss_server_, kHostA,
+                                                "/echo-with-no-extension"),
+              resource);
   }
 
  protected:
@@ -316,6 +328,10 @@ class LocalNetworkAccessWebSocketsBrowserTest
             browser()->tab_strip_model()->GetActiveWebContents());
     mock_permission_prompt_factory_ =
         std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+    wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    // Launch a secure WebSocket server.
+    ASSERT_TRUE(wss_server_.Start());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -335,33 +351,85 @@ class LocalNetworkAccessWebSocketsBrowserTest
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
                        LNAWebSocketConnectionHasPermission) {
-  bubble_factory()->set_response_type(
-      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
-  wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  // Launch a secure WebSocket server.
-  ASSERT_TRUE(wss_server_.Start());
-
-  ConnectTo(kHostB,
-            net::test_server::GetWebSocketURL(wss_server_, kHostA,
-                                              "/echo-with-no-extension"),
-            "/websocket/connect_to_as_public_address.html");
-
+  bubble_factory()->set_response_type(ACCEPT_ALL);
+  ConnectToLNAWebSocket("/websocket/connect_to_as_public_address.html");
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
                        LNAWebSocketConnectionDeniedPermission) {
-  bubble_factory()->set_response_type(
-      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
-  wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  // Launch a secure WebSocket server.
-  ASSERT_TRUE(wss_server_.Start());
+  bubble_factory()->set_response_type(DENY_ALL);
+  ConnectToLNAWebSocket("/websocket/connect_to_as_public_address.html");
+  EXPECT_EQ("FAIL", WaitAndGetTitle());
+}
 
-  ConnectTo(kHostB,
-            net::test_server::GetWebSocketURL(wss_server_, kHostA,
-                                              "/echo-with-no-extension"),
-            "/websocket/connect_to_as_public_address.html");
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
+                       LNAWorkerWebSocketConnectionHasPermission) {
+  bubble_factory()->set_response_type(ACCEPT_ALL);
+  ConnectToLNAWebSocket(
+      "/websocket/connect_to_using_worker_as_public_address.html");
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
 
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
+                       LNAWorkerWebSocketConnectionDeniedPermission) {
+  bubble_factory()->set_response_type(DENY_ALL);
+  ConnectToLNAWebSocket(
+      "/websocket/connect_to_using_worker_as_public_address.html");
+  EXPECT_EQ("FAIL", WaitAndGetTitle());
+}
+
+class LocalNetworkAccessWebSocketsPolicyBrowserTest
+    : public LocalNetworkAccessWebSocketsBrowserTest {
+ protected:
+  void UpdateProviderPolicy(const policy::PolicyMap& policy) {
+    policy::PolicyMap policy_with_defaults = policy.Clone();
+#if BUILDFLAG(IS_CHROMEOS)
+    policy::SetEnterpriseUsersDefaults(&policy_with_defaults);
+#endif
+    provider_.UpdateChromePolicy(policy_with_defaults);
+  }
+
+  static void SetPolicy(policy::PolicyMap* policies,
+                        const char* key,
+                        std::optional<base::Value> value) {
+    policies->Set(key, policy::POLICY_LEVEL_MANDATORY,
+                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                  std::move(value), nullptr);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch("noerrdialogs");
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+
+    LocalNetworkAccessWebSocketsBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsPolicyBrowserTest,
+                       LNAServiceWorkerWebSocketConnectionHasPermission) {
+  // Service workers need permission pre-granted, do this through enterprise
+  // policy.
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(base::Value::List().Append("*")));
+  UpdateProviderPolicy(policies);
+
+  ConnectToLNAWebSocket(
+      "/websocket/connect_to_using_service_worker_as_public_address.html");
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsPolicyBrowserTest,
+                       LNAServiceWorkerWebSocketConnectionDeniedPermission) {
+  ConnectToLNAWebSocket(
+      "/websocket/connect_to_using_service_worker_as_public_address.html");
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
 

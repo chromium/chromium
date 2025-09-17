@@ -108,15 +108,26 @@ void WebSocketConnectorImpl::Connect(
     headers.push_back(network::mojom::HttpHeader::New(
         net::HttpRequestHeaders::kUserAgent, *user_agent));
   }
-  process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
+
+  content::StoragePartition* storage_partition = process->GetStoragePartition();
+
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_service_observer =
+          frame_id_ == IPC::mojom::kRoutingIdNone
+              ? static_cast<StoragePartitionImpl*>(storage_partition)
+                    ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
+                        process_id_, origin_)
+              : storage_partition->CreateURLLoaderNetworkObserverForFrame(
+                    process_id_, frame_id_);
+
+  storage_partition->GetNetworkContext()->CreateWebSocket(
       url, requested_protocols, site_for_cookies, storage_access_api_status,
       isolation_info_, std::move(headers), process_id_, origin_,
       client_security_state_->Clone(), options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
-      process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
-          process_id_, frame_id_),
-      mojo::NullRemote(), mojo::NullRemote(), std::move(throttling_profile_id));
+      std::move(url_loader_network_service_observer), mojo::NullRemote(),
+      mojo::NullRemote(), std::move(throttling_profile_id));
 }
 
 void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(

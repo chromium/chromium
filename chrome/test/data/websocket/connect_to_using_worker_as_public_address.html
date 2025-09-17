@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>test ws connection</title>
+<script type="text/javascript">
+
+const href = window.location.href;
+const queryBegin = href.indexOf('?url=');
+if (queryBegin == -1) {
+  console.log("Failed to find ?url= in URL");
+  document.title = 'FAIL';
+  throw "FAILURE";
+}
+const url = href.slice(queryBegin + 5);
+
+const workerConnection = new Promise((resolve, reject) => {
+  const worker = new Worker('./connect_to_using_worker_as_public_address.js');
+  worker.onmessage = event => {
+    if (event.data === 'PASS') {
+      resolve();
+    } else if (event.data === 'FAIL') {
+      reject();
+    }
+  };
+  worker.onerror = reject;
+
+  // Start the worker.
+  worker.postMessage({url});
+});
+
+workerConnection.then(() => {
+  // Set document title to 'PASS'. The test observer catches this title changes
+  // to know the result.
+  document.title = 'PASS';
+}, () => {
+  // Set document title to 'FAIL'.
+  document.title = 'FAIL';
+});
+
+</script>
+</head>
+</html>
