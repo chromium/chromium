@@ -1117,12 +1117,9 @@ void PopulateChromeWebUIFrameBinders(
       ash::hotspot_config::mojom::CrosHotspotConfig,
       ash::settings::OSSettingsUI>(map);
 
-  if (base::FeatureList::IsEnabled(
-          ash::features::kSystemJapanesePhysicalTyping)) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::ime::mojom::InputMethodUserDataService,
-        ash::settings::OSSettingsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::ime::mojom::InputMethodUserDataService,
+      ash::settings::OSSettingsUI>(map);
 
   if (chromeos::features::IsOrcaEnabled() ||
       chromeos::features::IsMahiEnabled()) {

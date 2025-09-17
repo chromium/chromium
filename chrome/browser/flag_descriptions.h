@@ -4416,9 +4416,6 @@ extern const char kContinuousOverviewScrollAnimationDescription[];
 extern const char kSpectreVariant2MitigationName[];
 extern const char kSpectreVariant2MitigationDescription[];
 
-extern const char kSystemJapanesePhysicalTypingName[];
-extern const char kSystemJapanesePhysicalTypingDescription[];
-
 extern const char kSupportF11AndF12ShortcutsName[];
 extern const char kSupportF11AndF12ShortcutsDescription[];
 

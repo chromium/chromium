@@ -505,9 +505,7 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "onDeviceGrammarCheckEnabled",
       base::FeatureList::IsEnabled(features::kOnDeviceGrammarCheck));
 
-  html_source->AddBoolean(
-      "systemJapanesePhysicalTyping",
-      base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping));
+  html_source->AddBoolean("systemJapanesePhysicalTyping", true);
   html_source->AddBoolean(
       "languagePacksInSettingsEnabled",
       base::FeatureList::IsEnabled(features::kLanguagePacksInSettings));

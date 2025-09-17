@@ -306,16 +306,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
                                    /*disabled_features=*/disabled_features);
   }
 
-  void EnableDefaultFeatureListWithJapaneseSystemPk() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            features::kSystemJapanesePhysicalTyping,
-        },
-        /*disabled_features=*/DisabledFeatures());
-  }
-
   base::test::ScopedFeatureList feature_list_;
 
  private:

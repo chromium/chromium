@@ -2036,10 +2036,6 @@ BASE_FEATURE(kSmartDimExperimentalComponent, base::FEATURE_DISABLED_BY_DEFAULT);
 // notification for users who previously had this feature enabled.
 BASE_FEATURE(kSmartLockSignInRemoved, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables using the system input engine for physical typing in
-// Japanese.
-BASE_FEATURE(kSystemJapanesePhysicalTyping, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Replaces uses of `SystemNudge` with the new `AnchoredNudge` component.
 BASE_FEATURE(kSystemNudgeMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
