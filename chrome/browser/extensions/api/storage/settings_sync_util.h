@@ -11,7 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class Value;
