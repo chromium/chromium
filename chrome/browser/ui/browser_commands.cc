@@ -1424,8 +1424,9 @@ void GroupTab(Browser* browser) {
       TabStripModel::ContextMenuCommand::CommandToggleGrouped);
 }
 
-void NewSplitTab(Browser* browser, split_tabs::SplitTabCreatedSource source) {
-  TabStripModel* const tab_strip_model = browser->tab_strip_model();
+void NewSplitTab(BrowserWindowInterface* browser,
+                 split_tabs::SplitTabCreatedSource source) {
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
   const int active_index = tab_strip_model->active_index();
   tab_strip_model->delegate()->AddTabAt(
       GURL(chrome::kChromeUISplitViewNewTabPageURL), active_index + 1, true,

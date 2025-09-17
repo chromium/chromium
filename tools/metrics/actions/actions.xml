@@ -50224,6 +50224,7 @@ should be able to be added at any place in this file.
   <suffix name="SafetySafetycheck" label="Safety Check"/>
   <suffix name="SaveTabGroups" label="Saved Tab Groups"/>
   <suffix name="SearchBoxSuggestions" label="Search Box Suggestions"/>
+  <suffix name="SideBySide" label="Split View"/>
   <suffix name="SidePanelPinning" label="Side Panel Pinning"/>
   <suffix name="TabGroupsSync" label="Tab Groups Sync"/>
   <suffix name="TabOrganizer" label="Tab Organizer"/>

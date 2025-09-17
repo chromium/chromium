@@ -34,6 +34,7 @@ enum Command {
   kOpenGlic = 16,
   kOpenGlicSettings = 17,
   kPrewarmGlicFre = 18,
+  kOpenSplitView = 19,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:PromoBrowserCommandEnum)
 

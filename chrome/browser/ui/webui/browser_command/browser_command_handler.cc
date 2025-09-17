@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/user_education/tutorial_identifiers.h"
@@ -38,6 +39,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "net/base/url_util.h"
@@ -152,6 +154,10 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kPrewarmGlicFre:
       can_execute = true;
       break;
+    case Command::kOpenSplitView:
+      // What's new module is gated on the kSideBySide flag already.
+      can_execute = true;
+      break;
   }
   std::move(callback).Run(can_execute);
 }
@@ -243,6 +249,9 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       break;
     case Command::kPrewarmGlicFre:
       PrewarmGlicFre();
+      break;
+    case Command::kOpenSplitView:
+      OpenSplitView();
       break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
@@ -399,6 +408,15 @@ void BrowserCommandHandler::PrewarmGlicFre() {
     glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kBrowserCommand);
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+void BrowserCommandHandler::OpenSplitView() {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_);
+  if (tab) {
+    chrome::NewSplitTab(tab->GetBrowserWindowInterface(),
+                        split_tabs::SplitTabCreatedSource::kWhatsNew);
+  }
 }
 
 void BrowserCommandHandler::OpenFeedbackForm() {

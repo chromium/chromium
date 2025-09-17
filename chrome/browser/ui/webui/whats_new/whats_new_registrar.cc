@@ -35,6 +35,11 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // M138
   registry->RegisterModule(
       WhatsNewModule("TabGroupsSync", "dpenning@google.com"));
+
+  // M142
+  registry->RegisterModule(WhatsNewModule(::features::kSideBySide,
+                                          "agale@google.com",
+                                          BrowserCommand::kOpenSplitView));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
