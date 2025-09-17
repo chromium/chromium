@@ -24,6 +24,31 @@ class StartKioskReceiverRequest : public boca::BocaRequest::Delegate {
  public:
   using ResponseCallback = base::OnceCallback<void(std::optional<std::string>)>;
 
+  static constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+      net::DefineNetworkTrafficAnnotation(
+          "ash_boca_receiver_start_kiosk_receiver_request",
+          R"(
+        semantics {
+          sender: "School Tools"
+          description: "Start the kiosk receiver."
+          trigger: "Teacher requests starting the connection"
+          data: "Connection state."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "cros-edu-eng@google.com"
+            }
+          }
+          last_reviewed: "2025-09-09"
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This request cannot be stopped in settings, but will only "
+                    "be sent if the device set to kiosk mode with the School "
+                    "Tools receiver URL set."
+          policy_exception_justification: "Not implemented."
+        })");
+
   StartKioskReceiverRequest(std::string receiver_id,
                             ::boca::UserIdentity initiator,
                             ::boca::UserIdentity presenter,
