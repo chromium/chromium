@@ -75,7 +75,7 @@ source_set("ble_scan_parser") {
 }
 
 fuzzer_test("ble_scan_parser_fuzzer") {
-  sources = [ "ble_scan_parser_impl_fuzzer.cc" ]
+  sources = [ "ble_scan_parser_fuzzer.cc" ]
   deps = [ ":ble_scan_parser" ]
 
   seed_corpus = "//device/bluetooth/bluez/ble_scan_parser/data"
