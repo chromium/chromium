@@ -37,13 +37,14 @@ namespace {
 const std::array<int, HttpNetworkSession::NUM_SOCKET_POOL_TYPES>
 GlobalMaxSocketsPerPoolImpl() {
   // See crbug.com/415691664 for more details on the connection pool size trial.
-  if (base::FeatureList::IsEnabled(features::kTcpConnectionPoolSizeTrial)) {
+  if (base::FeatureList::IsEnabled(
+          features::kSocketPoolSizePerTopLevelSiteTrial)) {
     // TODO(crbug.com/415691664): If we run out of file descriptors due to the
     // new pool size and see a spike in errors, that should be addressed.
     return std::to_array<int>({
-        features::kTcpConnectionPoolSizeTrialNormal
+        features::kSocketPoolSizePerTopLevelSiteTrialNormalProfileLimit
             .Get(),  // NORMAL_SOCKET_POOL
-        features::kTcpConnectionPoolSizeTrialWebSocket
+        features::kSocketPoolSizePerTopLevelSiteTrialWebSocketProfileLimit
             .Get()  // WEBSOCKET_SOCKET_POOL
     });
   }

@@ -23959,6 +23959,29 @@
             ]
         }
     ],
+    "SocketPoolSizePerTopLevelSiteTrial": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "SocketPoolSizePerTopLevelSiteTrialNormalProfileLimit": "513",
+                        "SocketPoolSizePerTopLevelSiteTrialWebSocketProfileLimit": "513"
+                    },
+                    "enable_features": [
+                        "SocketPoolSizePerTopLevelSiteTrial"
+                    ]
+                }
+            ]
+        }
+    ],
     "SoftNavigationDetectionAdvancedPaintAttribution": [
         {
             "platforms": [
@@ -24886,29 +24909,6 @@
                     "name": "TaskManagerDesktopRefresh",
                     "enable_features": [
                         "TaskManagerDesktopRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TcpConnectionPoolSizeTrial": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_512",
-                    "params": {
-                        "TcpConnectionPoolSizeTrialNormal": "512",
-                        "TcpConnectionPoolSizeTrialWebSocket": "512"
-                    },
-                    "enable_features": [
-                        "TcpConnectionPoolSizeTrial"
                     ]
                 }
             ]
