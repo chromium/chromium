@@ -1,22 +1,49 @@
 # This yaml file is used to package binaries from Xcode.app.
 #
 # To use this:
-#   1) Make sure Xcode is fully updated (via the app store or otherwise).
-#   2) Move Xcode.app to the same directory as this file, and rename Xcode.app
-#      to xcode_binaries. Or make a symlink:
-#      $ rm -rf build/xcode_binaries && \
-#        ln -s /Applications/Xcode.app build/xcode_binaries
-#   3) Create the package and upload it to CIPD:
-#      $ cipd create --pkg-def build/xcode_binaries.yaml \
+#
+#   1. Make sure Xcode is fully updated (via the app store or otherwise).
+#
+#   2. Copy Xcode.app to the same directory as this file, naming it
+#      xcode_binaries. `cp -c` uses `clonefile` which is speedier and uses less
+#      disk space than making true copies, but requires source and destination
+#      to be on the same APFS filesystem. Remove the `-c` if clonefile failures
+#      are reported.
+#
+#      % rm -rf build/xcode_binaries
+#      % cp -ac /Applications/Xcode.app/ build/xcode_binaries
+#
+#      Xcode 26 has unbundled the Metal compiler, so download it and integrate
+#      it into the toolchain. This installs the Metal toolchain corresponding
+#      to Xcode’s version, finds the filesystem mount point where it appears,
+#      and splices it into build/xcode_binaries:
+#
+#      % DEVELOPER_DIR=/Applications/Xcode.app \
+#        xcodebuild -downloadComponent MetalToolchain
+#      % METAL_DIR=$(xcrun --find metal |
+#                    sed -E -e 's%(/Metal\.xctoolchain)/.*%\1%')
+#      % rsync --archive --delete ${METAL_DIR}/usr/metal/ \
+#        build/xcode_binaries/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/metal
+#      % rsync --archive ${METAL_DIR}/usr/bin/{air-lld,metal,metallib} \
+#        build/xcode_binaries/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+#
+#   3. Create the package and upload it to CIPD:
+#
+#      % cipd create --pkg-def build/xcode_binaries.yaml \
 #            -ref ${xcode_version} -ref ${xcode_build_version} \
 #            -ref sdk_${sdk_version} -ref sdk_${sdk_build_version}
+#
 #      ${xcode_version} and ${xcode_build_version} can be found in "About
 #      Xcode", or by running `xcodebuild -version`. ${sdk_version} can be found
 #      by running `xcrun --show-sdk-version`. ${sdk_build_version} can be found
 #      by running `xcrun --show-sdk-build-version`.
 #
+#   4. Optional: clean up.
+#
+#      % rm -rf build/xcode_binaries
+#
 # To deploy the newly created cipd package across the fleet, modify
-# ./mac_toolchain.py to point to the new cipd hash, and update the
+# build/mac_toolchain.py to point to the new cipd hash, and update the
 # mac_sdk_official_* variables in build/config/mac/mac_sdk.gni.
 #
 # Note that the Chromium build looks for the mac binaries in
@@ -26,6 +53,7 @@
 #
 # The ACLs for this package are determined by the directory structure. The
 # nomenclature mirrors that of the hermetic toolchain to avoid ACL duplication.
+
 package: infra_internal/ios/xcode/xcode_binaries/mac-amd64
 description: A hermetic deployment of all Xcode binaries used to build Chromium.
 root: "xcode_binaries"

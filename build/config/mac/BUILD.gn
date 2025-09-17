@@ -67,20 +67,6 @@ config("runtime_library") {
   cflags = common_flags
   ldflags = common_flags
 
-  # Record the SDK as 26.0, even though that may not be the SDK in use. This
-  # convinces macOS 26 (and its betas) to enable new features gated on that SDK
-  # being used at build time, before actually migrating to that SDK (which is
-  # currently in beta, and which we wouldn’t normally use until released). On
-  # macOS < 26, this white lie is a no-op, as older versions won’t change
-  # behaviors if this field is set to anything newer than they’re aware of. On
-  # macOS 26, this enables Liquid Glass, and disables the undesirable
-  # SystemVersionCompat OS version reporting, where macOS 26 calls itself macOS
-  # 16.
-  #
-  # TODO(https://crbug.com/423933062): Remove this once the macOS 26 SDK is in
-  # use.
-  ldflags += [ "-Wl,-platform_version,macos,$mac_deployment_target,26.0" ]
-
   # TODO(https://crbug.com/442128549): see if we can convince upstream rust to
   # add an -isysroot flag instead.
   rustenv = [ "SDKROOT=" + rebase_path(sysroot, root_build_dir) ]
