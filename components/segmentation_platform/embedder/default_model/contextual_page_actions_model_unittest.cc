@@ -19,13 +19,15 @@ class ContextualPageActionsModelTest : public DefaultModelTestBase {
       bool has_price_tracking,
       bool has_reader_mode,
       bool has_discounts = false,
-      bool has_tab_grouping_suggestions = false) {
+      bool has_tab_grouping_suggestions = false,
+      float non_contextual_click_count = 0) {
     ModelProvider::Request input;
     input.push_back(has_discounts ? 1 : 0);
     input.push_back(has_price_insights ? 1 : 0);
     input.push_back(has_price_tracking ? 1 : 0);
     input.push_back(has_reader_mode ? 1 : 0);
     input.push_back(has_tab_grouping_suggestions ? 1 : 0);
+    input.push_back(non_contextual_click_count);
     return input;
   }
 
@@ -34,13 +36,16 @@ class ContextualPageActionsModelTest : public DefaultModelTestBase {
       bool has_price_tracking,
       bool has_reader_mode,
       bool has_discounts = false,
-      bool has_tab_grouping_suggestions = false) {
+      bool has_tab_grouping_suggestions = false,
+      float non_contextual_click_count = 0) {
     ModelProvider::Response response;
     response.push_back(has_discounts ? 1 : 0);
     response.push_back(has_price_insights ? 1 : 0);
     response.push_back(has_price_tracking ? 1 : 0);
     response.push_back(has_reader_mode ? 1 : 0);
-    response.push_back(has_tab_grouping_suggestions ? 1 : 0);
+    response.push_back(
+        (has_tab_grouping_suggestions && non_contextual_click_count == 0) ? 1
+                                                                          : 0);
     return response;
   }
 };
@@ -151,6 +156,15 @@ TEST_F(ContextualPageActionsModelTest, ExecuteModelWithInput_TabSuggestions) {
                            /*expected_result=*/expected_response);
   // Discounts has greater priority than tab group suggestions.
   ExpectClassifierResults(input, {kContextualPageActionModelLabelDiscounts});
+
+  // Price insights = 0, price tracking = 0, reader mode = 0, discounts = 0, tab
+  // group suggestions = 1, non contextual click = 1. "group suggestions" is
+  // ignored due to non contextual clicks.
+  input = GetRequestInput(false, false, false, false, true, 1);
+  expected_response = ExpectedResponse(false, false, false, false, true, 1);
+  ExpectExecutionWithInput(input, /*expected_error=*/false,
+                           /*expected_result=*/expected_response);
+  ExpectClassifierResults(input, {});
 }
 
 }  // namespace segmentation_platform
