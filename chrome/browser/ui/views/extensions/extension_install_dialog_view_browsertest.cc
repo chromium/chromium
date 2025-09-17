@@ -26,6 +26,9 @@
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_install_prompt_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/webstore_data_fetcher.h"
+#include "chrome/browser/extensions/webstore_installer_test.h"
+#include "chrome/browser/extensions/webstore_reinstaller.h"
 #include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -40,13 +43,17 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_test_util.h"
+#include "chrome/common/extensions/webstore_install_result.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_icon_manager.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -71,6 +78,7 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -80,6 +88,37 @@ using extensions::PermissionMessages;
 using extensions::PermissionSet;
 
 namespace {
+// The following values are used to mock a protobuf response to the item
+// snippets API and should match the values for the test extension stored in
+// "chrome/test/data/extensions/api_test/webstore_inline_install/extension".
+constexpr char kMockTitle[] = "Inline Install Test Extension";
+constexpr char kMockUserCountString[] = "371,674";
+constexpr double kMockAverageRating = 4.36;
+constexpr int kMockRatingCount = 788;
+constexpr char kMockRatingCountString[] = "788";
+constexpr char kMockLogoUri[] = "webstore_inline_install/extension/icon.png";
+constexpr char kMockManifest[] = R"({
+  "name": "Inline Install Test Extension",
+  "version": "0.1",
+  "manifest_version": 2,
+  "icons": {"128": "icon.png"},
+  "permissions":["tabs"]
+})";
+
+std::unique_ptr<extensions::FetchItemSnippetResponse> CreateMockResponse(
+    const extensions::ExtensionId& id) {
+  auto mock_response = std::make_unique<extensions::FetchItemSnippetResponse>();
+  mock_response->set_item_id(id);
+  mock_response->set_title(kMockTitle);
+  mock_response->set_manifest(kMockManifest);
+  mock_response->set_logo_uri(kMockLogoUri);
+  mock_response->set_user_count_string(kMockUserCountString);
+  mock_response->set_rating_count_string(kMockRatingCountString);
+  mock_response->set_rating_count(kMockRatingCount);
+  mock_response->set_average_rating(kMockAverageRating);
+
+  return mock_response;
+}
 
 void CloseAndWait(views::Widget* widget) {
   views::test::WidgetDestroyedWaiter waiter(widget);
@@ -1124,4 +1163,93 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogPictureInPictureInputProtectorTest,
       .NotifyClick(press_enter_delayed);
   EXPECT_TRUE(delegate_view->GetWidget()->IsClosed());
   CloseAndWait(delegate_view->GetWidget());
+}
+
+class WebstoreReinstallerDialogViewTest : public WebstoreInstallerTest {
+ public:
+  WebstoreReinstallerDialogViewTest()
+      : WebstoreInstallerTest("cws.com",
+                              "extensions/api_test/webstore_inline_install",
+                              "extension.crx",
+                              "app.com",
+                              "nonapp.com") {}
+  ~WebstoreReinstallerDialogViewTest() override = default;
+};
+
+// Tests that destroying the WebContents after reinstall prompt is shown
+// properly handles dialog cleanup when prompt is cancelled.
+// The test will crash without the fix.
+IN_PROC_BROWSER_TEST_F(WebstoreReinstallerDialogViewTest,
+                       TestWebContentsDestroyedDuringReinstall) {
+  // Build an extension with the same id as our test extension and add it.
+  constexpr char kTestExtensionId[] = "ecglahbcnmdpdciemllbhojghbkagdje";
+  const std::string kExtensionName("ReinstallerExtension");
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder(kExtensionName)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
+          .SetID(kTestExtensionId)
+          .SetManifestKey("update_url",
+                          "https://clients2.google.com/service/update2/crx")
+          .Build();
+
+  extension_registrar()->AddExtension(extension.get());
+
+  auto mock_response = CreateMockResponse(kTestExtensionId);
+  extensions::WebstoreDataFetcher::SetMockItemSnippetReponseForTesting(
+      mock_response.get());
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile());
+  ASSERT_TRUE(registry->enabled_extensions().GetByID(kTestExtensionId));
+
+  // WebstoreReinstaller expects corrupted extension.
+  extension_registrar()->DisableExtension(
+      kTestExtensionId, {extensions::disable_reason::DISABLE_CORRUPTED});
+
+  content::WebContents* active_web_contents = GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  // Create a WebstoreReinstaller with the first WebContents
+  // We do not anticipate a callback in this test.
+  auto reinstaller = base::MakeRefCounted<extensions::WebstoreReinstaller>(
+      active_web_contents, kTestExtensionId,
+      base::BindOnce([](bool success, const std::string& error,
+                        extensions::webstore_install::Result result) {}));
+
+  // open a new tab in order to keep the browser alive when we close the first
+  // tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.google.com/"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  base::RunLoop run_loop;
+  views::AnyWidgetObserver install_dialog_observer(
+      views::test::AnyWidgetTestPasskey{});
+  views::Widget* dialog_widget = nullptr;
+  install_dialog_observer.set_initialized_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (widget->GetName() == "ExtensionInstallDialogView") {
+          dialog_widget = widget;
+          run_loop.Quit();
+        }
+      }));
+
+  // Begin the reinstall process - this will show the prompt
+  reinstaller->BeginReinstall();
+  // release the ref held outside of installer as BeginReinstall() synchronously
+  // adds a ref.
+  reinstaller = nullptr;
+  run_loop.Run();
+
+  // Destroy the first WebContents (the one associated with the reinstaller)
+  CloseTabForWebContents(active_web_contents);
+
+  // Dialog does not close automatically as WebContents is destroyed.
+  ASSERT_TRUE(dialog_widget);
+  ASSERT_FALSE(dialog_widget->IsClosed());
+
+  // Now close/cancel the dialog
+  views::test::WidgetDestroyedWaiter dialog_observer(dialog_widget);
+  dialog_widget->Close();
+  dialog_observer.Wait();
 }
