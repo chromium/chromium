@@ -31,7 +31,6 @@ TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
     # High priority to enable in non-tests:
-    'JdkObsolete',
     'ReturnValueIgnored',
     'StaticAssignmentInConstructor',
 
