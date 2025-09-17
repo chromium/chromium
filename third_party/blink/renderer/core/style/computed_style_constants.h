@@ -155,6 +155,12 @@ class PseudoIdFlags {
     bits_ |= (uint32_t{1} << Bit(pseudo_id));
   }
 
+  void MaybeSet(PseudoId pseudo_id) {
+    if (pseudo_id >= kFirstValid && pseudo_id <= kLastValid) {
+      Set(pseudo_id);
+    }
+  }
+
   bool Has(PseudoId pseudo_id) const {
     DCHECK_LT(Bit(pseudo_id), 32u);
     return bits_ & (uint32_t{1} << Bit(pseudo_id));
