@@ -9028,6 +9028,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(content_settings::features::kTrackingProtection3pcd)},
 
+    {"tracking-protection-rollback",
+     flag_descriptions::kTrackingProtection3pcdRollbackName,
+     flag_descriptions::kTrackingProtection3pcdRollbackDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(privacy_sandbox::kRollBackModeB)},
+
 #if BUILDFLAG(IS_CHROMEOS)
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -4256,6 +4256,10 @@ const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "
     "1%.";
 
+const char kTrackingProtection3pcdRollbackName[] = "Rollback for Mode B";
+const char kTrackingProtection3pcdRollbackDescription[] =
+    "Enables the Mode B rollback.";
+
 const char kUseSearchClickForRightClickName[] =
     "Use Search+Click for right click";
 const char kUseSearchClickForRightClickDescription[] =
