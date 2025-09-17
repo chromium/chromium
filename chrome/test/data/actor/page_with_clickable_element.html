@@ -32,15 +32,39 @@
 </body>
 <script>
   let button_clicked = false;
+  let button_click_count = null;
+  let button_right_clicked = false;
+  let button_right_click_count = null;
+  let button_mouse_down = false;
+  let button_mouse_up = false;
+  let button_pointer_down = false;
+  let button_pointer_up = false;
   let offscreen_button_clicked = false;
 
   const button = document.getElementById('clickable');
-  button.addEventListener('click', () => {
-    button_clicked = true;
+  button.addEventListener('click', (event) => {
+      button_clicked = true;
+      button_click_count = event.detail;
+  });
+  button.addEventListener('mousedown', (event) => {
+    button_mouse_down = true;
+  });
+  button.addEventListener('mouseup', (event) => {
+    button_mouse_up = true;
+  });
+  button.addEventListener('pointerdown', (event) => {
+    button_pointer_down = true;
+  });
+  button.addEventListener('pointerup', (event) => {
+    button_pointer_up = true;
+  });
+  button.addEventListener("auxclick", (event) => {
+    button_right_clicked = event.button == 2;
+    button_right_click_count = event.detail;
   });
 
   const offscreen_button = document.getElementById('offscreen');
-  offscreen_button.addEventListener('click', () => {
+  offscreen_button.addEventListener('click', (event) => {
     offscreen_button_clicked = true;
   });
 
@@ -53,6 +77,37 @@
   document.addEventListener('click', log_handler);
   document.addEventListener('mousedown', log_handler);
   document.addEventListener('mouseup', log_handler);
+
+  // GlicActorControllerUiTest crashes on Mac if we allow it to open the
+  // context menu.
+  document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+  });
+
+  function expect_single_left_click() {
+    return button_clicked &&
+           button_click_count == 1 &&
+           button_mouse_down && button_mouse_up &&
+           button_pointer_down && button_pointer_up;
+  }
+  function expect_double_left_click() {
+    return button_clicked &&
+           button_click_count == 2 &&
+           button_mouse_down && button_mouse_up &&
+           button_pointer_down && button_pointer_up;
+  }
+  function expect_single_right_click() {
+    return button_right_clicked &&
+           button_right_click_count == 1 &&
+           button_mouse_down && button_mouse_up &&
+           button_pointer_down && button_pointer_up;
+  }
+  function expect_double_right_click() {
+    return button_right_clicked &&
+           button_right_click_count == 2 &&
+           button_mouse_down && button_mouse_up &&
+           button_pointer_down && button_pointer_up;
+  }
   </script>
 
 </html>

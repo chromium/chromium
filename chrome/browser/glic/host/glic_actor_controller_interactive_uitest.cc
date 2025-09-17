@@ -54,6 +54,8 @@ using apc::Actions;
 using apc::ActionsResult;
 using apc::AnnotatedPageContent;
 using apc::ClickAction;
+using ClickType = apc::ClickAction::ClickType;
+using ClickCount = apc::ClickAction::ClickCount;
 using apc::ContentAttributes;
 using apc::ContentNode;
 using ::base::test::EqualsProto;
@@ -268,15 +270,18 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   }
 
   auto ClickAction(std::string_view label,
+                   ClickType click_type,
+                   ClickCount click_count,
                    actor::TaskId& task_id,
                    TabHandle& tab_handle,
                    ExpectedErrorResult expected_result = {}) {
-    auto click_provider =
-        base::BindLambdaForTesting([this, &task_id, &tab_handle, label]() {
+    auto click_provider = base::BindLambdaForTesting(
+        [this, &task_id, &tab_handle, label, click_type, click_count]() {
           int32_t node_id = SearchAnnotatedPageContent(label);
           RenderFrameHost* frame =
               tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
-          Actions action = actor::MakeClick(*frame, node_id);
+          Actions action =
+              actor::MakeClick(*frame, node_id, click_type, click_count);
           action.set_task_id(task_id.value());
           return EncodeActionProto(action);
         });
@@ -284,18 +289,23 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   }
 
   auto ClickAction(std::string_view label,
+                   ClickType click_type,
+                   ClickCount click_count,
                    ExpectedErrorResult expected_result = {}) {
-    return ClickAction(label, task_id_, tab_handle_,
+    return ClickAction(label, click_type, click_count, task_id_, tab_handle_,
                        std::move(expected_result));
   }
 
   auto ClickAction(const gfx::Point& coordinate,
+                   ClickType click_type,
+                   ClickCount click_count,
                    actor::TaskId& task_id,
                    TabHandle& tab_handle,
                    ExpectedErrorResult expected_result = {}) {
-    auto click_provider =
-        base::BindLambdaForTesting([&task_id, &tab_handle, coordinate]() {
-          Actions action = actor::MakeClick(tab_handle, coordinate);
+    auto click_provider = base::BindLambdaForTesting(
+        [&task_id, &tab_handle, coordinate, click_type, click_count]() {
+          Actions action =
+              actor::MakeClick(tab_handle, coordinate, click_type, click_count);
           action.set_task_id(task_id.value());
           return EncodeActionProto(action);
         });
@@ -303,9 +313,11 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   }
 
   auto ClickAction(const gfx::Point& coordinate,
+                   ClickType click_type,
+                   ClickCount click_count,
                    ExpectedErrorResult expected_result = {}) {
-    return ClickAction(coordinate, task_id_, tab_handle_,
-                       std::move(expected_result));
+    return ClickAction(coordinate, click_type, click_count, task_id_,
+                       tab_handle_, std::move(expected_result));
   }
 
   auto NavigateAction(GURL url,
@@ -759,14 +771,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
     // Click in the top frame. This will extract page context after the click
     // action.
     GetPageContextFromFocusedTab(),
-    ClickAction(gfx::Point(10, 10)),
+    ClickAction(gfx::Point(10, 10), ClickAction::LEFT, ClickAction::SINGLE),
 
     // Remove the top frame which puts the bottom frame at its former location.
     // Sending a click to the same location should fail the TOCTOU check since
     // the last page context had the removed frame there.
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('topframe').remove();}"),
-    ClickAction(gfx::Point(10, 10),
+    ClickAction(gfx::Point(10, 10), ClickAction::LEFT, ClickAction::SINGLE,
         actor::mojom::ActionResultCode::kFrameLocationChangedSinceObservation)
       // clang-format on
   );
@@ -796,14 +808,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
     // Click in the top frame. This will extract page context after the click
     // action.
     GetPageContextFromFocusedTab(),
-    ClickAction(gfx::Point(10, 10)),
+    ClickAction(gfx::Point(10, 10), ClickAction::LEFT, ClickAction::SINGLE),
 
     // Remove the top frame which puts the bottom frame at its former location.
     // Sending a click to the same location should fail the TOCTOU check since
     // the last page context had the removed frame there.
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('topframe').remove();}"),
-    ClickAction(gfx::Point(10, 10),
+    ClickAction(gfx::Point(10, 10), ClickAction::LEFT, ClickAction::SINGLE,
         actor::mojom::ActionResultCode::kFrameLocationChangedSinceObservation)
       // clang-format on
   );
@@ -821,10 +833,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
     GetPageContextFromFocusedTab(),
-    ClickAction(kClickableButtonLabel),
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('clickable').remove();}"),
-    ClickAction(kClickableButtonLabel,
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE,
                     actor::mojom::ActionResultCode::kElementOffscreen)
       // clang-format on
   );
@@ -841,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
     GetPageContextFromFocusedTab(),
-    ClickAction({15, 15}),
+    ClickAction({15, 15}, ClickAction::LEFT, ClickAction::SINGLE),
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('clickable').style.cssText = "
               "'position: relative; left: 20px;'}"),
@@ -849,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
               "()=>{const forcelayout = "
               "document.getElementById('clickable').offsetHeight;}"),
     ClickAction(
-        {15, 15},
+        {15, 15}, ClickAction::LEFT, ClickAction::SINGLE,
             actor::mojom::ActionResultCode::kObservedTargetElementChanged)
       // clang-format on
   );
@@ -869,6 +881,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
     GetPageContextFromFocusedTab(),
     ClickAction(
         kClickableButtonLabel,
+        ClickAction::LEFT, ClickAction::SINGLE,
         actor::mojom::ActionResultCode::kTargetNodeInteractionPointObscured),
      InAnyContext(WithElement(kNewActorTabId, [](ui::TrackedElement* el) {
         content::WebContents* web_contents =
@@ -908,8 +921,54 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionSucceeds) {
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
                   GetPageContextFromFocusedTab(),
-                  ClickAction(kClickableButtonLabel),
-                  WaitForJsResult(kNewActorTabId, "() => button_clicked"));
+                  ClickAction(kClickableButtonLabel, ClickAction::LEFT,
+                              ClickAction::SINGLE),
+                  WaitForJsResult(kNewActorTabId, "expect_single_left_click"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DblClickActionSucceeds) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kClickableButtonLabel = "clickable";
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId),
+                  GetPageContextFromFocusedTab(),
+                  ClickAction(kClickableButtonLabel, ClickAction::LEFT,
+                              ClickAction::DOUBLE),
+                  WaitForJsResult(kNewActorTabId, "expect_double_left_click"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, RightClickActionSucceeds) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kClickableButtonLabel = "clickable";
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId),
+                  GetPageContextFromFocusedTab(),
+                  ClickAction(kClickableButtonLabel, ClickAction::RIGHT,
+                              ClickAction::SINGLE),
+                  WaitForJsResult(kNewActorTabId, "expect_single_right_click"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DblRightClickActionSucceeds) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kClickableButtonLabel = "clickable";
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId),
+                  GetPageContextFromFocusedTab(),
+                  ClickAction(kClickableButtonLabel, ClickAction::RIGHT,
+                              ClickAction::DOUBLE),
+                  WaitForJsResult(kNewActorTabId, "expect_double_right_click"));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionProtoInvalid) {
@@ -930,7 +989,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
         std::numeric_limits<int32_t>::max();
     RenderFrameHost* frame =
         tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
-    Actions action = actor::MakeClick(*frame, kNonExistentContentNodeId);
+    Actions action = actor::MakeClick(*frame, kNonExistentContentNodeId,
+                                      ClickAction::LEFT, ClickAction::SINGLE);
     action.set_task_id(task_id_.value());
     return EncodeActionProto(action);
   });
@@ -972,11 +1032,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StopActorTask) {
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
     GetPageContextFromFocusedTab(),
-    ClickAction(kClickableButtonLabel),
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
     CheckIsActingOnTab(kNewActorTabId, true),
     StopActorTask(),
-    ClickAction(kClickableButtonLabel,
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE,
         actor::mojom::ActionResultCode::kTaskWentAway),
     CheckIsActingOnTab(kNewActorTabId, false));
   // clang-format on
@@ -1020,14 +1080,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StopThenStartActTask) {
     // Start, click, stop.
     StartActorTaskInNewTab(task_url, kSecondTabId),
     GetPageContextFromFocusedTab(),
-    ClickAction(kClickableButtonLabel),
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kSecondTabId, "() => button_clicked"),
     StopActorTask(),
 
     // Start, click, stop.
     StartActorTaskInNewTab(task_url, kThirdTabId),
     GetPageContextFromFocusedTab(),
-    ClickAction(kClickableButtonLabel),
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kThirdTabId, "() => button_clicked"),
     StopActorTask()
       // clang-format on
@@ -1048,12 +1108,12 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseActorTask) {
     StartActorTaskInNewTab(task_url, kNewActorTabId),
 
     GetPageContextFromFocusedTab(),
-    ClickAction(kClickableButtonLabel),
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
     CheckIsActingOnTab(kNewActorTabId, true),
 
     PauseActorTask(),
-    ClickAction(kClickableButtonLabel,
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE,
                 actor::mojom::ActionResultCode::kTaskPaused),
 
     // Unlike stopping, pausing keeps the task.
@@ -1075,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseThenStopActorTask) {
     StartActorTaskInNewTab(task_url, kNewActorTabId),
 
     GetPageContextFromFocusedTab(),
-    ClickAction(kClickableButtonLabel),
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
     WaitForActorTaskState(mojom::ActorTaskState::kIdle),
 
@@ -1102,7 +1162,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseAlreadyPausedActorTask) {
     StartActorTaskInNewTab(task_url, kNewActorTabId),
 
     GetPageContextFromFocusedTab(),
-    ClickAction(kClickableButtonLabel),
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
 
     // Ensure pausing twice in a row is a no-op.
@@ -1126,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseThenResumeActorTask) {
     StartActorTaskInNewTab(task_url, kNewActorTabId),
 
     GetPageContextFromFocusedTab(),
-    ClickAction(kClickableButtonLabel),
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
 
     // Reset the flag
@@ -1137,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseThenResumeActorTask) {
     CheckIsActingOnTab(kNewActorTabId, true),
 
     // Ensure actions work acter pause and resume.
-    ClickAction(kClickableButtonLabel),
+    ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked")
       // clang-format on
   );
@@ -1265,7 +1325,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
       AddInstrumentedTab(kOtherTabId, GURL(chrome::kChromeUISettingsURL)),
       FocusWebContents(kOtherTabId),
       CheckIsWebContentsCaptured(kNewActorTabId, true),
-      ClickAction(kClickableButtonLabel),
+      ClickAction(kClickableButtonLabel,
+                  ClickAction::LEFT, ClickAction::SINGLE),
       WaitForJsResult(kNewActorTabId, "() => button_clicked"),
       CheckIsActingOnTab(kNewActorTabId, true),
       CheckIsActingOnTab(kOtherTabId, false),
@@ -1295,7 +1356,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
       StartActorTaskInNewTab(task_url, kNewActorTabId),
 
       GetPageContextFromFocusedTab(),
-      ClickAction(kClickableButtonLabel),
+      ClickAction(kClickableButtonLabel,
+                  ClickAction::LEFT, ClickAction::SINGLE),
 
       Do([&]() {
         ASSERT_TRUE(last_execution_result());
@@ -1343,7 +1405,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, TimeOfUseCheckOnTextNode) {
   auto click_provider =
       base::BindLambdaForTesting([this, &checkbox_label_bounds]() {
         Actions action =
-            actor::MakeClick(tab_handle_, checkbox_label_bounds.CenterPoint());
+            actor::MakeClick(tab_handle_, checkbox_label_bounds.CenterPoint(),
+                             ClickAction::LEFT, ClickAction::SINGLE);
         action.set_task_id(task_id_.value());
         return EncodeActionProto(action);
       });
@@ -1387,7 +1450,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
       CheckIsWebContentsCaptured(kNewActorTabId, false),
       ResumeActorTask(UpdatedContextOptions(), true),
       CheckIsWebContentsCaptured(kNewActorTabId, true),
-      ClickAction(kClickableButtonLabel),
+      ClickAction(kClickableButtonLabel,
+                  ClickAction::LEFT, ClickAction::SINGLE),
       WaitForJsResult(kNewActorTabId, "() => button_clicked"),
       CheckIsActingOnTab(kNewActorTabId, true),
       CheckIsActingOnTab(kOtherTabId, false),

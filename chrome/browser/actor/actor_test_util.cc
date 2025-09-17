@@ -50,6 +50,8 @@ using ::content::WebContents;
 using ::optimization_guide::DocumentIdentifierUserData;
 using ::optimization_guide::proto::Actions;
 using ::optimization_guide::proto::ClickAction;
+using ClickType = ::optimization_guide::proto::ClickAction::ClickType;
+using ClickCount = ::optimization_guide::proto::ClickAction::ClickCount;
 using ::optimization_guide::proto::Coordinate;
 using ::optimization_guide::proto::CreateTabAction;
 using ::optimization_guide::proto::DragAndReleaseAction;
@@ -65,15 +67,18 @@ using ::optimization_guide::proto::TypeAction_TypeMode;
 using tabs::TabHandle;
 using tabs::TabInterface;
 
-Actions MakeClick(RenderFrameHost& rfh, int content_node_id) {
+Actions MakeClick(RenderFrameHost& rfh,
+                  int content_node_id,
+                  ClickType click_type,
+                  ClickCount click_count) {
   Actions actions;
   ClickAction* click = actions.add_actions()->mutable_click();
   click->mutable_target()->set_content_node_id(content_node_id);
   click->mutable_target()->mutable_document_identifier()->set_serialized_token(
       *DocumentIdentifierUserData::GetDocumentIdentifier(
           rfh.GetGlobalFrameToken()));
-  click->set_click_type(ClickAction::LEFT);
-  click->set_click_count(ClickAction::SINGLE);
+  click->set_click_type(click_type);
+  click->set_click_count(click_count);
 
   auto* tab = TabInterface::GetFromContents(
       content::WebContents::FromRenderFrameHost(&rfh));
@@ -82,14 +87,17 @@ Actions MakeClick(RenderFrameHost& rfh, int content_node_id) {
   return actions;
 }
 
-Actions MakeClick(TabHandle tab_handle, const gfx::Point& click_point) {
+Actions MakeClick(TabHandle tab_handle,
+                  const gfx::Point& click_point,
+                  ClickType click_type,
+                  ClickCount click_count) {
   Actions actions;
   ClickAction* click = actions.add_actions()->mutable_click();
   Coordinate* coordinate = click->mutable_target()->mutable_coordinate();
   coordinate->set_x(click_point.x());
   coordinate->set_y(click_point.y());
-  click->set_click_type(ClickAction::LEFT);
-  click->set_click_count(ClickAction::SINGLE);
+  click->set_click_type(click_type);
+  click->set_click_count(click_count);
   click->set_tab_id(tab_handle.raw_value());
   return actions;
 }

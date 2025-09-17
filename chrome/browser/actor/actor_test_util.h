@@ -59,10 +59,16 @@ using PerformActionsFuture =
 /////////////////////////
 // Proto action makers
 
-optimization_guide::proto::Actions MakeClick(content::RenderFrameHost& rfh,
-                                             int content_node_id);
-optimization_guide::proto::Actions MakeClick(tabs::TabHandle tab_handle,
-                                             const gfx::Point& click_point);
+optimization_guide::proto::Actions MakeClick(
+    content::RenderFrameHost& rfh,
+    int content_node_id,
+    optimization_guide::proto::ClickAction::ClickType click_type,
+    optimization_guide::proto::ClickAction::ClickCount click_count);
+optimization_guide::proto::Actions MakeClick(
+    tabs::TabHandle tab_handle,
+    const gfx::Point& click_point,
+    optimization_guide::proto::ClickAction::ClickType click_type,
+    optimization_guide::proto::ClickAction::ClickCount click_count);
 optimization_guide::proto::Actions MakeHistoryBack(tabs::TabHandle tab_handle);
 optimization_guide::proto::Actions MakeHistoryForward(
     tabs::TabHandle tab_handle);
