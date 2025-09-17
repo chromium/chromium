@@ -508,15 +508,20 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mHandler.removeCallbacksAndMessages(TOKEN_ACCESSIBILITY_FOCUS);
     }
 
-    /* package */ void setToolbarPosition(@ControlsPosition int toolbarPosition) {
+    void setToolbarPosition(@ControlsPosition int toolbarPosition) {
         mToolbarOnTop =
                 !(ChromeFeatureList.sAndroidBottomToolbarV2ReverseOrderSuggestionsList.getValue()
-                        && toolbarPosition != ControlsPosition.BOTTOM);
+                        && toolbarPosition == ControlsPosition.BOTTOM);
         mLayoutScrollListener.setToolbarPosition(mToolbarOnTop);
 
         var params = (FrameLayout.LayoutParams) getLayoutParams();
         params.gravity = mToolbarOnTop ? Gravity.TOP : Gravity.BOTTOM;
         setLayoutParams(params);
+    }
+
+    /** Returns whether the toolbar is currently positioned on top. For testing purposes only. */
+    boolean getToolbarOnTopForTesting() {
+        return mToolbarOnTop;
     }
 
     @VisibleForTesting

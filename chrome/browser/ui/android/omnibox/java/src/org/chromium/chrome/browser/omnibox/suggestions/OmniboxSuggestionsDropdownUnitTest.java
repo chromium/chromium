@@ -16,7 +16,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -32,6 +34,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.test.R;
 
 /** Unit tests for {@link OmniboxSuggestionsDropdown}. */
@@ -46,6 +50,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     private Context mContext;
     private OmniboxSuggestionsDropdown mDropdown;
     private OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener mListener;
+    private FrameLayout.LayoutParams mLayoutParams;
 
     @Before
     public void setUp() {
@@ -59,6 +64,9 @@ public class OmniboxSuggestionsDropdownUnitTest {
         mDropdown = new OmniboxSuggestionsDropdown(mContext, null, mListener);
         mDropdown.setId(R.id.omnibox_suggestions_dropdown);
         mDropdown.setAdapter(mAdapter);
+
+        mLayoutParams = new FrameLayout.LayoutParams(0, 0);
+        mDropdown.setLayoutParams(mLayoutParams);
     }
 
     @After
@@ -269,5 +277,30 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
         mListener.updateVisualScrollState();
         verify(mListener, times(0)).postOnAnimation(any());
+    }
+
+    @Test
+    public void testToolbarPosition() {
+        // Feature OFF, Toolbar at the TOP.
+        ChromeFeatureList.sAndroidBottomToolbarV2ReverseOrderSuggestionsList.setForTesting(false);
+        mDropdown.setToolbarPosition(ControlsPosition.TOP);
+        assertTrue(mDropdown.getToolbarOnTopForTesting());
+        assertEquals(Gravity.TOP, mLayoutParams.gravity);
+
+        // Feature OFF, Toolbar at the BOTTOM.
+        mDropdown.setToolbarPosition(ControlsPosition.BOTTOM);
+        assertTrue(mDropdown.getToolbarOnTopForTesting());
+        assertEquals(Gravity.TOP, mLayoutParams.gravity);
+
+        // Feature ON, Toolbar at the TOP.
+        ChromeFeatureList.sAndroidBottomToolbarV2ReverseOrderSuggestionsList.setForTesting(true);
+        mDropdown.setToolbarPosition(ControlsPosition.TOP);
+        assertTrue(mDropdown.getToolbarOnTopForTesting());
+        assertEquals(Gravity.TOP, mLayoutParams.gravity);
+
+        // Feature ON, Toolbar at the BOTTOM.
+        mDropdown.setToolbarPosition(ControlsPosition.BOTTOM);
+        assertFalse(mDropdown.getToolbarOnTopForTesting());
+        assertEquals(Gravity.BOTTOM, mLayoutParams.gravity);
     }
 }
