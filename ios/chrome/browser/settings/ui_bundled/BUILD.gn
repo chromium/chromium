@@ -69,6 +69,8 @@ source_set("ui_bundled") {
   sources = [
     "about_chrome_table_view_controller.h",
     "about_chrome_table_view_controller.mm",
+    "button_catalog_view_controller.h",
+    "button_catalog_view_controller.mm",
     "search_engine_table_view_controller.h",
     "search_engine_table_view_controller.mm",
     "settings_navigation_controller.mm",
