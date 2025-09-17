@@ -44,11 +44,13 @@ class AddressRewriter {
 
   class Cache;
 
+  explicit AddressRewriter(const CompiledRuleVector* compiled_rules);
+
   static void CompileRulesFromData(const std::string& data_string,
                                    CompiledRuleVector* compiled_rules);
 
   // A handle to the internal rewrite rules this instance is using.
-  raw_ptr<const CompiledRuleVector> impl_ = nullptr;
+  const raw_ptr<const CompiledRuleVector> compiled_rules_ = nullptr;
 };
 
 }  // namespace autofill

@@ -136,6 +136,9 @@ class AddressRewriter::Cache {
   friend class base::NoDestructor<Cache>;
 };
 
+AddressRewriter::AddressRewriter(const CompiledRuleVector* compiled_rules)
+    : compiled_rules_(compiled_rules) {}
+
 // static
 std::u16string AddressRewriter::RewriteForCountryCode(
     const AddressCountryCode& country_code,
@@ -150,9 +153,7 @@ AddressRewriter AddressRewriter::ForCountryCode(
   const std::string region = base::ToUpperASCII(country_code.value());
   const CompiledRuleVector* rules =
       Cache::GetInstance()->GetRulesForRegion(region);
-  AddressRewriter rewriter;
-  rewriter.impl_ = rules;
-  return rewriter;
+  return AddressRewriter(rules);
 }
 
 // static
@@ -160,13 +161,11 @@ AddressRewriter AddressRewriter::ForCustomRules(
     const std::string& custom_rules) {
   const CompiledRuleVector* rules =
       Cache::GetInstance()->CreateRulesForData(custom_rules);
-  AddressRewriter rewriter;
-  rewriter.impl_ = rules;
-  return rewriter;
+  return AddressRewriter(rules);
 }
 
 std::u16string AddressRewriter::Rewrite(const std::u16string& text) const {
-  if (impl_ == nullptr) {
+  if (compiled_rules_ == nullptr) {
     return base::CollapseWhitespace(text, true);
   }
 
@@ -174,7 +173,7 @@ std::u16string AddressRewriter::Rewrite(const std::u16string& text) const {
   // whitespace during these passes because the patterns are all whitespace
   // tolerant regular expressions.
   std::string utf8_text = base::UTF16ToUTF8(text);
-  for (const CompiledRule& rule : *impl_) {
+  for (const CompiledRule& rule : *compiled_rules_) {
     RE2::GlobalReplace(&utf8_text, *rule.first, rule.second);
   }
 
