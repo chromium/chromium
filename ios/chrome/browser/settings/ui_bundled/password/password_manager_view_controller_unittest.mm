@@ -637,13 +637,6 @@ TEST_F(PasswordManagerViewControllerTest,
 // expected content.
 // TODO(crbug.com/437314312): Deflake the test.
 TEST_F(PasswordManagerViewControllerTest, FLAKY_TestOpenInSearchMode) {
-  // TODO(crbug.com/437314312): Re-enable on device.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26 device.");
-  }
-#endif
-
   // Call `settingsWillBeDismissed` on the initial view controller so that its
   // observers are reset.
   [GetPasswordManagerViewController() settingsWillBeDismissed];
