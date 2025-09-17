@@ -58,7 +58,7 @@ constexpr int kMiniToolbarContentPadding = 4;
 constexpr int kMiniToolbarDomainMaxWidth = 140;
 
 tabs::TabInterface* GetTabInterface(content::WebContents* web_contents) {
-  return web_contents ? tabs::TabInterface::GetFromContents(web_contents)
+  return web_contents ? tabs::TabInterface::MaybeGetFromContents(web_contents)
                       : nullptr;
 }
 
