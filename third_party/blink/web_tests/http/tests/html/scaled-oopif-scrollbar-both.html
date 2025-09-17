@@ -12,4 +12,20 @@
     <iframe src="http://localhost:8080/html/resources/scaled-oopif-scrollbar-both.html"
             style="border: 1px solid black; overflow: scroll"></iframe>
   </body>
+  <script>
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+    }
+    onload = () => {
+      if (window.testRunner) {
+        // This test is flaky because the test does not wait for the oopif to
+        // paint. Work around this by waiting for a frame.
+        requestAnimationFrame(()=> {
+          requestAnimationFrame(()=> {
+            testRunner.notifyDone();
+          });
+        });
+      }
+    }
+  </script>
 </html>
