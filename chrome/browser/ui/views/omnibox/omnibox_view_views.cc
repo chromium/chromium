@@ -379,11 +379,11 @@ void OmniboxViewViews::InstallPlaceholderText() {
     // If `keyword_placeholder()` is set, then the user is in a keyword mode
     // that has placeholder text, so display that.
     SetPlaceholderText(model()->keyword_placeholder());
-  } else if (model()->is_caret_visible()) {
-    // If the Omnibox is visibly focused, display the AI Mode placeholder text
-    // to suggest tabbing into AI Mode. Note, even if the AI placeholder text is
-    // installed, it will only be visible if ShouldShowAimPlaceholderText() is
-    // also true.
+  } else if (ShouldInstallAimPlaceholderText()) {
+    // If the Omnibox is visibly focused w/ AI Mode enabled, display the AI Mode
+    // placeholder text to suggest tabbing into AI Mode. Note, even if the AI
+    // placeholder text is installed, it will only be visible if
+    // ShouldShowAimPlaceholderText() is also true.
     SetPlaceholderText(
         l10n_util::GetStringUTF16(IDS_OMNIBOX_AIM_PLACEHOLDER_TEXT));
     // Override the AIM accessibility placeholder text, so that the tab icon is
@@ -2353,9 +2353,15 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
   if (!GetColorProvider()) {
     return;
   }
+  bool dse_placeholder_installed = model()->keyword_placeholder().empty() &&
+      !ShouldInstallAimPlaceholderText();
   set_placeholder_text_color(GetColorProvider()->GetColor(
-      model()->keyword_placeholder().empty() && !model()->is_caret_visible()
-          ? kColorOmniboxText : kColorOmniboxTextDimmed));
+      dse_placeholder_installed ? kColorOmniboxText : kColorOmniboxTextDimmed));
+}
+
+bool OmniboxViewViews::ShouldInstallAimPlaceholderText() const {
+  return omnibox_feature_configs::AiModeOmniboxEntryPoint::Get().enabled &&
+         model()->is_caret_visible();
 }
 
 bool OmniboxViewViews::ShouldShowAimPlaceholderText() const {

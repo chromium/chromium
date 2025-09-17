@@ -327,8 +327,13 @@ class OmniboxViewViews
   // DSE placeholder.
   void UpdatePlaceholderTextColor();
 
-  // Returns true if the AIM placeholder text should be visible instead of the
+  // Returns true if the AIM placeholder text should be installed instead of the
   // DSE placeholder text.
+  bool ShouldInstallAimPlaceholderText() const;
+
+  // Returns true if the AIM placeholder text should be visible. This differs
+  // from ShouldInstallAimPlaceholderText() because there are certain scenarios
+  // where the AIM placeholder text is installed but not visible.
   bool ShouldShowAimPlaceholderText() const;
 
   // Returns the AI Mode page action icon view, if present, or nullptr if the
