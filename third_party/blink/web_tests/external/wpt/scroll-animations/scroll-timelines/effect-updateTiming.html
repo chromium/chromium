@@ -460,8 +460,9 @@ promise_test(async t => {
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   anim.play();
   await anim.ready;
-  scroller.scrollTop = maxScroll * 0.07
-  await waitForNextFrame();
+  await runAndWaitForFrameUpdate(() => {
+    scroller.scrollTop = maxScroll * 0.07;
+  });
 
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.07,
                              'progress before updating direction');
@@ -514,8 +515,9 @@ promise_test(async t => {
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   anim.play();
   await anim.ready;
-  scroller.scrollTop = maxScroll * 0.17 // 34% through first iteration
-  await waitForNextFrame();
+  await runAndWaitForFrameUpdate(() => {
+    scroller.scrollTop = maxScroll * 0.17; // 34% through first iteration
+  });
 
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.34,
                              'progress before updating direction');
@@ -535,8 +537,9 @@ promise_test(async t => {
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   anim.play();
   await anim.ready;
-  scroller.scrollTop = maxScroll * 0.17
-  await waitForNextFrame();
+  await runAndWaitForFrameUpdate(() => {
+    scroller.scrollTop = maxScroll * 0.17;
+  });
   // anim.currentTime = 17000; // 34% through first iteration
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.34,
                              'progress before updating direction');
@@ -556,8 +559,9 @@ promise_test(async t => {
 async function assert_progress(animation, scrollPercent, easingFunction) {
   const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-  scroller.scrollTop = maxScroll * scrollPercent
-  await waitForNextFrame();
+  await runAndWaitForFrameUpdate(() => {
+    scroller.scrollTop = maxScroll * scrollPercent;
+  });
   assert_approx_equals(animation.effect.getComputedTiming().progress,
                        easingFunction(scrollPercent),
                        0.01,
@@ -610,8 +614,9 @@ promise_test(async t => {
   assert_equals(anim.effect.getComputedTiming().progress, 0,
                 'easing replace to steps(2, end) at before phase');
 
-  scroller.scrollTop = maxScroll * 0.875
-  await waitForNextFrame();
+  await runAndWaitForFrameUpdate(() => {
+    scroller.scrollTop = maxScroll * 0.875;
+  });
 
   assert_equals(anim.effect.getComputedTiming().progress, 0.5,
                 'change currentTime to active phase');
@@ -620,8 +625,9 @@ promise_test(async t => {
   assert_equals(anim.effect.getComputedTiming().progress, 1,
                 'easing replace to steps(2, start) at active phase');
 
-  scroller.scrollTop = maxScroll * 1.25
-  await waitForNextFrame();
+  await runAndWaitForFrameUpdate(() => {
+    scroller.scrollTop = maxScroll * 1.25;
+  });
 
   anim.effect.updateTiming({ easing: 'steps(2, end)' });
   assert_equals(anim.effect.getComputedTiming().progress, 1,
