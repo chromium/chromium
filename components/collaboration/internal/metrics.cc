@@ -280,8 +280,6 @@ std::string_view CollaborationServiceStepToString(
       return "LinkReadyAfterGroupCreation";
     case CollaborationServiceStep::kTabGroupFetchedAfterPeopleGroupJoined:
       return "TabGroupFetchedAfterPeopleGroupJoined";
-    case CollaborationServiceStep::kFullJoinFlowSuccess:
-      return "FullJoinFlowSuccess";
   }
 }
 

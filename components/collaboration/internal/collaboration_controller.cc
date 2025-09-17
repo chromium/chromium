@@ -730,9 +730,6 @@ class AddingUserToGroupState : public ControllerState {
       case Outcome::kSuccess:
         RecordJoinEvent(GetLogger(),
                         CollaborationServiceJoinEvent::kAddedUserToGroup);
-        RecordLatency(GetLogger(),
-                      metrics::CollaborationServiceStep::kFullJoinFlowSuccess,
-                      base::Time::Now() - controller_->flow_start_time());
         break;
       case Outcome::kFailure:
         RecordJoinEvent(
@@ -1405,8 +1402,6 @@ CollaborationController::CollaborationController(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   tab_group_sync_service_observer_.Observe(tab_group_sync_service_);
   collaboration_service_observer_.Observe(collaboration_service_);
-
-  flow_start_time_ = base::Time::Now();
 
   RecordJoinOrShareOrManageEvent(
       data_sharing_service_->GetLogger(), flow_.type,

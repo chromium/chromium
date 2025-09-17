@@ -29,12 +29,11 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="FlowStep">
-  <variant name="JoinDialogShownToFaviconFetched"/>
   <variant name="SyncRequest"/>
 </variants>
 
 <histogram name="DataSharing.Android.JoinActionFlowState"
-    enum="JoinActionStateAndroid" expires_after="2026-09-16">
+    enum="JoinActionStateAndroid" expires_after="2026-03-08">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -45,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.Android.ShareActionFlowState"
-    enum="ShareActionStateAndroid" expires_after="2026-09-16">
+    enum="ShareActionStateAndroid" expires_after="2026-03-08">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -56,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.Android.UserAction" enum="DataSharingUserAction"
-    expires_after="2026-09-16">
+    expires_after="2026-04-24">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -67,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.Android.{FlowName}.{FlowStep}.Latency" units="ms"
-    expires_after="2026-09-16">
+    expires_after="2025-09-03">
   <owner>haileywang@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -79,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.GroupDBInitSuccess" enum="BooleanSuccess"
-    expires_after="2026-09-16">
+    expires_after="2026-03-15">
   <owner>mmoskvitin@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -89,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.Intent.{Progress}" enum="DataSharingIntentType"
-    expires_after="2026-09-16">
+    expires_after="2026-03-15">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -106,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.TotalMembersInGroup.AtStartup" units="members"
-    expires_after="2026-09-16">
+    expires_after="2026-03-08">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>

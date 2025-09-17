@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.os.SystemClock;
 import android.text.TextUtils;
 
 import org.chromium.base.Callback;
@@ -281,7 +280,6 @@ public class DataSharingTabManager {
      * @param activity The current tabbed activity.
      * @param token The {@link GroupToken} for the tab group.
      * @param previewTabGroupData The {@link SharedTabGroupPreview} for the tab group.
-     * @param joinDialogShownTimestampMs elapsedRealtime() from boot till join dialog was displayed.
      * @param joinCallback The callbacks for the join ui.
      * @return The session id of the join screen.
      */
@@ -289,7 +287,6 @@ public class DataSharingTabManager {
             Activity activity,
             GroupToken token,
             SharedTabGroupPreview previewTabGroupData,
-            long joinDialogShownTimestampMs,
             DataSharingJoinUiConfig.JoinCallback joinCallback) {
         DataSharingStringConfig stringConfig =
                 new DataSharingStringConfig.Builder()
@@ -342,15 +339,7 @@ public class DataSharingTabManager {
                                         .setSharedDataPreview(
                                                 new SharedDataPreview(previewTabGroupData))
                                         .build());
-
-        Runnable recordJoinFaviconLatency =
-                () -> {
-                    long latency = SystemClock.elapsedRealtime() - joinDialogShownTimestampMs;
-                    DataSharingMetrics.recordJoinFlowLatency(
-                            "JoinDialogShownToFaviconFetched", latency);
-                };
-
-        fetchFavicons(activity, sessionId, tabs, tabs.size(), recordJoinFaviconLatency);
+        fetchFavicons(activity, sessionId, tabs, tabs.size());
         return sessionId;
     }
 
@@ -358,8 +347,7 @@ public class DataSharingTabManager {
             Activity activity,
             @Nullable String sessionId,
             List<TabPreview> tabs,
-            int maxFaviconsToFetch,
-            @Nullable Runnable favIconRunnable) {
+            int maxFaviconsToFetch) {
         // First fetch favicons for up to 4 tabs, then fetch favicons for the remaining tabs.
         int previewImageSize = 4;
         Runnable fetchAll =
@@ -373,9 +361,6 @@ public class DataSharingTabManager {
                                 DataSharingMetrics.recordJoinActionFlowState(
                                         DataSharingMetrics.JoinActionStateAndroid
                                                 .ALL_FAVICONS_FETCHED);
-                                if (favIconRunnable != null) {
-                                    favIconRunnable.run();
-                                }
                             });
                 };
 
@@ -644,8 +629,7 @@ public class DataSharingTabManager {
                 activity,
                 sessionId,
                 convertToTabsPreviewList(existingGroup.savedTabs),
-                /* maxFaviconsToFetch= */ 4,
-                null);
+                /* maxFaviconsToFetch= */ 4);
 
         return sessionId;
     }

@@ -33,8 +33,6 @@ chromium-metrics-reviews@google.com.
 <variants name="CollaborationServiceStep">
   <variant name="AuthenticationInitToSuccess"
       summary="Authentication initiated to successful completion"/>
-  <variant name="FullJoinFlowSuccess"
-      summary="Full join flow start to successful user added"/>
   <variant name="LinkReadyAfterGroupCreation"
       summary="Link ready after group creation"/>
   <variant name="TabGroupFetchedAfterPeopleGroupJoined"

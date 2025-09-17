@@ -127,8 +127,7 @@ enum class CollaborationServiceStep {
   kWaitingForServicesInitialization = 2,
   kLinkReadyAfterGroupCreation = 3,
   kTabGroupFetchedAfterPeopleGroupJoined = 4,
-  kFullJoinFlowSuccess = 5,
-  kMaxValue = kFullJoinFlowSuccess,
+  kMaxValue = kTabGroupFetchedAfterPeopleGroupJoined,
 };
 
 void RecordJoinEvent(data_sharing::Logger* logger,
