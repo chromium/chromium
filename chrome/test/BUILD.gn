@@ -11225,6 +11225,7 @@ if (!is_android && !is_chromeos_device) {
 
       if (enable_dice_support) {
         sources += [
+          "../browser/signin/history_sync_optin_screen_interactive_uitest.cc",
           "../browser/ui/webui/settings/sync_settings_interactive_uitest.cc",
         ]
       }
