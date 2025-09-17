@@ -229,8 +229,7 @@ class WebAppCommandScheduler {
   // original.
   // For more details, go/predictable-app-updating-design-doc.
   void ScheduleManifestSilentUpdate(
-      const GURL& url,
-      base::WeakPtr<content::WebContents> contents,
+      content::WebContents& contents,
       ManifestSilentUpdateCompletedCallback callback,
       const base::Location& location = FROM_HERE);
 

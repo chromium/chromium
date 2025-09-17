@@ -321,7 +321,7 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
   if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) &&
       base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
     provider_->scheduler().ScheduleManifestSilentUpdate(
-        url, web_contents->GetWeakPtr(),
+        *web_contents,
         base::BindOnce(&ManifestUpdateManager::OnManifestSilentUpdateComplete,
                        weak_factory_.GetWeakPtr(), web_contents, url, app_id));
     return;
