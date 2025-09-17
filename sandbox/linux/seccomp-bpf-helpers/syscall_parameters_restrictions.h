@@ -138,6 +138,14 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictSockSendFlags(int sysno);
 // Restrict the flags of memfd_create(). The flags are allowlisted, but in
 // particular, this denies MFD_HUGETLB and MFD_EXEC.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMemfdCreate();
+// Restricts memfd_create() the same as RestrictMemfdCreate(), except allows
+// explicitly executable mappings (MFD_EXEC).
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMemfdCreateWithExecMappings();
+// Same as above, but `fallback` is used when the regular allowlist is failed.
+// RestrictMemfdCreateWithFallback(CrashSIGSYS()) is the equivalent of
+// RestrictMemfdCreate().
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMemfdCreateWithFallback(
+    bpf_dsl::ResultExpr fallback);
 }  // namespace sandbox.
 
 #endif  // SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_PARAMETERS_RESTRICTIONS_H_
