@@ -14,6 +14,7 @@ import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 suite('ReadAloudHighlight', () => {
   let app: AppElement;
   let speechController: SpeechController;
+  let selectionController: SelectionController;
   const sentence1 = 'Only need the light when it\'s burning low.\n';
   const sentence2 = 'Only miss the sun when it starts to snow.\n';
   const sentenceSegment1 = 'Only know you love her when you let her go';
@@ -67,6 +68,8 @@ suite('ReadAloudHighlight', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
     SpeechBrowserProxyImpl.setInstance(new TestSpeechBrowserProxy());
+    selectionController = new SelectionController();
+    SelectionController.setInstance(selectionController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
     VoiceLanguageController.setInstance(new VoiceLanguageController());
@@ -74,6 +77,7 @@ suite('ReadAloudHighlight', () => {
 
     app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, leafIds);
+    selectionController.onSelectionChange(app.getSelection());
   });
 
   test('on speak first sentence highlights are correct', () => {
@@ -250,7 +254,7 @@ suite('ReadAloudHighlight', () => {
           },
           axTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
-      SelectionController.getInstance().updateSelection(app.getSelection());
+      selectionController.updateSelection(app.getSelection());
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       mockTimer.tick(playFromSelectionTimeout);
       mockTimer.uninstall();

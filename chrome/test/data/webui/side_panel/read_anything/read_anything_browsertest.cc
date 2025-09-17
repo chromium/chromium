@@ -268,11 +268,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentSelection) {
-  RunSidePanelTest("side_panel/read_anything/update_content_selection_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentIntegration) {
   RunSidePanelTest(
       "side_panel/read_anything/update_content_integration_test.js",
@@ -296,6 +291,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageController) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageModel) {
   RunSidePanelTest("side_panel/read_anything/voice_language_model_test.js",
+                   "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SelectionController) {
+  RunSidePanelTest("side_panel/read_anything/selection_controller_test.js",
                    "mocha.run()");
 }
 

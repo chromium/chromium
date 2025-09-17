@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ContentController, getReadAloudModel, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, getReadAloudModel, ReadAloudHighlighter, SelectionController, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertLE, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
@@ -14,6 +14,7 @@ suite('WordHighlighting', () => {
   let speech: TestSpeechBrowserProxy;
   let wordBoundaries: WordBoundaries;
   let speechController: SpeechController;
+  let selectionController: SelectionController;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -69,6 +70,8 @@ suite('WordHighlighting', () => {
     wordBoundaries = new WordBoundaries();
     WordBoundaries.setInstance(wordBoundaries);
     ReadAloudHighlighter.setInstance(new ReadAloudHighlighter());
+    selectionController = new SelectionController();
+    SelectionController.setInstance(selectionController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
     ContentController.setInstance(new ContentController());
@@ -297,9 +300,10 @@ suite('WordHighlighting', () => {
     range.setStart(anchor, anchorOffset);
     range.setEnd(focus, focusOffset);
 
-    const selection = app.getSelection();
+    const selection = document.getSelection();
     assertTrue(!!selection);
     selection.addRange(range);
+    selectionController.onSelectionChange(selection);
 
     playFromSelectionWithMockTimer(app);
 

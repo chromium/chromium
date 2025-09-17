@@ -5,7 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {BrowserProxy, currentReadHighlightClass, getReadAloudModel, previousReadHighlightClass, ReadAloudHighlighter, SelectionController, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -148,7 +148,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
     }
 
     setup(() => {
-      selection = app.getSelection();
+      const appSelection = app.getSelection();
+      assertTrue(!!appSelection);
+      selection = appSelection;
       actualAnchorId = -1;
       actualFocusId = -1;
       actualAnchorOffset = -1;
@@ -394,8 +396,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
       selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
-      assertEquals(texts[0]!, selection.anchorNode.textContent);
-      assertEquals(texts[0]!, selection.focusNode.textContent);
+      assertTrue(!!selection);
+      assertEquals(texts[0]!, selection.anchorNode?.textContent);
+      assertEquals(texts[0]!, selection.focusNode?.textContent);
       assertEquals(expectedAnchorOffset, selection.anchorOffset);
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
@@ -410,8 +413,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
       selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
-      assertEquals(texts[0]!, selection.anchorNode.textContent);
-      assertEquals(texts[1]!, selection.focusNode.textContent);
+      assertTrue(!!selection);
+      assertEquals(texts[0]!, selection.anchorNode?.textContent);
+      assertEquals(texts[1]!, selection.focusNode?.textContent);
       assertEquals(expectedAnchorOffset, selection.anchorOffset);
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
@@ -426,8 +430,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
       selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
-      assertEquals(texts[1]!, selection.anchorNode.textContent);
-      assertEquals(texts[1]!, selection.focusNode.textContent);
+      assertTrue(!!selection);
+      assertEquals(texts[1]!, selection.anchorNode?.textContent);
+      assertEquals(texts[1]!, selection.focusNode?.textContent);
       assertEquals(expectedAnchorOffset, selection.anchorOffset);
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
@@ -442,8 +447,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
       selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
-      assertEquals(texts[0]!, selection.anchorNode.textContent);
-      assertEquals(texts[1]!, selection.focusNode.textContent);
+      assertTrue(!!selection);
+      assertEquals(texts[0]!, selection.anchorNode?.textContent);
+      assertEquals(texts[1]!, selection.focusNode?.textContent);
       assertEquals(expectedAnchorOffset, selection.anchorOffset);
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
@@ -460,8 +466,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
       selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
-      assertEquals(texts[1]!, selection.anchorNode.textContent);
-      assertEquals(texts[1]!, selection.focusNode.textContent);
+      assertTrue(!!selection);
+      assertEquals(texts[1]!, selection.anchorNode?.textContent);
+      assertEquals(texts[1]!, selection.focusNode?.textContent);
       assertEquals(expectedAnchorOffset, selection.anchorOffset);
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
@@ -476,8 +483,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
       selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
-      assertEquals(texts[1]!, selection.anchorNode.textContent);
-      assertEquals(texts[1]!, selection.focusNode.textContent);
+      assertTrue(!!selection);
+      assertEquals(texts[1]!, selection.anchorNode?.textContent);
+      assertEquals(texts[1]!, selection.focusNode?.textContent);
       assertEquals(expectedAnchorOffset, selection.anchorOffset);
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
@@ -495,8 +503,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
           selectionController.updateSelection(app.getSelection());
 
           const selection = app.getSelection();
-          assertEquals(texts[0]!, selection.anchorNode.textContent);
-          assertEquals(texts[1]!, selection.focusNode.textContent);
+          assertTrue(!!selection);
+          assertEquals(texts[0]!, selection.anchorNode?.textContent);
+          assertEquals(texts[1]!, selection.focusNode?.textContent);
           assertEquals(expectedAnchorOffset, selection.anchorOffset);
           assertEquals(expectedFocusOffset, selection.focusOffset);
         });
@@ -514,9 +523,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
+      assertTrue(!!selection);
       const expectedSelectedText = texts[2]!.slice(0, highlightStart);
-      assertEquals(expectedSelectedText, selection.anchorNode.textContent);
-      assertEquals(expectedSelectedText, selection.focusNode.textContent);
+      assertEquals(expectedSelectedText, selection.anchorNode?.textContent);
+      assertEquals(expectedSelectedText, selection.focusNode?.textContent);
       assertEquals(expectedAnchorOffset, selection.anchorOffset);
       assertEquals(highlightStart, selection.focusOffset);
     });
@@ -536,9 +546,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       // selected the rest of node 7, the selection corresponds to the
       // entirety of the new second node.
       const selection = app.getSelection();
+      assertTrue(!!selection);
       const expectedSelectedText = texts[2]!.slice(highlightEnd);
-      assertEquals(expectedSelectedText, selection.anchorNode.textContent);
-      assertEquals(expectedSelectedText, selection.focusNode.textContent);
+      assertEquals(expectedSelectedText, selection.anchorNode?.textContent);
+      assertEquals(expectedSelectedText, selection.focusNode?.textContent);
       assertEquals(0, selection.anchorOffset);
       assertEquals(expectedSelectedText.length, selection.focusOffset);
     });
@@ -553,8 +564,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
       selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
-      assertEquals(texts[2]!, selection.anchorNode.textContent);
-      assertEquals(texts[2]!, selection.focusNode.textContent);
+      assertTrue(!!selection);
+      assertEquals(texts[2]!, selection.anchorNode?.textContent);
+      assertEquals(texts[2]!, selection.focusNode?.textContent);
       assertEquals(expectedAnchorOffset, selection.anchorOffset);
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
@@ -569,8 +581,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
       selectionController.updateSelection(app.getSelection());
 
       const selection = app.getSelection();
-      assertEquals(texts[1]!, selection.anchorNode.textContent);
-      assertEquals(texts[2]!, selection.focusNode.textContent);
+      assertTrue(!!selection);
+      assertEquals(texts[1]!, selection.anchorNode?.textContent);
+      assertEquals(texts[2]!, selection.focusNode?.textContent);
       assertEquals(expectedAnchorOffset, selection.anchorOffset);
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
@@ -587,10 +600,11 @@ suite('UpdateContentSelectionWithHighlights', () => {
           selectionController.updateSelection(app.getSelection());
 
           const selection = app.getSelection();
+          assertTrue(!!selection);
           assertEquals(0, selection.anchorOffset);
           assertEquals(texts[3]!.length, selection.focusOffset);
-          assertEquals(texts[0]!, selection.anchorNode.textContent);
-          assertEquals(texts[3]!, selection.focusNode.textContent);
+          assertEquals(texts[0]!, selection.anchorNode?.textContent);
+          assertEquals(texts[3]!, selection.focusNode?.textContent);
         });
   });
 });

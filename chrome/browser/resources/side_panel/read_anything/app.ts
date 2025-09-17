@@ -207,38 +207,9 @@ export class AppElement extends AppElementBase implements
       if (!this.hasContent_ || this.speechController_.isSpeechActive()) {
         return;
       }
-      const selection: Selection = this.getSelection();
-      assert(selection, 'no selection');
-      if (!selection.anchorNode || !selection.focusNode) {
-        // The selection was collapsed by clicking inside the selection.
-        chrome.readingMode.onCollapseSelection();
-        return;
-      }
 
-      const {anchorNodeId, anchorOffset, focusNodeId, focusOffset} =
-          this.isReadAloudEnabled_ ?
-          this.selectionController_.getSelectionAdjustedForHighlights(
-              selection.anchorNode, selection.anchorOffset, selection.focusNode,
-              selection.focusOffset) :
-          this.getSelection();
-      if (!anchorNodeId || !focusNodeId) {
-        return;
-      }
-
-      // Only send this selection to the main panel if it is different than the
-      // current main panel selection.
-      const mainPanelAnchor =
-          this.nodeStore_.getDomNode(chrome.readingMode.startNodeId);
-      const mainPanelFocus =
-          this.nodeStore_.getDomNode(chrome.readingMode.endNodeId);
-      if (!mainPanelAnchor || !mainPanelAnchor.contains(selection.anchorNode) ||
-          !mainPanelFocus || !mainPanelFocus.contains(selection.focusNode) ||
-          selection.anchorOffset !== chrome.readingMode.startOffset ||
-          selection.focusOffset !== chrome.readingMode.endOffset) {
-        chrome.readingMode.onSelectionChange(
-            anchorNodeId, anchorOffset, focusNodeId, focusOffset);
-      }
-
+      const selection = this.getSelection();
+      this.selectionController_.onSelectionChange(selection);
       if (this.isReadAloudEnabled_) {
         this.speechController_.onSelectionChange();
         this.contentController_.onSelectionChange(this.shadowRoot);
@@ -470,7 +441,7 @@ export class AppElement extends AppElementBase implements
     });
   }
 
-  getSelection(): any {
+  getSelection(): Selection|null {
     assert(this.shadowRoot, 'no shadow root');
     return this.shadowRoot.getSelection();
   }

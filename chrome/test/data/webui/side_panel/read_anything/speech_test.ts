@@ -207,7 +207,9 @@ suite('Speech', () => {
           },
           baseTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
-      SelectionController.getInstance().updateSelection(app.getSelection());
+      const selectionController = SelectionController.getInstance();
+      selectionController.updateSelection(app.getSelection());
+      selectionController.onSelectionChange(app.getSelection());
     }
 
     function playFromSelection() {
@@ -228,7 +230,9 @@ suite('Speech', () => {
 
     test('selection is cleared after play', () => {
       selectAndPlay(axTree, 5, 0, 5, 10);
-      assertEquals('None', app.getSelection().type);
+      const selection = app.getSelection();
+      assertTrue(!!selection);
+      assertEquals('None', selection.type);
     });
 
     test('in middle of node, play from beginning of node', () => {

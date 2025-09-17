@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {BrowserProxy, NodeStore, SelectionController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {SelectionWithIds} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -51,7 +50,13 @@ suite('SelectionController', () => {
     SelectionController.setInstance(selectionController);
   });
 
-  suite('getSelectionAdjustedForHighlights', () => {
+  suite('onSelectionChange', () => {
+    let selection: Selection;
+    let actualAnchorId: number;
+    let actualFocusId: number;
+    let actualAnchorOffset: number;
+    let actualFocusOffset: number;
+
     function highlightEverything() {
       for (let i = 0; i < textNodes.length; i++) {
         highlightAtOffset(i, 0);
@@ -65,52 +70,77 @@ suite('SelectionController', () => {
       assertTrue(!!parentId);
       const parent = document.createElement('span');
       assertTrue(!!child.textContent);
-      parent.appendChild(document.createTextNode(child.textContent));
+      const newChild = document.createTextNode(child.textContent);
+      parent.appendChild(newChild);
       child.replaceWith(parent);
+      textNodes[nodeIndex] = newChild;
       nodeStore.setDomNode(parent, parentId);
-      nodeStore.setAncestor(child, parent, offset);
+      nodeStore.setAncestor(newChild, parent, offset);
     }
 
     function selectNodes(
         anchor: TextNode, anchorOffset: number, focus: TextNode,
-        focusOffset: number): SelectionWithIds {
-      return selectionController.getSelectionAdjustedForHighlights(
+        focusOffset: number): void {
+      selection.setBaseAndExtent(
           anchor.node, anchorOffset, focus.node, focusOffset);
+      selectionController.onSelectionChange(selection);
     }
 
     setup(() => {
       textNodes = texts.map(str => document.createTextNode(str));
       assertEquals(textNodeIds.length, textNodes.length);
+      const parent = document.createElement('p');
+      textNodes.forEach(node => {
+        parent.appendChild(node);
+      });
+      document.body.appendChild(parent);
+
+      const docSelection = document.getSelection();
+      assertTrue(!!docSelection);
+      selection = docSelection;
+      actualAnchorId = -1;
+      actualFocusId = -1;
+      actualAnchorOffset = -1;
+      actualFocusOffset = -1;
+
+      // Capture what's sent off to the main panel so we can verify
+      chrome.readingMode.onSelectionChange =
+          (anchorId, anchorOffset, focusId, focusOffset) => {
+            actualAnchorId = anchorId;
+            actualAnchorOffset = anchorOffset;
+            actualFocusId = focusId;
+            actualFocusOffset = focusOffset;
+          };
     });
 
-    test('gets node when node exists as is', () => {
+    test('sends node when node exists as is', () => {
       const expectedAnchorOffset = 2;
       const expectedFocusOffset = 10;
       const node = getNodeAt(1);
       nodeStore.setDomNode(node.node, node.id);
 
-      const selection =
-          selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
+      selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
 
-      assertEquals(node.id, selection.anchorNodeId);
-      assertEquals(node.id, selection.focusNodeId);
-      assertEquals(expectedAnchorOffset, selection.anchorOffset);
-      assertEquals(expectedFocusOffset, selection.focusOffset);
+      assertEquals(node.id, actualAnchorId);
+      assertEquals(node.id, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
-    test('gets undefined when node does not exist and has no ancestor', () => {
-      const expectedAnchorOffset = 2;
-      const expectedFocusOffset = 10;
-      const node = getNodeAt(1);
+    test(
+        'does not forward node when node does not exist and has no ancestor',
+        () => {
+          const anchorOffset = 2;
+          const focusOffset = 10;
+          const node = getNodeAt(1);
 
-      const selection =
-          selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
+          selectNodes(node, anchorOffset, node, focusOffset);
 
-      assertFalse(!!selection.anchorNodeId);
-      assertFalse(!!selection.focusNodeId);
-      assertEquals(expectedAnchorOffset, selection.anchorOffset);
-      assertEquals(expectedFocusOffset, selection.focusOffset);
-    });
+          assertEquals(-1, actualAnchorId);
+          assertEquals(-1, actualFocusId);
+          assertEquals(-1, actualAnchorOffset);
+          assertEquals(-1, actualFocusOffset);
+        });
 
     test('one node selected with ancestor and no ancestor offset', () => {
       highlightEverything();
@@ -118,13 +148,12 @@ suite('SelectionController', () => {
       const expectedFocusOffset = 7;
       const node = getNodeAt(0);
 
-      const selection =
-          selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
+      selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
 
-      assertEquals(parentIds[0], selection.anchorNodeId);
-      assertEquals(parentIds[0], selection.focusNodeId);
-      assertEquals(expectedAnchorOffset, selection.anchorOffset);
-      assertEquals(expectedFocusOffset, selection.focusOffset);
+      assertEquals(parentIds[0], actualAnchorId);
+      assertEquals(parentIds[0], actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
     test('multiple nodes selected with ancestor and no ancestor offset', () => {
@@ -134,13 +163,12 @@ suite('SelectionController', () => {
       const node1 = getNodeAt(0);
       const node2 = getNodeAt(1);
 
-      const selection =
-          selectNodes(node1, expectedAnchorOffset, node2, expectedFocusOffset);
+      selectNodes(node1, expectedAnchorOffset, node2, expectedFocusOffset);
 
-      assertEquals(parentIds[0], selection.anchorNodeId);
-      assertEquals(parentIds[1], selection.focusNodeId);
-      assertEquals(expectedAnchorOffset, selection.anchorOffset);
-      assertEquals(expectedFocusOffset, selection.focusOffset);
+      assertEquals(parentIds[0], actualAnchorId);
+      assertEquals(parentIds[1], actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
     test('one node selected with anchor offset in ancestor', () => {
@@ -150,12 +178,12 @@ suite('SelectionController', () => {
       const anchorOffset = 5;
       const focusOffset = node.text.length;
 
-      const selection = selectNodes(node, anchorOffset, node, focusOffset);
+      selectNodes(node, anchorOffset, node, focusOffset);
 
-      assertEquals(parentIds[0], selection.anchorNodeId);
-      assertEquals(parentIds[0], selection.focusNodeId);
-      assertEquals(highlightStart + anchorOffset, selection.anchorOffset);
-      assertEquals(highlightStart + focusOffset, selection.focusOffset);
+      assertEquals(parentIds[0], actualAnchorId);
+      assertEquals(parentIds[0], actualFocusId);
+      assertEquals(highlightStart + anchorOffset, actualAnchorOffset);
+      assertEquals(highlightStart + focusOffset, actualFocusOffset);
     });
 
     test('multiple nodes selected with anchor offset in ancestor', () => {
@@ -167,13 +195,12 @@ suite('SelectionController', () => {
       const anchorOffset = 5;
       const focusOffset = 10;
 
-      const selection =
-          selectNodes(anchorNode, anchorOffset, focusNode, focusOffset);
+      selectNodes(anchorNode, anchorOffset, focusNode, focusOffset);
 
-      assertEquals(parentIds[0], selection.anchorNodeId);
-      assertEquals(parentIds[1], selection.focusNodeId);
-      assertEquals(highlightStart + anchorOffset, selection.anchorOffset);
-      assertEquals(focusOffset, selection.focusOffset);
+      assertEquals(parentIds[0], actualAnchorId);
+      assertEquals(parentIds[1], actualFocusId);
+      assertEquals(highlightStart + anchorOffset, actualAnchorOffset);
+      assertEquals(focusOffset, actualFocusOffset);
     });
 
     test('multiple nodes selected with focus offset in ancestor', () => {
@@ -185,13 +212,12 @@ suite('SelectionController', () => {
       const anchorOffset = 5;
       const focusOffset = 10;
 
-      const selection =
-          selectNodes(anchorNode, anchorOffset, focusNode, focusOffset);
+      selectNodes(anchorNode, anchorOffset, focusNode, focusOffset);
 
-      assertEquals(parentIds[0], selection.anchorNodeId);
-      assertEquals(parentIds[1], selection.focusNodeId);
-      assertEquals(anchorOffset, selection.anchorOffset);
-      assertEquals(highlightStart + focusOffset, selection.focusOffset);
+      assertEquals(parentIds[0], actualAnchorId);
+      assertEquals(parentIds[1], actualFocusId);
+      assertEquals(anchorOffset, actualAnchorOffset);
+      assertEquals(highlightStart + focusOffset, actualFocusOffset);
     });
 
     test('multiple nodes selected with anchor ancestor only', () => {
@@ -202,13 +228,12 @@ suite('SelectionController', () => {
       const anchorOffset = 6;
       const focusOffset = 11;
 
-      const selection =
-          selectNodes(anchorNode, anchorOffset, focusNode, focusOffset);
+      selectNodes(anchorNode, anchorOffset, focusNode, focusOffset);
 
-      assertEquals(parentIds[0], selection.anchorNodeId);
-      assertEquals(focusNode.id, selection.focusNodeId);
-      assertEquals(anchorOffset, selection.anchorOffset);
-      assertEquals(focusOffset, selection.focusOffset);
+      assertEquals(parentIds[0], actualAnchorId);
+      assertEquals(focusNode.id, actualFocusId);
+      assertEquals(anchorOffset, actualAnchorOffset);
+      assertEquals(focusOffset, actualFocusOffset);
     });
 
     test('multiple nodes selected with focus ancestor only', () => {
@@ -219,13 +244,12 @@ suite('SelectionController', () => {
       const anchorOffset = 6;
       const focusOffset = 11;
 
-      const selection =
-          selectNodes(anchorNode, anchorOffset, focusNode, focusOffset);
+      selectNodes(anchorNode, anchorOffset, focusNode, focusOffset);
 
-      assertEquals(anchorNode.id, selection.anchorNodeId);
-      assertEquals(parentIds[1], selection.focusNodeId);
-      assertEquals(anchorOffset, selection.anchorOffset);
-      assertEquals(focusOffset, selection.focusOffset);
+      assertEquals(anchorNode.id, actualAnchorId);
+      assertEquals(parentIds[1], actualFocusId);
+      assertEquals(anchorOffset, actualAnchorOffset);
+      assertEquals(focusOffset, actualFocusOffset);
     });
 
     test('selection with both anchor and focus offset in ancestors', () => {
@@ -239,13 +263,12 @@ suite('SelectionController', () => {
       const anchorOffset = 5;
       const focusOffset = 15;
 
-      const selection =
-          selectNodes(anchorNode, anchorOffset, focusNode, focusOffset);
+      selectNodes(anchorNode, anchorOffset, focusNode, focusOffset);
 
-      assertEquals(parentIds[0], selection.anchorNodeId);
-      assertEquals(parentIds[1], selection.focusNodeId);
-      assertEquals(anchorHighlightStart + anchorOffset, selection.anchorOffset);
-      assertEquals(focusHighlightStart + focusOffset, selection.focusOffset);
+      assertEquals(parentIds[0], actualAnchorId);
+      assertEquals(parentIds[1], actualFocusId);
+      assertEquals(anchorHighlightStart + anchorOffset, actualAnchorOffset);
+      assertEquals(focusHighlightStart + focusOffset, actualFocusOffset);
     });
 
     test('selection starts at offset 0 with an ancestor offset', () => {
@@ -255,12 +278,12 @@ suite('SelectionController', () => {
       const anchorOffset = 0;
       const focusOffset = 10;
 
-      const selection = selectNodes(node, anchorOffset, node, focusOffset);
+      selectNodes(node, anchorOffset, node, focusOffset);
 
-      assertEquals(parentIds[0], selection.anchorNodeId);
-      assertEquals(parentIds[0], selection.focusNodeId);
-      assertEquals(highlightStart + anchorOffset, selection.anchorOffset);
-      assertEquals(highlightStart + focusOffset, selection.focusOffset);
+      assertEquals(parentIds[0], actualAnchorId);
+      assertEquals(parentIds[0], actualFocusId);
+      assertEquals(highlightStart + anchorOffset, actualAnchorOffset);
+      assertEquals(highlightStart + focusOffset, actualFocusOffset);
     });
   });
 
