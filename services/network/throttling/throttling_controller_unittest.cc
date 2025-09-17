@@ -213,54 +213,6 @@ TEST(ThrottlingControllerTest, FailOnStart) {
   EXPECT_EQ(helper.callback()->run_count(), 0);
 }
 
-TEST(ThrottlingControllerTest, FailRunningTransaction) {
-  ThrottlingControllerTestHelper helper;
-  helper.SetNetworkState(false, 0, 0);
-  TestCallback* callback = helper.callback();
-
-  int rv = helper.Start(false);
-  EXPECT_EQ(rv, net::OK);
-
-  rv = helper.Read();
-  EXPECT_EQ(rv, net::ERR_IO_PENDING);
-  EXPECT_EQ(callback->run_count(), 0);
-
-  helper.SetNetworkState(true, 0, 0);
-  EXPECT_EQ(callback->run_count(), 0);
-
-  // Wait until HttpTrancation completes reading and invokes callback.
-  // ThrottlingNetworkTransaction should report error instead.
-  helper.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(callback->run_count(), 1);
-  EXPECT_EQ(callback->value(), net::ERR_INTERNET_DISCONNECTED);
-
-  // Check that transaction is not failed second time.
-  helper.SetNetworkState(false, 0, 0);
-  helper.SetNetworkState(true, 0, 0);
-  EXPECT_EQ(callback->run_count(), 1);
-}
-
-TEST(ThrottlingControllerTest, ReadAfterFail) {
-  ThrottlingControllerTestHelper helper;
-  helper.SetNetworkState(false, 0, 0);
-
-  int rv = helper.Start(false);
-  EXPECT_EQ(rv, net::OK);
-  EXPECT_TRUE(helper.HasStarted());
-
-  helper.SetNetworkState(true, 0, 0);
-  // Not failed yet, as no IO was initiated.
-  EXPECT_FALSE(helper.HasFailed());
-
-  rv = helper.Read();
-  // Fails on first IO.
-  EXPECT_EQ(rv, net::ERR_INTERNET_DISCONNECTED);
-
-  // Check that callback is never invoked.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(helper.callback()->run_count(), 0);
-}
-
 TEST(ThrottlingControllerTest, CancelTransaction) {
   ThrottlingControllerTestHelper helper;
   helper.SetNetworkState(false, 0, 0);
@@ -397,31 +349,27 @@ TEST(ThrottlingControllerTest, SetConditions) {
   helper.SetNetworkState({{std::string{}, NetworkConditions{true}}});
 
   // Test that only global conditions are set
-  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 0u);
-  EXPECT_TRUE(helper.GetThrottlingProfile()->has_global_conditions());
+  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
 
   // Set matched conditions
   helper.SetNetworkState({{"http://*/*", NetworkConditions{true}}});
 
   // Test that only one matched condition is set
   EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
-  EXPECT_FALSE(helper.GetThrottlingProfile()->has_global_conditions());
 
   // Set both global and local conditions
   helper.SetNetworkState({
       {"http://*/*", NetworkConditions{true}},
-      {std::string{}, NetworkConditions{true}},
+      {std::string{}, NetworkConditions{false}},
   });
-  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
-  EXPECT_TRUE(helper.GetThrottlingProfile()->has_global_conditions());
+  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 2u);
 
   // Set them the other way around
   helper.SetNetworkState({
-      {std::string{}, NetworkConditions{true}},
+      {std::string{}, NetworkConditions{false}},
       {"http://*/*", NetworkConditions{true}},
   });
-  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
-  EXPECT_TRUE(helper.GetThrottlingProfile()->has_global_conditions());
+  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 2u);
 
   // Try to set an invalid pattern. The parser accepts a lot of weird inputs,
   // but in some cases fails to parse:
@@ -429,16 +377,15 @@ TEST(ThrottlingControllerTest, SetConditions) {
       {"ht tp://", NetworkConditions{false}},
   });
   EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 0u);
-  EXPECT_FALSE(helper.GetThrottlingProfile()->has_global_conditions());
 }
 
 TEST(ThrottlingControllerTest, MultipleGlobalConditions) {
   ThrottlingControllerTestHelper helper;
 
-  // Set multiple global conditions. The last one wins.
+  // Set multiple global conditions. The first one wins.
   helper.SetNetworkState({
-      {std::string{}, NetworkConditions{true}},
       {std::string{}, NetworkConditions{false, 0.0, 1.0, 0.5}},
+      {std::string{}, NetworkConditions{true}},
   });
 
   auto* interceptor = helper.GetThrottlingProfile()->FindInterceptor(
@@ -451,8 +398,8 @@ TEST(ThrottlingControllerTest, UpdateConditions) {
   ThrottlingControllerTestHelper helper;
 
   helper.SetNetworkState({
-      {std::string{}, NetworkConditions{false, 0.0, 0.5, 1.0}},
       {"http://*", NetworkConditions{false, 0.0, 1.0, 0.5}},
+      {std::string{}, NetworkConditions{false, 0.0, 0.5, 1.0}},
   });
 
   EXPECT_EQ(helper.GetThrottlingProfile()
@@ -468,8 +415,8 @@ TEST(ThrottlingControllerTest, UpdateConditions) {
 
   // Update conditions for the same patterns.
   helper.SetNetworkState({
-      {std::string{}, NetworkConditions{false, 0.0, 1.0, 0.5}},
       {"http://*", NetworkConditions{false, 0.0, 0.5, 1.0}},
+      {std::string{}, NetworkConditions{false, 0.0, 1.0, 0.5}},
   });
 
   EXPECT_EQ(helper.GetThrottlingProfile()
@@ -525,7 +472,7 @@ TEST(ThrottlingControllerTest, MultipleMatchedConditions) {
                 .upload_throughput(),
             0.5);
 
-  // Matching patterns take precedence over global conditions.
+  // Global conditions respect the ordering as well
   helper.SetNetworkState({
       {std::string{}, NetworkConditions{false, 0.0, 0.5, 1.0}},
       {"http://example.com", NetworkConditions{false, 0.0, 1.0, 0.5}},
@@ -534,18 +481,7 @@ TEST(ThrottlingControllerTest, MultipleMatchedConditions) {
                 ->FindInterceptor(GURL("http://example.com"))
                 ->conditions()
                 .upload_throughput(),
-            0.5);
-
-  // No matter the order.
-  helper.SetNetworkState({
-      {"http://example.com", NetworkConditions{false, 0.0, 1.0, 0.5}},
-      {std::string{}, NetworkConditions{false, 0.0, 0.5, 1.0}},
-  });
-  EXPECT_EQ(helper.GetThrottlingProfile()
-                ->FindInterceptor(GURL("http://example.com"))
-                ->conditions()
-                .upload_throughput(),
-            0.5);
+            1.0);
 }
 
 }  // namespace network

@@ -86,12 +86,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
     void SetNetworkConditions(std::vector<MatchedNetworkConditions> conditions);
     ThrottlingNetworkInterceptor* FindInterceptor(const GURL& url) const;
 
-    bool has_global_conditions() const { return !!default_interceptor_; }
     size_t matcher_count() const { return matchers_.size(); }
 
    private:
     std::vector<InterceptorMatcher> matchers_;
-    std::unique_ptr<ThrottlingNetworkInterceptor> default_interceptor_;
   };
 
   ThrottlingController();

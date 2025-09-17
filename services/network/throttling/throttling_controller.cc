@@ -93,7 +93,7 @@ ThrottlingController::InterceptorMatcher::InterceptorMatcher(
 ThrottlingController::InterceptorMatcher::~InterceptorMatcher() {
   // May have been moved out
   if (interceptor) {
-    interceptor->UpdateConditions(this->conditions);
+    interceptor->UpdateConditions({});
   }
 }
 
@@ -122,8 +122,6 @@ static IterT FindConditions(IterT begin,
 }
 void ThrottlingController::ThrottlingProfile::SetNetworkConditions(
     std::vector<MatchedNetworkConditions> conditions) {
-  const NetworkConditions* global_conditions = nullptr;
-
   std::vector<InterceptorMatcher> old_matchers;
   std::swap(old_matchers, matchers_);
   // This has quadratic (#conditions * #matchers_) complexity, but we expect
@@ -131,14 +129,10 @@ void ThrottlingController::ThrottlingProfile::SetNetworkConditions(
   // same time. If this grows too large me need to build maps from the
   // conditions here.
   for (auto& [pattern, network_conditions] : conditions) {
-    if (pattern.empty()) {
-      global_conditions = &network_conditions;
-      continue;
-    }
-
     auto pattern_matcher =
         SimpleUrlPatternMatcher::Create(pattern, GURL("https://*"));
-    if (!pattern_matcher.has_value() || !*pattern_matcher) {
+    if (!pattern.empty() &&
+        (!pattern_matcher.has_value() || !*pattern_matcher)) {
       continue;
     }
 
@@ -162,16 +156,6 @@ void ThrottlingController::ThrottlingProfile::SetNetworkConditions(
                                              std::move(*pattern_matcher));
     }
   }
-
-  if (global_conditions) {
-    if (!default_interceptor_) {
-      default_interceptor_ = std::make_unique<ThrottlingNetworkInterceptor>();
-    }
-    default_interceptor_->UpdateConditions(*global_conditions);
-  } else if (default_interceptor_) {
-    default_interceptor_->UpdateConditions({});
-    default_interceptor_.reset();
-  }
 }
 
 ThrottlingNetworkInterceptor*
@@ -179,12 +163,12 @@ ThrottlingController::ThrottlingProfile::FindInterceptor(
     const GURL& url) const {
   for (const InterceptorMatcher& matcher : matchers_) {
     for (auto& pattern : matcher.patterns) {
-      if (pattern.second->Match(url)) {
+      if (pattern.first.empty() || pattern.second->Match(url)) {
         return matcher.interceptor.get();
       }
     }
   }
-  return default_interceptor_.get();
+  return nullptr;
 }
 
 void ThrottlingController::SetNetworkConditions(
@@ -209,11 +193,11 @@ void ThrottlingController::SetNetworkConditions(
 
 #if BUILDFLAG(IS_P2P_ENABLED)
   auto global_conditions = std::find_if(
-      matched_conditions.rbegin(), matched_conditions.rend(),
+      matched_conditions.begin(), matched_conditions.end(),
       [](auto&& conditions) { return conditions.url_pattern.empty(); });
   auto p2p_it = p2p_interceptors_.find(throttling_profile_id);
   if (p2p_it == p2p_interceptors_.end()) {
-    if (global_conditions == matched_conditions.rend()) {
+    if (global_conditions == matched_conditions.end()) {
       return;
     }
 
@@ -222,7 +206,7 @@ void ThrottlingController::SetNetworkConditions(
     new_interceptor->UpdateConditions(global_conditions->conditions);
     p2p_interceptors_[throttling_profile_id] = std::move(new_interceptor);
   } else {
-    if (global_conditions == matched_conditions.rend()) {
+    if (global_conditions == matched_conditions.end()) {
       p2p_it->second->UpdateConditions(NetworkConditions{});
       p2p_interceptors_.erase(throttling_profile_id);
     } else {
