@@ -8579,6 +8579,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:test_support",
+      "//chrome/browser/ui/window_sizer:unit_tests",
       "//chrome/browser/ui/zoom",
       "//chrome/browser/ui/zoom:unit_tests",
       "//chrome/browser/upgrade_detector:build_state_observer",
