@@ -94,7 +94,7 @@ TEST(MapUtilTest, FindPtrOrNullConstCorrectness) {
 
     // Const map to mutable pointers.
     const auto& const_map = map;
-    static_assert(std::is_same_v<const std::string*,
+    static_assert(std::is_same_v<std::string*,
                                  decltype(FindPtrOrNull(const_map, "asdf"))>);
   }
   {
@@ -120,7 +120,7 @@ TEST(MapUtilTest, FindPtrOrNullConstCorrectness) {
     // Const map to mutable pointers.
     const auto& const_map = map;
 
-    static_assert(std::is_same_v<const std::string*,
+    static_assert(std::is_same_v<std::string*,
                                  decltype(FindPtrOrNull(const_map, "asdf"))>);
   }
   {

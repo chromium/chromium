@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
@@ -1327,11 +1328,12 @@ CompositorFrameSinkSupport::GetRequestRegionProperties(
   // If we have a region capture crop ID, capture a subsection of the root
   // render pass.
   if (IsRegionCapture(sub_target)) {
-    const auto it = current_capture_bounds_.bounds().find(
-        std::get<RegionCaptureCropId>(sub_target));
-    if (it != current_capture_bounds_.bounds().end() && !it->second.IsEmpty() &&
-        gfx::Rect(out.root_render_pass_size).Contains(it->second)) {
-      out.render_pass_subrect = it->second;
+    const gfx::Rect* rect =
+        base::FindOrNull(current_capture_bounds_.bounds(),
+                         std::get<RegionCaptureCropId>(sub_target));
+    if (rect && !rect->IsEmpty() &&
+        gfx::Rect(out.root_render_pass_size).Contains(*rect)) {
+      out.render_pass_subrect = *rect;
       return out;
     }
 
