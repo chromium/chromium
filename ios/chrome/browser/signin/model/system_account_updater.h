@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
@@ -33,7 +34,7 @@ class SystemAccountUpdater : public SystemIdentityManagerObserver {
   void UpdateLoadedAccounts();
   void HandleMigrationIfNeeded();
 
-  raw_ptr<SystemIdentityManager> system_identity_manager_;
+  const raw_ref<SystemIdentityManager> system_identity_manager_;
 
   base::ScopedObservation<SystemIdentityManager, SystemIdentityManagerObserver>
       system_identity_manager_observation_{this};

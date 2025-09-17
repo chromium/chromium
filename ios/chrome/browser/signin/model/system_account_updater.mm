@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/system_account_updater.h"
 
+#import "base/check_deref.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
@@ -107,8 +108,8 @@ void UpdateAvatars(NSDictionary* avatars) {
 
 SystemAccountUpdater::SystemAccountUpdater(
     SystemIdentityManager* system_identity_manager)
-    : system_identity_manager_(system_identity_manager) {
-  system_identity_manager_observation_.Observe(system_identity_manager_);
+    : system_identity_manager_(CHECK_DEREF(system_identity_manager)) {
+  system_identity_manager_observation_.Observe(&*system_identity_manager_);
   HandleMigrationIfNeeded();
 }
 
