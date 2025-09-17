@@ -15,6 +15,9 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -67,8 +70,11 @@ class WebNavigationAPI : public BrowserContextKeyedAPI,
   static const bool kServiceRedirectedInIncognito = true;
   static const bool kServiceIsNULLWhileTesting = true;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Created lazily upon OnListenerAdded.
+  // TODO(crbug.com/371432404): Port to desktop Android.
   std::unique_ptr<WebNavigationEventRouter> web_navigation_event_router_;
+#endif
 };
 
 }  // namespace extensions

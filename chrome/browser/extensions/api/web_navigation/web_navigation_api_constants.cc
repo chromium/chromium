@@ -4,6 +4,10 @@
 
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_constants.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 namespace web_navigation_api_constants {

@@ -11,7 +11,6 @@
 #include "base/lazy_instance.h"
 #include "chrome/browser/extensions/api/web_navigation/frame_navigation_state.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_constants.h"
-#include "chrome/browser/extensions/api/web_navigation/web_navigation_event_router.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/web_navigation.h"
@@ -21,12 +20,20 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/buildflags/buildflags.h"
 #include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "components/pdf/common/pdf_util.h"
+#include "components/pdf/common/pdf_util.h"  // nogncheck
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+// TODO(crbug.com/371432404): Port these files to desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/web_navigation/web_navigation_event_router.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace GetFrame = extensions::api::web_navigation::GetFrame;
 namespace GetAllFrames = extensions::api::web_navigation::GetAllFrames;
@@ -261,8 +268,11 @@ WebNavigationAPI::GetFactoryInstance() {
 }
 
 void WebNavigationAPI::OnListenerAdded(const EventListenerInfo& details) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/371432404): Port to desktop Android.
   web_navigation_event_router_ = std::make_unique<WebNavigationEventRouter>(
       Profile::FromBrowserContext(browser_context_));
+#endif
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
 }
 

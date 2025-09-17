@@ -11,27 +11,41 @@ source_set("web_navigation") {
   sources = [
     "frame_navigation_state.cc",
     "frame_navigation_state.h",
+    "web_navigation_api.cc",
+    "web_navigation_api.h",
+    "web_navigation_api_constants.cc",
+    "web_navigation_api_constants.h",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/buildflags",
     "//url",
   ]
 
   deps = [
+    "//chrome/browser/extensions",
     "//chrome/common",
+    "//chrome/common/extensions/api",
+    "//content/public/browser",
     "//extensions/common:common_constants",
   ]
+
+  if (enable_pdf) {
+    deps += [
+      "//components/pdf/common:util",
+      "//pdf:buildflags",
+      "//pdf:features",
+    ]
+  }
 
   # TODO(crbug.com/371432404): Port the rest of chrome.webNavigation to
   # desktop Android.
   if (enable_extensions) {
     sources += [
-      "web_navigation_api.cc",
-      "web_navigation_api.h",
-      "web_navigation_api_constants.cc",
-      "web_navigation_api_constants.h",
       "web_navigation_api_helpers.cc",
       "web_navigation_api_helpers.h",
       "web_navigation_event_router.cc",
@@ -41,28 +55,16 @@ source_set("web_navigation") {
     ]
 
     public_deps += [
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_tab_strip",
-      "//extensions/browser",
       "//ui/base",
     ]
 
     deps += [
-      "//chrome/browser/extensions",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/browser_window",
-      "//chrome/common/extensions/api",
       "//content/public/common",
       "//extensions/common:mojom",
       "//net",
     ]
-
-    if (enable_pdf) {
-      deps += [
-        "//components/pdf/common:util",
-        "//pdf:buildflags",
-        "//pdf:features",
-      ]
-    }
   }
 }

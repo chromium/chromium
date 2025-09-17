@@ -21,17 +21,12 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
-#include "chrome/browser/download/download_browsertest_utils.h"
-#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/api/web_navigation/frame_navigation_state.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
@@ -72,12 +67,22 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/download/download_browsertest_utils.h"
+#include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
 using content::WebContents;
 
 namespace extensions {
 
 namespace {
 
+// TODO(crbug.com/371432404): Port to desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Waits for a WC to be created. Once it starts loading |delay_url| (after at
 // least the first navigation has committed), it delays the load, executes
 // |script| in the last committed RVH and resumes the load when a URL ending in
@@ -218,6 +223,7 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
       render_frame_host_ = nullptr;
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 };
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS
 
 // Handles requests for URLs with paths of "/test*" sent to the test server, so
 // tests request a URL that receives a non-error response.
@@ -261,9 +267,7 @@ class WebNavigationApiTest : public ExtensionApiTest {
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
+  content::WebContents* GetWebContents() { return GetActiveWebContents(); }
 };
 
 class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
@@ -301,6 +305,24 @@ class WebNavigationApiTestWithContextType
   }
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android only supports service worker, not persistent background pages.
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         WebNavigationApiTestWithContextType,
+                         testing::Values(ContextType::kPersistentBackground));
+#endif  // !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         WebNavigationApiTestWithContextType,
+                         testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
+  ASSERT_TRUE(RunExtensionTest("webnavigation/api")) << message_;
+}
+
+// TODO(crbug.com/371432404): Port more tests to desktop Android as the rest of
+// the API is ported and chrome.tabs becomes available.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 class WebNavigationApiPrerenderTestWithContextType
     : public WebNavigationApiTest,
       public testing::WithParamInterface<ContextType> {
@@ -316,10 +338,6 @@ class WebNavigationApiPrerenderTestWithContextType
  private:
   content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/api")) << message_;
-}
 
 // TODO(crbug.com/40858121): Flakily timing out.
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, DISABLED_GetFrame) {
@@ -349,12 +367,6 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, GetFrameIncognito) {
       << message_;
 }
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         WebNavigationApiTestWithContextType,
-                         testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         WebNavigationApiTestWithContextType,
-                         testing::Values(ContextType::kServiceWorker));
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          WebNavigationApiPrerenderTestWithContextType,
                          testing::Values(ContextType::kPersistentBackground));
@@ -869,4 +881,6 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiFencedFrameTest, Load) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/fencedFrames")) << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 }  // namespace extensions
