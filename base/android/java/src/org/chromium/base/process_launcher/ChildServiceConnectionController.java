@@ -55,62 +55,22 @@ import org.chromium.build.annotations.NullMarked;
      */
     void replaceService(Intent bindIntent);
 
-    /**
-     * Sets the effective binding state of the connection.
-     *
-     * <p>This is available only if EffectiveBindingState feature is enabled. This method will
-     * deprecate the usage of set/unsetting strong/visible/not perceptible bindings below.
-     *
-     * @param effectiveBindingState The effective binding state to set.
-     */
-    void setEffectiveBindingState(@ChildBindingState int effectiveBindingState);
-
-    /**
-     * Adds a strong binding to the service, making it a foreground priority process.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
+    /** Adds a strong binding to the service, making it a foreground priority process. */
     void setStrongBinding();
 
-    /**
-     * Removes a strong binding.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
+    /** Removes a strong binding. */
     void unsetStrongBinding();
 
-    /**
-     * Adds a visible binding to the service.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
+    /** Adds a visible binding to the service. */
     void setVisibleBinding();
 
-    /**
-     * Removes a visible binding.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
+    /** Removes a visible binding. */
     void unsetVisibleBinding();
 
-    /**
-     * Adds a "not perceptible" binding.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
+    /** Adds a "not perceptible" binding. */
     void setNotPerceptibleBinding();
 
-    /**
-     * Removes a "not perceptible" binding.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
+    /** Removes a "not perceptible" binding. */
     void unsetNotPerceptibleBinding();
 
     /**

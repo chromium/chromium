@@ -1141,9 +1141,6 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.LIBRARY_PREFETCHER_MADVISE,
                 "Use madvise MADV_WILLNEED to prefetch the native library. This replaces the "
                         + "default mechanism of pre-reading the memory from a forked process."),
-        Flag.baseFeature(
-                BaseFeatures.EFFECTIVE_BINDING_STATE,
-                "Use effective binding state to manage child process bindings."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
