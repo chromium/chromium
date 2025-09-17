@@ -1991,6 +1991,15 @@ const FeatureEntry::FeatureVariation kOmniboxMobileParityV2Variants[] = {
      std::size(kOmniboxMobileParityV2RetrieveBuiltinFavicon)}};
 // <-- Omnibox Mobile Parity Update V2
 
+const FeatureEntry::FeatureParam
+    kOmniboxRemoveSearchReadyOmniboxNoMatchParam[] = {
+        {"remove_sro_including_verbatim_match", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kOmniboxRemoveSearchReadyOmniboxVariations[] = {
+        {"No Match", kOmniboxRemoveSearchReadyOmniboxNoMatchParam,
+         std::size(kOmniboxRemoveSearchReadyOmniboxNoMatchParam), nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kMaxZeroSuggestMatches5[] = {
@@ -7118,6 +7127,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-multimodal-input", flag_descriptions::kOmniboxMultimodalInputName,
      flag_descriptions::kOmniboxMultimodalInputDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxMultimodalInput)},
+
+    {"omnibox-remove-search-ready-omnibox",
+     flag_descriptions::kOmniboxRemoveSearchReadyOmniboxName,
+     flag_descriptions::kOmniboxRemoveSearchReadyOmniboxDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRemoveSearchReadyOmnibox,
+                                    kOmniboxRemoveSearchReadyOmniboxVariations,
+                                    "RemoveSearchReadyOmnibox")},
 
     {"omnibox-site-search", flag_descriptions::kOmniboxSiteSearchName,
      flag_descriptions::kOmniboxSiteSearchDescription, kOsAndroid,

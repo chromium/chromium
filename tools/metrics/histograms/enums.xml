@@ -8787,6 +8787,7 @@ from previous Chrome versions.
   <int value="-1924837577"
       label="InterestFeedV1ClickAndViewActionsConditionalUpload:enabled"/>
   <int value="-1923751382" label="HelpAppAppDetailPage:disabled"/>
+  <int value="-1922891513" label="RemoveSearchReadyOmnibox:enabled"/>
   <int value="-1922176861"
       label="WalletRequiresFirstSyncSetupComplete:disabled"/>
   <int value="-1921593903" label="ImeInputLogicHmm:disabled"/>
@@ -10453,6 +10454,7 @@ from previous Chrome versions.
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:disabled"/>
   <int value="-1328468625" label="LensSearchSidePanelNewFeedback:enabled"/>
   <int value="-1328090640" label="DesktopPWAsAppHomePage:enabled"/>
+  <int value="-1328078305" label="RemoveSearchReadyOmnibox:disabled"/>
   <int value="-1327982727" label="IsolatedWebAppAllowlist:enabled"/>
   <int value="-1327676774" label="disable-accelerated-mjpeg-decode"/>
   <int value="-1326671705" label="TrustTokens:enabled"/>

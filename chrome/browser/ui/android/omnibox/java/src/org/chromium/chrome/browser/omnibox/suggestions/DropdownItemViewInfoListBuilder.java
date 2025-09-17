@@ -35,6 +35,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -359,6 +360,14 @@ class DropdownItemViewInfoListBuilder {
             // Inner loop to populate AutocompleteMatch objects belonging to this group.
             while (index < newMatchesCount) {
                 var match = newMatches.get(index);
+                if (OmniboxFeatures.sRemoveSroIncludingVerbatimMatch.getValue()) {
+                    if (match.getType() == OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED
+                            || match.getType() == OmniboxSuggestionType.URL_WHAT_YOU_TYPED) {
+                        index++;
+                        continue;
+                    }
+                }
+
                 var matchGroupConfig =
                         groupsInfo.getGroupConfigsOrDefault(
                                 match.getGroupId(), GroupConfig.getDefaultInstance());
@@ -366,6 +375,10 @@ class DropdownItemViewInfoListBuilder {
                 currentGroupMatches.add(match);
                 index++;
             }
+
+            // Corner case: if disabling SRO and the verbatim match on the Web, the top group may be
+            // empty.
+            if (currentGroupMatches.isEmpty()) continue;
 
             // Append this suggestions group/section to resulting model, following the render type
             // dictated by GroupConfig.

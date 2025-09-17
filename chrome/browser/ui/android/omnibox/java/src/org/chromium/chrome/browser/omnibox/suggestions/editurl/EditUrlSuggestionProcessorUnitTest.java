@@ -36,6 +36,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.R;
@@ -54,6 +55,7 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -197,6 +199,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.REMOVE_SEARCH_READY_OMNIBOX)
     public void doesProcessSuggestion_acceptMatchingUrlWhatYouTyped() {
         // URL_WHAT_YOU_TYPED
         assertTrue(mProcessor.doesProcessSuggestion(mMatch, 0));
@@ -212,6 +215,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.REMOVE_SEARCH_READY_OMNIBOX)
     public void doesProcessSuggestion_acceptMatchingWhatYouTypedWhenRetainOmniboxOnFocusDisabled() {
         // URL_WHAT_YOU_TYPED
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);

@@ -146,6 +146,13 @@ public class OmniboxFeatures {
     public static final CachedFlag sOmniboxImprovementForLFF =
             newFlag(OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF, FeatureState.DISABLED);
 
+    public static final CachedFlag sRemoveSearchReadyOmnibox =
+            newFlag(OmniboxFeatureList.REMOVE_SEARCH_READY_OMNIBOX, FeatureState.ENABLED_IN_TEST);
+
+    public static final BooleanCachedFeatureParam sRemoveSroIncludingVerbatimMatch =
+            newBooleanParam(
+                    sRemoveSearchReadyOmnibox, "remove_sro_including_verbatim_match", false);
+
     public static final BooleanCachedFeatureParam sOmniboxParityRetrieveBuiltInEngineIcon =
             newBooleanParam(sOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", false);
 

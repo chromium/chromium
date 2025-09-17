@@ -20728,6 +20728,21 @@
             ]
         }
     ],
+    "RemoveSearchReadyOmnibox": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RemoveSearchReadyOmnibox"
+                    ]
+                }
+            ]
+        }
+    ],
     "RenderArcNotificationsByChrome": [
         {
             "platforms": [

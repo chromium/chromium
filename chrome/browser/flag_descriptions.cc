@@ -3022,6 +3022,11 @@ const char kOmniboxUIMaxAutocompleteMatchesDescription[] =
     "Changes the maximum number of autocomplete matches displayed in the "
     "Omnibox UI.";
 
+const char kOmniboxRemoveSearchReadyOmniboxName[] =
+    "Remove Search Ready Omnibox";
+const char kOmniboxRemoveSearchReadyOmniboxDescription[] =
+    "When enabled, removes the Search Ready Omnibox feature.";
+
 const char kOmniboxStarterPackExpansionName[] =
     "Expansion pack for the Site search starter pack";
 const char kOmniboxStarterPackExpansionDescription[] =

@@ -184,6 +184,9 @@ BASE_FEATURE(kOmniboxMultimodalInput, DISABLED);
 // Whether the AI Mode entrypoint is shown in the Omnibox as a RHS button.
 BASE_FEATURE(kAiModeOmniboxEntryPoint, DISABLED);
 
+// When enabled, removes the Search Ready Omnibox feature.
+BASE_FEATURE(kRemoveSearchReadyOmnibox, "RemoveSearchReadyOmnibox", DISABLED);
+
 // Feature used to default typed navigations to use HTTPS instead of HTTP.
 // This only applies to navigations that don't have a scheme such as
 // "example.com". Presently, typing "example.com" in a clean browsing profile
@@ -388,7 +391,8 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxAimShortcutTypedState,
       &kOmniboxMultimodalInput,
       &kMultilineEditField,
-      &kOmniboxImprovementForLFF};
+      &kOmniboxImprovementForLFF,
+      &kRemoveSearchReadyOmnibox};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<jlong>(kFeatureMap.get());

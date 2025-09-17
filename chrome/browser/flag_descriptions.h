@@ -1739,6 +1739,9 @@ extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];
 extern const char kOmniboxSuggestionAnswerMigrationName[];
 extern const char kOmniboxSuggestionAnswerMigrationDescription[];
 
+extern const char kOmniboxRemoveSearchReadyOmniboxName[];
+extern const char kOmniboxRemoveSearchReadyOmniboxDescription[];
+
 extern const char kOmniboxStarterPackExpansionName[];
 extern const char kOmniboxStarterPackExpansionDescription[];
 
