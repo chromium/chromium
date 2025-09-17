@@ -117,6 +117,10 @@
         "Autofill.PaymentMethods.SettingsPage."
         "StoredCreditCardCountBeforeCardAdded",
         _personalDataManager->payments_data_manager().GetCreditCards().size());
+    if (!creditCard.cvc().empty()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillCreditCardsAddedWithCvc"));
+    }
     _personalDataManager->payments_data_manager().AddCreditCard(creditCard);
   }
 
