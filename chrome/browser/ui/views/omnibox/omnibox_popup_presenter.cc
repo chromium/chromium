@@ -120,8 +120,11 @@ void OmniboxPopupPresenter::OnPopupElementSizeChanged(gfx::Size size) {
     // TODO(crbug.com/40062053): Change max height according to max suggestion
     //  count and calculated row height, or use a more general maximum value.
     constexpr int kMaxHeight = 600;
+    // TODO(crbug.com/445458864): Temporarily set a min height of 1 to avoid the
+    // compositor from thinking the view is hidden.
+    const int temp_height = size.height() == 0 ? 1 : size.height();
     widget_bounds.set_height(widget_bounds.height() +
-                             std::min(kMaxHeight, size.height()));
+                             std::min(kMaxHeight, temp_height));
     widget_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
     widget_->SetBounds(widget_bounds);
   }
