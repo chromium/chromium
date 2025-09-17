@@ -230,7 +230,25 @@ TEST_F(OnDeviceAssetManagerTest, UpdateSafetyModel) {
         TextSafetyModelMetadataValidity::kValid, 1);
   }
 
-  // TODO(crbug.com/440141447): Add test case for duplicate safety model.
+  // Duplicate model info is ignored.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::TextSafetyModelMetadata model_metadata;
+    model_metadata.add_feature_text_safety_configurations()->set_feature(
+        ToModelExecutionFeatureProto(ModelBasedCapabilityKey::kCompose));
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetVersion(40)
+            .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
+            .SetModelMetadata(AnyWrapProto(model_metadata))
+            .Build();
+    asset_manager()->OnModelUpdated(proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
+                                    *model_info);
+
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecution.OnDeviceTextSafetyUpdateSkipped", 1);
+  }
 }
 
 TEST_F(OnDeviceAssetManagerTest, NotRegisteredWhenDisabledByEnterprisePolicy) {

@@ -892,9 +892,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         0);
   }
 
-  // TODO(crbug.com/440141447): Add test case for setting safety model to
-  // invalid model.
-
   // Safety model info is valid and requires language but no language detection
   // model, session not created successfully.
   {

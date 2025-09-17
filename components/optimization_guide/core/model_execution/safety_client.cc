@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/safety_client.h"
 
+#include "base/metrics/histogram_macros_local.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -31,6 +32,9 @@ void SafetyClient::MaybeUpdateSafetyModel(
       safety_model_info_->GetVersion() == safety_model_info->GetVersion()) {
     // We could get duplicate update notifications because this object could
     // receive model updates from multiple profiles.
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "OptimizationGuide.ModelExecution.OnDeviceTextSafetyUpdateSkipped",
+        true);
     return;
   }
   // New safety model means new configs, fail existing sessions.
