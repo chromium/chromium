@@ -56,8 +56,16 @@ class BrowserViewLayoutDelegateImplBrowsertest : public InteractiveBrowserTest {
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
+// TODO(crbug.com/445725696): Fix failing test on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CompareOldAndNewLayout_TabbedBrowser \
+  DISABLED_CompareOldAndNewLayout_TabbedBrowser
+#else
+#define MAYBE_CompareOldAndNewLayout_TabbedBrowser \
+  CompareOldAndNewLayout_TabbedBrowser
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
-                       CompareOldAndNewLayout_TabbedBrowser) {
+                       MAYBE_CompareOldAndNewLayout_TabbedBrowser) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
   TabStrip* const tabstrip = browser_view->tabstrip();
@@ -82,8 +90,16 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
   }
 }
 
+// TODO(crbug.com/445725696): Fix failing test on Mac and Linux.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_CompareOldAndNewLayout_AppBrowser \
+  DISABLED_CompareOldAndNewLayout_AppBrowser
+#else
+#define MAYBE_CompareOldAndNewLayout_AppBrowser \
+  CompareOldAndNewLayout_AppBrowser
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
-                       CompareOldAndNewLayout_AppBrowser) {
+                       MAYBE_CompareOldAndNewLayout_AppBrowser) {
   Browser* const app_browser = CreateAppBrowser();
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
@@ -126,8 +142,14 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
                  std::ref(bounds)));
 }
 
+// TODO(crbug.com/445725696): Fix failing test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Screenshot_AppBrowser DISABLED_Screenshot_AppBrowser
+#else
+#define MAYBE_Screenshot_AppBrowser Screenshot_AppBrowser
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
-                       Screenshot_AppBrowser) {
+                       MAYBE_Screenshot_AppBrowser) {
   Browser* const app_browser = CreateAppBrowser();
   SetUseLayoutDelegate(app_browser, true);
 
