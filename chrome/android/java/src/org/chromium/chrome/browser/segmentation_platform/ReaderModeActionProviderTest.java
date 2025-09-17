@@ -141,6 +141,21 @@ public class ReaderModeActionProviderTest {
     }
 
     @Test
+    public void testChromeSchemeUrl_isNotDistillableImmediateResult() throws TimeoutException {
+        when(mMockTab.getUrl()).thenReturn(new GURL("chrome://newtab"));
+
+        HashMap<Integer, ActionProvider> providers = new HashMap<>();
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
+        providers.put(AdaptiveToolbarButtonVariant.READER_MODE, provider);
+        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
+        provider.getAction(mMockTab, accumulator);
+        ShadowLooper.idleMainLooper();
+
+        Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.READER_MODE));
+    }
+
+
+    @Test
     public void testWaitForDistillabilityResult() throws TimeoutException {
         var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         // Get action before distillability is determined.

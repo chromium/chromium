@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.url.GURL;
 
@@ -53,7 +54,9 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
             mSignalAccumulator = signalAccumulator;
 
             mTab.addObserver(this);
-            if (DomDistillerFeatures.shouldUseReadabilityTriggeringHeuristic()) {
+            if (!isTabPossiblyDistillable(mTab)) {
+                onIsPageDistillableResult(mTab, /* isDistillable= */ false, /* isLast= */ true, /* isMobileOptimized= */ false);
+            } else if (DomDistillerFeatures.shouldUseReadabilityTriggeringHeuristic()) {
                 useReadabilityHeuristic();
             } else {
                 useDistillabilityProvider();
@@ -224,5 +227,9 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
                     .addMetric("Latency", (int) latency)
                     .record();
         }
+    }
+
+    private boolean isTabPossiblyDistillable(@Nullable Tab tab) {
+        return tab != null && !tab.getUrl().getSpec().startsWith(UrlConstants.CHROME_SCHEME);
     }
 }
