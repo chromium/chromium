@@ -2472,6 +2472,18 @@ message OSReport {
   // A string representing the Linux distribution VERSION_ID contained in
   // /etc/os-release.
   optional string distribution_version = 20;
+
+  // Whether the device has potentially harmful apps according the SafetyNet
+  // API. Android only.
+  optional bool has_potentially_harmful_apps = 21;
+
+  // Whether app verification is enabled according the SafetyNet API.
+  // Android only.
+  optional bool verified_apps_enabled = 22;
+
+  // The user-visible security patch level. This value represents the date when
+  // the device most recently applied a security patch. Android only.
+  optional string security_patch = 23;
 }
 
 // Report the status of a Chrome installation on non-Chrome OS platform.
