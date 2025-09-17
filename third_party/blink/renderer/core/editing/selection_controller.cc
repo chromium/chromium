@@ -516,7 +516,11 @@ bool SelectionController::HandleSingleClick(
 
   // SelectionControllerTest_SetCaretAtHitTestResultWithDisconnectedPosition
   // makes the IsValidFor() check fail.
-  if (is_editable && event.Event().FromTouch() &&
+  bool event_should_trigger_suggestion =
+      event.Event().FromTouch() ||
+      (RuntimeEnabledFeatures::LeftClickToHandleSuggestionEnabled() &&
+       event.Event().button == WebPointerProperties::Button::kLeft);
+  if (is_editable && event_should_trigger_suggestion &&
       position_to_use.IsValidFor(*frame_->GetDocument())) {
     frame_->GetTextSuggestionController().HandlePotentialSuggestionTap(
         position_to_use.GetPosition());

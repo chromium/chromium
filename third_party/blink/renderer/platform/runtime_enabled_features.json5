@@ -2934,6 +2934,14 @@
       // This is enabled by features::kLazyInitializeMediaControls.
     },
     {
+      // Allow triggering the word suggestion from left click.
+      // From crbug.com/433209485
+      name: "LeftClickToHandleSuggestion",
+      status: {
+        "Android": "stable"
+      }
+    },
+    {
       name: "LimitThirdPartyCookies",
       origin_trial_feature_name: "LimitThirdPartyCookies",
       status: "experimental",
