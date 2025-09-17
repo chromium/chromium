@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 
@@ -54,7 +55,18 @@ gfx::Point ExtensionViewHostWebModalHandler::GetDialogPosition(
 }
 
 gfx::Size ExtensionViewHostWebModalHandler::GetMaximumDialogSize() {
-  return web_contents_->GetViewBounds().size();
+  // Since dialogs can break out of extension popup bounds, allow them to use
+  // up to the maximum popup dimensions instead of being constrained to the
+  // current popup size. This gives dialogs room to use their preferred size
+  // while keeping them appropriately scoped.
+  return ExtensionPopup::kMaxSize;
+}
+
+bool ExtensionViewHostWebModalHandler::ShouldDialogBoundsConstrainedByHost() {
+  // Allow dialogs in extension popups to break out of the popup bounds to
+  // prevent clipping on Windows and Linux. This matches the behavior on macOS
+  // where extension popup dialogs are shown as sheets over the popup.
+  return false;
 }
 
 void ExtensionViewHostWebModalHandler::AddObserver(
