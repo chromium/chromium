@@ -433,6 +433,27 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsPolicyBrowserTest,
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
 
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsPolicyBrowserTest,
+                       LNASharedWorkerWebSocketConnectionHasPermission) {
+  // Shared workers need permission pre-granted, do this through enterprise
+  // policy.
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(base::Value::List().Append("*")));
+  UpdateProviderPolicy(policies);
+
+  ConnectToLNAWebSocket(
+      "/websocket/connect_to_using_shared_worker_as_public_address.html");
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsPolicyBrowserTest,
+                       LNASharedWorkerWebSocketConnectionDeniedPermission) {
+  ConnectToLNAWebSocket(
+      "/websocket/connect_to_using_shared_worker_as_public_address.html");
+  EXPECT_EQ("FAIL", WaitAndGetTitle());
+}
+
 class WebSocketBrowserHTTPSConnectToTestPre3pcd
     : public WebSocketBrowserHTTPSConnectToTest {
   void SetUp() override {
