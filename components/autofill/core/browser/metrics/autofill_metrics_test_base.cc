@@ -65,6 +65,25 @@ MockCreditCardAccessManager::MockCreditCardAccessManager(
 
 MockCreditCardAccessManager::~MockCreditCardAccessManager() = default;
 
+MockAutofillDriver::MockAutofillDriver(TestAutofillClient* client)
+    : TestAutofillDriver(client) {
+  ON_CALL(*this, ApplyFormAction)
+      .WillByDefault(
+          [this](mojom::FormActionType action_type,
+                 mojom::ActionPersistence action_persistence,
+                 base::span<const FormFieldData> data,
+                 const url::Origin& triggered_origin,
+                 const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+                 const Section& section_for_clear_form_on_ios)
+              -> base::flat_set<FieldGlobalId> {
+            return TestAutofillDriver::ApplyFormAction(
+                action_type, action_persistence, data, triggered_origin,
+                field_type_map, section_for_clear_form_on_ios);
+          });
+}
+
+MockAutofillDriver::~MockAutofillDriver() = default;
+
 TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
     : autofill::TestBrowserAutofillManager(driver) {
   test_api(*this).SetExternalDelegate(
@@ -105,7 +124,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   personal_data().SetSyncServiceForTest(&sync_service_);
 
   autofill_driver_ =
-      std::make_unique<TestAutofillDriver>(autofill_client_.get());
+      std::make_unique<MockAutofillDriver>(autofill_client_.get());
   autofill_driver_->SetLocalFrameToken(test::MakeLocalFrameToken());
 
   payments::TestPaymentsNetworkInterface* payments_network_interface =

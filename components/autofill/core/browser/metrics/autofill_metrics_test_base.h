@@ -67,6 +67,24 @@ class MockCreditCardAccessManager : public CreditCardAccessManager {
               (override));
 };
 
+class MockAutofillDriver : public TestAutofillDriver {
+ public:
+  explicit MockAutofillDriver(TestAutofillClient* client);
+  MockAutofillDriver(const MockAutofillDriver&) = delete;
+  MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
+  ~MockAutofillDriver() override;
+
+  MOCK_METHOD((base::flat_set<FieldGlobalId>),
+              ApplyFormAction,
+              (mojom::FormActionType action_type,
+               mojom::ActionPersistence action_persistence,
+               base::span<const FormFieldData> data,
+               const url::Origin& triggered_origin,
+               (const base::flat_map<FieldGlobalId, FieldType>&),
+               (const Section&)),
+              (override));
+};
+
 class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
  public:
   explicit TestBrowserAutofillManager(AutofillDriver* driver);
@@ -273,7 +291,7 @@ class AutofillMetricsBaseTest {
 
   TestAutofillClient& autofill_client() { return *autofill_client_; }
 
-  TestAutofillDriver& autofill_driver() { return *autofill_driver_; }
+  MockAutofillDriver& autofill_driver() { return *autofill_driver_; }
 
   TestBrowserAutofillManager& autofill_manager() {
     return static_cast<TestBrowserAutofillManager&>(
@@ -320,7 +338,7 @@ class AutofillMetricsBaseTest {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
   syncer::TestSyncService sync_service_;
-  std::unique_ptr<TestAutofillDriver> autofill_driver_;
+  std::unique_ptr<MockAutofillDriver> autofill_driver_;
   base::test::ScopedFeatureList scoped_features_;
 
  private:
