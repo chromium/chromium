@@ -359,7 +359,13 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePageSyncControls) {
   RunTest("settings/people_page_sync_controls_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyPageIndex) {
+// TODO(crbug.com/445644484): Tests take too long to run in Linux dbg bots.
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+#define MAYBE_PrivacyPageIndex DISABLED_PrivacyPageIndex
+#else
+#define MAYBE_PrivacyPageIndex PrivacyPageIndex
+#endif  // BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(SettingsTest, MAYBE_PrivacyPageIndex) {
   RunTest("settings/privacy_page_index_test.js",
           "runMochaSuite('PrivacyPageIndex Main')");
 }
