@@ -65,6 +65,8 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
                              UpdateMostVisitedTileCallback callback) override;
   void PrerenderMostVisitedTile(
       most_visited::mojom::MostVisitedTilePtr tile) override;
+  void PrefetchMostVisitedTile(
+      most_visited::mojom::MostVisitedTilePtr tile) override;
   void PreconnectMostVisitedTile(
       most_visited::mojom::MostVisitedTilePtr tile) override;
   void CancelPrerender() override;

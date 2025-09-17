@@ -1272,7 +1272,7 @@ suite('Theming', () => {
   });
 });
 
-suite('Prerendering', () => {
+suite('Preloading', () => {
   suiteSetup(() => {});
 
   setup(async () => {
@@ -1296,6 +1296,9 @@ suite('Prerendering', () => {
 
     // Make sure preconnect has been triggered.
     await handler.whenCalled('preconnectMostVisitedTile');
+
+    // Make sure prefetch has been triggered.
+    await handler.whenCalled('prefetchMostVisitedTile');
   });
 
   test('onMouseDown Trigger', async () => {

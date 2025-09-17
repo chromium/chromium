@@ -28,6 +28,9 @@ class NewTabPagePreloadPipeline {
   NewTabPagePreloadPipeline& operator=(const NewTabPagePreloadPipeline&) =
       delete;
 
+  void StartPrefetch(content::WebContents& web_contents,
+                     content::PreloadingPredictor predictor);
+
   void StartPrerender(content::WebContents& web_contents,
                       content::PreloadingPredictor predictor);
 
@@ -37,6 +40,8 @@ class NewTabPagePreloadPipeline {
   const scoped_refptr<content::PreloadPipelineInfo> pipeline_info_;
 
   const GURL url_;
+
+  std::unique_ptr<content::PrefetchHandle> prefetch_handle_;
 
   std::unique_ptr<content::PrerenderHandle> prerender_handle_;
 };

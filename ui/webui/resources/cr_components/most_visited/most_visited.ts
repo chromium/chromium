@@ -200,6 +200,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private mediaEventTracker_: EventTracker;
   private eventTracker_: EventTracker;
   private boundOnDocumentKeyDown_: (e: KeyboardEvent) => void = (_e) => null;
+  private prefetchTimer_: null|ReturnType<typeof setTimeout> = null;
   private preconnectTimer_: null|ReturnType<typeof setTimeout> = null;
   private dragImage_: HTMLImageElement;
 
@@ -870,6 +871,13 @@ export class MostVisitedElement extends MostVisitedElementBase {
         this.pageHandler_.preconnectMostVisitedTile(item);
       }, loadTimeData.getInteger('preconnectStartTimeThreshold'));
     }
+
+    if (loadTimeData.getBoolean('prefetchTriggerEnabled') &&
+        loadTimeData.getInteger('prefetchStartTimeThreshold') >= 0) {
+      this.prefetchTimer_ = setTimeout(() => {
+        this.pageHandler_.prefetchMostVisitedTile(item);
+      }, loadTimeData.getInteger('prefetchStartTimeThreshold'));
+    }
   }
 
   protected onTileMouseDown_(e: Event) {
@@ -880,6 +888,12 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (loadTimeData.getBoolean('prerenderOnPressEnabled')) {
       const item = this.tiles_[this.getCurrentTargetIndex_(e)];
       assert(item);
+      // prefetchMostVisitedTile is called explicitly to guarantee prefetch
+      // ahead of prerender, and the duplicate prefetch requests will be
+      // prevented at `StartPrefetch`.
+      if (loadTimeData.getBoolean('prefetchTriggerEnabled')) {
+        this.pageHandler_.prefetchMostVisitedTile(item);
+      }
       this.pageHandler_.prerenderMostVisitedTile(item);
     }
   }
@@ -888,6 +902,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (e.defaultPrevented) {
       // Ignore previously handled events.
       return;
+    }
+
+    if (this.prefetchTimer_) {
+      clearTimeout(this.prefetchTimer_);
     }
 
     if (this.preconnectTimer_) {

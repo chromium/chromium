@@ -35,6 +35,12 @@ NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
   return new_tab_page_preload_manager;
 }
 
+void NewTabPagePreloadPipelineManager::StartPrefetch(const GURL& url) {
+  EnsurePipelineForUrl(url);
+  pipeline_->StartPrefetch(
+      *web_contents(), chrome_preloading_predictor::kMouseHoverOnNewTabPage);
+}
+
 void NewTabPagePreloadPipelineManager::StartPrerender(
     const GURL& url,
     content::PreloadingPredictor predictor) {

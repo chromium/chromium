@@ -69,6 +69,8 @@ interface MostVisitedPageHandler {
                         string new_title) => (bool success);
   // Prerenders |tile|.
   PrerenderMostVisitedTile(MostVisitedTile tile);
+  // Prefetches |tile|.
+  PrefetchMostVisitedTile(MostVisitedTile tile);
   // Preconnects |tile|. Preresolve/preconnects the origin; a socket created
   // by this call will be reused, if possible, for a subsequent attempt to
   // prerender or navigate to this url.

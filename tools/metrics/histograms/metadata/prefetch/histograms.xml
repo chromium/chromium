@@ -40,6 +40,7 @@ chromium-metrics-reviews@google.com.
       summary="Embedder trigger, ChromeCustomTabs"/>
   <variant name="Embedder_DefaultSearchEngine"
       summary="Embedder trigger, DefaultSearchEngine"/>
+  <variant name="Embedder_NewTabPage" summary="Embedder trigger, NewTabPage"/>
   <variant name="Embedder_WebView" summary="Embedder trigger, WebView"/>
   <variant name="SpeculationRule_Conservative"
       summary="SpeculationRules trigger, Conservative"/>
