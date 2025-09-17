@@ -33,7 +33,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.util.TokenHolder;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * Manager for the snackbar showing at the bottom of activity. There should be only one
@@ -107,7 +108,7 @@ public class SnackbarManager
     private final ObservableSupplierImpl<Boolean> mIsShowingSupplier =
             new ObservableSupplierImpl<>();
     private final ViewGroup mOriginalParentView;
-    private final Stack<Pair<Integer, ViewGroup>> mParentViewOverrideStack = new Stack<>();
+    private final Deque<Pair<Integer, ViewGroup>> mParentViewOverrideStack = new ArrayDeque<>();
     protected final ObserverList<SnackbarStateProvider.Observer> mObservers = new ObserverList<>();
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
     private final SnackbarCollection mSnackbars = new SnackbarCollection();
@@ -245,7 +246,7 @@ public class SnackbarManager
     public int pushParentViewToOverrideStack(ViewGroup parentView) {
         assert parentView != null;
         int overrideToken = mTokenHolder.acquireToken();
-        mParentViewOverrideStack.push(new Pair<>(overrideToken, parentView));
+        mParentViewOverrideStack.addFirst(new Pair<>(overrideToken, parentView));
         overrideParent(parentView);
         return overrideToken;
     }
@@ -261,13 +262,13 @@ public class SnackbarManager
      */
     public void popParentViewFromOverrideStack(int token) {
         assert token != TokenHolder.INVALID_TOKEN;
-        Pair<Integer, ViewGroup> parentViewPair = mParentViewOverrideStack.pop();
+        Pair<Integer, ViewGroup> parentViewPair = mParentViewOverrideStack.removeFirst();
         assert parentViewPair.first.equals(token);
         mTokenHolder.releaseToken(token);
         overrideParent(
-                mParentViewOverrideStack.empty()
+                mParentViewOverrideStack.isEmpty()
                         ? mOriginalParentView
-                        : mParentViewOverrideStack.peek().second);
+                        : mParentViewOverrideStack.peekFirst().second);
     }
 
     /**
@@ -336,8 +337,8 @@ public class SnackbarManager
                 // If there is a temporary parent set, reparent accordingly. We override here
                 // instead of instantiating the new SnackbarView with the temporary parent, so
                 // that overriding with <code>null</code> will reparent to mSnackbarParentView.
-                if (!mParentViewOverrideStack.empty()) {
-                    mView.overrideParent(mParentViewOverrideStack.peek().second);
+                if (!mParentViewOverrideStack.isEmpty()) {
+                    mView.overrideParent(mParentViewOverrideStack.peekFirst().second);
                 }
             } else {
                 viewChanged = mView.update(currentSnackbar);

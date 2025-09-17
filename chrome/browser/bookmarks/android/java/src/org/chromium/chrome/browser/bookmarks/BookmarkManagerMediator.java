@@ -73,12 +73,13 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Stack;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -210,20 +211,19 @@ class BookmarkManagerMediator
                 }
             };
 
-    private final Stack<BookmarkUiState> mStateStack =
-            new Stack<>() {
+    private final Deque<BookmarkUiState> mStateStack =
+            new ArrayDeque<>() {
                 @Override
-                public BookmarkUiState push(BookmarkUiState item) {
+                public void addLast(BookmarkUiState item) {
                     // The back press state depends on the size of stack. So push/pop item first in
                     // order to keep the size update-to-date.
-                    var state = super.push(item);
+                    super.addLast(item);
                     onBackPressStateChanged();
-                    return state;
                 }
 
                 @Override
-                public synchronized BookmarkUiState pop() {
-                    var state = super.pop();
+                public synchronized BookmarkUiState removeLast() {
+                    var state = super.removeLast();
                     onBackPressStateChanged();
                     return state;
                 }
@@ -589,10 +589,10 @@ class BookmarkManagerMediator
             return true;
         }
 
-        if (!mStateStack.empty()) {
-            mStateStack.pop();
-            if (!mStateStack.empty()) {
-                setState(mStateStack.pop());
+        if (!mStateStack.isEmpty()) {
+            mStateStack.removeLast();
+            if (!mStateStack.isEmpty()) {
+                setState(mStateStack.removeLast());
                 return true;
             }
         }
@@ -616,7 +616,7 @@ class BookmarkManagerMediator
         if (mBookmarkModel.isBookmarkModelLoaded()) {
             BookmarkUiState searchState = null;
             if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
-                searchState = mStateStack.pop();
+                searchState = mStateStack.removeLast();
             }
 
             setState(BookmarkUiState.createStateFromUrl(url, mBookmarkModel));
@@ -803,7 +803,8 @@ class BookmarkManagerMediator
 
     @Override
     public @BookmarkUiMode int getCurrentUiMode() {
-        return mStateStack.isEmpty() ? BookmarkUiMode.LOADING : mStateStack.peek().mUiMode;
+        BookmarkUiState state = mStateStack.peekLast();
+        return state == null ? BookmarkUiMode.LOADING : state.mUiMode;
     }
 
     @Override
@@ -826,12 +827,12 @@ class BookmarkManagerMediator
 
     void onEndSearch() {
         // Pop the search state off the stack.
-        mStateStack.pop();
+        mStateStack.removeLast();
 
         // Set the state back to the folder that was previously being viewed. Listeners will be
         // notified of the change and the list of bookmarks will be updated.
         mIsExitingSearch = true;
-        setState(mStateStack.pop());
+        setState(mStateStack.removeLast());
         mIsExitingSearch = false;
     }
 
@@ -889,7 +890,7 @@ class BookmarkManagerMediator
         // The loading state is not persisted in history stack and once we have a valid state it
         // shall be removed.
         if (!mStateStack.isEmpty() && currentUiMode == BookmarkUiMode.LOADING) {
-            mStateStack.pop();
+            mStateStack.removeLast();
         }
 
         // TODO(crbug.com/40276748): Delete this empty search mechanism.
@@ -902,7 +903,7 @@ class BookmarkManagerMediator
         // one.
         if (currentUiMode == BookmarkUiMode.SEARCHING
                 && state.mUiMode == BookmarkUiMode.SEARCHING) {
-            mStateStack.pop();
+            mStateStack.removeLast();
         } else if (currentUiMode != BookmarkUiMode.SEARCHING
                 && state.mUiMode == BookmarkUiMode.SEARCHING) {
             // The initial state change to search should clear selection.
@@ -911,10 +912,10 @@ class BookmarkManagerMediator
 
         // Search states should only be the top most state. Back button should not restore them.
         if (currentUiMode == BookmarkUiMode.SEARCHING && state.mUiMode == BookmarkUiMode.FOLDER) {
-            mStateStack.pop();
+            mStateStack.removeLast();
         }
 
-        mStateStack.push(state);
+        mStateStack.addLast(state);
         notifyUi(state, preserveFolderBookmarksOnEmptySearch);
     }
 
@@ -1128,7 +1129,7 @@ class BookmarkManagerMediator
             }
         }
 
-        notifyUi(mStateStack.peek(), /* preserveFolderBookmarksOnEmptySearch= */ false);
+        notifyUi(mStateStack.peekLast(), /* preserveFolderBookmarksOnEmptySearch= */ false);
     }
 
     private @ViewType int calculatePromoHeaderType() {
@@ -1725,15 +1726,17 @@ class BookmarkManagerMediator
                     ? ""
                     : searchModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT);
         }
-        return mStateStack.isEmpty() ? "" : mStateStack.peek().mSearchText;
+        BookmarkUiState state = mStateStack.peekLast();
+        return state == null ? "" : state.mSearchText;
     }
 
     private @Nullable BookmarkUiState getCurrentUiState() {
-        return mStateStack.isEmpty() ? null : mStateStack.peek();
+        return mStateStack.peekLast();
     }
 
     private @Nullable BookmarkId getCurrentFolderId() {
-        return mStateStack.isEmpty() ? null : mStateStack.peek().mFolder;
+        BookmarkUiState state = mStateStack.peekLast();
+        return state == null ? null : state.mFolder;
     }
 
     @VisibleForTesting

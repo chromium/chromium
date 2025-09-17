@@ -17,8 +17,9 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Deque;
 
 /** Implementation of {@link HubLayoutAnimationRunner}. */
 @NullMarked
@@ -29,7 +30,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
     private @HubLayoutAnimationType int mAnimationType;
     private boolean mWasForcedToFinish;
 
-    private @Nullable LinkedList<HubLayoutAnimationListener> mListeners;
+    private @Nullable Deque<HubLayoutAnimationListener> mListeners;
 
     /**
      * Creates a {@link HubLayoutAnimatorRunnerImpl}.
@@ -110,7 +111,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
         assert mAnimationState == AnimationState.INITIALIZING
                 : "Attempting to add an HubLayoutAnimationListener that may not be called.";
         ensureListenersList();
-        mListeners.add(animationListener);
+        mListeners.addLast(animationListener);
     }
 
     private void onWaitForAnimatorTimeout() {
@@ -197,7 +198,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
     @EnsuresNonNull("mListeners")
     private void ensureListenersList() {
         if (mListeners == null) {
-            mListeners = new LinkedList<>();
+            mListeners = new ArrayDeque<>();
         }
     }
 }
