@@ -50304,6 +50304,7 @@ should be able to be added at any place in this file.
       label="For BadgedTranslateManualTrigger feature."/>
   <suffix name="BatterySaverMode" label="For BatterySaverMode feature."/>
   <suffix name="Bookmark" label="For Bookmark feature."/>
+  <suffix name="BookmarksBar" label="For Bookmarks Bar feature."/>
   <suffix name="BottomToolbarTip" label="For BottomToolbarTip feature."/>
   <suffix name="CCTHistory" label="For CCT History feature."/>
   <suffix name="CCTMinimized" label="For Minimized CCT feature."/>

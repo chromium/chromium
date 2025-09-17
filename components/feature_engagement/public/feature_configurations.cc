@@ -1741,6 +1741,25 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHBookmarksBarFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    // This feature is available to show immediately upon release and we are not
+    // adding an organic discovery period.
+    config.availability = Comparator(ANY, 0);
+    // The IPH will only be shown if no other IPHs have been shown in the
+    // current session.
+    config.session_rate = Comparator(EQUAL, 0);
+    // Once the trigger event is fired, remember it for 360 days.
+    config.trigger =
+        EventConfig("bookmark_bar_iph_triggered", Comparator(ANY, 0), 0, 360);
+    // The IPH will only be shown if a trigger condition is met + the user has
+    // not opened Appearance in Settings in 360 days.
+    config.used = EventConfig("settings_appearance_opened",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHPdfPageDownloadFeature.name == feature->name) {
     // A config that allows the pdf page download IPH to be shown to users.
     // This will be triggered a maximum of 3 times (once per 2 weeks) with pdf

@@ -243,6 +243,9 @@ public final class EventConstants {
     public static final String ADAPTIVE_TOOLBAR_PAGE_SUMMARY_PDF_USED =
             "adaptive_toolbar_page_summary_pdf_used";
 
+    /** Appearance in Settings was opened by the user. */
+    public static final String SETTINGS_APPEARANCE_OPENED = "settings_appearance_opened";
+
     /** Do not instantiate. */
     private EventConstants() {}
 }
