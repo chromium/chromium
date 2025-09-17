@@ -86,6 +86,18 @@ void MetadataWriter::AddUmaFeatures(const UMAFeature features[],
   }
 }
 
+void MetadataWriter::AddFeatures(const base::span<const Feature> features) {
+  for (const auto& feature : features) {
+    if (feature.uma_feature) {
+      AddUmaFeatures(&feature.uma_feature.value(), 1);
+    } else if (feature.sql_feature) {
+      AddSqlFeature(feature.sql_feature.value());
+    } else if (feature.custom_input) {
+      AddCustomInput(feature.custom_input.value());
+    }
+  }
+}
+
 proto::SqlFeature* MetadataWriter::AddSqlFeature(const SqlFeature& feature) {
   proto::SqlFeature* proto =
       metadata_->add_input_features()->mutable_sql_feature();

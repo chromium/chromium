@@ -16,6 +16,59 @@
 
 namespace segmentation_platform {
 
+// TODO(ssid): This file should be moved to public API of segmentation and
+// macros should be separated from this header.
+
+// The following `GENERATE` macros are helpers for `DEFINE_FEATURES` and
+// `DEFINE_LABELS` macros. They are used to generate enums and arrays from a
+// list of features or labels. The `feature_list` or `label_list` is expected to
+// be a macro that takes another macro as an argument, and applies it to each
+// feature/label.
+
+// Generates an enum member from a feature definition.
+#define SEGMENTATION_INTERNAL_GENERATE_ENUM(name, feature) name,
+// Generates a feature struct from a feature definition.
+#define SEGMENTATION_INTERNAL_GENERATE_FEATURE(name, feature) feature,
+// Generates an enum member from a label definition.
+#define SEGMENTATION_INTERNAL_GENERATE_LABEL_ENUM(name, label_string) name,
+// Generates a label string from a label definition.
+#define SEGMENTATION_INTERNAL_GENERATE_LABEL_STRING(name, label_string) \
+  label_string,
+
+// Public helper macros:
+
+// A helper macro to define a single UMA feature based on a user action.
+#define SEGMENTATION_USER_ACTION(uma_name, days) \
+  MetadataWriter::Feature::FromUMAFeature(       \
+      MetadataWriter::UMAFeature::FromUserAction(uma_name, days))
+
+// A helper macro to define a single UMA feature based on an enum histogram.
+#define SEGMENTATION_UMA_ENUM(uma_name, days, enum_ids, enum_size)            \
+  MetadataWriter::Feature::FromUMAFeature(                                    \
+      MetadataWriter::UMAFeature::FromEnumHistogram(uma_name, days, enum_ids, \
+                                                    enum_size))
+
+// A helper macro to define a custom input feature.
+#define SEGMENTATION_INPUT_CONTEXT(input_name)                          \
+  MetadataWriter::Feature::FromCustomInput(MetadataWriter::CustomInput{ \
+      .tensor_length = 1,                                               \
+      .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,       \
+      .name = input_name})
+
+// A helper macro to define a list of features. This macro generates an enum for
+// feature indices and a constexpr array of `MetadataWriter::Feature` structs.
+#define SEGMENTATION_DEFINE_FEATURES(array_name, feature_list)       \
+  enum { feature_list(SEGMENTATION_INTERNAL_GENERATE_ENUM) kCount }; \
+  constexpr MetadataWriter::Feature array_name[] = {                 \
+      feature_list(SEGMENTATION_INTERNAL_GENERATE_FEATURE)}
+
+// A helper macro to define a list of output labels. This macro generates an
+// enum for label indices and a constexpr array of label strings.
+#define SEGMENTATION_DEFINE_LABELS(array_name, label_list)                     \
+  enum { label_list(SEGMENTATION_INTERNAL_GENERATE_LABEL_ENUM) kLabelsCount }; \
+  constexpr const char* array_name[] = {                                       \
+      label_list(SEGMENTATION_INTERNAL_GENERATE_LABEL_STRING)}
+
 // Utility to write metadata proto for default models.
 class MetadataWriter {
  public:
@@ -121,10 +174,36 @@ class MetadataWriter {
   using BindValue = std::pair<BindValueType, CustomInput>;
   using BindValues = std::vector<BindValue>;
 
+  // Defines a feature that can be one of UMA, SQL or CustomInput.
+  struct Feature {
+    STACK_ALLOCATED();
+
+   public:
+    static constexpr Feature FromUMAFeature(
+        MetadataWriter::UMAFeature uma_feature) {
+      return Feature{.uma_feature = uma_feature};
+    }
+    static constexpr Feature FromSqlFeature(
+        MetadataWriter::SqlFeature sql_feature) {
+      return Feature{.sql_feature = sql_feature};
+    }
+    static constexpr Feature FromCustomInput(
+        MetadataWriter::CustomInput custom_input) {
+      return Feature{.custom_input = custom_input};
+    }
+
+    const std::optional<MetadataWriter::UMAFeature> uma_feature;
+    const std::optional<MetadataWriter::SqlFeature> sql_feature;
+    const std::optional<MetadataWriter::CustomInput> custom_input;
+  };
+
   // Appends the list of UMA features in order.
   void AddUmaFeatures(const UMAFeature features[],
                       size_t features_size,
                       bool is_output = false);
+
+  // Appends the list of features in order.
+  void AddFeatures(const base::span<const Feature> features);
 
   // Appends the list of SQL features in order.
   proto::SqlFeature* AddSqlFeature(const SqlFeature& feature);

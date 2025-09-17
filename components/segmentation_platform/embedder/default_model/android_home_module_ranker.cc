@@ -30,13 +30,13 @@ constexpr int64_t kMinSignalCollectionLength = 0;
 // Refresh the result every time.
 constexpr int64_t kResultTTLMinutes = 5;
 
-constexpr std::array<const char*, 3> kAndroidHomeModuleLabels = {
-    kPriceChange, kSingleTab, kSafetyHub};
+#define ANDROID_HOME_MODULE_LABELS(F) \
+  F(kPriceChangeIdx, kPriceChange)    \
+  F(kSingleTabIdx, kSingleTab)        \
+  F(kSafetyHubIdx, kSafetyHub)
 
-constexpr std::array<const char*, 3> kAndroidHomeModuleInputContextKeys = {
-    kPriceChangeFreshness, kSingleTabFreshness, kSafetyHubFreshness};
-
-// InputFeatures.
+SEGMENTATION_DEFINE_LABELS(kAndroidHomeModuleLabels,
+                           ANDROID_HOME_MODULE_LABELS);
 
 // Enum values for the MagicStack.Clank.NewTabPage|StartSurface.Module.Click and
 // MagicStack.Clank.NewTabPage|StartSurface.Module.TopImpressionV2 histograms.
@@ -46,52 +46,41 @@ constexpr std::array<int32_t, 1> kEnumValueForPriceChange{/*PriceChange=*/1};
 
 constexpr std::array<int32_t, 1> kEnumValueForSafetyHub{/*SafetyHub=*/3};
 
-// Set UMA metrics to use as input.
-constexpr std::array<MetadataWriter::UMAFeature, 6> kUMAFeatures = {
-    // Single Tab Module
-    // 0 : click
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.Click",
-        28,
-        kEnumValueForSingleTab.data(),
-        kEnumValueForSingleTab.size()),
-    // 1 : impression
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
-        28,
-        kEnumValueForSingleTab.data(),
-        kEnumValueForSingleTab.size()),
-    // Price Change Module
-    // 2 : click
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.Click",
-        28,
-        kEnumValueForPriceChange.data(),
-        kEnumValueForPriceChange.size()),
-    // 3 : impression
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
-        28,
-        kEnumValueForPriceChange.data(),
-        kEnumValueForPriceChange.size()),
-    // Safety Hub Module
-    // 4 : click
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.Click",
-        28,
-        kEnumValueForSafetyHub.data(),
-        kEnumValueForSafetyHub.size()),
-    // 5 : impression
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
-        28,
-        kEnumValueForSafetyHub.data(),
-        kEnumValueForSafetyHub.size()),
-};
+#define ANDROID_HOME_MODULE_UMA_FEATURES(F)                                  \
+  F(kSingleTabClickIdx,                                                      \
+    SEGMENTATION_UMA_ENUM("MagicStack.Clank.NewTabPage.Module.Click", 28,    \
+                          kEnumValueForSingleTab.data(),                     \
+                          kEnumValueForSingleTab.size()))                    \
+  F(kSingleTabImpressionIdx,                                                 \
+    SEGMENTATION_UMA_ENUM(                                                   \
+        "MagicStack.Clank.NewTabPage.Module.TopImpressionV2", 28,            \
+        kEnumValueForSingleTab.data(), kEnumValueForSingleTab.size()))       \
+  F(kPriceChangeClickIdx,                                                    \
+    SEGMENTATION_UMA_ENUM("MagicStack.Clank.NewTabPage.Module.Click", 28,    \
+                          kEnumValueForPriceChange.data(),                   \
+                          kEnumValueForPriceChange.size()))                  \
+  F(kPriceChangeImpressionIdx,                                               \
+    SEGMENTATION_UMA_ENUM(                                                   \
+        "MagicStack.Clank.NewTabPage.Module.TopImpressionV2", 28,            \
+        kEnumValueForPriceChange.data(), kEnumValueForPriceChange.size()))   \
+  F(kSafetyHubClickIdx,                                                      \
+    SEGMENTATION_UMA_ENUM("MagicStack.Clank.NewTabPage.Module.Click", 28,    \
+                          kEnumValueForSafetyHub.data(),                     \
+                          kEnumValueForSafetyHub.size()))                    \
+  F(kSafetyHubImpressionIdx,                                                 \
+    SEGMENTATION_UMA_ENUM(                                                   \
+        "MagicStack.Clank.NewTabPage.Module.TopImpressionV2", 28,            \
+        kEnumValueForSafetyHub.data(), kEnumValueForSafetyHub.size()))       \
+  F(kSingleTabFreshnessIdx, SEGMENTATION_INPUT_CONTEXT(kSingleTabFreshness)) \
+  F(kPriceChangeFreshnessIdx,                                                \
+    SEGMENTATION_INPUT_CONTEXT(kPriceChangeFreshness))                       \
+  F(kSafetyHubFreshnessIdx, SEGMENTATION_INPUT_CONTEXT(kSafetyHubFreshness))
+
+SEGMENTATION_DEFINE_FEATURES(kUMAFeatures, ANDROID_HOME_MODULE_UMA_FEATURES);
 
 float TransformFreshness(float freshness_score, float freshness_threshold) {
   float new_freshness_score = 0.0;
-  if (freshness_score >= 0.0 and freshness_score <= freshness_threshold) {
+  if (freshness_score >= 0.0 && freshness_score <= freshness_threshold) {
     new_freshness_score = 1.0;
   }
   return new_freshness_score;
@@ -129,7 +118,7 @@ AndroidHomeModuleRanker::GetModelConfig() {
 
   // Set output config.
   writer.AddOutputConfigForMultiClassClassifier(kAndroidHomeModuleLabels,
-                                                kAndroidHomeModuleLabels.size(),
+                                                kLabelsCount,
                                                 /*threshold=*/-99999.0);
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{},
@@ -138,13 +127,13 @@ AndroidHomeModuleRanker::GetModelConfig() {
   writer.SetIgnorePreviousModelTTLInOutputConfig();
 
   // Set features.
-  writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
-
   if (is_android_home_module_ranker_v2_enabled) {
-    // Add freshness for all modules as custom input.
-    writer.AddFromInputContext("single_tab_input", kSingleTabFreshness);
-    writer.AddFromInputContext("price_change_input", kPriceChangeFreshness);
-    writer.AddFromInputContext("safety_hub_input", kSafetyHubFreshness);
+    writer.AddFeatures(kUMAFeatures);
+  } else {
+    // When V2 is disabled, only add the UMA features.
+    base::span<const MetadataWriter::Feature> all_features(kUMAFeatures);
+    writer.AddFeatures(all_features.subspan(
+        0u, static_cast<unsigned>(kSingleTabFreshnessIdx)));
   }
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
@@ -154,10 +143,10 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  size_t expected_input_size =
-      is_android_home_module_ranker_v2_enabled
-          ? kUMAFeatures.size() + kAndroidHomeModuleInputContextKeys.size()
-          : kUMAFeatures.size();
+  size_t expected_input_size = is_android_home_module_ranker_v2_enabled
+                                   ? kCount
+                                   : kSingleTabFreshnessIdx;
+
   if (inputs.size() != expected_input_size) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
@@ -167,42 +156,45 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   // Add logic here.
   // Single Tab score calculation.
   float single_tab_weights[3] = {1.5, -0.5, 1.0};
-  float single_tab_engagement = inputs[0];
-  float single_tab_impression = inputs[1];
-  float single_tab_freshness = is_android_home_module_ranker_v2_enabled
-                                   ? TransformFreshness(inputs[6], 1.0)
-                                   : 0.0;
+  float single_tab_engagement = inputs[kSingleTabClickIdx];
+  float single_tab_impression = inputs[kSingleTabImpressionIdx];
+  float single_tab_freshness =
+      is_android_home_module_ranker_v2_enabled
+          ? TransformFreshness(inputs[kSingleTabFreshnessIdx], 1.0)
+          : 0.0;
   float single_tab_score = single_tab_weights[0] * single_tab_engagement +
                            single_tab_weights[1] * single_tab_impression +
                            single_tab_weights[2] * single_tab_freshness;
 
   // Price Change score calculation.
   float price_change_weights[3] = {2.0, -1.0, 2.0};
-  float price_change_engagement = inputs[2];
-  float price_change_impression = inputs[3];
-  float price_change_freshness = is_android_home_module_ranker_v2_enabled
-                                     ? TransformFreshness(inputs[7], 1.0)
-                                     : 0.0;
+  float price_change_engagement = inputs[kPriceChangeClickIdx];
+  float price_change_impression = inputs[kPriceChangeImpressionIdx];
+  float price_change_freshness =
+      is_android_home_module_ranker_v2_enabled
+          ? TransformFreshness(inputs[kPriceChangeFreshnessIdx], 1.0)
+          : 0.0;
   float price_change_score = price_change_weights[0] * price_change_engagement +
                              price_change_weights[1] * price_change_impression +
                              price_change_weights[2] * price_change_freshness;
 
   // Safety Hub score calculation.
   float safety_hub_weights[3] = {2.5, -2, 2.5};
-  float safety_hub_engagement = inputs[4];
-  float safety_hub_impression = inputs[5];
-  float safety_hub_freshness = is_android_home_module_ranker_v2_enabled
-                                   ? TransformFreshness(inputs[8], 1.0)
-                                   : 0.0;
+  float safety_hub_engagement = inputs[kSafetyHubClickIdx];
+  float safety_hub_impression = inputs[kSafetyHubImpressionIdx];
+  float safety_hub_freshness =
+      is_android_home_module_ranker_v2_enabled
+          ? TransformFreshness(inputs[kSafetyHubFreshnessIdx], 1.0)
+          : 0.0;
   float safety_hub_score = safety_hub_weights[0] * safety_hub_engagement +
                            safety_hub_weights[1] * safety_hub_impression +
                            safety_hub_weights[2] * safety_hub_freshness;
 
-  ModelProvider::Response response(kAndroidHomeModuleLabels.size(), 0);
+  ModelProvider::Response response(kLabelsCount, 0);
   // Default ranking
-  response[0] = price_change_score;    // Price Change
-  response[1] = single_tab_score;      // Single tab
-  response[2] = safety_hub_score;      // Safety Hub
+  response[kPriceChangeIdx] = price_change_score;
+  response[kSingleTabIdx] = single_tab_score;
+  response[kSafetyHubIdx] = safety_hub_score;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
