@@ -4,6 +4,7 @@
 
 module ip_protection.mojom;
 
+import "components/ip_protection/mojom/core_test.mojom";
 import "components/ip_protection/mojom/data_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -21,20 +22,8 @@ interface CoreControl {
   // browser has changed.
   SetIpProtectionEnabled(bool value);
 
-  // Testing support.
-  VerifyIpProtectionCoreHostForTesting()
-      => (BlindSignedAuthToken? bsa_token,
-          mojo_base.mojom.Time? try_again_after);
-
-  // Check whether IP Protection is enabled in the core, for testing.
-  IsIpProtectionEnabledForTesting() => (bool value);
-
-  // Gets a token from the cache for the given proxy layer and geo.
-  // Specifying the geo allows tests to validate cache contents even if the
-  // current geo has not yet been detected (i.e. the proxy config has not been
-  // fetched).
-  GetAuthTokenForTesting(ProxyLayer proxy_layer, string geo_id)
-      => (BlindSignedAuthToken? token);
+  // Binds the test interface for this CoreControl.
+  BindTestInterfaceForTesting(pending_receiver<CoreControlTest> receiver);
 };
 
 // Host (browser) support for the IP Protection core.

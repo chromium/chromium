@@ -8,6 +8,7 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "core.mojom",
+    "core_test.mojom",
     "data_types.mojom",
   ]
 

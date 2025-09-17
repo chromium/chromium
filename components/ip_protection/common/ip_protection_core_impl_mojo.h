@@ -15,8 +15,10 @@
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/mojom/core.mojom.h"
+#include "components/ip_protection/mojom/core_test.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ip_protection {
 
@@ -27,7 +29,8 @@ class ProbabilisticRevealTokenRegistry;
 // The Mojo implementation of IpProtectionCore, providing methods for CoreHost
 // to call on the core, and supporting initialization.
 class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
-                                 public ip_protection::mojom::CoreControl {
+                                 public ip_protection::mojom::CoreControl,
+                                 public ip_protection::mojom::CoreControlTest {
  public:
   // If `core_host_remote` is null, no tokens or proxy config will be provided.
   IpProtectionCoreImplMojo(
@@ -55,18 +58,23 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       bool ip_protection_incognito);
 
   // `CoreControl` implementation.
-  void VerifyIpProtectionCoreHostForTesting(
-      ip_protection::mojom::CoreControl::
-          VerifyIpProtectionCoreHostForTestingCallback callback) override;
   void AuthTokensMayBeAvailable() override;
   void SetIpProtectionEnabled(bool enabled) override;
+  void BindTestInterfaceForTesting(
+      mojo::PendingReceiver<ip_protection::mojom::CoreControlTest> receiver)
+      override;
+
+  // `CoreControlTest` implementation.
+  void VerifyIpProtectionCoreHostForTesting(
+      ip_protection::mojom::CoreControlTest::
+          VerifyIpProtectionCoreHostForTestingCallback callback) override;
   void IsIpProtectionEnabledForTesting(
-      ip_protection::mojom::CoreControl::IsIpProtectionEnabledForTestingCallback
-          callback) override;
+      ip_protection::mojom::CoreControlTest::
+          IsIpProtectionEnabledForTestingCallback callback) override;
   void GetAuthTokenForTesting(
       ProxyLayer proxy_layer,
       const std::string& geo_id,
-      ip_protection::mojom::CoreControl::GetAuthTokenForTestingCallback
+      ip_protection::mojom::CoreControlTest::GetAuthTokenForTestingCallback
           callback) override;
 
  private:
@@ -85,6 +93,8 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       VerifyIpProtectionCoreHostForTestingCallback callback);
 
   const mojo::Receiver<ip_protection::mojom::CoreControl> receiver_;
+  mojo::ReceiverSet<ip_protection::mojom::CoreControlTest>
+      test_receivers_for_testing_;
 
   base::WeakPtrFactory<IpProtectionCoreImplMojo> weak_ptr_factory_{this};
 };

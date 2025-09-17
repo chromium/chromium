@@ -138,8 +138,13 @@ IpProtectionCoreImplMojo IpProtectionCoreImplMojo::CreateForTesting(
       is_ip_protection_enabled, ip_protection_incognito);
 }
 
+void IpProtectionCoreImplMojo::BindTestInterfaceForTesting(
+    mojo::PendingReceiver<ip_protection::mojom::CoreControlTest> receiver) {
+  test_receivers_for_testing_.Add(this, std::move(receiver));
+}
+
 void IpProtectionCoreImplMojo::VerifyIpProtectionCoreHostForTesting(
-    ip_protection::mojom::CoreControl::
+    ip_protection::mojom::CoreControlTest::
         VerifyIpProtectionCoreHostForTestingCallback callback) {
   auto* ipp_token_manager_impl = static_cast<IpProtectionTokenManagerImpl*>(
       GetIpProtectionTokenManagerForTesting(  // IN-TEST
@@ -206,15 +211,15 @@ void IpProtectionCoreImplMojo::SetIpProtectionEnabled(bool enabled) {
 }
 
 void IpProtectionCoreImplMojo::IsIpProtectionEnabledForTesting(
-    ip_protection::mojom::CoreControl::IsIpProtectionEnabledForTestingCallback
-        callback) {
+    ip_protection::mojom::CoreControlTest::
+        IsIpProtectionEnabledForTestingCallback callback) {
   std::move(callback).Run(is_ip_protection_enabled());
 }
 
 void IpProtectionCoreImplMojo::GetAuthTokenForTesting(
     ProxyLayer proxy_layer,
     const std::string& geo_id,
-    ip_protection::mojom::CoreControl::GetAuthTokenForTestingCallback
+    ip_protection::mojom::CoreControlTest::GetAuthTokenForTestingCallback
         callback) {
   std::move(callback).Run(
       IpProtectionCoreImpl::GetAuthTokenForTesting(proxy_layer, geo_id));
