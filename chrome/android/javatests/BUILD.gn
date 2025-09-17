@@ -569,6 +569,15 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
 }
 
 android_library(
+    "chrome_test_java_org.chromium.chrome.browser.browser_controls") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [ "src/org/chromium/chrome/browser/browser_controls/BrowserControlsPTTest.java" ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library(
     "chrome_test_java_org.chromium.chrome.browser.browserservices") {
   resources_package = "org.chromium.chrome.test"
 

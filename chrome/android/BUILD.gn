@@ -1346,6 +1346,7 @@ if (_is_default_toolchain) {
       "javatests:chrome_test_java_org.chromium.chrome.browser.appearance",
       "javatests:chrome_test_java_org.chromium.chrome.browser.autofill",
       "javatests:chrome_test_java_org.chromium.chrome.browser.bookmarkswidget",
+      "javatests:chrome_test_java_org.chromium.chrome.browser.browser_controls",
       "javatests:chrome_test_java_org.chromium.chrome.browser.browserservices",
       "javatests:chrome_test_java_org.chromium.chrome.browser.browsing_data",
       "javatests:chrome_test_java_org.chromium.chrome.browser.collaboration",
