@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 
 #include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -120,7 +121,15 @@ LensSearchController* LensSearchController::FromWebUIWebContents(
 // static.
 LensSearchController* LensSearchController::FromTabWebContents(
     content::WebContents* tab_web_contents) {
-  return From(tabs::TabInterface::GetFromContents(tab_web_contents));
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(tab_web_contents);
+  if (!tab) {
+    // TODO(crbug.com/444404134): Instead of calling MaybeGetFromContents(),
+    // callers should be ensuring that the web contents is a tab. Dump to try to
+    // identify when it is not.
+    base::debug::DumpWithoutCrashing();
+  }
+  return From(tab);
 }
 
 void LensSearchController::OpenLensOverlay(
