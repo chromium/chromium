@@ -271,22 +271,26 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     /**
-     * Called when the {@code url} should be opened in the other window with the same incognito
-     * state as the current page.
+     * Opens a URL in another window with the specified incognito state.
      *
      * @param url The URL to open.
+     * @param referrer The referrer to use when opening the URL.
+     * @param incognito Whether the other window should be incognito.
      */
-    public void onOpenInOtherWindow(GURL url, @Nullable Referrer referrer) {
-        ChromeAsyncTabLauncher chromeAsyncTabLauncher =
-                new ChromeAsyncTabLauncher(mTab.isIncognito());
+    public void openInOtherWindow(GURL url, @Nullable Referrer referrer, boolean incognito) {
+        ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(incognito);
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
         Activity activity = TabUtils.getActivity(mTab);
+        assumeNonNull(activity);
+        Activity otherWindowActivity =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? MultiWindowUtils.getForegroundWindowActivityWithProfileType(
+                                activity, incognito)
+                        : MultiWindowUtils.getForegroundWindowActivity(activity);
+
         chromeAsyncTabLauncher.launchTabInOtherWindow(
-                loadUrlParams,
-                assumeNonNull(activity),
-                mTab.getParentId(),
-                MultiWindowUtils.getForegroundWindowActivity(activity));
+                loadUrlParams, activity, mTab.getParentId(), otherWindowActivity);
     }
 
     /**
@@ -347,24 +351,6 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 TabLaunchType.FROM_LONGPRESS_FOREGROUND,
                 mTab,
                 true);
-    }
-
-    /**
-     * Called when the {@code url} should be opened in an incognito window.
-     *
-     * @param url The URL to open.
-     */
-    public void onOpenInIncognitoWindow(GURL url) {
-        ChromeAsyncTabLauncher incognitoLauncher =
-                new ChromeAsyncTabLauncher(/* incognito= */ true);
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
-        Activity activity = TabUtils.getActivity(mTab);
-        incognitoLauncher.launchTabInOtherWindow(
-                loadUrlParams,
-                assumeNonNull(activity),
-                mTab.getParentId(),
-                MultiWindowUtils.getForegroundWindowActivityWithProfileType(
-                        activity, /* incognito= */ true));
     }
 
     @Override
