@@ -23,30 +23,6 @@
 
 namespace viz {
 
-namespace {
-
-// matches usage from
-// `SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia()`
-constexpr gpu::SharedImageUsageSet kDefaultSharedImageUsage =
-    gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-    gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
-
-// Translate `CopyOutputResult::Format to `SharedImageFormat`
-SharedImageFormat GetSharedImageFormatFor(CopyOutputResult::Format format) {
-  switch (format) {
-    case CopyOutputResult::Format::RGBA:
-      return SinglePlaneFormat::kRGBA_8888;
-    case CopyOutputResult::Format::RGBAF16:
-      return SinglePlaneFormat::kRGBA_F16;
-    case CopyOutputResult::Format::I420_PLANES:
-      return MultiPlaneFormat::kI420;
-    case CopyOutputResult::Format::NV12:
-      return MultiPlaneFormat::kNV12;
-  }
-}
-
-}  // namespace
-
 CopyOutputResult::CopyOutputResult(Format format,
                                    Destination destination,
                                    const gfx::Rect& rect,
@@ -351,6 +327,20 @@ SkBitmap CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmap() const {
     bitmap.readPixels(bitmap_copy.pixmap(), 0, 0);
   }
   return bitmap_copy;
+}
+
+VIZ_COMMON_EXPORT SharedImageFormat
+GetSharedImageFormatFor(CopyOutputResult::Format format) {
+  switch (format) {
+    case CopyOutputResult::Format::RGBA:
+      return SinglePlaneFormat::kRGBA_8888;
+    case CopyOutputResult::Format::RGBAF16:
+      return SinglePlaneFormat::kRGBA_F16;
+    case CopyOutputResult::Format::I420_PLANES:
+      return MultiPlaneFormat::kI420;
+    case CopyOutputResult::Format::NV12:
+      return MultiPlaneFormat::kNV12;
+  }
 }
 
 }  // namespace viz

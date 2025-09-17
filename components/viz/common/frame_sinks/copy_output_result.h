@@ -73,6 +73,16 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // Maximum number of planes allowed when returning software NV12 results.
   static constexpr size_t kNV12MaxPlanes = 2;
 
+  // Defines the default usage for shared images which are the destination of a
+  // `CopyOutputRequest`. Since these shared images will eventually make it back
+  // to the client that issued that request, the usage here needs to capture the
+  // variety of clients' eventual allowed usages. Note that CopyOutputRequests
+  // are not writable via raster (by contract).
+  static constexpr gpu::SharedImageUsageSet kDefaultSharedImageUsage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+
   CopyOutputResult(Format format,
                    Destination destination,
                    const gfx::Rect& rect,
@@ -300,6 +310,10 @@ class VIZ_COMMON_EXPORT CopyOutputResult::ScopedSkBitmap {
 
   THREAD_CHECKER(thread_checker_);
 };
+
+// Translate `CopyOutputResult::Format` to `SharedImageFormat`
+VIZ_COMMON_EXPORT SharedImageFormat
+GetSharedImageFormatFor(CopyOutputResult::Format format);
 
 }  // namespace viz
 

@@ -33,8 +33,11 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/frame_sinks/blit_request.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/debugger/viz_debugger.h"
@@ -65,8 +68,10 @@
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/skia_trace_memory_dump_impl.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
@@ -1037,6 +1042,41 @@ void SkiaOutputSurfaceImpl::CopyOutput(
     const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  ReleaseCallback release_callback = {};
+
+  // Set up a new blit request with a shared image for the copy if one can be
+  // created but does not already exist.
+  if (!request->has_blit_request() &&
+      request->result_destination() ==
+          CopyOutputRequest::ResultDestination::kSharedImage) {
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        shared_image_interface_->CreateSharedImage(
+            gpu::SharedImageInfo{
+                GetSharedImageFormatFor(request->result_format()),
+                geometry.result_selection.size(), color_space,
+                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                CopyOutputResult::kDefaultSharedImageUsage, "CopyOutput"},
+            gpu::kNullSurfaceHandle);
+
+    // Set up deletion callback for new shared image.
+    release_callback = base::BindOnce(
+        [](scoped_refptr<gpu::ClientSharedImage> client_shared_image,
+           const gpu::SyncToken& destruction_sync_token, bool) {
+          client_shared_image->UpdateDestructionSyncToken(
+              destruction_sync_token);
+        },
+        shared_image);
+
+    // Ensure result selection exists and matches expected output.
+    request->set_result_selection(geometry.result_selection);
+
+    const gpu::SyncToken& sync_token = shared_image->creation_sync_token();
+    request->set_blit_request(
+        BlitRequest{gfx::Point{}, LetterboxingBehavior::kDoNotLetterbox,
+                    std::move(shared_image), sync_token,
+                    /*populates_gpu_memory_buffer=*/false});
+  }
+
   if (request->has_blit_request()) {
     const auto& sync_token = request->blit_request().sync_token();
     if (sync_token.HasData()) {
@@ -1046,7 +1086,8 @@ void SkiaOutputSurfaceImpl::CopyOutput(
 
   auto callback = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CopyOutput,
                                  base::Unretained(impl_on_gpu_.get()), geometry,
-                                 color_space, std::move(request), mailbox);
+                                 color_space, std::move(request), mailbox,
+                                 std::move(release_callback));
   EnqueueGpuTask(std::move(callback), std::move(resource_sync_tokens_),
                  /*make_current=*/true, /*need_framebuffer=*/mailbox.IsZero());
 }
