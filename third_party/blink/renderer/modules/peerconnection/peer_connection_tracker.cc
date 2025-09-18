@@ -866,38 +866,32 @@ void PeerConnectionTracker::TrackCreateDataChannel(
   if (id == -1)
     return;
   // See https://w3c.github.io/webrtc-pc/#dom-rtcdatachannelinit
-  StringBuilder result;
-  result.Append("label: ");
-  result.Append(String::FromUTF8(data_channel->label()));
-  result.Append(", ordered: ");
-  result.Append(String::Boolean(data_channel->ordered()));
+  auto json = std::make_unique<JSONObject>();
+  json->SetString("label", String::FromUTF8(data_channel->label()));
+  json->SetBoolean("ordered", data_channel->ordered());
   std::optional<uint16_t> maxPacketLifeTime = data_channel->maxPacketLifeTime();
   if (maxPacketLifeTime.has_value()) {
-    result.Append(", maxPacketLifeTime: ");
-    result.Append(String::Number(*maxPacketLifeTime));
+    json->SetInteger("maxPacketLifeTime", *maxPacketLifeTime);
   }
   std::optional<uint16_t> maxRetransmits = data_channel->maxRetransmitsOpt();
   if (maxRetransmits.has_value()) {
-    result.Append(", maxRetransmits: ");
-    result.Append(String::Number(*maxRetransmits));
+    json->SetInteger("maxRetransmits", *maxRetransmits);
   }
   if (!data_channel->protocol().empty()) {
-    result.Append(", protocol: \"");
-    result.Append(String::FromUTF8(data_channel->protocol()));
-    result.Append("\"");
+    json->SetString("protocol", String::FromUTF8(data_channel->protocol()));
   }
   bool negotiated = data_channel->negotiated();
-  result.Append(", negotiated: ");
-  result.Append(String::Boolean(negotiated));
   if (negotiated) {
-    result.Append(", id: ");
-    result.Append(String::Number(data_channel->id()));
+    json->SetBoolean("negotiated", true);
+    json->SetInteger("id", data_channel->id());
   }
   // TODO(crbug.com/1455847): add priority
   // https://w3c.github.io/webrtc-priority/#new-rtcdatachannelinit-member
+  StringBuilder value;
+  json->WriteJSON(&value);
   SendPeerConnectionUpdate(
       id, source == kSourceLocal ? "createDataChannel" : "datachannel",
-      result.ToString());
+      value.ToString());
 }
 
 void PeerConnectionTracker::TrackClose(RTCPeerConnectionHandler* pc_handler) {
