@@ -16,6 +16,7 @@
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/data_sharing/public/data_sharing_service.h"
+#import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
@@ -162,8 +163,15 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
           _messagingBackendServiceBridge.get());
       [self fetchMessages];
     }
-
-    BOOL shareAvailable = _shareKitService && _shareKitService->IsSupported();
+    // Share not available if:
+    // ShareKitService is not supported or available
+    // version is out of date and no UI should be shown
+    BOOL shareAvailable =
+        _shareKitService && _shareKitService->IsSupported() &&
+        (!base::FeatureList::IsEnabled(
+             data_sharing::features::kSharedDataTypesKillSwitch) ||
+         base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingEnableUpdateChromeUI));
     [_groupConsumer setShareAvailable:shareAvailable];
     [self updateFacePileUI];
     [self updateTabGroupSharingState];
