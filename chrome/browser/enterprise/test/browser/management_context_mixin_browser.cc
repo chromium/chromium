@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/test/browser/management_context_mixin_browser.h"
 
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -22,7 +23,7 @@ namespace enterprise::test {
 
 ManagementContextMixinBrowser::ManagementContextMixinBrowser(
     InProcessBrowserTestMixinHost* host,
-    InProcessBrowserTest* test_base,
+    PlatformBrowserTest* test_base,
     ManagementContext management_context)
     : ManagementContextMixin(host, test_base, std::move(management_context)) {
   // Fake the OS' device ID.
@@ -44,8 +45,7 @@ void ManagementContextMixinBrowser::ManageCloudUser() {
   policy_data->set_request_token(kProfileDmToken);
   policy_data->set_device_id(kProfileClientId);
 
-  browser()
-      ->profile()
+  profile()
       ->GetCloudPolicyManager()
       ->core()
       ->store()
@@ -55,13 +55,14 @@ void ManagementContextMixinBrowser::ManageCloudUser() {
   client->SetDMToken(kProfileDmToken);
   client->SetClientId(kProfileClientId);
 
-  browser()->profile()->GetCloudPolicyManager()->Connect(
-      g_browser_process->local_state(), std::move(client));
+  profile()->GetCloudPolicyManager()->Connect(g_browser_process->local_state(),
+                                              std::move(client));
 }
 
 void ManagementContextMixinBrowser::SetUpOnMainThread() {
   ManagementContextMixin::SetUpOnMainThread();
 
+#if !BUILDFLAG(IS_ANDROID)
   if (management_context_.is_cloud_machine_managed) {
     auto browser_policy_data =
         std::make_unique<enterprise_management::PolicyData>();
@@ -74,6 +75,7 @@ void ManagementContextMixinBrowser::SetUpOnMainThread() {
     browser_policy_manager->core()->store()->set_policy_data_for_testing(
         std::move(browser_policy_data));
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (management_context_.is_cloud_user_managed) {
     ManageCloudUser();

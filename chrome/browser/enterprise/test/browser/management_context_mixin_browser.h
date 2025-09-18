@@ -21,7 +21,7 @@ namespace enterprise::test {
 class ManagementContextMixinBrowser : public ManagementContextMixin {
  public:
   ManagementContextMixinBrowser(InProcessBrowserTestMixinHost* host,
-                                InProcessBrowserTest* test_base,
+                                PlatformBrowserTest* test_base,
                                 ManagementContext management_context);
 
   ManagementContextMixinBrowser(const ManagementContextMixinBrowser&) = delete;

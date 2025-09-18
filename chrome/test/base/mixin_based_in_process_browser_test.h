@@ -220,4 +220,10 @@ extern template class InProcessBrowserTestMixinHostSupport<
     InProcessBrowserTest>;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+using MixinBasedPlatformBrowserTest = MixinBasedAndroidBrowserTest;
+#else
+using MixinBasedPlatformBrowserTest = MixinBasedInProcessBrowserTest;
+#endif
+
 #endif  // CHROME_TEST_BASE_MIXIN_BASED_IN_PROCESS_BROWSER_TEST_H_

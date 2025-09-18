@@ -13,14 +13,14 @@
 #include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 
 namespace enterprise::test {
 
 ManagementContextMixinAsh::ManagementContextMixinAsh(
     InProcessBrowserTestMixinHost* host,
-    InProcessBrowserTest* test_base,
+    PlatformBrowserTest* test_base,
     ManagementContext management_context)
     : ManagementContextMixin(host, test_base, std::move(management_context)),
       device_state_mixin_(
@@ -50,8 +50,7 @@ ManagementContextMixinAsh::RequestDevicePolicyUpdate() {
 
 void ManagementContextMixinAsh::ManageCloudUser() {
   ManagementContextMixin::ManageCloudUser();
-  auto* profile_policy_manager =
-      browser()->profile()->GetUserCloudPolicyManagerAsh();
+  auto* profile_policy_manager = profile()->GetUserCloudPolicyManagerAsh();
   profile_policy_manager->core()->client()->SetupRegistration(
       kProfileDmToken, kProfileClientId, {});
   profile_policy_manager->core()->store()->set_policy_data_for_testing(

@@ -5,6 +5,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -13,11 +14,9 @@
 #include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
@@ -28,6 +27,7 @@
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,7 +49,7 @@ struct CapturedRequest {
 
 }  // namespace
 
-class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
+class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
                                      public testing::WithParamInterface<bool> {
  protected:
   ClientCertificateBrowserTest() : scoped_key_converter_(true) {
@@ -60,6 +60,12 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
             .is_cloud_machine_managed = !is_profile_scenario(),
             .affiliated = false,
         });
+
+#if BUILDFLAG(IS_ANDROID)
+    scoped_feature_list_.InitAndEnableFeature(
+        client_certificates::features::
+            kEnableClientCertificateProvisioningOnAndroid);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void SetUp() override {
@@ -72,7 +78,7 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
     embedded_https_test_server().SetSSLConfig(server_cert_config, ssl_config);
 
     CHECK(embedded_https_test_server().InitializeAndListen());
-    MixinBasedInProcessBrowserTest::SetUp();
+    MixinBasedPlatformBrowserTest::SetUp();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -90,7 +96,7 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
     command_line->AppendSwitchASCII(policy::switches::kDeviceManagementUrl,
                                     test_dm_server_->GetServiceURL().spec());
 
-    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    MixinBasedPlatformBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   void SetUpOnMainThread() override {
@@ -100,7 +106,7 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
 
     embedded_https_test_server().StartAcceptingConnections();
 
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    MixinBasedPlatformBrowserTest::SetUpOnMainThread();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -169,8 +175,7 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
     if (is_profile_scenario()) {
       SetUserPolicy(true);
       provisioning_service =
-          CertificateProvisioningServiceFactory::GetForProfile(
-              browser()->profile());
+          CertificateProvisioningServiceFactory::GetForProfile(GetProfile());
     } else {
       SetBrowserPolicy(true);
       provisioning_service = g_browser_process->browser_policy_connector()
@@ -217,6 +222,7 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
   std::unique_ptr<policy::EmbeddedPolicyTestServer> test_dm_server_;
   client_certificates::ScopedSSLKeyConverter scoped_key_converter_;
   std::unique_ptr<ManagementContextMixin> management_mixin_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, CreateNewIdentity) {
@@ -229,6 +235,9 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, CreateNewIdentity) {
       true, 1);
 }
 
+// Temporarily disabled on Android due to PRE_ tests not being fully supported.
+// See crbug.com/40200835
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, PRE_LoadExistingIdentity) {
   EnablePolicyAndWaitForIdentity();
 }
@@ -242,6 +251,7 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, LoadExistingIdentity) {
           is_profile_scenario() ? "Profile" : "Browser"),
       true, 1);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, UseIdentityInMtls) {
   // Enable the necessary policies and trigger a navigation.
@@ -252,8 +262,8 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, UseIdentityInMtls) {
     SetBrowserPolicy(true);
   }
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this),
       embedded_https_test_server().GetURL("mtls.google.com", "/mtls")));
 
   ASSERT_TRUE(captured_request_);

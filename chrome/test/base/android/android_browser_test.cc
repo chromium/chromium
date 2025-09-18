@@ -28,6 +28,8 @@ AndroidBrowserTest::AndroidBrowserTest() {
   // which sometimes need it. So just override it.
   chrome_test_utils::OverrideChromeTestDataDir();
 
+  InitializeHTTPSTestServer();
+
   CreateTestServer(base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Allow unpacked extensions without developer mode for testing.
@@ -57,7 +59,6 @@ void AndroidBrowserTest::SetUp() {
   SetUpDefaultCommandLine(command_line);
   ASSERT_TRUE(test_launcher_utils::CreateUserDataDir(&temp_user_data_dir_));
 
-  InitializeHTTPSTestServer();
   embedded_https_test_server().AddDefaultHandlers(GetChromeTestDataDir());
 
   ASSERT_TRUE(SetUpUserDataDirectory());

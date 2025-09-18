@@ -26,7 +26,7 @@ namespace enterprise::test {
 // static
 std::unique_ptr<ManagementContextMixin> ManagementContextMixin::Create(
     InProcessBrowserTestMixinHost* host,
-    InProcessBrowserTest* test_base,
+    PlatformBrowserTest* test_base,
     ManagementContext management_context) {
 #if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ManagementContextMixinAsh>(
@@ -39,7 +39,7 @@ std::unique_ptr<ManagementContextMixin> ManagementContextMixin::Create(
 
 ManagementContextMixin::ManagementContextMixin(
     InProcessBrowserTestMixinHost* host,
-    InProcessBrowserTest* test_base,
+    PlatformBrowserTest* test_base,
     ManagementContext management_context)
     : InProcessBrowserTestMixin(host),
       test_base_(test_base),

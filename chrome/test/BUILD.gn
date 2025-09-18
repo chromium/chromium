@@ -1764,6 +1764,16 @@ source_set("platform_browser_tests") {
     }
   }
 
+  if (enterprise_client_certificates) {
+    sources += [ "../browser/enterprise/client_certificates/client_certificates_browsertest.cc" ]
+
+    deps += [
+      "//chrome/browser/enterprise/test:test_support",
+      "//components/enterprise",
+      "//components/enterprise/client_certificates/core:test_support",
+    ]
+  }
+
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
@@ -4820,13 +4830,6 @@ if (!is_android) {
           "//components/device_signals/test:test_support",
           "//components/enterprise/connectors/core",
         ]
-      }
-
-      if (enterprise_client_certificates) {
-        sources += [ "../browser/enterprise/client_certificates/client_certificates_browsertest.cc" ]
-
-        deps +=
-            [ "//components/enterprise/client_certificates/core:test_support" ]
       }
 
       if (is_win || is_linux || is_mac) {
