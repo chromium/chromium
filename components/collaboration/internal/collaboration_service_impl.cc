@@ -365,29 +365,33 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
   syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
   // The mapping between the selected type and what is actually sync'ed is done
   // in `GetUserSelectableTypeInfo()`.
+  constexpr syncer::UserSelectableTypeSet kRequiredTypes =
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  bool sync_types_disabled_policy =
-      user_settings->IsTypeManagedByPolicy(syncer::UserSelectableType::kTabs) ||
-      user_settings->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kHistory);
-  if (sync_types_disabled_policy ||
+      {syncer::UserSelectableType::kTabs, syncer::UserSelectableType::kHistory};
+#else
+      {syncer::UserSelectableType::kSavedTabGroups};
+#endif
+
+  // Note: Policy checking is only required for mobile here. On desktop, it's
+  // already handled in `CollaborationController`.
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  bool any_type_disabled_by_policy = false;
+  for (const syncer::UserSelectableType type : kRequiredTypes) {
+    if (user_settings->IsTypeManagedByPolicy(type)) {
+      any_type_disabled_by_policy = true;
+      break;
+    }
+  }
+  if (any_type_disabled_by_policy ||
       sync_service_->GetDisableReasons().Has(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     return SyncStatus::kSyncDisabledByEnterprise;
   }
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
-  syncer::UserSelectableTypeSet selected_types =
-      user_settings->GetSelectedTypes();
-  if (selected_types.Has(syncer::UserSelectableType::kTabs) &&
-      selected_types.Has(syncer::UserSelectableType::kHistory)) {
+  if (user_settings->GetSelectedTypes().HasAll(kRequiredTypes)) {
     return SyncStatus::kSyncEnabled;
   }
-#else
-  if (user_settings->GetSelectedTypes().HasAll(
-          {syncer::UserSelectableType::kSavedTabGroups})) {
-    return SyncStatus::kSyncEnabled;
-  }
-#endif
 
   // TODO(crbug.com/40066949): Simplify this code once all users are migrated
   // away from Sync-the-feature.
