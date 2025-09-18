@@ -34,11 +34,19 @@ void NativeThemeMobile::AdjustCheckboxRadioRectForPadding(SkRect* rect) const {
 SkColor NativeThemeMobile::GetControlColor(
     ControlColorId color_id,
     bool dark_mode,
+    PreferredContrast contrast,
     const ColorProvider* color_provider) const {
   // TODO(pkasting): Ensure the relevant bits of //ui/color/ are built on
   // Android, then have `WebThemeEngineAndroid::Paint()` pass a web-only
   // provider that provides the colors below, eliminating the need for this
   // override.
+  const auto maybe_add_alpha = [&](ControlColorId id) {
+    const SkColor color =
+        GetControlColor(id, dark_mode, contrast, color_provider);
+    return (dark_mode || contrast == PreferredContrast::kMore)
+               ? color
+               : SkColorSetA(color, 0x80);
+  };
   switch (color_id) {
     case kBorder:
       return dark_mode ? SkColorSetRGB(0x85, 0x85, 0x85)
@@ -99,6 +107,12 @@ SkColor NativeThemeMobile::GetControlColor(
     case kPressedSlider:
       return dark_mode ? SkColorSetRGB(0x61, 0xA9, 0xFF)
                        : SkColorSetRGB(0x37, 0x93, 0xFF);
+    case kSliderBorder:
+      return maybe_add_alpha(kBorder);
+    case kHoveredSliderBorder:
+      return maybe_add_alpha(kHoveredBorder);
+    case kPressedSliderBorder:
+      return maybe_add_alpha(kPressedBorder);
     case kAutoCompleteBackground:
       return dark_mode ? SkColorSetARGB(0x66, 0x46, 0x5A, 0x7E)
                        : SkColorSetRGB(0xE8, 0xF0, 0xFE);

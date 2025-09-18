@@ -188,28 +188,29 @@ void NativeThemeAura::PaintArrowButton(
     bool dark_mode,
     PreferredContrast contrast,
     const ScrollbarArrowExtraParams& extra_params) const {
-  SkColor bg_color =
-      GetControlColor(kScrollbarArrowBackground, dark_mode, color_provider);
+  SkColor bg_color = GetControlColor(kScrollbarArrowBackground, dark_mode,
+                                     contrast, color_provider);
   // Aura-win uses slightly different arrow colors.
   SkColor arrow_color = gfx::kPlaceholderColor;
   switch (state) {
     case kDisabled:
-      arrow_color = GetArrowColor(state, dark_mode, color_provider);
+      arrow_color = GetArrowColor(state, dark_mode, contrast, color_provider);
       break;
     case kHovered:
       bg_color = GetControlColor(kScrollbarArrowBackgroundHovered, dark_mode,
-                                 color_provider);
-      arrow_color =
-          GetControlColor(kScrollbarArrowHovered, dark_mode, color_provider);
+                                 contrast, color_provider);
+      arrow_color = GetControlColor(kScrollbarArrowHovered, dark_mode, contrast,
+                                    color_provider);
       break;
     case kNormal:
-      arrow_color = GetControlColor(kScrollbarArrow, dark_mode, color_provider);
+      arrow_color =
+          GetControlColor(kScrollbarArrow, dark_mode, contrast, color_provider);
       break;
     case kPressed:
       bg_color = GetControlColor(kScrollbarArrowBackgroundPressed, dark_mode,
-                                 color_provider);
-      arrow_color =
-          GetControlColor(kScrollbarArrowPressed, dark_mode, color_provider);
+                                 contrast, color_provider);
+      arrow_color = GetControlColor(kScrollbarArrowPressed, dark_mode, contrast,
+                                    color_provider);
       break;
     case kNumStates:
       break;
@@ -328,7 +329,7 @@ void NativeThemeAura::PaintScrollbarTrack(
 
   cc::PaintFlags flags;
   flags.setColor(extra_params.track_color.value_or(
-      GetControlColor(kScrollbarTrack, {}, color_provider)));
+      GetControlColor(kScrollbarTrack, {}, {}, color_provider)));
   canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
 }
 
@@ -342,7 +343,7 @@ void NativeThemeAura::PaintScrollbarCorner(
 
   cc::PaintFlags flags;
   flags.setColor(extra_params.track_color.value_or(
-      GetControlColor(kScrollbarCornerControlColorId, {}, color_provider)));
+      GetControlColor(kScrollbarCornerControlColorId, {}, {}, color_provider)));
   canvas->drawIRect(RectToSkIRect(rect), flags);
 }
 

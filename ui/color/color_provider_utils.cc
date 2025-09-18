@@ -129,6 +129,12 @@ constexpr RendererColorIdTable kRendererColorIdMap[] = {
      kColorWebNativeControlScrollbarTrack},
     {RendererColorId::kColorWebNativeControlSlider,
      kColorWebNativeControlSlider},
+    {RendererColorId::kColorWebNativeControlSliderBorder,
+     kColorWebNativeControlSliderBorder},
+    {RendererColorId::kColorWebNativeControlSliderBorderHovered,
+     kColorWebNativeControlSliderBorderHovered},
+    {RendererColorId::kColorWebNativeControlSliderBorderPressed,
+     kColorWebNativeControlSliderBorderPressed},
     {RendererColorId::kColorWebNativeControlSliderDisabled,
      kColorWebNativeControlSliderDisabled},
     {RendererColorId::kColorWebNativeControlSliderHovered,
@@ -433,6 +439,9 @@ CreateEmulatedForcedColorsColorProviderForTest() {
       SkColorSetRGB(0x1A, 0xEB, 0xFF)};
   mixer[kColorWebNativeControlScrollbarTrack] = {SK_ColorWHITE};
   mixer[kColorWebNativeControlSlider] = {SK_ColorCYAN};
+  mixer[kColorWebNativeControlSliderBorder] = {SK_ColorWHITE};
+  mixer[kColorWebNativeControlSliderBorderHovered] = {SK_ColorWHITE};
+  mixer[kColorWebNativeControlSliderBorderPressed] = {SK_ColorWHITE};
   mixer[kColorWebNativeControlSliderDisabled] = {SK_ColorGREEN};
   mixer[kColorWebNativeControlSliderHovered] = {SK_ColorCYAN};
   mixer[kColorWebNativeControlSliderPressed] = {SK_ColorCYAN};
@@ -516,6 +525,9 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
       kColorCssSystemBtnText};
   mixer[kColorWebNativeControlScrollbarCorner] = {kColorCssSystemBtnFace};
   mixer[kColorWebNativeControlSlider] = {kColorCssSystemHighlight};
+  mixer[kColorWebNativeControlSliderBorder] = {kColorCssSystemBtnText};
+  mixer[kColorWebNativeControlSliderBorderHovered] = {kColorCssSystemBtnText};
+  mixer[kColorWebNativeControlSliderBorderPressed] = {kColorCssSystemBtnText};
   mixer[kColorWebNativeControlSliderDisabled] = {kColorCssSystemGrayText};
   mixer[kColorWebNativeControlSliderHovered] = {kColorCssSystemHighlight};
   mixer[kColorWebNativeControlSliderPressed] = {kColorCssSystemHighlight};
@@ -626,6 +638,11 @@ void COMPONENT_EXPORT(COLOR)
     mixer[kColorWebNativeControlScrollbarTrack] = {
         SkColorSetRGB(0x42, 0x42, 0x42)};
     mixer[kColorWebNativeControlSlider] = {SkColorSetRGB(0x99, 0xC8, 0xFF)};
+    mixer[kColorWebNativeControlSliderBorder] = {kColorWebNativeControlBorder};
+    mixer[kColorWebNativeControlSliderBorderHovered] = {
+        kColorWebNativeControlBorderHovered};
+    mixer[kColorWebNativeControlSliderBorderPressed] = {
+        kColorWebNativeControlBorderPressed};
     mixer[kColorWebNativeControlSliderDisabled] = {
         SkColorSetRGB(0x75, 0x75, 0x75)};
     mixer[kColorWebNativeControlSliderHovered] = {
@@ -701,6 +718,15 @@ void COMPONENT_EXPORT(COLOR)
     mixer[kColorWebNativeControlScrollbarTrack] = {
         SkColorSetRGB(0xF1, 0xF1, 0xF1)};
     mixer[kColorWebNativeControlSlider] = {SkColorSetRGB(0x00, 0x75, 0xFF)};
+    mixer[kColorWebNativeControlSliderBorder] =
+        high_contrast ? kColorWebNativeControlBorder
+                      : SetAlpha(kColorWebNativeControlBorder, 0x80);
+    mixer[kColorWebNativeControlSliderBorderHovered] =
+        high_contrast ? kColorWebNativeControlBorderHovered
+                      : SetAlpha(kColorWebNativeControlBorderHovered, 0x80);
+    mixer[kColorWebNativeControlSliderBorderPressed] =
+        high_contrast ? kColorWebNativeControlBorderPressed
+                      : SetAlpha(kColorWebNativeControlBorderPressed, 0x80);
     mixer[kColorWebNativeControlSliderDisabled] = {
         SkColorSetRGB(0xCB, 0xCB, 0xCB)};
     mixer[kColorWebNativeControlSliderHovered] = {

@@ -578,6 +578,9 @@
   E_CPONLY(kColorWebNativeControlScrollbarThumbPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarTrack) \
   E_CPONLY(kColorWebNativeControlSlider) \
+  E_CPONLY(kColorWebNativeControlSliderBorder) \
+  E_CPONLY(kColorWebNativeControlSliderBorderHovered) \
+  E_CPONLY(kColorWebNativeControlSliderBorderPressed) \
   E_CPONLY(kColorWebNativeControlSliderDisabled) \
   E_CPONLY(kColorWebNativeControlSliderHovered) \
   E_CPONLY(kColorWebNativeControlSliderPressed) \

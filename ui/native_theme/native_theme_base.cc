@@ -166,7 +166,7 @@ void NativeThemeBase::PaintImpl(cc::PaintCanvas* canvas,
     case kCheckbox:
       PaintCheckbox(canvas, color_provider, state, rect,
                     std::get<ButtonExtraParams>(extra_params), dark_mode,
-                    accent_color);
+                    contrast, accent_color);
       break;
 #if BUILDFLAG(IS_LINUX)
     case kFrameTopArea:
@@ -181,7 +181,8 @@ void NativeThemeBase::PaintImpl(cc::PaintCanvas* canvas,
       break;
     case kMenuList:
       PaintMenuList(canvas, color_provider, state, rect,
-                    std::get<MenuListExtraParams>(extra_params), dark_mode);
+                    std::get<MenuListExtraParams>(extra_params), dark_mode,
+                    contrast);
       break;
     case kMenuPopupBackground:
       PaintMenuPopupBackground(
@@ -203,11 +204,12 @@ void NativeThemeBase::PaintImpl(cc::PaintCanvas* canvas,
       break;
     case kPushButton:
       PaintButton(canvas, color_provider, state, rect,
-                  std::get<ButtonExtraParams>(extra_params), dark_mode);
+                  std::get<ButtonExtraParams>(extra_params), dark_mode,
+                  contrast);
       break;
     case kRadio:
       PaintRadio(canvas, color_provider, state, rect,
-                 std::get<ButtonExtraParams>(extra_params), dark_mode,
+                 std::get<ButtonExtraParams>(extra_params), dark_mode, contrast,
                  accent_color);
       break;
     case kScrollbarDownArrow:
@@ -247,11 +249,12 @@ void NativeThemeBase::PaintImpl(cc::PaintCanvas* canvas,
     case kSliderThumb:
       PaintSliderThumb(canvas, color_provider, state, rect,
                        std::get<SliderExtraParams>(extra_params), dark_mode,
-                       accent_color);
+                       contrast, accent_color);
       break;
     case kTextField:
       PaintTextField(canvas, color_provider, state, rect,
-                     std::get<TextFieldExtraParams>(extra_params), dark_mode);
+                     std::get<TextFieldExtraParams>(extra_params), dark_mode,
+                     contrast);
       break;
     case kTabPanelBackground:
     case kTrackbarThumb:
@@ -274,6 +277,7 @@ void NativeThemeBase::AdjustCheckboxRadioRectForPadding(SkRect* rect) const {
 SkColor NativeThemeBase::GetControlColor(
     ControlColorId color_id,
     bool dark_mode,
+    PreferredContrast contrast,
     const ColorProvider* color_provider) const {
   static constexpr auto kColorMap = base::MakeFixedFlatMap<ControlColorId,
                                                            ColorId>(
@@ -297,6 +301,9 @@ SkColor NativeThemeBase::GetControlColor(
        {kDisabledSlider, kColorWebNativeControlSliderDisabled},
        {kHoveredSlider, kColorWebNativeControlSliderHovered},
        {kPressedSlider, kColorWebNativeControlSliderPressed},
+       {kSliderBorder, kColorWebNativeControlSliderBorder},
+       {kHoveredSliderBorder, kColorWebNativeControlSliderBorderHovered},
+       {kPressedSliderBorder, kColorWebNativeControlSliderBorderPressed},
        {kAutoCompleteBackground, kColorWebNativeControlAutoCompleteBackground},
        {kScrollbarArrowBackground, kColorWebNativeControlScrollbarTrack},
        {kScrollbarArrowBackgroundHovered,
@@ -411,6 +418,7 @@ void NativeThemeBase::PaintScrollbarCorner(
 SkColor NativeThemeBase::GetArrowColor(
     State state,
     bool dark_mode,
+    PreferredContrast contrast,
     const ColorProvider* color_provider) const {
   if (state != kDisabled) {
     return dark_mode ? SK_ColorWHITE : SK_ColorBLACK;
@@ -422,9 +430,9 @@ SkColor NativeThemeBase::GetArrowColor(
       track_hsv);
 
   SkScalar thumb_hsv[3];
-  SkColorToHSV(
-      GetControlColor(kScrollbarThumbInactive, dark_mode, color_provider),
-      thumb_hsv);
+  SkColorToHSV(GetControlColor(kScrollbarThumbInactive, dark_mode, contrast,
+                               color_provider),
+               thumb_hsv);
 
   // GTK Theme engines have way too much control over the layout of the
   // scrollbar. We might be able to more closely approximate its look-and-feel,
@@ -468,57 +476,69 @@ SkColor NativeThemeBase::GetArrowColor(
 SkColor NativeThemeBase::ControlsAccentColorForState(
     State state,
     bool dark_mode,
+    PreferredContrast contrast,
     const ColorProvider* color_provider) const {
   static constexpr auto kAccentColors =
       std::to_array({kDisabledAccent, kHoveredAccent, kAccent, kPressedAccent});
-  return GetControlColor(kAccentColors[state], dark_mode, color_provider);
+  return GetControlColor(kAccentColors[state], dark_mode, contrast,
+                         color_provider);
 }
 
 SkColor NativeThemeBase::ControlsSliderColorForState(
     State state,
     bool dark_mode,
+    PreferredContrast contrast,
     const ColorProvider* color_provider) const {
   static constexpr auto kSliderColors =
       std::to_array({kDisabledSlider, kHoveredSlider, kSlider, kPressedSlider});
-  return GetControlColor(kSliderColors[state], dark_mode, color_provider);
+  return GetControlColor(kSliderColors[state], dark_mode, contrast,
+                         color_provider);
 }
 
 SkColor NativeThemeBase::ButtonBorderColorForState(
     State state,
     bool dark_mode,
+    PreferredContrast contrast,
     const ColorProvider* color_provider) const {
   static constexpr auto kButtonBorderColors =
       std::to_array({kButtonDisabledBorder, kButtonHoveredBorder, kButtonBorder,
                      kButtonPressedBorder});
-  return GetControlColor(kButtonBorderColors[state], dark_mode, color_provider);
+  return GetControlColor(kButtonBorderColors[state], dark_mode, contrast,
+                         color_provider);
 }
 
 SkColor NativeThemeBase::ButtonFillColorForState(
     State state,
     bool dark_mode,
+    PreferredContrast contrast,
     const ColorProvider* color_provider) const {
   static constexpr auto kButtonFillColors =
       std::to_array({kButtonDisabledFill, kButtonHoveredFill, kButtonFill,
                      kButtonPressedFill});
-  return GetControlColor(kButtonFillColors[state], dark_mode, color_provider);
+  return GetControlColor(kButtonFillColors[state], dark_mode, contrast,
+                         color_provider);
 }
 
 SkColor NativeThemeBase::ControlsBorderColorForState(
     State state,
     bool dark_mode,
+    PreferredContrast contrast,
     const ColorProvider* color_provider) const {
   static constexpr auto kBorderColors =
       std::to_array({kDisabledBorder, kHoveredBorder, kBorder, kPressedBorder});
-  return GetControlColor(kBorderColors[state], dark_mode, color_provider);
+  return GetControlColor(kBorderColors[state], dark_mode, contrast,
+                         color_provider);
 }
 
 SkColor NativeThemeBase::ControlsFillColorForState(
     State state,
     bool dark_mode,
+    PreferredContrast contrast,
     const ColorProvider* color_provider) const {
   static constexpr auto kFillColors =
       std::to_array({kDisabledFill, kHoveredFill, kFill, kPressedFill});
-  return GetControlColor(kFillColors[state], dark_mode, color_provider);
+  return GetControlColor(kFillColors[state], dark_mode, contrast,
+                         color_provider);
 }
 
 void NativeThemeBase::PaintLightenLayer(cc::PaintCanvas* canvas,
@@ -526,13 +546,15 @@ void NativeThemeBase::PaintLightenLayer(cc::PaintCanvas* canvas,
                                         const SkRect& skrect,
                                         State state,
                                         float border_radius,
-                                        bool dark_mode) const {
+                                        bool dark_mode,
+                                        PreferredContrast contrast) const {
   if (state != kDisabled) {
     return;
   }
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(GetControlColor(kLightenLayer, dark_mode, color_provider));
+  flags.setColor(
+      GetControlColor(kLightenLayer, dark_mode, contrast, color_provider));
   canvas->drawRoundRect(skrect, border_radius, border_radius, flags);
 }
 
@@ -610,13 +632,14 @@ void NativeThemeBase::PaintCheckbox(cc::PaintCanvas* canvas,
                                     const gfx::Rect& rect,
                                     const ButtonExtraParams& extra_params,
                                     bool dark_mode,
+                                    PreferredContrast contrast,
                                     std::optional<SkColor> accent_color) const {
   // Paint the background and border.
   const float radius =
       GetBorderRadiusForPart(kCheckbox, rect.width(), rect.height());
   const SkRect skrect = PaintCheckboxRadioCommon(
       canvas, color_provider, state, rect, extra_params, true, radius,
-      dark_mode, accent_color);
+      dark_mode, contrast, accent_color);
   if (skrect.isEmpty()) {
     return;
   }
@@ -629,13 +652,13 @@ void NativeThemeBase::PaintCheckbox(cc::PaintCanvas* canvas,
       flags.setColor(
           CustomAccentColorForState(*accent_color, state, dark_mode));
     } else {
-      flags.setColor(
-          ControlsAccentColorForState(state, dark_mode, color_provider));
+      flags.setColor(ControlsAccentColorForState(state, dark_mode, contrast,
+                                                 color_provider));
     }
     canvas->drawRoundRect(skrect, radius, radius, flags);
   }
-  flags.setColor(
-      ControlsBackgroundColorForState(state, dark_mode, color_provider));
+  flags.setColor(ControlsBackgroundColorForState(state, dark_mode, contrast,
+                                                 color_provider));
   if (extra_params.indeterminate) {
     // Paint the dash.
     static constexpr gfx::Size kDashSize(8, 2);
@@ -703,7 +726,8 @@ void NativeThemeBase::PaintMenuList(cc::PaintCanvas* canvas,
                                     State state,
                                     const gfx::Rect& rect,
                                     const MenuListExtraParams& extra_params,
-                                    bool dark_mode) const {
+                                    bool dark_mode,
+                                    PreferredContrast contrast) const {
   // If a border radius is specified, Blink will paint the background and the
   // border.
   // TODO(pkasting): The comment above seems untrue;
@@ -714,7 +738,8 @@ void NativeThemeBase::PaintMenuList(cc::PaintCanvas* canvas,
     params.background_color = extra_params.background_color;
     params.has_border = extra_params.has_border;
     params.zoom = extra_params.zoom;
-    PaintTextField(canvas, color_provider, state, rect, params, dark_mode);
+    PaintTextField(canvas, color_provider, state, rect, params, dark_mode,
+                   contrast);
   }
 
   // The arrow base is twice the arrow height, giving 45 degree sides.
@@ -834,7 +859,7 @@ void NativeThemeBase::PaintProgressBar(
   // Paint the track.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(GetControlColor(kFill, dark_mode, color_provider));
+  flags.setColor(GetControlColor(kFill, dark_mode, contrast, color_provider));
   canvas->drawRoundRect(track_rect, radius, radius, flags);
 
   // Paint the progress value bar.
@@ -851,7 +876,8 @@ void NativeThemeBase::PaintProgressBar(
   if (accent_color) {
     flags.setColor(*accent_color);
   } else {
-    flags.setColor(GetControlColor(kAccent, dark_mode, color_provider));
+    flags.setColor(
+        GetControlColor(kAccent, dark_mode, contrast, color_provider));
   }
   if (extra_params.determinate) {
     canvas->clipRRect(SkRRect::MakeRectXY(track_rect, radius, radius), true);
@@ -865,11 +891,8 @@ void NativeThemeBase::PaintProgressBar(
       AdjustBorderWidthByZoom(kBorderWidth, extra_params.zoom);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(border_width);
-  SkColor border_color = GetControlColor(kBorder, dark_mode, color_provider);
-  if (contrast != PreferredContrast::kMore && !dark_mode) {
-    border_color = SkColorSetA(border_color, 0x80);
-  }
-  flags.setColor(border_color);
+  flags.setColor(GetControlColor(kSliderBorderColors[state], dark_mode,
+                                 contrast, color_provider));
   canvas->drawRoundRect(
       track_rect.makeInset(border_width / 2, border_width / 2), radius, radius,
       flags);
@@ -880,11 +903,13 @@ void NativeThemeBase::PaintButton(cc::PaintCanvas* canvas,
                                   State state,
                                   const gfx::Rect& rect,
                                   const ButtonExtraParams& extra_params,
-                                  bool dark_mode) const {
+                                  bool dark_mode,
+                                  PreferredContrast contrast) const {
   SkRect skrect = gfx::RectToSkRect(rect);
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(ButtonFillColorForState(state, dark_mode, color_provider));
+  flags.setColor(
+      ButtonFillColorForState(state, dark_mode, contrast, color_provider));
 
   // If the button is too small, fall back to drawing a solid color rect.
   if (rect.width() < 5 || rect.height() < 5) {
@@ -901,14 +926,16 @@ void NativeThemeBase::PaintButton(cc::PaintCanvas* canvas,
       extra_params.zoom);
 
   // Paint the background.
-  PaintLightenLayer(canvas, color_provider, skrect, state, radius, dark_mode);
+  PaintLightenLayer(canvas, color_provider, skrect, state, radius, dark_mode,
+                    contrast);
   canvas->drawRoundRect(skrect, radius, radius, flags);
 
   // Paint the border.
   if (extra_params.has_border) {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(border_width);
-    flags.setColor(ButtonBorderColorForState(state, dark_mode, color_provider));
+    flags.setColor(
+        ButtonBorderColorForState(state, dark_mode, contrast, color_provider));
     canvas->drawRoundRect(skrect, radius, radius, flags);
   }
 }
@@ -919,13 +946,14 @@ void NativeThemeBase::PaintRadio(cc::PaintCanvas* canvas,
                                  const gfx::Rect& rect,
                                  const ButtonExtraParams& extra_params,
                                  bool dark_mode,
+                                 PreferredContrast contrast,
                                  std::optional<SkColor> accent_color) const {
   // Paint the background and border.
   const float radius =
       GetBorderRadiusForPart(kRadio, rect.width(), rect.height());
   const SkRect skrect = PaintCheckboxRadioCommon(
       canvas, color_provider, state, rect, extra_params, false, radius,
-      dark_mode, accent_color);
+      dark_mode, contrast, accent_color);
   if (skrect.isEmpty() || !extra_params.checked) {
     return;
   }
@@ -936,8 +964,8 @@ void NativeThemeBase::PaintRadio(cc::PaintCanvas* canvas,
   if (accent_color && state != kDisabled) {
     flags.setColor(CustomAccentColorForState(*accent_color, state, dark_mode));
   } else {
-    flags.setColor(
-        ControlsAccentColorForState(state, dark_mode, color_provider));
+    flags.setColor(ControlsAccentColorForState(state, dark_mode, contrast,
+                                               color_provider));
   }
   canvas->drawRoundRect(
       skrect.makeInset(skrect.width() * 0.2, skrect.height() * 0.2), radius,
@@ -968,7 +996,8 @@ void NativeThemeBase::PaintSliderTrack(
   // Paint the track.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(ControlsFillColorForState(state, dark_mode, color_provider));
+  flags.setColor(
+      ControlsFillColorForState(state, dark_mode, contrast, color_provider));
   canvas->drawRoundRect(track_rect, radius, radius, flags);
 
   {
@@ -981,8 +1010,8 @@ void NativeThemeBase::PaintSliderTrack(
       flags.setColor(
           CustomAccentColorForState(*accent_color, state, dark_mode));
     } else {
-      flags.setColor(
-          ControlsSliderColorForState(state, dark_mode, color_provider));
+      flags.setColor(ControlsSliderColorForState(state, dark_mode, contrast,
+                                                 color_provider));
     }
     canvas->drawRRect(SkRRect::MakeRectXY(track_rect, radius, radius), flags);
   }
@@ -992,13 +1021,8 @@ void NativeThemeBase::PaintSliderTrack(
   const float border_width =
       AdjustBorderWidthByZoom(kBorderWidth, extra_params.zoom);
   flags.setStrokeWidth(border_width);
-  SkColor border_color =
-      ControlsBorderColorForState(state, dark_mode, color_provider);
-  if (contrast != PreferredContrast::kMore && state != kDisabled &&
-      !dark_mode) {
-    border_color = SkColorSetA(border_color, 0x80);
-  }
-  flags.setColor(border_color);
+  flags.setColor(GetControlColor(kSliderBorderColors[state], dark_mode,
+                                 contrast, color_provider));
   canvas->drawRoundRect(
       track_rect.makeInset(border_width / 2, border_width / 2), radius, radius,
       flags);
@@ -1011,6 +1035,7 @@ void NativeThemeBase::PaintSliderThumb(
     const gfx::Rect& rect,
     const SliderExtraParams& extra_params,
     bool dark_mode,
+    PreferredContrast contrast,
     std::optional<SkColor> accent_color) const {
   const SkRect thumb_rect = gfx::RectToSkRect(rect);
   const float radius = GetBorderRadiusForPart(kSliderThumb, thumb_rect.width(),
@@ -1020,8 +1045,8 @@ void NativeThemeBase::PaintSliderThumb(
   if (accent_color && state != kDisabled) {
     flags.setColor(CustomAccentColorForState(*accent_color, state, dark_mode));
   } else {
-    flags.setColor(
-        ControlsSliderColorForState(state, dark_mode, color_provider));
+    flags.setColor(ControlsSliderColorForState(state, dark_mode, contrast,
+                                               color_provider));
   }
   // TODO(pkasting): This inset appears to be a historical accident; consider
   // removing it and rebaselining the slider appearance.
@@ -1034,7 +1059,8 @@ void NativeThemeBase::PaintTextField(cc::PaintCanvas* canvas,
                                      State state,
                                      const gfx::Rect& rect,
                                      const TextFieldExtraParams& extra_params,
-                                     bool dark_mode) const {
+                                     bool dark_mode,
+                                     PreferredContrast contrast) const {
   SkRect bounds = gfx::RectToSkRect(rect);
   const float border_width =
       AdjustBorderWidthByZoom(kBorderWidth, extra_params.zoom);
@@ -1048,13 +1074,14 @@ void NativeThemeBase::PaintTextField(cc::PaintCanvas* canvas,
   const bool paint_autocomplete_background =
       extra_params.auto_complete_active && state != kDisabled;
   if (extra_params.background_color != 0) {
-    PaintLightenLayer(canvas, color_provider, bounds, state, radius, dark_mode);
+    PaintLightenLayer(canvas, color_provider, bounds, state, radius, dark_mode,
+                      contrast);
     cc::PaintFlags bg_flags;
-    SkColor default_bg_color =
-        ControlsBackgroundColorForState(state, dark_mode, color_provider);
+    SkColor default_bg_color = ControlsBackgroundColorForState(
+        state, dark_mode, contrast, color_provider);
     bg_flags.setColor(paint_autocomplete_background
                           ? GetControlColor(kAutoCompleteBackground, dark_mode,
-                                            color_provider)
+                                            contrast, color_provider)
                           : default_bg_color);
     canvas->drawRoundRect(bounds, radius, radius, bg_flags);
   }
@@ -1062,8 +1089,8 @@ void NativeThemeBase::PaintTextField(cc::PaintCanvas* canvas,
   // Paint the border.
   if (extra_params.has_border) {
     cc::PaintFlags border_flags;
-    border_flags.setColor(
-        ControlsBorderColorForState(state, dark_mode, color_provider));
+    border_flags.setColor(ControlsBorderColorForState(
+        state, dark_mode, contrast, color_provider));
     border_flags.setStyle(cc::PaintFlags::kStroke_Style);
     border_flags.setStrokeWidth(border_width);
     canvas->drawRoundRect(bounds, radius, radius, border_flags);
@@ -1084,10 +1111,11 @@ gfx::RectF NativeThemeBase::GetArrowRect(const gfx::Rect& rect) const {
 SkColor NativeThemeBase::ControlsBackgroundColorForState(
     State state,
     bool dark_mode,
+    PreferredContrast contrast,
     const ColorProvider* color_provider) const {
   return GetControlColor(
       (state == kDisabled) ? kDisabledBackground : kBackground, dark_mode,
-      color_provider);
+      contrast, color_provider);
 }
 
 SkRect NativeThemeBase::PaintCheckboxRadioCommon(
@@ -1099,6 +1127,7 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
     bool is_checkbox,
     float border_radius,
     bool dark_mode,
+    PreferredContrast contrast,
     std::optional<SkColor> accent_color) const {
   // Use the largest square that fits inside the provided rectangle. This
   // matches other browsers.
@@ -1114,7 +1143,8 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
       flags.setColor(
           CustomAccentColorForState(*accent_color, state, dark_mode));
     } else {
-      flags.setColor(GetControlColor(kBorder, dark_mode, color_provider));
+      flags.setColor(
+          GetControlColor(kBorder, dark_mode, contrast, color_provider));
     }
     canvas->drawRect(skrect, flags);
     return {};  // Don't draw anything more.
@@ -1125,10 +1155,10 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
   const auto background_rect =
       skrect.makeInset(kBorderWidth * 0.2f, kBorderWidth * 0.2f);
   PaintLightenLayer(canvas, color_provider, background_rect, state,
-                    border_radius, dark_mode);
+                    border_radius, dark_mode, contrast);
   flags.setAntiAlias(true);
-  flags.setColor(
-      ControlsBackgroundColorForState(state, dark_mode, color_provider));
+  flags.setColor(ControlsBackgroundColorForState(state, dark_mode, contrast,
+                                                 color_provider));
   canvas->drawRoundRect(background_rect, border_radius, border_radius, flags);
 
   // Paint the border.
@@ -1141,12 +1171,12 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
         border_color =
             CustomAccentColorForState(*accent_color, state, dark_mode);
       } else {
-        border_color =
-            ControlsAccentColorForState(state, dark_mode, color_provider);
+        border_color = ControlsAccentColorForState(state, dark_mode, contrast,
+                                                   color_provider);
       }
     } else {
-      border_color =
-          ControlsBorderColorForState(state, dark_mode, color_provider);
+      border_color = ControlsBorderColorForState(state, dark_mode, contrast,
+                                                 color_provider);
     }
     flags.setColor(border_color);
     flags.setStyle(cc::PaintFlags::kStroke_Style);
