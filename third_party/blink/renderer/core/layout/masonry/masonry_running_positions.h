@@ -138,6 +138,21 @@ class CORE_EXPORT MasonryRunningPositions {
     LayoutUnit max_pos;
   };
 
+  // This struct is used to hold a path of eligible track openings.
+  // `starting_track_index` refers to the first track index in the path, and
+  // corresponds to the first dimension of `track_collection_openings_`. Each
+  // element in `track_opening_indices` is the specific index within a track's
+  // vector of openings. `start_position` refers to the highest possible
+  // position that an item can be placed; this would be the lowest running
+  // position of all the openings in the path.
+  struct EligibleTrackOpeningPath {
+    bool IsValid() const { return start_position != LayoutUnit::Max(); }
+
+    wtf_size_t starting_track_index{0};
+    Vector<wtf_size_t> track_opening_indices;
+    LayoutUnit start_position{LayoutUnit::Max()};
+  };
+
   // For testing only.
   MasonryRunningPositions(const Vector<LayoutUnit>& running_positions,
                           LayoutUnit tie_threshold,
@@ -163,6 +178,28 @@ class CORE_EXPORT MasonryRunningPositions {
   // its max-position and return a vector where the index corresponds to the
   // track number and the value corresponds to the max-position for that track.
   Vector<LayoutUnit> GetMaxPositionsForAllTracks(wtf_size_t span_size) const;
+
+  // TODO(celestepan): Once we have a way to query for individual track sizes
+  // from `GridLayoutTrackCollection`, move this method to GridSpan and have it
+  // take in a `GridLayoutTrackCollection` and use that to perform the size
+  // calculations.
+  //
+  // Calculate the total size of the tracks across the given span.
+  LayoutUnit CalculateUsedTrackSize(const GridSpan& span) const;
+
+  // Recursive method that uses backtracking to find a path of
+  // track openings which align to accomodate an item with a contribution size
+  // in the stacking axis of `item_stacking_axis_contribution`. This method
+  // returns whether or not a path of eligible track openings were found.
+  // Because of the recursive nature of this method, the `track_opening_indices`
+  // in `eligible_track_opening_result` will be in reverse order.
+  bool AccumulateTrackOpeningsToAccomodateItem(
+      LayoutUnit item_stacking_axis_contribution,
+      LayoutUnit previous_track_opening_start_position,
+      LayoutUnit previous_track_opening_end_position,
+      wtf_size_t num_tracks_remaining,
+      wtf_size_t track_to_check_for_openings,
+      EligibleTrackOpeningPath& eligible_track_opening_result);
 
   // The index of the `running_positions_` vector corresponds to the track
   // number, while the value of the vector item corresponds to the current

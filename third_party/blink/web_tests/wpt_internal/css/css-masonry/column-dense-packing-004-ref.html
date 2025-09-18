@@ -6,41 +6,26 @@
     display: grid;
     background: gray;
     position: relative;
-    grid-template-columns: repeat(3, 50px);
-    width: 170px;
+    grid-template-columns: 30px 40px 50px 30px;
+    padding: 10px;
     grid-auto-flow: dense;
 }
 </style>
 <body>
-  <p>Ensure that dense-packing does not affect the layout when all items are single-spanning.</p>
+  <p>Ensure dense-packing only places items into gaps where the track size is the same as where the item would have been laid out WITHOUT dense packing.</p>
   <div class="grid">
-    <div>
-      <div style="background: lightskyblue; height: 20px;" >
-        1
-      </div>
-      <div style="background: brown; height: 15px;">
-        4
-      </div>
-      <div style="background: red; height: 40px;">
-        5
-      </div>
-  </div>
-  <div>
-      <div style="background: lightcoral; height: 60px;" >
-        2
-      </div>
-      <div style="background: pink; height: 40px;">
-        6
-      </div>
-  </div>
-  <div>
-      <div style="background: lightgreen; height: 60px;">
-        3
-      </div>
-      <div style="background: yellow; height: 40px;">
-        7
-      </div>
-  </div>
+    <div style="background: lightskyblue; height: 40px; grid-column: 1" >
+     1
+    </div>
+    <div style="background: lightgreen; height: 40px; grid-column: 3">
+      2
+    </div>
+    <div style="background: brown; height: 10px; grid-column: span 4;">
+      3
+    </div>
+    <div style="background: red; height: 40px; width: 30px; grid-column: 4;">
+      4
+    </div>
   </div>
 </body>
 </html>

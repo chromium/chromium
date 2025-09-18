@@ -8,32 +8,6 @@
 
 namespace blink {
 
-namespace {
-struct EligibleTrackOpening {
-  MasonryRunningPositions::TrackOpening opening{LayoutUnit::Max(),
-                                                LayoutUnit()};
-  GridSpan span{GridSpan::IndefiniteGridSpan(1)};
-  wtf_size_t track_index{0};
-  wtf_size_t opening_index{0};
-
-  EligibleTrackOpening() = default;
-
-  void SetOpening(
-      const MasonryRunningPositions::TrackOpening& other_track_opening,
-      wtf_size_t other_track_index,
-      wtf_size_t other_opening_index,
-      const GridSpan other_span) {
-    opening = other_track_opening;
-    track_index = other_track_index;
-    opening_index = other_opening_index;
-    span = other_span;
-  }
-
-  bool HasValidOpening() const {
-    return opening.start_position != LayoutUnit::Max();
-  }
-};
-}  // namespace
 
 GridSpan MasonryRunningPositions::GetFirstEligibleLine(
     wtf_size_t span_size,
@@ -86,7 +60,6 @@ void MasonryRunningPositions::UpdateRunningPositionsForSpan(
   CHECK_LE(end_line, running_positions_.size());
 
   for (auto track_idx = span.StartLine(); track_idx < end_line; ++track_idx) {
-    // TODO(celestepan): Account for openings with span > 1.
     const LayoutUnit current_running_position = running_positions_[track_idx];
     DCHECK_GE(new_running_position, current_running_position);
     // If the current running position is less than the new running position, it
@@ -114,6 +87,67 @@ LayoutUnit MasonryRunningPositions::GetMaxPositionForSpan(
                             running_positions_for_span.end()));
 }
 
+LayoutUnit MasonryRunningPositions::CalculateUsedTrackSize(
+    const GridSpan& span) const {
+  LayoutUnit used_track_size;
+  const auto end_line = span.EndLine();
+  CHECK_LE(end_line, track_collection_sizes_.size());
+  for (wtf_size_t start_line = span.StartLine(); start_line < end_line;
+       ++start_line) {
+    used_track_size += track_collection_sizes_[start_line];
+  }
+  return used_track_size;
+}
+
+bool MasonryRunningPositions::AccumulateTrackOpeningsToAccomodateItem(
+    LayoutUnit item_stacking_axis_contribution,
+    LayoutUnit previous_track_opening_start_position,
+    LayoutUnit previous_track_opening_end_position,
+    wtf_size_t num_tracks_remaining,
+    wtf_size_t track_to_check_for_openings,
+    EligibleTrackOpeningPath& eligible_track_opening_result) {
+  // Iterate through the track's openings to search for opening overlaps.
+  const Vector<TrackOpening>& current_track_openings =
+      track_collection_openings_[track_to_check_for_openings];
+  for (wtf_size_t i = 0; i < current_track_openings.size(); ++i) {
+    TrackOpening current_track_opening = current_track_openings[i];
+
+    // Calculate the overlap between the previous track's eligible opening and
+    // the current opening. We need to ensure that the item we are placing into
+    // the track opening does not layout on top of already laid out items, which
+    // means that we have to always choose the greatest start position and the
+    // smallest end position.
+    const LayoutUnit overlap_start_position =
+        std::max(previous_track_opening_start_position,
+                 current_track_opening.start_position);
+    const LayoutUnit overlap_end_position =
+        std::min(previous_track_opening_end_position,
+                 current_track_opening.end_position);
+    const LayoutUnit overlap_range_size =
+        overlap_end_position - overlap_start_position;
+
+    if (overlap_range_size >= item_stacking_axis_contribution) {
+      // If this is the last track we needed to check, we can return the current
+      // start position as the final position we want to place the item in.
+      // Otherwise, check to see if the next n-1 tracks have openings that can
+      // align to accomodate the current item. If they do, we can return.
+      if (num_tracks_remaining == 0 ||
+          AccumulateTrackOpeningsToAccomodateItem(
+              item_stacking_axis_contribution,
+              /*previous_track_opening_start_position=*/
+              overlap_start_position,
+              /*previous_track_opening_end_position=*/overlap_end_position,
+              num_tracks_remaining - 1, track_to_check_for_openings + 1,
+              eligible_track_opening_result)) {
+        eligible_track_opening_result.track_opening_indices.emplace_back(i);
+        eligible_track_opening_result.start_position = overlap_start_position;
+        break;
+      }
+    }
+  }
+  return eligible_track_opening_result.IsValid();
+}
+
 LayoutUnit
 MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
     wtf_size_t start_offset,
@@ -123,79 +157,12 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
   DCHECK(is_dense_packing_);
 
   const auto grid_axis_direction = track_collection.Direction();
-  GridSpan item_span =
-      masonry_item.MaybeTranslateSpan(start_offset, grid_axis_direction);
-  const wtf_size_t span_size = item_span.SpanSize();
-  const wtf_size_t start_line = item_span.StartLine();
-  const LayoutUnit used_track_size = track_collection_sizes_[start_line];
+  const wtf_size_t span_size =
+      masonry_item.resolved_position.Span(grid_axis_direction).SpanSize();
+  const LayoutUnit used_track_size = CalculateUsedTrackSize(
+      masonry_item.resolved_position.Span(grid_axis_direction));
 
-  EligibleTrackOpening highest_eligible_opening;
-  // TODO(celestepan): Remove this check once we support multi-spanning items.
-  if (span_size > 1) {
-    return highest_eligible_opening.opening.start_position;
-  }
-
-  auto GetHighestEligibleTrackOpeningForTrack =
-      [&](Vector<TrackOpening>& current_track_openings,
-          const wtf_size_t current_line) {
-        // TODO (celestepan): account for openings between items when
-        // checking if the item can fit into the space. This affects the
-        // conditional below when we're adjusting/removing the opening we
-        // place the item into.
-        //
-        // Check if the item can fit into any of the current track's
-        // openings and if the opening is higher than the current highest
-        // existing opening; if it is, then it should be our newest highest
-        // opening.
-        for (wtf_size_t i = 0; i < current_track_openings.size(); ++i) {
-          TrackOpening& current_opening = current_track_openings[i];
-          if ((current_opening.Size() >= item_stacking_axis_contribution) &&
-              (current_opening.start_position <
-               highest_eligible_opening.opening.start_position)) {
-            GridSpan span = GridSpan::TranslatedDefiniteGridSpan(
-                current_line, current_line + 1);
-            span.Translate(start_offset);
-            highest_eligible_opening.SetOpening(
-                current_opening, /*other_track_idx=*/current_line,
-                /*other_opening_idx=*/i, span);
-            // Since openings are sorted by start position, if we find an
-            // opening in the curent track, there's no reason to iterate
-            // through the rest of the openings in the track.
-            break;
-          }
-        }
-      };
-
-  // Iterate through the openings in each track to find the highest eligible
-  // opening that can fit `masonry_item`. `start_line` is the first line that
-  // we will begin checking for openings at.
-  auto SetHighestEligibleTrackOpening = [&](wtf_size_t start_line,
-                                            wtf_size_t end_line) {
-    CHECK_LE(end_line, track_collection_openings_.size());
-    CHECK_LE(end_line, track_collection_sizes_.size());
-    // TODO(celestepan): Account for items with a span size greater than 1;
-    // we should iterate through the tracks in spans.
-    for (wtf_size_t current_line = start_line; current_line < end_line;
-         ++current_line) {
-      // Only iterate through tracks with the same size as the track the
-      // item was laid out into.
-      if ((track_collection_sizes_[current_line] == used_track_size)) {
-        Vector<TrackOpening>& current_track_openings =
-            track_collection_openings_[current_line];
-        // If there are no openings or the highest opening in the track is
-        // lower than the current highest position, skip iterating through
-        // the rest of the openings in the track.
-        if (current_track_openings.empty() ||
-            (highest_eligible_opening.HasValidOpening() &&
-             current_track_openings[0].start_position >=
-                 highest_eligible_opening.opening.start_position)) {
-          continue;
-        }
-        GetHighestEligibleTrackOpeningForTrack(current_track_openings,
-                                               current_line);
-      }
-    }
-  };
+  EligibleTrackOpeningPath highest_eligible_track_opening_result;
 
   // TODO(celestepan): If the item has a specified track, only check the
   // openings within that track.
@@ -204,40 +171,118 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
   // to the end of the tracks, then looping around from the first track to the
   // auto-placement cursor. This gives priority to openings right after the
   // auto-placement cursor.
-  SetHighestEligibleTrackOpening(
-      /*start_line=*/auto_placement_cursor_,
-      /*end_line=*/running_positions_.size());
+  GridSpan item_span = GridSpan::TranslatedDefiniteGridSpan(
+      auto_placement_cursor_, auto_placement_cursor_ + span_size);
 
-  SetHighestEligibleTrackOpening(
-      /*start_line=*/0,
-      /*end_line=*/auto_placement_cursor_);
-
-  // If an eligible opening was found, we should place the item into it
-  // and remove or adjust the opening as needed.
-  if (highest_eligible_opening.HasValidOpening()) {
-    // TODO(celestepan): Determine if we need a faster data structure for
-    // erasing items.
-    //
-    // If the item completely fills the opening, remove the opening.
-    if (item_stacking_axis_contribution ==
-        highest_eligible_opening.opening.Size()) {
-      track_collection_openings_[highest_eligible_opening.track_index].EraseAt(
-          highest_eligible_opening.opening_index);
-    } else {
-      // Otherwise, adjust the opening size.
-      track_collection_openings_[highest_eligible_opening.track_index]
-                                [highest_eligible_opening.opening_index]
-                                    .start_position =
-          highest_eligible_opening.opening.start_position +
-          item_stacking_axis_contribution;
+  // `max_iterations` is the maximum number of iterations we should need to
+  // perform to check all possible track spans of size `span_size`.
+  wtf_size_t iterations = 0;
+  wtf_size_t max_iterations = running_positions_.size() - span_size + 1;
+  do {
+    ++iterations;
+    if (item_span.EndLine() > running_positions_.size()) {
+      item_span = GridSpan::TranslatedDefiniteGridSpan(0, span_size);
     }
+    if (CalculateUsedTrackSize(item_span) != used_track_size) {
+      ++item_span;
+      continue;
+    }
+
+    wtf_size_t current_track = item_span.StartLine();
+    // If the current track does not have any openings OR the first track
+    // opening is already greater than the highest eligible opening found so
+    // far, we won't end up finding any better results that start with this
+    // track.
+    if (track_collection_openings_[current_track].empty() ||
+        (highest_eligible_track_opening_result.IsValid() &&
+         track_collection_openings_[current_track][0].start_position >=
+             highest_eligible_track_opening_result.start_position)) {
+      ++item_span;
+      continue;
+    }
+
+    EligibleTrackOpeningPath eligible_track_opening_result;
+    AccumulateTrackOpeningsToAccomodateItem(
+        item_stacking_axis_contribution,
+        /*previous_track_opening_start_position=*/LayoutUnit(),
+        /*previous_track_opening_end_position=*/LayoutUnit::Max(),
+        /*num_tracks_remaining=*/span_size - 1,
+        /*track_to_check_for_openings=*/current_track,
+        eligible_track_opening_result);
+
+    // Starting at `current_track`, find a series of adjacent track openings
+    // that the item could be placed into starting at this line.  If there is
+    // not previous result for the highest eligible path of openings OR the
+    // series of adjacent track openings is higher than the previous highest
+    // series of adjacent track openings found, store the result in
+    // `highest_eligible_track_opening_result`.
+    if (eligible_track_opening_result.IsValid() &&
+        (!highest_eligible_track_opening_result.IsValid() ||
+         eligible_track_opening_result.start_position <
+             highest_eligible_track_opening_result.start_position)) {
+      highest_eligible_track_opening_result = eligible_track_opening_result;
+      highest_eligible_track_opening_result.starting_track_index =
+          current_track;
+    }
+
+    ++item_span;
+  } while (iterations <= max_iterations);
+
+  // TODO(celestepan): Determine if we need a faster data structure for
+  // erasing items.
+  //
+  // The indices of the track openings are stored in reverse order due to the
+  // recursive nature of `AccumulateTrackOpeningsToAccomodateItem`, so we need
+  // to iterate through the tracks in reverse order.
+  if (highest_eligible_track_opening_result.IsValid()) {
+    wtf_size_t current_track_index =
+        highest_eligible_track_opening_result.starting_track_index + span_size;
+    for (wtf_size_t track_opening_index :
+         highest_eligible_track_opening_result.track_opening_indices) {
+      // Perform subtraction here to avoid underflow.
+      --current_track_index;
+      // If an eligible opening was found, we should place the item into it
+      // and remove or adjust the opening as needed.
+      const TrackOpening current_track_opening =
+          track_collection_openings_[current_track_index][track_opening_index];
+      // If the item completely fills the opening, remove the opening.
+      if (item_stacking_axis_contribution == current_track_opening.Size()) {
+        track_collection_openings_[current_track_index].EraseAt(
+            track_opening_index);
+      } else {
+        // If the item causes an opening to split, create a new track
+        // opening above the item.
+        if (current_track_opening.start_position !=
+            highest_eligible_track_opening_result.start_position) {
+          track_collection_openings_[current_track_index].insert(
+              track_opening_index,
+              TrackOpening{
+                  current_track_opening.start_position,
+                  highest_eligible_track_opening_result.start_position});
+          ++track_opening_index;
+        }
+        // If the item doesn't fill the opening, adjust the size of the track
+        // opening.
+        track_collection_openings_[current_track_index][track_opening_index]
+            .start_position = current_track_opening.start_position +
+                              item_stacking_axis_contribution;
+      }
+    }
+
+    // Set the span of `masonry_item` to the span of the highest eligible
+    // opening found.
+    GridSpan highest_eligible_opening_span =
+        GridSpan::TranslatedDefiniteGridSpan(
+            highest_eligible_track_opening_result.starting_track_index,
+            highest_eligible_track_opening_result.starting_track_index +
+                span_size);
     DCHECK_EQ(masonry_item.resolved_position.SpanSize(grid_axis_direction),
-              highest_eligible_opening.span.SpanSize());
-    masonry_item.UpdateSpan(highest_eligible_opening.span, grid_axis_direction,
+              highest_eligible_opening_span.SpanSize());
+    masonry_item.UpdateSpan(highest_eligible_opening_span, grid_axis_direction,
                             start_offset, track_collection);
   }
 
-  return highest_eligible_opening.opening.start_position;
+  return highest_eligible_track_opening_result.start_position;
 }
 
 // TODO(celestepan): Add method GridLayoutTrackCollection to query for
@@ -251,7 +296,7 @@ void MasonryRunningPositions::CalculateAndCacheTrackSizes(
   LayoutUnit start_offset;
   GridSpan span = GridSpan::TranslatedDefiniteGridSpan(0, 1);
 
-  for (; span.StartLine() < running_positions_.size(); span.Translate(1)) {
+  for (; span.StartLine() < running_positions_.size(); ++span) {
     item->resolved_position.SetSpan(span, track_collection.Direction());
     item->ComputeSetIndices(track_collection);
     track_collection_sizes_.emplace_back(
@@ -274,7 +319,7 @@ Vector<LayoutUnit> MasonryRunningPositions::GetMaxPositionsForAllTracks(
   max_running_positions.ReserveInitialCapacity(first_non_fit_start_line);
 
   for (auto span = GridSpan::TranslatedDefiniteGridSpan(0, span_size);
-       span.StartLine() < first_non_fit_start_line; span.Translate(1)) {
+       span.StartLine() < first_non_fit_start_line; ++span) {
     max_running_positions.emplace_back(GetMaxPositionForSpan(span));
   }
 

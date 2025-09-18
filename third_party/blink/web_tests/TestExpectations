@@ -1130,9 +1130,6 @@ crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-012.html [ Failur
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-006.html [ Failure ]
 # Masonry named line failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/grid-placement/masonry-grid-placement-named-lines-002.html [ Failure ]
-# Masonry dense-packing tests failing as we are not supporting dense-packing for multi-spanning items yet
-crbug.com/1076027 wpt_internal/css/css-masonry/column-dense-packing-003.html [ Failure ]
-crbug.com/1076027 wpt_internal/css/css-masonry/row-dense-packing-003.html [ Failure ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/1211460 external/wpt/css/css-fonts/alternates-order.html [ Failure ]

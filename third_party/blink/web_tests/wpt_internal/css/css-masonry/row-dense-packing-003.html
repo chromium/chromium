@@ -10,27 +10,32 @@
     item-tolerance: 0;
     masonry-direction: row;
     grid-template-rows: repeat(3, 50px);
-    padding: 10px;
     grid-auto-flow: dense;
 }
 </style>
 <body>
-  <p>Ensure that dense-packing places items that span more than 1 track correctly into gaps.</p>
+  <p>Ensure that dense-packing does not affect the layout when all items are single-spanning.</p>
   <div class="masonry">
     <div style="background: lightskyblue; width: 20px;" >
-      1
+     1
     </div>
-    <div style="background: lightcoral; width: 20px;" >
+    <div style="background: lightcoral; width: 60px;" >
       2
     </div>
-    <div style="background: lightgreen; width: 40px;">
+    <div style="background: lightgreen; width: 60px;">
       3
     </div>
-    <div style="background: brown; width: 10px; grid-row: span 3;">
+    <div style="background: brown; width: 10px;">
       4
     </div>
-    <div style="background:orchid; width: 10px; grid-row: span 2;">
+    <div style="background: red; width: 40px;">
       5
+    </div>
+    <div style="background: pink; width: 40px;">
+      6
+    </div>
+    <div style="background: yellow; width: 40px;">
+      7
     </div>
   </div>
 </body>

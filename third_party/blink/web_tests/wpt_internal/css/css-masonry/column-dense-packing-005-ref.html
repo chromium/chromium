@@ -1,30 +1,35 @@
 <!DOCTYPE html>
 <html>
-<link rel="help" href="https://drafts.csswg.org/css-grid-3">
 <style>
 .grid {
     display: grid;
-    background: gray;
     position: relative;
-    grid-template-columns: 30px 40px 50px 30px;
-    padding: 10px;
+    item-tolerance: 0;
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: masonry;
     grid-auto-flow: dense;
 }
 </style>
 <body>
-  <p>Ensure dense-packing only lays items into gaps where the track size is the same as where the item would have been laid out WITHOUT dense packing.</p>
+  <p>Ensure that we always pick the highest eligible opening; auto-placement cursor should only be a tie-breaker with openings at the same location.</p>
   <div class="grid">
-    <div style="background: lightskyblue; height: 40px; grid-column: 1" >
-     1
+    <div style="background: lightskyblue; height: 20px;" >
+      1
     </div>
-    <div style="background: lightgreen; height: 40px; grid-column: 3">
+    <div style="background: lightblue; height: 20px;" >
       2
     </div>
-    <div style="background: brown; height: 10px; grid-column: span 4;">
+    <div style="background: yellow; height: 20px;" >
+      6
+    </div>
+    <div style="background: darkblue; height: 20px; grid-column: span 3;">
       3
     </div>
-    <div style="background: red; height: 40px; width: 30px; grid-column: 4;">
+    <div style="background: lightsteelblue; height: 20px; grid-column: 2 / span 2;" >
       4
+    </div>
+    <div style="background: darkblue; height: 20px; grid-column: span 3;">
+      5
     </div>
   </div>
 </body>
