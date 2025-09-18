@@ -209,7 +209,7 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
 }
 
 bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
-    CanvasResourceProvider* resource_provider,
+    CanvasResourceProviderSharedImage* resource_provider,
     const gfx::Rect& copy_rect) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(resource_provider);

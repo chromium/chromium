@@ -354,20 +354,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     return last_recording_;
   }
 
-  // Overwrites the current image (either completely or partially) with the
-  // passed-in SharedImage. Waits on `ready_sync_token` before copying; pass
-  // SyncToken() if no sync is required. Synthesizes a new sync token in
-  // `completion_sync_token` which will satisfy after the image copy completes.
-  // In practice, this API can be used to replace a resource with the contents
-  // of an AcceleratedStaticBitmapImage or with a WebGPUMailboxTexture.
-  virtual bool OverwriteImage(
-      const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-      const gfx::Rect& copy_rect,
-      const gpu::SyncToken& ready_sync_token,
-      gpu::SyncToken& completion_sync_token) {
-    return false;
-  }
-
   // ExternalCanvasDrawHelper() is used by clients that require the invocation
   // of WillDrawIfNeeded() before obtaining a canvas and drawing on it. All
   // meaningful ExternalCanvasDrawHelper() implementations should call
@@ -589,6 +575,22 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnAcquireRecyclableCanvasResource();
   void OnDestroyRecyclableCanvasResource(const gpu::SyncToken& sync_token);
 
+  // Overwrites the current image (either completely or partially) with the
+  // passed-in SharedImage. Waits on `ready_sync_token` before copying; pass
+  // SyncToken() if no sync is required. Synthesizes a new sync token in
+  // `completion_sync_token` which will satisfy after the image copy completes.
+  // In practice, this API can be used to replace a resource with the contents
+  // of an AcceleratedStaticBitmapImage or with a WebGPUMailboxTexture.
+  bool OverwriteImage(const scoped_refptr<gpu::ClientSharedImage>& shared_image,
+                      const gfx::Rect& copy_rect,
+                      const gpu::SyncToken& ready_sync_token,
+                      gpu::SyncToken& completion_sync_token);
+  bool WritePixels(const SkImageInfo& orig_info,
+                   const void* pixels,
+                   size_t row_bytes,
+                   int x,
+                   int y) override;
+
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
 
@@ -672,16 +674,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override;
-
-  bool WritePixels(const SkImageInfo& orig_info,
-                   const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y) override;
-  bool OverwriteImage(const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-                      const gfx::Rect& copy_rect,
-                      const gpu::SyncToken& ready_sync_token,
-                      gpu::SyncToken& completion_sync_token) override;
 
   void OnDestroyResource() override { --num_inflight_resources_; }
   void SetResourceRecyclingEnabled(bool value) override;

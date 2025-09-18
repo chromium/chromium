@@ -96,8 +96,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
                      const gfx::Point& dest_point,
                      const gfx::Rect& src_rect) override;
 
-  bool CopyToResourceProvider(CanvasResourceProvider* resource_provider,
-                              const gfx::Rect& copy_rect) override;
+  bool CopyToResourceProvider(
+      CanvasResourceProviderSharedImage* resource_provider,
+      const gfx::Rect& copy_rect) override;
 
   // To be called on sender thread before performing a transfer to a different
   // thread.
