@@ -81,7 +81,7 @@ class SVGRect final : public SVGPropertyBase {
   bool IsValid() const { return is_valid_; }
 
   template <typename CharType>
-  SVGParsingError Parse(const CharType*& ptr, const CharType* end);
+  SVGParsingError Parse(base::span<const CharType>);
   void Set(float x, float y, float width, float height);
   void Add(float x, float y, float width, float height);
 
