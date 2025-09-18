@@ -30,6 +30,7 @@
 
 #include "base/auto_reset.h"
 #include "base/format_macros.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_transaction_durability.h"
@@ -378,10 +379,10 @@ void IDBTransaction::commit(ExceptionState& exception_state) {
 }
 
 void IDBTransaction::RegisterRequest(IDBRequest* request) {
-  DCHECK(request);
-  DCHECK(!request_list_.Contains(request));
-  DCHECK_EQ(state_, kActive);
-  request_list_.insert(request);
+  CHECK(request, base::NotFatalUntil::M145);
+  CHECK_EQ(state_, kActive, base::NotFatalUntil::M145);
+  auto add_result = request_list_.insert(request);
+  CHECK(add_result.is_new_entry, base::NotFatalUntil::M145);
 }
 
 void IDBTransaction::UnregisterRequest(IDBRequest* request) {
