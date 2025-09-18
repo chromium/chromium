@@ -780,9 +780,8 @@
   <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Redress number”. This field is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
     Redress number
   </message>
-  <!-- TODO(crbug.com/436175248) - Add descriptions for the flight reservation entity name. -->
   <!-- TODO(crbug.com/436175248) - Set `translateable` to `true` for the flight reservation entity name. -->
-  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME" translateable="false">
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME" desc="The label for something that a user can autofill when filling a form. For context, a user has been able to fill addresses within Chrome for many users. Now a user can also fill a “Flight reservation”." translateable="false">
     Flight
   </message>
 
