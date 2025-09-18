@@ -9,10 +9,6 @@ import {loadTimeData} from './i18n_setup.js';
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
-import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import type {SettingsSectionElement} from './settings_page/settings_section.js';
-import type {SettingsSubpageElement} from './settings_page/settings_subpage.js';
 
 // clang-format on
 
@@ -80,23 +76,6 @@ function findAndHighlightMatches(request: SearchRequest, root: Node): number {
   }
 
   function doSearch(node: Node) {
-    // NOTE: For subpage wrappers <template route-path="..."> when |no-search|
-    // participates in a data binding:
-    //
-    //  - Always use noSearch Polymer property, for example
-    //    no-search="[[foo]]"
-    //  - *Don't* use a no-search CSS attribute like no-search$="[[foo]]"
-    //
-    // The latter throws an error during the automatic Polymer 2 conversion to
-    // <dom-if><template...></dom-if> syntax.
-    if (node.nodeName === 'DOM-IF' &&
-        (node as DomIf).hasAttribute('route-path') && !(node as DomIf).if &&
-        !(node as any)['noSearch'] &&
-        !(node as DomIf).hasAttribute(SKIP_SEARCH_CSS_ATTRIBUTE)) {
-      request.queue.addRenderTask(new RenderTask(request, node));
-      return;
-    }
-
     if (IGNORED_ELEMENTS.has(node.nodeName)) {
       return;
     }
@@ -123,8 +102,6 @@ function findAndHighlightMatches(request: SearchRequest, root: Node): number {
 
       if (ranges.length > 0) {
         matchCount += ranges.length;
-        revealParentSection(
-            node, /*numResults=*/ ranges.length, request.bubbles);
 
         if (node.parentNode!.nodeName === 'OPTION') {
           const select = node.parentNode!.parentNode!;
@@ -171,59 +148,6 @@ function findAndHighlightMatches(request: SearchRequest, root: Node): number {
   return matchCount;
 }
 
-/**
- * Finds and makes visible the <settings-section> parent of |node|.
- * @param bubbles A map of bubbles created so far.
- */
-function revealParentSection(
-    node: Node, numResults: number, bubbles: Set<HTMLElement>) {
-  let associatedControl: HTMLElement|null = null;
-  let subpageTitle: string = '';
-
-  // Find corresponding SETTINGS-SECTION parent and make it visible.
-  let parent = node;
-  while (parent.nodeName !== 'SETTINGS-SECTION') {
-    parent = parent.nodeType === Node.DOCUMENT_FRAGMENT_NODE ?
-        (parent as ShadowRoot).host :
-        parent.parentNode as Node;
-    if (!parent) {
-      // |node| wasn't inside a SETTINGS-SECTION.
-      return;
-    }
-    if (parent.nodeName === 'SETTINGS-SUBPAGE') {
-      const subpage = parent as SettingsSubpageElement;
-      associatedControl = subpage.associatedControl;
-      subpageTitle = subpage.pageTitle;
-    }
-  }
-
-  const parentSection = parent as SettingsSectionElement;
-  parentSection.hiddenBySearch = false;
-
-  if (!parentSection.hasAttribute('section')) {
-    // Nothing else to do. A <settings-section> without a 'section' attribute
-    // indicates that it has been migrated to the plugin architecture, where
-    // <setttings-section> is just a presentational element and has no semantic
-    // meaning. Showing bubbles is handled by each individual plugin instead.
-    return;
-  }
-
-  if (subpageTitle !== '') {
-    assert(
-        associatedControl,
-        'An associated control was expected for SETTINGS-SUBPAGE ' +
-            subpageTitle + ', but was not found.');
-  }
-
-  // Need to add the search bubble after the parent SETTINGS-SECTION has
-  // become visible, otherwise |offsetWidth| returns zero.
-  if (associatedControl) {
-    showBubble(
-        associatedControl, numResults, bubbles,
-        /* horizontallyCenter= */ false);
-  }
-}
-
 export function showBubble(
     control: Node, newResults: number, bubbles: Set<Node>,
     horizontallyCenter: boolean) {
@@ -249,41 +173,6 @@ abstract class Task {
   abstract exec(): Promise<void>;
 }
 
-/**
- * A task that takes a <template is="dom-if">...</template> node
- * corresponding to a setting subpage and renders it. A
- * SearchAndHighlightTask is posted for the newly rendered subtree, once
- * rendering is done.
- */
-class RenderTask extends Task {
-  exec() {
-    const domIfNode = this.node as DomIf;
-
-    const routePath = domIfNode.getAttribute('route-path')!;
-
-    const content = DomIf._contentForTemplate(
-        domIfNode.firstElementChild as HTMLTemplateElement);
-    const subpageTemplate = content!.querySelector('settings-subpage')!;
-    subpageTemplate.setAttribute('route-path', routePath);
-    assert(!domIfNode.if);
-    domIfNode.if = true;
-
-    return new Promise<void>(resolve => {
-      const parent = domIfNode.parentNode!;
-      microTask.run(() => {
-        const renderedNode =
-            parent.querySelector('[route-path="' + routePath + '"]');
-        assert(renderedNode);
-        // Register a SearchAndHighlightTask for the part of the DOM that was
-        // just rendered.
-        this.request.queue.addSearchAndHighlightTask(
-            new SearchAndHighlightTask(this.request, renderedNode));
-        resolve();
-      });
-    });
-  }
-}
-
 class SearchAndHighlightTask extends Task {
   exec() {
     const matchCount = findAndHighlightMatches(this.request, this.node);
@@ -295,7 +184,6 @@ class SearchAndHighlightTask extends Task {
 class TopLevelSearchTask extends Task {
   exec() {
     const shouldSearch = this.request.regExp !== null;
-    this.setSectionsVisibility_(!shouldSearch);
     if (shouldSearch) {
       const matchCount = findAndHighlightMatches(this.request, this.node);
       this.request.updateMatchCount(matchCount);
@@ -303,20 +191,10 @@ class TopLevelSearchTask extends Task {
 
     return Promise.resolve();
   }
-
-  private setSectionsVisibility_(visible: boolean) {
-    const sections =
-        (this.node as HTMLElement).querySelectorAll('settings-section');
-
-    for (let i = 0; i < sections.length; i++) {
-      sections[i].hiddenBySearch = !visible;
-    }
-  }
 }
 
 interface Queues {
   high: Task[];
-  middle: Task[];
   low: Task[];
 }
 
@@ -339,7 +217,7 @@ class TaskQueue {
 
   /** Drops all tasks. */
   reset() {
-    this.queues_ = {high: [], middle: [], low: []};
+    this.queues_ = {high: [], low: []};
   }
 
   addTopLevelSearchTask(task: TopLevelSearchTask) {
@@ -348,11 +226,6 @@ class TaskQueue {
   }
 
   addSearchAndHighlightTask(task: SearchAndHighlightTask) {
-    this.queues_.middle.push(task);
-    this.consumePending_();
-  }
-
-  addRenderTask(task: RenderTask) {
     this.queues_.low.push(task);
     this.consumePending_();
   }
@@ -365,8 +238,7 @@ class TaskQueue {
   }
 
   private popNextTask_(): Task|undefined {
-    return this.queues_.high.shift() || this.queues_.middle.shift() ||
-        this.queues_.low.shift();
+    return this.queues_.high.shift() || this.queues_.low.shift();
   }
 
   private consumePending_() {

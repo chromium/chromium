@@ -28,7 +28,7 @@
         margin-top: var(--cr-section-vertical-margin);
       }
 
-      :host(:not(.expanded)) #card {
+      #card {
         background-color: var(--cr-card-background-color);
         border-radius: var(--cr-card-border-radius);
         box-shadow: var(--cr-card-shadow);
@@ -39,14 +39,9 @@
       @media (forced-colors: active) {
         /* Use border instead of box-shadow (which does not work) in Windows
            HCM. */
-        :host(:not(.expanded)) #card {
+        #card {
           border: var(--cr-border-hcm);
         }
-      }
-
-      :host(.expanded) #header,
-      :host([hidden-by-search]) {
-        display: none;
       }
     </style>
     <div id="header">

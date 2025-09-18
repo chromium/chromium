@@ -42,16 +42,6 @@ export class SettingsSectionElement extends PolymerElement {
       },
 
       /**
-       * A CSS attribute used for temporarily hiding a SETTINGS-SECTION for the
-       * purposes of searching.
-       */
-      hiddenBySearch: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-
-      /**
        * When this attribute is enabled, a send feedback button will be shown
        * that emits a 'send-feedback' event.
        */
@@ -63,7 +53,6 @@ export class SettingsSectionElement extends PolymerElement {
   }
 
   declare pageTitle: string;
-  declare hiddenBySearch: boolean;
   declare showSendFeedbackButton: boolean;
 
   /**

@@ -410,7 +410,6 @@ build_webui("build") {
 
   css_files = [
     "settings_columned_section.css",
-    "settings_page_styles.css",
     "settings_shared.css",
     "settings_vars.css",
 

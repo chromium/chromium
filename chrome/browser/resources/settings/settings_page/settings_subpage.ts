@@ -94,16 +94,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
       },
 
       /**
-       * Indicates which element triggers this subpage. Used by the searching
-       * algorithm to show search bubbles. It is |null| for subpages that are
-       * skipped during searching.
-       */
-      associatedControl: {
-        type: Object,
-        value: null,
-      },
-
-      /**
        * Whether the subpage search term should be preserved across navigations.
        */
       preserveSearchTerm: {
@@ -126,7 +116,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   declare searchLabel: string;
   declare searchTerm: string;
   declare hideCloseButton: boolean;
-  declare associatedControl: HTMLElement|null;
   declare preserveSearchTerm: boolean;
   declare private active_: boolean;
   private lastActiveValue_: boolean = false;

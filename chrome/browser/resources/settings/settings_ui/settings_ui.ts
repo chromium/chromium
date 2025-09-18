@@ -145,14 +145,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
       // </if>
     };
 
-    this.addEventListener('show-container', () => {
-      this.$.container.style.visibility = 'visible';
-    });
-
-    this.addEventListener('hide-container', () => {
-      this.$.container.style.visibility = 'hidden';
-    });
-
     this.addEventListener('refresh-pref', this.onRefreshPref_.bind(this));
   }
 
