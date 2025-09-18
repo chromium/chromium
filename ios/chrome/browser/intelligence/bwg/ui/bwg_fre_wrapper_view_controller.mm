@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
@@ -312,8 +313,17 @@ const CGFloat kDamping = 0.85;
   self.modalPresentationStyle = UIModalPresentationPageSheet;
   self.sheetPresentationController.selectedDetentIdentifier =
       kBWGPromoConsentFullDetentIdentifier;
-  self.sheetPresentationController.preferredCornerRadius =
-      kPreferredCornerRadius;
+  [self configureCornerRadius];
+}
+
+// Configures the correct preferred corner radius given the form factor.
+- (void)configureCornerRadius {
+  CGFloat preferredCornerRadius =
+      IsSplitToolbarMode(self.presentingViewController)
+          ? kPreferredCornerRadius
+          : UISheetPresentationControllerAutomaticDimension;
+  self.navigationController.sheetPresentationController.preferredCornerRadius =
+      preferredCornerRadius;
 }
 
 // Calculates the total height of the content to be displayed in the sheet.
