@@ -476,7 +476,7 @@ class BASE_EXPORT ThreadGroup {
   std::atomic<YieldSortKey> max_allowed_sort_key_ GUARDED_BY(lock_){
       kMaxYieldSortKey};
 
-  const std::string histogram_label_;
+  const std::string unnecessary_wakeup_histogram_label_;
   const std::string thread_group_label_;
   const ThreadType thread_type_hint_;
 

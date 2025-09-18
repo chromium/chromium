@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "build/build_config.h"
@@ -127,7 +128,8 @@ ThreadGroup::ThreadGroup(std::string_view histogram_label,
                          TrackedRef<Delegate> delegate)
     : task_tracker_(std::move(task_tracker)),
       delegate_(std::move(delegate)),
-      histogram_label_(histogram_label),
+      unnecessary_wakeup_histogram_label_(
+          StringPrintf("ThreadPool.UnnecessaryWakeup.%s", histogram_label)),
       thread_group_label_(thread_group_label),
       thread_type_hint_(thread_type_hint),
       idle_workers_set_cv_for_testing_(lock_.CreateConditionVariable()) {

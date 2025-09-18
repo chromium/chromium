@@ -646,7 +646,7 @@ void ThreadGroupImpl::WorkerDelegate::RecordUnnecessaryWakeup() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
 
   base::BooleanHistogram::FactoryGet(
-      std::string("ThreadPool.UnnecessaryWakeup.") + outer_->histogram_label_,
+      outer_->unnecessary_wakeup_histogram_label_,
       base::Histogram::kUmaTargetedHistogramFlag)
       ->Add(true);
 
