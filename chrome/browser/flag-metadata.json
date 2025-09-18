@@ -5286,6 +5286,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "fluid-resize",
+    "owners": [ "lungc@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "focus-follows-cursor",
     "owners": [ "dandersson@chromium.org", "tclaiborne@chromium.org" ],
     "expiry_milestone": 200

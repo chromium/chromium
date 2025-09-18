@@ -7667,10 +7667,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePixelCanvasRecordingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kEnablePixelCanvasRecording)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"fluid-resize", flag_descriptions::kFluidResizeName,
+     flag_descriptions::kFluidResizeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kFluidResize)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     {"enable-parallel-downloading", flag_descriptions::kParallelDownloadingName,
      flag_descriptions::kParallelDownloadingDescription, kOsAll,
      FEATURE_VALUE_TYPE(download::features::kParallelDownloading)},
-
     {"download-notification-service-unified-api",
      flag_descriptions::kDownloadNotificationServiceUnifiedAPIName,
      flag_descriptions::kDownloadNotificationServiceUnifiedAPIDescription,

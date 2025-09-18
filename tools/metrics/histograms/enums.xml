@@ -13561,6 +13561,7 @@ from previous Chrome versions.
   <int value="-199690952" label="PageInfoV2:enabled"/>
   <int value="-199443830"
       label="ReadingListEnableSyncTransportModeUponSignIn:enabled"/>
+  <int value="-199266098" label="FluidResize:enabled"/>
   <int value="-198725896" label="AlmanacGameMigration:enabled"/>
   <int value="-198595821"
       label="EnterpriseSecurityEventReportingOnAndroid:enabled"/>
@@ -15051,6 +15052,7 @@ from previous Chrome versions.
   <int value="334330083" label="WebAuthenticationConditionalUI:disabled"/>
   <int value="334802038" label="OfflinePreviews:disabled"/>
   <int value="335088926" label="WelcomeTourForceUserEligibility:enabled"/>
+  <int value="335791690" label="FluidResize:disabled"/>
   <int value="335976368" label="LoadCryptoTokenExtension:disabled"/>
   <int value="335976733" label="NotificationStackingBarRedesign:enabled"/>
   <int value="336105835" label="CameraAppTimeLapse:disabled"/>

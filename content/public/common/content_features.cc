@@ -423,6 +423,8 @@ BASE_FEATURE(kFencedFramesEnforceFocus, base::FEATURE_DISABLED_BY_DEFAULT);
 // however this might not be true on WebView, see crbug.com/378779896 for more
 // details.
 #if BUILDFLAG(IS_ANDROID)
+// Enable AL device fluid resize.
+BASE_FEATURE(kFluidResize, "FluidResize", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFocusRenderWidgetHostViewAndroidOnActionDown,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif

@@ -388,6 +388,9 @@ extern const char kEnableSeamlessSigninDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kForceHistoryOptInScreenName[];
 extern const char kForceHistoryOptInScreenDescription[];
+
+extern const char kFluidResizeName[];
+extern const char kFluidResizeDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kForceStartupSigninPromoName[];

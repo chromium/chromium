@@ -509,6 +509,10 @@ const char kForceHistoryOptInScreenName[] = "Force history opt-in screen";
 const char kForceHistoryOptInScreenDescription[] =
     "If enabled, the history opt-in screen will be forced to show up even if "
     "the user declined history sync too recently or too often";
+
+const char kFluidResizeName[] = "Enable AL device fluid resize";
+const char kFluidResizeDescription[] =
+    "Enable AL device fluid resize to improve UX.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
