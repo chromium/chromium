@@ -14,7 +14,6 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/focus/focus_cycler.h"
-#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
@@ -47,8 +46,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -125,7 +122,7 @@ class HotseatWidgetTest
       SwipeUpOnShelf();
 
     // If the launcher button is not expected to be shown, start a
-    // Sunfish-session / show the assistant UI directly; otherwise, simulate the
+    // Sunfish-session directly; otherwise, simulate the
     // long press on the home button,
     if (!navigation_buttons_shown_in_tablet_mode_ &&
         display::Screen::Get()->InTabletMode()) {
@@ -437,9 +434,8 @@ TEST_P(HotseatWidgetTest, LongPressHomeWithAppWindow) {
     // |ShowShelfAndLongPressHome()| will bring up shelf so it will trigger one
     // hotseat state change.
     expected_state.push_back(HotseatState::kExtended);
-    // Launching a Sunfish-session, or launching the assistant from a shelf
-    // button on an autohidden shelf will hide the shelf at the end of the
-    // operation.
+    // Launching a Sunfish-session from a shelf button on an autohidden shelf
+    // will hide the shelf at the end of the operation.
     if (sunfish_or_scanner_enabled()) {
       expected_state.push_back(HotseatState::kHidden);
     }
@@ -1270,8 +1266,6 @@ TEST_P(HotseatWidgetTest, InAppToHomeChangesStateOnce) {
   wm::ActivateWindow(window.get());
 
   // TODO(manucornet): This is flaky when the shelf is always auto-hidden.
-  // Investigate and fix (sometimes fails when the assistant is enabled,
-  // sometimes not).
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kNever)
     return;
 

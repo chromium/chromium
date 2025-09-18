@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"

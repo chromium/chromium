@@ -9,7 +9,6 @@
 
 #include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/display/display_observer.h"

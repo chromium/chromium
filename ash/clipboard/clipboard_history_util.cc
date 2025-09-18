@@ -10,7 +10,6 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/metrics/histogram_macros.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

@@ -14,7 +14,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/shell_delegate.h"
@@ -35,7 +34,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
-#include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -379,11 +377,6 @@ void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
       arc::IsArcAllowedForProfile(profile)) {
     arc_service_launcher->arc_locked_fullscreen_manager()
         ->UpdateForLockedFullscreenMode(locked);
-  }
-
-  if (assistant::IsAssistantAllowedForProfile(profile) ==
-      ash::assistant::AssistantAllowedState::ALLOWED) {
-    ash::AssistantState::Get()->NotifyLockedFullScreenStateChanged(locked);
   }
 
   // If a window is entering locked fullscreen, then we should close any

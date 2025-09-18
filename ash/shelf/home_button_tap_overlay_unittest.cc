@@ -12,7 +12,6 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/scanner/scanner_enterprise_policy.h"
@@ -30,7 +29,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -74,14 +72,6 @@ class HomeButtonTapOverlayTest
           << "Assistant is not available if new entry point is enabled. "
              "crbug.com/388361414";
     }
-
-    // Enable Assistant
-    Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
-        assistant::prefs::kAssistantEnabled, true);
-    AssistantState* assistant_state = AssistantState::Get();
-    assistant_state->NotifyFeatureAllowed(
-        assistant::AssistantAllowedState::ALLOWED);
-    assistant_state->NotifyStatusChanged(assistant::AssistantStatus::READY);
 
     PrefService* prefs =
         Shell::Get()->session_controller()->GetActivePrefService();
@@ -278,11 +268,6 @@ TEST_P(HomeButtonTapOverlayTest,
   for (const gfx::Rect& clip_rect : clip_rects_during_animation) {
     EXPECT_TRUE(clip_rect.IsEmpty());
   }
-
-  // Assistant turns disabled during the tap (due to policy, for example).
-  AssistantState* assistant_state = AssistantState::Get();
-  assistant_state->NotifyFeatureAllowed(
-      assistant::AssistantAllowedState::DISALLOWED_BY_POLICY);
 
   SendGestureEventToHomeButton(ui::EventType::kGestureTap);
 

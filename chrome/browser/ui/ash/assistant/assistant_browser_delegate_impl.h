@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"

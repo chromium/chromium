@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ASSISTANT_ASSISTANT_UTIL_H_
 #define CHROME_BROWSER_ASH_ASSISTANT_ASSISTANT_UTIL_H_
 
-#include "ash/public/cpp/assistant/assistant_state_base.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 
 class Profile;
 

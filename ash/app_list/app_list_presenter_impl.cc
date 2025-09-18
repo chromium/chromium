@@ -18,7 +18,6 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
@@ -51,8 +50,6 @@
 
 namespace ash {
 namespace {
-
-using assistant::AssistantExitPoint;
 
 // The target scale to which (or from which) the fullscreen launcher will
 // animate between tablet <-> clamshell mode transition.

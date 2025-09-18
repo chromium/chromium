@@ -38,10 +38,8 @@
 #include "net/base/network_change_notifier.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "base/base64.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
