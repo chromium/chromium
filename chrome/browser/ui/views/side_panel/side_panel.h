@@ -59,6 +59,8 @@ class SidePanel : public views::AccessiblePaneView,
   // pushing the other side panel content down.
   void AddHeaderView(std::unique_ptr<views::View> view);
 
+  void SetHeaderVisibility(bool visible);
+
   // Gets the upper bound of the content area size if the side panel is shown
   // right now. If the side panel is not showing, returns the minimum width
   // and browser view height minus the padding insets. The actual content
@@ -84,6 +86,8 @@ class SidePanel : public views::AccessiblePaneView,
 
   // This is the parent view for the contents of the side panel.
   views::View* GetContentParentView();
+
+  views::View* get_header_for_testing() { return header_view_; }
 
  private:
   class VisibleBoundsViewClipper;

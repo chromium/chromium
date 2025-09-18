@@ -400,7 +400,8 @@ void SidePanelCoordinator::Show(
     if (browser_view_->unified_side_panel()->state() ==
         SidePanel::State::kClosing) {
       browser_view_->unified_side_panel()->Open(/*animated=*/true);
-      NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
+      NotifyPinnedContainerOfActiveStateChange(
+          entry->key(), entry->should_show_ephemerally_in_toolbar());
     }
     return;
   }
@@ -519,7 +520,8 @@ void SidePanelCoordinator::PopulateSidePanel(
   set_current_key(unique_key);
   set_current_entry(entry->GetWeakPtr());
   if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
-    NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
+    NotifyPinnedContainerOfActiveStateChange(
+        entry->key(), entry->should_show_ephemerally_in_toolbar());
     // Notify active state change only if the entry ids for the side panel are
     // different. This is to ensure extensions container isn't notified if we
     // switch between different extensions side panels or between global to
@@ -534,9 +536,16 @@ void SidePanelCoordinator::PopulateSidePanel(
   } else {
     content->RequestFocus();
   }
-  UpdateNewTabButtonState();
-  UpdateHeaderPinButtonState();
-  header_more_info_button_->SetVisible(entry->SupportsMoreInfoButton());
+
+  // The header should only be visible for the kContent side panel type.
+  if (entry->should_show_header()) {
+    browser_view_->unified_side_panel()->SetHeaderVisibility(true);
+    UpdateNewTabButtonState();
+    UpdateHeaderPinButtonState();
+    header_more_info_button_->SetVisible(entry->SupportsMoreInfoButton());
+  } else {
+    browser_view_->unified_side_panel()->SetHeaderVisibility(false);
+  }
 
   if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
     browser_view_->unified_side_panel()->UpdateWidthOnEntryChanged();
@@ -634,7 +643,7 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
 
 void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
     SidePanelEntryKey key,
-    bool is_active) {
+    bool show_active_in_toolbar) {
   auto* toolbar_container =
       browser_view_->toolbar()->pinned_toolbar_actions_container();
   CHECK(toolbar_container);
@@ -643,12 +652,12 @@ void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
   // built-in side-panels.
   if (key.id() == SidePanelEntryId::kExtension) {
     browser_view_->toolbar()->extensions_container()->UpdateSidePanelState(
-        is_active);
+        show_active_in_toolbar);
   } else {
     std::optional<actions::ActionId> action_id =
         SidePanelEntryIdToActionId(key.id());
     CHECK(action_id.has_value());
-    toolbar_container->UpdateActionState(*action_id, is_active);
+    toolbar_container->UpdateActionState(*action_id, show_active_in_toolbar);
   }
 }
 

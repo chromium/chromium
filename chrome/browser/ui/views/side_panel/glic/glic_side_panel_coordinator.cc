@@ -77,6 +77,8 @@ void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
       base::BindRepeating(&GlicSidePanelCoordinator::CreateView,
                           base::Unretained(this)),
       /*default_content_width_callback=*/base::NullCallback());
+  entry->set_should_show_header(false);
+  entry->set_should_show_ephemerally_in_toolbar(false);
   entry->AddObserver(this);
   side_panel_registry_->Register(std::move(entry));
 }

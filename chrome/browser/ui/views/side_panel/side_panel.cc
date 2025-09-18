@@ -65,14 +65,14 @@ int GetBorderThickness() {
 constexpr int kOverlapFromToolbar = 4;
 
 // We want the border to visually look like GetBorderThickness() units on all
-// sides. On the top side, background is drawn on top of the top-content
-// separator and some units of background inside the toolbar (or bookmarks bar)
-// itself. Subtract both of those to not get visually-excessive padding.
+// sides except the top. On the top side, background is drawn on top of the
+// top-content separator and some units of background inside the toolbar (or
+// bookmarks bar) itself. Subtract both of those to not get visually-excessive
+// padding.
 gfx::Insets GetBorderInsets() {
   int border_thickness = GetBorderThickness();
-  return gfx::Insets::TLBR(
-      border_thickness - views::Separator::kThickness - kOverlapFromToolbar,
-      border_thickness, border_thickness, border_thickness);
+  return gfx::Insets::TLBR(-kOverlapFromToolbar, border_thickness,
+                           border_thickness, border_thickness);
 }
 
 constexpr int kAnimationDurationMs = 450;
@@ -172,7 +172,7 @@ class SidePanelBorder : public views::Border {
     // there is a header we want to increase the top inset to give room for the
     // header to paint on top of the border area.
     int top_inset =
-        views::Separator::kThickness + header_height_ - GetBorderThickness();
+        views::Separator::kThickness + header_height_ - GetBorderInsets().top();
     return GetBorderInsets() + gfx::Insets::TLBR(top_inset, 0, 0, 0);
   }
   gfx::Size GetMinimumSize() const override {
@@ -448,7 +448,22 @@ void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
   static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
   // Update the border so that the insets include space for the header to be
   // placed on top of the border area.
-  int top_inset = header_view_->height() - GetBorderThickness();
+  int top_inset = header_view_->height() - GetBorderInsets().top();
+  SetBorder(views::CreateEmptyBorder(GetBorderInsets() +
+                                     gfx::Insets::TLBR(top_inset, 0, 0, 0)));
+}
+
+void SidePanel::SetHeaderVisibility(bool visible) {
+  if (!header_view_) {
+    return;
+  }
+  header_view_->SetVisible(visible);
+  static_cast<BorderView*>(border_view_)
+      ->HeaderViewChanged(visible ? header_view_ : nullptr);
+  // Update the border so that the insets include space for the header to be
+  // placed on top of the border area.
+  int top_inset =
+      (visible ? header_view_->height() : 0) - GetBorderInsets().top();
   SetBorder(views::CreateEmptyBorder(GetBorderInsets() +
                                      gfx::Insets::TLBR(top_inset, 0, 0, 0)));
 }
@@ -654,9 +669,9 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
     if (side_panel_open_or_closing) {
       border_view_->SetPaintToLayer();
       border_view_->layer()->SetFillsBoundsOpaquely(false);
-      if (header_view_) {
+      if (header_view_ && header_view_->GetVisible()) {
         static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
-        int top_inset = header_view_->height() - GetBorderThickness();
+        int top_inset = header_view_->height() - GetBorderInsets().top();
         SetBorder(views::CreateEmptyBorder(
             GetBorderInsets() + gfx::Insets::TLBR(top_inset, 0, 0, 0)));
       }

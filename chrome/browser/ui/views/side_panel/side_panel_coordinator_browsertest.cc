@@ -1943,6 +1943,85 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, SidePanelTitleUpdates) {
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE));
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, HeaderlessSidePanel) {
+  auto* registry = browser()
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  std::unique_ptr<SidePanelEntry> entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      /*default_content_width_callback=*/base::NullCallback());
+  entry->set_should_show_header(false);
+  registry->Register(std::move(entry));
+  coordinator()->SetNoDelaysForTesting(true);
+
+  coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
+  // Verify the side panel is showing with no header.
+  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
+  EXPECT_FALSE(browser()
+                   ->GetBrowserView()
+                   .unified_side_panel()
+                   ->get_header_for_testing()
+                   ->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
+                       HeaderlessSidePanelOnTabChange) {
+  global_registry()->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+  AddTabToBrowser(GURL("http://foo1.com"));
+  AddTabToBrowser(GURL("http://foo2.com"));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  auto* registry = browser()
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  std::unique_ptr<SidePanelEntry> entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      /*default_content_width_callback=*/base::NullCallback());
+  entry->set_should_show_header(false);
+  registry->Register(std::move(entry));
+  coordinator()->SetNoDelaysForTesting(true);
+
+  // Open the headerless side panel and verify the side panel is showing with no
+  // header.
+  coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
+  EXPECT_FALSE(global_registry()->active_entry().has_value());
+  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
+  EXPECT_FALSE(browser()
+                   ->GetBrowserView()
+                   .unified_side_panel()
+                   ->get_header_for_testing()
+                   ->GetVisible());
+
+  // Switch tabs and open a different side panel and verify the header is
+  // showing.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
+  coordinator()->Show(SidePanelEntry::Id::kBookmarks);
+  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
+  EXPECT_TRUE(browser()
+                  ->GetBrowserView()
+                  .unified_side_panel()
+                  ->get_header_for_testing()
+                  ->GetVisible());
+
+  // Verify the header is not showing if we switch back to the tab with the
+  // headerless side panel open.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
+  EXPECT_FALSE(browser()
+                   ->GetBrowserView()
+                   .unified_side_panel()
+                   ->get_header_for_testing()
+                   ->GetVisible());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        SidePanelPinButtonsHideInGuestMode) {

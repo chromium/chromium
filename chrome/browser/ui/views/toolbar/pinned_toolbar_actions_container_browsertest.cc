@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -189,6 +191,38 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   pinned_button->SetVisible(false);
   container()->InvalidateLayout();
   EXPECT_EQ(pinned_button->GetVisible(), false);
+}
+
+IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
+                       ButtonNotSeenWhenHiddenForSidePanelEntry) {
+  // Set the bookmarks side panel entry to not show an ephemeral button.
+  SidePanelCoordinator* side_panel_coordinator =
+      browser()->GetFeatures().side_panel_coordinator();
+  side_panel_coordinator->SetNoDelaysForTesting(true);
+  SidePanelEntry* entry =
+      side_panel_coordinator->GetWindowRegistry()->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  entry->set_should_show_ephemerally_in_toolbar(false);
+
+  // Verify no toolbar button is shown when the bookmarks side panel is opened.
+  side_panel_coordinator->Show(
+      SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_FALSE(container()->IsActionPinned(kActionSidePanelShowBookmarks));
+  EXPECT_FALSE(container()->IsActionPoppedOut(kActionSidePanelShowBookmarks));
+
+  // Set the bookmarks entry back to showing the toolbar button ephemerally if
+  // shown.
+  side_panel_coordinator->Close();
+  entry->set_should_show_ephemerally_in_toolbar(true);
+
+  // Verify the toolbar button is now ephemerally shown if the bookmarks side
+  // panel is opened.
+  side_panel_coordinator->Show(
+      SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_FALSE(container()->IsActionPinned(kActionSidePanelShowBookmarks));
+  EXPECT_TRUE(container()->IsActionPoppedOut(kActionSidePanelShowBookmarks));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

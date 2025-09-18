@@ -160,7 +160,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   std::unique_ptr<views::View> CreateHeader();
 
   void NotifyPinnedContainerOfActiveStateChange(SidePanelEntryKey key,
-                                                bool is_active);
+                                                bool show_active_in_toolbar);
 
   void MaybeQueuePinPromo();
   void ShowPinPromo();
