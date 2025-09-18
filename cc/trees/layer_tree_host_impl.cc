@@ -554,8 +554,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 
 #if BUILDFLAG(IS_CHROMEOS)
     frame_sorter_.EnableReportForUI();
-    frame_trackers_.StartSequence(
-        FrameSequenceTrackerType::kCompositorAnimation);
+    frame_trackers_.UpdateSmoothThreadHistory(
+        FrameInfo::SmoothEffectDrivingThread::kMain, /*modifier-*/1);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
