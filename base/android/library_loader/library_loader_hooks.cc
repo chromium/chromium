@@ -47,9 +47,13 @@ void SetLibraryLoadedHook(LibraryLoadedHook* func) {
 bool LibraryLoaded(LibraryProcessType library_process_type) {
   DCHECK_EQ(g_library_process_type, PROCESS_UNINITIALIZED);
   g_library_process_type = library_process_type;
-
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
-  orderfile::StartDelayedDump();
+  // For WebView renderer process, we want to start the recording later close to
+  // when the navigation starts. That way we optimize more for the pageload
+  // time.
+  if (g_library_process_type != PROCESS_WEBVIEW_CHILD) {
+    orderfile::StartDelayedDump();
+  }
 #endif
 
   if (g_native_initialization_hook &&
