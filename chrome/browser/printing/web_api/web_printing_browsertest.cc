@@ -58,7 +58,7 @@ startxref
 %EOF`;
 
     const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
-    const printers = await navigator.printing.getPrinters();
+    const printers = await printing.getPrinters();
 
     const printJob = await printers[0].submitPrintJob("Title",
       pdfBlob,
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, GetPrinters) {
   constexpr std::string_view kGetPrintersScript = R"(
     (async () => {
       try {
-        const printers = await navigator.printing.getPrinters();
+        const printers = await printing.getPrinters();
         if (printers.length !== 1 ||
             printers[0].cachedAttributes().printerName !== $1) {
           return false;
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
 
   constexpr std::string_view kFetchAttributesScript = R"(
     (async () => {
-      const printers = await navigator.printing.getPrinters();
+      const printers = await printing.getPrinters();
       return await printers[0].fetchAttributes();
     })();
   )";
@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, PrintFailure) {
   ASSERT_THAT(EvalJs(app_frame(), script), content::EvalJsResult::IsOk());
 }
 
-// Validate that call to `navigator.printing.getPrinters()` fails when content
+// Validate that call to `printing.getPrinters()` fails when content
 // setting is set to BLOCK.
 IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest,
                        GetPrintersUserPermissionDenied) {
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest,
 
   constexpr std::string_view kGetPrintersScript = R"(
     (async () => {
-      const printers = await navigator.printing.getPrinters();
+      const printers = await printing.getPrinters();
     })();
   )";
 
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest,
 
 // Validate that further calls to printer's methods fail when content setting
 // gets switched to BLOCK after a successful call to
-// `navigator.printing.getPrinters()`.
+// `printing.getPrinters()`.
 IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest,
                        FetchAndPrintUserPermissionDenied) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -428,10 +428,10 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest,
                              extensions::ConstructPrinterCapabilities());
 #endif
 
-  // Call `navigator.printing.getPrinters()` while the permission is active.
+  // Call `printing.getPrinters()` while the permission is active.
   constexpr std::string_view kGetPrintersScript = R"(
     (async () => {
-      const printers = await navigator.printing.getPrinters();
+      const printers = await printing.getPrinters();
       printer = printers[0];
     })();
   )";
@@ -501,7 +501,7 @@ startxref
 %EOF`;
 
     const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
-    const printers = await navigator.printing.getPrinters();
+    const printers = await printing.getPrinters();
 
     const printJob = await printers[0].submitPrintJob("Title", pdfBlob, {});
     let phase = 0;
@@ -554,7 +554,7 @@ startxref
 %EOF`;
 
     const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
-    const printers = await navigator.printing.getPrinters();
+    const printers = await printing.getPrinters();
 
     const printJob = await printers[0].submitPrintJob("Title", pdfBlob, {});
     let phase = 0;

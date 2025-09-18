@@ -16,20 +16,20 @@
 namespace blink {
 
 class ExceptionState;
-class NavigatorBase;
+class ExecutionContext;
 class WebPrinter;
 
 class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
-                                          public Supplement<NavigatorBase> {
+                                          public Supplement<ExecutionContext> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static const char kSupplementName[];
 
   // Getter for navigator.printing
-  static WebPrintingManager* GetWebPrintingManager(NavigatorBase&);
+  static WebPrintingManager* GetWebPrintingManager(ExecutionContext&);
 
-  explicit WebPrintingManager(NavigatorBase&);
+  explicit WebPrintingManager(ExecutionContext*);
 
   // navigator.printing.getPrinters()
   ScriptPromise<IDLSequence<WebPrinter>> getPrinters(ScriptState*,
@@ -42,6 +42,8 @@ class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
   mojom::blink::WebPrintingService* GetPrintingService();
   void OnPrintersRetrieved(ScriptPromiseResolver<IDLSequence<WebPrinter>>*,
                            mojom::blink::GetPrintersResultPtr result);
+
+  ExecutionContext* GetExecutionContext();
 
   HeapMojoRemote<mojom::blink::WebPrintingService> printing_service_;
 };

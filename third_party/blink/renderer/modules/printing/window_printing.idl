@@ -8,7 +8,7 @@
   RuntimeEnabled=WebPrinting,
   SecureContext,
   IsolatedContext
-] partial interface Navigator {
+] partial interface mixin WindowOrWorkerGlobalScope {
   [SameObject, ImplementedAs=GetWebPrintingManager]
   readonly attribute WebPrintingManager printing;
 };

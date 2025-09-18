@@ -1305,12 +1305,12 @@ if (!target_os_is_android) {
 # we need to compile in the same way as would happen when current_os = "android".
 if (!target_os_is_android) {
   static_idl_files_in_modules += [
-    "//third_party/blink/renderer/modules/printing/navigator_printing.idl",
     "//third_party/blink/renderer/modules/printing/web_printer.idl",
     "//third_party/blink/renderer/modules/printing/web_printer_attributes.idl",
     "//third_party/blink/renderer/modules/printing/web_printing_enums.idl",
     "//third_party/blink/renderer/modules/printing/web_printing_manager.idl",
     "//third_party/blink/renderer/modules/printing/web_print_job.idl",
+    "//third_party/blink/renderer/modules/printing/window_printing.idl",
   ]
 }
 
