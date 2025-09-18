@@ -56,7 +56,7 @@
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/platform_style.h"
-#include "ui/views/test/configurable_test_frame_view.h"
+#include "ui/views/test/configurable_test_native_frame_view.h"
 #include "ui/views/test/mock_drag_controller.h"
 #include "ui/views/test/mock_native_widget.h"
 #include "ui/views/test/native_widget_factory.h"
@@ -141,7 +141,7 @@ ui::GestureEvent CreateTestGestureEvent(const ui::GestureEventDetails& details,
 }
 
 std::unique_ptr<NativeFrameView> CreateMinimumSizeFrameView(Widget* frame) {
-  auto frame_view = std::make_unique<ConfigurableTestFrameView>(frame);
+  auto frame_view = std::make_unique<ConfigurableTestNativeFrameView>(frame);
   frame_view->set_minimum_size(gfx::Size(300, 400));
   return std::move(frame_view);
 }
@@ -5006,8 +5006,9 @@ TEST_F(DesktopWidgetTest, MAYBE_DeleteInSetFullscreen) {
 TEST_F(WidgetTest, FullscreenFrameLayout) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
 
-  auto frame_view = std::make_unique<ConfigurableTestFrameView>(widget.get());
-  ConfigurableTestFrameView* frame = frame_view.get();
+  auto frame_view =
+      std::make_unique<ConfigurableTestNativeFrameView>(widget.get());
+  ConfigurableTestNativeFrameView* frame = frame_view.get();
   widget->non_client_view()->SetFrameView(std::move(frame_view));
 
   widget->Maximize();
@@ -5817,7 +5818,7 @@ TEST_F(WidgetTest, NativeWidgetNotifiedOfWidgetDestructionForClientOwnsWidget) {
   auto native_widget =
       std::make_unique<testing::NiceMock<MockNativeWidget>>(widget.get());
   ON_CALL(*native_widget, CreateNonClientFrameView).WillByDefault([]() {
-    return std::make_unique<NonClientFrameView>();
+    return std::make_unique<FrameView>();
   });
   params.native_widget = native_widget.get();
   widget->Init(std::move(params));
@@ -5847,7 +5848,8 @@ class WidgetSetAspectRatioTest
     native_widget_ = std::make_unique<MockNativeWidget>(widget());
     ON_CALL(*native_widget(), CreateNonClientFrameView).WillByDefault([this]() {
       auto frame_view_with_fixed_margin =
-          std::make_unique<test::ConfigurableTestFrameView>(widget_.get());
+          std::make_unique<test::ConfigurableTestNativeFrameView>(
+              widget_.get());
       frame_view_with_fixed_margin->set_client_view_margin(margin());
       return frame_view_with_fixed_margin;
     });

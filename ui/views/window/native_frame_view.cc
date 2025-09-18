@@ -23,7 +23,7 @@ NativeFrameView::NativeFrameView(Widget* frame) : frame_(frame) {}
 NativeFrameView::~NativeFrameView() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
-// NativeFrameView, NonClientFrameView overrides:
+// NativeFrameView, FrameView overrides:
 
 gfx::Rect NativeFrameView::GetBoundsForClientView() const {
   return gfx::Rect(0, 0, width(), height());

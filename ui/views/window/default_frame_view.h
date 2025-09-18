@@ -12,7 +12,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_buttons.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 namespace views {
 
@@ -22,13 +22,13 @@ class Widget;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// DefaultNonClientFrameView
+// DefaultFrameView
 //
 //  Provides a fallback frame view that manually renders its frame, caption, and
 //  controls. Used on all platforms when no other frame view is specified.
 //
 ////////////////////////////////////////////////////////////////////////////////
-class VIEWS_EXPORT DefaultFrameView : public NonClientFrameView {
+class VIEWS_EXPORT DefaultFrameView : public FrameView {
  public:
   explicit DefaultFrameView(Widget* frame);
 
@@ -37,7 +37,7 @@ class VIEWS_EXPORT DefaultFrameView : public NonClientFrameView {
 
   ~DefaultFrameView() override;
 
-  // Overridden from NonClientFrameView:
+  // Overridden from FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;

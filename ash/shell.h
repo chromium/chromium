@@ -75,7 +75,7 @@ class UserActivityPowerManagerNotifier;
 }  // namespace ui
 
 namespace views {
-class NonClientFrameView;
+class FrameView;
 class Widget;
 namespace corewm {
 class TooltipController;
@@ -381,7 +381,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   // Creates a default views::NonClientFrameView for use by windows in the
   // Ash environment.
-  std::unique_ptr<views::NonClientFrameView> CreateDefaultNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateDefaultNonClientFrameView(
       views::Widget* widget);
 
   // Called when a casting session is started or stopped.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/test/configurable_test_frame_view.h"
+#include "ui/views/test/configurable_test_native_frame_view.h"
 
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/point.h"
@@ -12,11 +12,11 @@
 
 namespace views::test {
 
-ConfigurableTestFrameView::ConfigurableTestFrameView(Widget* frame)
+ConfigurableTestNativeFrameView::ConfigurableTestNativeFrameView(Widget* frame)
     : NativeFrameView(frame) {}
-ConfigurableTestFrameView::~ConfigurableTestFrameView() = default;
+ConfigurableTestNativeFrameView::~ConfigurableTestNativeFrameView() = default;
 
-gfx::Size ConfigurableTestFrameView::GetMinimumSize() const {
+gfx::Size ConfigurableTestNativeFrameView::GetMinimumSize() const {
   if (minimum_size_) {
     return minimum_size_.value();
   }
@@ -24,7 +24,7 @@ gfx::Size ConfigurableTestFrameView::GetMinimumSize() const {
   return NativeFrameView::GetMinimumSize();
 }
 
-gfx::Rect ConfigurableTestFrameView::GetBoundsForClientView() const {
+gfx::Rect ConfigurableTestNativeFrameView::GetBoundsForClientView() const {
   gfx::Rect client_view_bounds = NativeFrameView::GetBoundsForClientView();
 
   if (client_view_margin_) {
@@ -37,7 +37,7 @@ gfx::Rect ConfigurableTestFrameView::GetBoundsForClientView() const {
   return client_view_bounds;
 }
 
-gfx::Rect ConfigurableTestFrameView::GetWindowBoundsForClientBounds(
+gfx::Rect ConfigurableTestNativeFrameView::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   if (client_view_margin_) {
     // If a margin is set, adjust the window bounds to account for the custom
@@ -54,7 +54,7 @@ gfx::Rect ConfigurableTestFrameView::GetWindowBoundsForClientBounds(
   return NativeFrameView::GetWindowBoundsForClientBounds(client_bounds);
 }
 
-int ConfigurableTestFrameView::NonClientHitTest(const gfx::Point& point) {
+int ConfigurableTestNativeFrameView::NonClientHitTest(const gfx::Point& point) {
   if (hit_test_result_) {
     return hit_test_result_.value();
   }
@@ -62,12 +62,12 @@ int ConfigurableTestFrameView::NonClientHitTest(const gfx::Point& point) {
   return NativeFrameView::NonClientHitTest(point);
 }
 
-void ConfigurableTestFrameView::Layout(PassKey) {
+void ConfigurableTestNativeFrameView::Layout(PassKey) {
   if (GetWidget() && GetWidget()->IsFullscreen()) {
     fullscreen_layout_caled_ = true;
   }
 }
 
-BEGIN_METADATA(ConfigurableTestFrameView);
+BEGIN_METADATA(ConfigurableTestNativeFrameView);
 END_METADATA
 }  // namespace views::test

@@ -40,8 +40,7 @@ class LayerTreeOwner;
 namespace views {
 enum class CaptionButtonLayoutSize;
 class FrameCaptionButton;
-class NonClientFrameView;
-class View;
+class FrameView;
 class Widget;
 }  // namespace views
 
@@ -98,7 +97,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   // frame animator view to still be at the bottom of the z-order while also
   // keeping the rest of the frame view's children on top of the client view.
   static views::View::Views GetAdjustedChildrenInZOrder(
-      views::NonClientFrameView* frame_view);
+      views::FrameView* frame_view);
 
   FrameHeader(const FrameHeader&) = delete;
   FrameHeader& operator=(const FrameHeader&) = delete;

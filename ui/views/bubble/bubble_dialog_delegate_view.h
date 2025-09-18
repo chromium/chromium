@@ -255,8 +255,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // DialogDelegate:
   BubbleDialogDelegate* AsBubbleDialogDelegate() override;
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override;
+  std::unique_ptr<FrameView> CreateNonClientFrameView(Widget* widget) override;
   ClientView* CreateClientView(Widget* widget) override;
   ax::mojom::Role GetAccessibleWindowRole() final;
 

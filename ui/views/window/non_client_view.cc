@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/hit_test.h"
@@ -20,152 +19,9 @@
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "ui/display/win/screen_win.h"
-#endif
+#include "ui/views/window/frame_view.h"
 
 namespace views {
-
-NonClientFrameView::~NonClientFrameView() = default;
-
-bool NonClientFrameView::ShouldPaintAsActive() const {
-  return GetWidget()->ShouldPaintAsActive();
-}
-
-int NonClientFrameView::GetHTComponentForFrame(const gfx::Point& point,
-                                               const gfx::Insets& resize_border,
-                                               int top_resize_corner_height,
-                                               int resize_corner_width,
-                                               bool can_resize) {
-  // If the point isnt within the resize boundaries, return nowhere.
-  bool point_in_top = point.y() < resize_border.top();
-  bool point_in_bottom = point.y() >= height() - resize_border.bottom();
-  bool point_in_left = point.x() < resize_border.left();
-  bool point_in_right = point.x() >= width() - resize_border.right();
-
-  if (!point_in_left && !point_in_right && !point_in_top && !point_in_bottom) {
-    return HTNOWHERE;
-  }
-
-  // If the window can't be resized, there are no resize boundaries, just
-  // window borders.
-  if (!can_resize) {
-    return HTBORDER;
-  }
-
-  // Shrink the resize boundaries
-  point_in_top |= point.y() < top_resize_corner_height;
-  point_in_left |= point.x() < resize_corner_width;
-  point_in_right |= point.x() >= width() - resize_corner_width;
-
-  if (point_in_top) {
-    if (point_in_left) {
-      return HTTOPLEFT;
-    } else if (point_in_right) {
-      return HTTOPRIGHT;
-    }
-    return HTTOP;
-  } else if (point_in_bottom) {
-    if (point_in_left) {
-      return HTBOTTOMLEFT;
-    } else if (point_in_right) {
-      return HTBOTTOMRIGHT;
-    }
-    return HTBOTTOM;
-  } else if (point_in_left) {
-    return HTLEFT;
-  }
-  CHECK(point_in_right);
-  return HTRIGHT;
-}
-
-gfx::Rect NonClientFrameView::GetBoundsForClientView() const {
-  return gfx::Rect();
-}
-
-gfx::Rect NonClientFrameView::GetWindowBoundsForClientBounds(
-    const gfx::Rect& client_bounds) const {
-  return client_bounds;
-}
-
-bool NonClientFrameView::GetClientMask(const gfx::Size& size,
-                                       SkPath* mask) const {
-  return false;
-}
-
-bool NonClientFrameView::HasWindowTitle() const {
-  return false;
-}
-
-bool NonClientFrameView::IsWindowTitleVisible() const {
-  return false;
-}
-
-#if BUILDFLAG(IS_WIN)
-gfx::Point NonClientFrameView::GetSystemMenuScreenPixelLocation() const {
-  gfx::Point point(GetMirroredXInView(GetBoundsForClientView().x()),
-                   GetSystemMenuY());
-  View::ConvertPointToScreen(this, &point);
-  point = display::win::GetScreenWin()->DIPToScreenPoint(point);
-  // The native system menu seems to overlap the titlebar by 1 px.  Match that.
-  return point - gfx::Vector2d(0, 1);
-}
-#endif
-
-int NonClientFrameView::NonClientHitTest(const gfx::Point& point) {
-  return HTNOWHERE;
-}
-
-void NonClientFrameView::OnThemeChanged() {
-  View::OnThemeChanged();
-  SchedulePaint();
-}
-
-void NonClientFrameView::Layout(PassKey) {
-  if (GetLayoutManager()) {
-    GetLayoutManager()->Layout(this);
-  }
-
-  views::ClientView* client_view = GetWidget()->client_view();
-  client_view->SetBoundsRect(GetBoundsForClientView());
-  SkPath client_clip;
-  if (GetClientMask(client_view->size(), &client_clip)) {
-    client_view->SetClipPath(client_clip);
-  }
-}
-
-View::Views NonClientFrameView::GetChildrenInZOrder() {
-  View::Views paint_order = View::GetChildrenInZOrder();
-  views::ClientView* client_view =
-      GetWidget() ? GetWidget()->client_view() : nullptr;
-
-  // Move the client view to the beginning of the Z-order to ensure that the
-  // other children of the frame view draw on top of it.
-  if (client_view && std::erase(paint_order, client_view)) {
-    paint_order.insert(paint_order.begin(), client_view);
-  }
-
-  return paint_order;
-}
-
-void NonClientFrameView::InsertClientView(ClientView* client_view) {
-  AddChildViewRaw(client_view);
-}
-
-NonClientFrameView::NonClientFrameView() {
-  GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
-  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
-}
-
-#if BUILDFLAG(IS_WIN)
-int NonClientFrameView::GetSystemMenuY() const {
-  return GetBoundsForClientView().y();
-}
-#endif
-
-BEGIN_METADATA(NonClientFrameView)
-END_METADATA
 
 NonClientView::NonClientView(views::ClientView* client_view)
     : client_view_(client_view) {
@@ -182,12 +38,11 @@ NonClientView::~NonClientView() {
   RemoveChildView(frame_view_.get());
 }
 
-void NonClientView::SetFrameView(
-    std::unique_ptr<NonClientFrameView> frame_view) {
+void NonClientView::SetFrameView(std::unique_ptr<FrameView> frame_view) {
   // If there is an existing frame view, ensure that the ClientView remains
   // attached to the Widget by moving the ClientView to the new frame before
   // removing the old frame from the view hierarchy.
-  std::unique_ptr<NonClientFrameView> old_frame_view = std::move(frame_view_);
+  std::unique_ptr<FrameView> old_frame_view = std::move(frame_view_);
   frame_view_ = std::move(frame_view);
   if (parent()) {
     AddChildViewAt(frame_view_.get(), 0);
@@ -236,7 +91,7 @@ gfx::Rect NonClientView::GetWindowBoundsForClientBounds(
 }
 
 int NonClientView::NonClientHitTest(const gfx::Point& point) {
-  // The NonClientFrameView is responsible for also asking the ClientView.
+  // The FrameView is responsible for also asking the ClientView.
   return frame_view_->NonClientHitTest(point);
 }
 
@@ -344,12 +199,12 @@ View* NonClientView::TargetForRect(View* root, const gfx::Rect& rect) {
   }
 
   // Because of the z-ordering of our child views (the client view is positioned
-  // over the non-client frame view, if the client view ever overlaps the frame
-  // view visually (as it does for the browser window), then it will eat
-  // events for the window controls. We override this method here so that we can
-  // detect this condition and re-route the events to the non-client frame view.
-  // The assumption is that the frame view's implementation of HitTest will only
-  // return true for area not occupied by the client view.
+  // over the frame view, if the client view ever overlaps the frame view
+  // visually (as it does for the browser window), then it will eat events for
+  // the window controls. We override this method here so that we can detect
+  // this condition and re-route the events to the frame view. The assumption is
+  // that the frame view's implementation of HitTest will only return true for
+  // area not occupied by the client view.
   if (frame_view_->parent() == this) {
     // During the reset of the frame_view_ it's possible to be in this code
     // after it's been removed from the view hierarchy but before it's been

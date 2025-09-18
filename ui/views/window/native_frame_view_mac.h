@@ -23,7 +23,7 @@ class VIEWS_EXPORT NativeFrameViewMacClient {
   virtual ~NativeFrameViewMacClient() = default;
 
   // Returns a hit-test value for the given point, or nullopt to allow default
-  // processing. See NonClientFrameView::NonClientHitTest for more details.
+  // processing. See FrameView::NonClientHitTest for more details.
   virtual std::optional<int> NonClientHitTest(const gfx::Point& point) = 0;
 };
 
@@ -36,7 +36,7 @@ class VIEWS_EXPORT NativeFrameViewMac : public NativeFrameView {
   NativeFrameViewMac& operator=(const NativeFrameViewMac&) = delete;
   ~NativeFrameViewMac() override;
 
-  // NonClientFrameView
+  // FrameView
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
   int NonClientHitTest(const gfx::Point& point) override;

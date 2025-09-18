@@ -29,7 +29,7 @@ namespace views {
 class FrameCaptionButton;
 class ImageView;
 class Widget;
-class NonClientFrameView;
+class FrameView;
 }  // namespace views
 
 namespace chromeos {
@@ -54,8 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   // placed in. For example, in immersive fullscreen this view may be painted in
   // a widget that slides in and out on top of the main app or browser window.
   // However, clicking a caption button should act on the target widget.
-  HeaderView(views::Widget* target_widget,
-             views::NonClientFrameView* frame_view);
+  HeaderView(views::Widget* target_widget, views::FrameView* frame_view);
 
   HeaderView(const HeaderView&) = delete;
   HeaderView& operator=(const HeaderView&) = delete;

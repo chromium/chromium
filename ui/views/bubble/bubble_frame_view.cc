@@ -672,11 +672,11 @@ void BubbleFrameView::Layout(PassKey) {
   }
 
   // Lay out the client view.
-  LayoutSuperclass<NonClientFrameView>(this);
+  LayoutSuperclass<FrameView>(this);
 }
 
 void BubbleFrameView::OnThemeChanged() {
-  NonClientFrameView::OnThemeChanged();
+  FrameView::OnThemeChanged();
   UpdateWindowTitle();
   UpdateSubtitle();
   ResetWindowControls();
@@ -711,7 +711,7 @@ void BubbleFrameView::ViewHierarchyChanged(
 }
 
 void BubbleFrameView::VisibilityChanged(View* starting_from, bool is_visible) {
-  NonClientFrameView::VisibilityChanged(starting_from, is_visible);
+  FrameView::VisibilityChanged(starting_from, is_visible);
   input_protector_.VisibilityChanged(is_visible);
 }
 
@@ -721,7 +721,7 @@ void BubbleFrameView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void BubbleFrameView::PaintChildren(const PaintInfo& paint_info) {
-  NonClientFrameView::PaintChildren(paint_info);
+  FrameView::PaintChildren(paint_info);
 
   ui::PaintCache paint_cache;
   ui::PaintRecorder recorder(

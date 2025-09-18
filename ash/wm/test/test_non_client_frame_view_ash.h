@@ -13,7 +13,7 @@
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
-class NonClientFrameView;
+class FrameView;
 class Widget;
 }  // namespace views
 
@@ -28,7 +28,7 @@ class TestWidgetDelegateAsh : public views::WidgetDelegateView {
   ~TestWidgetDelegateAsh() override;
 
   // views::WidgetDelegateView:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 };
 

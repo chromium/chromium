@@ -12,7 +12,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
-class NonClientFrameView;
+class FrameView;
 }  // namespace views
 
 namespace ash {
@@ -57,7 +57,7 @@ class DeleteEditShortcut : public views::BubbleDialogDelegateView {
   void OnDeleteButtonPressed();
 
   // views::DialogDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
   // views::View:

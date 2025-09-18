@@ -40,7 +40,7 @@ class ContextFactory;
 namespace views {
 
 class NativeWidget;
-class NonClientFrameView;
+class FrameView;
 class Widget;
 
 #if defined(USE_AURA)
@@ -147,12 +147,12 @@ class VIEWS_EXPORT ViewsDelegate {
   virtual gfx::ImageSkia* GetDefaultWindowIcon() const;
 #endif
 
-  // Creates a default NonClientFrameView to be used for windows that don't
+  // Creates a default FrameView to be used for windows that don't
   // specify their own and where no platform frame view is specified.
   //
   // Defaults to `DefaultFrameView`. This method should never return null, as a
   // fallback is needed on all platforms.
-  virtual std::unique_ptr<NonClientFrameView> CreateDefaultNonClientFrameView(
+  virtual std::unique_ptr<FrameView> CreateDefaultNonClientFrameView(
       Widget* widget);
 
   // AddRef/ReleaseRef are invoked while a menu is visible. They are used to

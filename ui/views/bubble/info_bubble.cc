@@ -90,7 +90,7 @@ void InfoBubble::Hide() {
   }
 }
 
-std::unique_ptr<NonClientFrameView> InfoBubble::CreateNonClientFrameView(
+std::unique_ptr<FrameView> InfoBubble::CreateNonClientFrameView(
     Widget* widget) {
   DCHECK(!frame_);
   auto frame = std::make_unique<InfoBubbleFrame>(margins());

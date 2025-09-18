@@ -867,7 +867,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
   //
   // Widget
   // ++NonClientView
-  // ++NonClientFrameView
+  // ++FrameView
   // ++Button
   // ++++Label
   // 0 = ++ParentView

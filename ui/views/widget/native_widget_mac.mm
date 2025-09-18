@@ -395,8 +395,7 @@ void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
   }
 }
 
-std::unique_ptr<NonClientFrameView>
-NativeWidgetMac::CreateNonClientFrameView() {
+std::unique_ptr<FrameView> NativeWidgetMac::CreateNonClientFrameView() {
   return GetWidget() ? std::make_unique<NativeFrameViewMac>(GetWidget(),
                                                             /*client=*/nullptr)
                      : nullptr;

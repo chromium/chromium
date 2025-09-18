@@ -384,8 +384,7 @@ void NativeWidgetAura::ReparentNativeViewImpl(gfx::NativeView new_parent) {
   ReparentAuraWindow(GetNativeView(), new_parent);
 }
 
-std::unique_ptr<NonClientFrameView>
-NativeWidgetAura::CreateNonClientFrameView() {
+std::unique_ptr<FrameView> NativeWidgetAura::CreateNonClientFrameView() {
   return nullptr;
 }
 

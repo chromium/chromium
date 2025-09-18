@@ -57,8 +57,8 @@ class VIEWS_EXPORT ClientView : public View {
 
   // Updates the ClientView's contents as part of rounding the window.
   // Some platforms, such as ChromeOS, do not have borders surrounding
-  // ClientView part of the NonClientFrameView. Therefore, the
-  // NonClientFrameView has to delegate part of the rounding logic to the
+  // ClientView part of the FrameView. Therefore, the
+  // FrameView has to delegate part of the rounding logic to the
   // ClientView.
   virtual void UpdateWindowRoundedCorners(
       const gfx::RoundedCornersF& window_radii);

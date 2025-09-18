@@ -251,7 +251,7 @@ views::ClientView* WebDialogView::CreateClientView(views::Widget* widget) {
   return this;
 }
 
-std::unique_ptr<NonClientFrameView> WebDialogView::CreateNonClientFrameView(
+std::unique_ptr<FrameView> WebDialogView::CreateNonClientFrameView(
     Widget* widget) {
   if (!delegate_) {
     return WidgetDelegate::CreateNonClientFrameView(widget);

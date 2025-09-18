@@ -559,7 +559,7 @@ gfx::Rect DesktopWindowTreeHostPlatform::GetWindowBoundsInScreen() const {
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::GetClientAreaBoundsInScreen() const {
-  // Attempts to calculate the rect by asking the NonClientFrameView what it
+  // Attempts to calculate the rect by asking the FrameView what it
   // thought its GetBoundsForClientView() were broke combobox drop down
   // placement.
   return GetWindowBoundsInScreen();
@@ -736,7 +736,7 @@ void DesktopWindowTreeHostPlatform::SetVisibilityChangedAnimationsEnabled(
   }
 }
 
-std::unique_ptr<NonClientFrameView>
+std::unique_ptr<FrameView>
 DesktopWindowTreeHostPlatform::CreateNonClientFrameView() {
   return ShouldUseNativeFrame() ? std::make_unique<NativeFrameView>(GetWidget())
                                 : nullptr;

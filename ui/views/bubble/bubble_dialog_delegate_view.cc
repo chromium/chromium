@@ -569,8 +569,8 @@ BubbleDialogDelegate* BubbleDialogDelegate::AsBubbleDialogDelegate() {
   return this;
 }
 
-std::unique_ptr<NonClientFrameView>
-BubbleDialogDelegate::CreateNonClientFrameView(Widget* widget) {
+std::unique_ptr<FrameView> BubbleDialogDelegate::CreateNonClientFrameView(
+    Widget* widget) {
   auto frame = std::make_unique<BubbleDialogFrameView>(title_margins_);
 
   frame->SetFootnoteMargins(footnote_margins_);
@@ -1015,7 +1015,7 @@ gfx::Rect BubbleDialogDelegate::GetDesiredBubbleBounds() {
 
 gfx::Size BubbleDialogDelegateView::GetMinimumSize() const {
   // Note that although BubbleDialogFrameView will never invoke this, a subclass
-  // may override CreateNonClientFrameView() to provide a NonClientFrameView
+  // may override CreateNonClientFrameView() to provide a FrameView
   // that does. See http://crbug.com/844359.
   return gfx::Size();
 }

@@ -16,7 +16,7 @@
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/test/configurable_test_frame_view.h"
+#include "ui/views/test/configurable_test_native_frame_view.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -172,20 +172,20 @@ class HitTestWidgetDelegate : public WidgetDelegate {
 
   ~HitTestWidgetDelegate() override = default;
 
-  test::ConfigurableTestFrameView* frame_view() { return frame_view_; }
+  test::ConfigurableTestNativeFrameView* frame_view() { return frame_view_; }
 
   // WidgetDelegate:
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override {
+  std::unique_ptr<FrameView> CreateNonClientFrameView(Widget* widget) override {
     DCHECK(!frame_view_);
-    auto frame_view = std::make_unique<test::ConfigurableTestFrameView>(widget);
+    auto frame_view =
+        std::make_unique<test::ConfigurableTestNativeFrameView>(widget);
     frame_view_ = frame_view.get();
     return frame_view;
   }
 
  private:
-  raw_ptr<test::ConfigurableTestFrameView, DanglingUntriaged> frame_view_ =
-      nullptr;
+  raw_ptr<test::ConfigurableTestNativeFrameView, DanglingUntriaged>
+      frame_view_ = nullptr;
 };
 
 // Test host that can intercept calls to the real host.

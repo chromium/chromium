@@ -14,7 +14,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/display/display_switches.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/test/configurable_test_non_client_frame_view.h"
+#include "ui/views/test/configurable_test_custom_frame_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
@@ -63,12 +63,10 @@ class ShapedWidgetDelegate : public WidgetDelegateView {
   ~ShapedWidgetDelegate() override = default;
 
   // WidgetDelegateView:
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override {
-    // Create a NonClientFrameView with a window mask with the bottom right
+  std::unique_ptr<FrameView> CreateNonClientFrameView(Widget* widget) override {
+    // Create a FrameView with a window mask with the bottom right
     // corner cut out.
-    auto frame_view =
-        std::make_unique<test::ConfigurableTestNonClientFrameView>();
+    auto frame_view = std::make_unique<test::ConfigurableTestCustomFrameView>();
     frame_view->SetWindowMaskCallback(
         base::BindRepeating([](const gfx::Size& size, SkPath* window_mask) {
           int right = size.width();

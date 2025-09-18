@@ -86,7 +86,7 @@ TEST_F(WidgetDelegateTest,
   auto delegate = std::make_unique<WidgetDelegate>();
   delegate->SetNonClientFrameViewFactory(
       base::BindLambdaForTesting([&tracker](Widget* widget) {
-        auto view = std::make_unique<NonClientFrameView>();
+        auto view = std::make_unique<FrameView>();
         tracker.SetView(view.get());
         return view;
       }));

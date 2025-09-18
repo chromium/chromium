@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_TEST_CONFIGURABLE_TEST_FRAME_VIEW_H_
-#define UI_VIEWS_TEST_CONFIGURABLE_TEST_FRAME_VIEW_H_
+#ifndef UI_VIEWS_TEST_CONFIGURABLE_TEST_NATIVE_FRAME_VIEW_H_
+#define UI_VIEWS_TEST_CONFIGURABLE_TEST_NATIVE_FRAME_VIEW_H_
 
 #include <optional>
 
@@ -19,19 +19,20 @@ class Widget;
 
 namespace test {
 
-// A test-only NonClientFrameView that allows for configuring specific
+// A test-only FrameView that allows for configuring specific
 // behaviors needed by tests, such as returning a custom minimum size or a
 // custom hit-test result.
-class ConfigurableTestFrameView : public NativeFrameView {
-  METADATA_HEADER(ConfigurableTestFrameView, NativeFrameView)
+class ConfigurableTestNativeFrameView : public NativeFrameView {
+  METADATA_HEADER(ConfigurableTestNativeFrameView, NativeFrameView)
 
  public:
-  explicit ConfigurableTestFrameView(Widget* frame);
-  ~ConfigurableTestFrameView() override;
+  explicit ConfigurableTestNativeFrameView(Widget* frame);
+  ~ConfigurableTestNativeFrameView() override;
 
-  ConfigurableTestFrameView(const ConfigurableTestFrameView&) = delete;
-  ConfigurableTestFrameView& operator=(const ConfigurableTestFrameView&) =
+  ConfigurableTestNativeFrameView(const ConfigurableTestNativeFrameView&) =
       delete;
+  ConfigurableTestNativeFrameView& operator=(
+      const ConfigurableTestNativeFrameView&) = delete;
 
   void set_minimum_size(const gfx::Size& size) { minimum_size_ = size; }
   void set_hit_test_result(int result) { hit_test_result_ = result; }
@@ -60,4 +61,4 @@ class ConfigurableTestFrameView : public NativeFrameView {
 }  // namespace test
 }  // namespace views
 
-#endif  // UI_VIEWS_TEST_CONFIGURABLE_TEST_FRAME_VIEW_H_
+#endif  // UI_VIEWS_TEST_CONFIGURABLE_TEST_NATIVE_FRAME_VIEW_H_

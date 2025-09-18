@@ -40,7 +40,6 @@ class MenuModel;
 namespace views {
 class Label;
 class MenuRunner;
-class NonClientFrameView;
 class View;
 }  // namespace views
 

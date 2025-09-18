@@ -220,7 +220,7 @@ class DefaultWidgetDelegate;
 class DialogDelegate;
 class FocusTraversalTest;
 class MoveTestWidgetDelegate;
-class NonClientFrameView;
+class FrameView;
 class ShapedWidgetDelegate;
 class TableViewFocusTest;
 class View;
@@ -274,14 +274,14 @@ class VIEWS_EXPORT WidgetDelegate {
   using OverlayViewFactory = base::OnceCallback<std::unique_ptr<View>()>;
 
   // NonClientFrameViewFactory is a RepeatingCallback because the
-  // NonClientFrameView is rebuilt on Aura platforms when WindowTreeHost
+  // FrameView is rebuilt on Aura platforms when WindowTreeHost
   // properties that might affect its appearance change. Rebuilding the entire
-  // NonClientFrameView is a pretty big hammer for that but it's the one we
+  // FrameView is a pretty big hammer for that but it's the one we
   // have.
-  // TODO(b:387350163): Investigate if NonClientFrameView can handle these
+  // TODO(b:387350163): Investigate if FrameView can handle these
   // changes in a more granular way.
   using NonClientFrameViewFactory =
-      base::RepeatingCallback<std::unique_ptr<NonClientFrameView>(Widget*)>;
+      base::RepeatingCallback<std::unique_ptr<FrameView>(Widget*)>;
 
   struct Params {
     Params();
@@ -695,12 +695,11 @@ class VIEWS_EXPORT WidgetDelegate {
 
   // Called by the Widget to create the NonClient Frame View for this widget.
   // Return NULL to use the default one.
-  virtual std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget);
+  virtual std::unique_ptr<FrameView> CreateNonClientFrameView(Widget* widget);
 
   // Called by the Widget to create the overlay View for this widget. Return
   // NULL for no overlay. The overlay View will fill the Widget and sit on top
-  // of the ClientView and NonClientFrameView (both visually and wrt click
+  // of the ClientView and FrameView (both visually and wrt click
   // targeting).
   virtual View* CreateOverlayView();
 

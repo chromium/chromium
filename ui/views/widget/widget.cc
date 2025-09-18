@@ -1491,7 +1491,7 @@ void Widget::ClearNativeFocus() {
   }
 }
 
-std::unique_ptr<NonClientFrameView> Widget::CreateNonClientFrameView() {
+std::unique_ptr<FrameView> Widget::CreateNonClientFrameView() {
   if (!native_widget_) {
     return nullptr;
   }

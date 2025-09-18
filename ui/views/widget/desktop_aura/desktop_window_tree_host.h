@@ -172,7 +172,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
 
   virtual void SetVisibilityChangedAnimationsEnabled(bool value) = 0;
 
-  virtual std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() = 0;
+  virtual std::unique_ptr<FrameView> CreateNonClientFrameView() = 0;
 
   // Determines whether the window should use native title bar and borders.
   virtual bool ShouldUseNativeFrame() const = 0;

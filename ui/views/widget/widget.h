@@ -41,6 +41,7 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/window/client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -77,7 +78,6 @@ namespace views {
 
 class DesktopWindowTreeHost;
 class NativeWidget;
-class NonClientFrameView;
 class SublevelManager;
 class TooltipManager;
 class View;
@@ -1181,11 +1181,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void set_frame_type(FrameType frame_type) { frame_type_ = frame_type; }
   FrameType frame_type() const { return frame_type_; }
 
-  // Creates an appropriate NonClientFrameView for this widget. The
+  // Creates an appropriate FrameView for this widget. The
   // WidgetDelegate is given the first opportunity to create one, followed by
   // the NativeWidget implementation. If both return NULL, a default one is
   // created.
-  virtual std::unique_ptr<NonClientFrameView> CreateNonClientFrameView();
+  virtual std::unique_ptr<FrameView> CreateNonClientFrameView();
 
   // Whether we should be using a native frame.
   bool ShouldUseNativeFrame() const;

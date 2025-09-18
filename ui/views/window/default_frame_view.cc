@@ -238,7 +238,7 @@ void DefaultFrameView::Layout(PassKey) {
   }
 
   LayoutClientView();
-  LayoutSuperclass<NonClientFrameView>(this);
+  LayoutSuperclass<FrameView>(this);
 }
 
 gfx::Size DefaultFrameView::CalculatePreferredSize(

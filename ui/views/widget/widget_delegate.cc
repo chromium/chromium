@@ -32,8 +32,7 @@ std::unique_ptr<ClientView> CreateDefaultClientView(WidgetDelegate* delegate,
       widget, delegate->TransferOwnershipOfContentsView());
 }
 
-std::unique_ptr<NonClientFrameView> CreateDefaultNonClientFrameView(
-    Widget* widget) {
+std::unique_ptr<FrameView> CreateDefaultNonClientFrameView(Widget* widget) {
   return nullptr;
 }
 
@@ -373,7 +372,7 @@ ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
   return std::move(client_view_factory_).Run(widget).release();
 }
 
-std::unique_ptr<NonClientFrameView> WidgetDelegate::CreateNonClientFrameView(
+std::unique_ptr<FrameView> WidgetDelegate::CreateNonClientFrameView(
     Widget* widget) {
   CHECK(non_client_frame_view_factory_);
   return non_client_frame_view_factory_.Run(widget);

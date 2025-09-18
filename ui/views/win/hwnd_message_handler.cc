@@ -2417,7 +2417,7 @@ LRESULT HWNDMessageHandler::OnNCActivate(UINT message,
 LRESULT HWNDMessageHandler::OnNCCalcSize(BOOL mode, LPARAM l_param) {
   // We only override the default handling if we need to specify a custom
   // non-client edge width. Note that in most cases "no insets" means no
-  // custom width, but in fullscreen mode or when the NonClientFrameView
+  // custom width, but in fullscreen mode or when the FrameView
   // requests it, we want a custom width of 0.
 
   // Let User32 handle the first nccalcsize for captioned windows
