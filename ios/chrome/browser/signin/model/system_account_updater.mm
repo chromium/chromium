@@ -31,11 +31,11 @@
 namespace {
 
 // Updates all widget timelines with the updated data.
-void ReloadAllTimelines() {
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+void ReloadAllTimelines() {
   [WidgetTimelinesUpdater reloadAllTimelines];
-#endif
 }
+#endif
 
 // Stores information about a SystemIdentity.
 class SystemIdentityInfo {
