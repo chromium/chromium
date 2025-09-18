@@ -114,8 +114,8 @@ bool ElementFragmentAnchor::Invoke() {
 
   if (element_to_scroll) {
     ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-    options->setBlock("start");
-    options->setInlinePosition("nearest");
+    options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+    options->setInlinePosition(V8ScrollLogicalPosition::Enum::kNearest);
     ScrollElementIntoViewWithOptions(element_to_scroll, options);
   }
 

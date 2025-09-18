@@ -683,8 +683,10 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
             // bottom one.
             ScrollIntoViewOptions* scroll_into_view_options =
                 ScrollIntoViewOptions::Create();
-            scroll_into_view_options->setBlock("start");
-            scroll_into_view_options->setInlinePosition("nearest");
+            scroll_into_view_options->setBlock(
+                V8ScrollLogicalPosition::Enum::kStart);
+            scroll_into_view_options->setInlinePosition(
+                V8ScrollLogicalPosition::Enum::kNearest);
             scrollIntoViewWithOptions(scroll_into_view_options);
           }
           // Then find the last option that is still in the view.
@@ -709,8 +711,10 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
             // the top one.
             ScrollIntoViewOptions* scroll_into_view_options =
                 ScrollIntoViewOptions::Create();
-            scroll_into_view_options->setBlock("end");
-            scroll_into_view_options->setInlinePosition("nearest");
+            scroll_into_view_options->setBlock(
+                V8ScrollLogicalPosition::Enum::kEnd);
+            scroll_into_view_options->setInlinePosition(
+                V8ScrollLogicalPosition::Enum::kNearest);
             scrollIntoViewWithOptions(scroll_into_view_options);
           }
           // Then find the first option that is in the view.

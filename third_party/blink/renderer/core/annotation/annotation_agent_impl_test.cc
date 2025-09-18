@@ -2416,8 +2416,8 @@ TEST_F(AnnotationAgentImplTest,
   Element* element_bar = GetDocument().getElementById(AtomicString("bar"));
   EXPECT_TRUE(ExpectNotInViewport(*element_bar));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("instant");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kInstant);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   element_bar->scrollIntoViewForTesting(arg);
