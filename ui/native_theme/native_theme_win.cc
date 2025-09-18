@@ -390,7 +390,7 @@ void PaintMenuSeparator(
   }
 
   cc::PaintFlags flags;
-  flags.setColor(color_provider->GetColor(kColorMenuSeparator));
+  flags.setColor(color_provider->GetColor(extra_params.color_id));
   canvas->drawLine(start.x(), start.y(), end.x(), end.y(), flags);
 }
 

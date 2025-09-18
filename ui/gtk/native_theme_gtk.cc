@@ -108,7 +108,7 @@ void NativeThemeGtk::PaintMenuSeparator(
   if (extra_params.type == ui::VERTICAL_SEPARATOR) {
     CHECK(color_provider);
     cc::PaintFlags paint;
-    paint.setColor(color_provider->GetColor(ui::kColorMenuSeparator));
+    paint.setColor(color_provider->GetColor(extra_params.color_id));
     canvas->drawRect(gfx::RectToSkRect(rect), paint);
     return;
   }
