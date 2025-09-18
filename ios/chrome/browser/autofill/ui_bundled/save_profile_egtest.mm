@@ -248,15 +248,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
     config.features_enabled.push_back(kAutofillFixXhrForXframe);
   }
 
-  if ([self isRunningTest:@selector(testSubmissionDetectionWithDeduping)]) {
-    config.features_enabled.push_back(kAutofillDedupeFormSubmission);
-  }
-
-  if ([self isRunningTest:@selector
-            (DISABLED_testSubmissionDetectionWithoutDeduping)]) {
-    config.features_disabled.push_back(kAutofillDedupeFormSubmission);
-  }
-
   if ([self isRunningTest:@selector(testSubmissionErrorReporting_Enabled)]) {
     config.features_enabled.push_back(kAutofillReportFormSubmissionErrors);
   }
@@ -941,37 +932,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   [SigninEarlGrey signOut];
 }
 
-// TODO(crbug.com/444697263): Re-enable this test.
-// Tests that multiple submissions on the same form are not deduped when
-// deduping is disabled where all submissions are sent over to the browser.
-- (void)DISABLED_testSubmissionDetectionWithoutDeduping {
-  // Submit the form with `defaultPrevented` not considered and without
-  // redirecting so the same form can be submitted multiple time.
-  FullAddressFormPageParams params{.default_prevented = true,
-                                   .redirect = false};
-  [self loadAndSubmitFullAddressFormWithParams:params];
 
-  // Wait on the infobar to be displayed after submission, meaning that
-  // submission was detected.
-  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
-
-  // Spam submissions.
-  for (int i = 0; i < 5; ++i) {
-    [ChromeEarlGrey tapWebStateElementWithID:@"submit-button"];
-  }
-
-  // Verify that all submissions were sent over to the browser and recorded.
-  GREYAssertTrue(
-      base::test::ios::WaitUntilConditionOrTimeout(
-          base::Milliseconds(200),
-          ^{
-            NSError* error = [MetricsAppInterface
-                expectTotalCount:6
-                    forHistogram:@"Autofill.iOS.FormSubmission.OutcomeV2"];
-            return error == nil;
-          }),
-      @"Timed out waiting for all form submission events.");
-}
 
 // Tests that multiple submissions on the same form are deduped when deduping is
 // enabled where only one submission per form element is allowed when.

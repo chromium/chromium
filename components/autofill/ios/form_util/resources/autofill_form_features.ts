@@ -68,7 +68,7 @@ let autofillAllowDefaultPreventedSubmission: boolean = true;
 /**
 Dedupes form submission by only allowing one submission per form.
 */
-let autofillDedupeFormSubmission: boolean = false;
+let autofillDedupeFormSubmission: boolean = true;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_dedupe_form_submission)
 
 // LINT.IfChange(autofill_report_form_submission_errors)

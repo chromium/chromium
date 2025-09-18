@@ -22,7 +22,7 @@ BASE_FEATURE(kAutofillCountFormSubmissionInRenderer,
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_count_form_submission_in_renderer)
 
 // LINT.IfChange(autofill_dedupe_form_submission)
-BASE_FEATURE(kAutofillDedupeFormSubmission, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillDedupeFormSubmission, base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_dedupe_form_submission)
 
 BASE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput,
