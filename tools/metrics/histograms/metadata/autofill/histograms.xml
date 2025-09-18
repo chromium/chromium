@@ -5940,8 +5940,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.SaveAndFill.DialogShown.{SaveType}"
-    enum="SaveAndFillDialogResult" expires_after="2026-06-01">
+<histogram name="Autofill.SaveAndFill.DialogShown.{SaveType}" enum="Boolean"
+    expires_after="2026-06-01">
   <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
