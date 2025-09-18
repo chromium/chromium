@@ -249,7 +249,8 @@ promise_test(async t => {
       timestamp_us += data_duration_s * 1_000_000;
     }
 
-    await Promise.all([encoder.flush(), decoder.flush()]);
+    await encoder.flush()
+    await decoder.flush();
 
     encoder.close();
     decoder.close();
