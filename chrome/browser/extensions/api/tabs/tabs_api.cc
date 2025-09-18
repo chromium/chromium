@@ -32,6 +32,7 @@
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "extensions/browser/extension_zoom_request_client.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
@@ -988,6 +989,64 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
       ArgumentList(tabs::Get::Results::Create(ExtensionTabUtil::CreateTabObject(
           new_contents, scrub_tab_behavior, extension(), new_tab_list,
           new_tab_index))));
+}
+
+// TabsUpdateFunction has a production implementation in tabs_api_non_android.cc
+// and a stub implementation in tabs_api_android.cc, but these utility functions
+// are shared (and will stay here when there's finally a single implementation).
+bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
+                                   int tab_id,
+                                   std::string* error) {
+  auto url = ExtensionTabUtil::PrepareURLForNavigation(url_string, extension(),
+                                                       browser_context());
+  if (!url.has_value()) {
+    *error = std::move(url.error());
+    return false;
+  }
+
+  content::NavigationController::LoadURLParams load_params(*url);
+
+  // Treat extension-initiated navigations as renderer-initiated so that the URL
+  // does not show in the omnibox until it commits.  This avoids URL spoofs
+  // since URLs can be opened on behalf of untrusted content.
+  load_params.is_renderer_initiated = true;
+  // All renderer-initiated navigations need to have an initiator origin.
+  load_params.initiator_origin = extension()->origin();
+  // |source_site_instance| needs to be set so that a renderer process
+  // compatible with |initiator_origin| is picked by Site Isolation.
+  load_params.source_site_instance = content::SiteInstance::CreateForURL(
+      web_contents_->GetBrowserContext(),
+      load_params.initiator_origin->GetURL());
+
+  // Marking the navigation as initiated via an API means that the focus
+  // will stay in the omnibox - see https://crbug.com/1085779.
+  load_params.transition_type = ui::PAGE_TRANSITION_FROM_API;
+
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      web_contents_->GetController().LoadURLWithParams(load_params);
+  // Navigation can fail for any number of reasons at the content layer.
+  // Unfortunately, we can't provide a detailed error message here, because
+  // there are too many possible triggers. At least notify the extension that
+  // the update failed.
+  if (!navigation_handle) {
+    *error = "Navigation rejected.";
+    return false;
+  }
+
+  DCHECK_EQ(*url,
+            web_contents_->GetController().GetPendingEntry()->GetVirtualURL());
+
+  return true;
+}
+
+ExtensionFunction::ResponseValue TabsUpdateFunction::GetResult() {
+  if (!has_callback()) {
+    return NoArguments();
+  }
+
+  return ArgumentList(
+      tabs::Get::Results::Create(tabs_internal::CreateTabObjectHelper(
+          web_contents_, extension(), source_context_type(), nullptr, -1)));
 }
 
 TabsRemoveFunction::TabsRemoveFunction() = default;
