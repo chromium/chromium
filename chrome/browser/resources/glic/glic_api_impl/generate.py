@@ -146,7 +146,7 @@ def _ApplyChange(target_path, text, check_only):
               ' run chrome/browser/resources/glic/glic_api_impl/generate.py',
               file=sys.stderr)
         sys.exit(1)
-    with open(target_path, 'w') as f:
+    with open(target_path, 'w', newline='') as f:
         f.write(full_text)
 
 
