@@ -562,6 +562,7 @@ if (is_android) {
       "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewTabAnimationLayoutUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/CompositorSurfaceManagerImplTest.java",
       "src/org/chromium/chrome/browser/compositor/CompositorViewHolderUnitTest.java",
+      "src/org/chromium/chrome/browser/compositor/CompositorViewUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/layouts/SceneOverlayTest.java",
       "src/org/chromium/chrome/browser/compositor/layouts/StaticLayoutUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/layouts/content/TitleBitmapFactoryUnitTest.java",

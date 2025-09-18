@@ -779,6 +779,10 @@ public class CompositorView extends FrameLayout
         CompositorViewJni.get().onTabChanged(mNativeCompositorView);
     }
 
+    void setCompositorSurfaceManagerForTesting(CompositorSurfaceManager manager) {
+        mCompositorSurfaceManager = manager;
+    }
+
     @NativeMethods
     interface Natives {
         long init(
