@@ -136,6 +136,7 @@ def fix_graph(graph: dict[str, Header],
 
   # Windows has multiple include directories contained with the sysroot.
   if compiler.os == Os.Win:
+    graph['math.h'].kwargs['defines'].append('_USE_MATH_DEFINES')
     return {
         graph['corecrt.h'].abs.parent.parent: '$windows_kits',
         graph['eh.h'].abs.parent: '$msvc',

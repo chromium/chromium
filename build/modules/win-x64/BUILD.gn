@@ -142,6 +142,7 @@ libcxx_module("std_math_h") {
     ":std_core",
     ":sys_stage1",
   ]
+  defines = [ "_USE_MATH_DEFINES" ]
 }
 
 libcxx_module("std_private_mbstate_t") {
