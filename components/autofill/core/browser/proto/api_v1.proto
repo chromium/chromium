@@ -114,8 +114,8 @@ message AutofillQueryResponse {
           // client type votes.
           SOURCE_AUTOFILL_AI_CROWDSOURCING = 9;
 
-          // Experiments with stable signatures.
-          reserved 10, 11, 12;
+          // Experiments with signatures.
+          reserved 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20;
         }
 
         // The predicted field type.
