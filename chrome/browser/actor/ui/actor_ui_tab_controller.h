@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/ui/actor_overlay_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,7 +32,8 @@ class ActorUiTabControllerFactory
 };
 
 class ActorUiTabController : public ActorUiTabControllerInterface,
-                             public ImmersiveModeController::Observer {
+                             public ImmersiveModeController::Observer,
+                             public OmniboxTabHelper::Observer {
  public:
   ActorUiTabController(
       tabs::TabInterface& tab,
@@ -57,6 +59,13 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   void OnImmersiveFullscreenEntered() override;
   void OnImmersiveFullscreenExited() override;
   void OnImmersiveModeControllerDestroyed() override;
+
+  // OmniboxTabHelper::Observer:
+  void OnOmniboxInputStateChanged() override {}
+  void OnOmniboxInputInProgress(bool in_progress) override {}
+  void OnOmniboxFocusChanged(OmniboxFocusState state,
+                             OmniboxFocusChangeReason reason) override;
+  void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override {}
 
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
 
@@ -102,6 +111,13 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // determines if the scrim background should be visible if the mouse is
   // hovering over either the overlay or the handoff button.
   void UpdateScrimBackground();
+  void OnTabWillDetach(tabs::TabInterface* tab_interface,
+                       tabs::TabInterface::DetachReason reason);
+  void OnTabWillDiscard(tabs::TabInterface* tab_interface,
+                        content::WebContents* old_contents,
+                        content::WebContents* new_contents);
+
+  void UpdateOmniboxTabHelperObserver();
 
   // The current UiTabState.
   UiTabState current_ui_tab_state_ = {
@@ -115,6 +131,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // Determines if the scrim background should be visible. This is set to true
   // if the mouse is hovering over either the overlay or the handoff button.
   bool should_show_scrim_background_ = false;
+  bool is_focusing_omnibox_ = false;
 
   // Owns this class via TabModel.
   const raw_ref<tabs::TabInterface> tab_;
@@ -145,6 +162,10 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   base::ScopedObservation<ImmersiveModeController,
                           ImmersiveModeController::Observer>
       immersive_mode_observer_{this};
+
+  // Observer to get notifications when the omnibox is focused.
+  base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
+      omnibox_tab_helper_observer_{this};
 
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };

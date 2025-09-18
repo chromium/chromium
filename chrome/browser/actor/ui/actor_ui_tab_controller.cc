@@ -77,6 +77,11 @@ void ActorUiTabController::RegisterTabSubscriptions() {
   tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
       base::BindRepeating(&ActorUiTabController::OnTabActiveStatusChanged,
                           weak_factory_.GetWeakPtr(), /*is_activated=*/false)));
+  tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
+      &ActorUiTabController::OnTabWillDetach, weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
+      base::BindRepeating(&ActorUiTabController::OnTabWillDiscard,
+                          weak_factory_.GetWeakPtr())));
 }
 
 void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
@@ -117,6 +122,40 @@ base::CallbackListSubscription
 ActorUiTabController::RegisterActorTabIndicatorStateChangedCallback(
     ActorTabIndicatorStateChangedCallback callback) {
   return on_actor_tab_indicator_changed_callbacks_.Add(std::move(callback));
+}
+
+void ActorUiTabController::OnTabWillDetach(
+    tabs::TabInterface* tab_interface,
+    tabs::TabInterface::DetachReason reason) {
+  // Reset the omnibox tab helper observation to ensure that it doesn't live
+  // longer than the web contents it is observing.
+  if (omnibox_tab_helper_observer_.IsObserving()) {
+    omnibox_tab_helper_observer_.Reset();
+  }
+}
+
+void ActorUiTabController::OnTabWillDiscard(
+    tabs::TabInterface* tab_interface,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  // Reset the observation of the omnibox tab helper since it is possible for
+  // the active tab to be discarded on CrOS.
+  if (omnibox_tab_helper_observer_.IsObserving()) {
+    omnibox_tab_helper_observer_.Reset();
+  }
+}
+
+void ActorUiTabController::UpdateOmniboxTabHelperObserver() {
+  if (current_ui_tab_state_.handoff_button.is_active) {
+    if (!omnibox_tab_helper_observer_.IsObserving()) {
+      if (auto* helper =
+              OmniboxTabHelper::FromWebContents(tab_->GetContents())) {
+        omnibox_tab_helper_observer_.Observe(helper);
+      }
+    }
+  } else {
+    omnibox_tab_helper_observer_.Reset();
+  }
 }
 
 void ActorUiTabController::SetActorTabIndicatorVisibility(
@@ -162,6 +201,13 @@ void ActorUiTabController::UpdateUi(UiResultCallback callback) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), true));
   }
+}
+
+void ActorUiTabController::OnOmniboxFocusChanged(
+    OmniboxFocusState state,
+    OmniboxFocusChangeReason reason) {
+  is_focusing_omnibox_ = state != OmniboxFocusState::OMNIBOX_FOCUS_NONE;
+  UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError, "OnOmniboxFocusChanged"));
 }
 
 void ActorUiTabController::InitializeImmersiveModeObserver() {
@@ -222,6 +268,10 @@ bool ActorUiTabController::ComputeHandoffButtonVisibility() {
   if (tab_->GetBrowserWindowInterface()
           ->GetImmersiveModeController()
           ->IsEnabled()) {
+    return false;
+  }
+  UpdateOmniboxTabHelperObserver();
+  if (is_focusing_omnibox_) {
     return false;
   }
 
