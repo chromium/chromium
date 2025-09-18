@@ -25,10 +25,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
-  SkColor GetScrollbarThumbColor(
-      const ui::ColorProvider* color_provider,
-      State state,
-      const ScrollbarThumbExtraParams& extra_params) const override;
 
  protected:
   explicit NativeThemeAura(bool use_overlay_scrollbar = false);
@@ -36,6 +32,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
   ~NativeThemeAura() override;
 
   // NativeThemeBase:
+  std::optional<ColorId> GetScrollbarThumbColorId(
+      State state,
+      const ScrollbarThumbExtraParams& extra_params) const override;
   float GetScrollbarPartContrastRatioForState(State state) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,

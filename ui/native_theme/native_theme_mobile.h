@@ -27,6 +27,16 @@ class NativeThemeMobile : public NativeThemeBase {
                           bool dark_mode,
                           PreferredContrast contrast,
                           const ColorProvider* color_provider) const override;
+  void PaintArrowButton(
+      cc::PaintCanvas* gc,
+      const ColorProvider* color_provider,
+      const gfx::Rect& rect,
+      Part part,
+      State state,
+      bool forced_colors,
+      bool dark_mode,
+      PreferredContrast contrast,
+      const ScrollbarArrowExtraParams& extra_params) const override;
 
  private:
   friend class base::NoDestructor<NativeThemeMobile>;

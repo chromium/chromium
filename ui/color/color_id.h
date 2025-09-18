@@ -566,14 +566,15 @@
   E_CPONLY(kColorWebNativeControlFillPressed) \
   E_CPONLY(kColorWebNativeControlLightenLayer) \
   E_CPONLY(kColorWebNativeControlProgressValue) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundDisabled) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundHovered) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowForeground) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowForegroundDisabled) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowForegroundPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarCorner) \
   E_CPONLY(kColorWebNativeControlScrollbarThumb) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbHovered) \
-  E_CPONLY(kColorWebNativeControlScrollbarThumbInactive) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbOverlayMinimalMode) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarTrack) \

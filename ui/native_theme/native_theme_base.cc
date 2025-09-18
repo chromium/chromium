@@ -28,7 +28,6 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -148,6 +147,28 @@ float NativeThemeBase::GetBorderRadiusForPart(Part part,
   return (part == kRadio || part == kSliderThumb)
              ? (std::max(width, height) * 0.5f)
              : 0;
+}
+
+SkColor NativeThemeBase::GetScrollbarThumbColor(
+    const ColorProvider* color_provider,
+    State state,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  const SkColor bg_color =
+      GetContrastingColorForScrollbarPart(extra_params.track_color,
+                                          std::nullopt, state)
+          .value_or(GetControlColor(kScrollbarTrack, {}, {}, color_provider));
+  if (const std::optional<SkColor> color = GetContrastingColorForScrollbarPart(
+          extra_params.thumb_color, bg_color, state)) {
+    return color.value();
+  }
+  if (const std::optional<ColorId> id =
+          GetScrollbarThumbColorId(state, extra_params)) {
+    return color_provider->GetColor(id.value());
+  }
+  static constexpr auto kScrollbarThumbColors =
+      std::to_array({kScrollbarThumb, kScrollbarThumbHovered, kScrollbarThumb,
+                     kScrollbarThumbPressed});
+  return GetControlColor(kScrollbarThumbColors[state], {}, {}, color_provider);
 }
 
 NativeThemeBase::~NativeThemeBase() = default;
@@ -306,11 +327,15 @@ SkColor NativeThemeBase::GetControlColor(
        {kPressedSliderBorder, kColorWebNativeControlSliderBorderPressed},
        {kAutoCompleteBackground, kColorWebNativeControlAutoCompleteBackground},
        {kScrollbarArrowBackground, kColorWebNativeControlScrollbarTrack},
+       {kScrollbarArrowBackgroundDisabled,
+        kColorWebNativeControlScrollbarArrowBackgroundDisabled},
        {kScrollbarArrowBackgroundHovered,
         kColorWebNativeControlScrollbarArrowBackgroundHovered},
        {kScrollbarArrowBackgroundPressed,
         kColorWebNativeControlScrollbarArrowBackgroundPressed},
        {kScrollbarArrow, kColorWebNativeControlScrollbarArrowForeground},
+       {kScrollbarArrowDisabled,
+        kColorWebNativeControlScrollbarArrowForegroundDisabled},
        {kScrollbarArrowHovered, kColorWebNativeControlScrollbarArrowForeground},
        {kScrollbarArrowPressed,
         kColorWebNativeControlScrollbarArrowForegroundPressed},
@@ -318,7 +343,6 @@ SkColor NativeThemeBase::GetControlColor(
        {kScrollbarTrack, kColorWebNativeControlScrollbarTrack},
        {kScrollbarThumb, kColorWebNativeControlScrollbarThumb},
        {kScrollbarThumbHovered, kColorWebNativeControlScrollbarThumbHovered},
-       {kScrollbarThumbInactive, kColorWebNativeControlScrollbarThumbInactive},
        {kScrollbarThumbPressed, kColorWebNativeControlScrollbarThumbPressed},
        {kButtonBorder, kColorWebNativeControlButtonBorder},
        {kButtonDisabledBorder, kColorWebNativeControlButtonBorderDisabled},
@@ -330,6 +354,12 @@ SkColor NativeThemeBase::GetControlColor(
        {kButtonPressedFill, kColorWebNativeControlButtonFillPressed}});
   CHECK(color_provider);
   return color_provider->GetColor(kColorMap.at(color_id));
+}
+
+std::optional<ColorId> NativeThemeBase::GetScrollbarThumbColorId(
+    State state,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  return std::nullopt;
 }
 
 float NativeThemeBase::GetScrollbarPartContrastRatioForState(
@@ -415,64 +445,6 @@ void NativeThemeBase::PaintScrollbarCorner(
   NOTIMPLEMENTED();
 }
 
-SkColor NativeThemeBase::GetArrowColor(
-    State state,
-    bool dark_mode,
-    PreferredContrast contrast,
-    const ColorProvider* color_provider) const {
-  if (state != kDisabled) {
-    return dark_mode ? SK_ColorWHITE : SK_ColorBLACK;
-  }
-
-  SkScalar track_hsv[3];
-  SkColorToHSV(
-      dark_mode ? gfx::kPlaceholderColor : SkColorSetRGB(0xD3, 0xD3, 0xD3),
-      track_hsv);
-
-  SkScalar thumb_hsv[3];
-  SkColorToHSV(GetControlColor(kScrollbarThumbInactive, dark_mode, contrast,
-                               color_provider),
-               thumb_hsv);
-
-  // GTK Theme engines have way too much control over the layout of the
-  // scrollbar. We might be able to more closely approximate its look-and-feel,
-  // if we sent whole images instead of just colors from the browser to the
-  // renderer. But even then, some themes would just break.
-  //
-  // So, instead, we don't even try to 100% replicate the look of the native
-  // scrollbar. We render our own version, but we make sure to pick colors that
-  // blend in nicely with the system GTK theme. In most cases, we can just
-  // sample a couple of pixels from the system scrollbar and use those colors to
-  // draw our scrollbar.
-  //
-  // This works fine for the track color and the overall thumb color. But it
-  // fails spectacularly for the outline color used around the thumb piece.  Not
-  // all themes have a clearly defined outline. For some of them it is partially
-  // transparent, and for others the thickness is very unpredictable.
-  //
-  // So, instead of trying to approximate the system theme, we instead try to
-  // compute a reasonable looking choice based on the known color of the track
-  // and the thumb piece. This is difficult when trying to deal both with high-
-  // and low-contrast themes, and both with positive and inverted themes.
-  //
-  // The following code has been tested to look OK with all of the default GTK
-  // themes.
-  SkScalar min_diff =
-      std::clamp((track_hsv[1] + thumb_hsv[1]) * 1.2f, 0.28f, 0.5f);
-  SkScalar diff =
-      std::clamp(fabsf(track_hsv[2] - thumb_hsv[2]) / 2, min_diff, 0.5f);
-
-  if (track_hsv[2] + thumb_hsv[2] > 1.0) {
-    diff = -diff;
-  }
-
-  SkScalar color[3];
-  color[0] = thumb_hsv[0];
-  color[1] = std::clamp(thumb_hsv[1] - 0.2f, SkScalar{0}, SK_Scalar1);
-  color[2] = std::clamp(thumb_hsv[2] + diff, SkScalar{0}, SK_Scalar1);
-  return SkHSVToColor(color);
-}
-
 SkColor NativeThemeBase::ControlsAccentColorForState(
     State state,
     bool dark_mode,
@@ -500,9 +472,6 @@ SkColor NativeThemeBase::ButtonBorderColorForState(
     bool dark_mode,
     PreferredContrast contrast,
     const ColorProvider* color_provider) const {
-  static constexpr auto kButtonBorderColors =
-      std::to_array({kButtonDisabledBorder, kButtonHoveredBorder, kButtonBorder,
-                     kButtonPressedBorder});
   return GetControlColor(kButtonBorderColors[state], dark_mode, contrast,
                          color_provider);
 }
@@ -539,6 +508,37 @@ SkColor NativeThemeBase::ControlsFillColorForState(
       std::to_array({kDisabledFill, kHoveredFill, kFill, kPressedFill});
   return GetControlColor(kFillColors[state], dark_mode, contrast,
                          color_provider);
+}
+
+SkColor NativeThemeBase::GetScrollbarArrowBackgroundColor(
+    const ScrollbarArrowExtraParams& extra_params,
+    State state,
+    bool dark_mode,
+    PreferredContrast contrast,
+    const ColorProvider* color_provider) const {
+  static constexpr auto kScrollbarArrowBackgroundColors = std::to_array(
+      {kScrollbarArrowBackgroundDisabled, kScrollbarArrowBackgroundHovered,
+       kScrollbarArrowBackground, kScrollbarArrowBackgroundPressed});
+  return GetContrastingColorForScrollbarPart(extra_params.track_color,
+                                             std::nullopt, state)
+      .value_or(GetControlColor(kScrollbarArrowBackgroundColors[state],
+                                dark_mode, contrast, color_provider));
+}
+
+SkColor NativeThemeBase::GetScrollbarArrowForegroundColor(
+    SkColor bg_color,
+    const ScrollbarArrowExtraParams& extra_params,
+    State state,
+    bool dark_mode,
+    PreferredContrast contrast,
+    const ColorProvider* color_provider) const {
+  static constexpr auto kScrollbarArrowColors =
+      std::to_array({kScrollbarArrowDisabled, kScrollbarArrowHovered,
+                     kScrollbarArrow, kScrollbarArrowPressed});
+  return GetContrastingColorForScrollbarPart(extra_params.thumb_color, bg_color,
+                                             state)
+      .value_or(GetControlColor(kScrollbarArrowColors[state], dark_mode,
+                                contrast, color_provider));
 }
 
 void NativeThemeBase::PaintLightenLayer(cc::PaintCanvas* canvas,

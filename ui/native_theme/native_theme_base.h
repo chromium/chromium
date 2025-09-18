@@ -5,12 +5,14 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_BASE_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_BASE_H_
 
+#include <array>
 #include <optional>
 
 #include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -37,6 +39,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   float GetBorderRadiusForPart(Part part,
                                float width,
                                float height) const override;
+  SkColor GetScrollbarThumbColor(
+      const ColorProvider* color_provider,
+      State state,
+      const ScrollbarThumbExtraParams& extra_params) const override;
 
  protected:
   enum ControlColorId {
@@ -65,9 +71,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
     kPressedSliderBorder,
     kAutoCompleteBackground,
     kScrollbarArrowBackground,
+    kScrollbarArrowBackgroundDisabled,
     kScrollbarArrowBackgroundHovered,
     kScrollbarArrowBackgroundPressed,
     kScrollbarArrow,
+    kScrollbarArrowDisabled,
     kScrollbarArrowHovered,
     kScrollbarArrowPressed,
     // TODO(crbug.com/40242489): kScrollbarCorner overlaps with
@@ -78,7 +86,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
     kScrollbarThumb,
     kScrollbarThumbHovered,
     kScrollbarThumbPressed,
-    kScrollbarThumbInactive,
     kButtonBorder,
     kButtonDisabledBorder,
     kButtonHoveredBorder,
@@ -88,6 +95,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
     kButtonHoveredFill,
     kButtonPressedFill
   };
+
+  static constexpr auto kButtonBorderColors =
+      std::to_array({kButtonDisabledBorder, kButtonHoveredBorder, kButtonBorder,
+                     kButtonPressedBorder});
 
   using NativeTheme::NativeTheme;
   ~NativeThemeBase() override;
@@ -120,6 +131,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                                   bool dark_mode,
                                   PreferredContrast contrast,
                                   const ColorProvider* color_provider) const;
+
+  // Returns any custom color ID to use based on `state` and `extra_params`. If
+  // this returns null, the default thumb color for the state will be used.
+  virtual std::optional<ColorId> GetScrollbarThumbColorId(
+      State state,
+      const ScrollbarThumbExtraParams& extra_params) const;
 
   // Returns the amount a hovered or pressed scrollbar part should contrast with
   // the normal version of that part. Used when there is a custom scrollbar part
@@ -182,12 +199,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       const gfx::Rect& rect,
       const ScrollbarTrackExtraParams& extra_params) const;
 
-  // Returns the color used to draw the arrow.
-  SkColor GetArrowColor(State state,
-                        bool dark_mode,
-                        PreferredContrast contrast,
-                        const ColorProvider* color_provider) const;
-
   SkColor ControlsAccentColorForState(
       State state,
       bool dark_mode,
@@ -215,6 +226,21 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                                     bool dark_mode,
                                     PreferredContrast contrast,
                                     const ColorProvider* color_provider) const;
+
+  SkColor GetScrollbarArrowBackgroundColor(
+      const ScrollbarArrowExtraParams& extra_params,
+      State state,
+      bool dark_mode,
+      PreferredContrast contrast,
+      const ColorProvider* color_provider) const;
+
+  SkColor GetScrollbarArrowForegroundColor(
+      SkColor bg_color,
+      const ScrollbarArrowExtraParams& extra_params,
+      State state,
+      bool dark_mode,
+      PreferredContrast contrast,
+      const ColorProvider* color_provider) const;
 
   // For disabled controls, lightens the background so the translucent disabled
   // color works regardless of what it's over.

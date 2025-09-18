@@ -159,42 +159,53 @@ TEST_F(NativeThemeFluentTest, PaintThumbRoundedCorners) {
 TEST_F(NativeThemeFluentTest, GetThumbColor) {
   const std::unique_ptr<ColorProvider> color_provider =
       CreateDefaultColorProviderForBlink(/*dark_mode=*/false);
-  NativeTheme::ScrollbarThumbExtraParams extra_params;
-  const auto scrollbar_color = [&](auto state) {
-    return theme_.GetScrollbarThumbColor(color_provider.get(), state,
-                                         extra_params);
-  };
-
-  const SkColor normal_thumb_color =
-      color_provider->GetColor(kColorWebNativeControlScrollbarThumb);
-  const SkColor hovered_thumb_color =
-      color_provider->GetColor(kColorWebNativeControlScrollbarThumbHovered);
-  const SkColor pressed_thumb_color =
-      color_provider->GetColor(kColorWebNativeControlScrollbarThumbPressed);
-  const SkColor minimal_thumb_color = color_provider->GetColor(
-      kColorWebNativeControlScrollbarThumbOverlayMinimalMode);
-  static constexpr SkColor css_color = SK_ColorRED;
 
   // When there are no extra params set, the colors should be the ones that
   // correspond to the ColorId.
-  EXPECT_EQ(normal_thumb_color, scrollbar_color(NativeTheme::kNormal));
-  EXPECT_EQ(hovered_thumb_color, scrollbar_color(NativeTheme::kHovered));
-  EXPECT_EQ(pressed_thumb_color, scrollbar_color(NativeTheme::kPressed));
+  EXPECT_EQ(color_provider->GetColor(kColorWebNativeControlScrollbarThumb),
+            theme_.GetScrollbarThumbColor(color_provider.get(),
+                                          NativeTheme::kNormal, {}));
+  const auto hovered_thumb_color =
+      color_provider->GetColor(kColorWebNativeControlScrollbarThumbHovered);
+  EXPECT_EQ(hovered_thumb_color,
+            theme_.GetScrollbarThumbColor(color_provider.get(),
+                                          NativeTheme::kHovered, {}));
+  const auto pressed_thumb_color =
+      color_provider->GetColor(kColorWebNativeControlScrollbarThumbPressed);
+  EXPECT_EQ(pressed_thumb_color,
+            theme_.GetScrollbarThumbColor(color_provider.get(),
+                                          NativeTheme::kPressed, {}));
 
   // When the thumb is being painted in minimal mode, the normal state should
   // return the minimal mode's transparent color while the other states remain
   // unaffected.
-  extra_params.is_thumb_minimal_mode = true;
-  EXPECT_EQ(minimal_thumb_color, scrollbar_color(NativeTheme::kNormal));
-  EXPECT_EQ(hovered_thumb_color, scrollbar_color(NativeTheme::kHovered));
-  EXPECT_EQ(pressed_thumb_color, scrollbar_color(NativeTheme::kPressed));
+  static constexpr NativeTheme::ScrollbarThumbExtraParams kMinimalParams = {
+      .is_thumb_minimal_mode = true};
+  EXPECT_EQ(color_provider->GetColor(
+                kColorWebNativeControlScrollbarThumbOverlayMinimalMode),
+            theme_.GetScrollbarThumbColor(
+                color_provider.get(), NativeTheme::kNormal, kMinimalParams));
+  EXPECT_EQ(hovered_thumb_color,
+            theme_.GetScrollbarThumbColor(
+                color_provider.get(), NativeTheme::kHovered, kMinimalParams));
+  EXPECT_EQ(pressed_thumb_color,
+            theme_.GetScrollbarThumbColor(
+                color_provider.get(), NativeTheme::kPressed, kMinimalParams));
 
   // When there is a css color set in the extra params, we modify the color
   // when it is hovered or pressed to signal the change in state.
-  extra_params.thumb_color = css_color;
-  EXPECT_EQ(css_color, scrollbar_color(NativeTheme::kNormal));
-  EXPECT_NE(css_color, scrollbar_color(NativeTheme::kHovered));
-  EXPECT_NE(css_color, scrollbar_color(NativeTheme::kPressed));
+  static constexpr auto kCssColor = SK_ColorGREEN;
+  static constexpr NativeTheme::ScrollbarThumbExtraParams kColorParams = {
+      .thumb_color = kCssColor};
+  EXPECT_EQ(kCssColor,
+            theme_.GetScrollbarThumbColor(color_provider.get(),
+                                          NativeTheme::kNormal, kColorParams));
+  EXPECT_NE(kCssColor,
+            theme_.GetScrollbarThumbColor(color_provider.get(),
+                                          NativeTheme::kHovered, kColorParams));
+  EXPECT_NE(kCssColor,
+            theme_.GetScrollbarThumbColor(color_provider.get(),
+                                          NativeTheme::kPressed, kColorParams));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

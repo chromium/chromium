@@ -49,10 +49,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
                         const ExtraParams& extra_params) const override;
   int GetPaintedScrollbarTrackInset() const override;
   gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
-  SkColor GetScrollbarThumbColor(
-      const ui::ColorProvider* color_provider,
-      State state,
-      const ScrollbarThumbExtraParams& extra_params) const override;
 
   // Gets whether arrow icons are treated as available for metric computations.
   bool ArrowIconsAvailable() const {
@@ -64,6 +60,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   ~NativeThemeFluent() override;
 
   // NativeThemeBase:
+  std::optional<ColorId> GetScrollbarThumbColorId(
+      State state,
+      const ScrollbarThumbExtraParams& extra_params) const override;
   float GetScrollbarPartContrastRatioForState(State state) const override;
   void PaintArrowButton(
       cc::PaintCanvas* canvas,

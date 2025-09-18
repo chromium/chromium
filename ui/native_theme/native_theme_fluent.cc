@@ -88,34 +88,22 @@ gfx::Insets NativeThemeFluent::GetScrollbarSolidColorThumbInsets(
   return gfx::Insets();
 }
 
-SkColor NativeThemeFluent::GetScrollbarThumbColor(
-    const ui::ColorProvider* color_provider,
-    State state,
-    const ScrollbarThumbExtraParams& extra_params) const {
-  auto get_color_id = [&] {
-    if (state == kPressed) {
-      return kColorWebNativeControlScrollbarThumbPressed;
-    } else if (state == kHovered) {
-      return kColorWebNativeControlScrollbarThumbHovered;
-    } else if (extra_params.is_thumb_minimal_mode) {
-      return kColorWebNativeControlScrollbarThumbOverlayMinimalMode;
-    }
-    return kColorWebNativeControlScrollbarThumb;
-  };
-  return GetContrastingColorForScrollbarPart(
-             extra_params.thumb_color,
-             extra_params.track_color.value_or(color_provider->GetColor(
-                 kColorWebNativeControlScrollbarTrack)),
-             state)
-      .value_or(color_provider->GetColor(get_color_id()));
-}
-
 NativeThemeFluent::NativeThemeFluent() {
   set_use_overlay_scrollbar(IsFluentOverlayScrollbarEnabled());
   scrollbar_width_ = kScrollbarThickness;
 }
 
 NativeThemeFluent::~NativeThemeFluent() = default;
+
+std::optional<ColorId> NativeThemeFluent::GetScrollbarThumbColorId(
+    State state,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  return (extra_params.is_thumb_minimal_mode && state != kHovered &&
+          state != kPressed)
+             ? std::make_optional(
+                   kColorWebNativeControlScrollbarThumbOverlayMinimalMode)
+             : std::nullopt;
+}
 
 float NativeThemeFluent::GetScrollbarPartContrastRatioForState(
     State state) const {
@@ -155,7 +143,10 @@ void NativeThemeFluent::PaintArrowButton(
 
     cc::PaintFlags outline_flags;
     outline_flags.setColor(
-        color_provider->GetColor(kColorWebNativeControlScrollbarThumb));
+        GetScrollbarThumbColor(color_provider, state,
+                               {.is_hovering = extra_params.is_hovering,
+                                .thumb_color = extra_params.thumb_color,
+                                .track_color = extra_params.track_color}));
     outline_flags.setStyle(cc::PaintFlags::kStroke_Style);
     outline_flags.setStrokeWidth(kScrollbarTrackOutlineWidth);
     PaintRoundedButton(canvas, outline_rect, outline_flags, part);
@@ -165,24 +156,15 @@ void NativeThemeFluent::PaintArrowButton(
   }
 
   // Paint button background.
-  const SkColor bg_color = extra_params.track_color.value_or(
-      color_provider->GetColor(kColorWebNativeControlScrollbarTrack));
+  const SkColor bg_color = GetScrollbarArrowBackgroundColor(
+      extra_params, state, dark_mode, contrast, color_provider);
   cc::PaintFlags bg_flags;
   bg_flags.setColor(bg_color);
   PaintRoundedButton(canvas, button_fill_rect, bg_flags, part);
 
   // Paint arrow.
-  const ColorId fg_color_id =
-      state == kPressed || state == kHovered
-          ? kColorWebNativeControlScrollbarArrowForegroundPressed
-          : kColorWebNativeControlScrollbarArrowForeground;
-  const SkColor fg_color =
-      GetContrastingColorForScrollbarPart(
-          extra_params.thumb_color,
-          extra_params.track_color.value_or(
-              color_provider->GetColor(kColorWebNativeControlScrollbarTrack)),
-          state)
-          .value_or(color_provider->GetColor(fg_color_id));
+  const SkColor fg_color = GetScrollbarArrowForegroundColor(
+      bg_color, extra_params, state, dark_mode, contrast, color_provider);
   cc::PaintFlags flags;
   flags.setColor(fg_color);
 

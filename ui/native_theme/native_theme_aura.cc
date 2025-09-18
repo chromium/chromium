@@ -19,7 +19,6 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -108,26 +107,6 @@ gfx::Rect NativeThemeAura::GetNinePatchAperture(Part part) const {
   return aperture;
 }
 
-SkColor NativeThemeAura::GetScrollbarThumbColor(
-    const ui::ColorProvider* color_provider,
-    State state,
-    const ScrollbarThumbExtraParams& extra_params) const {
-  // Only non-overlay aura scrollbars use solid color thumb.
-  CHECK(!use_overlay_scrollbar());
-  if (extra_params.thumb_color.has_value()) {
-    return GetContrastingColorForScrollbarPart(extra_params.thumb_color,
-                                               extra_params.track_color, state)
-        .value();
-  }
-  ColorId color_id = kColorWebNativeControlScrollbarThumb;
-  if (state == NativeTheme::kHovered) {
-    color_id = kColorWebNativeControlScrollbarThumbHovered;
-  } else if (state == NativeTheme::kPressed) {
-    color_id = kColorWebNativeControlScrollbarThumbPressed;
-  }
-  return color_provider->GetColor(color_id);
-}
-
 NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbar) {
   set_use_overlay_scrollbar(use_overlay_scrollbar);
   if (use_overlay_scrollbar) {
@@ -152,6 +131,17 @@ NativeThemeAura::NativeThemeAura(SystemTheme system_theme)
 }
 
 NativeThemeAura::~NativeThemeAura() = default;
+
+std::optional<ColorId> NativeThemeAura::GetScrollbarThumbColorId(
+    State state,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  if (!use_overlay_scrollbar()) {
+    return std::nullopt;
+  }
+  return (state == kHovered || state == kPressed)
+             ? kColorOverlayScrollbarFillHovered
+             : kColorOverlayScrollbarFill;
+}
 
 float NativeThemeAura::GetScrollbarPartContrastRatioForState(
     State state) const {
@@ -188,52 +178,8 @@ void NativeThemeAura::PaintArrowButton(
     bool dark_mode,
     PreferredContrast contrast,
     const ScrollbarArrowExtraParams& extra_params) const {
-  SkColor bg_color = GetControlColor(kScrollbarArrowBackground, dark_mode,
-                                     contrast, color_provider);
-  // Aura-win uses slightly different arrow colors.
-  SkColor arrow_color = gfx::kPlaceholderColor;
-  switch (state) {
-    case kDisabled:
-      arrow_color = GetArrowColor(state, dark_mode, contrast, color_provider);
-      break;
-    case kHovered:
-      bg_color = GetControlColor(kScrollbarArrowBackgroundHovered, dark_mode,
-                                 contrast, color_provider);
-      arrow_color = GetControlColor(kScrollbarArrowHovered, dark_mode, contrast,
-                                    color_provider);
-      break;
-    case kNormal:
-      arrow_color =
-          GetControlColor(kScrollbarArrow, dark_mode, contrast, color_provider);
-      break;
-    case kPressed:
-      bg_color = GetControlColor(kScrollbarArrowBackgroundPressed, dark_mode,
-                                 contrast, color_provider);
-      arrow_color = GetControlColor(kScrollbarArrowPressed, dark_mode, contrast,
-                                    color_provider);
-      break;
-    case kNumStates:
-      break;
-  }
-  if (extra_params.thumb_color.has_value() &&
-      extra_params.thumb_color.value() == gfx::kPlaceholderColor) {
-    // TODO(crbug.com/40278836): Remove this and the below checks for
-    // placeholderColor.
-    DLOG(ERROR) << "thumb_color with a placeholderColor value encountered";
-  }
-  if (extra_params.track_color.has_value() &&
-      extra_params.track_color.value() != gfx::kPlaceholderColor) {
-    bg_color =
-        GetContrastingColorForScrollbarPart(extra_params.track_color,
-                                            /*bg_color=*/std::nullopt, state)
-            .value();
-  }
-  if (extra_params.thumb_color.has_value() &&
-      extra_params.thumb_color.value() != gfx::kPlaceholderColor) {
-    arrow_color = GetContrastingColorForScrollbarPart(extra_params.thumb_color,
-                                                      bg_color, state)
-                      .value();
-  }
+  const SkColor bg_color = GetScrollbarArrowBackgroundColor(
+      extra_params, state, dark_mode, contrast, color_provider);
   cc::PaintFlags bg_flags;
   bg_flags.setColor(bg_color);
 
@@ -258,7 +204,10 @@ void NativeThemeAura::PaintArrowButton(
     canvas->drawRRect(static_cast<SkRRect>(rrect), bg_flags);
   }
 
-  PaintArrow(canvas, rect, part, arrow_color);
+  PaintArrow(
+      canvas, rect, part,
+      GetScrollbarArrowForegroundColor(bg_color, extra_params, state, dark_mode,
+                                       contrast, color_provider));
 }
 
 void NativeThemeAura::PaintScrollbarThumb(
@@ -275,7 +224,6 @@ void NativeThemeAura::PaintScrollbarThumb(
   TRACE_EVENT0("blink", "NativeThemeAura::PaintScrollbarThumb");
 
   gfx::Rect fill_rect(rect);
-  cc::PaintFlags fill_flags;
   if (use_overlay_scrollbar()) {
     // Paint a stroke.
     gfx::RectF stroke_rect(fill_rect);
@@ -304,15 +252,13 @@ void NativeThemeAura::PaintScrollbarThumb(
     // `ScrollbarThemeOverlay::PaintThumb()`.
     fill_rect.Inset(gfx::Insets(kOverlayScrollbarStrokeWidth) +
                     edge_adjust_insets);
-    fill_flags.setColor(extra_params.thumb_color.value_or(
-        color_provider->GetColor(hovered ? kColorOverlayScrollbarFillHovered
-                                         : kColorOverlayScrollbarFill)));
   } else {
     fill_rect.Inset(GetScrollbarSolidColorThumbInsets(part));
-    fill_flags.setColor(
-        GetScrollbarThumbColor(color_provider, state, extra_params));
   }
 
+  cc::PaintFlags fill_flags;
+  fill_flags.setColor(
+      GetScrollbarThumbColor(color_provider, state, extra_params));
   canvas->drawIRect(gfx::RectToSkIRect(fill_rect), fill_flags);
 }
 

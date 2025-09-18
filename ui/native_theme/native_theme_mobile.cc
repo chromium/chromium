@@ -5,9 +5,14 @@
 #include "ui/native_theme/native_theme_mobile.h"
 
 #include "base/notreached.h"
+#include "cc/paint/paint_canvas.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme_base.h"
 
 namespace ui {
@@ -122,12 +127,14 @@ SkColor NativeThemeMobile::GetControlColor(
       // Even though Android does not paint scrollbars, these are used for the
       // arrow buttons that comprise a web "inner spin button" control.
       return dark_mode ? SK_ColorWHITE : SK_ColorBLACK;
+    case kScrollbarArrowDisabled:
+      return dark_mode ? SkColorSetRGB(0x55, 0x55, 0x55)
+                       : SkColorSetRGB(0xA3, 0xA3, 0xA3);
     case kScrollbarCornerControlColorId:
     case kScrollbarTrack:
     case kScrollbarThumb:
     case kScrollbarThumbPressed:
     case kScrollbarThumbHovered:
-    case kScrollbarThumbInactive:
       // These colors are unused because Android does not paint scrollbars.
       NOTREACHED();
     case kButtonBorder:
@@ -147,6 +154,7 @@ SkColor NativeThemeMobile::GetControlColor(
       return dark_mode ? SkColorSetRGB(0x6B, 0x6B, 0x6B)
                        : SkColorSetRGB(0xEF, 0xEF, 0xEF);
     case kButtonDisabledFill:
+    case kScrollbarArrowBackgroundDisabled:
       return dark_mode ? SkColorSetRGB(0x36, 0x36, 0x36)
                        : SkColorSetARGB(0x4D, 0xEF, 0xEF, 0xEF);
     case kButtonHoveredFill:
@@ -159,6 +167,73 @@ SkColor NativeThemeMobile::GetControlColor(
                        : SkColorSetRGB(0xF5, 0xF5, 0xF5);
   }
   NOTREACHED();
+}
+
+void NativeThemeMobile::PaintArrowButton(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    const gfx::Rect& rect,
+    Part part,
+    State state,
+    bool forced_colors,
+    bool dark_mode,
+    PreferredContrast contrast,
+    const ScrollbarArrowExtraParams& extra_params) const {
+  // Paint the background.
+  PaintLightenLayer(canvas, color_provider, gfx::RectToSkRect(rect), state, 0,
+                    dark_mode, contrast);
+
+  // Paint the button's outline and fill the middle.
+  SkPath outline;
+  if (part == kScrollbarUpArrow) {
+    outline.moveTo(rect.x() + 0.5f, rect.y() + rect.height() + 0.5f);
+    outline.rLineTo(0, -(rect.height() - 2));
+    outline.rLineTo(2, -2);
+    outline.rLineTo(rect.width() - 5, 0);
+    outline.rLineTo(2, 2);
+    outline.rLineTo(0, rect.height() - 2);
+  } else if (part == kScrollbarDownArrow) {
+    outline.moveTo(rect.x() + 0.5f, rect.y() - 0.5f);
+    outline.rLineTo(0, rect.height() - 2);
+    outline.rLineTo(2, 2);
+    outline.rLineTo(rect.width() - 5, 0);
+    outline.rLineTo(2, -2);
+    outline.rLineTo(0, -(rect.height() - 2));
+  } else if (part == kScrollbarRightArrow) {
+    outline.moveTo(rect.x() - 0.5f, rect.y() + 0.5f);
+    outline.rLineTo(rect.width() - 2, 0);
+    outline.rLineTo(2, 2);
+    outline.rLineTo(0, rect.height() - 5);
+    outline.rLineTo(-2, 2);
+    outline.rLineTo(-(rect.width() - 2), 0);
+  } else {
+    CHECK_EQ(kScrollbarLeftArrow, part);
+    outline.moveTo(rect.x() + rect.width() + 0.5f, rect.y() + 0.5f);
+    outline.rLineTo(-(rect.width() - 2), 0);
+    outline.rLineTo(-2, 2);
+    outline.rLineTo(0, rect.height() - 5);
+    outline.rLineTo(2, 2);
+    outline.rLineTo(rect.width() - 2, 0);
+  }
+  outline.close();
+
+  const SkColor bg_color = GetScrollbarArrowBackgroundColor(
+      extra_params, state, dark_mode, contrast, color_provider);
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setColor(bg_color);
+  canvas->drawPath(outline, flags);
+
+  flags.setAntiAlias(true);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setColor(GetControlColor(kButtonBorderColors[state], dark_mode,
+                                 contrast, color_provider));
+  canvas->drawPath(outline, flags);
+
+  PaintArrow(
+      canvas, rect, part,
+      GetScrollbarArrowForegroundColor(bg_color, extra_params, state, dark_mode,
+                                       contrast, color_provider));
 }
 
 NativeThemeMobile::NativeThemeMobile() = default;

@@ -105,12 +105,16 @@ constexpr RendererColorIdTable kRendererColorIdMap[] = {
      kColorWebNativeControlLightenLayer},
     {RendererColorId::kColorWebNativeControlProgressValue,
      kColorWebNativeControlProgressValue},
+    {RendererColorId::kColorWebNativeControlScrollbarArrowBackgroundDisabled,
+     kColorWebNativeControlScrollbarArrowBackgroundDisabled},
     {RendererColorId::kColorWebNativeControlScrollbarArrowBackgroundHovered,
      kColorWebNativeControlScrollbarArrowBackgroundHovered},
     {RendererColorId::kColorWebNativeControlScrollbarArrowBackgroundPressed,
      kColorWebNativeControlScrollbarArrowBackgroundPressed},
     {RendererColorId::kColorWebNativeControlScrollbarArrowForeground,
      kColorWebNativeControlScrollbarArrowForeground},
+    {RendererColorId::kColorWebNativeControlScrollbarArrowForegroundDisabled,
+     kColorWebNativeControlScrollbarArrowForegroundDisabled},
     {RendererColorId::kColorWebNativeControlScrollbarArrowForegroundPressed,
      kColorWebNativeControlScrollbarArrowForegroundPressed},
     {RendererColorId::kColorWebNativeControlScrollbarCorner,
@@ -119,8 +123,6 @@ constexpr RendererColorIdTable kRendererColorIdMap[] = {
      kColorWebNativeControlScrollbarThumb},
     {RendererColorId::kColorWebNativeControlScrollbarThumbHovered,
      kColorWebNativeControlScrollbarThumbHovered},
-    {RendererColorId::kColorWebNativeControlScrollbarThumbInactive,
-     kColorWebNativeControlScrollbarThumbInactive},
     {RendererColorId::kColorWebNativeControlScrollbarThumbOverlayMinimalMode,
      kColorWebNativeControlScrollbarThumbOverlayMinimalMode},
     {RendererColorId::kColorWebNativeControlScrollbarThumbPressed,
@@ -421,18 +423,21 @@ CreateEmulatedForcedColorsColorProviderForTest() {
   mixer[kColorWebNativeControlFillPressed] = {SK_ColorBLACK};
   mixer[kColorWebNativeControlLightenLayer] = {SK_ColorBLACK};
   mixer[kColorWebNativeControlProgressValue] = {SK_ColorCYAN};
+  mixer[kColorWebNativeControlScrollbarArrowBackgroundDisabled] = {
+      SK_ColorWHITE};
   mixer[kColorWebNativeControlScrollbarArrowBackgroundHovered] = {
       SkColorSetRGB(0x1A, 0xEB, 0xFF)};
   mixer[kColorWebNativeControlScrollbarArrowBackgroundPressed] = {
       SkColorSetRGB(0x1A, 0xEB, 0xFF)};
   mixer[kColorWebNativeControlScrollbarArrowForeground] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlScrollbarArrowForegroundDisabled] = {
+      SK_ColorBLACK};
   mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
       SK_ColorBLACK};
   mixer[kColorWebNativeControlScrollbarCorner] = {SK_ColorBLACK};
   mixer[kColorWebNativeControlScrollbarThumb] = {SK_ColorBLACK};
   mixer[kColorWebNativeControlScrollbarThumbHovered] = {
       SkColorSetRGB(0x1A, 0xEB, 0xFF)};
-  mixer[kColorWebNativeControlScrollbarThumbInactive] = {SK_ColorWHITE};
   mixer[kColorWebNativeControlScrollbarThumbOverlayMinimalMode] = {
       SK_ColorBLACK};
   mixer[kColorWebNativeControlScrollbarThumbPressed] = {
@@ -483,8 +488,6 @@ void CompleteScrollbarColorsDefinition(ui::ColorMixer& mixer) {
       kColorWebNativeControlScrollbarArrowForeground};
   mixer[kColorWebNativeControlScrollbarThumbHovered] = {
       kColorWebNativeControlScrollbarArrowForegroundPressed};
-  mixer[kColorWebNativeControlScrollbarThumbInactive] = {
-      kColorWebNativeControlScrollbarThumb};
   mixer[kColorWebNativeControlScrollbarThumbPressed] = {
       kColorWebNativeControlScrollbarThumbHovered};
   mixer[kColorWebNativeControlScrollbarTrack] = {
@@ -517,8 +520,12 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlFillPressed] = {kColorCssSystemWindow};
   mixer[kColorWebNativeControlLightenLayer] = {kColorCssSystemWindow};
   mixer[kColorWebNativeControlProgressValue] = {kColorCssSystemHighlight};
+  mixer[kColorWebNativeControlScrollbarArrowBackgroundDisabled] = {
+      kColorCssSystemWindow};
   mixer[kColorWebNativeControlScrollbarArrowForeground] = {
       kColorCssSystemBtnText};
+  mixer[kColorWebNativeControlScrollbarArrowForegroundDisabled] = {
+      kColorCssSystemGrayText};
   mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
       kColorCssSystemHighlight};
   mixer[kColorWebNativeControlScrollbarThumbOverlayMinimalMode] = {
@@ -617,11 +624,15 @@ void COMPONENT_EXPORT(COLOR)
         SkColorSetRGB(0x3B, 0x3B, 0x3B)};
     mixer[kColorWebNativeControlProgressValue] = {
         SkColorSetRGB(0x63, 0xAD, 0xE5)};
+    mixer[kColorWebNativeControlScrollbarArrowBackgroundDisabled] = {
+        SkColorSetRGB(0x36, 0x36, 0x36)};
     mixer[kColorWebNativeControlScrollbarArrowBackgroundHovered] = {
         SkColorSetRGB(0x4F, 0x4F, 0x4F)};
     mixer[kColorWebNativeControlScrollbarArrowBackgroundPressed] = {
         SkColorSetRGB(0xB1, 0xB1, 0xB1)};
     mixer[kColorWebNativeControlScrollbarArrowForeground] = {SK_ColorWHITE};
+    mixer[kColorWebNativeControlScrollbarArrowForegroundDisabled] = {
+        SkColorSetRGB(0xAF, 0xAF, 0xAF)};
     mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
         SK_ColorBLACK};
     mixer[kColorWebNativeControlScrollbarCorner] = {
@@ -630,7 +641,6 @@ void COMPONENT_EXPORT(COLOR)
         SkColorSetA(SK_ColorWHITE, 0x33)};
     mixer[kColorWebNativeControlScrollbarThumbHovered] = {
         SkColorSetA(SK_ColorWHITE, 0x4D)};
-    mixer[kColorWebNativeControlScrollbarThumbInactive] = {SK_ColorWHITE};
     mixer[kColorWebNativeControlScrollbarThumbOverlayMinimalMode] = {
         SkColorSetA(SK_ColorWHITE, 0x8B)};
     mixer[kColorWebNativeControlScrollbarThumbPressed] = {
@@ -695,12 +705,16 @@ void COMPONENT_EXPORT(COLOR)
         SkColorSetARGB(0x33, 0xA9, 0xA9, 0xA9)};
     mixer[kColorWebNativeControlProgressValue] = {
         SkColorSetRGB(0x00, 0x75, 0xFF)};
+    mixer[kColorWebNativeControlScrollbarArrowBackgroundDisabled] = {
+        SkColorSetARGB(0x4D, 0xF1, 0xF1, 0xF1)};
     mixer[kColorWebNativeControlScrollbarArrowBackgroundHovered] = {
         SkColorSetRGB(0xD2, 0xD2, 0xD2)};
     mixer[kColorWebNativeControlScrollbarArrowBackgroundPressed] = {
         SkColorSetRGB(0x78, 0x78, 0x78)};
     mixer[kColorWebNativeControlScrollbarArrowForeground] = {
         SkColorSetRGB(0x50, 0x50, 0x50)};
+    mixer[kColorWebNativeControlScrollbarArrowForegroundDisabled] = {
+        SkColorSetARGB(0x4D, 0x50, 0x50, 0x50)};
     mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
         SK_ColorWHITE};
     mixer[kColorWebNativeControlScrollbarCorner] = {
@@ -709,8 +723,6 @@ void COMPONENT_EXPORT(COLOR)
         SkColorSetA(SK_ColorBLACK, 0x33)};
     mixer[kColorWebNativeControlScrollbarThumbHovered] = {
         SkColorSetA(SK_ColorBLACK, 0x4D)};
-    mixer[kColorWebNativeControlScrollbarThumbInactive] = {
-        SkColorSetRGB(0xEA, 0xEA, 0xEA)};
     mixer[kColorWebNativeControlScrollbarThumbOverlayMinimalMode] = {
         SkColorSetA(SK_ColorBLACK, 0x72)};
     mixer[kColorWebNativeControlScrollbarThumbPressed] = {
