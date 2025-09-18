@@ -23,6 +23,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace resource_attribution {
@@ -65,6 +66,10 @@ TEST_F(ResourceAttrProcessContextTest, BrowserProcessContext) {
             ProcessContext::FromProcessNode(process_node.get()));
   EXPECT_EQ(process_context.value(),
             ProcessContext::FromWeakProcessNode(process_node));
+
+  // Put context in an absl set to make sure it can be hashed.
+  absl::flat_hash_set<ProcessContext> context_set{process_context.value()};
+  EXPECT_EQ(context_set.size(), 1u);
 
   performance_manager::DeleteBrowserProcessNodeForTesting();
 
@@ -127,6 +132,11 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   EXPECT_TRUE(process_context2.has_value());
   EXPECT_NE(process_context2, process_context);
 
+  // Put contexts in an absl set to make sure they can be hashed.
+  absl::flat_hash_set<ProcessContext> context_set{process_context.value(),
+                                                  process_context2.value()};
+  EXPECT_EQ(context_set.size(), 2u);
+
   web_contents.reset();
 
   EXPECT_EQ(std::nullopt, ProcessContext::FromRenderProcessHost(rph));
@@ -182,6 +192,11 @@ TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
       ProcessContext::FromBrowserChildProcessHost(gpu_process.host());
   EXPECT_TRUE(process_context2.has_value());
   EXPECT_NE(process_context2, process_context);
+
+  // Put contexts in an absl set to make sure they can be hashed.
+  absl::flat_hash_set<ProcessContext> context_set{process_context.value(),
+                                                  process_context2.value()};
+  EXPECT_EQ(context_set.size(), 2u);
 
   const BrowserChildProcessHostId utility_id = utility_process->GetId();
   utility_process.reset();

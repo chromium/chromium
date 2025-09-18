@@ -10,6 +10,7 @@
 #include <compare>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/component_export.h"
 
@@ -152,6 +153,11 @@ class COMPONENT_EXPORT(URL) SchemeHostPort {
                          const SchemeHostPort& right) = default;
   friend auto operator<=>(const SchemeHostPort& left,
                           const SchemeHostPort& right) = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const SchemeHostPort& tuple) {
+    return H::combine(std::move(h), tuple.port_, tuple.scheme_, tuple.host_);
+  }
 
   // Whether to discard host and port information for a specific scheme.
   //

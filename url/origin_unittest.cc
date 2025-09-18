@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 #include "url/origin_abstract_tests.h"
 #include "url/origin_debug.h"
@@ -207,6 +208,18 @@ TEST_F(OriginTest, OpaqueOriginComparison) {
   EXPECT_EQ(opaque_b, url::Origin::Resolve(GURL("about:srcdoc"), opaque_b));
   EXPECT_EQ(opaque_b,
             url::Origin::Resolve(GURL("about:blank?hello#whee"), opaque_b));
+}
+
+TEST_F(OriginTest, Hashing) {
+  url::Origin origin = url::Origin::Create(GURL("http://www.google.com"));
+  url::Origin opaque;
+  EXPECT_FALSE(HasNonceTokenBeenInitialized(opaque));
+
+  // Test that origins support absl hashing. Hashing an opaque origin should
+  // trigger lazy initialization of its nonce.
+  absl::flat_hash_set<url::Origin> origin_set{origin, opaque};
+  EXPECT_TRUE(HasNonceTokenBeenInitialized(opaque));
+  EXPECT_THAT(origin_set, ::testing::UnorderedElementsAre(origin, opaque));
 }
 
 TEST_F(OriginTest, ConstructFromTuple) {
