@@ -75,7 +75,7 @@ class InstantExtendedTest : public InProcessBrowserTest,
         ->GetLocationBar()
         ->GetOmniboxView()
         ->model()
-        ->OpenSelection();
+        ->OpenSelectionForTesting();
     observer.Wait();
   }
 

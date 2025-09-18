@@ -367,7 +367,8 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
     AutocompleteInput input(input_string, metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile()));
     autocomplete_controller->Start(input);
-    omnibox_view->model()->OpenSelection(base::TimeTicks(), disposition);
+    omnibox_view->model()->OpenSelectionForTesting(base::TimeTicks(),
+                                                   disposition);
     WaitForAutocompleteDone();
   };
 
@@ -474,7 +475,10 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
                             metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile()));
     GetAutocompleteController()->Start(input);
-    GetLocationBar(browser())->GetOmniboxView()->model()->OpenSelection();
+    GetLocationBar(browser())
+        ->GetOmniboxView()
+        ->model()
+        ->OpenSelectionForTesting();
   }
   {
     AutocompleteInput input(
@@ -484,7 +488,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
     GetLocationBar(incognito_browser)
         ->GetOmniboxView()
         ->model()
-        ->OpenSelection();
+        ->OpenSelectionForTesting();
   }
 
   EXPECT_TRUE(on_the_record_listener.WaitUntilSatisfied());
@@ -529,7 +533,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest, MAYBE_PopupStaysClosed) {
   AutocompleteInput input(u"kw command", metrics::OmniboxEventProto::NTP,
                           ChromeAutocompleteSchemeClassifier(profile()));
   autocomplete_controller->Start(input);
-  location_bar->GetOmniboxView()->model()->OpenSelection();
+  location_bar->GetOmniboxView()->model()->OpenSelectionForTesting();
   WaitForAutocompleteDone();
   EXPECT_TRUE(autocomplete_controller->done());
   // This checks that the keyword provider (via javascript)
@@ -1305,8 +1309,8 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnInputEntered) {
 
   // Select the suggestion created by the extension, which will trigger the
   // `onInputEntered` event.
-  omnibox_view->model()->OpenSelection(base::TimeTicks(),
-                                       WindowOpenDisposition::CURRENT_TAB);
+  omnibox_view->model()->OpenSelectionForTesting(
+      base::TimeTicks(), WindowOpenDisposition::CURRENT_TAB);
 
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("sending input", listener.message());

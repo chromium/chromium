@@ -86,7 +86,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxMetricsTest, LogSearchEngineUsed) {
 
   base::HistogramTester histogram_tester;
   model()->SetPopupSelection(OmniboxPopupSelection(0));
-  model()->OpenSelection(base::TimeTicks(), WindowOpenDisposition::CURRENT_TAB);
+  model()->OpenSelectionForTesting(base::TimeTicks(),
+                                   WindowOpenDisposition::CURRENT_TAB);
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(controller()->done());
 

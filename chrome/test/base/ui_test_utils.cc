@@ -650,7 +650,7 @@ void SendToOmniboxAndSubmit(BrowserWindowInterface* browser,
                              ->GetOmniboxView();
   omnibox->model()->OnSetFocus(/*control_down=*/false);
   omnibox->SetUserText(base::ASCIIToUTF16(input));
-  omnibox->model()->OpenSelection(match_selection_timestamp);
+  omnibox->model()->OpenSelectionForTesting(match_selection_timestamp);
 
   WaitForAutocompleteDone(browser);
 }

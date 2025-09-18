@@ -806,9 +806,10 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
   }
 }
 
-void OmniboxEditModel::OpenSelection(base::TimeTicks timestamp,
-                                     WindowOpenDisposition disposition,
-                                     bool via_keyboard) {
+void OmniboxEditModel::OpenSelectionForTesting(
+    base::TimeTicks timestamp,
+    WindowOpenDisposition disposition,
+    bool via_keyboard) {
   OpenSelection(popup_selection_, timestamp, disposition, via_keyboard);
 }
 

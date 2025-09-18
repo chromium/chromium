@@ -495,7 +495,7 @@ TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLD) {
   view()->OnInlineAutocompleteTextMaybeChanged(u"foo", u"bar");
 
   model()->OnControlKeyChanged(true);
-  model()->OpenSelection();
+  model()->OpenSelectionForTesting();
   OmniboxEditModel::State state = model()->GetStateForTabSwitch();
   EXPECT_EQ(GURL("http://www.foo.com/"),
             state.autocomplete_input.canonicalized_url());
@@ -511,7 +511,7 @@ TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLDTemporaryText) {
                               std::u16string(), {});
 
   model()->OnControlKeyChanged(true);
-  model()->OpenSelection();
+  model()->OpenSelectionForTesting();
   OmniboxEditModel::State state = model()->GetStateForTabSwitch();
   EXPECT_EQ(GURL("http://www.foobar.com/"),
             state.autocomplete_input.canonicalized_url());
@@ -526,7 +526,7 @@ TEST_F(OmniboxEditModelTest,
   model()->Revert();
 
   model()->OnControlKeyChanged(true);
-  model()->OpenSelection();
+  model()->OpenSelectionForTesting();
   OmniboxEditModel::State state = model()->GetStateForTabSwitch();
   EXPECT_EQ(GURL("https://www.example.com/"),
             state.autocomplete_input.canonicalized_url());

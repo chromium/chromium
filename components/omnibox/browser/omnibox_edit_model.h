@@ -219,9 +219,9 @@ class OmniboxEditModel {
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
       bool via_keyboard = false);
 
-  // A simplified version of OpenSelection that opens the model's current
+  // A simplified version of `OpenSelection()` that opens the model's current
   // selection.
-  virtual void OpenSelection(
+  void OpenSelectionForTesting(
       base::TimeTicks timestamp = base::TimeTicks(),
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
       bool via_keyboard = false);
