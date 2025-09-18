@@ -1052,6 +1052,48 @@ ExtensionFunction::ResponseValue TabsUpdateFunction::GetResult() {
           web_contents_, extension(), source_context_type(), nullptr, -1)));
 }
 
+ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
+  std::optional<tabs::Reload::Params> params =
+      tabs::Reload::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  bool bypass_cache = false;
+  if (params->reload_properties && params->reload_properties->bypass_cache) {
+    bypass_cache = *params->reload_properties->bypass_cache;
+  }
+
+  // If |tab_id| is specified, look for it. Otherwise default to selected tab
+  // in the current window.
+  content::WebContents* web_contents = nullptr;
+  if (!params->tab_id) {
+    if (WindowController* window_controller =
+            ChromeExtensionFunctionDetails(this).GetCurrentWindowController()) {
+      web_contents = window_controller->GetActiveTab();
+      if (!web_contents) {
+        return RespondNow(Error(tabs_constants::kNoSelectedTabError));
+      }
+    } else {
+      return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
+    }
+  } else {
+    int tab_id = *params->tab_id;
+
+    std::string error;
+    if (!tabs_internal::GetTabById(tab_id, browser_context(),
+                                   include_incognito_information(), nullptr,
+                                   &web_contents, nullptr, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+  }
+
+  web_contents->GetController().Reload(
+      bypass_cache ? content::ReloadType::BYPASSING_CACHE
+                   : content::ReloadType::NORMAL,
+      true);
+
+  return RespondNow(NoArguments());
+}
+
 TabsRemoveFunction::TabsRemoveFunction() = default;
 TabsRemoveFunction::~TabsRemoveFunction() = default;
 
