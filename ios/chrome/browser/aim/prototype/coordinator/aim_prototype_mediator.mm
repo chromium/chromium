@@ -256,13 +256,6 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)setAIModeEnabled:(BOOL)enabled {
   _AIModeEnabled = enabled;
-  if (!_AIModeEnabled) {
-    if (_composeboxQueryController) {
-      _composeboxQueryController->ClearFiles();
-    }
-    [_items removeAllObjects];
-    [self.consumer setItems:_items];
-  }
 }
 
 - (void)attachCurrentTabContent {
