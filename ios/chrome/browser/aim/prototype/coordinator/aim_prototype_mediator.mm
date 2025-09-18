@@ -274,6 +274,7 @@ CreateInputDataFromAnnotatedPageContent(
         }
       })];
   _pageContextWrapper.shouldGetAnnotatedPageContent = YES;
+  _pageContextWrapper.shouldGetSnapshot = YES;
   [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
