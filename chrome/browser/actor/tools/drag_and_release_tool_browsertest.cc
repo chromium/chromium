@@ -130,8 +130,7 @@ IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
         MakeDragAndReleaseRequest(*active_tab(), start, end);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
-    ExpectErrorResult(result,
-                      mojom::ActionResultCode::kDragAndReleaseFromOffscreen);
+    ExpectErrorResult(result, mojom::ActionResultCode::kCoordinatesOutOfBounds);
   }
 
   // Scroll the range into the viewport.

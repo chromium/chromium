@@ -280,6 +280,15 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
   if (!frame) {
     return MakeResult(mojom::ActionResultCode::kFrameWentAway);
   }
+
+  if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
+    const gfx::Point& point = std::get<gfx::Point>(request_->GetTarget());
+    gfx::Size content_size = tab->GetContents()->GetSize();
+    if (!gfx::Rect(content_size).Contains(point)) {
+      return MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds);
+    }
+  }
+
   // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
   // like clip paths. Need more checks to ensure we don't drop actions
   // unnecessarily.

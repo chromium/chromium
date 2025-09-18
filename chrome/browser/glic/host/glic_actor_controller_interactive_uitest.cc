@@ -1162,11 +1162,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
       GetPageContextFromFocusedTab(),
       GetClientRect(kNewActorTabId, "offscreen", offscreen_bounds),
       ExecuteAction(std::move(move_provider),
-                    // While we would expect kCoordinatesOutOfBounds, we don't
-                    // keep observation state for coordinates outside of the
-                    // viewport. So we treat it as stale.
-                    actor::mojom::ActionResultCode::
-                        kFrameLocationChangedSinceObservation));
+                    actor::mojom::ActionResultCode::kCoordinatesOutOfBounds));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, HistoryTool) {
