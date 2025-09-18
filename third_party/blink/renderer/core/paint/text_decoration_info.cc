@@ -403,7 +403,7 @@ void TextDecorationInfo::SetLineThroughLineData() {
 
 void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
     const TextDecorationOffset& decoration_offset) {
-  DCHECK(HasSpellingOrGrammerError());
+  DCHECK(HasSpellingOrGrammarError());
   DCHECK(!HasUnderline());
   DCHECK(!HasOverline());
   DCHECK(!HasLineThrough());
@@ -440,7 +440,7 @@ Color TextDecorationInfo::LineColor() const {
 float TextDecorationInfo::ComputeThickness() const {
   DCHECK(applied_text_decoration_);
   const AppliedTextDecoration& decoration = *applied_text_decoration_;
-  if (HasSpellingOrGrammerError()) {
+  if (HasSpellingOrGrammarError()) {
     // Spelling and grammar error thickness doesn't depend on the font size.
 #if BUILDFLAG(IS_ANDROID)
     // TODO(crbug.com/434081396): Verify with UX that this is accurate.

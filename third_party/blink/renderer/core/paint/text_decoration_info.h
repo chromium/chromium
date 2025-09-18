@@ -87,7 +87,7 @@ class CORE_EXPORT TextDecorationInfo {
   bool HasGrammarError() const {
     return Has(TextDecorationLine::kGrammarError);
   }
-  bool HasSpellingOrGrammerError() const {
+  bool HasSpellingOrGrammarError() const {
     return HasSpellingError() || HasGrammarError();
   }
 

@@ -159,7 +159,7 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
              i++) {
           decoration_info.SetDecorationIndex(i);
 
-          if (decoration_info.HasSpellingOrGrammerError() &&
+          if (decoration_info.HasSpellingOrGrammarError() &&
               EnumHasFlags(lines_to_paint,
                            TextDecorationLine::kSpellingError |
                                TextDecorationLine::kGrammarError)) {
