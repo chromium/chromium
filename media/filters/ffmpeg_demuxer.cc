@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/ffmpeg_demuxer.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -332,7 +328,15 @@ base::span<const uint8_t> GetSideData(const AVPacket* packet) {
   uint8_t* side_data = av_packet_get_side_data(
       packet, AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL, &side_data_size);
 
-  return base::span<const uint8_t>(side_data, side_data_size);
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/6.0/group__lavc__packet.html#ga68712351b8a025b464e5c854d4a9fe1f
+  // ffmpeg documentation: av_packet_get_side_data() returns a pointer to
+  // already allocated data with a valid size if present and sets `size`
+  // to its length, or nullptr if no data is available and sets `size` to zero.
+  //
+  // Since we are not allocating memory, and it is considered a valid use case
+  // to construct a base::span<> from nullptr with size zero, this is safe.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(side_data, side_data_size));
 }
 
 void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
@@ -431,16 +435,15 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
 
     // MP3 packets may be zero-padded according to ffmpeg, so trim until we
     // have the packet; adjust |data_offset| too so this work isn't repeated.
-    uint8_t* packet_end = packet->data + packet->size;
-    uint8_t* header_start = packet->data;
-    while (header_start < packet_end && !*header_start) {
-      ++header_start;
-      ++data_offset;
-    }
+    base::span<const uint8_t> packet_span = AVPacketData(*packet);
+    auto iter =
+        std::ranges::find_if(packet_span, [](uint8_t v) { return v != 0; });
+    data_offset = std::distance(packet_span.begin(), iter);
+    packet_span = packet_span.subspan(data_offset);
 
-    if (packet_end - header_start < MPEG1AudioStreamParser::kHeaderSize ||
-        !MPEG1AudioStreamParser::ParseHeader(nullptr, nullptr, header_start,
-                                             nullptr)) {
+    if (packet_span.size() < MPEG1AudioStreamParser::kHeaderSize ||
+        !MPEG1AudioStreamParser::ParseHeader(nullptr, nullptr,
+                                             packet_span.data(), nullptr)) {
       LIMITED_MEDIA_LOG(INFO, media_log_, num_discarded_packet_warnings_, 5)
           << "Discarding invalid MP3 packet, ts: "
           << ConvertStreamTimestamp(stream_->time_base, packet->pts)
@@ -1253,8 +1256,8 @@ static int CalculateBitrate(AVFormatContext* format_context,
 
   // Then try to sum the bitrates individually per stream.
   int bitrate = 0;
-  for (size_t i = 0; i < format_context->nb_streams; ++i) {
-    AVCodecParameters* codec_parameters = format_context->streams[i]->codecpar;
+  for (AVStream* stream : AVFormatContextToSpan(format_context)) {
+    AVCodecParameters* codec_parameters = stream->codecpar;
     bitrate += codec_parameters->bit_rate;
   }
   if (bitrate > 0)
@@ -1335,9 +1338,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
   // flag will be ignored.
   bool has_disabled_stream = false;
   bool has_enabled_stream = false;
-  for (size_t i = 0; i < format_context->nb_streams; ++i) {
-    AVStream* stream = format_context->streams[i];
-
+  for (AVStream* stream : AVFormatContextToSpan(format_context)) {
     // Only consider audio and video streams.
     const AVMediaType codec_type = stream->codecpar->codec_type;
     if (codec_type != AVMEDIA_TYPE_AUDIO && codec_type != AVMEDIA_TYPE_VIDEO) {
@@ -1367,8 +1368,10 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
   int supported_video_track_count = 0;
   bool has_opus_or_vorbis_audio = false;
   bool needs_negative_timestamp_fixup = false;
-  for (size_t i = 0; i < format_context->nb_streams; ++i) {
-    AVStream* stream = format_context->streams[i];
+  const base::span<AVStream*> stream_span =
+      AVFormatContextToSpan(format_context);
+  for (size_t i = 0; i < stream_span.size(); ++i) {
+    AVStream* stream = stream_span[i];
     const AVCodecParameters* codec_parameters = stream->codecpar;
     const AVMediaType codec_type = codec_parameters->codec_type;
     const AVCodecID codec_id = codec_parameters->codec_id;
