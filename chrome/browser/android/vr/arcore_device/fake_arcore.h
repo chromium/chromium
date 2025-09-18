@@ -78,7 +78,7 @@ class FakeArCore : public ArCore {
   void CreateAnchor(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const device::Pose& native_origin_from_anchor,
-      std::optional<uint64_t> plane_id,
+      std::optional<PlaneId> plane_id,
       CreateAnchorCallback callback) override;
 
   void ProcessAnchorCreationRequests(

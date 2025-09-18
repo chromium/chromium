@@ -1,17 +1,16 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef DEVICE_VR_UTIL_HIT_TEST_SUBSCRIPTION_DATA_H_
-#define DEVICE_VR_UTIL_HIT_TEST_SUBSCRIPTION_DATA_H_
+#ifndef DEVICE_VR_HIT_TEST_SUBSCRIPTION_DATA_H_
+#define DEVICE_VR_HIT_TEST_SUBSCRIPTION_DATA_H_
 
 #include "base/component_export.h"
+#include "device/vr/hit_test_subscription_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 
 namespace device {
 
-using HitTestSubscriptionId = base::IdTypeU64<class HitTestSubscriptionTag>;
-
-struct COMPONENT_EXPORT(DEVICE_VR_UTIL) HitTestSubscriptionData {
+struct COMPONENT_EXPORT(DEVICE_VR_BASE) HitTestSubscriptionData {
   mojom::XRNativeOriginInformationPtr native_origin_information;
   const std::vector<mojom::EntityTypeForHitTest> entity_types;
   mojom::XRRayPtr ray;
@@ -24,7 +23,7 @@ struct COMPONENT_EXPORT(DEVICE_VR_UTIL) HitTestSubscriptionData {
   ~HitTestSubscriptionData();
 };
 
-struct COMPONENT_EXPORT(DEVICE_VR_UTIL) TransientInputHitTestSubscriptionData {
+struct COMPONENT_EXPORT(DEVICE_VR_BASE) TransientInputHitTestSubscriptionData {
   const std::string profile_name;
   const std::vector<mojom::EntityTypeForHitTest> entity_types;
   mojom::XRRayPtr ray;
@@ -40,4 +39,4 @@ struct COMPONENT_EXPORT(DEVICE_VR_UTIL) TransientInputHitTestSubscriptionData {
 
 }  // namespace device
 
-#endif  // DEVICE_VR_UTIL_HIT_TEST_SUBSCRIPTION_DATA_H_
+#endif  // DEVICE_VR_HIT_TEST_SUBSCRIPTION_DATA_H_

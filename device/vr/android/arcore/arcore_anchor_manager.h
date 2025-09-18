@@ -11,18 +11,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
-#include "device/vr/android/arcore/address_to_id_map.h"
+#include "device/vr/anchor_id.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/arcore_sdk.h"
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace device {
 
 class ArCoreImpl;
 class Pose;
-
-using AnchorId = base::IdTypeU64<class AnchorTag>;
 
 class ArCoreAnchorManager {
  public:
@@ -62,6 +61,8 @@ class ArCoreAnchorManager {
     ~AnchorInfo();
   };
 
+  AnchorId GetOrCreateAnchorId(ArAnchor* anchor_address, bool* created);
+
   // Executes |fn| for each still tracked, anchor present in |arcore_anchors|.
   // |fn| will receive a `device::internal::ScopedArCoreObject<ArAnchor*>` that
   // can be stored, as well as ArTrackingState of the passed in anchor. An
@@ -79,12 +80,14 @@ class ArCoreAnchorManager {
 
   internal::ScopedArCoreObject<ArAnchorList*> arcore_anchors_;
 
+  AnchorId::Generator anchor_id_generator_;
+
   // Mapping from anchor address to anchor ID. It should be modified only during
   // calls to |Update()| and anchor creation.
-  AddressToIdMap<AnchorId> anchor_address_to_id_;
+  absl::flat_hash_map<ArAnchor*, AnchorId> anchor_address_to_id_;
   // Mapping from anchor ID to ARCore anchor information. It should be modified
   // only during calls to |Update()|.
-  std::map<AnchorId, AnchorInfo> anchor_id_to_anchor_info_;
+  absl::flat_hash_map<AnchorId, AnchorInfo> anchor_id_to_anchor_info_;
   // Set containing IDs of anchors updated in the last frame. It should be
   // modified only during calls to |Update()|.
   std::set<AnchorId> updated_anchor_ids_;

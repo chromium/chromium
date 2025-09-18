@@ -1033,9 +1033,9 @@ void OpenXrRenderLoop::CreateAnchor(
     std::move(callback).Run(mojom::CreateAnchorResult::FAILURE, 0);
     return;
   }
-  anchor_manager->AddCreateAnchorRequest(*native_origin_information,
-                                         native_origin_from_anchor, plane_id,
-                                         std::move(callback));
+  anchor_manager->AddCreateAnchorRequest(
+      *native_origin_information, native_origin_from_anchor,
+      MaybeCreatePlaneId(plane_id), std::move(callback));
 }
 
 void OpenXrRenderLoop::DetachAnchor(uint64_t anchor_id) {

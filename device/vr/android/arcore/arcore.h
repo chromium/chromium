@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "device/vr/plane_id.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -173,7 +174,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   virtual void CreateAnchor(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const device::Pose& native_origin_from_anchor,
-      std::optional<uint64_t> plane_id,
+      std::optional<PlaneId> plane_id,
       CreateAnchorCallback callback) = 0;
 
   // Starts processing anchor creation requests created by calls to

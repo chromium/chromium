@@ -5,7 +5,7 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_PLANE_MANAGER_H_
 #define DEVICE_VR_OPENXR_OPENXR_PLANE_MANAGER_H_
 
-#include "device/vr/openxr/plane_id.h"
+#include "device/vr/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 

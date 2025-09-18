@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/types/expected.h"
+#include "device/vr/anchor_id.h"
 #include "device/vr/create_anchor_request.h"
-#include "device/vr/openxr/anchor_id.h"
-#include "device/vr/openxr/plane_id.h"
+#include "device/vr/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -34,7 +34,7 @@ class OpenXrAnchorManager {
   void AddCreateAnchorRequest(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const device::Pose& native_origin_from_anchor,
-      std::optional<uint64_t> plane_id,
+      std::optional<PlaneId> plane_id,
       CreateAnchorCallback callback);
 
   device::mojom::XRAnchorsDataPtr ProcessAnchorsForFrame(

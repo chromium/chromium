@@ -10,22 +10,21 @@
 #include "base/component_export.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "base/types/id_type.h"
+#include "device/vr/anchor_id.h"
 #include "device/vr/android/arcore/arcore.h"
 #include "device/vr/android/arcore/arcore_anchor_manager.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/arcore_sdk.h"
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
 #include "device/vr/create_anchor_request.h"
+#include "device/vr/hit_test_subscription_data.h"
+#include "device/vr/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
-#include "device/vr/util/hit_test_subscription_data.h"
 
 namespace device {
 
 class ArCorePlaneManager;
-
-using AnchorId = base::IdTypeU64<class AnchorTag>;
 
 
 // This class should be created and accessed entirely on a Gl thread.
@@ -94,7 +93,7 @@ class ArCoreImpl : public ArCore {
   void CreateAnchor(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const device::Pose& native_origin_from_anchor,
-      std::optional<uint64_t> plane_id,
+      std::optional<PlaneId> plane_id,
       CreateAnchorCallback callback) override;
 
   void ProcessAnchorCreationRequests(

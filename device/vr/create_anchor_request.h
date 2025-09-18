@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "device/vr/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -22,14 +23,14 @@ class COMPONENT_EXPORT(DEVICE_VR_BASE) CreateAnchorRequest {
   const mojom::XRNativeOriginInformation& GetNativeOriginInformation() const;
   const gfx::Transform& GetNativeOriginFromAnchor() const;
   const base::TimeTicks& GetRequestStartTime() const;
-  std::optional<uint64_t> GetPlaneId() const;
+  std::optional<PlaneId> GetPlaneId() const;
 
   CreateAnchorCallback TakeCallback();
 
   CreateAnchorRequest(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const gfx::Transform native_origin_from_anchor,
-      std::optional<uint64_t> plane_id,
+      std::optional<PlaneId> plane_id,
       CreateAnchorCallback callback);
   CreateAnchorRequest(CreateAnchorRequest&& other);
   ~CreateAnchorRequest();
@@ -38,7 +39,7 @@ class COMPONENT_EXPORT(DEVICE_VR_BASE) CreateAnchorRequest {
   mojom::XRNativeOriginInformationPtr native_origin_information_;
   const gfx::Transform native_origin_from_anchor_;
   const base::TimeTicks request_start_time_;
-  std::optional<uint64_t> plane_id_;
+  std::optional<PlaneId> plane_id_;
 
   CreateAnchorCallback callback_;
 };

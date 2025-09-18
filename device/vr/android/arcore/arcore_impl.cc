@@ -22,6 +22,7 @@
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/vr_service_type_converters.h"
 #include "device/vr/create_anchor_request.h"
+#include "device/vr/plane_id.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -1766,7 +1767,7 @@ bool ArCoreImpl::RequestHitTest(
 void ArCoreImpl::CreateAnchor(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const device::Pose& native_origin_from_anchor,
-    std::optional<uint64_t> plane_id,
+    std::optional<PlaneId> plane_id,
     CreateAnchorCallback callback) {
   DVLOG(2) << __func__ << ": native_origin_information.which()="
            << static_cast<uint32_t>(native_origin_information.which())
@@ -1774,7 +1775,7 @@ void ArCoreImpl::CreateAnchor(
            << native_origin_from_anchor.position().ToString()
            << ", native_origin_from_anchor.orientation()="
            << native_origin_from_anchor.orientation().ToString()
-           << ", plane_id=" << plane_id.value_or(0);
+           << ", plane_id=" << plane_id.value_or(PlaneId(0)).GetUnsafeValue();
 
   create_anchor_requests_.emplace_back(native_origin_information,
                                        native_origin_from_anchor.ToTransform(),
@@ -1853,9 +1854,8 @@ void ArCoreImpl::ProcessAnchorCreationRequests(
     std::optional<AnchorId> maybe_anchor_id;
     auto maybe_plane_id = create_anchor.GetPlaneId();
     if (maybe_plane_id) {
-      PlaneId plane_id = PlaneId(*maybe_plane_id);
       maybe_anchor_id = anchor_manager_->CreatePlaneAnchor(
-          plane_manager_.get(), plane_id, *mojo_from_anchor);
+          plane_manager_.get(), *maybe_plane_id, *mojo_from_anchor);
     } else {
       maybe_anchor_id = anchor_manager_->CreateAnchor(*mojo_from_anchor);
     }

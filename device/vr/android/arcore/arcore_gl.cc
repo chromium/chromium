@@ -29,6 +29,7 @@
 #include "device/vr/android/arcore/vr_service_type_converters.h"
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/android/xr_java_coordinator.h"
+#include "device/vr/plane_id.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -1394,7 +1395,7 @@ void ArCoreGl::CreateAnchor(
   DCHECK(native_origin_information);
 
   arcore_->CreateAnchor(*native_origin_information, native_origin_from_anchor,
-                        plane_id, std::move(callback));
+                        MaybeCreatePlaneId(plane_id), std::move(callback));
 }
 
 void ArCoreGl::DetachAnchor(uint64_t anchor_id) {

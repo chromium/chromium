@@ -347,7 +347,7 @@ mojom::XRDepthDataPtr FakeArCore::GetDepthData() {
 void FakeArCore::CreateAnchor(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const device::Pose& native_origin_from_anchor,
-    std::optional<uint64_t> plane_id,
+    std::optional<PlaneId> plane_id,
     CreateAnchorCallback callback) {
   std::move(callback).Run(mojom::CreateAnchorResult::FAILURE, 0);
 }

@@ -53,8 +53,13 @@ if (enable_vr) {
 
     defines = [ "IS_DEVICE_VR_BASE_IMPL" ]
     sources = [
+      "anchor_id.h",
       "create_anchor_request.cc",
       "create_anchor_request.h",
+      "hit_test_subscription_data.cc",
+      "hit_test_subscription_data.h",
+      "hit_test_subscription_id.h",
+      "plane_id.h",
       "vr_device_base.cc",
       "vr_device_base.h",
       "vr_gl_util.cc",
@@ -86,8 +91,6 @@ if (enable_vr) {
       "util/fps_meter.h",
       "util/gamepad_builder.cc",
       "util/gamepad_builder.h",
-      "util/hit_test_subscription_data.cc",
-      "util/hit_test_subscription_data.h",
       "util/sample_queue.cc",
       "util/sample_queue.h",
       "util/sliding_average.cc",
@@ -152,7 +155,6 @@ if (enable_vr) {
 
     if (enable_openxr) {
       sources += [
-        "openxr/anchor_id.h",
         "openxr/context_provider_callbacks.h",
         "openxr/exit_xr_present_reason.h",
         "openxr/fb/openxr_hand_tracker_fb.cc",
@@ -251,7 +253,6 @@ if (enable_vr) {
         "openxr/openxr_util.h",
         "openxr/openxr_view_configuration.cc",
         "openxr/openxr_view_configuration.h",
-        "openxr/plane_id.h",
         "openxr/scoped_openxr_object.h",
       ]
 

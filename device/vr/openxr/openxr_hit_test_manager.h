@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "device/vr/hit_test_subscription_data.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "device/vr/util/hit_test_subscription_data.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace gfx {

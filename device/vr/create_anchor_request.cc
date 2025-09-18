@@ -9,7 +9,7 @@ namespace device {
 CreateAnchorRequest::CreateAnchorRequest(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const gfx::Transform native_origin_from_anchor,
-    std::optional<uint64_t> plane_id,
+    std::optional<PlaneId> plane_id,
     CreateAnchorCallback callback)
     : native_origin_information_(native_origin_information.Clone()),
       native_origin_from_anchor_(native_origin_from_anchor),
@@ -32,7 +32,7 @@ const base::TimeTicks& CreateAnchorRequest::GetRequestStartTime() const {
   return request_start_time_;
 }
 
-std::optional<uint64_t> CreateAnchorRequest::GetPlaneId() const {
+std::optional<PlaneId> CreateAnchorRequest::GetPlaneId() const {
   return plane_id_;
 }
 
