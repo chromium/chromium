@@ -98,7 +98,8 @@ builders.builder(
             "ios-simulator",
             "ios-simulator-full-configs",
             "android-arm64-rel",
-            "android-desktop-x64-rel-15-tests",
+            "android-desktop-x64-rel",
+            "android-x64-rel",
         ],
         "exclude_suites": [
             "chrome_all_tast_tests",
