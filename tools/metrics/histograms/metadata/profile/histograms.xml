@@ -944,6 +944,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ProfilePicker.SignInProviderStep"
+    enum="ProfilePickerSignInProviderStep" expires_after="2026-03-17">
+  <owner>droger@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records steps from the ProfilePickerSignInProvider, when they are reached.
+    Introduced for debugging https://crbug.com/445316497
+  </summary>
+</histogram>
+
 <histogram name="ProfilePicker.StartupTime.BeforeCreation" units="ms"
     expires_after="2026-01-18">
   <owner>alexilin@chromium.org</owner>

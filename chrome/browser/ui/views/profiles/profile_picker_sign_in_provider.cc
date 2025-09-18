@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
@@ -52,6 +53,21 @@
 
 namespace {
 
+constexpr char kProfilePickerSignInProviderStepHistogram[] =
+    "ProfilePicker.SignInProviderStep";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SigninProviderStep {
+  kSwitchToSignin = 0,
+  kGaiaBlankPageNavigation = 1,
+  kFinishFlowSaml = 2,
+  kFinishFlowSyncConfirmation = 3,
+  kFinishFlowHistoryOptin = 4,
+
+  kMaxValue = kFinishFlowHistoryOptin
+};
+
 bool IsTwoFactorIntersitial(const GURL& url) {
   return base::StartsWith(url.spec(), chrome::kGoogleTwoFactorIntersitialURL);
 }
@@ -69,6 +85,9 @@ bool IsExternalURL(const GURL& url) {
 }
 
 }  // namespace
+
+BASE_FEATURE(kProfilePickerGaiaBlankContinueUrl,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 ProfilePickerSignInProvider::ProfilePickerSignInProvider(
     ProfilePickerWebContentsHost* host,
@@ -96,6 +115,9 @@ ProfilePickerSignInProvider::~ProfilePickerSignInProvider() {
 void ProfilePickerSignInProvider::SwitchToSignIn(
     StepSwitchFinishedCallback switch_finished_callback,
     SignedInCallback signin_finished_callback) {
+  base::UmaHistogramEnumeration(kProfilePickerSignInProviderStepHistogram,
+                                SigninProviderStep::kSwitchToSignin);
+
   // Update the callback even if the profile is already initialized (to respect
   // that the callback may be different).
   callback_ = std::move(signin_finished_callback);
@@ -201,11 +223,12 @@ void ProfilePickerSignInProvider::NavigationStateChanged(
   if (source != contents_.get()) {
     return;
   }
+
+  const GURL& visible_url = contents_->GetVisibleURL();
   auto primary_account =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
-  if (IsTwoFactorIntersitial(contents_->GetVisibleURL()) &&
-      !primary_account.IsEmpty()) {
+  if (IsTwoFactorIntersitial(visible_url) && !primary_account.IsEmpty()) {
     // This intersitial should be skipped while in the profile picker, so we
     // finish flow with the current primary account. The intersitial will be
     // opened in a tab after the profile is created. This is handled by the
@@ -216,19 +239,34 @@ void ProfilePickerSignInProvider::NavigationStateChanged(
         FROM_HERE,
         base::BindOnce(&ProfilePickerSignInProvider::FinishFlow,
                        weak_ptr_factory_.GetWeakPtr(), primary_account));
-  } else if (IsExternalURL(contents_->GetVisibleURL()) &&
-             // SAML with ForceSignin in Profile Picker should follow the
-             // regular flow.
-             !signin_util::IsForceSigninEnabled()) {
-    // Attach DiceTabHelper to `contents_` so that sync consent dialog appears
-    // after a successful sign-in.
-    DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(contents_.get());
-    CHECK(tab_helper);
-    InitializeOrUpdateDiceTabHelper(*tab_helper, DiceTabHelperMode::kInBrowser);
-    // The rest of the SAML flow logic is handled by the signed-in flow
-    // controller.
-    FinishFlow(CoreAccountInfo());
+    return;
   }
+
+  if (signin_util::IsForceSigninEnabled()) {
+    // SAML with ForceSignin in Profile Picker should follow the regular flow.
+    return;
+  }
+
+  if (visible_url == GaiaUrls::GetInstance()->blank_page_url()) {
+    base::UmaHistogramEnumeration(kProfilePickerSignInProviderStepHistogram,
+                                  SigninProviderStep::kGaiaBlankPageNavigation);
+    return;
+  }
+
+  if (!IsExternalURL(visible_url)) {
+    return;
+  }
+
+  // Attach DiceTabHelper to `contents_` so that sync consent dialog appears
+  // after a successful sign-in.
+  base::UmaHistogramEnumeration(kProfilePickerSignInProviderStepHistogram,
+                                SigninProviderStep::kFinishFlowSaml);
+  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(contents_.get());
+  CHECK(tab_helper);
+  InitializeOrUpdateDiceTabHelper(*tab_helper, DiceTabHelperMode::kInBrowser);
+  // The rest of the SAML flow logic is handled by the signed-in flow
+  // controller.
+  FinishFlow(CoreAccountInfo());
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -324,6 +362,9 @@ void ProfilePickerSignInProvider::FinishFlowInPickerWithSyncConfirmation(
     content::WebContents* /*contents*/,
     const CoreAccountInfo& account_info) {
   CHECK_EQ(profile, profile_.get());
+  base::UmaHistogramEnumeration(
+      kProfilePickerSignInProviderStepHistogram,
+      SigninProviderStep::kFinishFlowSyncConfirmation);
   FinishFlow(account_info);
 }
 
@@ -332,6 +373,8 @@ void ProfilePickerSignInProvider::FinishFlowInPickerWithHistorySyncOptin(
     content::WebContents* /*contents*/,
     const CoreAccountInfo& account_info) {
   CHECK_EQ(profile, profile_.get());
+  base::UmaHistogramEnumeration(kProfilePickerSignInProviderStepHistogram,
+                                SigninProviderStep::kFinishFlowHistoryOptin);
   FinishFlow(account_info);
 }
 
@@ -347,8 +390,16 @@ GURL ProfilePickerSignInProvider::BuildSigninURL() const {
                                  ? signin::Flow::EMBEDDED_PROMO
                                  : signin::Flow::PROMO;
 
+  GURL continue_url;
+  if (base::FeatureList::IsEnabled(kProfilePickerGaiaBlankContinueUrl)) {
+    // Do not navigate out of the Gaia domain, to avoid triggering the SAML
+    // flow.
+    continue_url = GaiaUrls::GetInstance()->blank_page_url();
+  }
+
   return signin::GetChromeSyncURLForDice({
       .email = initial_email_,
+      .continue_url = std::move(continue_url),
       .request_dark_scheme = host_->ShouldUseDarkColors(),
       .flow = signin_flow,
   });
