@@ -110,6 +110,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Tools.TimeOfUseValidation" enum="TimeOfUseResult"
+    expires_after="2026-09-17">
+  <owner>mfoltz@google.com</owner>
+  <owner>rodneyding@google.com</owner>
+  <summary>
+    The result of Time-Of-Check Time-Of-Use validation performed before a tool
+    is invoked on a DOM element in a Web page.
+  </summary>
+</histogram>
+
 <histogram name="Actor.UiTabController.NumberOfPendingCallbacks"
     units="callbacks" expires_after="2026-08-11">
   <owner>chrstne@google.com</owner>

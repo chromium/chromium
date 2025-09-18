@@ -5,6 +5,7 @@
 #include "chrome/renderer/actor/tool_base.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
@@ -23,10 +24,33 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
-namespace actor {
-
+using base::UmaHistogramEnumeration;
 using blink::WebElement;
 using blink::WebNode;
+
+namespace actor {
+namespace {
+
+constexpr char kTimeOfUseValidationHistogram[] =
+    "Actor.Tools.TimeOfUseValidation";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(TimeOfUseResult)
+enum class TimeOfUseResult {
+  kValid = 0,
+  kWrongNodeAtCoordinate = 1,
+  kTargetNodeInteractionPointObscured = 2,
+  kTargetNodeMissing = 3,
+  kTargetPointOutsideBoundingBox = 4,
+  kTargetNodeMissingGeometry = 5,
+  kNoValidApcNode = 6,
+  kMaxValue = kNoValidApcNode,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:TimeOfUseResult)
+
+}  // namespace
 
 base::TimeDelta ToolBase::ExecutionObservationDelay() const {
   return base::TimeDelta();
@@ -120,6 +144,8 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
       journal_->Log(
           task_id_, "TimeOfUseValidation",
           JournalDetailsBuilder().AddError("No valid APC node").Build());
+      UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
+                              TimeOfUseResult::kNoValidApcNode);
       // TODO(crbug.com/445210509): return error for no apc found.
       return resolved_target;
     }
@@ -134,6 +160,8 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                         .Add("target", NodeToDebugSring(target_node))
                         .AddError("Wrong Node At Location")
                         .Build());
+      UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
+                              TimeOfUseResult::kWrongNodeAtCoordinate);
       if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
         return base::unexpected(
             MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
@@ -162,6 +190,9 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                         .Add("hit_node", NodeToDebugSring(hit_element))
                         .AddError("Node covered by another node")
                         .Build());
+      UmaHistogramEnumeration(
+          kTimeOfUseValidationHistogram,
+          TimeOfUseResult::kTargetNodeInteractionPointObscured);
       return base::unexpected(MakeResult(
           mojom::ActionResultCode::kTargetNodeInteractionPointObscured,
           "The element's interaction point is obscured by other elements."));
@@ -171,6 +202,8 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
       journal_->Log(
           task_id_, "TimeOfUseValidation",
           JournalDetailsBuilder().AddError("No valid APC node").Build());
+      UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
+                              TimeOfUseResult::kNoValidApcNode);
       // TODO(crbug.com/445210509): return error for no apc found.
       return resolved_target;
     }
@@ -184,6 +217,10 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
               .Add("point", gfx::ToFlooredPoint(resolved_target.point))
               .AddError("No geometry for node")
               .Build());
+      // TODO(crbug.com/418280472): return error after retry for failed task is
+      // landed.
+      UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
+                              TimeOfUseResult::kTargetNodeMissingGeometry);
       return resolved_target;
     }
 
@@ -201,10 +238,14 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                         .Build());
       // TODO(crbug.com/418280472): return error after retry for failed task is
       // landed.
+      UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
+                              TimeOfUseResult::kTargetPointOutsideBoundingBox);
       return resolved_target;
     }
   }
 
+  UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
+                          TimeOfUseResult::kValid);
   return resolved_target;
 }
 
