@@ -1138,7 +1138,7 @@ TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
   auto* entry1 = CreateEntryAndWriteData(backend.get(), kKey1, kData);
   auto* entry2 = CreateEntryAndWriteData(backend.get(), kKey2, kData);
   auto* entry3 = CreateEntryAndWriteData(backend.get(), kKey3, kData);
-  auto token = static_cast<SqlEntryImpl*>(entry3)->token();
+  auto res_id = static_cast<SqlEntryImpl*>(entry3)->res_id();
   entry1->Close();
   entry2->Close();
   entry3->Close();
@@ -1162,7 +1162,7 @@ TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
     ASSERT_EQ(future_init.Get(), disk_cache::SqlPersistentStore::Error::kOk);
 
     base::test::TestFuture<SqlPersistentStore::Error> future_doom;
-    store->DoomEntry(CacheEntryKey(kKey3), token, future_doom.GetCallback());
+    store->DoomEntry(CacheEntryKey(kKey3), res_id, future_doom.GetCallback());
     EXPECT_EQ(future_doom.Get(), SqlPersistentStore::Error::kOk);
 
     store.reset();

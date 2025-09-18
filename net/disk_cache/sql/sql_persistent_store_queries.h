@@ -23,10 +23,6 @@ inline constexpr const char kInitSchema_CreateTableResources[] =
     "CREATE TABLE resources("
         // Unique ID for the resource
         "res_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
-        // High part of an unguessable token
-        "token_high INTEGER NOT NULL,"
-        // Low part of an unguessable token
-        "token_low INTEGER NOT NULL,"
         // Timestamp for LRU
         "last_used INTEGER NOT NULL,"
         // End offset of the body
@@ -49,10 +45,8 @@ inline constexpr const char kInitSchema_CreateTableBlobs[] =
     "CREATE TABLE blobs("
         // Unique ID for the blob
         "blob_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
-        // Foreign key to resources.token_high
-        "token_high INTEGER NOT NULL,"
-        // Foreign key to resources.token_low
-        "token_low INTEGER NOT NULL,"
+        // Foreign key to resources.res_id
+        "res_id INTEGER NOT NULL,"
         // Start offset of this blob chunk
         "start INTEGER NOT NULL,"
         // End offset of this blob chunk
@@ -61,15 +55,6 @@ inline constexpr const char kInitSchema_CreateTableBlobs[] =
         "blob BLOB NOT NULL)";
 // clang-format on
 
-// A unique index on the entry's token. This is used to quickly look up or
-// update a resource entry using its unique token, which is essential for
-// operations like `DoomEntry`, `UpdateEntryHeaderAndLastUsed`, and
-// `WriteEntryData`. The `UNIQUE` constraint ensures data integrity by
-// preventing duplicate tokens.
-inline constexpr const char kIndex_ResourcesToken[] =
-    "CREATE UNIQUE INDEX index_resources_token ON "
-    "resources(token_high, token_low)";
-
 // An index on `(cache_key_hash, doomed)` to speed up lookups for live entries.
 // This is frequently used in operations like `OpenEntry` to quickly find a
 // non-doomed entry for a given cache key.
@@ -77,39 +62,34 @@ inline constexpr const char kIndex_ResourcesCacheKeyHashDoomed[] =
     "CREATE INDEX index_resources_cache_key_hash_doomed ON "
     "resources(cache_key_hash, doomed)";
 
-// An index on `(doomed, last_used)` to optimize eviction logic. Eviction
-// typically targets the least recently used (`last_used`) live (`doomed=false`)
-// entries. This index significantly speeds up queries that select entries for
-// eviction.
-inline constexpr const char kIndex_ResourcesDoomedLastUsed[] =
-    "CREATE INDEX index_resources_doomed_last_used ON "
-    "resources(doomed, last_used)";
+// An index on `last_used` for live entries (`doomed=0`). This is crucial for
+// eviction logic, which targets the least recently used entries.
+inline constexpr const char kIndex_LiveResourcesLastUsed[] =
+    "CREATE INDEX index_live_resources_last_used ON "
+    "resources(last_used) WHERE doomed=0";
 
-// An index on `(doomed, res_id)` to optimize iterating through entries while
-// filtering for live (`doomed=false`) entries. `res_id` is a monotonically
-// increasing primary key, making this index ideal for ordered traversals like
-// in `OpenLatestEntryBeforeResId`.
-inline constexpr const char kIndex_ResourcesDoomedResId[] =
-    "CREATE INDEX index_resources_doomed_res_id ON "
-    "resources(doomed, res_id)";
+// An index on `res_id` for doomed entries (`doomed=1`). This is used to
+// efficiently find and clean up doomed entries.
+inline constexpr const char kIndex_DoomedResourcesResId[] =
+    "CREATE INDEX index_doomed_resources_res_id ON "
+    "resources(res_id) WHERE doomed=1";
 
-// A unique index on `(token_high, token_low, start)` in the `blobs` table. This
-// is critical for quickly finding the correct data blobs for a given entry when
-// reading or writing data at a specific offset. The `UNIQUE` constraint
-// ensures that there are no overlapping blobs starting at the same offset for
-// the same entry, which is important for data integrity.
-inline constexpr const char kIndex_BlobsTokenStart[] =
-    "CREATE UNIQUE INDEX index_blobs_token_start ON "
-    "blobs(token_high, token_low, start)";
+// A unique index on `(res_id, start)` in the `blobs` table. This is critical
+// for quickly finding the correct data blobs for a given entry when reading or
+// writing data at a specific offset. The `UNIQUE` constraint ensures that
+// there are no overlapping blobs starting at the same offset for the same
+// entry, which is important for data integrity.
+inline constexpr const char kIndex_BlobsResIdStart[] =
+    "CREATE UNIQUE INDEX index_blobs_res_id_start ON "
+    "blobs(res_id, start)";
 
 inline constexpr const char kOpenEntry_SelectLiveResources[] =
     // clang-format off
     "SELECT "
-        "token_high,"  // 0
-        "token_low,"   // 1
-        "last_used,"   // 2
-        "body_end,"    // 3
-        "head "        // 4
+        "res_id,"      // 0
+        "last_used,"   // 1
+        "body_end,"    // 2
+        "head "        // 3
     "FROM resources "
     "WHERE "
         "cache_key_hash=? AND " // 0
@@ -121,15 +101,14 @@ inline constexpr const char kOpenEntry_SelectLiveResources[] =
 inline constexpr const char kCreateEntry_InsertIntoResources[] =
     // clang-format off
     "INSERT INTO resources("
-        "token_high,"     // 0
-        "token_low,"      // 1
-        "last_used,"      // 2
-        "body_end,"       // 3
-        "bytes_usage,"    // 4
+        "last_used,"      // 0
+        "body_end,"       // 1
+        "bytes_usage,"    // 2
         "doomed,"
-        "cache_key_hash," // 5
-        "cache_key) "     // 6
-    "VALUES(?,?,?,?,?,0,?,?)";
+        "cache_key_hash," // 3
+        "cache_key) "     // 4
+    "VALUES(?,?,?,0,?,?) "
+    "RETURNING res_id";
 // clang-format on
 
 inline constexpr const char kDoomEntry_MarkDoomedResources[] =
@@ -138,8 +117,7 @@ inline constexpr const char kDoomEntry_MarkDoomedResources[] =
     "SET "
         "doomed=1 "
     "WHERE "
-        "token_high=? AND "  // 0
-        "token_low=? AND "   // 1
+        "res_id=? AND "  // 0
         "doomed=0 "
     "RETURNING "
         "bytes_usage";       // 0
@@ -149,17 +127,14 @@ inline constexpr const char kDeleteDoomedEntry_DeleteFromResources[] =
     // clang-format off
     "DELETE FROM resources "
     "WHERE "
-        "token_high=? AND "  // 0
-        "token_low=? AND "   // 1
+        "res_id=? AND "  // 0
         "doomed=1";
 // clang-format on
 
 inline constexpr const char kDeleteDoomedEntries_SelectDoomedResources[] =
     // clang-format off
     "SELECT "
-        "res_id,"       // 0
-        "token_high,"   // 1
-        "token_low "    // 2
+        "res_id "       // 0
     "FROM resources "
     "WHERE doomed=1";
 // clang-format on
@@ -172,9 +147,8 @@ inline constexpr const char kDeleteLiveEntry_DeleteFromResources[] =
         "cache_key=? AND "      // 1
         "doomed=0 "
     "RETURNING "
-        "token_high,"       // 0
-        "token_low,"        // 1
-        "bytes_usage";      // 2
+        "res_id,"           // 0
+        "bytes_usage";      // 1
 // clang-format on
 
 inline constexpr const char kDeleteAllEntries_DeleteFromResources[] =
@@ -187,10 +161,8 @@ inline constexpr const char kDeleteLiveEntriesBetween_SelectLiveResources[] =
     // clang-format off
     "SELECT "
         "res_id,"       // 0
-        "token_high,"   // 1
-        "token_low,"    // 2
-        "bytes_usage,"  // 3
-        "cache_key "    // 4
+        "bytes_usage,"  // 1
+        "cache_key "    // 2
     "FROM resources "
     "WHERE "
         "last_used>=? AND "  // 0
@@ -220,8 +192,7 @@ inline constexpr const char kUpdateEntryHeaderAndLastUsed_UpdateResource[] =
         "bytes_usage=bytes_usage+?, "  // 1
         "head=? "                      // 2
     "WHERE "
-        "token_high=? AND "            // 3
-        "token_low=? AND "             // 4
+        "res_id=? AND "                // 3
         "doomed=0 "
     "RETURNING "
         "bytes_usage";                 // 0
@@ -234,8 +205,7 @@ inline constexpr const char kWriteEntryData_UpdateResource[] =
         "body_end=body_end+?, "       // 0
         "bytes_usage=bytes_usage+? "  // 1
     "WHERE "
-        "token_high=? AND "           // 2
-        "token_low=? "                // 3
+        "res_id=? "                   // 2
     "RETURNING "
         "body_end,"                   // 0
         "doomed";                     // 1
@@ -245,10 +215,9 @@ inline constexpr const char kTrimOverlappingBlobs_DeleteContained[] =
     // clang-format off
     "DELETE FROM blobs "
     "WHERE "
-        "token_high=? AND "  // 0
-        "token_low=? AND "   // 1
-        "start>=? AND "      // 2
-        "end<=? "            // 3
+        "res_id=? AND "      // 0
+        "start>=? AND "      // 1
+        "end<=? "            // 2
     "RETURNING "
         "start,"             // 0
         "end";               // 1
@@ -263,19 +232,17 @@ inline constexpr const char kTrimOverlappingBlobs_SelectOverlapping[] =
       "blob "              // 3
   "FROM blobs "
   "WHERE "
-      "token_high=? AND "  // 0
-      "token_low=? AND "   // 1
-      "start<? AND "       // 2
-      "end>?";             // 3
+      "res_id=? AND "      // 0
+      "start<? AND "       // 1
+      "end>?";             // 2
 // clang-format on
 
 inline constexpr const char kTruncateBlobsAfter_DeleteAfter[] =
     // clang-format off
     "DELETE FROM blobs "
     "WHERE "
-        "token_high=? AND "  // 0
-        "token_low=? AND "   // 1
-        "start>=? "          // 2
+        "res_id=? AND "      // 0
+        "start>=? "          // 1
     "RETURNING "
         "start,"             // 0
         "end";               // 1
@@ -284,12 +251,11 @@ inline constexpr const char kTruncateBlobsAfter_DeleteAfter[] =
 inline constexpr const char kInsertNewBlob_InsertIntoBlobs[] =
     // clang-format off
     "INSERT INTO blobs("
-        "token_high,"  // 0
-        "token_low,"   // 1
-        "start,"       // 2
-        "end,"         // 3
-        "blob) "       // 4
-    "VALUES(?,?,?,?,?)";
+        "res_id,"      // 0
+        "start,"       // 1
+        "end,"         // 2
+        "blob) "       // 3
+    "VALUES(?,?,?,?)";
 // clang-format on
 
 inline constexpr const char kDeleteBlobById_DeleteFromBlobs[] =
@@ -302,12 +268,11 @@ inline constexpr const char kDeleteBlobById_DeleteFromBlobs[] =
         "end";        // 1
 // clang-format on
 
-inline constexpr const char kDeleteBlobsByToken_DeleteFromBlobs[] =
+inline constexpr const char kDeleteBlobsByResId_DeleteFromBlobs[] =
     // clang-format off
     "DELETE FROM blobs "
     "WHERE "
-        "token_high=? AND "  // 0
-        "token_low=?";       // 1
+        "res_id=?";       // 0
 // clang-format on
 
 inline constexpr const char kReadEntryData_SelectOverlapping[] =
@@ -318,10 +283,9 @@ inline constexpr const char kReadEntryData_SelectOverlapping[] =
         "blob "              // 2
     "FROM blobs "
     "WHERE "
-        "token_high=? AND "  // 0
-        "token_low=? AND "   // 1
-        "start<? AND "       // 2
-        "end>? "             // 3
+        "res_id=? AND "      // 0
+        "start<? AND "       // 1
+        "end>? "             // 2
     "ORDER BY start";
 // clang-format on
 
@@ -332,10 +296,9 @@ inline constexpr const char kGetEntryAvailableRange_SelectOverlapping[] =
         "end "    // 1
     "FROM blobs "
     "WHERE "
-        "token_high=? AND "  // 0
-        "token_low=? AND "   // 1
-        "start<? AND "       // 2
-        "end>? "             // 3
+        "res_id=? AND "      // 0
+        "start<? AND "       // 1
+        "end>? "             // 2
     "ORDER BY start";
 // clang-format on
 
@@ -355,12 +318,10 @@ inline constexpr const char kOpenLatestEntryBeforeResId_SelectLiveResources[] =
     // clang-format off
     "SELECT "
         "res_id,"      // 0
-        "token_high,"  // 1
-        "token_low,"   // 2
-        "last_used,"   // 3
-        "body_end,"    // 4
-        "cache_key,"   // 5
-        "head "        // 6
+        "last_used,"   // 1
+        "body_end,"    // 2
+        "cache_key,"   // 3
+        "head "        // 4
     "FROM resources "
     "WHERE "
         "res_id<? AND "  // 0
@@ -371,10 +332,9 @@ inline constexpr const char kOpenLatestEntryBeforeResId_SelectLiveResources[] =
 inline constexpr const char kRunEviction_SelectLiveResources[] =
     // clang-format off
     "SELECT "
-        "token_high,"   // 0
-        "token_low,"    // 1
-        "cache_key,"    // 2
-        "bytes_usage "  // 3
+        "res_id,"       // 0
+        "cache_key,"    // 1
+        "bytes_usage "  // 2
     "FROM resources "
     "WHERE "
         "doomed=0 "
@@ -385,8 +345,7 @@ inline constexpr const char kRunEviction_DeleteFromResources[] =
     // clang-format off
     "DELETE FROM resources "
     "WHERE "
-        "token_high=? AND "  // 0
-        "token_low=?";       // 1
+        "res_id=?";       // 0
 // clang-format on
 
 inline constexpr const char
@@ -403,11 +362,11 @@ inline constexpr const char
 enum class Query {
   kInitSchema_CreateTableResources,
   kInitSchema_CreateTableBlobs,
-  kIndex_ResourcesToken,
+
   kIndex_ResourcesCacheKeyHashDoomed,
-  kIndex_ResourcesDoomedLastUsed,
-  kIndex_ResourcesDoomedResId,
-  kIndex_BlobsTokenStart,
+  kIndex_LiveResourcesLastUsed,
+  kIndex_DoomedResourcesResId,
+  kIndex_BlobsResIdStart,
   kOpenEntry_SelectLiveResources,
   kCreateEntry_InsertIntoResources,
   kDoomEntry_MarkDoomedResources,
@@ -426,7 +385,7 @@ enum class Query {
   kTruncateBlobsAfter_DeleteAfter,
   kInsertNewBlob_InsertIntoBlobs,
   kDeleteBlobById_DeleteFromBlobs,
-  kDeleteBlobsByToken_DeleteFromBlobs,
+  kDeleteBlobsByResId_DeleteFromBlobs,
   kReadEntryData_SelectOverlapping,
   kGetEntryAvailableRange_SelectOverlapping,
   kCalculateSizeOfEntriesBetween_SelectLiveResources,
@@ -445,16 +404,15 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kInitSchema_CreateTableResources;
     case Query::kInitSchema_CreateTableBlobs:
       return internal::kInitSchema_CreateTableBlobs;
-    case Query::kIndex_ResourcesToken:
-      return internal::kIndex_ResourcesToken;
+
     case Query::kIndex_ResourcesCacheKeyHashDoomed:
       return internal::kIndex_ResourcesCacheKeyHashDoomed;
-    case Query::kIndex_ResourcesDoomedLastUsed:
-      return internal::kIndex_ResourcesDoomedLastUsed;
-    case Query::kIndex_ResourcesDoomedResId:
-      return internal::kIndex_ResourcesDoomedResId;
-    case Query::kIndex_BlobsTokenStart:
-      return internal::kIndex_BlobsTokenStart;
+    case Query::kIndex_LiveResourcesLastUsed:
+      return internal::kIndex_LiveResourcesLastUsed;
+    case Query::kIndex_DoomedResourcesResId:
+      return internal::kIndex_DoomedResourcesResId;
+    case Query::kIndex_BlobsResIdStart:
+      return internal::kIndex_BlobsResIdStart;
     case Query::kOpenEntry_SelectLiveResources:
       return internal::kOpenEntry_SelectLiveResources;
     case Query::kCreateEntry_InsertIntoResources:
@@ -491,8 +449,8 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kInsertNewBlob_InsertIntoBlobs;
     case Query::kDeleteBlobById_DeleteFromBlobs:
       return internal::kDeleteBlobById_DeleteFromBlobs;
-    case Query::kDeleteBlobsByToken_DeleteFromBlobs:
-      return internal::kDeleteBlobsByToken_DeleteFromBlobs;
+    case Query::kDeleteBlobsByResId_DeleteFromBlobs:
+      return internal::kDeleteBlobsByResId_DeleteFromBlobs;
     case Query::kReadEntryData_SelectOverlapping:
       return internal::kReadEntryData_SelectOverlapping;
     case Query::kGetEntryAvailableRange_SelectOverlapping:

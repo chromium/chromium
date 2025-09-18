@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "base/unguessable_token.h"
+#include "base/types/strong_alias.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/buildflags.h"
@@ -41,6 +41,10 @@ namespace disk_cache {
 // a provided background task runner.
 class NET_EXPORT_PRIVATE SqlPersistentStore {
  public:
+  // The primary key for resources managed in the SqlPersistentStore's resources
+  // table.
+  using ResId = base::StrongAlias<class ResIdTag, int64_t>;
+
   // Represents the error of SqlPersistentStore operation.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -75,7 +79,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     EntryInfo& operator=(EntryInfo&&);
 
     // A unique identifier for this entry instance, used for safe data access.
-    base::UnguessableToken token;
+    ResId res_id;
     // The last time this entry was used.
     base::Time last_used;
     // The total size of the entry's body (all data streams).
@@ -95,7 +99,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     EntryInfoWithIdAndKey& operator=(EntryInfoWithIdAndKey&&);
 
     EntryInfo info;
-    int64_t res_id;
+    ResId res_id;
     CacheEntryKey key;
   };
 
@@ -154,27 +158,26 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Marks an entry for future deletion. When an entry is "doomed", it is
   // immediately removed from the cache's entry count and total size, but its
-  // data remains on disk until `DeleteDoomedEntry()` is called. The `token`
+  // data remains on disk until `DeleteDoomedEntry()` is called. The `res_id`
   // ensures that only the correct instance of an entry is doomed.
   virtual void DoomEntry(const CacheEntryKey& key,
-                         const base::UnguessableToken& token,
+                         ResId res_id,
                          ErrorCallback callback) = 0;
 
   // Physically deletes an entry that has been previously marked as doomed. This
   // operation completes the deletion process by removing the entry's data from
-  // the database. The `token` ensures that only a specific, doomed instance of
+  // the database. The `res_id` ensures that only a specific, doomed instance of
   // the entry is deleted.
   virtual void DeleteDoomedEntry(const CacheEntryKey& key,
-                                 const base::UnguessableToken& token,
+                                 ResId res_id,
                                  ErrorCallback callback) = 0;
 
   // Physically deletes all entries that have been marked as doomed, except for
-  // those whose tokens are in `excluded_tokens`. This is typically used for
+  // those whose IDs are in `excluded_res_ids`. This is typically used for
   // background cleanup of doomed entries that are no longer in use. `callback`
   // is invoked upon completion.
-  virtual void DeleteDoomedEntries(
-      base::flat_set<base::UnguessableToken> excluded_tokens,
-      ErrorCallback callback) = 0;
+  virtual void DeleteDoomedEntries(base::flat_set<ResId> excluded_res_ids,
+                                   ErrorCallback callback) = 0;
 
   // Deletes a "live" entry, i.e., an entry whose `doomed` flag is not set.
   // This is for use for entries which are not open; open entries should have
@@ -205,12 +208,12 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Updates the header data (stream 0) and the `last_used` timestamp for a
   // specific cache entry. The `bytes_usage` for the entry is adjusted based
   // on `header_size_delta`. `callback` is invoked with `kOk` on success,
-  // `kNotFound` if the entry (matching `key` and `token`) is not found or is
+  // `kNotFound` if the entry (matching `key` and `res_id`) is not found or is
   // doomed, or `kInvalidData` if internal data consistency checks fail.
   // `buffer` must not be null. `header_size_delta` is the change in the size
   // of the header data.
   virtual void UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
-                                            const base::UnguessableToken& token,
+                                            ResId res_id,
                                             base::Time last_used,
                                             scoped_refptr<net::IOBuffer> buffer,
                                             int64_t header_size_delta,
@@ -218,7 +221,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Writes data to an entry's body. This can be used to write new data,
   // overwrite existing data, or append to the entry.
-  // `key` and `token` identify the target entry.
+  // `key` and `res_id` identify the target entry.
   // `old_body_end` is the expected current size of the body. It is used to
   // determine whether to trim or truncate existing data, and for consistency
   // checks.
@@ -230,7 +233,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // the current end.
   // `callback` is invoked upon completion with an error code.
   virtual void WriteEntryData(const CacheEntryKey& key,
-                              const base::UnguessableToken& token,
+                              ResId res_id,
                               int64_t old_body_end,
                               int64_t offset,
                               scoped_refptr<net::IOBuffer> buffer,
@@ -239,7 +242,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                               ErrorCallback callback) = 0;
 
   // Reads data from an entry's body.
-  // `token` identifies the entry to read from.
+  // `res_id` identifies the entry to read from.
   // `offset` is the position within the entry's body to start reading.
   // `buffer` is the destination for the read data.
   // `buf_len` is the size of `buffer`.
@@ -248,7 +251,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // stored data. If false, gaps will be filled with zeros.
   // `callback` is invoked with the number of bytes read on success, or an error
   // code on failure.
-  virtual void ReadEntryData(const base::UnguessableToken& token,
+  virtual void ReadEntryData(ResId res_id,
                              int64_t offset,
                              scoped_refptr<net::IOBuffer> buffer,
                              int buf_len,
@@ -257,14 +260,14 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                              IntOrErrorCallback callback) = 0;
 
   // Finds the available contiguous range of data for a given entry.
-  // `token` identifies the entry.
+  // `res_id` identifies the entry.
   // `offset` is the starting position of the range to check.
   // `len` is the length of the range to check.
   // `callback` is invoked with the result. The `RangeResult` will contain the
   // starting offset and length of the first contiguous block of data found
   // within the requested range `[offset, offset + len)`. If no data is found
   // in the requested range, the `available_len` in the result will be 0.
-  virtual void GetEntryAvailableRange(const base::UnguessableToken& token,
+  virtual void GetEntryAvailableRange(ResId res_id,
                                       int64_t offset,
                                       int len,
                                       RangeResultCallback callback) = 0;
@@ -283,7 +286,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // `res_id_cursor` set to `std::numeric_limits<int64_t>::max()`. `callback`
   // receives the entry (or `std::nullopt` if no more entries exist).
   virtual void OpenLatestEntryBeforeResId(
-      int64_t res_id_cursor,
+      ResId res_id_cursor,
       OptionalEntryInfoWithIdAndKeyCallback callback) = 0;
 
   // Checks if cache eviction should be initiated. This is typically called by

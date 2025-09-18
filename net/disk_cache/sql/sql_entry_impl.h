@@ -10,7 +10,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/unguessable_token.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
@@ -38,7 +37,7 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // Constructs a SqlEntryImpl.
   SqlEntryImpl(base::WeakPtr<SqlBackendImpl> backend,
                CacheEntryKey key,
-               const base::UnguessableToken& token,
+               SqlPersistentStore::ResId res_id,
                base::Time last_used,
                int64_t body_end,
                scoped_refptr<net::GrowableIOBuffer> head);
@@ -79,8 +78,8 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // Returns the cache key of the entry.
   const CacheEntryKey& cache_key() const { return key_; }
 
-  // Returns the unique token for this entry instance.
-  const base::UnguessableToken& token() const { return token_; }
+  // Returns the unique res_id for this entry instance.
+  SqlPersistentStore::ResId res_id() const { return res_id_; }
 
   // Marks the entry as doomed. This is called by the backend when an
   // active entry is doomed.
@@ -118,10 +117,10 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // The key for this cache entry.
   const CacheEntryKey key_;
 
-  // A unique token identifying this specific instance of the entry.
+  // A unique res_id identifying this specific instance of the entry.
   // This is used to ensure that operations (like dooming or deleting)
   // target the correct version of an entry if it's reopened.
-  const base::UnguessableToken token_;
+  const SqlPersistentStore::ResId res_id_;
 
   // The last time this entry was accessed.
   base::Time last_used_;

@@ -37,11 +37,10 @@ namespace disk_cache_sql_queries {
 constexpr auto kSchemaAndIndexQueries = base::MakeFixedFlatSet<Query>({
     Query::kInitSchema_CreateTableResources,
     Query::kInitSchema_CreateTableBlobs,
-    Query::kIndex_ResourcesToken,
     Query::kIndex_ResourcesCacheKeyHashDoomed,
-    Query::kIndex_ResourcesDoomedLastUsed,
-    Query::kIndex_ResourcesDoomedResId,
-    Query::kIndex_BlobsTokenStart,
+    Query::kIndex_LiveResourcesLastUsed,
+    Query::kIndex_DoomedResourcesResId,
+    Query::kIndex_BlobsResIdStart,
 });
 
 class SqlPersistentStoreQueriesTest : public testing::Test {
@@ -134,16 +133,13 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
            {Query::kCreateEntry_InsertIntoResources, ""},
            {Query::kDoomEntry_MarkDoomedResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_token "
-            "(token_high=? AND token_low=?)"},
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kDeleteDoomedEntry_DeleteFromResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_token "
-            "(token_high=? AND token_low=?)"},
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kDeleteDoomedEntries_SelectDoomedResources,
-            "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_res_id "
-            "(doomed=?)"},
+            "`--SCAN resources USING "
+            "COVERING INDEX index_doomed_resources_res_id"},
            {Query::kDeleteLiveEntry_DeleteFromResources,
             "`--SEARCH resources USING "
             "INDEX index_resources_cache_key_hash_doomed "
@@ -152,8 +148,8 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
            {Query::kDeleteAllEntries_DeleteFromBlobs, ""},
            {Query::kDeleteLiveEntriesBetween_SelectLiveResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_last_used "
-            "(doomed=? AND last_used>? AND last_used<?)"},
+            "INDEX index_live_resources_last_used "
+            "(last_used>? AND last_used<?)"},
            {Query::kDeleteResourcesByResIds_DeleteFromResources,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
@@ -162,65 +158,57 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "INDEX index_resources_cache_key_hash_doomed "
             "(cache_key_hash=? AND doomed=?)"},
            {Query::kUpdateEntryHeaderAndLastUsed_UpdateResource,
-            "`--SEARCH resources USING INDEX "
-            "index_resources_token "
-            "(token_high=? AND token_low=?)"},
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kWriteEntryData_UpdateResource,
             "`--SEARCH resources USING "
-            "INDEX index_resources_token "
-            "(token_high=? AND token_low=?)"},
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kTrimOverlappingBlobs_DeleteContained,
             "`--SEARCH blobs USING "
-            "INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=? AND start>?)"},
+            "INDEX index_blobs_res_id_start "
+            "(res_id=? AND start>?)"},
            {Query::kTrimOverlappingBlobs_SelectOverlapping,
             "`--SEARCH blobs USING "
-            "INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=? AND start<?)"},
+            "INDEX index_blobs_res_id_start "
+            "(res_id=? AND start<?)"},
            {Query::kTruncateBlobsAfter_DeleteAfter,
             "`--SEARCH blobs USING "
-            "COVERING INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=? AND start>?)"},
+            "COVERING INDEX index_blobs_res_id_start "
+            "(res_id=? AND start>?)"},
            {Query::kInsertNewBlob_InsertIntoBlobs, ""},
            {Query::kDeleteBlobById_DeleteFromBlobs,
             "`--SEARCH blobs USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
-           {Query::kDeleteBlobsByToken_DeleteFromBlobs,
+           {Query::kDeleteBlobsByResId_DeleteFromBlobs,
             "`--SEARCH blobs USING "
-            "INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=?)"},
+            "INDEX index_blobs_res_id_start "
+            "(res_id=?)"},
            {Query::kReadEntryData_SelectOverlapping,
             "`--SEARCH blobs USING "
-            "INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=? AND start<?)"},
+            "INDEX index_blobs_res_id_start "
+            "(res_id=? AND start<?)"},
            {Query::kGetEntryAvailableRange_SelectOverlapping,
             "`--SEARCH blobs USING "
-            "INDEX index_blobs_token_start "
-            "(token_high=? AND token_low=? AND start<?)"},
+            "INDEX index_blobs_res_id_start "
+            "(res_id=? AND start<?)"},
            {Query::kCalculateSizeOfEntriesBetween_SelectLiveResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_last_used "
-            "(doomed=? AND last_used>? AND last_used<?)"},
+            "INDEX index_live_resources_last_used "
+            "(last_used>? AND last_used<?)"},
            {Query::kOpenLatestEntryBeforeResId_SelectLiveResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_res_id "
-            "(doomed=? AND res_id<?)"},
+            "INTEGER PRIMARY KEY (rowid<?)"},
            {Query::kRunEviction_SelectLiveResources,
-            "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_last_used "
-            "(doomed=?)"},
+            "`--SCAN resources USING INDEX index_live_resources_last_used"},
            {Query::kRunEviction_DeleteFromResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_token "
-            "(token_high=? AND token_low=?)"},
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kCalculateResourceEntryCount_SelectCountFromLiveResources,
-            "`--SEARCH resources USING "
-            "COVERING INDEX index_resources_doomed_res_id "
-            "(doomed=?)"},
+            "`--SCAN resources USING "
+            "COVERING INDEX index_live_resources_last_used"},
            {Query::kCalculateTotalSize_SelectTotalSizeFromLiveResources,
-            "`--SEARCH resources USING "
-            "INDEX index_resources_doomed_res_id "
-            "(doomed=?)"}});
+            "`--SCAN resources USING "
+            "INDEX index_live_resources_last_used"}});
   static_assert(kAllQueriesAndPlans.size() + kSchemaAndIndexQueries.size() ==
                 static_cast<int>(Query::kMaxValue) + 1);
   for (const auto& it : kAllQueriesAndPlans) {

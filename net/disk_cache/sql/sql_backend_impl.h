@@ -120,13 +120,13 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   // Updates the `last_used` timestamp for an entry.
   void UpdateEntryLastUsed(const CacheEntryKey& key,
-                           const base::UnguessableToken& token,
+                           SqlPersistentStore::ResId res_id,
                            base::Time last_used,
                            SqlPersistentStore::ErrorCallback callback);
 
   // Updates the header data and `last_used` timestamp for an entry.
   void UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
-                                    const base::UnguessableToken& token,
+                                    SqlPersistentStore::ResId res_id,
                                     base::Time last_used,
                                     scoped_refptr<net::GrowableIOBuffer> buffer,
                                     int64_t header_size_delta,
@@ -137,7 +137,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // scheduled via the `ExclusiveOperationCoordinator` to ensure proper
   // serialization.
   void WriteEntryData(const CacheEntryKey& key,
-                      const base::UnguessableToken& token,
+                      SqlPersistentStore::ResId res_id,
                       int64_t old_body_end,
                       int64_t body_end,
                       int64_t offset,
@@ -150,7 +150,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // the `ExclusiveOperationCoordinator`. `sparse_reading` controls whether
   // gaps in the data are filled with zeros or cause the read to stop.
   void ReadEntryData(const CacheEntryKey& key,
-                     const base::UnguessableToken& token,
+                     SqlPersistentStore::ResId res_id,
                      int64_t offset,
                      scoped_refptr<net::IOBuffer> buffer,
                      int buf_len,
@@ -162,7 +162,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // operation is scheduled via the `ExclusiveOperationCoordinator` to ensure
   // proper serialization.
   void GetEntryAvailableRange(const CacheEntryKey& key,
-                              const base::UnguessableToken& token,
+                              SqlPersistentStore::ResId res_id,
                               int64_t offset,
                               int len,
                               RangeResultCallback callback);
@@ -196,17 +196,17 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // last_used, header). These modifications are queued and applied when the
   // entry is re-activated by `Iterator::OpenNextEntry()`.
   struct InFlightEntryModification {
-    InFlightEntryModification(const base::UnguessableToken& token,
+    InFlightEntryModification(std::optional<SqlPersistentStore::ResId> res_id,
                               base::Time last_used);
-    InFlightEntryModification(const base::UnguessableToken& token,
+    InFlightEntryModification(std::optional<SqlPersistentStore::ResId> res_id,
                               base::Time last_used,
                               scoped_refptr<net::GrowableIOBuffer> head);
-    InFlightEntryModification(const base::UnguessableToken& token,
+    InFlightEntryModification(std::optional<SqlPersistentStore::ResId> res_id,
                               int64_t body_end);
     ~InFlightEntryModification();
     InFlightEntryModification(InFlightEntryModification&&);
 
-    base::UnguessableToken token;
+    std::optional<SqlPersistentStore::ResId> res_id;
     std::optional<base::Time> last_used;
     std::optional<scoped_refptr<net::GrowableIOBuffer>> head;
     std::optional<int64_t> body_end;
@@ -272,7 +272,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
   void HandleDeleteDoomedEntry(
       const CacheEntryKey& key,
-      const base::UnguessableToken& token,
+      SqlPersistentStore::ResId res_id,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for `DoomEntry()`. This method is scheduled as a
@@ -296,7 +296,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
   void HandleUpdateEntryLastUsedOperation(
       const CacheEntryKey& key,
-      const base::UnguessableToken& token,
+      SqlPersistentStore::ResId res_id,
       base::Time last_used,
       SqlPersistentStore::ErrorCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
@@ -305,7 +305,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // is scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
   void HandleUpdateEntryHeaderAndLastUsedOperation(
       const CacheEntryKey& key,
-      const base::UnguessableToken& token,
+      SqlPersistentStore::ResId res_id,
       base::Time last_used,
       scoped_refptr<net::GrowableIOBuffer> buffer,
       int64_t header_size_delta,
@@ -317,7 +317,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // the call to the persistent store.
   void HandleWriteEntryDataOperation(
       const CacheEntryKey& key,
-      const base::UnguessableToken& token,
+      SqlPersistentStore::ResId res_id,
       int64_t old_body_end,
       int64_t offset,
       scoped_refptr<net::IOBuffer> buffer,
@@ -330,7 +330,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // as a normal operation via the `ExclusiveOperationCoordinator` and forwards
   // the call to the persistent store.
   void HandleReadEntryDataOperation(
-      const base::UnguessableToken& token,
+      SqlPersistentStore::ResId res_id,
       int64_t offset,
       scoped_refptr<net::IOBuffer> buffer,
       int buf_len,
@@ -343,7 +343,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // scheduled as a normal operation via the `ExclusiveOperationCoordinator`
   // and forwards the call to the persistent store.
   void HandleGetEntryAvailableRangeOperation(
-      const base::UnguessableToken& token,
+      SqlPersistentStore::ResId res_id,
       int64_t offset,
       int len,
       RangeResultCallback callback,

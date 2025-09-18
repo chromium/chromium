@@ -49,21 +49,23 @@ inline constexpr uint64_t kSqlBackendFakeIndexMagicNumber =
 //            Dev/Canary with this version.
 // Version 2: https://crrev.com/c/6917159 added `cache_key_hash` column and an
 //            index on `(cache_key_hash, doomed)` to the `resources` table.
+// Version 3: https://crrev.com/c/6940353 replaced `(token_high, token_low)`
+//            with `res_id` in `resources` and `blobs` tables.
 // ----------------------------------------------------------------------------
 
 // The oldest database schema version that the current code can read.
 // A database with a version older than this will be razed as it's considered
 // obsolete and the code no longer supports migrating from it.
-inline constexpr int kSqlBackendLowestSupportedDatabaseVersion = 2;
+inline constexpr int kSqlBackendLowestSupportedDatabaseVersion = 3;
 
 // The current version of the database schema. This should be incremented for
 // any schema change.
-inline constexpr int kSqlBackendCurrentDatabaseVersion = 2;
+inline constexpr int kSqlBackendCurrentDatabaseVersion = 3;
 
 // The oldest application version that can use a database with the current
 // schema. If a schema change is not backward-compatible, this must be set to
 // the same value as `kSqlBackendCurrentDatabaseVersion`.
-inline constexpr int kSqlBackendCompatibleDatabaseVersion = 2;
+inline constexpr int kSqlBackendCompatibleDatabaseVersion = 3;
 
 // Estimated static size overhead for a resource entry in the database,
 // excluding the key and any blob data. This is a conservative estimate based on

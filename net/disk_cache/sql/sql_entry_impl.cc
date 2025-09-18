@@ -47,13 +47,13 @@ base::OnceCallback<void(ResultType)> WrapCallbackWithAbortError(
 
 SqlEntryImpl::SqlEntryImpl(base::WeakPtr<SqlBackendImpl> backend,
                            CacheEntryKey key,
-                           const base::UnguessableToken& token,
+                           SqlPersistentStore::ResId res_id,
                            base::Time last_used,
                            int64_t body_end,
                            scoped_refptr<net::GrowableIOBuffer> head)
     : backend_(backend),
       key_(key),
-      token_(token),
+      res_id_(res_id),
       last_used_(last_used),
       body_end_(body_end),
       head_(head ? std::move(head)
@@ -73,12 +73,12 @@ SqlEntryImpl::~SqlEntryImpl() {
       // store.
       const int64_t header_size_delta = static_cast<int64_t>(head_->size()) -
                                         *previous_header_size_in_storage_;
-      backend_->UpdateEntryHeaderAndLastUsed(key_, token_, last_used_, head_,
+      backend_->UpdateEntryHeaderAndLastUsed(key_, res_id_, last_used_, head_,
                                              header_size_delta,
                                              base::DoNothing());
     } else if (last_used_modified_) {
       // Otherwise, if only last_used was modified, update just last_used.
-      backend_->UpdateEntryLastUsed(key_, token_, last_used_,
+      backend_->UpdateEntryLastUsed(key_, res_id_, last_used_,
                                     base::DoNothing());
     }
     backend_->ReleaseActiveEntry(*this);
@@ -169,7 +169,7 @@ int SqlEntryImpl::ReadDataInternal(int64_t offset,
     return 0;
   }
   backend_->ReadEntryData(
-      key_, token_, offset, buf, buf_len, body_end_, sparse_reading,
+      key_, res_id_, offset, buf, buf_len, body_end_, sparse_reading,
       base::BindOnce(
           [](CompletionOnceCallback callback,
              SqlPersistentStore::IntOrError result) {
@@ -274,7 +274,7 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
   // to Simple Cache (see https://chromiumcodereview.appspot.com/13907009). This
   // would allow returning synchronously if no other operations are pending.
   backend_->WriteEntryData(
-      key_, token_, old_body_end, body_end_, offset, buf, buf_len, truncate,
+      key_, res_id_, old_body_end, body_end_, offset, buf, buf_len, truncate,
       base::BindOnce(
           [](CompletionOnceCallback callback, int buf_len,
              SqlPersistentStore::Error result) {
@@ -327,7 +327,7 @@ RangeResult SqlEntryImpl::GetAvailableRange(int64_t offset,
   }
 
   backend_->GetEntryAvailableRange(
-      key_, token_, offset, len,
+      key_, res_id_, offset, len,
       WrapCallbackWithAbortError<const RangeResult&>(
           std::move(callback), RangeResult(net::ERR_ABORTED)));
   return RangeResult(net::ERR_IO_PENDING);
