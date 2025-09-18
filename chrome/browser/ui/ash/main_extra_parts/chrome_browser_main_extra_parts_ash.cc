@@ -251,7 +251,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
                      // Safe because SessionManager singleton will be destroyed
                      // after message loops stops.
                      base::Unretained(session_manager::SessionManager::Get())));
-  if (ash::MultiUserWindowManagerImpl::IsEnabled()) {
+  if (ash::MultiUserWindowManager::IsEnabled()) {
     multi_user_window_manager_browser_adaptor_ =
         std::make_unique<ash::MultiUserWindowManagerBrowserAdaptor>(
             ash::Shell::Get()->multi_user_window_manager());

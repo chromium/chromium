@@ -49,7 +49,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
   call.root_window_to_show = root_window_to_show;
   call.template_type = template_type;
   call.template_name = template_name;
-  auto* window_manager = MultiUserWindowManagerImpl::Get();
+  auto* window_manager = MultiUserWindowManager::Get();
   auto* const shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);

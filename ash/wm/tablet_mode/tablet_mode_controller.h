@@ -114,7 +114,7 @@ class ASH_EXPORT TabletModeController
 
   // Add a special window to the TabletModeWindowManager for tracking. This is
   // only required for special windows which are handled by other window
-  // managers like the |MultiUserWindowManagerImpl|.
+  // managers like the |MultiUserWindowManager|.
   // If the tablet mode is not enabled no action will be performed.
   void AddWindow(aura::Window* window);
 

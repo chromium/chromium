@@ -90,7 +90,7 @@ void PutMruWindowLast(
 
 }  // namespace
 
-UserSwitchAnimator::UserSwitchAnimator(MultiUserWindowManagerImpl* owner,
+UserSwitchAnimator::UserSwitchAnimator(MultiUserWindowManager* owner,
                                        const AccountId& new_account_id,
                                        base::TimeDelta animation_speed)
     : owner_(owner),
@@ -237,7 +237,7 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
           // different than that of the for_show_account_id) should return to
           // their
           // original owners' desktops.
-          MultiUserWindowManagerImpl::WindowToEntryMap::const_iterator itr =
+          MultiUserWindowManager::WindowToEntryMap::const_iterator itr =
               owner_->window_to_entry().find(window);
           DCHECK(itr != owner_->window_to_entry().end());
           if (show_for_account_id != itr->second->owner() &&

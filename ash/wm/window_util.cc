@@ -771,7 +771,7 @@ views::DialogDelegate* AsDialogDelegate(aura::Window* transient_window) {
 
 bool ShouldShowForCurrentUser(aura::Window* window) {
   MultiUserWindowManager* multi_user_window_manager =
-      MultiUserWindowManagerImpl::Get();
+      MultiUserWindowManager::Get();
   if (!multi_user_window_manager)
     return true;
 

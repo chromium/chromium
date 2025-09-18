@@ -55,11 +55,10 @@ class UserSwitchAnimator;
 //   visibility changes from the owning user. This way the visibility can be
 //   changed back to its requested state upon showing by us - or when the window
 //   gets detached from its current owning parent.
-class ASH_EXPORT MultiUserWindowManagerImpl
-    : public SessionObserver,
-      public aura::WindowObserver,
-      public ::wm::TransientWindowObserver,
-      public display::DisplayObserver {
+class ASH_EXPORT MultiUserWindowManager : public SessionObserver,
+                                          public aura::WindowObserver,
+                                          public ::wm::TransientWindowObserver,
+                                          public display::DisplayObserver {
  public:
   // The speed which should be used to perform animations.
   enum AnimationSpeed {
@@ -69,15 +68,14 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   };
 
   // TODO(crbug.com/425160398): make dependency more explicit.
-  MultiUserWindowManagerImpl();
+  MultiUserWindowManager();
 
-  MultiUserWindowManagerImpl(const MultiUserWindowManagerImpl&) = delete;
-  MultiUserWindowManagerImpl& operator=(const MultiUserWindowManagerImpl&) =
-      delete;
+  MultiUserWindowManager(const MultiUserWindowManager&) = delete;
+  MultiUserWindowManager& operator=(const MultiUserWindowManager&) = delete;
 
-  ~MultiUserWindowManagerImpl() override;
+  ~MultiUserWindowManager() override;
 
-  static MultiUserWindowManagerImpl* Get();
+  static MultiUserWindowManager* Get();
 
   // Returns true if MultiUserSignIn is enabled. Always true on production.
   static bool IsEnabled();
@@ -268,11 +266,6 @@ class ASH_EXPORT MultiUserWindowManagerImpl
 
   display::ScopedDisplayObserver display_observer_{this};
 };
-
-// Alias for backward compatibility for short-term migration period.
-// TODO(crbug.com/444572622): Remove this alias on renaming
-// MultiUserWindowManagerImpl to MultiUserWindowManager.
-using MultiUserWindowManager = MultiUserWindowManagerImpl;
 
 }  // namespace ash
 

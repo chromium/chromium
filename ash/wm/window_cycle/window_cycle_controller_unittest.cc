@@ -3198,9 +3198,9 @@ class MultiUserWindowCycleControllerTest : public NoSessionAshTestBase {
 
     generator_ = GetEventGenerator();
 
-    CHECK(MultiUserWindowManagerImpl::Get());
-    MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
-        MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
+    CHECK(MultiUserWindowManager::Get());
+    MultiUserWindowManager::Get()->SetAnimationSpeedForTest(
+        MultiUserWindowManager::ANIMATION_SPEED_DISABLED);
   }
 
   void TearDown() override {

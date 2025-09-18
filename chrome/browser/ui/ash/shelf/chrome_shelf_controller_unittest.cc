@@ -749,11 +749,11 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(profile()));
 
-    // MultiUserWindowManagerImpl is created (indirectly) by
+    // MultiUserWindowManager is created (indirectly) by
     // ChromeShelfController when there's more than one user.
-    if (ash::MultiUserWindowManagerImpl::Get()) {
-      ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
-          ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
+    if (ash::MultiUserWindowManager::Get()) {
+      ash::MultiUserWindowManager::Get()->SetAnimationSpeedForTest(
+          ash::MultiUserWindowManager::ANIMATION_SPEED_DISABLED);
     }
 
     return shelf_controller_.get();

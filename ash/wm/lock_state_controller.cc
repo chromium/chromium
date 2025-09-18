@@ -239,7 +239,7 @@ bool ShouldTakeInformedRestoreScreenshot() {
     return false;
   }
 
-  auto* multi_user_window_manager = MultiUserWindowManagerImpl::Get();
+  auto* multi_user_window_manager = MultiUserWindowManager::Get();
   CHECK(multi_user_window_manager);
 
   const AccountId& current_active_user =

@@ -686,7 +686,7 @@ void Shell::RemoveAccessibilityEventHandler(ui::EventHandler* handler) {
 void Shell::RecreateMultiUserWindowManagerForTesting() {
   // Destroy the object before instantiating the next one explicitly.
   multi_user_window_manager_.reset();
-  multi_user_window_manager_ = std::make_unique<MultiUserWindowManagerImpl>();
+  multi_user_window_manager_ = std::make_unique<MultiUserWindowManager>();
 }
 
 WebAuthNDialogController* Shell::webauthn_dialog_controller() {
@@ -1344,7 +1344,7 @@ void Shell::Init(
   peripheral_battery_notifier_ = std::make_unique<PeripheralBatteryNotifier>(
       peripheral_battery_listener_.get());
   power_event_observer_ = std::make_unique<PowerEventObserver>();
-  multi_user_window_manager_ = std::make_unique<MultiUserWindowManagerImpl>();
+  multi_user_window_manager_ = std::make_unique<MultiUserWindowManager>();
   window_cycle_controller_ = std::make_unique<WindowCycleController>();
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(

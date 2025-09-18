@@ -41,7 +41,7 @@ constexpr base::TimeDelta kUserFadeTime = base::Milliseconds(110);
 // The animation time in ms for a window which get teleported to another screen.
 constexpr base::TimeDelta kTeleportAnimationTime = base::Milliseconds(300);
 
-MultiUserWindowManagerImpl* g_instance = nullptr;
+MultiUserWindowManager* g_instance = nullptr;
 
 bool g_multi_user_window_manager_enabled = true;
 
@@ -97,18 +97,17 @@ class AnimationSetter {
   const base::TimeDelta previous_animation_time_;
 };
 
-MultiUserWindowManagerImpl::WindowEntry::WindowEntry(
-    const AccountId& account_id)
+MultiUserWindowManager::WindowEntry::WindowEntry(const AccountId& account_id)
     : owner_(account_id), show_for_user_(account_id) {}
 
-MultiUserWindowManagerImpl::WindowEntry::~WindowEntry() = default;
+MultiUserWindowManager::WindowEntry::~WindowEntry() = default;
 
-MultiUserWindowManagerImpl::MultiUserWindowManagerImpl() {
+MultiUserWindowManager::MultiUserWindowManager() {
   g_instance = this;
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
-MultiUserWindowManagerImpl::~MultiUserWindowManagerImpl() {
+MultiUserWindowManager::~MultiUserWindowManager() {
   // When the MultiUserWindowManager gets destroyed, ash::Shell is mostly gone.
   // As such we should not try to finalize any outstanding user animations.
   // Note that the destruction of the object can be done later.
@@ -130,25 +129,25 @@ MultiUserWindowManagerImpl::~MultiUserWindowManagerImpl() {
 }
 
 // static
-MultiUserWindowManagerImpl* MultiUserWindowManagerImpl::Get() {
+MultiUserWindowManager* MultiUserWindowManager::Get() {
   return g_instance;
 }
 
 // static
-bool MultiUserWindowManagerImpl::IsEnabled() {
+bool MultiUserWindowManager::IsEnabled() {
   return g_multi_user_window_manager_enabled;
 }
 
 // static
-base::AutoReset<bool> MultiUserWindowManagerImpl::DisableForTesting() {
+base::AutoReset<bool> MultiUserWindowManager::DisableForTesting() {
   CHECK(g_multi_user_window_manager_enabled)
       << "MultiUserSignIn is already disabled";
   base::AutoReset resetter(&g_multi_user_window_manager_enabled, false);
   return resetter;
 }
 
-void MultiUserWindowManagerImpl::SetWindowOwner(aura::Window* window,
-                                                const AccountId& account_id) {
+void MultiUserWindowManager::SetWindowOwner(aura::Window* window,
+                                            const AccountId& account_id) {
   // Make sure the window is valid and there was no owner yet.
   DCHECK(window);
   DCHECK(account_id.is_valid());
@@ -193,9 +192,8 @@ void MultiUserWindowManagerImpl::SetWindowOwner(aura::Window* window,
   }
 }
 
-void MultiUserWindowManagerImpl::ShowWindowForUser(
-    aura::Window* window,
-    const AccountId& account_id) {
+void MultiUserWindowManager::ShowWindowForUser(aura::Window* window,
+                                               const AccountId& account_id) {
   DCHECK(window);
   const AccountId previous_owner(GetUserPresentingWindow(window));
   if (!ShowWindowForUserIntern(window, account_id))
@@ -210,14 +208,14 @@ void MultiUserWindowManagerImpl::ShowWindowForUser(
   Shell::Get()->session_controller()->SwitchActiveUser(account_id);
 }
 
-const AccountId& MultiUserWindowManagerImpl::GetWindowOwner(
+const AccountId& MultiUserWindowManager::GetWindowOwner(
     const aura::Window* window) const {
   WindowToEntryMap::const_iterator it =
       window_to_entry_.find(const_cast<aura::Window*>(window));
   return it != window_to_entry_.end() ? it->second->owner() : EmptyAccountId();
 }
 
-bool MultiUserWindowManagerImpl::AreWindowsSharedAmongUsers() const {
+bool MultiUserWindowManager::AreWindowsSharedAmongUsers() const {
   for (auto& window_pair : window_to_entry_) {
     if (window_pair.second->owner() != window_pair.second->show_for_user())
       return true;
@@ -225,8 +223,7 @@ bool MultiUserWindowManagerImpl::AreWindowsSharedAmongUsers() const {
   return false;
 }
 
-std::set<AccountId> MultiUserWindowManagerImpl::GetOwnersOfVisibleWindows()
-    const {
+std::set<AccountId> MultiUserWindowManager::GetOwnersOfVisibleWindows() const {
   std::set<AccountId> result;
   for (auto& window_pair : window_to_entry_) {
     if (window_pair.first->IsVisible())
@@ -235,7 +232,7 @@ std::set<AccountId> MultiUserWindowManagerImpl::GetOwnersOfVisibleWindows()
   return result;
 }
 
-const AccountId& MultiUserWindowManagerImpl::GetUserPresentingWindow(
+const AccountId& MultiUserWindowManager::GetUserPresentingWindow(
     const aura::Window* window) const {
   auto iter = window_to_entry_.find(const_cast<aura::Window*>(window));
   // If the window is not owned by anyone it is shown on all desktops and we
@@ -244,29 +241,29 @@ const AccountId& MultiUserWindowManagerImpl::GetUserPresentingWindow(
                                           : iter->second->show_for_user();
 }
 
-const AccountId& MultiUserWindowManagerImpl::CurrentAccountId() const {
+const AccountId& MultiUserWindowManager::CurrentAccountId() const {
   CHECK(current_account_id_.has_value());
   return *current_account_id_;
 }
 
-void MultiUserWindowManagerImpl::AddObserver(
+void MultiUserWindowManager::AddObserver(
     MultiUserWindowManagerObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void MultiUserWindowManagerImpl::RemoveObserver(
+void MultiUserWindowManager::RemoveObserver(
     MultiUserWindowManagerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool MultiUserWindowManagerImpl::IsWindowOnDesktopOfUser(
+bool MultiUserWindowManager::IsWindowOnDesktopOfUser(
     aura::Window* window,
     const AccountId& account_id) const {
   const AccountId& presenting_user = GetUserPresentingWindow(window);
   return (!presenting_user.is_valid()) || presenting_user == account_id;
 }
 
-void MultiUserWindowManagerImpl::OnActiveUserSessionChanged(
+void MultiUserWindowManager::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   CHECK(current_account_id_ != account_id);
   bool for_primary_user = !current_account_id_.has_value();
@@ -290,11 +287,11 @@ void MultiUserWindowManagerImpl::OnActiveUserSessionChanged(
 
   // Call RequestCaptureState here instead of having MediaClient observe
   // ActiveUserChanged because it must happen after
-  // MultiUserWindowManagerImpl is notified.
+  // MultiUserWindowManager is notified.
   Shell::Get()->media_controller()->RequestCaptureState();
 }
 
-void MultiUserWindowManagerImpl::OnWindowDestroyed(aura::Window* window) {
+void MultiUserWindowManager::OnWindowDestroyed(aura::Window* window) {
   if (GetWindowOwner(window).empty()) {
     // This must be a window in the transient chain - remove it and its
     // children from the owner.
@@ -306,9 +303,8 @@ void MultiUserWindowManagerImpl::OnWindowDestroyed(aura::Window* window) {
   window_to_entry_.erase(window);
 }
 
-void MultiUserWindowManagerImpl::OnWindowVisibilityChanging(
-    aura::Window* window,
-    bool visible) {
+void MultiUserWindowManager::OnWindowVisibilityChanging(aura::Window* window,
+                                                        bool visible) {
   // This command gets called first and immediately when show or hide gets
   // called. We remember here the desired state for restoration IF we were
   // not ourselves issuing the call.
@@ -333,8 +329,8 @@ void MultiUserWindowManagerImpl::OnWindowVisibilityChanging(
   }
 }
 
-void MultiUserWindowManagerImpl::OnWindowVisibilityChanged(aura::Window* window,
-                                                           bool visible) {
+void MultiUserWindowManager::OnWindowVisibilityChanged(aura::Window* window,
+                                                       bool visible) {
   if (suppress_visibility_changes_ || !current_account_id_.has_value()) {
     return;
   }
@@ -353,7 +349,7 @@ void MultiUserWindowManagerImpl::OnWindowVisibilityChanged(aura::Window* window,
   }
 }
 
-void MultiUserWindowManagerImpl::OnTransientChildAdded(
+void MultiUserWindowManager::OnTransientChildAdded(
     aura::Window* window,
     aura::Window* transient_window) {
   if (!GetWindowOwner(window).empty()) {
@@ -368,7 +364,7 @@ void MultiUserWindowManagerImpl::OnTransientChildAdded(
   AddTransientOwnerRecursive(transient_window, owned_parent);
 }
 
-void MultiUserWindowManagerImpl::OnTransientChildRemoved(
+void MultiUserWindowManager::OnTransientChildRemoved(
     aura::Window* window,
     aura::Window* transient_window) {
   // Remove the transient child if the window itself is owned, or one of the
@@ -379,7 +375,7 @@ void MultiUserWindowManagerImpl::OnTransientChildRemoved(
   }
 }
 
-void MultiUserWindowManagerImpl::OnDisplayTabletStateChanged(
+void MultiUserWindowManager::OnDisplayTabletStateChanged(
     display::TabletState state) {
   if (state != display::TabletState::kInTabletMode) {
     return;
@@ -389,21 +385,21 @@ void MultiUserWindowManagerImpl::OnDisplayTabletStateChanged(
     Shell::Get()->tablet_mode_controller()->AddWindow(entry.first);
 }
 
-void MultiUserWindowManagerImpl::SetAnimationSpeedForTest(
-    MultiUserWindowManagerImpl::AnimationSpeed speed) {
+void MultiUserWindowManager::SetAnimationSpeedForTest(
+    MultiUserWindowManager::AnimationSpeed speed) {
   animation_speed_ = speed;
 }
 
-bool MultiUserWindowManagerImpl::IsAnimationRunningForTest() {
+bool MultiUserWindowManager::IsAnimationRunningForTest() {
   return animation_ && !animation_->IsAnimationFinished();
 }
 
-const AccountId& MultiUserWindowManagerImpl::GetCurrentUserForTest() const {
+const AccountId& MultiUserWindowManager::GetCurrentUserForTest() const {
   CHECK(current_account_id_.has_value());
   return *current_account_id_;
 }
 
-bool MultiUserWindowManagerImpl::ShowWindowForUserIntern(
+bool MultiUserWindowManager::ShowWindowForUserIntern(
     aura::Window* window,
     const AccountId& account_id) {
   // If there is either no owner, or the owner is the current user, no action
@@ -438,7 +434,7 @@ bool MultiUserWindowManagerImpl::ShowWindowForUserIntern(
   return true;
 }
 
-void MultiUserWindowManagerImpl::SetWindowVisibility(
+void MultiUserWindowManager::SetWindowVisibility(
     aura::Window* window,
     bool visible,
     base::TimeDelta animation_time) {
@@ -475,7 +471,7 @@ void MultiUserWindowManagerImpl::SetWindowVisibility(
     SetWindowVisible(window, false, animation_time);
 }
 
-void MultiUserWindowManagerImpl::ShowWithTransientChildrenRecursive(
+void MultiUserWindowManager::ShowWithTransientChildrenRecursive(
     aura::Window* window,
     base::TimeDelta animation_time) {
   for (aura::Window* transient_child : ::wm::GetTransientChildren(window))
@@ -488,7 +484,7 @@ void MultiUserWindowManagerImpl::ShowWithTransientChildrenRecursive(
     SetWindowVisible(window, true, animation_time);
 }
 
-aura::Window* MultiUserWindowManagerImpl::GetOwningWindowInTransientChain(
+aura::Window* MultiUserWindowManager::GetOwningWindowInTransientChain(
     aura::Window* window) const {
   if (!GetWindowOwner(window).empty())
     return nullptr;
@@ -501,7 +497,7 @@ aura::Window* MultiUserWindowManagerImpl::GetOwningWindowInTransientChain(
   return nullptr;
 }
 
-void MultiUserWindowManagerImpl::AddTransientOwnerRecursive(
+void MultiUserWindowManager::AddTransientOwnerRecursive(
     aura::Window* window,
     aura::Window* owned_parent) {
   // First add all child windows.
@@ -528,7 +524,7 @@ void MultiUserWindowManagerImpl::AddTransientOwnerRecursive(
   }
 }
 
-void MultiUserWindowManagerImpl::RemoveTransientOwnerRecursive(
+void MultiUserWindowManager::RemoveTransientOwnerRecursive(
     aura::Window* window) {
   // First remove all child windows.
   for (aura::Window* transient_child : ::wm::GetTransientChildren(window)) {
@@ -561,10 +557,9 @@ void MultiUserWindowManagerImpl::RemoveTransientOwnerRecursive(
   }
 }
 
-void MultiUserWindowManagerImpl::SetWindowVisible(
-    aura::Window* window,
-    bool visible,
-    base::TimeDelta animation_time) {
+void MultiUserWindowManager::SetWindowVisible(aura::Window* window,
+                                              bool visible,
+                                              base::TimeDelta animation_time) {
   // The TabletModeWindowManager will not handle invisible windows since they
   // are not user activatable. Since invisible windows are not being tracked,
   // we tell it to maximize / track this window now before it gets shown, to
@@ -580,7 +575,7 @@ void MultiUserWindowManagerImpl::SetWindowVisible(
     window->Hide();
 }
 
-base::TimeDelta MultiUserWindowManagerImpl::GetAdjustedAnimationTime(
+base::TimeDelta MultiUserWindowManager::GetAdjustedAnimationTime(
     base::TimeDelta default_time) const {
   return animation_speed_ == ANIMATION_SPEED_NORMAL
              ? default_time

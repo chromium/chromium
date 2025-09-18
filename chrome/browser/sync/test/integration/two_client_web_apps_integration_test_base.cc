@@ -29,7 +29,7 @@ TwoClientWebAppsIntegrationTestBase::TwoClientWebAppsIntegrationTestBase()
       // TODO(crbug.com/425160398): Consider to redesign the tests to work
       // with the feature.
       multi_user_window_manager_resetter_(
-          ash::MultiUserWindowManagerImpl::DisableForTesting()),
+          ash::MultiUserWindowManager::DisableForTesting()),
 #endif  // BUILDFLAG(IS_CHROMEOS)
       helper_(this) {
 }
