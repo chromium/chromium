@@ -4529,15 +4529,6 @@ public class StripLayoutHelper
     }
 
     private void updateStrip() {
-        // TODO(dtrainor): Remove this once tabCreated() is refactored to be called even from
-        // restore.
-        if (mTabStateInitialized
-                && (mStripTabs == null
-                        || mModel == null
-                        || mModel.getCount() != mStripTabs.length)) {
-            rebuildStripTabs(/* deferAnimations= */ false);
-        }
-
         // 1. Update the scroll offset limits
         updateScrollOffsetLimits();
 

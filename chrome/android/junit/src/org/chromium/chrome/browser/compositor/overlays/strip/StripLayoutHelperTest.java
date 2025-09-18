@@ -2574,8 +2574,10 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.getRunningAnimatorForTesting().end();
 
         // Act: End the animations to apply final values.
+        Tab closingTab = mModel.getTabAt(2);
         Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
         runningAnimator.end();
+        mStripLayoutHelper.tabClosed(closingTab);
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
         // - groupTitleWidth(46) - titleOverlapWidth(4) = 680.
@@ -3685,8 +3687,10 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Act: End the tab closing animations to apply final values.
+        Tab closingTab = mModel.getTabAt(14);
         Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
         runningAnimator.end();
+        mStripLayoutHelper.tabClosed(closingTab);
 
         // Assert: Tab is closed and animations are still running.
         int expectedTabCount = 14;
@@ -3742,8 +3746,10 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Act: End the animations to apply final values.
+        Tab closingTab = mModel.getTabAt(2);
         Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
         runningAnimator.end();
+        mStripLayoutHelper.tabClosed(closingTab);
 
         // Assert: Tab is closed and animations are still running.
         int expectedTabCount = 3;
@@ -3826,7 +3832,6 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setPendingMouseTabClosureForTesting(true);
 
         // Fake a tab closure.
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.tabClosed(mModel.getTabAt(0));
 
         // Verify state is cleared.
@@ -5947,9 +5952,11 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Act: End the tab closing animations to apply final values.
+        Tab closingTab = mModel.getTabAt(9);
         Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
         assertNotNull(runningAnimator);
         runningAnimator.end();
+        mStripLayoutHelper.tabClosed(closingTab);
 
         // Assert: Tab is closed.
         int expectedTabCount = 9;
