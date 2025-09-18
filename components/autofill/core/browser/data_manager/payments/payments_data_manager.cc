@@ -1804,6 +1804,11 @@ bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
   return sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
 }
 
+base::WeakPtr<const PaymentsDataManager> PaymentsDataManager::GetWeakPtr()
+    const {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PaymentsDataManager::LoadCreditCards() {
   if (!database_helper_->GetLocalDatabase()) {
     NOTREACHED();

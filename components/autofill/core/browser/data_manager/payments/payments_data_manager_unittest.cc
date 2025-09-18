@@ -4158,5 +4158,14 @@ TEST_F(PaymentsDataManagerTest, ShouldShowBnplSettings_FlagOff) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+TEST_F(PaymentsDataManagerTest, GetWeakPtr_InvalidatedAfterManagerDestroyed) {
+  base::WeakPtr<const PaymentsDataManager> weak_ptr_local =
+      payments_data_manager().GetWeakPtr();
+  EXPECT_TRUE(weak_ptr_local);
+
+  ResetPaymentsDataManager();
+  EXPECT_FALSE(weak_ptr_local);
+}
+
 }  // namespace
 }  // namespace autofill

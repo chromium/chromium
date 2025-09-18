@@ -533,6 +533,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // user.
   virtual bool ShouldSuggestServerPaymentMethods() const;
 
+  base::WeakPtr<const PaymentsDataManager> GetWeakPtr() const;
+
  protected:
   friend class PaymentsDataManagerTestApi;
 
