@@ -252,4 +252,26 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NewCallInvalidatesOldCallback) {
   EXPECT_EQ(future2.Get()[0], reply.otp_value->value());
 }
 
+// Tests that an empty OTP value received from the backend is not stored.
+TEST_F(OtpManagerImplTest, GetOtpSuggestions_EmptyOtpIsNotStored) {
+  OtpManagerImpl otp_manager(&autofill_manager_, &sms_otp_backend_);
+
+  // Prepare a reply with an empty OTP.
+  one_time_tokens::OtpFetchReply reply = one_time_tokens::OtpFetchReply(
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    "", base::Time::Now()),
+      /*request_complete=*/true);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(RunOnceCallback<0>(reply));
+
+  // Observing an OTP field is supposed to trigger an SMS OTP request.
+  AddFormWithOtpField();
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(future.GetCallback());
+
+  EXPECT_TRUE(future.Get().empty());
+}
+
 }  // namespace autofill

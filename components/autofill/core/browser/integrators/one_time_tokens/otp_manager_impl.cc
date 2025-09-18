@@ -94,7 +94,7 @@ void OtpManagerImpl::OnFieldTypesDetermined(
 void OtpManagerImpl::OnOtpRetrievalComplete(
     const one_time_tokens::OtpFetchReply& reply) {
   sms_otp_retrieval_in_progress_ = false;
-  if (reply.otp_value.has_value()) {
+  if (reply.otp_value.has_value() && !reply.otp_value->value().empty()) {
     // If the same token was retrieved before, remove it.
     std::erase_if(otp_suggestions_,
                   [&reply](const one_time_tokens::OneTimeToken& token) {
