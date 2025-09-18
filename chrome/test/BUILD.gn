@@ -4403,6 +4403,7 @@ if (!is_android) {
         "../browser/profiles/delete_profile_helper_browsertest.cc",
         "../browser/profiles/profile_window_browsertest.cc",
         "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
+        "../browser/ui/views/download/bubble/download_bubble_row_list_view_browsertest.cc",
         "../browser/ui/views/download/bubble/download_toolbar_ui_controller_browsertest.cc",
         "../browser/ui/views/profiles/signin_view_controller_delegate_views_browsertest.cc",
       ]
@@ -10292,7 +10293,6 @@ test("unit_tests") {
       "../browser/signin/signin_ui_util_unittest.cc",
       "../browser/signin/signin_util_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_contents_view_unittest.cc",
-      "../browser/ui/views/download/bubble/download_bubble_row_list_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_row_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_security_view_unittest.cc",
       "../browser/ui/views/sharing/sharing_dialog_view_unittest.cc",

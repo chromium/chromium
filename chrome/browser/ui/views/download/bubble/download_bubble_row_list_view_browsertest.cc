@@ -10,16 +10,18 @@
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/views_test_utils.h"
@@ -30,26 +32,30 @@ using ::offline_items_collection::ContentId;
 using ::testing::NiceMock;
 using ::testing::ReturnRefOfCopy;
 
-class DownloadBubbleRowListViewTest : public TestWithBrowserView {
+class DownloadBubbleRowListViewBrowserTest : public InProcessBrowserTest {
  public:
-  DownloadBubbleRowListViewTest() = default;
-  ~DownloadBubbleRowListViewTest() override = default;
+  DownloadBubbleRowListViewBrowserTest() = default;
+  ~DownloadBubbleRowListViewBrowserTest() override = default;
 
-  DownloadBubbleRowListViewTest(const DownloadBubbleRowListViewTest&) = delete;
-  DownloadBubbleRowListViewTest& operator=(
-      const DownloadBubbleRowListViewTest&) = delete;
+  DownloadBubbleRowListViewBrowserTest(
+      const DownloadBubbleRowListViewBrowserTest&) = delete;
+  DownloadBubbleRowListViewBrowserTest& operator=(
+      const DownloadBubbleRowListViewBrowserTest&) = delete;
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
+    row_list_view_.reset();
+    info_.reset();
     download_items_.clear();
-    TestWithBrowserView::TearDown();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   DownloadBubbleUIController* bubble_controller() {
-    return browser_view()->GetDownloadBubbleUIController();
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetDownloadBubbleUIController();
   }
 
   DownloadBubbleNavigationHandler* navigation_handler() {
-      return browser()->GetFeatures().download_toolbar_ui_controller();
+    return browser()->GetFeatures().download_toolbar_ui_controller();
   }
 
   // Sets up `num_items` mock download items with GUID equal to their index in
@@ -59,8 +65,8 @@ class DownloadBubbleRowListViewTest : public TestWithBrowserView {
       auto item = std::make_unique<NiceMock<download::MockDownloadItem>>();
       EXPECT_CALL(*item, GetGuid())
           .WillRepeatedly(ReturnRefOfCopy(base::NumberToString(i)));
-      content::DownloadItemUtils::AttachInfoForTesting(
-          item.get(), browser()->profile(), nullptr);
+      content::DownloadItemUtils::AttachInfoForTesting(item.get(), GetProfile(),
+                                                       nullptr);
       download_items_.push_back(std::move(item));
     }
   }
@@ -100,7 +106,7 @@ class DownloadBubbleRowListViewTest : public TestWithBrowserView {
       download_items_;
 };
 
-TEST_F(DownloadBubbleRowListViewTest, AddRow) {
+IN_PROC_BROWSER_TEST_F(DownloadBubbleRowListViewBrowserTest, AddRow) {
   InitItems(2);
   InitRowListView(1);
   EXPECT_EQ(row_list_view_->NumRows(), 1u);
@@ -108,7 +114,7 @@ TEST_F(DownloadBubbleRowListViewTest, AddRow) {
   EXPECT_EQ(row_list_view_->NumRows(), 2u);
 }
 
-TEST_F(DownloadBubbleRowListViewTest, RemoveRow) {
+IN_PROC_BROWSER_TEST_F(DownloadBubbleRowListViewBrowserTest, RemoveRow) {
   InitItems(1);
   InitRowListView(1);
   EXPECT_EQ(row_list_view_->NumRows(), 1u);
