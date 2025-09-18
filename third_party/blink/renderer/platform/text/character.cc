@@ -59,10 +59,11 @@ UCPTrie* CreateTrie() {
   return trie;
 }
 
-unsigned GetProperty(UChar32 c, CharacterProperty property) {
+inline CharacterProperty GetProperty(UChar32 c) {
   static const UCPTrie* trie = CreateTrie();
-  return UNSAFE_TODO(UCPTRIE_FAST_GET(trie, UCPTRIE_16, c)) &
-         static_cast<CharacterPropertyType>(property);
+  static_assert(sizeof(CharacterProperty) == 2);
+  const auto value = UNSAFE_TODO(UCPTRIE_FAST_GET(trie, UCPTRIE_16, c));
+  return CharacterProperty(value);
 }
 
 base::Lock& GetFreezePatternLock() {
@@ -92,34 +93,29 @@ bool Character::IsUprightInMixedVertical(UChar32 character) {
 }
 
 bool Character::IsCJKIdeographOrSymbolSlow(UChar32 c) {
-  return GetProperty(c, CharacterProperty::kIsCJKIdeographOrSymbol);
+  return GetProperty(c).is_cjk_ideograph_or_symbol;
 }
 
 bool Character::IsPotentialCustomElementNameChar(UChar32 character) {
-  return GetProperty(character,
-                     CharacterProperty::kIsPotentialCustomElementNameChar);
+  return GetProperty(character).is_potential_custom_element_name_char;
 }
 
 bool Character::IsBidiControl(UChar32 character) {
-  return GetProperty(character, CharacterProperty::kIsBidiControl);
+  return GetProperty(character).is_bidi_control;
 }
 
 bool Character::IsHangulSlow(UChar32 character) {
-  return GetProperty(character, CharacterProperty::kIsHangul);
+  return GetProperty(character).is_hangul;
 }
 
 // static
 HanKerningCharType Character::GetHanKerningCharType(UChar32 character) {
-  return static_cast<HanKerningCharType>(
-      GetProperty(character, CharacterProperty::kHanKerningShiftedMask) >>
-      static_cast<unsigned>(CharacterProperty::kHanKerningShift));
+  return GetProperty(character).han_kerning;
 }
 
 // static
 EastAsianSpacingType Character::GetEastAsianSpacingType(UChar32 character) {
-  return static_cast<EastAsianSpacingType>(
-      GetProperty(character, CharacterProperty::kEastAsianSpacingShiftedMask) >>
-      static_cast<unsigned>(CharacterProperty::kEastAsianSpacingShift));
+  return GetProperty(character).east_asian_spacing;
 }
 
 bool Character::MaybeHanKerningOpenSlow(UChar32 ch) {
