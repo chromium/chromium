@@ -28,6 +28,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) MockOsSettingsProvider
 
   // OsSettingsProvider:
   bool DarkColorSchemeAvailable() const override;
+  NativeTheme::PreferredColorScheme PreferredColorScheme() const override;
   ColorProviderKey::UserColorSource PreferredColorSource() const override;
   NativeTheme::PreferredContrast PreferredContrast() const override;
   bool PrefersReducedTransparency() const override;
@@ -40,6 +41,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) MockOsSettingsProvider
 
   // Setters for all the above settings.
   void SetDarkColorSchemeAvailable(bool dark_color_scheme_available);
+  void SetPreferredColorScheme(
+      NativeTheme::PreferredColorScheme preferred_color_scheme);
   void SetPreferredColorSource(
       ColorProviderKey::UserColorSource preferred_color_source);
   void SetPreferredContrast(NativeTheme::PreferredContrast preferred_contrast);
@@ -53,6 +56,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) MockOsSettingsProvider
 
  private:
   bool dark_color_scheme_available_ = true;
+  NativeTheme::PreferredColorScheme preferred_color_scheme_ =
+      NativeTheme::PreferredColorScheme::kLight;
   ColorProviderKey::UserColorSource preferred_color_source_ =
       ColorProviderKey::UserColorSource::kBaseline;
   NativeTheme::PreferredContrast preferred_contrast_ =

@@ -355,10 +355,9 @@ std::vector<std::string> QtUi::GetCmdLineFlagsForCopy() const {
                         base::NumberToString(qt_version_)})};
 }
 
-DISABLE_CFI_VCALL
 bool QtUi::PreferDarkTheme() const {
-  return color_utils::IsDark(
-      shim_->GetColor(ColorType::kWindowBg, ColorState::kNormal));
+  return native_theme_->preferred_color_scheme() ==
+         ui::NativeTheme::PreferredColorScheme::kDark;
 }
 
 DISABLE_CFI_VCALL
@@ -369,7 +368,7 @@ void QtUi::SetDarkTheme(bool dark) {
 DISABLE_CFI_VCALL
 void QtUi::SetAccentColor(std::optional<SkColor> accent_color) {
   accent_color_ = accent_color;
-  ThemeChanged();
+  native_theme_->NotifyOnNativeThemeUpdated();
 }
 
 DISABLE_CFI_VCALL
@@ -445,7 +444,7 @@ void QtUi::FontChanged() {
 }
 
 void QtUi::ThemeChanged() {
-  native_theme_->ThemeChanged(PreferDarkTheme());
+  native_theme_->OnQtThemeChanged();
 }
 
 void QtUi::ScaleFactorMaybeChanged() {

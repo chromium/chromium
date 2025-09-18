@@ -53,6 +53,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #endif
 
@@ -1690,9 +1691,7 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_SingleProfile) {
 // Themes aren't used on Android
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_preferred_color_scheme(
-      ui::NativeTheme::PreferredColorScheme::kLight);
+  ui::MockOsSettingsProvider os_settings_provider;
   AddTestingProfile();
   base::FilePath profile_path = GetProfilePath("testing_profile_path0");
 
@@ -1706,7 +1705,7 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   ProfileThemeColors light_colors = GetDefaultProfileThemeColors();
   EXPECT_EQ(entry->GetProfileThemeColors(), light_colors);
 
-  native_theme->set_preferred_color_scheme(
+  os_settings_provider.SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors());
   EXPECT_NE(entry->GetProfileThemeColors(), light_colors);
@@ -1720,7 +1719,7 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   VerifyAndResetCallExpectations();
 
   // Colors shouldn't change after switching back to the light mode.
-  native_theme->set_preferred_color_scheme(
+  os_settings_provider.SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_EQ(entry->GetProfileThemeColors(), colors);
 

@@ -23,6 +23,11 @@ bool MockOsSettingsProvider::DarkColorSchemeAvailable() const {
   return dark_color_scheme_available_;
 }
 
+NativeTheme::PreferredColorScheme MockOsSettingsProvider::PreferredColorScheme()
+    const {
+  return preferred_color_scheme_;
+}
+
 ColorProviderKey::UserColorSource MockOsSettingsProvider::PreferredColorSource()
     const {
   return preferred_color_source_;
@@ -66,6 +71,12 @@ base::TimeDelta MockOsSettingsProvider::CaretBlinkInterval() const {
 void MockOsSettingsProvider::SetDarkColorSchemeAvailable(
     bool dark_color_scheme_available) {
   dark_color_scheme_available_ = dark_color_scheme_available;
+  NotifyOnSettingsChanged();
+}
+
+void MockOsSettingsProvider::SetPreferredColorScheme(
+    NativeTheme::PreferredColorScheme preferred_color_scheme) {
+  preferred_color_scheme_ = preferred_color_scheme;
   NotifyOnSettingsChanged();
 }
 

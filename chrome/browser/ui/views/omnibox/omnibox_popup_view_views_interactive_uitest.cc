@@ -9,6 +9,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/widget/widget_utils.h"
 
 // Check that the location bar background (and the background of the textfield
@@ -18,10 +19,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        PopupMatchesLocationBarBackground) {
   // In dark mode the omnibox focused and unfocused colors are the same, which
   // makes this test fail; see comments below.
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->GetNativeTheme()
-      ->set_preferred_color_scheme(
-          ui::NativeTheme::PreferredColorScheme::kLight);
+  ui::MockOsSettingsProvider os_settings_provider;  // Forces light mode.
 
   // Start with the Omnibox unfocused.
   omnibox_view()->GetFocusManager()->ClearFocus();

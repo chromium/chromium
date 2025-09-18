@@ -26,6 +26,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderWin
   ~OsSettingsProviderWin() override;
 
   bool DarkColorSchemeAvailable() const override;
+  NativeTheme::PreferredColorScheme PreferredColorScheme() const override;
   ColorProviderKey::UserColorSource PreferredColorSource() const override;
   bool PrefersReducedTransparency() const override;
   bool PrefersInvertedColors() const override;
@@ -70,6 +71,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderWin
           base::BindRepeating(&OsSettingsProviderWin::OnAccentColorMaybeChanged,
                               base::Unretained(this)));
 
+  bool in_dark_mode_ = false;
   bool prefers_reduced_transparency_ = false;
   bool prefers_inverted_colors_ = false;
   bool forced_colors_active_ = false;

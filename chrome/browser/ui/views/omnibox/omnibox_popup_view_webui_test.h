@@ -71,12 +71,6 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
         ->GetColor(kColorOmniboxResultsBackground);
   }
 
-  void SetUseDarkColor(ui::NativeTheme::PreferredColorScheme color_scheme) {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    browser_view->GetNativeTheme()->set_preferred_color_scheme(color_scheme);
-  }
-
   // Some tests relies on the light/dark variants of the result background to be
   // different. But when using the system theme on Linux, these colors will be
   // the same. Ensure we're not using the system theme, which may be

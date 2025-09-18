@@ -13,6 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/linux/fake_linux_ui.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace ui {
@@ -24,17 +25,6 @@ class MockLinuxUi : public FakeLinuxUi {
   MOCK_METHOD(ui::NativeTheme*, GetNativeTheme, (), (const override));
   MOCK_METHOD(void, SetDarkTheme, (bool dark), (override));
   MOCK_METHOD(void, SetAccentColor, (std::optional<SkColor> color), (override));
-};
-
-class MockNativeTheme : public NativeTheme {
- public:
-  MockNativeTheme() = default;
-  ~MockNativeTheme() override = default;
-
-  void SetPreferredColorScheme(NativeTheme::PreferredColorScheme color_scheme) {
-    set_preferred_color_scheme(color_scheme);
-    NotifyOnNativeThemeUpdated();
-  }
 };
 
 ACTION_P2(RegisterSignalCallback, signal_callback, connected_callback) {
@@ -79,7 +69,9 @@ class DarkModeManagerLinuxTest : public testing::Test {
   dbus::ObjectProxy::ResponseOrErrorCallback& accent_color_callback() {
     return accent_color_callback_;
   }
-  MockNativeTheme* mock_native_theme() { return mock_native_theme_.get(); }
+  MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
+  }
   MockLinuxUi* mock_linux_ui() { return mock_linux_ui_.get(); }
 
  private:
@@ -153,10 +145,9 @@ class DarkModeManagerLinuxTest : public testing::Test {
     mock_linux_ui_ = std::make_unique<MockLinuxUi>();
     linux_ui_themes_ = std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>{
         mock_linux_ui_.get()};
-
-    mock_native_theme_ = std::make_unique<MockNativeTheme>();
+    auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
     EXPECT_CALL(*mock_linux_ui_, GetNativeTheme())
-        .WillOnce(Return(mock_native_theme_.get()));
+        .WillOnce(Return(native_theme));
 
     enable_portal_accent_color_.InitAndEnableFeature(
         features::kUsePortalAccentColor);
@@ -164,14 +155,12 @@ class DarkModeManagerLinuxTest : public testing::Test {
     dbus_xdg::ResetCachedStateForTesting();
 
     manager_ = std::make_unique<DarkModeManagerLinux>(
-        mock_bus_, mock_linux_ui_.get(), &linux_ui_themes_,
-        std::vector<raw_ptr<NativeTheme, VectorExperimental>>{
-            mock_native_theme_.get()});
+        mock_bus_, mock_linux_ui_.get(), &linux_ui_themes_);
 
     EXPECT_FALSE(manager_->prefer_dark_theme());
-    EXPECT_EQ(mock_native_theme_->preferred_color_scheme(),
+    EXPECT_EQ(native_theme->preferred_color_scheme(),
               NativeTheme::PreferredColorScheme::kLight);
-    EXPECT_FALSE(mock_native_theme_->user_color().has_value());
+    EXPECT_FALSE(native_theme->user_color().has_value());
   }
 
   void TearDown() override { manager_.reset(); }
@@ -179,7 +168,7 @@ class DarkModeManagerLinuxTest : public testing::Test {
   std::unique_ptr<MockLinuxUi> mock_linux_ui_;
   std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>> linux_ui_themes_;
 
-  std::unique_ptr<MockNativeTheme> mock_native_theme_;
+  MockOsSettingsProvider os_settings_provider_;
 
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_dbus_proxy_;
@@ -199,10 +188,10 @@ class DarkModeManagerLinuxTest : public testing::Test {
 
 TEST_F(DarkModeManagerLinuxTest, UseNativeThemeSetting) {
   // Set the native theme preference before the async DBus calls complete.
-  mock_native_theme()->SetPreferredColorScheme(
+  os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kDark);
   EXPECT_TRUE(ManagerPrefersDarkTheme());
-  mock_native_theme()->SetPreferredColorScheme(
+  os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kLight);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
 
@@ -219,10 +208,10 @@ TEST_F(DarkModeManagerLinuxTest, UseNativeThemeSetting) {
            DarkModeManagerLinux::kSettingChangedSignal, false);
 
   // The native theme preference should still toggle the manager preference.
-  mock_native_theme()->SetPreferredColorScheme(
+  os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kDark);
   EXPECT_TRUE(ManagerPrefersDarkTheme());
-  mock_native_theme()->SetPreferredColorScheme(
+  os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kLight);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
 }
@@ -243,7 +232,8 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(true));
   std::move(color_scheme_callback()).Run(response.get(), nullptr);
   EXPECT_TRUE(ManagerPrefersDarkTheme());
-  EXPECT_EQ(mock_native_theme()->preferred_color_scheme(),
+  auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  EXPECT_EQ(native_theme->preferred_color_scheme(),
             NativeTheme::PreferredColorScheme::kDark);
 
   // Changes in the portal preference should be processed by the manager and the
@@ -257,15 +247,15 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(false));
   std::move(setting_changed_callback()).Run(&signal);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
-  EXPECT_EQ(mock_native_theme()->preferred_color_scheme(),
+  EXPECT_EQ(native_theme->preferred_color_scheme(),
             NativeTheme::PreferredColorScheme::kLight);
 
   // The native theme preference should have no effect when the portal
   // preference is being used.
-  mock_native_theme()->SetPreferredColorScheme(
+  os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kDark);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
-  mock_native_theme()->SetPreferredColorScheme(
+  os_settings_provider().SetPreferredColorScheme(
       NativeTheme::PreferredColorScheme::kLight);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
 }
@@ -294,7 +284,8 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalAccentColor) {
       SkColorSetRGB(0, 127, 255);
   EXPECT_CALL(*mock_linux_ui(), SetAccentColor(kExpectedColor1));
   std::move(accent_color_callback()).Run(response.get(), nullptr);
-  EXPECT_EQ(mock_native_theme()->user_color(), kExpectedColor1);
+  auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  EXPECT_EQ(native_theme->user_color(), kExpectedColor1);
   Mock::VerifyAndClearExpectations(mock_linux_ui());
 
   // Changes in the portal accent color should be processed by the manager and
@@ -317,7 +308,7 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalAccentColor) {
       SkColorSetRGB(255, 127, 0);
   EXPECT_CALL(*mock_linux_ui(), SetAccentColor(kExpectedColor2));
   std::move(setting_changed_callback()).Run(&signal);
-  EXPECT_EQ(mock_native_theme()->user_color(), kExpectedColor2);
+  EXPECT_EQ(native_theme->user_color(), kExpectedColor2);
 }
 
 }  // namespace ui

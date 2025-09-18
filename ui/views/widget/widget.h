@@ -1436,12 +1436,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
       ui::ColorProviderKey::ColorMode color_mode,
       ui::ColorProviderKey::ForcedColors forced_colors) const override;
 
-  // Set the native theme from which this widget gets color from for testing.
-  void SetNativeThemeForTest(ui::NativeTheme* native_theme) {
-    SetNativeTheme(native_theme);
-    native_theme_set_for_testing_ = true;
-  }
-
   ui::ColorProviderKey GetColorProviderKeyForTesting() const;
 
   // Causes IsFullscreen() to also check parent state, since this widget is
@@ -1754,11 +1748,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // The native theme this widget is using.
   // If nullptr, defaults to use the regular native theme.
   raw_ptr<ui::NativeTheme> native_theme_ = nullptr;
-
-  // A flag that prevents the widget from updating its instance of
-  // `native_theme_`. This is necessary during testing as theme updates may
-  // trigger a reset of the explicitly set test theme.
-  bool native_theme_set_for_testing_ = false;
 
   // By default, widgets are assumed to correspond to windows. If a parent
   // widget is fullscreen, then the child widget is a popup which is not

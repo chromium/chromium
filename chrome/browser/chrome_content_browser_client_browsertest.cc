@@ -100,7 +100,6 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/test_native_theme.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -442,15 +441,10 @@ class PrefersColorSchemeTest
     : public testing::WithParamInterface<std::tuple<bool, bool>>,
       public InProcessBrowserTest {
  public:
-  ~PrefersColorSchemeTest() override {
-    CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    original_client_ = SetBrowserClientForTesting(&theme_client_);
-    test_theme_.SetPreferredColorScheme(
+    os_settings_provider_.SetPreferredColorScheme(
         DarkOs() ? ui::NativeTheme::PreferredColorScheme::kDark
                  : ui::NativeTheme::PreferredColorScheme::kLight);
 
@@ -498,23 +492,7 @@ class PrefersColorSchemeTest
     return guest_view_manager_;
   }
 
-  ui::TestNativeTheme test_theme_;
-
  private:
-  class ChromeContentBrowserClientWithWebTheme
-      : public ChromeContentBrowserClient {
-   public:
-    explicit ChromeContentBrowserClientWithWebTheme(
-        const ui::NativeTheme* theme)
-        : theme_(theme) {}
-
-   protected:
-    const ui::NativeTheme* GetWebTheme() const override { return theme_; }
-
-   private:
-    const raw_ptr<const ui::NativeTheme> theme_;
-  };
-
   class MockColorProviderSource : public ui::ColorProviderSource {
    public:
     explicit MockColorProviderSource(bool is_dark) {
@@ -550,8 +528,7 @@ class PrefersColorSchemeTest
   static bool DarkOs() { return std::get<0>(GetParam()); }
   static bool DarkColorProvider() { return std::get<1>(GetParam()); }
 
-  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
-  ChromeContentBrowserClientWithWebTheme theme_client_{&test_theme_};
+  ui::MockOsSettingsProvider os_settings_provider_;
   MockColorProviderSource color_provider_source_{DarkColorProvider()};
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicTestEnvironment glic_test_environment_;
@@ -645,13 +622,9 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    original_client_ = SetBrowserClientForTesting(&theme_client_);
-    const auto color_scheme =
+    os_settings_provider_.SetPreferredColorScheme(
         DarkMode() ? ui::NativeTheme::PreferredColorScheme::kDark
-                   : ui::NativeTheme::PreferredColorScheme::kLight;
-    test_theme_.SetPreferredColorScheme(color_scheme);
-    ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
-        color_scheme);
+                   : ui::NativeTheme::PreferredColorScheme::kLight);
     ThemeService* const theme_service =
         ThemeServiceFactory::GetForProfile(browser()->profile());
     if (UsesCustomTheme()) {
@@ -663,10 +636,6 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
     } else {
       theme_service->UseDefaultTheme();
     }
-  }
-
-  ~PreferredRootScrollbarColorSchemeChromeClientTest() override {
-    CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
   }
 
  protected:
@@ -708,26 +677,10 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
   }
 
  private:
-  class ChromeContentBrowserClientWithWebTheme
-      : public ChromeContentBrowserClient {
-   public:
-    explicit ChromeContentBrowserClientWithWebTheme(
-        const ui::NativeTheme* theme)
-        : theme_(theme) {}
-
-   protected:
-    const ui::NativeTheme* GetWebTheme() const override { return theme_; }
-
-   private:
-    const raw_ptr<const ui::NativeTheme> theme_;
-  };
-
   static bool DarkMode() { return std::get<0>(GetParam()); }
   static bool UsesCustomTheme() { return std::get<1>(GetParam()); }
 
-  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
-  ui::TestNativeTheme test_theme_;
-  ChromeContentBrowserClientWithWebTheme theme_client_{&test_theme_};
+  ui::MockOsSettingsProvider os_settings_provider_;
   const SkColor theme_color_;
   base::test::ScopedFeatureList feature_list_;
 };

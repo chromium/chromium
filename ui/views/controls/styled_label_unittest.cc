@@ -24,6 +24,8 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/link.h"
@@ -94,6 +96,9 @@ class StyledLabelInWidgetTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
+  ui::MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
+  }
   Widget* widget() const { return widget_.get(); }
 
   StyledLabel* InitStyledLabel(const std::string& ascii_text) {
@@ -105,6 +110,7 @@ class StyledLabelInWidgetTest : public ViewsTestBase {
   }
 
  private:
+  ui::MockOsSettingsProvider os_settings_provider_;
   std::unique_ptr<Widget> widget_;
 };
 
@@ -375,12 +381,6 @@ TEST_F(StyledLabelInWidgetTest, Color) {
   styled->SetBounds(0, 0, 1000, 1000);
   test::RunScheduledLayout(styled);
 
-  // The code below is not prepared to deal with dark mode.
-  auto* const native_theme = widget()->GetNativeTheme();
-  native_theme->set_preferred_color_scheme(
-      ui::NativeTheme::PreferredColorScheme::kLight);
-  native_theme->NotifyOnNativeThemeUpdated();
-
   auto* container = widget()->GetContentsView();
   // Obtain the default text color for a label.
   Label* label =
@@ -439,16 +439,13 @@ TEST_F(StyledLabelInWidgetTest, SetBackgroundColorIdReactsToThemeChange) {
   test::RunScheduledLayout(styled);
 
   ASSERT_THAT(styled->children(), SizeIs(1u));
-  auto* const native_theme = widget()->GetNativeTheme();
-  native_theme->set_preferred_color_scheme(
+  os_settings_provider().SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
-  native_theme->NotifyOnNativeThemeUpdated();
   EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorDialogBackground),
             LabelAt(styled, 0)->GetBackgroundColor());
 
-  native_theme->set_preferred_color_scheme(
+  os_settings_provider().SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kLight);
-  native_theme->NotifyOnNativeThemeUpdated();
   EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorDialogBackground),
             LabelAt(styled, 0)->GetBackgroundColor());
 
@@ -456,9 +453,8 @@ TEST_F(StyledLabelInWidgetTest, SetBackgroundColorIdReactsToThemeChange) {
   EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
             LabelAt(styled, 0)->GetBackgroundColor());
 
-  native_theme->set_preferred_color_scheme(
+  os_settings_provider().SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
-  native_theme->NotifyOnNativeThemeUpdated();
   EXPECT_EQ(widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
             LabelAt(styled, 0)->GetBackgroundColor());
 }

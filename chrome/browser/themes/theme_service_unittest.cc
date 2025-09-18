@@ -296,36 +296,12 @@ class ColorProviderTest : public ThemeServiceTest,
         GetSystemTheme() == SystemTheme::kCustom);
 #endif  // BUILDFLAG(IS_LINUX)
 
-    native_theme_ = ui::NativeTheme::GetInstanceForNativeUi();
-#if BUILDFLAG(IS_LINUX)
-    if (GetSystemTheme() == SystemTheme::kCustom) {
-      native_theme_ = ui::GetDefaultLinuxUiTheme()->GetNativeTheme();
-    }
-#endif
-    original_preferred_color_scheme_ = native_theme_->preferred_color_scheme();
-
+    os_settings_provider_.SetPreferredColorScheme(GetPreferredColorScheme());
     os_settings_provider_.SetPreferredContrast(GetPreferredContrast());
-    auto preferred_color_scheme = GetPreferredColorScheme();
 #if BUILDFLAG(IS_WIN)
-    const bool high_contrast =
-        GetPreferredContrast() == ui::NativeTheme::PreferredContrast::kMore;
-    if (high_contrast) {
-      preferred_color_scheme = ui::NativeTheme::PreferredColorScheme::kLight;
-    }
     os_settings_provider_.SetForcedColorsActive(
         GetPreferredContrast() == ui::NativeTheme::PreferredContrast::kMore);
 #endif  // BUILDFLAG(IS_WIN)
-    native_theme_->set_preferred_color_scheme(preferred_color_scheme);
-
-    // If native_theme_ has changed, call
-    // NativeTheme::NotifyOnNativeThemeUpdated to notify observers that the
-    // NativeTheme has been updated so that the ThemeService will know to update
-    // its ThemeSupplier to match the NativeTheme. The ColorProvider cache will
-    // also be reset.
-    if (original_preferred_color_scheme_ !=
-        native_theme_->preferred_color_scheme()) {
-      native_theme_->NotifyOnNativeThemeUpdated();
-    }
 
     // Update ThemeService to use the system theme if necessary.
     if (GetSystemTheme() == SystemTheme::kCustom) {
@@ -333,13 +309,6 @@ class ColorProviderTest : public ThemeServiceTest,
     } else {
       theme_service()->UseDefaultTheme();
     }
-  }
-
-  void TearDown() override {
-    // Restore the original NativeTheme parameters.
-    native_theme_->set_preferred_color_scheme(original_preferred_color_scheme_);
-    native_theme_->NotifyOnNativeThemeUpdated();
-    ThemeServiceTest::TearDown();
   }
 
  protected:
@@ -371,12 +340,6 @@ class ColorProviderTest : public ThemeServiceTest,
 
  private:
   ui::MockOsSettingsProvider os_settings_provider_;
-  // Store the parameter values of the global NativeTheme for UI instance
-  // configured during SetUp() to check if an update should be propagated and
-  // to restore the NativeTheme to its original state in TearDown().
-  ui::NativeTheme::PreferredColorScheme original_preferred_color_scheme_ =
-      ui::NativeTheme::PreferredColorScheme::kLight;
-  raw_ptr<ui::NativeTheme> native_theme_;
 #if BUILDFLAG(IS_LINUX)
   std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
 #endif

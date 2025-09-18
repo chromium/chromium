@@ -31,7 +31,8 @@
 #include "extensions/common/manifest.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/native_theme/test_native_theme.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 
 using GotDataCallback = content::URLDataSource::GotDataCallback;
@@ -67,30 +68,16 @@ class MockHistoryUiFaviconRequestHandler
 
 class TestFaviconSource : public FaviconSource {
  public:
-  TestFaviconSource(Profile* profile,
-                    chrome::FaviconUrlFormat format,
-                    bool serve_untrusted,
-                    ui::NativeTheme* theme)
-      : FaviconSource(profile, format, serve_untrusted), theme_(theme) {}
+  using FaviconSource::FaviconSource;
 
   MOCK_METHOD(base::RefCountedMemory*, LoadIconBytes, (float, int));
-
- protected:
-  // FaviconSource:
-  ui::NativeTheme* GetNativeTheme(
-      const content::WebContents::Getter& wc_getter) override {
-    return theme_;
-  }
-
- private:
-  const raw_ptr<ui::NativeTheme> theme_;
 };
 
 class FaviconSourceTestBase : public testing::Test {
  public:
   explicit FaviconSourceTestBase(chrome::FaviconUrlFormat format,
                                  bool serve_untrusted = false)
-      : source_(&profile_, format, serve_untrusted, &theme_) {
+      : source_(&profile_, format, serve_untrusted) {
     Init();
   }
 
@@ -136,12 +123,11 @@ class FaviconSourceTestBase : public testing::Test {
         .WillByDefault(Return(dummy_icon_bytes_.get()));
   }
 
-  void SetPreferredColorScheme(
-      ui::NativeTheme::PreferredColorScheme color_scheme) {
-    theme_.SetPreferredColorScheme(color_scheme);
+ protected:
+  ui::MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
   }
 
- protected:
   content::WebContents* test_web_contents() { return test_web_contents_.get(); }
 
   const WebContentsGetter& test_web_contents_getter() const {
@@ -160,17 +146,17 @@ class FaviconSourceTestBase : public testing::Test {
   NiceMock<TestFaviconSource>& source() { return source_; }
 
  private:
+  ui::MockOsSettingsProvider os_settings_provider_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler test_render_host_factories_;
   TestingProfile profile_;
-  ui::TestNativeTheme theme_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   WebContentsGetter test_web_contents_getter_;
   raw_ptr<NiceMock<favicon::MockFaviconService>> mock_favicon_service_;
   raw_ptr<NiceMock<MockHistoryUiFaviconRequestHandler>>
       mock_history_ui_favicon_request_handler_;
   NiceMock<TestFaviconSource> source_;
-  const scoped_refptr<base::RefCountedBytes> dummy_icon_bytes_;
+  scoped_refptr<base::RefCountedBytes> dummy_icon_bytes_;
 };
 
 class FaviconSourceTestWithLegacyFormat : public FaviconSourceTestBase {
@@ -180,14 +166,14 @@ class FaviconSourceTestWithLegacyFormat : public FaviconSourceTestBase {
 };
 
 TEST_F(FaviconSourceTestWithLegacyFormat, DarkDefault) {
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON_DARK));
   source().StartDataRequest(GURL(kDummyPrefix), test_web_contents_getter(),
                             base::DoNothing());
 }
 
 TEST_F(FaviconSourceTestWithLegacyFormat, LightDefault) {
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
   source().StartDataRequest(GURL(kDummyPrefix), test_web_contents_getter(),
                             base::DoNothing());
@@ -261,21 +247,22 @@ TEST_P(FaviconSourceTestWithFavicon2Format,
 }
 
 TEST_P(FaviconSourceTestWithFavicon2Format, DarkDefault) {
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON_DARK));
   source().StartDataRequest(GURL(kDummyPrefix), test_web_contents_getter(),
                             base::DoNothing());
 }
 
 TEST_P(FaviconSourceTestWithFavicon2Format, LightDefault) {
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
   source().StartDataRequest(GURL(kDummyPrefix), test_web_contents_getter(),
                             base::DoNothing());
 }
 
 TEST_P(FaviconSourceTestWithFavicon2Format, LightOverride) {
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
   source().StartDataRequest(
       GURL(base::StrCat({kDummyPrefix,

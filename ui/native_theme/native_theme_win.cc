@@ -21,14 +21,11 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/cstring_view.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
@@ -53,7 +50,6 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/win/screen_win.h"
-#include "ui/gfx/color_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -132,16 +128,6 @@ class ScopedCreateDCWithBitmap {
   base::win::ScopedCreateDC dc_;
   base::win::ScopedGDIObject<HBITMAP> bitmap_;
 };
-
-base::win::RegKey OpenThemeRegKey(REGSAM access) {
-  base::win::RegKey hkcu_themes_regkey;
-  // Validity is checked at time-of-use.
-  std::ignore = hkcu_themes_regkey.Open(HKEY_CURRENT_USER,
-                                        L"Software\\Microsoft\\Windows\\"
-                                        L"CurrentVersion\\Themes\\Personalize",
-                                        access);
-  return hkcu_themes_regkey;
-}
 
 // Returns the cached open theme handles. This is process-scoped rather than
 // owned by `NativeThemeWin` so that, in case two `NativeThemeWin` instances are
@@ -1084,46 +1070,7 @@ gfx::Size NativeThemeWin::GetPartSize(Part part,
                                                : gfx::Size();
 }
 
-NativeThemeWin::NativeThemeWin() {
-  // The below code attempts calls to user32.dll, so avoid it if those calls are
-  // not possible.
-  if (base::win::IsUser32AndGdi32Available()) {
-    // If there's no sequenced task runner handle, we can't be called back for
-    // registry changes. This generally happens in tests.
-    const bool observers_can_operate =
-        base::SequencedTaskRunner::HasCurrentDefault();
-
-    hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
-    if (hkcu_themes_regkey_.Valid()) {
-      if (!IsForcedDarkMode() && !IsForcedHighContrast()) {
-        UpdateDarkModeStatus();
-      }
-      if (observers_can_operate) {
-        RegisterThemeRegkeyObserver();
-      }
-    }
-  }
-
-  set_preferred_color_scheme(CalculatePreferredColorScheme());
-
-  // Histogram high contrast state.
-  // NOTE: Reported in metrics; do not reorder, add additional values at end.
-  enum class HighContrastColorScheme {
-    kNone = 0,
-    kDark = 1,
-    kLight = 2,
-    kMaxValue = kLight,
-  };
-  auto color_scheme = HighContrastColorScheme::kNone;
-  if (OsSettingsProvider::Get().PreferredContrast() ==
-      NativeTheme::PreferredContrast::kMore) {
-    color_scheme = (preferred_color_scheme() == PreferredColorScheme::kDark)
-                       ? HighContrastColorScheme::kDark
-                       : HighContrastColorScheme::kLight;
-  }
-  base::UmaHistogramEnumeration("Accessibility.WinHighContrastTheme",
-                                color_scheme);
-}
+NativeThemeWin::NativeThemeWin() = default;
 
 NativeThemeWin::~NativeThemeWin() {
   CloseHandles();
@@ -1163,64 +1110,6 @@ void NativeThemeWin::PaintImpl(cc::PaintCanvas* canvas,
 void NativeThemeWin::OnToolkitSettingsChanged(bool force_notify) {
   CloseHandles();
   NativeTheme::OnToolkitSettingsChanged(force_notify);
-}
-
-NativeTheme::PreferredColorScheme
-NativeThemeWin::CalculatePreferredColorScheme() const {
-  if (IsForcedDarkMode()) {
-    return PreferredColorScheme::kDark;
-  }
-
-  if (forced_colors() != ColorProviderKey::ForcedColors::kNone) {
-    // According to the spec, the preferred color scheme for web content is
-    // "dark" if the Canvas color has L<33% and "light" if L>67%, where "L" is
-    // LAB lightness. The Canvas color is mapped to the Window system color.
-    // https://www.w3.org/TR/css-color-adjust-1/#forced
-    if (const auto bg_color = OsSettingsProvider::Get().Color(
-            OsSettingsProvider::ColorId::kWindow)) {
-      const SkColor srgb_legacy = bg_color.value();
-      const auto [r, g, b] = gfx::SRGBLegacyToSRGB(SkColorGetR(srgb_legacy),
-                                                   SkColorGetG(srgb_legacy),
-                                                   SkColorGetB(srgb_legacy));
-      const auto [x, y, z] = gfx::SRGBToXYZD50(r, g, b);
-      const float lab_lightness = std::get<0>(gfx::XYZD50ToLab(x, y, z));
-      if (lab_lightness < 33.0f) {
-        return PreferredColorScheme::kDark;
-      }
-      if (lab_lightness > 67.0f) {
-        return PreferredColorScheme::kLight;
-      }
-    }
-  }
-
-  return in_dark_mode_ ? PreferredColorScheme::kDark
-                       : PreferredColorScheme::kLight;
-}
-
-void NativeThemeWin::RegisterThemeRegkeyObserver() {
-  DCHECK(hkcu_themes_regkey_.Valid());
-  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
-  hkcu_themes_regkey_.StartWatching(base::BindOnce(
-      [](NativeThemeWin* native_theme) {
-        native_theme->UpdateDarkModeStatus();
-        // RegKey::StartWatching only provides one notification. Reregistration
-        // is required to get future notifications.
-        native_theme->RegisterThemeRegkeyObserver();
-      },
-      base::Unretained(this)));
-}
-
-void NativeThemeWin::UpdateDarkModeStatus() {
-  in_dark_mode_ = false;
-  if (hkcu_themes_regkey_.Valid()) {
-    DWORD apps_use_light_theme = 1;
-    hkcu_themes_regkey_.ReadValueDW(L"AppsUseLightTheme",
-                                    &apps_use_light_theme);
-    in_dark_mode_ = (apps_use_light_theme == 0);
-  }
-  set_preferred_color_scheme(CalculatePreferredColorScheme());
-  CloseHandles();
-  NotifyOnNativeThemeUpdated();
 }
 
 }  // namespace ui

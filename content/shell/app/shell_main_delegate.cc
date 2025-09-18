@@ -5,6 +5,7 @@
 #include "content/shell/app/shell_main_delegate.h"
 
 #include <iostream>
+#include <memory>
 #include <tuple>
 #include <utility>
 #include <variant>
@@ -46,6 +47,7 @@
 #include "content/web_test/browser/web_test_browser_main_runner.h"  // nogncheck
 #include "content/web_test/browser/web_test_content_browser_client.h"  // nogncheck
 #include "content/web_test/renderer/web_test_content_renderer_client.h"  // nogncheck
+#include "ui/native_theme/mock_os_settings_provider.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -235,6 +237,12 @@ std::optional<int> ShellMainDelegate::BasicStartupComplete() {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (switches::IsRunWebTestsSwitchPresent()) {
+    // Instantiating `ui::OsSettingsProvider` will both provide sane default
+    // behavior and prevent `ui::OsSettingsProvider::Get()` from instantiating a
+    // platform-specific subclass.
+    os_settings_provider_ = std::make_unique<ui::OsSettingsProvider>(
+        ui::OsSettingsProvider::PriorityLevel::kTesting);
+
     const bool browser_process =
         command_line.GetSwitchValueASCII(switches::kProcessType).empty();
     if (browser_process) {

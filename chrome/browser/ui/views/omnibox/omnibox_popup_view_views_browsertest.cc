@@ -51,6 +51,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -197,10 +199,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   UseDefaultTheme();
   SetUseDeviceTheme(false);
 
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   const SkColor selection_color_dark = GetSelectedColor(browser());
 
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kLight);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   const SkColor selection_color_light = GetSelectedColor(browser());
 
   // Unthemed, non-incognito always has a white background. Exceptions: Inverted
@@ -246,12 +250,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
   UseDefaultTheme();
   SetUseDeviceTheme(false);
 
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   SetIsGrayscale(true);
 
   const SkColor selection_color_dark = GetSelectedColor(browser());
 
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kLight);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   SetIsGrayscale(false);
 
   // Install a theme (in both browsers, since it's the same profile).

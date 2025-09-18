@@ -132,33 +132,6 @@ void SortSampleColorSchemes(
   std::move(callback).Run(sorted_sample_color_schemes);
 }
 
-// Refresh colors of the system on the current color mode. Not only the SysUI,
-// but also all the other components like WebUI. This will trigger
-// View::OnThemeChanged to live update the colors. The colors live update can
-// happen when color mode changes or wallpaper changes. It is needed when
-// wallpaper changes as the background color is calculated from current
-// wallpaper.
-void RefreshNativeTheme(const ColorPaletteSeed& seed) {
-  if (auto* const os_settings_provider =
-          ui::OsSettingsProviderAsh::GetInstance()) {
-    os_settings_provider->SetColorPaletteData(seed.seed_color,
-                                              ToVariant(seed.scheme));
-  }
-
-  auto color_scheme = (seed.color_mode == ColorMode::kDark)
-                          ? ui::NativeTheme::PreferredColorScheme::kDark
-                          : ui::NativeTheme::PreferredColorScheme::kLight;
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_preferred_color_scheme(color_scheme);
-  native_theme->NotifyOnNativeThemeUpdated();
-
-  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
-  if (!native_theme_web->IsForcedDarkMode()) {
-    native_theme_web->set_preferred_color_scheme(color_scheme);
-  }
-  native_theme_web->NotifyOnNativeThemeUpdated();
-}
-
 class ColorPaletteControllerImpl : public ColorPaletteController,
                                    public WallpaperControllerObserver,
                                    public ColorModeObserver {
@@ -630,7 +603,14 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       observer.OnColorPaletteChanging(*seed);
     }
 
-    RefreshNativeTheme(*seed);
+    if (auto* const os_settings_provider =
+            ui::OsSettingsProviderAsh::GetInstance()) {
+      os_settings_provider->SetColorPaletteData(
+          (seed->color_mode == ui::ColorProviderKey::ColorMode::kDark)
+              ? ui::NativeTheme::PreferredColorScheme::kDark
+              : ui::NativeTheme::PreferredColorScheme::kLight,
+          seed->seed_color, ToVariant(seed->scheme));
+    }
   }
 
   void OnColorSchemePrefChanged() {

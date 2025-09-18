@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/win/dark_mode_support.h"
@@ -50,12 +51,43 @@ OsSettingsProviderWin::OsSettingsProviderWin()
     }
   }
   UpdateColors();
+
+  // Histogram high contrast state.
+  // NOTE: Reported in metrics; do not reorder, add additional values at end.
+  enum class HighContrastColorScheme {
+    kNone = 0,
+    kDark = 1,
+    kLight = 2,
+    kMaxValue = kLight,
+  };
+  auto color_scheme = HighContrastColorScheme::kNone;
+  if (PreferredContrast() == NativeTheme::PreferredContrast::kMore) {
+    color_scheme =
+        (PreferredColorScheme() == NativeTheme::PreferredColorScheme::kDark)
+            ? HighContrastColorScheme::kDark
+            : HighContrastColorScheme::kLight;
+  }
+  base::UmaHistogramEnumeration("Accessibility.WinHighContrastTheme",
+                                color_scheme);
 }
 
 OsSettingsProviderWin::~OsSettingsProviderWin() = default;
 
 bool OsSettingsProviderWin::DarkColorSchemeAvailable() const {
   return base::win::IsDarkModeAvailable();
+}
+
+NativeTheme::PreferredColorScheme OsSettingsProviderWin::PreferredColorScheme()
+    const {
+  if (const NativeTheme::PreferredColorScheme preferred_color_scheme =
+          OsSettingsProvider::PreferredColorScheme();
+      preferred_color_scheme !=
+      NativeTheme::PreferredColorScheme::kNoPreference) {
+    return preferred_color_scheme;
+  }
+
+  return in_dark_mode_ ? NativeTheme::PreferredColorScheme::kDark
+                       : NativeTheme::PreferredColorScheme::kLight;
 }
 
 ColorProviderKey::UserColorSource OsSettingsProviderWin::PreferredColorSource()
@@ -106,11 +138,14 @@ void OsSettingsProviderWin::RegisterThemesRegkeyObserver() {
   CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   hkcu_themes_regkey_.StartWatching(base::BindOnce(
       [](OsSettingsProviderWin* provider) {
+        const NativeTheme::PreferredColorScheme old_preferred_color_scheme =
+            provider->PreferredColorScheme();
         const bool old_prefers_reduced_transparency =
             provider->PrefersReducedTransparency();
         provider->UpdateForThemesRegkey();
-        if (provider->PrefersReducedTransparency() !=
-            old_prefers_reduced_transparency) {
+        if (provider->PreferredColorScheme() != old_preferred_color_scheme ||
+            provider->PrefersReducedTransparency() !=
+                old_prefers_reduced_transparency) {
           provider->NotifyOnSettingsChanged();
         }
 
@@ -142,6 +177,10 @@ void OsSettingsProviderWin::RegisterColorFilteringRegkeyObserver() {
 
 void OsSettingsProviderWin::UpdateForThemesRegkey() {
   CHECK(hkcu_themes_regkey_.Valid());
+
+  DWORD apps_use_light_theme = 1;
+  hkcu_themes_regkey_.ReadValueDW(L"AppsUseLightTheme", &apps_use_light_theme);
+  in_dark_mode_ = !apps_use_light_theme;
 
   DWORD enable_transparency = 1;
   hkcu_themes_regkey_.ReadValueDW(L"EnableTransparency", &enable_transparency);

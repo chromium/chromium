@@ -22,6 +22,7 @@
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {
@@ -187,9 +188,9 @@ TEST_F(ProfileColorsUtilTest, IsLightForAutoselection) {
 class ProfileColorsUtilTestDarkModeParam
     : public ProfileColorsUtilTest,
       public testing::WithParamInterface<bool> {
- public:
+ protected:
   ProfileColorsUtilTestDarkModeParam() {
-    ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+    os_settings_provider_.SetPreferredColorScheme(
         GetParam() ? ui::NativeTheme::PreferredColorScheme::kDark
                    : ui::NativeTheme::PreferredColorScheme::kLight);
   }
@@ -206,6 +207,9 @@ class ProfileColorsUtilTestDarkModeParam
       }
     }
   }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;
 };
 
 // Test that all colors matching the native light-or-dark color scheme are

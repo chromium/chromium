@@ -4,7 +4,6 @@
 
 #include "chrome/browser/accessibility/page_colors_controller.h"
 
-#include "build/build_config.h"
 #include "chrome/browser/accessibility/page_colors_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,33 +15,10 @@
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/linux/linux_ui.h"
-#include "ui/linux/linux_ui_factory.h"
-#endif
-
 class PageColorsControllerBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUpOnMainThread() override {
-    ui_native_theme().set_preferred_color_scheme(
-        ui::NativeTheme::PreferredColorScheme::kLight);
-    ui_native_theme().NotifyOnNativeThemeUpdated();
-  }
-
   ui::MockOsSettingsProvider& os_settings_provider() {
     return os_settings_provider_;
-  }
-
-  ui::NativeTheme& ui_native_theme() {
-#if BUILDFLAG(IS_LINUX)
-    // Match PageColorsController::OnPageColorsChanged().
-    if (auto* const linux_ui_theme = ui::GetDefaultLinuxUiTheme()) {
-      if (auto* const linux_native_theme = linux_ui_theme->GetNativeTheme()) {
-        return *linux_native_theme;
-      }
-    }
-#endif
-    return *ui::NativeTheme::GetInstanceForNativeUi();
   }
 
  private:
@@ -151,9 +127,8 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
 
   // Changing the UI color scheme should be reflected in the web theme while
   // page colors are Off.
-  ui_native_theme().set_preferred_color_scheme(
+  os_settings_provider().SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
-  ui_native_theme().NotifyOnNativeThemeUpdated();
   EXPECT_EQ(native_theme->forced_colors(),
             ui::ColorProviderKey::ForcedColors::kNone);
   EXPECT_EQ(native_theme->preferred_color_scheme(),

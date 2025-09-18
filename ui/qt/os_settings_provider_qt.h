@@ -19,6 +19,7 @@ class OsSettingsProviderQt : public ui::OsSettingsProvider {
   ~OsSettingsProviderQt() override;
 
   // ui::OsSettingsProvider:
+  ui::NativeTheme::PreferredColorScheme PreferredColorScheme() const override;
   base::TimeDelta CaretBlinkInterval() const override;
 
  private:

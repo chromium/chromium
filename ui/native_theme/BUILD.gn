@@ -116,8 +116,6 @@ component("test_support") {
   sources = [
     "mock_os_settings_provider.cc",
     "mock_os_settings_provider.h",
-    "test_native_theme.cc",
-    "test_native_theme.h",
   ]
 
   defines = [ "IS_NATIVE_THEME_IMPL" ]
@@ -160,10 +158,7 @@ test("native_theme_unittests") {
   }
 
   if (is_win) {
-    sources += [
-      "caption_style_win_unittest.cc",
-      "native_theme_win_unittest.cc",
-    ]
+    sources += [ "caption_style_win_unittest.cc" ]
   }
 
   if (use_aura) {

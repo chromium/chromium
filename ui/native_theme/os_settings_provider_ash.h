@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/os_settings_provider.h"
 
 namespace ui {
@@ -36,6 +37,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderAsh
   static OsSettingsProviderAsh* GetInstance();
 
   // OsSettingsProvider:
+  NativeTheme::PreferredColorScheme PreferredColorScheme() const override;
   std::optional<SkColor> AccentColor() const override;
   std::optional<ColorProviderKey::SchemeVariant> SchemeVariant() const override;
 
@@ -43,6 +45,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderAsh
   // directly; instead they call this method to update its state as necessary.
   // This avoids bringing Ash-specific types or observer interfaces into `//ui`.
   void SetColorPaletteData(
+      NativeTheme::PreferredColorScheme preferred_color_scheme,
       std::optional<SkColor> accent_color,
       std::optional<ColorProviderKey::SchemeVariant> scheme_variant);
 
@@ -50,6 +53,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderAsh
   // The `OsSettingsProviderAsh` instance if it has been created, or null.
   static OsSettingsProviderAsh* instance_;
 
+  NativeTheme::PreferredColorScheme preferred_color_scheme_ =
+      NativeTheme::PreferredColorScheme::kNoPreference;
   std::optional<SkColor> accent_color_;
   std::optional<ColorProviderKey::SchemeVariant> scheme_variant_;
 };

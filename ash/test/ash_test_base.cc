@@ -81,6 +81,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider_ash.h"
 #include "ui/views/test/test_widget_builder.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -729,10 +730,13 @@ void AshTestBase::PrepareForPixelDiffTest() {
       switches::kStabilizeTimeDependentViewForTests);
 
   // Use dark mode by default, which is what many gold images expect.
-  auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_preferred_color_scheme(
-      ui::NativeTheme::PreferredColorScheme::kDark);
-  native_theme->NotifyOnNativeThemeUpdated();
+  ui::OsSettingsProvider::Get();  // Ensure Ash instance is constructed
+  auto* const os_settings_provider = ui::OsSettingsProviderAsh::GetInstance();
+  CHECK(os_settings_provider);
+  os_settings_provider->SetColorPaletteData(
+      ui::NativeTheme::PreferredColorScheme::kDark,
+      os_settings_provider->AccentColor(),
+      os_settings_provider->SchemeVariant());
 
   DCHECK(!pixel_differ_);
   pixel_differ_ =

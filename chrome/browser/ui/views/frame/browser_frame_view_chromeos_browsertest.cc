@@ -132,6 +132,8 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/views_test_utils.h"
@@ -1800,13 +1802,11 @@ class BrowserFrameViewAshThemeChangeTest
 
   // Toggles the color mode, triggering propagation of theme change events.
   void ToggleColorMode() {
-    auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-    native_theme->set_preferred_color_scheme(
-        (native_theme->preferred_color_scheme() ==
+    os_settings_provider_.SetPreferredColorScheme(
+        (os_settings_provider_.PreferredColorScheme() ==
          ui::NativeTheme::PreferredColorScheme::kDark)
             ? ui::NativeTheme::PreferredColorScheme::kLight
             : ui::NativeTheme::PreferredColorScheme::kDark);
-    native_theme->NotifyOnNativeThemeUpdated();
   }
 
   // Installs the web app under test, blocking until installation is complete,
@@ -1841,6 +1841,7 @@ class BrowserFrameViewAshThemeChangeTest
   Profile* profile() { return browser()->profile(); }
 
  private:
+  ui::MockOsSettingsProvider os_settings_provider_;
   std::unique_ptr<ash::TestSystemWebAppInstallation>
       system_web_app_installation_;
   std::unique_ptr<net::EmbeddedTestServer> test_server_;

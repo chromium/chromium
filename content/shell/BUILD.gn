@@ -102,6 +102,7 @@ static_library("content_shell_app") {
       "//content/web_test:web_test_browser",
       "//content/web_test:web_test_common",
       "//content/web_test:web_test_renderer",
+      "//ui/native_theme",
     ]
   }
   if (!is_fuchsia) {
@@ -459,7 +460,6 @@ static_library("content_shell_lib") {
       public_deps += [ "//ui/base/mojom:ui_base_types" ]
       deps += [
         "//ui/color:color_headers",
-        "//ui/native_theme",
         "//ui/resources",
         "//ui/views:test_support",
         "//ui/views/controls/webview",

@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "ui/base/glib/scoped_gsignal.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/native_theme/native_theme.h"
@@ -24,6 +25,19 @@ OsSettingsProviderGtk::OsSettingsProviderGtk()
     : OsSettingsProvider(PriorityLevel::kProduction) {}
 
 OsSettingsProviderGtk::~OsSettingsProviderGtk() = default;
+
+ui::NativeTheme::PreferredColorScheme
+OsSettingsProviderGtk::PreferredColorScheme() const {
+  // GTK has a dark mode setting called "gtk-application-prefer-dark-theme", but
+  // this is really only used for themes that have a dark or light variant that
+  // gets toggled based on this setting (eg. Adwaita).  Most dark themes do not
+  // have a light variant and aren't affected by the setting.  Because of this,
+  // experimentally check if the theme is dark by checking if the window
+  // background color is dark.
+  return color_utils::IsDark(GetBgColor({}))
+             ? ui::NativeTheme::PreferredColorScheme::kDark
+             : ui::NativeTheme::PreferredColorScheme::kLight;
+}
 
 ui::NativeTheme::PreferredContrast OsSettingsProviderGtk::PreferredContrast()
     const {

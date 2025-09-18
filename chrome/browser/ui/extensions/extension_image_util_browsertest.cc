@@ -11,11 +11,12 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_getter.h"
+#include "ui/native_theme/native_theme.h"
 #endif
 
 namespace {
@@ -39,12 +40,11 @@ using ImageUtilTest = extensions::ExtensionBrowserTest;
 // consider deleting this test.
 IN_PROC_BROWSER_TEST_F(ImageUtilTest, DISABLED_CheckDefaultToolbarColor) {
   // This test relies on being run with the default light mode theme.
-  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
-      ui::NativeTheme::PreferredColorScheme::kLight);
+  ui::MockOsSettingsProvider os_settings_provider;  // Forces light mode.
 #if BUILDFLAG(IS_LINUX)
   ui::LinuxUiGetter::set_instance(nullptr);
-#endif
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
+#endif  // BUILDFLAG(IS_LINUX)
 
   EXPECT_EQ(extensions::image_util::kDefaultToolbarColor,
             browser()->window()->GetColorProvider()->GetColor(kColorToolbar))

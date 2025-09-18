@@ -45,6 +45,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/typed_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/interaction/polling_view_observer.h"
 #include "url/gurl.h"
 
@@ -466,7 +467,15 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, SigninPromoAppearsAndIsClickable) {
 
 #endif
 
-class NtpPromoVisualUiTest : public NtpPromoUiTest {};
+class NtpPromoVisualUiTest : public NtpPromoUiTest {
+ protected:
+  ui::MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
+  }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;
+};
 
 // Screenshot the promo UI across the available presentation styles, along
 // with other variables that warrant pixel-style validation.
@@ -521,8 +530,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
   BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetSize(
       screen_size);
 
-  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
-      GetParam().color_scheme);
+  os_settings_provider().SetPreferredColorScheme(GetParam().color_scheme);
 
   if (GetParam().rtl) {
     base::i18n::SetRTLForTesting(true);

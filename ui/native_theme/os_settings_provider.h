@@ -97,6 +97,17 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProvider {
   // theme; see comments on `PreferredColorScheme()` below.
   virtual bool DarkColorSchemeAvailable() const;
 
+  // Returns preferred color scheme based on OS-level factors, or
+  // `kNoPreference` if not set/applicable. This is not affected by e.g.
+  // `switches::kForceDarkMode`; that should be handled at the `NativeTheme`
+  // (i.e. caller) level.
+  // NOTE: It's possible for this to be `kDark` even if
+  // `DarkColorSchemeAvailable()` returns false, e.g. when the OS has no notion
+  // of a native "dark scheme" but is using colors that correspond to Chrome
+  // using a dark theme. A historical example would have been the "high contrast
+  // black" theme in old versions of Windows.
+  virtual NativeTheme::PreferredColorScheme PreferredColorScheme() const;
+
   // Returns the appropriate material color palette source for this OS.
   virtual ColorProviderKey::UserColorSource PreferredColorSource() const;
 

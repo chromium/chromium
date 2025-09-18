@@ -65,8 +65,6 @@ class FaviconSource : public content::URLDataSource {
 
  protected:
   // Exposed for testing.
-  virtual ui::NativeTheme* GetNativeTheme(
-      const content::WebContents::Getter& wc_getter);
   virtual base::RefCountedMemory* LoadIconBytes(float scale_factor,
                                                 int resource_id);
 
@@ -75,6 +73,9 @@ class FaviconSource : public content::URLDataSource {
  private:
   // Defines the allowed pixel sizes for requested favicons.
   enum IconSize { SIZE_16, SIZE_32, SIZE_64, NUM_SIZES };
+
+  ui::NativeTheme* GetNativeTheme(
+      const content::WebContents::Getter& wc_getter);
 
   // Called when favicon data is available from the history backend. If
   // |bitmap_result| is valid, returns it to caller using |callback|. Otherwise

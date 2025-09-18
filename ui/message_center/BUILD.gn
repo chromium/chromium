@@ -240,6 +240,7 @@ if (enable_message_center) {
       deps += [
         "//ui/color",
         "//ui/display",
+        "//ui/native_theme:test_support",
         "//ui/strings",
         "//ui/views",
         "//ui/views:test_support",

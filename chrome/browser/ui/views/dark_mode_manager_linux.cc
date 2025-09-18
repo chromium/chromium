@@ -20,22 +20,16 @@
 namespace ui {
 
 DarkModeManagerLinux::DarkModeManagerLinux()
-    : DarkModeManagerLinux(
-          dbus_thread_linux::GetSharedSessionBus(),
-          ui::GetDefaultLinuxUiTheme(),
-          &ui::GetLinuxUiThemes(),
-          std::vector<raw_ptr<ui::NativeTheme, VectorExperimental>>{
-              ui::NativeTheme::GetInstanceForNativeUi(),
-              ui::NativeTheme::GetInstanceForWeb()}) {}
+    : DarkModeManagerLinux(dbus_thread_linux::GetSharedSessionBus(),
+                           ui::GetDefaultLinuxUiTheme(),
+                           &ui::GetLinuxUiThemes()) {}
 
 DarkModeManagerLinux::DarkModeManagerLinux(
     scoped_refptr<dbus::Bus> bus,
     LinuxUiTheme* default_linux_ui_theme,
     const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>*
-        linux_ui_themes,
-    std::vector<raw_ptr<NativeTheme, VectorExperimental>> native_themes)
+        linux_ui_themes)
     : linux_ui_themes_(linux_ui_themes),
-      native_themes_(native_themes),
       bus_(bus),
       settings_proxy_(bus_->GetObjectProxy(
           kFreedesktopSettingsService,
@@ -205,12 +199,11 @@ void DarkModeManagerLinux::SetColorScheme(bool prefer_dark_theme,
   }
   prefer_dark_theme_ = prefer_dark_theme;
 
-  for (NativeTheme* theme : native_themes_) {
-    theme->set_preferred_color_scheme(
-        prefer_dark_theme_ ? NativeTheme::PreferredColorScheme::kDark
-                           : NativeTheme::PreferredColorScheme::kLight);
-    theme->NotifyOnNativeThemeUpdated();
-  }
+  auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_preferred_color_scheme(
+      prefer_dark_theme_ ? NativeTheme::PreferredColorScheme::kDark
+                         : NativeTheme::PreferredColorScheme::kLight);
+  native_theme->NotifyOnNativeThemeUpdated();
 }
 
 void DarkModeManagerLinux::SetAccentColor(dbus::MessageReader* reader) {
@@ -246,10 +239,9 @@ void DarkModeManagerLinux::SetAccentColor(dbus::MessageReader* reader) {
     linux_ui_theme->SetAccentColor(accent_color);
   }
 
-  for (NativeTheme* theme : native_themes_) {
-    theme->set_user_color(accent_color);
-    theme->NotifyOnNativeThemeUpdated();
-  }
+  auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_user_color(accent_color);
+  native_theme->NotifyOnNativeThemeUpdated();
 }
 
 }  // namespace ui

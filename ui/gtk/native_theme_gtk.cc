@@ -18,7 +18,6 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/system_theme.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -173,53 +172,7 @@ void NativeThemeGtk::PaintFrameTopArea(
                     rect.x(), rect.y());
 }
 
-void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
-  // NativeThemeGtk pulls information about contrast from NativeThemeAura. As
-  // such, Aura must be updated with this information before we call
-  // NotifyOnNativeThemeUpdated().
-  auto* const ui_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  bool updated = false;
-  if (ui_theme->forced_colors() != forced_colors()) {
-    ui_theme->set_forced_colors(forced_colors());
-    updated = true;
-  }
-  if (ui_theme->preferred_color_scheme() != preferred_color_scheme()) {
-    ui_theme->set_preferred_color_scheme(preferred_color_scheme());
-    updated = true;
-  }
-  if (ui_theme->preferred_contrast() != preferred_contrast()) {
-    ui_theme->set_preferred_contrast(preferred_contrast());
-    updated = true;
-  }
-  if (updated) {
-    ui_theme->NotifyOnNativeThemeUpdated();
-  }
-
-  NativeTheme::NotifyOnNativeThemeUpdated();
-}
-
-void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
-                                    GtkParamSpec* param) {
-  std::string theme_name =
-      GetGtkSettingsStringProperty(settings, "gtk-theme-name");
-
-  // GTK has a dark mode setting called "gtk-application-prefer-dark-theme", but
-  // this is really only used for themes that have a dark or light variant that
-  // gets toggled based on this setting (eg. Adwaita).  Most dark themes do not
-  // have a light variant and aren't affected by the setting.  Because of this,
-  // experimentally check if the theme is dark by checking if the window
-  // background color is dark.
-  const SkColor window_bg_color = GetBgColor("");
-  set_preferred_color_scheme(
-      (IsForcedDarkMode() || color_utils::IsDark(window_bg_color))
-          ? ui::NativeTheme::PreferredColorScheme::kDark
-          : ui::NativeTheme::PreferredColorScheme::kLight);
-
-  NotifyOnNativeThemeUpdated();
-}
-
 NativeThemeGtk::NativeThemeGtk() : NativeThemeBase(ui::SystemTheme::kGtk) {
-  OnThemeChanged(gtk_settings_get_default(), nullptr);
   BeginObservingOsSettingChanges();
 }
 

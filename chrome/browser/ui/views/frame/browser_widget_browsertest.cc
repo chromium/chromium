@@ -36,7 +36,6 @@
 #include "ui/color/color_recipe.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/test_native_theme.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/views_delegate.h"
 
@@ -176,13 +175,6 @@ class BrowserWidgetColorProviderTest : public BrowserWidgetTest {
   void SetUpOnMainThread() override {
     BrowserWidgetTest::SetUpOnMainThread();
 
-    test_native_theme_.SetPreferredColorScheme(
-        ui::NativeTheme::PreferredColorScheme::kLight);
-    // TODO(tluk): BrowserWidget may update the NativeTheme when a theme update
-    // event is received, which may unset the test NativeTheme. There should be
-    // a way to prevent updates resetting the test NativeTheme when set.
-    GetBrowserWidget(browser())->SetNativeThemeForTest(&test_native_theme_);
-
     // Set the default browser pref to follow system color mode.
     profile()->GetPrefs()->SetInteger(
         prefs::kBrowserColorScheme,
@@ -235,8 +227,6 @@ class BrowserWidgetColorProviderTest : public BrowserWidgetTest {
     return ThemeServiceFactory::GetForProfile(profile);
   }
 
-  ui::TestNativeTheme test_native_theme_;
-
  private:
   ui::MockOsSettingsProvider os_settings_provider_;
 };
@@ -246,32 +236,26 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
                        TracksBrowserColorScheme) {
   SetFollowDevice(profile(), false);
 
-  // Assert the browser follows the system color scheme (i.e. the color scheme
-  // set on the associated native theme)
-  views::Widget* browser_widget = GetBrowserWidget(browser());
-  test_native_theme_.SetPreferredColorScheme(
-      ui::NativeTheme::PreferredColorScheme::kLight);
+  // Assert the browser follows the system color scheme.
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight,
             GetColorProviderKey(browser()).color_mode);
 
-  test_native_theme_.SetPreferredColorScheme(
+  os_settings_provider().SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
             GetColorProviderKey(browser()).color_mode);
 
   // Set the BrowserColorScheme pref. The BrowserWidget should ignore the system
   // color scheme.
-  test_native_theme_.SetPreferredColorScheme(
+  os_settings_provider().SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kLight);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kDark);
-  browser_widget->SetNativeThemeForTest(&test_native_theme_);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
             GetColorProviderKey(browser()).color_mode);
 
-  test_native_theme_.SetPreferredColorScheme(
+  os_settings_provider().SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kLight);
-  browser_widget->SetNativeThemeForTest(&test_native_theme_);
   EXPECT_EQ(ui::ColorProviderKey::ColorMode::kLight,
             GetColorProviderKey(browser()).color_mode);
 }
@@ -281,8 +265,6 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetColorProviderTest,
                        IncognitoAlwaysDarkMode) {
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
-  views::Widget* incognito_browser_frame = GetBrowserWidget(incognito_browser);
-  incognito_browser_frame->SetNativeThemeForTest(&test_native_theme_);
 
   // The incognito browser should reflect the dark color mode irrespective of
   // the current BrowserColorScheme.

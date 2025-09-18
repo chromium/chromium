@@ -26,6 +26,7 @@ class OsSettingsProviderGtk : public ui::OsSettingsProvider {
   ~OsSettingsProviderGtk() override;
 
   // ui::OsSettingsProvider:
+  ui::NativeTheme::PreferredColorScheme PreferredColorScheme() const override;
   ui::NativeTheme::PreferredContrast PreferredContrast() const override;
   base::TimeDelta CaretBlinkInterval() const override;
 

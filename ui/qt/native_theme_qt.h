@@ -19,7 +19,8 @@ class NativeThemeQt : public ui::NativeThemeAura {
   NativeThemeQt& operator=(const NativeThemeQt&) = delete;
   ~NativeThemeQt() override;
 
-  void ThemeChanged(bool prefer_dark_theme);
+  // Updates toolkit-related settings.
+  void OnQtThemeChanged();
 
  protected:
   // ui::NativeThemeAura:

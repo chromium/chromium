@@ -13,11 +13,45 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/os_settings_provider_mac.h"
 
+// Helper object to respond to light mode/dark mode changeovers.
+@interface EffectiveAppearanceObserver : NSObject
+@end
+
+@implementation EffectiveAppearanceObserver {
+  void (^_handler)() __strong;
+}
+
+- (instancetype)initWithHandler:(void (^)())handler {
+  self = [super init];
+  if (self) {
+    _handler = handler;
+    [NSApp addObserver:self
+            forKeyPath:@"effectiveAppearance"
+               options:0
+               context:nullptr];
+  }
+  return self;
+}
+
+- (void)dealloc {
+  [NSApp removeObserver:self forKeyPath:@"effectiveAppearance"];
+}
+
+- (void)observeValueForKeyPath:(NSString*)forKeyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context {
+  _handler();
+}
+
+@end
+
 namespace ui {
 
 struct OsSettingsProviderMac::ObjCMembers {
   id __strong non_blinking_cursor_token;
   id __strong display_accessibility_notification_token;
+  EffectiveAppearanceObserver* __strong appearance_observer;
 };
 
 OsSettingsProviderMac::OsSettingsProviderMac()
@@ -46,6 +80,11 @@ OsSettingsProviderMac::OsSettingsProviderMac()
                   usingBlock:^(NSNotification* notification) {
                     provider->NotifyOnSettingsChanged();
                   }];
+
+  objc_members_->appearance_observer =
+      [[EffectiveAppearanceObserver alloc] initWithHandler:^{
+        provider->NotifyOnSettingsChanged();
+      }];
 }
 
 OsSettingsProviderMac::~OsSettingsProviderMac() {
@@ -55,6 +94,17 @@ OsSettingsProviderMac::~OsSettingsProviderMac() {
     [NSNotificationCenter.defaultCenter
         removeObserver:objc_members_->non_blinking_cursor_token];
   }
+}
+
+NativeTheme::PreferredColorScheme OsSettingsProviderMac::PreferredColorScheme()
+    const {
+  NSAppearanceName appearance =
+      [NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[
+        NSAppearanceNameAqua, NSAppearanceNameDarkAqua
+      ]];
+  return [appearance isEqual:NSAppearanceNameDarkAqua]
+             ? NativeTheme::PreferredColorScheme::kDark
+             : NativeTheme::PreferredColorScheme::kLight;
 }
 
 NativeTheme::PreferredContrast OsSettingsProviderMac::PreferredContrast()
@@ -82,7 +132,7 @@ base::TimeDelta OsSettingsProviderMac::CaretBlinkInterval() const {
 
   // If there's insertion point flash rate info in NSUserDefaults, use the
   // blink period derived from that.
-  return ui::TextInsertionCaretBlinkPeriodFromDefaults().value_or(
+  return TextInsertionCaretBlinkPeriodFromDefaults().value_or(
       OsSettingsProvider::CaretBlinkInterval());
 }
 

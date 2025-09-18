@@ -13,6 +13,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -52,8 +53,6 @@ class LabelButtonLabelTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
 
     widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
-    widget_->GetNativeTheme()->set_preferred_color_scheme(
-        ui::NativeTheme::PreferredColorScheme::kLight);
 
     widget_->SetContentsView(
         std::make_unique<TestLabel>(&last_color_, &last_requested_color_));
@@ -65,11 +64,9 @@ class LabelButtonLabelTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  void SetPreferredColorScheme(
-      ui::NativeTheme::PreferredColorScheme color_scheme) {
-    ui::NativeTheme* native_theme = widget_->GetNativeTheme();
-    native_theme->set_preferred_color_scheme(color_scheme);
-    native_theme->NotifyOnNativeThemeUpdated();
+ protected:
+  ui::MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
   }
 
   TestLabel* label() {
@@ -82,6 +79,7 @@ class LabelButtonLabelTest : public ViewsTestBase {
   }
 
  private:
+  ui::MockOsSettingsProvider os_settings_provider_;
   std::unique_ptr<views::Widget> widget_;
   SkColor last_color_ = gfx::kPlaceholderColor;
   std::optional<ui::ColorVariant> last_requested_color_;
@@ -100,7 +98,8 @@ TEST_F(LabelButtonLabelTest, Colors) {
       label()->GetColorProvider()->GetColor(ui::kColorLabelForegroundDisabled);
   EXPECT_EQ(default_theme_disabled_color, last_color());
 
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
 
   SkColor dark_theme_disabled_color =
       label()->GetColorProvider()->GetColor(ui::kColorLabelForegroundDisabled);
@@ -127,7 +126,8 @@ TEST_F(LabelButtonLabelTest, Colors) {
   EXPECT_EQ(SK_ColorMAGENTA, last_color());
 
   // Disabled still overridden after a theme change.
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kLight);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_EQ(SK_ColorMAGENTA, last_color());
 
   // The enabled color still gets its value from the theme.
@@ -160,7 +160,8 @@ TEST_F(LabelButtonLabelTest, ColorIds) {
             label()->GetColorProvider()->GetColor(ui::kColorBadgeBackground));
 
   // Still overridden after a theme change.
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(last_requested_color(), ui::kColorBadgeBackground);
   EXPECT_EQ(last_color(),
             label()->GetColorProvider()->GetColor(ui::kColorBadgeBackground));

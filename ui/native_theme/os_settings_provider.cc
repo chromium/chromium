@@ -7,6 +7,7 @@
 #include <array>
 #include <forward_list>
 #include <optional>
+#include <tuple>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -19,6 +20,7 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/gfx/color_conversions.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -142,6 +144,32 @@ OsSettingsProvider::RegisterOsSettingsChangedCallback(
 
 bool OsSettingsProvider::DarkColorSchemeAvailable() const {
   return true;
+}
+
+NativeTheme::PreferredColorScheme OsSettingsProvider::PreferredColorScheme()
+    const {
+  if (ForcedColorsActive()) {
+    // According to the spec, the preferred color scheme for web content is
+    // "dark" if the Canvas color has L<33% and "light" if L>67%, where "L" is
+    // LAB lightness. The Canvas color is mapped to the Window system color.
+    // https://www.w3.org/TR/css-color-adjust-1/#forced
+    if (const auto bg_color = Color(ColorId::kWindow)) {
+      const SkColor srgb_legacy = bg_color.value();
+      const auto [r, g, b] = gfx::SRGBLegacyToSRGB(SkColorGetR(srgb_legacy),
+                                                   SkColorGetG(srgb_legacy),
+                                                   SkColorGetB(srgb_legacy));
+      const auto [x, y, z] = gfx::SRGBToXYZD50(r, g, b);
+      const float lab_lightness = std::get<0>(gfx::XYZD50ToLab(x, y, z));
+      if (lab_lightness < 33.0f) {
+        return NativeTheme::PreferredColorScheme::kDark;
+      }
+      if (lab_lightness > 67.0f) {
+        return NativeTheme::PreferredColorScheme::kLight;
+      }
+    }
+  }
+
+  return NativeTheme::PreferredColorScheme::kNoPreference;
 }
 
 ColorProviderKey::UserColorSource OsSettingsProvider::PreferredColorSource()

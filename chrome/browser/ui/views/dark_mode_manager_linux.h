@@ -36,8 +36,10 @@ class DarkModeManagerLinuxTest;
 
 // Observes the system color scheme preference using
 // org.freedesktop.portal.Settings. Falls back to the toolkit preference if
-// org.freedesktop.portal.Settings is unavailable.  Propagates the dark mode
-// preference to the web theme.
+// org.freedesktop.portal.Settings is unavailable.
+// TODO(pkasting): Perhaps this functionality should be in a new
+// `OsSettingsProviderLinux` class instead? Not sure how it should interact with
+// `OsSettingsProviderGtk`/`OsSettingsProviderQt`.
 class DarkModeManagerLinux : public NativeThemeObserver {
  public:
   DarkModeManagerLinux();
@@ -45,8 +47,7 @@ class DarkModeManagerLinux : public NativeThemeObserver {
       scoped_refptr<dbus::Bus> bus,
       LinuxUiTheme* default_linux_ui_theme,
       const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>*
-          linux_ui_themes,
-      std::vector<raw_ptr<NativeTheme, VectorExperimental>> native_themes);
+          linux_ui_themes);
   DarkModeManagerLinux(const DarkModeManagerLinux&) = delete;
   DarkModeManagerLinux& operator=(const DarkModeManagerLinux&) = delete;
   ~DarkModeManagerLinux() override;
@@ -93,7 +94,6 @@ class DarkModeManagerLinux : public NativeThemeObserver {
 
   raw_ptr<const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>>
       linux_ui_themes_;
-  std::vector<raw_ptr<NativeTheme, VectorExperimental>> native_themes_;
 
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> settings_proxy_;

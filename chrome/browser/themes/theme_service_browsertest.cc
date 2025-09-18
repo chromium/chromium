@@ -19,7 +19,7 @@
 #include "content/public/test/test_utils.h"
 #include "ui/base/buildflags.h"
 #include "ui/color/color_provider.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
@@ -46,6 +46,9 @@ class ThemeServiceBrowserTest : public extensions::ExtensionBrowserTest {
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
     extensions::ExtensionBrowserTest::SetUp();
   }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;  // Forces light mode.
 };
 
 // Test that the theme is recreated from the extension when the data pack is
@@ -90,11 +93,6 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, ThemeDataPackInvalid) {
 }
 
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, IncognitoTest) {
-  // This test relies on incognito being meaningfully different than default,
-  // which is not currently true in dark mode.
-  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
-      ui::NativeTheme::PreferredColorScheme::kLight);
-
   // Should get a different ColorProvider for incognito and original windows.
   Browser* incognito_browser = CreateIncognitoBrowser();
   const auto* color_provider = GetColorProviderFor(browser());
@@ -151,16 +149,12 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
-  // This test relies on toolbar buttons having no tint, which is not currently
-  // true in dark mode.
-  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
-      ui::NativeTheme::PreferredColorScheme::kLight);
 #if BUILDFLAG(IS_LINUX)
   // This test relies on toolbar buttons having no tint, which is not currently
   // true when using the system theme.
   ui::LinuxUiGetter::set_instance(nullptr);
-#endif
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
+#endif
 
   SkColor default_toolbar_button_color =
       GetColorProviderFor(browser())->GetColor(kColorToolbarButtonIcon);

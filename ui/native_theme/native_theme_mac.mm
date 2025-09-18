@@ -4,7 +4,6 @@
 
 #include "ui/native_theme/native_theme_mac.h"
 
-#import <Cocoa/Cocoa.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <MediaAccessibility/MediaAccessibility.h>
 
@@ -65,16 +64,6 @@ void ConstrainInsets(int old_width, int min_width, int* left, int* right) {
   // behavior and to map to how it looks like other scrollbars work on MacOS.
   *right *= max_total_inset * 1.0f / requested_total_inset;
   *left = max_total_inset - *right;
-}
-
-NativeTheme::PreferredColorScheme GetPreferredColorScheme() {
-  NSAppearanceName appearance =
-      [NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[
-        NSAppearanceNameAqua, NSAppearanceNameDarkAqua
-      ]];
-  return [appearance isEqual:NSAppearanceNameDarkAqua]
-             ? NativeTheme::PreferredColorScheme::kDark
-             : NativeTheme::PreferredColorScheme::kLight;
 }
 
 void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
@@ -318,46 +307,6 @@ void PaintMacScrollBarTrackOrCorner(
 }
 
 }  // namespace
-}  // namespace ui
-
-// Helper object to respond to light mode/dark mode changeovers.
-@interface EffectiveAppearanceObserver : NSObject
-@end
-
-@implementation EffectiveAppearanceObserver {
-  void (^_handler)() __strong;
-}
-
-- (instancetype)initWithHandler:(void (^)())handler {
-  self = [super init];
-  if (self) {
-    _handler = handler;
-    [NSApp addObserver:self
-            forKeyPath:@"effectiveAppearance"
-               options:0
-               context:nullptr];
-  }
-  return self;
-}
-
-- (void)dealloc {
-  [NSApp removeObserver:self forKeyPath:@"effectiveAppearance"];
-}
-
-- (void)observeValueForKeyPath:(NSString*)forKeyPath
-                      ofObject:(id)object
-                        change:(NSDictionary*)change
-                       context:(void*)context {
-  _handler();
-}
-
-@end
-
-namespace ui {
-
-struct NativeThemeMac::ObjCMembers {
-  EffectiveAppearanceObserver* __strong appearance_observer;
-};
 
 // static
 gfx::Size NativeThemeMac::GetThumbMinSize(bool horizontal, float scale) {
@@ -396,10 +345,6 @@ void NativeThemeMac::PaintMenuItemBackground(
 }
 
 NativeThemeMac::NativeThemeMac() {
-  objc_members_ = std::make_unique<ObjCMembers>();
-
-  InitializeDarkModeStateAndObserver();
-
   if (static bool initialized = false; !initialized) {
     // Observe caption style changes. Technically these notify the web instance
     // rather than `this`, but there's a 1:1 relationship between the two, and
@@ -460,16 +405,6 @@ void NativeThemeMac::PaintMenuPopupBackground(
   const SkScalar radius = SkIntToScalar(extra_params.corner_radius);
   canvas->drawRoundRect(gfx::RectToSkRect(gfx::Rect(size)), radius, radius,
                         flags);
-}
-
-void NativeThemeMac::InitializeDarkModeStateAndObserver() {
-  __block auto theme = this;
-  set_preferred_color_scheme(GetPreferredColorScheme());
-  objc_members_->appearance_observer =
-      [[EffectiveAppearanceObserver alloc] initWithHandler:^{
-        theme->set_preferred_color_scheme(GetPreferredColorScheme());
-        theme->NotifyOnNativeThemeUpdated();
-      }];
 }
 
 }  // namespace ui

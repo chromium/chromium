@@ -53,14 +53,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
 
  private:
   friend class base::NoDestructor<NativeThemeMac>;
-
-  // Because this header is #included from C++ source, we can't use Obj-C here.
-  // Instead the Obj-C members are defined entirely in the .mm.
-  struct ObjCMembers;
-
-  void InitializeDarkModeStateAndObserver();
-
-  std::unique_ptr<ObjCMembers> objc_members_;
 };
 
 }  // namespace ui

@@ -8,6 +8,7 @@
 
 #include "base/scoped_observation.h"
 #include "ui/accessibility/android/accessibility_state.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ui {
 

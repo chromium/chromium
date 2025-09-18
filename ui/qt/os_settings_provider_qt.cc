@@ -6,6 +6,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/qt/qt_interface.h"
 
 namespace qt {
@@ -14,6 +16,15 @@ OsSettingsProviderQt::OsSettingsProviderQt(QtInterface* shim)
     : OsSettingsProvider(PriorityLevel::kProduction), shim_(shim) {}
 
 OsSettingsProviderQt::~OsSettingsProviderQt() = default;
+
+DISABLE_CFI_VCALL
+ui::NativeTheme::PreferredColorScheme
+OsSettingsProviderQt::PreferredColorScheme() const {
+  return color_utils::IsDark(
+             shim_->GetColor(ColorType::kWindowBg, ColorState::kNormal))
+             ? ui::NativeTheme::PreferredColorScheme::kDark
+             : ui::NativeTheme::PreferredColorScheme::kLight;
+}
 
 DISABLE_CFI_VCALL
 base::TimeDelta OsSettingsProviderQt::CaretBlinkInterval() const {

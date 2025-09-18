@@ -27,12 +27,8 @@ NativeThemeQt::NativeThemeQt(QtInterface* shim)
 
 NativeThemeQt::~NativeThemeQt() = default;
 
-void NativeThemeQt::ThemeChanged(bool prefer_dark_theme) {
-  set_preferred_color_scheme(
-      (IsForcedDarkMode() || prefer_dark_theme)
-          ? ui::NativeTheme::PreferredColorScheme::kDark
-          : ui::NativeTheme::PreferredColorScheme::kLight);
-  NotifyOnNativeThemeUpdated();
+void NativeThemeQt::OnQtThemeChanged() {
+  OnToolkitSettingsChanged(false);
 }
 
 DISABLE_CFI_VCALL

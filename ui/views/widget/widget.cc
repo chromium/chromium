@@ -1709,12 +1709,6 @@ void Widget::NotifyPaintAsActiveChanged() {
 }
 
 void Widget::SetNativeTheme(ui::NativeTheme* native_theme) {
-  // If `native_theme_` has been set for testing ensure the theme instance is
-  // not reset.
-  if (native_theme_set_for_testing_) {
-    return;
-  }
-
   const bool is_update = native_theme_ && (native_theme_ != native_theme);
   native_theme_ = native_theme;
   native_theme_observation_.Reset();

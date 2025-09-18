@@ -25,6 +25,7 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/proportional_image_view.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_observer.h"
@@ -271,6 +272,7 @@ class NotificationViewTest : public views::ViewsTestBase,
   scoped_refptr<NotificationTestDelegate> delegate_;
 
  private:
+  ui::MockOsSettingsProvider os_settings_provider_;  // Ensures light mode.
   raw_ptr<NotificationView> notification_view_ = nullptr;
   bool delete_on_notification_removed_ = false;
   bool ink_drop_stopped_ = false;
@@ -453,13 +455,6 @@ TEST_F(NotificationViewTest, InlineSettingsBlockAll) {
 TEST_F(NotificationViewTest, DISABLED_TestAccentColor) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_buttons(CreateButtons(2));
-
-  // The code below is not prepared to deal with dark mode.
-  notification_view()
-      ->GetWidget()
-      ->GetNativeTheme()
-      ->set_preferred_color_scheme(
-          ui::NativeTheme::PreferredColorScheme::kLight);
   UpdateNotificationViews(*notification);
 
   notification_view()->GetWidget()->Show();

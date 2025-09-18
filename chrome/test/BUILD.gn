@@ -1173,6 +1173,7 @@ static_library("test_support") {
     ]
     public_deps += [
       "//chrome/browser/media/router:media_router_feature",
+      "//ui/native_theme:test_support",
       "//ui/views:test_support",
     ]
     deps += [
@@ -11803,6 +11804,7 @@ if (!is_android && !is_chromeos_device) {
         "//ui/base/dragdrop/mojom",
         "//ui/base/mojom:ui_base_types",
         "//ui/menus",
+        "//ui/native_theme:test_support",
         "//ui/views",
         "//ui/views:test_support",
         "//ui/views:views_interactive_ui_tests",

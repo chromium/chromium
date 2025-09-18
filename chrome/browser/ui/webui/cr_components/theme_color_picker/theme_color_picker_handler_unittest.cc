@@ -295,7 +295,7 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
       .WillByDefault(testing::Return(false));
   ON_CALL(mock_theme_service(), GetBrowserColorVariant())
       .WillByDefault(testing::Return(ui::mojom::BrowserColorVariant::kNeutral));
-  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+  os_settings_provider().SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
 
   theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
@@ -347,7 +347,7 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {
   ON_CALL(mock_theme_service(), GetBrowserColorScheme())
       .WillByDefault(
           testing::Return(ThemeService::BrowserColorScheme::kSystem));
-  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+  os_settings_provider().SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
 
   // Theme should be dark to match the system.

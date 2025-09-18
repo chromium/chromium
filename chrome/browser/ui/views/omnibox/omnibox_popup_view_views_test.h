@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/widget/widget.h"
 
 // Base class for omnibox browser and ui tests.
@@ -47,6 +48,9 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     return popup_view()->result_view_at(index);
   }
 
+  ui::MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
+  }
   LocationBarView* location_bar() {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     return browser_view->toolbar()->location_bar();
@@ -71,13 +75,6 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
         ->GetColor(kColorOmniboxResultsBackground);
   }
 
-  void SetPreferredColorScheme(
-      ui::NativeTheme::PreferredColorScheme color_scheme) {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    browser_view->GetNativeTheme()->set_preferred_color_scheme(color_scheme);
-  }
-
   void SetIsGrayscale(bool is_grayscale) {
     ThemeServiceFactory::GetForProfile(browser()->profile())
         ->SetIsGrayscale(is_grayscale);
@@ -99,6 +96,7 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
   }
 
  private:
+  ui::MockOsSettingsProvider os_settings_provider_;
   OmniboxTriggeredFeatureService triggered_feature_service_;
 };
 

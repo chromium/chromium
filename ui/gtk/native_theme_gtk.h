@@ -8,9 +8,6 @@
 #include "base/no_destructor.h"
 #include "ui/native_theme/native_theme_base.h"
 
-typedef struct _GtkParamSpec GtkParamSpec;
-typedef struct _GtkSettings GtkSettings;
-
 namespace gtk {
 
 class NativeThemeGtk : public ui::NativeThemeBase {
@@ -43,9 +40,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
       State state,
       const gfx::Rect& rect,
       const FrameTopAreaExtraParams& extra_params) const override;
-  void NotifyOnNativeThemeUpdated() override;
-
-  void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
 
  private:
   friend class base::NoDestructor<NativeThemeGtk>;

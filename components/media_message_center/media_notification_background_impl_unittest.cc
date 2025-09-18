@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -210,15 +211,14 @@ TEST_F(MediaNotificationBackgroundImplTest,
 }
 
 TEST_F(MediaNotificationBackgroundImplTest, GetBackgroundColorRespectsTheme) {
+  ui::MockOsSettingsProvider os_settings_provider;
+
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-  auto* theme = widget->GetNativeTheme();
-  theme->set_preferred_color_scheme(
-      ui::NativeTheme::PreferredColorScheme::kLight);
   auto* owner = widget->SetContentsView(std::make_unique<views::View>());
   SkColor light_background_color = background()->GetBackgroundColor(*owner);
 
-  theme->set_preferred_color_scheme(
+  os_settings_provider.SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_NE(light_background_color, background()->GetBackgroundColor(*owner));
 }

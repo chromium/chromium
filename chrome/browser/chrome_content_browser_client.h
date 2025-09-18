@@ -111,10 +111,6 @@ enum class HashRealTimeSelection;
 }
 }  // namespace safe_browsing
 
-namespace ui {
-class NativeTheme;
-}  // namespace ui
-
 namespace url {
 class Origin;
 }  // namespace url
@@ -1217,7 +1213,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
                                  content::BrowserContext* browser_context);
-  virtual const ui::NativeTheme* GetWebTheme() const;  // For testing.
 
   // Used by subclasses (e.g. implemented by downstream embedders) to add
   // their own extra part objects.

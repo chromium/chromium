@@ -8,6 +8,7 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ui {
 
@@ -33,6 +34,11 @@ OsSettingsProviderAsh* OsSettingsProviderAsh::GetInstance() {
   return instance_;
 }
 
+NativeTheme::PreferredColorScheme OsSettingsProviderAsh::PreferredColorScheme()
+    const {
+  return preferred_color_scheme_;
+}
+
 std::optional<SkColor> OsSettingsProviderAsh::AccentColor() const {
   return accent_color_;
 }
@@ -43,8 +49,10 @@ OsSettingsProviderAsh::SchemeVariant() const {
 }
 
 void OsSettingsProviderAsh::SetColorPaletteData(
+    NativeTheme::PreferredColorScheme preferred_color_scheme,
     std::optional<SkColor> accent_color,
     std::optional<ColorProviderKey::SchemeVariant> scheme_variant) {
+  preferred_color_scheme_ = preferred_color_scheme;
   accent_color_ = accent_color;
   scheme_variant_ = scheme_variant;
   NotifyOnSettingsChanged();

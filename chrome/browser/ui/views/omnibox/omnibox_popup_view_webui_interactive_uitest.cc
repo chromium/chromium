@@ -9,6 +9,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 // ChromeOS environment doesn't instantiate the NewWebUI<OmniboxPopupUI>
 // in the factory's GetWebUIFactoryFunction, so these don't work there yet.
@@ -23,10 +24,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
                        PopupMatchesLocationBarBackground) {
   // In dark mode the omnibox focused and unfocused colors are the same, which
   // makes this test fail; see comments below.
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->GetNativeTheme()
-      ->set_preferred_color_scheme(
-          ui::NativeTheme::PreferredColorScheme::kLight);
+  ui::MockOsSettingsProvider os_settings_provider;  // Forces light mode.
 
   // Start with the Omnibox unfocused.
   omnibox_view()->GetFocusManager()->ClearFocus();

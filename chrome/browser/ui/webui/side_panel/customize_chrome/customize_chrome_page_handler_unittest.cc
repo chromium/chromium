@@ -69,6 +69,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -531,6 +532,7 @@ class CustomizeChromePageHandlerSetThemeTest
 };
 
 TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
+  ui::MockOsSettingsProvider os_settings_provider;
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.custom_background_attribution_line_1 = "foo line";
@@ -550,7 +552,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   ON_CALL(mock_ntp_custom_background_service_,
           IsCustomBackgroundDisabledByPolicy())
       .WillByDefault(Return(true));
-  ui::NativeTheme::GetInstanceForNativeUi()->set_preferred_color_scheme(
+  os_settings_provider.SetPreferredColorScheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
 
   side_panel::mojom::ThemePtr theme = UpdateTheme();

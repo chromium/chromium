@@ -20,20 +20,6 @@ namespace ui {
 
 namespace {
 
-class TestNativeTheme : public NativeTheme {
- public:
-  TestNativeTheme() = default;
-  TestNativeTheme(const TestNativeTheme&) = delete;
-  TestNativeTheme& operator=(const TestNativeTheme&) = delete;
-  ~TestNativeTheme() override = default;
-
-  ColorProviderKey::ForcedColors GetForcedColorsKey() const {
-    return GetColorProviderKey(/*custom_theme=*/nullptr).forced_colors;
-  }
-};
-
-}  // namespace
-
 class NativeThemeTest : public ::testing::Test {
  protected:
   NativeThemeTest() = default;
@@ -46,6 +32,19 @@ class NativeThemeTest : public ::testing::Test {
  private:
   MockOsSettingsProvider os_settings_provider_;
 };
+
+TEST_F(NativeThemeTest, PreferredColorScheme) {
+  using enum NativeTheme::PreferredColorScheme;
+  const auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
+
+  EXPECT_EQ(native_theme->preferred_color_scheme(), kLight);
+
+  os_settings_provider().SetPreferredColorScheme(kDark);
+  EXPECT_EQ(native_theme->preferred_color_scheme(), kDark);
+
+  os_settings_provider().SetPreferredColorScheme(kNoPreference);
+  EXPECT_EQ(native_theme->preferred_color_scheme(), kNoPreference);
+}
 
 TEST_F(NativeThemeTest, PreferredContrast) {
   using enum NativeTheme::PreferredContrast;
@@ -77,6 +76,28 @@ TEST_F(NativeThemeTest, CaretBlinkInterval) {
 
   native_theme->set_caret_blink_interval(base::TimeDelta());
   EXPECT_EQ(native_theme->caret_blink_interval(), base::TimeDelta());
+}
+
+TEST_F(NativeThemeTest, ColorMode) {
+  using enum NativeTheme::PreferredColorScheme;
+  const auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
+
+  os_settings_provider().SetPreferredColorScheme(kDark);
+  EXPECT_EQ(native_theme->GetColorProviderKey(nullptr).color_mode,
+            ColorProviderKey::ColorMode::kDark);
+
+  os_settings_provider().SetPreferredColorScheme(kLight);
+  EXPECT_EQ(native_theme->GetColorProviderKey(nullptr).color_mode,
+            ColorProviderKey::ColorMode::kLight);
+
+  os_settings_provider().SetForcedColorsActive(true);
+  os_settings_provider().SetPreferredColorScheme(kDark);
+  EXPECT_EQ(native_theme->GetColorProviderKey(nullptr).color_mode,
+            ColorProviderKey::ColorMode::kDark);
+
+  os_settings_provider().SetPreferredColorScheme(kLight);
+  EXPECT_EQ(native_theme->GetColorProviderKey(nullptr).color_mode,
+            ColorProviderKey::ColorMode::kLight);
 }
 
 TEST_F(NativeThemeTest, MetricsEmitted) {
@@ -140,4 +161,5 @@ TEST_F(NativeThemeTest, DelayScoper) {
   expect_notification_count(1);
 }
 
+}  // namespace
 }  // namespace ui

@@ -356,17 +356,17 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
   return key;
 }
 
+NativeTheme::NativeTheme(SystemTheme system_theme)
+    : system_theme_(system_theme) {}
+
+NativeTheme::~NativeTheme() = default;
+
 bool NativeTheme::IsForcedDarkMode() {
   static bool kIsForcedDarkMode =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceDarkMode);
   return kIsForcedDarkMode;
 }
-
-NativeTheme::NativeTheme(SystemTheme system_theme)
-    : system_theme_(system_theme) {}
-
-NativeTheme::~NativeTheme() = default;
 
 bool NativeTheme::IsForcedHighContrast() {
   static bool kIsForcedHighContrast =
@@ -582,7 +582,7 @@ ColorProviderKey::ForcedColors NativeTheme::CalculateForcedColors() const {
 NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
     const {
   return IsForcedDarkMode() ? PreferredColorScheme::kDark
-                            : preferred_color_scheme_;
+                            : OsSettingsProvider::Get().PreferredColorScheme();
 }
 
 NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {

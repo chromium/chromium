@@ -434,7 +434,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Notifies observers that something has changed and they should reload
   // settings if needed. This also resets the color provider cache.
   // CAUTION: This is expensive; minimize unnecessary calls.
-  virtual void NotifyOnNativeThemeUpdated();
+  void NotifyOnNativeThemeUpdated();
 
   // TODO(pkasting): Consider combining this with
   // `NotifyOnNativeThemeUpdated()`. This would make it easy to move the
@@ -531,12 +531,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     caret_blink_interval_ = caret_blink_interval;
   }
 
-  // Whether dark mode is forced via command-line flag.
-  static bool IsForcedDarkMode();
-
  protected:
   explicit NativeTheme(SystemTheme system_theme = SystemTheme::kDefault);
   virtual ~NativeTheme();
+
+  // Whether dark mode is forced via command-line flag.
+  static bool IsForcedDarkMode();
 
   // Whether high contrast is forced via command-line flag.
   static bool IsForcedHighContrast();
@@ -584,7 +584,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
 
   // Calculates and returns appropriate values based on flags and toolkit.
   ColorProviderKey::ForcedColors CalculateForcedColors() const;
-  virtual PreferredColorScheme CalculatePreferredColorScheme() const;
+  PreferredColorScheme CalculatePreferredColorScheme() const;
   PreferredContrast CalculatePreferredContrast() const;
 
   base::CallbackListSubscription os_settings_changed_subscription_;
@@ -593,9 +593,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   SystemTheme system_theme_;
   bool use_overlay_scrollbar_ = false;
   ColorProviderKey::ForcedColors forced_colors_ =
-      IsForcedHighContrast() ? ColorProviderKey::ForcedColors::kSystem
-                             : ColorProviderKey::ForcedColors::kNone;
-  PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
+      ColorProviderKey::ForcedColors::kNone;
+  PreferredColorScheme preferred_color_scheme_ =
+      PreferredColorScheme::kNoPreference;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
   bool prefers_reduced_transparency_ = false;
   bool inverted_colors_ = false;

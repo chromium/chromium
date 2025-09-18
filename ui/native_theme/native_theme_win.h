@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/no_destructor.h"
-#include "base/win/registry.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace ui {
@@ -27,10 +26,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra_params) const override;
-
-  void set_in_dark_mode_for_testing(bool in_dark_mode) {
-    in_dark_mode_ = in_dark_mode;
-  }
 
  protected:
   NativeThemeWin();
@@ -51,17 +46,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
 
  private:
   friend class base::NoDestructor<NativeThemeWin>;
-  friend class TestNativeThemeWin;
-
-  PreferredColorScheme CalculatePreferredColorScheme() const override;
-
-  void RegisterThemeRegkeyObserver();
-  void UpdateDarkModeStatus();
-
-  // Dark Mode registry key.
-  base::win::RegKey hkcu_themes_regkey_;
-
-  bool in_dark_mode_ = false;
 };
 
 }  // namespace ui

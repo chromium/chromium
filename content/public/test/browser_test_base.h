@@ -38,6 +38,7 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 namespace base {
 class FilePath;
@@ -339,6 +340,23 @@ class BrowserTestBase : public ::testing::Test {
   // Expected exit code.
   int expected_exit_code_ = 0;
 
+  // On ChromeOS, many tests expect the `ash::DarkLightModeController` to
+  // control the `ui::NativeTheme`. Since this is plumbed through
+  // `ui::OsSettingsProviderAsh`, the following instantiation breaks these
+  // tests.
+  // TODO(pkasting): Consider an alternate solution, e.g. changing tests to use
+  // a `ui::MockOsSettingsProvider` instead of the
+  // `ash::DarkLightModeController` and removing the `#if` guards here.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Browser tests should not use the current machine settings for theming, but
+  // should default to a consistent baseline. Instantiating
+  // `ui::OsSettingsProvider` will both provide sane default behavior and
+  // prevent `ui::OsSettingsProvider::Get()` from instantiating a
+  // platform-specific subclass.
+  ui::OsSettingsProvider os_settings_provider_{
+      ui::OsSettingsProvider::PriorityLevel::kTesting};
+#endif
+
   // When true, the compositor will produce pixel output that can be read back
   // for pixel tests.
   bool enable_pixel_output_ = false;
@@ -346,7 +364,7 @@ class BrowserTestBase : public ::testing::Test {
   // When using EnablePixelOutput, the device scale factor is forced to an
   // explicit value to ensure consistent results. This value will be passed to
   // the --force-device-scale-factor flag in SetUp.
-  float force_device_scale_factor_ = 0.f;
+  float force_device_scale_factor_ = 0;
 
   // When verifying pixel output, animations are disabled to reduce flakiness.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode>

@@ -15,8 +15,8 @@ namespace ui {
 namespace {
 
 // A cut-down version of `MockOsSettingsProvider` that intentionally does not
-// override the `PreferredContrast()` method, so the default implementation can
-// be tested.
+// override the `PreferredColorScheme()`/`PreferredContrast()` methods, so the
+// default implementations can be tested.
 class SysColorsOsSettingsProvider : public OsSettingsProvider {
  public:
   SysColorsOsSettingsProvider() : OsSettingsProvider(PriorityLevel::kTesting) {}
@@ -68,6 +68,29 @@ class OsSettingsProviderTest : public ::testing::Test {
  private:
   SysColorsOsSettingsProvider os_settings_provider_;
 };
+
+TEST_F(OsSettingsProviderTest, PreferredColorScheme) {
+  using enum NativeTheme::PreferredColorScheme;
+  using enum OsSettingsProvider::ColorId;
+
+  EXPECT_EQ(os_settings_provider().PreferredColorScheme(), kNoPreference);
+
+  os_settings_provider().SetForcedColorsActive(true);
+  os_settings_provider().SetColor(kWindow, SK_ColorBLACK);
+  EXPECT_EQ(os_settings_provider().PreferredColorScheme(), kDark);
+
+  os_settings_provider().SetColor(kWindow, SK_ColorWHITE);
+  EXPECT_EQ(os_settings_provider().PreferredColorScheme(), kLight);
+
+  os_settings_provider().SetColor(kWindow, SK_ColorBLUE);
+  EXPECT_EQ(os_settings_provider().PreferredColorScheme(), kDark);
+
+  os_settings_provider().SetColor(kWindow, SK_ColorYELLOW);
+  EXPECT_EQ(os_settings_provider().PreferredColorScheme(), kLight);
+
+  os_settings_provider().SetForcedColorsActive(false);
+  EXPECT_EQ(os_settings_provider().PreferredColorScheme(), kNoPreference);
+}
 
 TEST_F(OsSettingsProviderTest, PreferredContrast) {
   using enum NativeTheme::PreferredContrast;

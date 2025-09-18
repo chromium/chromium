@@ -823,7 +823,6 @@ void GtkUi::OnThemeChanged(GtkSettings* settings, GtkParamSpec* param) {
   colors_.clear();
   custom_frame_colors_.clear();
   native_frame_colors_.clear();
-  native_theme_->OnThemeChanged(settings, param);
   LoadGtkValues();
   native_theme_->NotifyOnNativeThemeUpdated();
 }
