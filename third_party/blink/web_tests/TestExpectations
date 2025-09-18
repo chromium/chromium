@@ -2986,7 +2986,6 @@ crbug.com/445726874 external/wpt/html/semantics/embedded-content/the-iframe-elem
 crbug.com/445726874 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_top_navigation_without_user_gesture_same_site.tentative.html [ Crash Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/444060885 [ Mac13 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Timeout ]
 crbug.com/443965740 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?9-last [ Crash Pass ]
 crbug.com/443965740 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?9-last [ Crash Pass ]
 crbug.com/443762762 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?3-4 [ Crash ]
@@ -9295,6 +9294,7 @@ crbug.com/380327348 media/encrypted-media/encrypted-media-async-setcert-with-gc.
 crbug.com/381407888 [ Win11-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 crbug.com/381407888 [ Mac12 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 crbug.com/381407888 [ Mac12-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
+crbug.com/381407888 [ Mac13 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Timeout ]
 crbug.com/381407888 [ Mac13-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 crbug.com/381407888 [ Mac14 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 crbug.com/381407888 [ Mac14-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
