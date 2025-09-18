@@ -12985,11 +12985,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VerifyPrerenderProcessVisibility) {
             base::Process::Priority::kBestEffort);
 }
 
-class PrerenderRequestHeadersBrowserTest
+class PrerenderSpecificRequestHeadersBrowserTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  PrerenderRequestHeadersBrowserTest() {
+  PrerenderSpecificRequestHeadersBrowserTest() {
     if (GetParam()) {
       feature_list_.InitAndEnableFeature(
           blink::features::kRemovePurposeHeaderForPrefetch);
@@ -12998,7 +12998,7 @@ class PrerenderRequestHeadersBrowserTest
           blink::features::kRemovePurposeHeaderForPrefetch);
     }
   }
-  ~PrerenderRequestHeadersBrowserTest() override = default;
+  ~PrerenderSpecificRequestHeadersBrowserTest() override = default;
 
   void SetUp() override {
     ssl_server().RegisterRequestHandler(
@@ -13074,7 +13074,7 @@ class PrerenderRequestHeadersBrowserTest
 
 // Tests that a request for the initial prerender navigation has the
 // Purpose and Sec-Purpose headers, but not the Sec-Speculation-Tags header.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderSpecificRequestHeadersBrowserTest,
                        InitialNavigation_Embedder) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -13096,7 +13096,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
 //
 // TODO(nhiroki/domenic): Move this test to WPT.
 // speculation-rules/prerender/headers.https.html is a good starting point.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderSpecificRequestHeadersBrowserTest,
                        RedirectionOnInitialNavigation) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
@@ -13122,7 +13122,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
   EXPECT_EQ(GetSecSpeculationTagsHeader(kRedirectedUrl), "null");
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderSpecificRequestHeadersBrowserTest,
                        SpeculationRulesTagsMergingForImmediateCandidates) {
   const GURL initial_url =
       GetUrl("/prerender/multiple_prerender_with_tags.html");
@@ -13136,7 +13136,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
   EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"tag1\", \"tag2\"");
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderSpecificRequestHeadersBrowserTest,
                        SpeculationRulesTagForSameSiteCrossOrigin) {
   const GURL initial_url = GetUrl("/prerender/empty.html");
   const GURL prerender_url =
@@ -13154,7 +13154,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
 
 // This prefetch test is tentatively implemented here to reuse the test infra.
 // TODO(crbug.com/381687257): Move this test to prefetch browser tests.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, Prefetch) {
+IN_PROC_BROWSER_TEST_P(PrerenderSpecificRequestHeadersBrowserTest, Prefetch) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -13175,7 +13175,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest, Prefetch) {
 }
 
 // Test that there is no tags merging if both of the candidates are enacted.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderSpecificRequestHeadersBrowserTest,
                        SpeculationRulesTagsMergingForNonImmediateCandidates) {
 #if !BUILDFLAG(IS_ANDROID)
   const GURL initial_url = GetUrl(
@@ -13197,7 +13197,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
 }
 
 // Test that there is no tags merging if only one of the candidates is enacted.
-IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderSpecificRequestHeadersBrowserTest,
                        SpeculationRulesTagsNoMergingForNonImmediateCandidates) {
 #if !BUILDFLAG(IS_ANDROID)
   const GURL initial_url = GetUrl(
@@ -13218,7 +13218,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(RemovePurposeHeaderVariations,
-                         PrerenderRequestHeadersBrowserTest,
+                         PrerenderSpecificRequestHeadersBrowserTest,
                          ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EnterFullscreen) {
