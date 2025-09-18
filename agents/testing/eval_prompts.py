@@ -443,6 +443,34 @@ def _perform_chromium_setup(force: bool, build: bool) -> None:
         _build_chromium(src_path)
 
 
+def _fetch_sandbox_image() -> bool:
+    """Pre-fetches the sandbox image.
+
+    Returns:
+        True on success, False on failure.
+    """
+    logging.info('Pre-fetching sandbox image. This may take a minute...')
+    # Use a simple, non-destructive prompt to trigger the one-time
+    # sandbox image download.
+    with tempfile.TemporaryDirectory() as tmpdir:
+        try:
+            subprocess.run(
+                ['gemini', '--sandbox'],
+                input='',
+                text=True,
+                check=True,
+                capture_output=True,
+                cwd=tmpdir,
+            )
+            return True
+        except subprocess.CalledProcessError as e:
+            logging.error(
+                'Failed to pre-fetch sandbox image: %s. This may be '
+                'because you are in an environment that does not support '
+                'sandboxing. Try running with --no-sandbox.', e)
+            return False
+
+
 def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     """Performs all the necessary steps to run prompt evaluation tests.
 
@@ -464,6 +492,9 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     promptfoo = _setup_promptfoo(promptfoo_dir, args.promptfoo_revision,
                                  args.promptfoo_version)
 
+    if args.sandbox and not _fetch_sandbox_image():
+        return 1
+
     returncode = 0
     console_width = shutil.get_terminal_size().columns
     root_path = _get_gclient_root()
@@ -481,6 +512,8 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
                 '--var',
                 f'console_width={console_width}',
             ]
+            if args.sandbox:
+                command.extend(['--var', 'sandbox=True'])
             if args.verbose:
                 command.extend(['--var', 'verbose=True'])
             logging.info('Running test: %s', str(config))
@@ -500,6 +533,13 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument('--no-clean',
                         action='store_true',
                         help='Do not clean up the workdir after evaluation.')
+    parser.add_argument(
+        '--sandbox',
+        default=True,
+        action=argparse.BooleanOptionalAction,
+        help='Use a sandbox for running gemini-cli. This should only be '
+        'disabled for local testing.',
+    )
     parser.add_argument('--force',
                         '-f',
                         action='store_true',

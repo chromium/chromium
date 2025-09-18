@@ -16,6 +16,13 @@ By default, it will build promptfoo from ToT, but specific behavior can be
 configured via command line arguments, including use of stable releases via npm
 which will likely result in faster setup.
 
+### Running without a container runtime
+
+If you are running `eval_prompts.py` on a system without a container runtime
+like Docker or Podman, you will need to pass the `--no-sandbox` flag. This
+is because the script uses sandboxing by default to isolate the test
+environment.
+
 ### btrfs Chromium Setup
 
 The prompt eval is intended to be run with Chromium in a btrfs file system.

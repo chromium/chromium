@@ -106,6 +106,9 @@ def call_api(prompt: str, options: dict[str, Any],
         return {
             'error': f"'command' must be a list of strings, but got: {command}"
         }
+    if provider_vars.get('sandbox', False):
+        command.append('--sandbox')
+
     system_prompt = provider_config.get('system_prompt', '')
     try:
         timeout_seconds = int(

@@ -862,6 +862,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.promptfoo_version = None
         self.args.no_clean = False
         self.args.verbose = False
+        self.args.sandbox = False
 
     @mock.patch('eval_prompts._get_tests_to_run')
     def test_run_prompt_eval_tests_no_tests(self, mock_get_tests_to_run):
@@ -980,6 +981,92 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
                                                             build=True)
         self.assertEqual(mock_promptfoo_instance.run.call_count, 3)
         self.assertEqual(returncode, 1)
+
+    @mock.patch('subprocess.run')
+    @mock.patch('eval_prompts.WorkDir')
+    @mock.patch('eval_prompts._setup_promptfoo')
+    @mock.patch('eval_prompts._perform_chromium_setup')
+    @mock.patch('eval_prompts._get_tests_to_run')
+    @mock.patch('eval_prompts._get_gclient_root')
+    @mock.patch('eval_prompts._check_btrfs')
+    @mock.patch('shutil.get_terminal_size')
+    def test_run_prompt_eval_tests_sandbox_prefetch_fails(
+            self, _mock_get_terminal_size, _mock_check_btrfs,
+            _mock_get_gclient_root, mock_get_tests_to_run,
+            _mock_perform_chromium_setup, _mock_setup_promptfoo, _mock_workdir,
+            mock_subprocess_run):
+        """Tests that _run_prompt_eval_tests exits if sandbox pre-fetch
+        fails."""
+        mock_get_tests_to_run.return_value = [pathlib.Path('/test/a.yaml')]
+        self.args.sandbox = True
+        mock_subprocess_run.side_effect = subprocess.CalledProcessError(
+            returncode=1, cmd='gemini')
+
+        with self.assertLogs(level='ERROR') as cm:
+            result = eval_prompts._run_prompt_eval_tests(self.args)
+            self.assertEqual(result, 1)
+            self.assertIn('Failed to pre-fetch sandbox image', cm.output[0])
+
+    @mock.patch('subprocess.run')
+    @mock.patch('eval_prompts.WorkDir')
+    @mock.patch('eval_prompts._setup_promptfoo')
+    @mock.patch('eval_prompts._perform_chromium_setup')
+    @mock.patch('eval_prompts._get_tests_to_run')
+    @mock.patch('eval_prompts._get_gclient_root')
+    @mock.patch('eval_prompts._check_btrfs')
+    @mock.patch('shutil.get_terminal_size')
+    def test_run_prompt_eval_tests_with_sandbox_enabled(
+            self, _mock_get_terminal_size, _mock_check_btrfs,
+            _mock_get_gclient_root, mock_get_tests_to_run,
+            _mock_perform_chromium_setup, mock_setup_promptfoo, _mock_workdir,
+            mock_subprocess_run):
+        """Tests that _run_prompt_eval_tests calls pre-fetch and passes sandbox
+        var when enabled."""
+        mock_get_tests_to_run.return_value = [pathlib.Path('/test/a.yaml')]
+        self.args.sandbox = True
+
+        eval_prompts._run_prompt_eval_tests(self.args)
+
+        mock_subprocess_run.assert_called_once_with(
+            ['gemini', '--sandbox'],
+            input='',
+            text=True,
+            check=True,
+            capture_output=True,
+            cwd=mock.ANY,
+        )
+        mock_promptfoo_instance = mock_setup_promptfoo.return_value
+        mock_promptfoo_instance.run.assert_called_once()
+        command = mock_promptfoo_instance.run.call_args[0][0]
+        self.assertIn('--var', command)
+        self.assertIn('sandbox=True', command)
+
+    @mock.patch('subprocess.run')
+    @mock.patch('eval_prompts.WorkDir')
+    @mock.patch('eval_prompts._setup_promptfoo')
+    @mock.patch('eval_prompts._perform_chromium_setup')
+    @mock.patch('eval_prompts._get_tests_to_run')
+    @mock.patch('eval_prompts._get_gclient_root')
+    @mock.patch('eval_prompts._check_btrfs')
+    @mock.patch('shutil.get_terminal_size')
+    def test_run_prompt_eval_tests_with_sandbox_disabled(
+            self, _mock_get_terminal_size, _mock_check_btrfs,
+            _mock_get_gclient_root, mock_get_tests_to_run,
+            _mock_perform_chromium_setup, mock_setup_promptfoo, _mock_workdir,
+            mock_subprocess_run):
+        """Tests that _run_prompt_eval_tests does not call pre-fetch or pass
+        sandbox var when disabled."""
+        mock_get_tests_to_run.return_value = [pathlib.Path('/test/a.yaml')]
+        self.args.sandbox = False
+
+        eval_prompts._run_prompt_eval_tests(self.args)
+
+        mock_subprocess_run.assert_not_called()
+        mock_promptfoo_instance = mock_setup_promptfoo.return_value
+        mock_promptfoo_instance.run.assert_called_once()
+        command = mock_promptfoo_instance.run.call_args[0][0]
+        for arg in command:
+            self.assertNotIn('sandbox', arg)
 
 
 if __name__ == '__main__':
