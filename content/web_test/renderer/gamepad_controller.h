@@ -75,7 +75,7 @@ class GamepadController final {
   void DispatchConnected(int index);
   void Disconnect(int index);
 
-  void SetId(int index, const std::string& src);
+  void SetId(int index, const std::u16string& src);
   void SetButtonCount(int index, int buttons);
   void SetButtonData(int index, int button, double data);
   void SetAxisCount(int index, int axes);

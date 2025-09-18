@@ -175,7 +175,7 @@ void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
                       std::optional<uint32_t>& initial_touch_id,
                       Gamepad* pad) {
   pad->touch_events_length = 0;
-  GamepadTouch* touches = pad->touch_events;
+  auto& touches = pad->touch_events;
 
   for (const auto& touchpad_data_entry : touchpad_data) {
     auto [touch_id_0, touch_id_1] = id_transform(
@@ -188,13 +188,12 @@ void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
         if (!initial_touch_id.has_value()) {
           initial_touch_id = j == 0 ? touch_id_0 : touch_id_1;
         }
-        auto& touch = UNSAFE_TODO(touches[pad->touch_events_length++]);
+        auto& touch = touches[pad->touch_events_length++];
         touch.touch_id =
             (j == 0 ? touch_id_0 : touch_id_1) - initial_touch_id.value();
         touch.surface_id = 0;
         // x and y coordinates stored in 3 bytes (12bits each)
-        ReadTouchCoordinates(UNSAFE_TODO(base::span(raw_touch.data, 3u)),
-                             touch);
+        ReadTouchCoordinates(raw_touch.data, touch);
       }
     }
   }
@@ -230,9 +229,9 @@ void ProcessAxisButtonData(const ControllerData& controller_data,
       controller_data.button_touch,
   });
   for (size_t i = 0; i < std::size(button_values); ++i) {
-    UNSAFE_TODO(pad->buttons[i]).pressed = button_values[i];
-    UNSAFE_TODO(pad->buttons[i]).touched = button_values[i];
-    UNSAFE_TODO(pad->buttons[i]).value = button_values[i] ? 1.0 : 0.0;
+    pad->buttons[i].pressed = button_values[i];
+    pad->buttons[i].touched = button_values[i];
+    pad->buttons[i].value = button_values[i] ? 1.0 : 0.0;
   }
 }
 
@@ -299,15 +298,15 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
   DCHECK(pad);
 
   const ControllerData* controller_data = nullptr;
-  const TouchPadData* touches = nullptr;
+  base::span<const TouchPadData> touches_span;
   uint8_t touches_count = 0;
 
   auto set_controller_and_touch_data =
-      [&controller_data, &touches, &touches_count,
+      [&controller_data, &touches_span, &touches_count,
        is_multitouch_enabled](const auto& data) {
         controller_data = &data->controller_data;
         if (is_multitouch_enabled) {
-          touches = data->touches;
+          touches_span = base::span(data->touches);
           touches_count = data->touches_count;
         }
       };
@@ -334,8 +333,8 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
 
   if (is_multitouch_enabled) {
     pad->supports_touch_events_ = true;
-    ProcessTouchData(UNSAFE_TODO(base::span(touches, touches_count)),
-                     transform_touch_id_, initial_touch_id_, pad);
+    ProcessTouchData(touches_span.first(touches_count), transform_touch_id_,
+                     initial_touch_id_, pad);
   }
 
   pad->timestamp = GamepadDataFetcher::CurrentTimeInMicroseconds();

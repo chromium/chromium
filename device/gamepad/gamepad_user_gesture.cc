@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 
 namespace {
@@ -34,16 +35,16 @@ bool GamepadsHaveUserGesture(const Gamepads& gamepads) {
       if (pad.display_id != 0)
         return true;
 
-      for (size_t button_index = 0; button_index < pad.buttons_length;
-           button_index++) {
-        if (UNSAFE_TODO(pad.buttons[button_index]).pressed) {
+      const auto buttons = base::span(pad.buttons).first(pad.buttons_length);
+      for (const auto& button : buttons) {
+        if (button.pressed) {
           return true;
         }
       }
 
-      for (size_t axes_index = 0; axes_index < pad.axes_length; axes_index++) {
-        if (fabs(UNSAFE_TODO(pad.axes[axes_index])) >
-            kAxisMoveAmountThreshold) {
+      const auto axes = base::span(pad.axes).first(pad.axes_length);
+      for (const auto& axis : axes) {
+        if (fabs(axis) > kAxisMoveAmountThreshold) {
           return true;
         }
       }

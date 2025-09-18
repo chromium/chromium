@@ -13,6 +13,8 @@
 #include <XInput.h>
 #include <winerror.h>
 
+#include <cstdint>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -1089,7 +1091,13 @@ TEST_P(WgiDataFetcherWinGamepadIdTest, GamepadIds) {
   size_t id_string_index = 0;
   for (auto it = gamepads.begin(); it != gamepads.end(); ++it) {
     PadState* pad = fetcher().GetPadState(it->first);
-    std::u16string display_id(pad->data.id);
+    std::u16string display_id;
+    for (char16_t ch : pad->data.id) {
+      if (ch == 0) {
+        break;
+      }
+      display_id += ch;
+    }
     EXPECT_EQ(display_id, expected_gamepad_id_strings[id_string_index++]);
   }
 }

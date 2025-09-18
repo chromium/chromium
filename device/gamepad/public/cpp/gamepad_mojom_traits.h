@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef DEVICE_GAMEPAD_PUBLIC_CPP_GAMEPAD_MOJOM_TRAITS_H_
 #define DEVICE_GAMEPAD_PUBLIC_CPP_GAMEPAD_MOJOM_TRAITS_H_
 
@@ -162,11 +157,11 @@ struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
   static bool connected(const device::Gamepad& r) { return r.connected; }
   static int64_t timestamp(const device::Gamepad& r) { return r.timestamp; }
   static base::span<const double> axes(const device::Gamepad& r) {
-    return base::span(r.axes, r.axes_length);
+    return base::span(r.axes).first(r.axes_length);
   }
   static base::span<const device::GamepadButton> buttons(
       const device::Gamepad& r) {
-    return base::span(r.buttons, r.buttons_length);
+    return base::span(r.buttons).first(r.buttons_length);
   }
   static const device::GamepadHapticActuator& vibration_actuator(
       const device::Gamepad& r) {
@@ -177,7 +172,7 @@ struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
   }
   static base::span<const device::GamepadTouch> touch_events(
       const device::Gamepad& r) {
-    return base::span(r.touch_events, r.touch_events_length);
+    return base::span(r.touch_events).first(r.touch_events_length);
   }
   static const device::GamepadHand& hand(const device::Gamepad& r) {
     return r.hand;

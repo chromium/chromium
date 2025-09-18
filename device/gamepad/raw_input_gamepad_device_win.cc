@@ -159,7 +159,7 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
         buttons_[i] = pad.buttons[i].pressed;
 
       if (is_multitouch_enabled) {
-        const GamepadTouch* touches = pad.touch_events;
+        const auto& touches = pad.touch_events;
         for (size_t i = 0; i < Gamepad::kTouchEventsLengthCap; ++i) {
           touches_[i].touch_id = touches[i].touch_id;
           touches_[i].surface_id = touches[i].surface_id;

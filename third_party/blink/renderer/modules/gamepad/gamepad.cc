@@ -26,11 +26,12 @@
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_comparisons.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -59,10 +60,18 @@ Gamepad::~Gamepad() = default;
 void Gamepad::UpdateFromDeviceState(const device::Gamepad& device_gamepad,
                                     bool cross_origin_isolated_capability) {
   bool newly_connected;
+  StringBuilder id_u16string_builder;
+  for (uint16_t c : device_gamepad.id) {
+    if (c == 0) {
+      break;
+    }
+    id_u16string_builder.Append(c);
+  }
+
   GamepadComparisons::HasGamepadConnectionChanged(
-      connected(),                            // Old connected.
-      device_gamepad.connected,               // New connected.
-      id() != StringView(device_gamepad.id),  // ID changed.
+      connected(),                              // Old connected.
+      device_gamepad.connected,                 // New connected.
+      id() != id_u16string_builder.ToString(),  // ID changed.
       &newly_connected, nullptr);
 
   SetConnected(device_gamepad.connected);
@@ -84,7 +93,7 @@ void Gamepad::UpdateFromDeviceState(const device::Gamepad& device_gamepad,
   // These fields are not expected to change and will only be written when the
   // gamepad is newly connected.
   if (newly_connected) {
-    SetId(device_gamepad.id);
+    SetId(id_u16string_builder.ReleaseString());
     SetMapping(device_gamepad.mapping);
   }
 }
