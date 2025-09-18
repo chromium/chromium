@@ -145,7 +145,7 @@ void AudioRendererImpl::StartRendering_Locked() {
   sink_playing_ = true;
   was_unmuted_ = was_unmuted_ || volume_ != 0;
   base::AutoUnlock auto_unlock(lock_);
-  if (volume_ || !null_sink_ || render_muted_audio_) {
+  if (volume_ || render_muted_audio_) {
     MaybeStartRealSink();
   } else {
     null_sink_->Play();
@@ -179,7 +179,7 @@ void AudioRendererImpl::StopRendering_Locked() {
   sink_playing_ = false;
 
   base::AutoUnlock auto_unlock(lock_);
-  if (volume_ || !null_sink_ || render_muted_audio_) {
+  if (volume_ || render_muted_audio_) {
     sink_->Pause();
   } else {
     null_sink_->Pause();
@@ -296,7 +296,7 @@ void AudioRendererImpl::Flush(base::OnceClosure callback) {
   // Flush |sink_| now.  |sink_| must only be accessed on |task_runner_| and not
   // be called under |lock_|.
   DCHECK(!sink_playing_);
-  if (volume_ || !null_sink_ || render_muted_audio_) {
+  if (volume_ || render_muted_audio_) {
     sink_->Flush();
   } else {
     null_sink_->Flush();
@@ -384,8 +384,7 @@ void AudioRendererImpl::Initialize(DemuxerStream* stream,
   if (state_ == kFlushed) {
     num_absurd_delay_warnings_ = 0;
     sink_->Stop();
-    if (null_sink_)
-      null_sink_->Stop();
+    null_sink_->Stop();
   }
 
   state_ = kInitializing;
@@ -431,15 +430,15 @@ void AudioRendererImpl::OnDeviceInfoReceived(
   UMA_HISTOGRAM_ENUMERATION("Media.AudioRendererImpl.SinkStatus",
                             output_device_info.device_status(),
                             OUTPUT_DEVICE_STATUS_MAX + 1);
+  // We always populate `null_sink_` to simplify state checks elsewhere.
+  null_sink_ = base::MakeRefCounted<NullAudioSink>(task_runner_);
   if (output_device_info.device_status() != OUTPUT_DEVICE_STATUS_OK) {
     MEDIA_LOG(ERROR, media_log_)
         << "Output device error, falling back to null sink. device_status="
         << output_device_info.device_status();
+    // This must be different than `null_sink_` to avoid double-initialization.
     sink_ = base::MakeRefCounted<NullAudioSink>(task_runner_);
     output_device_info = sink_->GetOutputDeviceInfo();
-  } else if (base::FeatureList::IsEnabled(kSuspendMutedAudio)) {
-    // If playback is muted, we use a fake sink for output until it unmutes.
-    null_sink_ = base::MakeRefCounted<NullAudioSink>(task_runner_);
   }
 
   current_decoder_config_ = stream->audio_decoder_config();
@@ -721,16 +720,9 @@ void AudioRendererImpl::OnAudioDecoderStreamInitialized(bool success) {
   {
     base::AutoUnlock auto_unlock(lock_);
     sink_->Initialize(audio_parameters_, this);
-    if (null_sink_) {
-      null_sink_->Initialize(audio_parameters_, this);
-      null_sink_->Start();  // Does nothing but reduce state bookkeeping.
-      real_sink_needs_start_ = true;
-    } else {
-      // Even when kSuspendMutedAudio is enabled, we can hit this path if we are
-      // exclusively using NullAudioSink due to OnDeviceInfoReceived() failure.
-      sink_->Start();
-      sink_->Pause();  // Sinks play on start.
-    }
+    null_sink_->Initialize(audio_parameters_, this);
+    null_sink_->Start();  // Does nothing but reduce state bookkeeping.
+    real_sink_needs_start_ = true;
     SetVolume(volume_);
   }
 
@@ -810,12 +802,6 @@ void AudioRendererImpl::SetVolume(float volume) {
   }
 
   sink_->SetVolume(volume);
-  if (!null_sink_) {
-    // Either null sink suspension is not enabled or we're already on the null
-    // sink due to failing to get device parameters.
-    return;
-  }
-
   null_sink_->SetVolume(volume);
 
   // Two cases to handle:
@@ -1555,10 +1541,6 @@ void AudioRendererImpl::TranscribeAudio(
 }
 
 void AudioRendererImpl::MaybeStartRealSink() {
-  if (!null_sink_) {
-    return;
-  }
-
   // Suspend null audio sink (does nothing if unused).
   null_sink_->Pause();
 
@@ -1582,7 +1564,7 @@ void AudioRendererImpl::SuspendRealSink() {
   sink_->Pause();
 
   // Start fake sink playback if needed.
-  if (sink_playing_ && null_sink_) {
+  if (sink_playing_) {
     null_sink_->Play();
   }
 }

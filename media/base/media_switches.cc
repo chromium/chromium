@@ -673,10 +673,6 @@ BASE_FEATURE(kSpecCompliantCanPlayThrough, base::FEATURE_ENABLED_BY_DEFAULT);
 // frozen. TODO(crbug.com/41161335): Remove in M143 after it goes stable.
 BASE_FEATURE(kSuspendMediaForFrozenFrames, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Disables the real audio output stream after silent audio has been delivered
-// for too long. Should save quite a bit of power in the muted video case.
-BASE_FEATURE(kSuspendMutedAudio, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Unified Autoplay policy by overriding the platform's default
 // autoplay policy.
 BASE_FEATURE(kUnifiedAutoplay, base::FEATURE_ENABLED_BY_DEFAULT);

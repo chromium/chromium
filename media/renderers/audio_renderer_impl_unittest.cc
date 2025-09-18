@@ -1522,9 +1522,6 @@ TEST_F(AudioRendererImplTest, BitstreamEndOfStream) {
 }
 
 TEST_F(AudioRendererImplTest, MutedPlaybackBadDeviceInfo) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(kSuspendMutedAudio);
-
   mock_sink_ = base::MakeRefCounted<MockAudioRendererSink>(
       std::string(), OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED,
       AudioParameters());
@@ -1563,8 +1560,6 @@ TEST_F(AudioRendererImplTest, MutedPlaybackBadDeviceInfo) {
 }
 
 TEST_F(AudioRendererImplTest, BasicMutedPlayback) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(kSuspendMutedAudio);
   ConfigureWithMockSink(hardware_params_);
 
   EXPECT_CALL(*mock_sink_, SetVolume(0));
