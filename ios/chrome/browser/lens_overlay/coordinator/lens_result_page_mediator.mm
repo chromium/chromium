@@ -335,7 +335,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
       return;
     }
 
-    [self.delegate lensResultPageOpenURLInNewTabRequsted:URL];
+    [self.delegate lensResultPageOpenURLInNewTabRequested:URL];
     [self.delegate
          lensResultPageMediator:self
         didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kWebNavigation];
@@ -346,7 +346,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     // AIM SRP requires lns_surface, but we can't use Chromnient's (4), so use
     // CHROME_SEARCH.
     URL = net::AppendOrReplaceQueryParameter(URL, "lns_surface", "45");
-    [self.delegate lensResultPageOpenURLInNewTabRequsted:URL];
+    [self.delegate lensResultPageOpenURLInNewTabRequested:URL];
     [self.delegate
          lensResultPageMediator:self
         didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kExploreBarTab];
@@ -500,7 +500,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     }
   }
   // Open the URL in a new tab.
-  [self.delegate lensResultPageOpenURLInNewTabRequsted:URL];
+  [self.delegate lensResultPageOpenURLInNewTabRequested:URL];
   [self.delegate
        lensResultPageMediator:self
       didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kWebNavigation];

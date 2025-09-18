@@ -160,11 +160,11 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
                                      totalAnimationDuration * NSEC_PER_SEC),
                        dispatch_get_main_queue(), ^{
                          [weakSelf.delegate
-                             lensOverlayMediatorOpenURLInNewTabRequsted:URL];
+                             lensOverlayMediatorOpenURLInNewTabRequested:URL];
                        });
       } else {
         [self.delegate
-            lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
+            lensOverlayMediatorOpenURLInNewTabRequested:destinationURL];
       }
 
       [self.metricsRecorder recordNewTabGeneratedWithSource:
@@ -443,8 +443,8 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   [self.metricsRecorder recordNewTabGeneratedWithSource:newTabSource];
 }
 
-- (void)lensResultPageOpenURLInNewTabRequsted:(GURL)URL {
-  [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:URL];
+- (void)lensResultPageOpenURLInNewTabRequested:(GURL)URL {
+  [self.delegate lensOverlayMediatorOpenURLInNewTabRequested:URL];
 }
 
 #pragma mark - Private

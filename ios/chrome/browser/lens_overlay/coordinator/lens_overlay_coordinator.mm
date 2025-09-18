@@ -922,7 +922,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [_metricsRecorder recordOverflowMenuOpened];
 }
 
-- (void)lensOverlayMediatorOpenURLInNewTabRequsted:(GURL)URL {
+- (void)lensOverlayMediatorOpenURLInNewTabRequested:(GURL)URL {
   // Take a snapshot of the current tab before opening the URL in a new tab.
   // A side effect of opening a new tab is that the snapshot storage associated
   // to the current web state is updated. This snapshot would not include the

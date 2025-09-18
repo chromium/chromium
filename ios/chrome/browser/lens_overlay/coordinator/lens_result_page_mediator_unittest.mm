@@ -52,7 +52,7 @@
   // NO-OP
 }
 
-- (void)lensResultPageOpenURLInNewTabRequsted:(GURL)URL {
+- (void)lensResultPageOpenURLInNewTabRequested:(GURL)URL {
   _openInNewTabRequested = YES;
 }
 

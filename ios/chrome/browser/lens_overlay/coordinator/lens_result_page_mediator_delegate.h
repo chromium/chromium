@@ -37,7 +37,7 @@ class WebState;
        didOpenNewTabFromSource:(lens::LensOverlayNewTabSource)newTabSource;
 
 /// Called when an URL needs to be opened in a new tab.
-- (void)lensResultPageOpenURLInNewTabRequsted:(GURL)URL;
+- (void)lensResultPageOpenURLInNewTabRequested:(GURL)URL;
 
 @end
 
