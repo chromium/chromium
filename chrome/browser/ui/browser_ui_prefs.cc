@@ -189,9 +189,9 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kTabCaptureAllowedByOrigins);
   registry->RegisterListPref(prefs::kSameOriginTabCaptureAllowedByOrigins);
 
-#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kCaretBrowsingEnabled, false);
   registry->RegisterBooleanPref(prefs::kShowCaretBrowsingDialog, true);
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kNTPFooterExtensionAttributionEnabled,
                                 true);
 #endif

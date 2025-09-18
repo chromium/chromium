@@ -3892,7 +3892,6 @@ inline constexpr char kAdbSideloadingPowerwashOnNextRebootNotificationShown[] =
     "adb_sideloading_powerwash_on_next_reboot_notification_shown";
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
 // Boolean pref that indicates whether caret browsing is currently enabled.
 inline constexpr char kCaretBrowsingEnabled[] =
     "settings.a11y.caretbrowsing.enabled";
@@ -3903,7 +3902,6 @@ inline constexpr char kCaretBrowsingEnabled[] =
 // is toggled silently by the keyboard shortcut.
 inline constexpr char kShowCaretBrowsingDialog[] =
     "settings.a11y.caretbrowsing.show_dialog";
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 // String enum pref determining what should happen when a user who authenticates

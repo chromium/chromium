@@ -193,12 +193,11 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #if BUILDFLAG(IS_ANDROID)
   prefs->uses_platform_autofill = pref_service->GetBoolean(
       autofill::prefs::kAutofillUsingVirtualViewStructure);
-#else
+#endif
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
   ui::AXPlatform::GetInstance().SetCaretBrowsingState(
       prefs->caret_browsing_enabled);
-#endif
   if (PrefService* const local_state = g_browser_process->local_state()) {
     prefs->allow_cross_origin_auth_prompt =
         local_state->GetBoolean(prefs::kAllowCrossOriginAuthPrompt);
