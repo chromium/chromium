@@ -1452,7 +1452,7 @@
     {
         "name": "guava",
         "group": "com.google.guava",
-        "version": "33.4.8-jre"
+        "version": "33.5.0-jre"
     },
     {
         "name": "listenablefuture",
