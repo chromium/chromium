@@ -188,6 +188,10 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.aria_description();
   }
 
+  static const std::u16string& nonce(const autofill::FormFieldData& r) {
+    return r.nonce();
+  }
+
   static autofill::FieldRendererId renderer_id(
       const autofill::FormFieldData& r) {
     return r.renderer_id();

@@ -31,7 +31,7 @@ namespace {
 
 // Increment this anytime pickle format is modified as well as provide
 // deserialization routine from previous kFormFieldDataPickleVersion format.
-const int kFormFieldDataPickleVersion = 9;
+const int kFormFieldDataPickleVersion = 10;
 
 void WriteSelectOption(const SelectOption& option, base::Pickle* pickle) {
   pickle->WriteString16(option.value);
@@ -257,6 +257,16 @@ bool DeserializeSection11(base::PickleIterator* iter,
   return true;
 }
 
+bool DeserializeSection13(base::PickleIterator* iter,
+                          FormFieldData* field_data) {
+  std::u16string nonce;
+  if (!iter->ReadString16(&nonce)) {
+    return false;
+  }
+  field_data->set_nonce(std::move(nonce));
+  return true;
+}
+
 }  // namespace
 
 LogBuffer& operator<<(LogBuffer& buffer, FormControlType type) {
@@ -306,10 +316,11 @@ bool FormFieldData::IsSelectElement() const {
 bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
   auto equality_tuple = [](const FormFieldData& f) {
     return std::tie(f.renderer_id_, f.host_frame_, f.label_, f.name_,
-                    f.name_attribute_, f.id_attribute_, f.form_control_type_,
-                    f.autocomplete_attribute_, f.placeholder_, f.max_length_,
-                    f.css_classes_, f.is_focusable_, f.should_autocomplete_,
-                    f.role_, f.text_direction_, f.options_);
+                    f.name_attribute_, f.id_attribute_, f.nonce_,
+                    f.form_control_type_, f.autocomplete_attribute_,
+                    f.placeholder_, f.max_length_, f.css_classes_,
+                    f.is_focusable_, f.should_autocomplete_, f.role_,
+                    f.text_direction_, f.options_);
   };
   return equality_tuple(a) == equality_tuple(b);
 }
@@ -403,6 +414,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   pickle->WriteUInt32(field_data.properties_mask());
   pickle->WriteString16(field_data.id_attribute());
   pickle->WriteString16(field_data.name_attribute());
+  pickle->WriteString16(field_data.nonce());
 }
 
 bool DeserializeFormFieldData(base::PickleIterator* iter,
@@ -529,6 +541,23 @@ bool DeserializeFormFieldData(base::PickleIterator* iter,
           !DeserializeSection9(iter, &temp_form_field_data) ||
           !DeserializeSection10(iter, &temp_form_field_data) ||
           !DeserializeSection11(iter, &temp_form_field_data)) {
+        LOG(ERROR) << "Could not deserialize FormFieldData from pickle";
+        return false;
+      }
+      break;
+    }
+    case 10: {
+      if (!DeserializeSection1(iter, &temp_form_field_data) ||
+          !DeserializeSection6(iter, &temp_form_field_data) ||
+          !DeserializeSection7(iter, &temp_form_field_data) ||
+          !DeserializeSection2(iter, &temp_form_field_data) ||
+          !DeserializeSection12(iter, &temp_form_field_data) ||
+          !DeserializeSection4(iter, &temp_form_field_data) ||
+          !DeserializeSection8(iter, &temp_form_field_data) ||
+          !DeserializeSection9(iter, &temp_form_field_data) ||
+          !DeserializeSection10(iter, &temp_form_field_data) ||
+          !DeserializeSection11(iter, &temp_form_field_data) ||
+          !DeserializeSection13(iter, &temp_form_field_data)) {
         LOG(ERROR) << "Could not deserialize FormFieldData from pickle";
         return false;
       }

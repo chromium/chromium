@@ -461,6 +461,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
       if (cached_ml_types.has_value()) {
         field->set_ml_supported_types(cached_ml_types.value());
       }
+      field->set_nonce(cached_field->nonce());
       field->SetHtmlType(cached_field->html_type(), cached_field->html_mode());
       field->set_credit_card_number_offset(
           cached_field->credit_card_number_offset());

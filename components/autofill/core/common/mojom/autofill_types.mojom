@@ -342,6 +342,7 @@ struct FormFieldData {
   mojo_base.mojom.String16 css_classes;
   mojo_base.mojom.String16 aria_label;
   mojo_base.mojom.String16 aria_description;
+  mojo_base.mojom.String16 nonce;
   FieldRendererId renderer_id;
   FormRendererId host_form_id;
   uint32 properties_mask;

@@ -198,6 +198,14 @@ bool StructTraits<
     out->set_aria_description(std::move(aria_description));
   }
 
+  {
+    std::u16string nonce;
+    if (!data.ReadNonce(&nonce)) {
+      return false;
+    }
+    out->set_nonce(std::move(nonce));
+  }
+
   out->set_properties_mask(data.properties_mask());
 
   {

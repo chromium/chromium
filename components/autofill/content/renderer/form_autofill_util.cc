@@ -163,6 +163,7 @@ constexpr std::string_view kListItem = "li";
 constexpr std::string_view kMeta = "meta";
 constexpr std::string_view kName = "name";
 constexpr std::string_view kNoScript = "noscript";
+constexpr std::string_view kNonce = "nonce";
 constexpr std::string_view kOption = "option";
 constexpr std::string_view kParagraph = "p";
 constexpr std::string_view kPattern = "pattern";
@@ -1946,6 +1947,10 @@ void WebFormControlElementToFormField(
   field->set_aria_label(GetAriaLabel(element.GetDocument(), element));
   field->set_aria_description(
       GetAriaDescription(element.GetDocument(), element));
+
+  if (HasAttribute<kNonce>(element)) {
+    field->set_nonce(GetAttribute<kNonce>(element).Utf16());
+  }
 
   const bool kAutofillDetectFieldVisibilityEnabled =
       base::FeatureList::IsEnabled(features::kAutofillDetectFieldVisibility);

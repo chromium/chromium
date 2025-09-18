@@ -54,6 +54,10 @@ void FillVersion8Fields(FormFieldData* data) {
   data->set_name_attribute(u"name");
 }
 
+void FillVersion10Fields(FormFieldData* data) {
+  data->set_nonce(u"nonce");
+}
+
 void WriteSection1(const FormFieldData& data, base::Pickle* pickle) {
   pickle->WriteString16(data.label());
   pickle->WriteString16(data.name());
@@ -121,6 +125,10 @@ void WriteVersion7Specific(const FormFieldData& data, base::Pickle* pickle) {
 
 void WriteVersion8Specific(const FormFieldData& data, base::Pickle* pickle) {
   pickle->WriteString16(data.name_attribute());
+}
+
+void WriteVersion10Specific(const FormFieldData& data, base::Pickle* pickle) {
+  pickle->WriteString16(data.nonce());
 }
 
 void SerializeInVersion1Format(const FormFieldData& data,
@@ -224,6 +232,21 @@ void SerializeInVersion9Format(const FormFieldData& data,
   WriteVersion8Specific(data, pickle);
 }
 
+void SerializeInVersion10Format(const FormFieldData& data,
+                                base::Pickle* pickle) {
+  WriteSection1(data, pickle);
+  WriteSection4(data, pickle);
+  WriteSection5(data, pickle);
+  WriteVersion2Specific(data, pickle);
+  WriteVersion9Specific(data, pickle);
+  WriteVersion3Specific(data, pickle);
+  WriteVersion5Specific(data, pickle);
+  WriteVersion6Specific(data, pickle);
+  WriteVersion7Specific(data, pickle);
+  WriteVersion8Specific(data, pickle);
+  WriteVersion10Specific(data, pickle);
+}
+
 TEST(FormFieldDataTest, SerializeAndDeserialize) {
   FormFieldData data;
   FillCommonFields(&data);
@@ -233,6 +256,7 @@ TEST(FormFieldDataTest, SerializeAndDeserialize) {
   FillVersion6Fields(&data);
   FillVersion7Fields(&data);
   FillVersion8Fields(&data);
+  FillVersion10Fields(&data);
 
   base::Pickle pickle;
   SerializeFormFieldData(data, &pickle);
@@ -400,6 +424,28 @@ TEST(FormFieldDataTest, DeserializeVersion9) {
   base::Pickle pickle;
   pickle.WriteInt(9);
   SerializeInVersion9Format(data, &pickle);
+
+  base::PickleIterator iter(pickle);
+  FormFieldData actual;
+  EXPECT_TRUE(DeserializeFormFieldData(&iter, &actual));
+
+  EXPECT_TRUE(FormFieldData::DeepEqual(actual, data));
+}
+
+TEST(FormFieldDataTest, DeserializeVersion10) {
+  FormFieldData data;
+  FillCommonFields(&data);
+  FillVersion2Fields(&data);
+  FillVersion3Fields(&data);
+  FillVersion5Fields(&data);
+  FillVersion6Fields(&data);
+  FillVersion7Fields(&data);
+  FillVersion8Fields(&data);
+  FillVersion10Fields(&data);
+
+  base::Pickle pickle;
+  pickle.WriteInt(10);
+  SerializeInVersion10Format(data, &pickle);
 
   base::PickleIterator iter(pickle);
   FormFieldData actual;
