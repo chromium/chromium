@@ -97,6 +97,8 @@ class SearchEnginesTestEnvironment {
 
   TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver();
 
+  policy::ManagementService& management_service();
+
   SearchEngineChoiceService& search_engine_choice_service();
 
   // Guaranteed to be non-null unless `ReleaseTemplateURLService` has been
@@ -137,6 +139,7 @@ class SearchEnginesTestEnvironment {
       regional_capabilities_service_;
   std::unique_ptr<TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;
+  std::unique_ptr<policy::ManagementService> management_service_;
   std::unique_ptr<SearchEngineChoiceService> search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
   bool released_template_url_service_ = false;

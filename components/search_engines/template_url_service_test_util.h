@@ -15,23 +15,23 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class WebDatabaseService;
 class KeywordWebDataService;
-
-namespace regional_capabilities {
-class RegionalCapabilitiesService;
-}
-
-namespace search_engines {
-class SearchEngineChoiceService;
-}
+class WebDatabaseService;
 
 namespace base {
 class RunLoop;
 }
-
 namespace os_crypt_async {
 class OSCryptAsync;
+}
+namespace policy {
+class ManagementService;
+}
+namespace regional_capabilities {
+class RegionalCapabilitiesService;
+}
+namespace search_engines {
+class SearchEngineChoiceService;
 }
 
 void RegisterPrefsForTemplateURLService(
@@ -98,6 +98,7 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
       regional_capabilities_service_;
   std::unique_ptr<TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;
+  std::unique_ptr<policy::ManagementService> management_service_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;

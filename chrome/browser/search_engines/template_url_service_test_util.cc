@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
@@ -220,7 +221,9 @@ TemplateURLServiceTestUtil::SetUpRequiredServicesWithCustomLocalState(
                 CHECK_DEREF(
                     TemplateURLPrepopulateData::ResolverFactory::GetInstance()
                         ->GetForProfile(profile)),
-                CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)));
+                CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)),
+                CHECK_DEREF(
+                    policy::ManagementServiceFactory::GetForProfile(profile)));
           }),
   });
 

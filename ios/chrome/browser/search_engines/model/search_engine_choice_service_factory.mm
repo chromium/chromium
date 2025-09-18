@@ -8,6 +8,8 @@
 
 #import "base/check_deref.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#import "ios/chrome/browser/policy/model/management_service_ios.h"
+#import "ios/chrome/browser/policy/model/management_service_ios_factory.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/ios_search_engine_choice_service_client.h"
 #import "ios/chrome/browser/search_engines/model/template_url_prepopulate_data_resolver_factory.h"
@@ -52,7 +54,8 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
           ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile)),
       CHECK_DEREF(ios::TemplateURLPrepopulateDataResolverFactory::GetForProfile(
           profile)),
-      CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)));
+      CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)),
+      CHECK_DEREF(policy::ManagementServiceIOSFactory::GetForProfile(profile)));
 
   service->Init();
   return service;

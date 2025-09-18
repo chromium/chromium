@@ -11,6 +11,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
@@ -93,12 +94,16 @@ void TemplateURLServiceUnitTestBase::SetUp() {
       std::make_unique<TemplateURLPrepopulateData::Resolver>(
           pref_service_, *regional_capabilities_service_.get());
 
+  management_service_ = std::make_unique<policy::ManagementService>(
+      std::vector<std::unique_ptr<policy::ManagementStatusProvider>>{});
+
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
           std::make_unique<FakeSearchEngineChoiceServiceClient>(),
           pref_service_, &local_state_, *regional_capabilities_service_,
           *prepopulate_data_resolver_,
-          CHECK_DEREF(identity_test_env_.identity_manager()));
+          CHECK_DEREF(identity_test_env_.identity_manager()),
+          *management_service_);
 
   template_url_service_ = CreateService();
 }
