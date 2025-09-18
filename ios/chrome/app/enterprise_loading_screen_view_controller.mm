@@ -35,35 +35,19 @@ constexpr CGFloat kPaddingHeight = 50;
   // Override the accessibility ID defined in LaunchScreenViewController.
   self.view.accessibilityIdentifier =
       first_run::kEnterpriseLoadingScreenAccessibilityIdentifier;
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    __weak EnterpriseLoadScreenViewController* weakSelf = self;
-    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                     UITraitCollection* previousCollection) {
-      // Limit the size of text to avoid truncation.
-      weakSelf.loadingLabel.font = PreferredFontForTextStyleWithMaxCategory(
-          UIFontTextStyleBody,
-          weakSelf.traitCollection.preferredContentSizeCategory,
-          UIContentSizeCategoryExtraExtraExtraLarge);
-    };
-    [self registerForTraitChanges:traits withHandler:handler];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  __weak EnterpriseLoadScreenViewController* weakSelf = self;
+  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                   UITraitCollection* previousCollection) {
+    // Limit the size of text to avoid truncation.
+    weakSelf.loadingLabel.font = PreferredFontForTextStyleWithMaxCategory(
+        UIFontTextStyleBody,
+        weakSelf.traitCollection.preferredContentSizeCategory,
+        UIContentSizeCategoryExtraExtraExtraLarge);
+  };
+  [self registerForTraitChanges:traits withHandler:handler];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  // Limit the size of text to avoid truncation.
-  self.loadingLabel.font = PreferredFontForTextStyleWithMaxCategory(
-      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
-      UIContentSizeCategoryExtraExtraExtraLarge);
-}
-#endif
 
 #pragma mark - Private
 
