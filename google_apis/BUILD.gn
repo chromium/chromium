@@ -219,6 +219,7 @@ static_library("test_support") {
     "gaia/fake_oauth2_token_response.h",
     "gaia/gaia_auth_test_util.cc",
     "gaia/gaia_auth_test_util.h",
+    "gaia/gaia_id_literal.h",
     "gaia/gaia_urls_overrider_for_testing.cc",
     "gaia/gaia_urls_overrider_for_testing.h",
     "gaia/oauth2_access_token_manager_test_util.cc",

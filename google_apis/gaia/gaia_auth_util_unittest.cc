@@ -8,6 +8,7 @@
 #include "base/base64url.h"
 #include "google_apis/gaia/gaia_auth_test_util.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_id_literal.h"
 #include "google_apis/gaia/list_accounts_response.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +18,7 @@ namespace gaia {
 
 namespace {
 
-constexpr GaiaId::Literal kGaiaId("fake_gaia_id");
+constexpr GaiaIdLiteral kGaiaId("fake_gaia_id");
 
 std::string CreateBinaryListAccountsData(const ListAccountsResponse& response) {
   std::string serialized_response;
