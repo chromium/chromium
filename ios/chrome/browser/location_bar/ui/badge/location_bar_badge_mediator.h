@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_LOCATION_BAR_UI_BADGE_LOCATION_BAR_BADGE_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_LOCATION_BAR_UI_BADGE_LOCATION_BAR_BADGE_MEDIATOR_H_
+
+#import <Foundation/Foundation.h>
+
+// Mediator for the location bar badge.
+// TODO(crbug.com/445719031): Implement this.
+@interface LocationBarBadgeMediator : NSObject
+@end
+
+#endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BADGE_LOCATION_BAR_BADGE_MEDIATOR_H_

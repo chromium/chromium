@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "location_bar_badge_coordinator.h",
+    "location_bar_badge_coordinator.mm",
+    "location_bar_badge_mediator.h",
+    "location_bar_badge_mediator.mm",
+    "location_bar_badge_view_controller.h",
+    "location_bar_badge_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
