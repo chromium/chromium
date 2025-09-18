@@ -134,15 +134,17 @@ class TabContextualizationController : public content::WebContentsObserver {
   // Downscales the screenshot if it exceeds the max dimension and calls the
   // callback with the downscaled screenshot.
   void DownscaleScreenshotAndContinue(
-      const lens::ImageEncodingOptions& image_options,
+      base::ScopedClosureRunner decrement_capturer_count_runner,
+      std::optional<lens::ImageEncodingOptions> image_options,
       CaptureScreenshotCallback callback,
       const SkBitmap& screenshot);
 
   // Called when screenshot is captured. Calls the callback with the supplied
   // contextual input data including the screenshot.
-  void OnScreenshotCaptured(GetPageContextCallback callback,
-                            std::unique_ptr<lens::ContextualInputData> data,
-                            const SkBitmap& screenshot);
+  void AddScreenshotToContextDataAndContinue(
+      GetPageContextCallback callback,
+      std::unique_ptr<lens::ContextualInputData> data,
+      const SkBitmap& screenshot);
 
   ::ui::ScopedUnownedUserData<TabContextualizationController>
       scoped_unowned_user_data_;
