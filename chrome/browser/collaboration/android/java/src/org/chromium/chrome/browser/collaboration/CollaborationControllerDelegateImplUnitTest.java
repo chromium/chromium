@@ -357,7 +357,7 @@ public class CollaborationControllerDelegateImplUnitTest {
         ArgumentCaptor<DataSharingJoinUiConfig.JoinCallback> joinCallbackCaptor =
                 ArgumentCaptor.forClass(DataSharingJoinUiConfig.JoinCallback.class);
         verify(mDataSharingTabManager)
-                .showJoinScreenWithPreviewAndLatencyMetrics(
+                .showJoinScreenWithPreview(
                         eq(mActivity),
                         eq(token),
                         eq(previewData),
@@ -387,7 +387,7 @@ public class CollaborationControllerDelegateImplUnitTest {
         ArgumentCaptor<DataSharingJoinUiConfig.JoinCallback> joinCallbackCaptor =
                 ArgumentCaptor.forClass(DataSharingJoinUiConfig.JoinCallback.class);
         verify(mDataSharingTabManager)
-                .showJoinScreenWithPreviewAndLatencyMetrics(
+                .showJoinScreenWithPreview(
                         eq(mActivity),
                         eq(token),
                         eq(previewData),

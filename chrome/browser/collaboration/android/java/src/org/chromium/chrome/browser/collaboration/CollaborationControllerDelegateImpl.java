@@ -522,7 +522,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
 
         mJoinDialogShownTimeMs = SystemClock.elapsedRealtime();
         mSessionId =
-                mDataSharingTabManager.showJoinScreenWithPreviewAndLatencyMetrics(
+                mDataSharingTabManager.showJoinScreenWithPreview(
                         mActivity, token, previewData, mJoinDialogShownTimeMs, joinCallback);
 
         mCloseScreenRunnable =
