@@ -1142,6 +1142,7 @@ public class UrlBar extends AutocompleteEditText {
         // of some urls (e.g. "flipkart.com" -> "flip cart. com" or "flipkart. com") despite
         // TYPE_TEXT_FLAG_NO_SUGGESTIONS and lack of TYPE_TEXT_FLAG_AUTO_CORRECT.
         outAttrs.inputType |= EditorInfo.TYPE_TEXT_VARIATION_URI;
+        outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
         return connection;
     }
 
