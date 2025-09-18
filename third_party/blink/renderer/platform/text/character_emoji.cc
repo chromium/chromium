@@ -12,7 +12,7 @@ namespace blink {
 // temporarily uing our own functions again. Compare crbug.com/628333 Other than
 // that: versions before 56 do not have an API for Emoji properties, but
 // Chrome's copy of ICU 56 does.
-#if defined(USING_SYSTEM_ICU) || (U_ICU_VERSION_MAJOR_NUM <= 61)
+#if U_ICU_VERSION_MAJOR_NUM <= 61
 // The following UnicodeSet patterns were compiled from
 // https://unicode.org/Public/emoji//11.0/emoji-data.txt
 
@@ -227,7 +227,7 @@ bool Character::IsEmojiEmojiDefault(UChar32 ch) {
 bool Character::IsEmojiModifierBase(UChar32 ch) {
   return u_hasBinaryProperty(ch, UCHAR_EMOJI_MODIFIER_BASE);
 }
-#endif  // defined(USING_SYSTEM_ICU) && (U_ICU_VERSION_MAJOR_NUM <= 61)
+#endif  // U_ICU_VERSION_MAJOR_NUM <= 61
 
 bool Character::IsEmojiReserved(UChar32 ch) {
   // `Extended_Pictographic` is for pictographic symbols, as well as reserved
