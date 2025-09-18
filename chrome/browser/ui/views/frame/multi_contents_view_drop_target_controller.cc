@@ -11,11 +11,14 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/common/drop_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -24,11 +27,27 @@
 
 MultiContentsViewDropTargetController::MultiContentsViewDropTargetController(
     MultiContentsDropTargetView& drop_target_view,
-    DropDelegate& drop_delegate)
+    DropDelegate& drop_delegate,
+    PrefService* prefs)
     : drop_target_view_(drop_target_view),
       drop_target_parent_view_(CHECK_DEREF(drop_target_view.parent())),
-      drop_delegate_(drop_delegate) {
+      drop_delegate_(drop_delegate),
+      prefs_(prefs) {
   drop_target_view_->SetDragDelegate(this);
+
+  pref_change_registrar_.Init(prefs);
+  pref_change_registrar_.Add(
+      prefs::kSplitViewDragAndDropNudgeShownCount,
+      base::BindRepeating(&MultiContentsViewDropTargetController::
+                              OnDragAndDropNudgeShownCountChange,
+                          base::Unretained(this)));
+  OnDragAndDropNudgeShownCountChange();
+  pref_change_registrar_.Add(
+      prefs::kSplitViewDragAndDropNudgeUsedCount,
+      base::BindRepeating(&MultiContentsViewDropTargetController::
+                              OnDragAndDropNudgeUsedCountChange,
+                          base::Unretained(this)));
+  OnDragAndDropNudgeUsedCountChange();
 }
 
 MultiContentsViewDropTargetController::
@@ -164,6 +183,14 @@ void MultiContentsViewDropTargetController::DoDrop(
   drop_target_view_->Hide(/*suppress_animation=*/true);
   drop_delegate_->HandleLinkDrop(side, event);
   output_drag_op = ui::mojom::DragOperation::kLink;
+
+  if (drop_target_view_->state() !=
+      MultiContentsDropTargetView::DropTargetState::kNudgeToFull) {
+    return;
+  }
+  prefs_->SetInteger(prefs::kSplitViewDragAndDropNudgeUsedCount,
+                     nudge_used_count_ + 1);
+  base::RecordAction(base::UserMetricsAction("Tabs.SplitView.NudgeUsed"));
 }
 
 void MultiContentsViewDropTargetController::HandleTabDrop(
@@ -200,7 +227,7 @@ void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
   }
 
   if (base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge) &&
-      drop_target_view_->ShouldShowAnimation()) {
+      ShouldShowNudge() && drop_target_view_->ShouldShowAnimation()) {
     HandleDragUpdateForNudge(point,
                              MultiContentsDropTargetView::DragType::kLink);
   } else {
@@ -289,6 +316,9 @@ void MultiContentsViewDropTargetController::HandleDragUpdateForNudge(
   if (drop_target_view_->side() != side) {
     drop_target_view_->Show(
         side, MultiContentsDropTargetView::DropTargetState::kNudge, drag_type);
+    prefs_->SetInteger(prefs::kSplitViewDragAndDropNudgeShownCount,
+                       nudge_shown_count_ + 1);
+    base::RecordAction(base::UserMetricsAction("Tabs.SplitView.NudgeShown"));
   }
 }
 
@@ -355,4 +385,23 @@ bool MultiContentsViewDropTargetController::PointOverlapsWithOSDropTarget(
 
   return (point_in_screen.x() < hide_for_os_width) ||
          (point_in_screen.x() > screen_width - hide_for_os_width);
+}
+
+void MultiContentsViewDropTargetController::
+    OnDragAndDropNudgeShownCountChange() {
+  nudge_shown_count_ =
+      prefs_->GetInteger(prefs::kSplitViewDragAndDropNudgeShownCount);
+}
+
+void MultiContentsViewDropTargetController::
+    OnDragAndDropNudgeUsedCountChange() {
+  nudge_used_count_ =
+      prefs_->GetInteger(prefs::kSplitViewDragAndDropNudgeUsedCount);
+}
+
+bool MultiContentsViewDropTargetController::ShouldShowNudge() {
+  return nudge_shown_count_ <
+             features::kSideBySideDropTargetNudgeShownLimit.Get() &&
+         nudge_used_count_ <
+             features::kSideBySideDropTargetNudgeUsedLimit.Get();
 }

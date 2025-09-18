@@ -1331,6 +1331,16 @@ inline constexpr char kPinSplitTabButton[] = "browser.pin_split_tab_button";
 inline constexpr char kSplitViewDragAndDropEnabled[] =
     "browser.split_view_drag_and_drop_enabled";
 
+// An int pref that tracks how many times the nudge is shown for the split view
+// drop target, when dragging a link.
+inline constexpr char kSplitViewDragAndDropNudgeShownCount[] =
+    "browser.split_view_drag_and_drop_nudge_shown_count";
+
+// An int pref that tracks how times a link was dragged to the split view drop
+// target to create a new tab, after the nudge had been shown.
+inline constexpr char kSplitViewDragAndDropNudgeUsedCount[] =
+    "browser.split_view_drag_and_drop_nudge_used_count";
+
 // A boolean pref set to true if Gemini integration be enabled. This is managed
 // by enterprise policy.
 inline constexpr char kGeminiSettings[] = "browser.gemini_settings";

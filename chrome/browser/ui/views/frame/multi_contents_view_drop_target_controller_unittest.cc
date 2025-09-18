@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -16,7 +17,10 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/test/mock_tab_drag_context.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/common/drop_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +40,8 @@ constexpr gfx::Point kDragPointForStartDropTargetShow(1, 250);
 constexpr gfx::Point kDragPointForEndDropTargetShow(499, 250);
 constexpr gfx::Point kDragPointForHiddenTargets(250, 250);
 constexpr base::TimeDelta kShowTargetDelay = base::Milliseconds(1000);
+constexpr char kNudgeUsedUserActionName[] = "Tabs.SplitView.NudgeUsed";
+constexpr char kNudgeShownUserActionName[] = "Tabs.SplitView.NudgeShown";
 
 content::DropData ValidUrlDropData() {
   content::DropData valid_url_data;
@@ -100,8 +106,13 @@ class MultiContentsViewDropTargetControllerTestBase
     drop_target_view_ = multi_contents_view_->AddChildView(
         std::make_unique<MultiContentsDropTargetView>());
     drop_target_view_->SetVisible(false);
+    prefs_ = std::make_unique<TestingPrefServiceSimple>();
+    prefs_->registry()->RegisterIntegerPref(
+        prefs::kSplitViewDragAndDropNudgeShownCount, 0);
+    prefs_->registry()->RegisterIntegerPref(
+        prefs::kSplitViewDragAndDropNudgeUsedCount, 0);
     controller_ = std::make_unique<MultiContentsViewDropTargetController>(
-        *drop_target_view_, drop_delegate_);
+        *drop_target_view_, drop_delegate_, prefs());
     multi_contents_view_->SetSize(kMultiContentsViewSize);
   }
 
@@ -118,6 +129,7 @@ class MultiContentsViewDropTargetControllerTestBase
 
   MultiContentsViewDropTargetController& controller() { return *controller_; }
   MultiContentsDropTargetView& drop_target_view() { return *drop_target_view_; }
+  PrefService* prefs() { return prefs_.get(); }
 
   // Fast forwards by an arbitrary time to ensure timed events are executed.
   void FastForward(double progress = 1.0) {
@@ -126,6 +138,76 @@ class MultiContentsViewDropTargetControllerTestBase
 
   void DragURLTo(const gfx::Point& point) {
     controller().OnWebContentsDragUpdate(ValidUrlDropData(), point, false);
+  }
+
+  void DropLink() {
+    ASSERT_TRUE(drop_target_view().GetVisible());
+    const GURL url("https://www.google.com");
+    ui::OSExchangeData drop_data;
+    drop_data.SetURL(url, u"Google");
+    const ui::DropTargetEvent drop_event(
+        drop_data, gfx::PointF(), gfx::PointF(), ui::DragDropTypes::DRAG_LINK);
+    EXPECT_CALL(drop_delegate(),
+                HandleLinkDrop(MultiContentsDropTargetView::DropSide::START,
+                               testing::_));
+    views::View::DropCallback callback =
+        controller().GetDropCallback(drop_event);
+    ui::mojom::DragOperation output_op = ui::mojom::DragOperation::kNone;
+    std::unique_ptr<ui::LayerTreeOwner> drag_image;
+    std::move(callback).Run(drop_event, output_op, std::move(drag_image));
+  }
+
+  // Tests that the nudge is shown a limited amount of times. If start_new_drag
+  // is true, starts a new drag after each nudge, otherwise just drags the link
+  // back to the center of the screen.
+  void TestNudgeShownLimit(bool start_new_drag) {
+    auto reset_nudge = [&]() {
+      if (start_new_drag) {
+        controller().OnWebContentsDragEnded();
+      } else {
+        DragURLTo(kDragPointForHiddenTargets);
+      }
+    };
+
+    base::UserActionTester user_action_tester;
+    ASSERT_EQ(0, user_action_tester.GetActionCount(kNudgeShownUserActionName));
+    ASSERT_EQ(0,
+              prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeShownCount));
+
+    // Show the nudge the first kSideBySideDropTargetNudgeShownLimit times.
+    for (int expected_count = 1;
+         expected_count <= features::kSideBySideDropTargetNudgeShownLimit.Get();
+         ++expected_count) {
+      DragURLTo(kDragPointForStartDropTargetShow);
+      FastForward();
+      EXPECT_TRUE(drop_target_view().GetVisible());
+      EXPECT_EQ(drop_target_view().state().value(),
+                MultiContentsDropTargetView::DropTargetState::kNudge);
+      EXPECT_EQ(expected_count,
+                user_action_tester.GetActionCount(kNudgeShownUserActionName));
+      EXPECT_EQ(
+          expected_count,
+          prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeShownCount));
+
+      reset_nudge();
+      FastForward();
+      EXPECT_FALSE(drop_target_view().GetVisible());
+    }
+
+    // Afterwards, the nudge should not be shown.
+    DragURLTo(kDragPointForStartDropTargetShow);
+    FastForward();
+    EXPECT_TRUE(drop_target_view().GetVisible());
+    EXPECT_EQ(drop_target_view().state().value(),
+              MultiContentsDropTargetView::DropTargetState::kFull);
+    EXPECT_EQ(features::kSideBySideDropTargetNudgeShownLimit.Get(),
+              user_action_tester.GetActionCount(kNudgeShownUserActionName));
+    EXPECT_EQ(features::kSideBySideDropTargetNudgeShownLimit.Get(),
+              prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeShownCount));
+
+    reset_nudge();
+    FastForward();
+    EXPECT_FALSE(drop_target_view().GetVisible());
   }
 
   MockDropDelegate& drop_delegate() { return drop_delegate_; }
@@ -138,6 +220,7 @@ class MultiContentsViewDropTargetControllerTestBase
   std::unique_ptr<MultiContentsViewDropTargetController> controller_;
   std::unique_ptr<views::View> multi_contents_view_;
   raw_ptr<MultiContentsDropTargetView> drop_target_view_;
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
 };
 
 // Tests link-dragging behaviour while the "nudge" feature is disabled.
@@ -506,6 +589,73 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudge) {
             MultiContentsDropTargetView::DropTargetState::kNudge);
 }
 
+// Tests that the nudge is shown a limited amount of times.
+TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeShownLimit) {
+  TestNudgeShownLimit(true);
+}
+
+// Tests that multiple nudges within the same drag count independently towards
+// the limit.
+TEST_F(MultiContentsViewDropTargetControllerDragTest,
+       NudgeShownLimitSingleDrag) {
+  TestNudgeShownLimit(false);
+}
+
+// Tests that if the nudge is no longer shown after using the drop zone a
+// certain number of times.
+TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeUsedLimit) {
+  base::UserActionTester user_action_tester;
+  ASSERT_EQ(0, user_action_tester.GetActionCount(kNudgeUsedUserActionName));
+  ASSERT_EQ(0, prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeUsedCount));
+
+  // The first kSideBySideDropTargetNudgeUsedLimit drags should show the nudge.
+  for (int expected_count = 1;
+       expected_count <= features::kSideBySideDropTargetNudgeUsedLimit.Get();
+       ++expected_count) {
+    DragURLTo(kDragPointForStartDropTargetShow);
+    FastForward();
+    EXPECT_TRUE(drop_target_view().GetVisible());
+    EXPECT_EQ(drop_target_view().state().value(),
+              MultiContentsDropTargetView::DropTargetState::kNudge);
+
+    const ui::DropTargetEvent event(ui::OSExchangeData(), gfx::PointF(),
+                                    gfx::PointF(),
+                                    ui::DragDropTypes::DRAG_LINK);
+    controller().OnDragEntered(event);
+    EXPECT_EQ(drop_target_view().state().value(),
+              MultiContentsDropTargetView::DropTargetState::kNudgeToFull);
+
+    DropLink();
+    FastForward();
+    EXPECT_FALSE(drop_target_view().GetVisible());
+    EXPECT_EQ(expected_count,
+              user_action_tester.GetActionCount(kNudgeUsedUserActionName));
+    EXPECT_EQ(expected_count,
+              prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeUsedCount));
+  }
+
+  // Afterwards, the nudge should not be shown during a drag.
+  DragURLTo(kDragPointForStartDropTargetShow);
+  FastForward();
+  EXPECT_TRUE(drop_target_view().GetVisible());
+  EXPECT_EQ(drop_target_view().state().value(),
+            MultiContentsDropTargetView::DropTargetState::kFull);
+
+  const ui::DropTargetEvent event(ui::OSExchangeData(), gfx::PointF(),
+                                  gfx::PointF(), ui::DragDropTypes::DRAG_LINK);
+  controller().OnDragEntered(event);
+  EXPECT_EQ(drop_target_view().state().value(),
+            MultiContentsDropTargetView::DropTargetState::kFull);
+
+  DropLink();
+  FastForward();
+  EXPECT_FALSE(drop_target_view().GetVisible());
+  EXPECT_EQ(features::kSideBySideDropTargetNudgeUsedLimit.Get(),
+            user_action_tester.GetActionCount(kNudgeUsedUserActionName));
+  EXPECT_EQ(features::kSideBySideDropTargetNudgeUsedLimit.Get(),
+            prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeUsedCount));
+}
+
 TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudgeRTL) {
   SetRTL(true);
 
@@ -651,19 +801,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, DragDelegateMethods) {
   drop_target_view().Show(MultiContentsDropTargetView::DropSide::START,
                           MultiContentsDropTargetView::DropTargetState::kFull,
                           MultiContentsDropTargetView::DragType::kLink);
-  ASSERT_TRUE(drop_target_view().GetVisible());
-  const GURL url("https://www.google.com");
-  ui::OSExchangeData drop_data;
-  drop_data.SetURL(url, u"Google");
-  const ui::DropTargetEvent drop_event(drop_data, gfx::PointF(), gfx::PointF(),
-                                       ui::DragDropTypes::DRAG_LINK);
-  EXPECT_CALL(
-      drop_delegate(),
-      HandleLinkDrop(MultiContentsDropTargetView::DropSide::START, testing::_));
-  views::View::DropCallback callback = controller().GetDropCallback(drop_event);
-  ui::mojom::DragOperation output_op = ui::mojom::DragOperation::kNone;
-  std::unique_ptr<ui::LayerTreeOwner> drag_image;
-  std::move(callback).Run(drop_event, output_op, std::move(drag_image));
+  DropLink();
   EXPECT_FALSE(drop_target_view().GetVisible());
 }
 

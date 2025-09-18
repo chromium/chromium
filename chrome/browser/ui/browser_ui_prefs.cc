@@ -89,6 +89,10 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
                                std::string());
   registry->RegisterBooleanPref(prefs::kNTPFooterManagementNoticeEnabled, true);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(prefs::kSplitViewDragAndDropNudgeShownCount, 0);
+  registry->RegisterIntegerPref(prefs::kSplitViewDragAndDropNudgeUsedCount, 0);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
