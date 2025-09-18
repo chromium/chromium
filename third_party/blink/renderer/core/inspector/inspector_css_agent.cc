@@ -2323,8 +2323,11 @@ protocol::Response InspectorCSSAgent::resolveValues(
     StyleResolverState state(element->GetDocument(), *element);
     state.EnsureParentStyle();
     state.SetStyle(*element->GetComputedStyle());
+    // TODO: When Devtools gets mixin support, we need to figure out
+    // what @env bindings to use here.
     const CSSUnparsedDeclarationValue* substituted =
-        StyleCascade::ResolveSubstitutions(state, *unparsed, &document);
+        StyleCascade::ResolveSubstitutions(state, *unparsed, &document,
+                                           /*env_bindings=*/nullptr);
 
     if (!substituted) {
       (*results)->emplace_back(value);

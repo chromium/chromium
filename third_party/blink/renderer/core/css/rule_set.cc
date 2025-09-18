@@ -1067,6 +1067,8 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       const StyleRuleMixin* mixin = apply_mixins_stack.back().mixin;
       const StyleRuleApplyMixin* apply =
           apply_mixins_stack.back().invoking_apply_rule;
+      const CustomEnvBindings* env_bindings =
+          apply_mixins_stack.back().env_bindings;
 
       // Verify that the mixin actually has a @contents parameter.
       // Otherwise, @contents is illegal and ignored.
@@ -1087,7 +1089,8 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
           rules_to_add = contents_rule->FakeParentRuleForFallback();
         }
         if (rules_to_add) {
-          rules_to_add = To<StyleRule>(rules_to_add->Clone(parent_rule));
+          rules_to_add =
+              To<StyleRule>(rules_to_add->Clone(parent_rule, env_bindings));
           AddChildRules(parent_rule, *rules_to_add->ChildRules(), medium,
                         mixins, add_rule_flags, container_query, cascade_layer,
                         style_scope, apply_mixins_stack);
@@ -1113,22 +1116,63 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
                          ApplyMixinsStack& apply_mixins_stack) {
   auto it = mixins.mixins.find(apply_mixin_rule->GetName());
   if (it != mixins.mixins.end()) {
+    StyleRuleMixin* mixin_rule = it->value;
     if (std::ranges::find_if(apply_mixins_stack,
                              [&](const ApplyingMixin& entry) {
-                               return entry.mixin == it->value;
+                               return entry.mixin == mixin_rule;
                              }) != apply_mixins_stack.end()) {
       // Cycle, so ignore this @apply.
       // NOTE: The exact behavior during cycles is not yet
       // specified. See https://github.com/w3c/csswg-drafts/issues/12595
       return;
     }
-    apply_mixins_stack.push_back(ApplyingMixin{
-        .mixin = it->value.Get(), .invoking_apply_rule = apply_mixin_rule});
+
+    // Bind arguments to parameters.
+    if (apply_mixin_rule->GetArguments().size() >
+        mixin_rule->GetParameters().size()) {
+      // https://drafts.csswg.org/css-mixins/#apply-rule
+      // “If passed a <dashed-function>, the arguments passed to the
+      // <dashed-function> are mapped to the mixin’s arguments; if more
+      // arguments are passed than the length of the mixin’s argument list,
+      // the @apply application does nothing. (Passing too few arguments is
+      // fine; the missing arguments take their default values instead.)”
+      return;
+    }
+
+    HashMap<String, std::pair<String, CSSSyntaxDefinition>> bindings;
+    for (unsigned i = 0; i < mixin_rule->GetParameters().size(); ++i) {
+      const StyleRuleFunction::Parameter& parameter =
+          mixin_rule->GetParameters()[i];
+      if (i < apply_mixin_rule->GetArguments().size()) {
+        bindings.insert(
+            parameter.name,
+            std::pair(apply_mixin_rule->GetArguments()[i], parameter.type));
+      } else if (CSSVariableData* default_value = parameter.default_value;
+                 default_value) {
+        bindings.insert(parameter.name,
+                        std::pair(default_value->OriginalText().ToString(),
+                                  parameter.type));
+      } else {
+        // No parameter given, and no default. This isn't spec-ed yet;
+        // see https://github.com/w3c/csswg-drafts/issues/12796.
+        // For now, we just don't add a binding (effectively option 2).
+      }
+    }
+    CustomEnvBindings* env_bindings = MakeGarbageCollected<CustomEnvBindings>(
+        bindings, apply_mixins_stack.empty()
+                      ? nullptr
+                      : apply_mixins_stack.back().env_bindings);
+
+    apply_mixins_stack.push_back(
+        ApplyingMixin{.mixin = mixin_rule,
+                      .invoking_apply_rule = apply_mixin_rule,
+                      .env_bindings = env_bindings});
     AddChildRules(
         parent_rule,
-        To<StyleRuleMixin>(it->value->Clone(parent_rule))->ChildRules(), medium,
-        mixins, add_rule_flags, container_query, cascade_layer, style_scope,
-        apply_mixins_stack);
+        To<StyleRuleMixin>(mixin_rule->Clone(parent_rule, env_bindings))
+            ->ChildRules(),
+        medium, mixins, add_rule_flags, container_query, cascade_layer,
+        style_scope, apply_mixins_stack);
     apply_mixins_stack.pop_back();
 
     // If the @mixin we are applying (or currently: any @mixin) was defined

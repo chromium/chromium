@@ -55,8 +55,10 @@ void MatchResultTest::SetUp() {
 TEST_F(MatchResultTest, CascadeOriginUserAgent) {
   MatchResult result;
   result.AddMatchedProperties(PropertySet(0),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kUserAgent});
   result.AddMatchedProperties(PropertySet(1),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kUserAgent});
 
   ASSERT_EQ(LengthOf(result), 2u);
@@ -66,8 +68,10 @@ TEST_F(MatchResultTest, CascadeOriginUserAgent) {
 
 TEST_F(MatchResultTest, CascadeOriginUser) {
   MatchResult result;
-  result.AddMatchedProperties(PropertySet(0), {.origin = CascadeOrigin::kUser});
-  result.AddMatchedProperties(PropertySet(1), {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(0), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(1), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
 
   ASSERT_EQ(LengthOf(result), 2u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUser);
@@ -77,8 +81,10 @@ TEST_F(MatchResultTest, CascadeOriginUser) {
 TEST_F(MatchResultTest, CascadeOriginAuthor) {
   MatchResult result;
   result.AddMatchedProperties(PropertySet(0),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(PropertySet(1),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
 
   ASSERT_EQ(LengthOf(result), 2u);
@@ -89,15 +95,21 @@ TEST_F(MatchResultTest, CascadeOriginAuthor) {
 TEST_F(MatchResultTest, CascadeOriginAll) {
   MatchResult result;
   result.AddMatchedProperties(PropertySet(0),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kUserAgent});
-  result.AddMatchedProperties(PropertySet(1), {.origin = CascadeOrigin::kUser});
-  result.AddMatchedProperties(PropertySet(2), {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(1), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(2), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(PropertySet(4),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(PropertySet(5),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
 
   ASSERT_EQ(LengthOf(result), 6u);
@@ -111,14 +123,19 @@ TEST_F(MatchResultTest, CascadeOriginAll) {
 
 TEST_F(MatchResultTest, CascadeOriginAllExceptUserAgent) {
   MatchResult result;
-  result.AddMatchedProperties(PropertySet(1), {.origin = CascadeOrigin::kUser});
-  result.AddMatchedProperties(PropertySet(2), {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(1), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(2), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(PropertySet(4),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(PropertySet(5),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
 
   ASSERT_EQ(LengthOf(result), 5u);
@@ -132,13 +149,17 @@ TEST_F(MatchResultTest, CascadeOriginAllExceptUserAgent) {
 TEST_F(MatchResultTest, CascadeOriginAllExceptUser) {
   MatchResult result;
   result.AddMatchedProperties(PropertySet(0),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kUserAgent});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(PropertySet(4),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(PropertySet(5),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
 
   ASSERT_EQ(LengthOf(result), 4u);
@@ -151,9 +172,12 @@ TEST_F(MatchResultTest, CascadeOriginAllExceptUser) {
 TEST_F(MatchResultTest, CascadeOriginAllExceptAuthor) {
   MatchResult result;
   result.AddMatchedProperties(PropertySet(0),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kUserAgent});
-  result.AddMatchedProperties(PropertySet(1), {.origin = CascadeOrigin::kUser});
-  result.AddMatchedProperties(PropertySet(2), {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(1), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(2), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
 
   ASSERT_EQ(LengthOf(result), 3u);
   EXPECT_EQ(OriginAt(result, 0), CascadeOrigin::kUserAgent);
@@ -164,22 +188,30 @@ TEST_F(MatchResultTest, CascadeOriginAllExceptAuthor) {
 TEST_F(MatchResultTest, CascadeOriginTreeScopes) {
   MatchResult result;
   result.AddMatchedProperties(PropertySet(0),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kUserAgent});
-  result.AddMatchedProperties(PropertySet(1), {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(1), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(2),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(PropertySet(4),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(5),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(PropertySet(6),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(PropertySet(7),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
 
   ASSERT_EQ(LengthOf(result), 8u);
@@ -196,16 +228,21 @@ TEST_F(MatchResultTest, CascadeOriginTreeScopes) {
 TEST_F(MatchResultTest, Reset) {
   MatchResult result;
   result.AddMatchedProperties(PropertySet(0),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kUserAgent});
-  result.AddMatchedProperties(PropertySet(1), {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(1), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(2),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(4),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
 
   ASSERT_EQ(LengthOf(result), 5u);
@@ -232,16 +269,21 @@ TEST_F(MatchResultTest, Reset) {
 
   // Add same declarations again.
   result.AddMatchedProperties(PropertySet(0),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kUserAgent});
-  result.AddMatchedProperties(PropertySet(1), {.origin = CascadeOrigin::kUser});
+  result.AddMatchedProperties(PropertySet(1), /*env_bindings=*/nullptr,
+                              {.origin = CascadeOrigin::kUser});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(2),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(3),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(PropertySet(4),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
 
   ASSERT_EQ(LengthOf(result), 5u);
@@ -271,6 +313,7 @@ TEST_F(MatchResultTest, ResetTreeScope) {
   MatchResult result;
   result.BeginAddingAuthorRulesForTreeScope(scope1);
   result.AddMatchedProperties(PropertySet(0),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
 
   ASSERT_EQ(LengthOf(result), 1u);
@@ -280,6 +323,7 @@ TEST_F(MatchResultTest, ResetTreeScope) {
 
   result.BeginAddingAuthorRulesForTreeScope(scope2);
   result.AddMatchedProperties(PropertySet(0),
+                              /*env_bindings=*/nullptr,
                               {.origin = CascadeOrigin::kAuthor});
 
   ASSERT_EQ(LengthOf(result), 1u);

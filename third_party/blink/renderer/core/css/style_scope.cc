@@ -18,7 +18,8 @@ StyleScope::StyleScope(StyleRule* from, CSSSelectorList* to)
 
 StyleScope::StyleScope(const StyleScope& other)
     : from_(other.from_
-                ? To<StyleRule>(other.from_->Clone(/*new_parent=*/nullptr))
+                ? To<StyleRule>(other.from_->Clone(/*new_parent=*/nullptr,
+                                                   /*env_bindings=*/nullptr))
                 : nullptr),
       to_(other.to_ ? other.to_->Renest(/*new_parent=*/nullptr) : nullptr),
       parent_(other.parent_) {}
@@ -30,8 +31,10 @@ StyleScope* StyleScope::CopyWithParent(const StyleScope* parent) const {
 }
 
 const StyleScope* StyleScope::Clone(StyleRule* new_parent) const {
-  StyleRule* reparented_from =
-      from_ ? blink::To<StyleRule>(from_->Clone(new_parent)) : nullptr;
+  StyleRule* reparented_from = from_
+                                   ? blink::To<StyleRule>(from_->Clone(
+                                         new_parent, /*env_bindings=*/nullptr))
+                                   : nullptr;
   // Note that for the "to" selector, any '&' selectors must point
   // to the "from" selector.
   CSSSelectorList* reparented_to = to_ ? to_->Renest(reparented_from) : nullptr;

@@ -75,7 +75,7 @@ TEST_F(StyleRuleTest, StyleRulePropertyCopy) {
     )CSS");
 
   ASSERT_TRUE(base_rule);
-  auto* base_copy = base_rule->Clone(nullptr);
+  auto* base_copy = base_rule->Clone(nullptr, nullptr);
 
   EXPECT_NE(base_rule, base_copy);
   EXPECT_EQ(base_rule->GetType(), base_copy->GetType());
@@ -103,7 +103,7 @@ TEST_F(StyleRuleTest, StyleRuleFunctionCopy) {
     )CSS");
 
   ASSERT_TRUE(base_rule);
-  auto* base_copy = base_rule->Clone(nullptr);
+  auto* base_copy = base_rule->Clone(nullptr, nullptr);
 
   EXPECT_NE(base_rule, base_copy);
   EXPECT_EQ(base_rule->GetType(), base_copy->GetType());
@@ -366,7 +366,7 @@ TEST_F(StyleRuleTest, CloneStyleRule) {
             nested->FirstSelector()->SelectorTextExpandingPseudoReferences(
                 /*scope_id=*/0));
 
-  auto* reparented = To<StyleRule>(nested->Clone(b));
+  auto* reparented = To<StyleRule>(nested->Clone(b, nullptr));
   EXPECT_NE(nested, reparented);
   EXPECT_EQ(":is(.a)",
             nested->FirstSelector()->SelectorTextExpandingPseudoReferences(
@@ -384,7 +384,7 @@ TEST_F(StyleRuleTest, CloneStyleRuleIsNeverNoOp) {
   EXPECT_EQ(":is(.a)",
             nested->FirstSelector()->SelectorTextExpandingPseudoReferences(
                 /*scope_id=*/0));
-  auto* reparented = To<StyleRule>(nested->Clone(a));
+  auto* reparented = To<StyleRule>(nested->Clone(a, nullptr));
   EXPECT_NE(nested, reparented);
 }
 
@@ -401,9 +401,9 @@ TEST_F(StyleRuleTest, CloneStyleRuleMedia) {
                 ->FirstSelector()
                 ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 
-  EXPECT_NE(media->Clone(a), media);  // No-op, but we copy anyway.
+  EXPECT_NE(media->Clone(a, nullptr), media);  // No-op, but we copy anyway.
 
-  auto* reparented = To<StyleRuleMedia>(media->Clone(b));
+  auto* reparented = To<StyleRuleMedia>(media->Clone(b, nullptr));
   EXPECT_NE(media, reparented);
   EXPECT_EQ(":is(.a)",
             To<StyleRule>(media->ChildRules().front().Get())
@@ -429,10 +429,11 @@ TEST_F(StyleRuleTest, CloneStyleRuleStartingStyle) {
                 ->FirstSelector()
                 ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 
-  EXPECT_NE(starting_style->Clone(a),
+  EXPECT_NE(starting_style->Clone(a, nullptr),
             starting_style);  // No-op, but we copy anyway.
 
-  auto* reparented = To<StyleRuleStartingStyle>(starting_style->Clone(b));
+  auto* reparented =
+      To<StyleRuleStartingStyle>(starting_style->Clone(b, nullptr));
   EXPECT_NE(starting_style, reparented);
   EXPECT_EQ(":is(.a)",
             To<StyleRule>(starting_style->ChildRules().front().Get())

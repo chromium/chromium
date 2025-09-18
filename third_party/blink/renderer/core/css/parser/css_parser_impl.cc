@@ -2469,25 +2469,45 @@ StyleRule* CSSParserImpl::ConsumeDeclarationListForMixins(
 StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
     CSSParserTokenStream& stream) {
   wtf_size_t header_start = stream.LookAheadOffset();
-  if (stream.Peek().GetType() != kIdentToken) {
+  if (stream.Peek().GetType() != kIdentToken &&
+      stream.Peek().GetType() != kFunctionToken) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
     return nullptr;  // Parse error.
   }
-  AtomicString name =
-      stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
+  AtomicString name = stream.Peek().Value().ToAtomicString();
   if (!name.StartsWith("--")) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
+    return nullptr;
+  }
+
+  // Parse arguments, if any.
+  HeapVector<String> arguments;
+  bool arguments_ok = true;
+  if (stream.Peek().GetType() == kIdentToken) {
+    // @apply --name ...
+    stream.ConsumeIncludingWhitespace();
+  } else {
+    // @apply --name( ...
+    CSSParserTokenStream::BlockGuard guard(stream);
+    arguments = CSSVariableParser::ConsumeFunctionArguments(
+        stream, std::numeric_limits<unsigned>::max());
+    arguments_ok = stream.AtEnd();
+  }
+  if (!arguments_ok) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
     return nullptr;
   }
 
   if (stream.AtEnd()) {
     // Implicit semicolon at end of block.
-    return MakeGarbageCollected<StyleRuleApplyMixin>(name, nullptr);
+    return MakeGarbageCollected<StyleRuleApplyMixin>(name, std::move(arguments),
+                                                     nullptr);
   }
   if (stream.UncheckedPeek().GetType() == kSemicolonToken) {
     // No declarations block, just a semicolon.
     stream.UncheckedConsume();  // kSemicolonToken
-    return MakeGarbageCollected<StyleRuleApplyMixin>(name, nullptr);
+    return MakeGarbageCollected<StyleRuleApplyMixin>(name, std::move(arguments),
+                                                     nullptr);
   }
 
   if (stream.UncheckedPeek().GetType() != kLeftBraceToken) {
@@ -2509,7 +2529,7 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
     observer_->EndRuleBody(stream.Offset());
   }
   return MakeGarbageCollected<StyleRuleApplyMixin>(
-      name, fake_parent_rule_for_contents);
+      name, std::move(arguments), fake_parent_rule_for_contents);
 }
 
 StyleRuleContentsStatement* CSSParserImpl::ConsumeContentsRule(

@@ -74,6 +74,7 @@ CachedMatchedProperties::CachedMatchedProperties(
   matched_properties.ReserveInitialCapacity(properties.size());
   for (const auto& new_matched_properties : properties) {
     matched_properties.emplace_back(new_matched_properties.properties,
+                                    new_matched_properties.env_bindings,
                                     new_matched_properties.data_);
   }
 }
@@ -177,7 +178,7 @@ bool CachedMatchedProperties::CorrespondsTo(
 
   for (const auto [lookup_it, cached_it] :
        base::zip(lookup_properties, matched_properties)) {
-    CSSPropertyValueSet* cached_properties = cached_it.first.Get();
+    CSSPropertyValueSet* cached_properties = cached_it.properties.Get();
     DCHECK(!lookup_it.properties->ModifiedSinceHashing())
         << "This should have been checked in AddMatchedProperties()";
     if (cached_properties->ModifiedSinceHashing()) {
@@ -193,7 +194,11 @@ bool CachedMatchedProperties::CorrespondsTo(
     if (!lookup_it.properties->Equals(*cached_properties)) {
       return false;
     }
-    if (lookup_it.data_ != cached_it.second) {
+    if (lookup_it.data_ != cached_it.data) {
+      return false;
+    }
+    if (!base::ValuesEquivalent(lookup_it.env_bindings.Get(),
+                                cached_it.env_bindings.Get())) {
       return false;
     }
   }
@@ -205,7 +210,8 @@ void CachedMatchedProperties::RefreshKey(
   DCHECK(CorrespondsTo(lookup_properties));
   for (auto [lookup_it, cached_it] :
        base::zip(lookup_properties, matched_properties)) {
-    cached_it.first = lookup_it.properties;
+    cached_it.properties = lookup_it.properties;
+    cached_it.env_bindings = lookup_it.env_bindings;
   }
 }
 
@@ -360,8 +366,10 @@ void MatchedPropertiesCache::Trace(Visitor* visitor) const {
 
 static inline bool ShouldRemoveMPCEntry(CachedMatchedProperties& value,
                                         const LivenessBroker& info) {
-  for (const auto& [properties, metadata] : value.matched_properties) {
+  for (const auto& [properties, env_bindings, metadata] :
+       value.matched_properties) {
     if (!info.IsHeapObjectAlive(properties) ||
+        !info.IsHeapObjectAlive(env_bindings) ||
         properties->ModifiedSinceHashing()) {
       return true;
     }

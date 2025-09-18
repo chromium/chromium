@@ -43,13 +43,16 @@ class StyleResolverState;
 class CORE_EXPORT CachedMatchedProperties final
     : public GarbageCollected<CachedMatchedProperties> {
  public:
-  // Caches data of MatchedProperties. See |MatchedPropertiesCache::Cache| for
-  // semantics.
+  // Caches the result of applying a set of MatchedProperties in order
+  // See |MatchedPropertiesCache::Cache| for semantics.
   // We use UntracedMember<> here because WeakMember<> would require using a
   // HeapHashSet which is slower to iterate.
-  Vector<
-      std::pair<UntracedMember<CSSPropertyValueSet>, MatchedProperties::Data>>
-      matched_properties;
+  struct Key {
+    UntracedMember<CSSPropertyValueSet> properties;
+    UntracedMember<const CustomEnvBindings> env_bindings;
+    MatchedProperties::Data data;
+  };
+  Vector<Key> matched_properties;
 
   struct Entry {
     DISALLOW_NEW();

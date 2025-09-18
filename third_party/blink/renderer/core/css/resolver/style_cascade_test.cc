@@ -141,6 +141,7 @@ class TestCascade {
     EnsureAtLeast(options.origin);
     cascade_.MutableMatchResult().AddMatchedProperties(
         set,
+        /*env_bindings=*/nullptr,
         {
             .link_match_type = static_cast<uint8_t>(options.link_match_type),
             .is_inline_style = options.is_inline_style,
@@ -170,8 +171,8 @@ class TestCascade {
                           CascadeOrigin& origin) {
     TestCascadeResolver resolver;
     return cascade_.Resolve(property, value, /*tree_scope=*/&GetDocument(),
-                            CascadePriority(origin), origin,
-                            resolver.InnerResolver());
+                            /*env_bindings=*/nullptr, CascadePriority(origin),
+                            origin, resolver.InnerResolver());
   }
 
   static const CSSValue* StaticResolve(StyleResolverState& state,
@@ -183,7 +184,8 @@ class TestCascade {
     DCHECK(set->PropertyCount());
     const CSSPropertyValue& reference = set->PropertyAt(0);
     return StyleCascade::Resolve(state, reference.Name(), reference.Value(),
-                                 /*tree_scope=*/&state.GetDocument());
+                                 /*tree_scope=*/&state.GetDocument(),
+                                 /*env_bindings=*/nullptr);
   }
 
   std::unique_ptr<CSSBitset> GetImportantSet() {

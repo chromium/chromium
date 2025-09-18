@@ -111,12 +111,16 @@ void PageRuleCollector::MatchPageRules(RuleSet* rules,
 
   for (const StyleRulePage* rule : matched_page_rules) {
     if (at_rule_id_ == CSSAtRuleID::kCSSAtRulePage) {
-      result_.AddMatchedProperties(&rule->Properties(), options);
+      // TODO: If we we support @page within mixins, we may need to support
+      // a non-nullptr env_bindings here.
+      result_.AddMatchedProperties(&rule->Properties(),
+                                   /*env_bindings=*/nullptr, options);
     } else {
       for (const auto child_rule : rule->ChildRules()) {
         const auto& margin_rule = To<StyleRulePageMargin>(*child_rule.Get());
         if (margin_rule.ID() == at_rule_id_) {
-          result_.AddMatchedProperties(&margin_rule.Properties(), options);
+          result_.AddMatchedProperties(&margin_rule.Properties(),
+                                       /*env_bindings=*/nullptr, options);
         }
       }
     }

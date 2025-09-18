@@ -1760,7 +1760,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
     if (IsForcedColorsModeEnabled()) {
       cascade.MutableMatchResult().AddMatchedProperties(
           ForcedColorsUserAgentDeclarations(),
-          {.origin = CascadeOrigin::kUserAgent});
+          /*env_bindings=*/nullptr, {.origin = CascadeOrigin::kUserAgent});
     }
 
     // UA rule: * { overlay: none !important }
@@ -1772,7 +1772,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
     // namespace since the sheet has a default namespace.
     cascade.MutableMatchResult().AddMatchedProperties(
         UniversalOverlayUserAgentDeclaration(),
-        {.origin = CascadeOrigin::kUserAgent});
+        /*env_bindings=*/nullptr, {.origin = CascadeOrigin::kUserAgent});
 
     // This adds a CSSInitialColorValue to the cascade for the document
     // element. The CSSInitialColorValue will resolve to a color-scheme
@@ -1784,7 +1784,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
     if (element == state.GetDocument().documentElement()) {
       cascade.MutableMatchResult().AddMatchedProperties(
           DocumentElementUserAgentDeclarations(),
-          {.origin = CascadeOrigin::kUserAgent});
+          /*env_bindings=*/nullptr, {.origin = CascadeOrigin::kUserAgent});
     }
   }
 
@@ -2102,7 +2102,7 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
         element.GetTreeScope());
     cascade.MutableMatchResult().AddMatchedProperties(
-        set, {.origin = CascadeOrigin::kAuthor});
+        set, /*env_bindings=*/nullptr, {.origin = CascadeOrigin::kAuthor});
     cascade.Apply();
   }
   const ComputedStyle* style = state.TakeStyle();
@@ -2237,7 +2237,7 @@ const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
     set->SetProperty(CSSPropertyID::kMarginLeft, *value,
                      /*important=*/params.ignore_css_margins);
     cascade.MutableMatchResult().AddMatchedProperties(
-        set, {.origin = CascadeOrigin::kUserAgent});
+        set, /*env_bindings=*/nullptr, {.origin = CascadeOrigin::kUserAgent});
   }
 
   if (!ignore_author_style) {
@@ -2945,7 +2945,7 @@ const CSSValue* StyleResolver::ComputeValue(
   cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
       element->GetTreeScope());
   cascade.MutableMatchResult().AddMatchedProperties(
-      set, {.origin = CascadeOrigin::kAuthor});
+      set, /*env_bindings=*/nullptr, {.origin = CascadeOrigin::kAuthor});
   cascade.Apply();
 
   if (state.HasUnsupportedGuaranteedInvalid()) {
@@ -2968,7 +2968,8 @@ const CSSValue* StyleResolver::ResolveValue(
   StyleResolverState state(document, element);
   state.SetStyle(style);
   return StyleCascade::Resolve(state, property_name, value,
-                               /*tree_scope=*/&document);
+                               /*tree_scope=*/&document,
+                               /*env_bindings=*/nullptr);
 }
 
 FilterOperations StyleResolver::ComputeFilterOperations(

@@ -175,7 +175,7 @@ CORE_EXPORT const CSSStyleSheet* FindStyleSheet(
       result = contents->ClientInTreeScope(*tree_scope_containing_rule);
     } else {
       for (const auto& [sheet, rule_set] :
-            style_engine.ActiveUserStyleSheets()) {
+           style_engine.ActiveUserStyleSheets()) {
         if (sheet->Contents() == contents) {
           result = sheet.Get();
           break;
@@ -183,8 +183,7 @@ CORE_EXPORT const CSSStyleSheet* FindStyleSheet(
       }
     }
   } else {
-    result =
-        SlowFindStyleSheet(tree_scope_containing_rule, style_engine, rule);
+    result = SlowFindStyleSheet(tree_scope_containing_rule, style_engine, rule);
   }
   return result;
 }
@@ -433,10 +432,11 @@ void ElementRuleCollector::AddElementStyleProperties(
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, {.link_match_type = static_cast<uint8_t>(
-                         AdjustLinkMatchType(inside_link_, link_match_type)),
-                     .is_inline_style = is_inline_style,
-                     .origin = origin});
+      property_set, /*env_bindings=*/nullptr,
+      {.link_match_type = static_cast<uint8_t>(
+           AdjustLinkMatchType(inside_link_, link_match_type)),
+       .is_inline_style = is_inline_style,
+       .origin = origin});
   if (!is_cacheable) {
     result_.SetIsCacheable(false);
   }
@@ -449,12 +449,13 @@ void ElementRuleCollector::AddTryStyleProperties() {
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, {.link_match_type = static_cast<uint8_t>(
-                         AdjustLinkMatchType(inside_link_, link_match_type)),
-                     .valid_property_filter = static_cast<uint8_t>(
-                         ValidPropertyFilter::kPositionTry),
-                     .is_try_style = true,
-                     .origin = CascadeOrigin::kAuthor});
+      property_set, /*env_bindings=*/nullptr,
+      {.link_match_type = static_cast<uint8_t>(
+           AdjustLinkMatchType(inside_link_, link_match_type)),
+       .valid_property_filter =
+           static_cast<uint8_t>(ValidPropertyFilter::kPositionTry),
+       .is_try_style = true,
+       .origin = CascadeOrigin::kAuthor});
   result_.SetIsCacheable(false);
 }
 
@@ -466,10 +467,11 @@ void ElementRuleCollector::AddTryTacticsStyleProperties() {
   }
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, {.link_match_type = static_cast<uint8_t>(
-                         AdjustLinkMatchType(inside_link_, link_match_type)),
-                     .origin = CascadeOrigin::kAuthor,
-                     .is_try_tactics_style = true});
+      property_set, /*env_bindings=*/nullptr,
+      {.link_match_type = static_cast<uint8_t>(
+           AdjustLinkMatchType(inside_link_, link_match_type)),
+       .origin = CascadeOrigin::kAuthor,
+       .is_try_tactics_style = true});
   result_.SetIsCacheable(false);
 }
 
@@ -1259,7 +1261,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
   // Now transfer the set of matched rules over to our list of declarations.
   for (const MatchedRule& matched_rule : matched_rules_) {
     result_.AddMatchedProperties(
-        &matched_rule.Rule()->Properties(),
+        &matched_rule.Rule()->Properties(), matched_rule.Rule()->EnvBindings(),
         {.link_match_type = static_cast<uint8_t>(
              AdjustLinkMatchType(inside_link_, matched_rule.LinkMatchType())),
          .valid_property_filter = static_cast<uint8_t>(

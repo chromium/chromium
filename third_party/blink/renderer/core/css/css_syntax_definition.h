@@ -20,6 +20,10 @@ class CSSValue;
 
 class CORE_EXPORT CSSSyntaxDefinition {
  public:
+  // Leaves an undefined state; only exists so that we can store it in
+  // a hash table (in CustomEnvBindings).
+  CSSSyntaxDefinition() = default;
+
   // https://drafts.csswg.org/css-values-5/#css-syntax
   static std::optional<CSSSyntaxDefinition> Consume(CSSParserTokenStream&);
   // https://drafts.csswg.org/css-values-5/#typedef-syntax-component

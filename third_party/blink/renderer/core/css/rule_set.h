@@ -394,10 +394,12 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
    public:
     Member<StyleRuleMixin> mixin;
     Member<StyleRuleApplyMixin> invoking_apply_rule;
+    Member<CustomEnvBindings> env_bindings;
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(mixin);
       visitor->Trace(invoking_apply_rule);
+      visitor->Trace(env_bindings);
     }
   };
   using ApplyMixinsStack = HeapVector<ApplyingMixin, 4>;

@@ -19,8 +19,11 @@ const CSSValue* CSSInterpolationEnvironment::Resolve(
   DCHECK(cascade_resolver_);
   if (!value)
     return value;
+  // TODO: If we support env() within @keyframe, we may need to support
+  // non-nullptr env_bindings here.
   return cascade_->Resolve(property.GetCSSPropertyName(), *value, tree_scope,
-                           CascadeOrigin::kAnimation, *cascade_resolver_);
+                           /*env_bindings=*/nullptr, CascadeOrigin::kAnimation,
+                           *cascade_resolver_);
 }
 
 }  // namespace blink

@@ -344,7 +344,8 @@ TEST_F(ContainerQueryTest, RuleCopy) {
   ASSERT_TRUE(container);
 
   // Copy via StyleRuleBase to test switch dispatch.
-  auto* copy_base = static_cast<StyleRuleBase*>(container)->Clone(nullptr);
+  auto* copy_base =
+      static_cast<StyleRuleBase*>(container)->Clone(nullptr, nullptr);
   auto* copy = DynamicTo<StyleRuleContainer>(copy_base);
   ASSERT_TRUE(copy);
 
