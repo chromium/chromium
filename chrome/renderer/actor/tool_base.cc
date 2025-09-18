@@ -111,18 +111,19 @@ void ToolBase::EnsureTargetInView() {
 
 base::expected<ToolBase::ResolvedTarget, mojom::ActionResultPtr>
 ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
-  if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {
-    journal_->Log(
-        task_id_, "TimeOfUseValidation",
-        JournalDetailsBuilder().AddError("No valid APC node").Build());
-    return resolved_target;
-  }
-
   const blink::WebNode& target_node = resolved_target.node;
 
   // For coordinate target, check the observed node matches the live DOM hit
   // test target.
   if (target_->is_coordinate()) {
+    if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {
+      journal_->Log(
+          task_id_, "TimeOfUseValidation",
+          JournalDetailsBuilder().AddError("No valid APC node").Build());
+      // TODO(crbug.com/445210509): return error for no apc found.
+      return resolved_target;
+    }
+
     if (target_node.GetDomNodeId() !=
         *observed_target_->node_attribute->dom_node_id) {
       journal_->Log(task_id_, "TimeOfUseValidation",
@@ -166,6 +167,14 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
           "The element's interaction point is obscured by other elements."));
     }
 
+    if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {
+      journal_->Log(
+          task_id_, "TimeOfUseValidation",
+          JournalDetailsBuilder().AddError("No valid APC node").Build());
+      // TODO(crbug.com/445210509): return error for no apc found.
+      return resolved_target;
+    }
+
     if (!observed_target_->node_attribute->geometry) {
       journal_->Log(
           task_id_, "TimeOfUseValidation",
@@ -175,8 +184,6 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
               .Add("point", gfx::ToFlooredPoint(resolved_target.point))
               .AddError("No geometry for node")
               .Build());
-      // TODO(crbug.com/418280472): return error after retry for failed task is
-      // landed.
       return resolved_target;
     }
 

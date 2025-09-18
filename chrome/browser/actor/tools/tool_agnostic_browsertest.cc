@@ -281,6 +281,25 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenFixedElement) {
   EXPECT_EQ(EvalJs(web_contents(), "window.scrollY"), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
+                       ToolFailsWhenNodeInteractionPointObscured) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_obscured_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_EQ(EvalJs(web_contents(), "target_button_clicked"), false);
+  ASSERT_EQ(EvalJs(web_contents(), "obstruction_button_clicked"), false);
+  std::optional<int> button_id = GetDOMNodeId(*main_frame(), "button#target");
+  ASSERT_TRUE(button_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(
+      result, mojom::ActionResultCode::kTargetNodeInteractionPointObscured);
+  EXPECT_EQ(EvalJs(web_contents(), "target_button_clicked"), false);
+  EXPECT_EQ(EvalJs(web_contents(), "obstruction_button_clicked"), false);
+}
+
 class ActorToolAgnosticBrowserTestWithCustomDelay
     : public ActorToolAgnosticBrowserTest {
  public:
