@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/signin/model/system_account_updater.h"
 
+#import "base/barrier_callback.h"
 #import "base/check_deref.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
@@ -35,80 +37,190 @@ void ReloadAllTimelines() {
 #endif
 }
 
-UIImage* ResizedAvatar(UIImage* image) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-  // Resize the avatar image.
-  CGSize new_size = CGSizeMake(32.0, 32.0);
-  if (!CGSizeEqualToSize(image.size, new_size)) {
-    image = ResizeImage(image, new_size, ProjectionMode::kAspectFit);
+// Stores information about a SystemIdentity.
+class SystemIdentityInfo {
+ public:
+  SystemIdentityInfo(id<SystemIdentity> identity, UIImage* cached_avatar)
+      : gaia_id_(identity.gaiaID),
+        full_name_(identity.userFullName ?: @""),
+        user_email_(identity.userEmail),
+        cached_avatar_(cached_avatar) {}
+
+  ~SystemIdentityInfo() = default;
+
+  NSString* gaia_id() const { return gaia_id_; }
+  NSString* full_name() const { return full_name_; }
+  NSString* user_email() const { return user_email_; }
+  UIImage* cached_avatar() const { return cached_avatar_; }
+
+  NSDictionary* AsDictionary() const {
+    NSMutableDictionary* dictionary = [[NSMutableDictionary alloc] init];
+    [dictionary setObject:user_email_ forKey:app_group::kEmail];
+    [dictionary setObject:full_name_ forKey:app_group::kFullName];
+    return dictionary;
   }
-  return image;
+
+ private:
+  NSString* gaia_id_;
+  NSString* full_name_;
+  NSString* user_email_;
+  UIImage* cached_avatar_;
+};
+
+// Stores information about a SystemIdentity in a serializable format.
+class SystemIdentityInfoData {
+ public:
+  explicit SystemIdentityInfoData(const SystemIdentityInfo& info)
+      : gaia_id_(info.gaia_id()), avatar_data_(nil) {
+    UIImage* image = info.cached_avatar();
+    if (image) {
+      const CGSize size = CGSizeMake(32.0, 32.0);
+      if (!CGSizeEqualToSize(image.size, size)) {
+        image = ResizeImage(image, size, ProjectionMode::kAspectFit);
+      }
+      avatar_data_ = UIImagePNGRepresentation(image);
+    }
+  }
+
+  ~SystemIdentityInfoData() = default;
+
+  NSString* gaia_id() const { return gaia_id_; }
+  NSData* avatar_data() const { return avatar_data_; }
+  NSURL* avatar_path(NSURL* directory) const {
+    return [directory
+        URLByAppendingPathComponent:[gaia_id_
+                                        stringByAppendingPathExtension:@"png"]];
+  }
+
+ private:
+  NSString* gaia_id_;
+  NSData* avatar_data_;
+};
+
+// Converts a SystemIdentityInfo into SystemIdentityInfoData.
+SystemIdentityInfoData ConvertSystemIdentityInfo(SystemIdentityInfo info) {
+  return SystemIdentityInfoData(info);
 }
 
-// Save avatar info to disk.
-void StoreAvatarToDisk(NSURL* identity_file, UIImage* avatar) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-  CHECK(avatar);
-  UIImage* resized_avatar = ResizedAvatar(avatar);
-  NSData* png_data = UIImagePNGRepresentation(resized_avatar);
-  if (png_data) {
-    [png_data writeToURL:identity_file atomically:YES];
+// A list of SystemIdentityInfo.
+using SystemIdentityInfoList = std::vector<SystemIdentityInfo>;
+using SystemIdentityInfoDataList = std::vector<SystemIdentityInfoData>;
+
+// Used as iterator for SystemIdentityManager.
+class SystemIdentityInfoCollector {
+ public:
+  using IteratorResult = SystemIdentityManager::IteratorResult;
+
+  SystemIdentityInfoCollector(SystemIdentityInfoList& list,
+                              SystemIdentityManager& manager)
+      : list_(list), manager_(manager) {}
+
+  ~SystemIdentityInfoCollector() = default;
+
+  IteratorResult AddIdentity(id<SystemIdentity> identity) {
+    list_->push_back(SystemIdentityInfo(
+        identity, manager_->GetCachedAvatarForIdentity(identity)));
+    return IteratorResult::kContinueIteration;
   }
+
+ private:
+  raw_ref<SystemIdentityInfoList> list_;
+  raw_ref<SystemIdentityManager> manager_;
+};
+
+// Collects the information about the SystemIdentity available on device.
+SystemIdentityInfoList CollectSystemIdentityInfo(
+    SystemIdentityManager& manager) {
+  SystemIdentityInfoList result;
+  SystemIdentityInfoCollector iterator(result, manager);
+  // Using base::Unretained(...) is safe since IterateOverIdentities(...)
+  // will synchronously call the callback during its execution and will
+  // not let it escape.
+  manager.IterateOverIdentities(base::BindRepeating(
+      &SystemIdentityInfoCollector::AddIdentity, base::Unretained(&iterator)));
+  return result;
 }
 
-// Remove legacy avatar data from disk.
-void RemoveAvatarDataFromDisk(NSDictionary* avatars) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-  NSURL* avatars_folder = app_group::WidgetsAvatarFolder();
-  if (!avatars_folder) {
+// Writes the avatars' image to disk, deleting obsolete avatars.
+void WriteAvatars(const SystemIdentityInfoDataList& list) {
+  base::ScopedBlockingCall may_block(FROM_HERE, base::BlockingType::MAY_BLOCK);
+
+  NSURL* avatar_folder = app_group::WidgetsAvatarFolder();
+  if (!avatar_folder) {
     return;
   }
-  NSFileManager* manager = [NSFileManager defaultManager];
-  NSArray<NSURL*>* contents =
-      [manager contentsOfDirectoryAtURL:avatars_folder
-             includingPropertiesForKeys:nil
-                                options:NSDirectoryEnumerationSkipsHiddenFiles
-                                  error:nil];
 
-  for (NSURL* url in contents) {
-    if ([url.pathExtension.lowercaseString isEqualToString:@"png"]) {
-      NSString* file_name =
-          [[url lastPathComponent] stringByDeletingPathExtension];
-      if (avatars[file_name] == nil) {
-        [manager removeItemAtURL:url error:nil];
+  NSFileManager* manager = [NSFileManager defaultManager];
+  NSMutableSet<NSURL*>* avatars = [[NSMutableSet alloc] init];
+  for (const SystemIdentityInfoData& info : list) {
+    NSData* data = info.avatar_data();
+    if (data) {
+      NSURL* path = info.avatar_path(avatar_folder);
+      if ([data writeToURL:path atomically:YES]) {
+        [avatars addObject:path];
       }
+    }
+  }
+
+  const auto options = NSDirectoryEnumerationSkipsSubdirectoryDescendants;
+  for (NSURL* url in [manager contentsOfDirectoryAtURL:avatar_folder
+                            includingPropertiesForKeys:nil
+                                               options:options
+                                                 error:nil]) {
+    if (![avatars containsObject:url]) {
+      [manager removeItemAtURL:url error:nil];
     }
   }
 }
 
-// Remove a single avatar file from disk.
-void RemoveSingleAvatarFromDisk(NSURL* url) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-  [NSFileManager.defaultManager removeItemAtURL:url error:nil];
+// Writes the avatar's image to disk, or delete it if the data is missing.
+void WriteAvatar(const SystemIdentityInfoData& info) {
+  base::ScopedBlockingCall may_block(FROM_HERE, base::BlockingType::MAY_BLOCK);
+
+  NSURL* avatar_folder = app_group::WidgetsAvatarFolder();
+  if (!avatar_folder) {
+    return;
+  }
+
+  NSURL* path = info.avatar_path(avatar_folder);
+  if (NSData* data = info.avatar_data()) {
+    [data writeToURL:path atomically:YES];
+  } else {
+    NSFileManager* manager = [NSFileManager defaultManager];
+    [manager removeItemAtURL:path error:nil];
+  }
 }
 
-// Save avatars info to disk.
-void UpdateAvatars(NSDictionary* avatars) {
-  for (NSString* gaia in avatars) {
-    NSString* file_name = [NSString stringWithFormat:@"%@.png", gaia];
-    NSURL* identity_file = [app_group::WidgetsAvatarFolder()
-        URLByAppendingPathComponent:file_name];
-    UIImage* avatar = avatars[gaia];
-    StoreAvatarToDisk(identity_file, avatar);
+// Removes items for unknown accounts from `defaults`.
+void RemoveUnknownAccounts(NSUserDefaults* defaults,
+                           NSDictionary* accounts,
+                           NSString* key) {
+  NSDictionary* value = [defaults objectForKey:key];
+  if (!value) {
+    return;
   }
-  // Check if disk cleanup in WidgetsAvatarFolder folder is needed.
-  RemoveAvatarDataFromDisk(avatars);
+
+  NSMutableDictionary* copy = [value mutableCopy];
+  for (NSString* gaia_id in value) {
+    if ([accounts objectForKey:gaia_id] ||
+        [gaia_id isEqualToString:app_group::kDefault] ||
+        [gaia_id isEqualToString:app_group::kNoAccount]) {
+      continue;
+    }
+
+    [copy removeObjectForKey:gaia_id];
+  }
+  [defaults setObject:copy forKey:key];
 }
 
 }  // namespace
 
 SystemAccountUpdater::SystemAccountUpdater(
     SystemIdentityManager* system_identity_manager)
-    : system_identity_manager_(CHECK_DEREF(system_identity_manager)) {
+    : system_identity_manager_(CHECK_DEREF(system_identity_manager)),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   system_identity_manager_observation_.Observe(&*system_identity_manager_);
   HandleMigrationIfNeeded();
 }
@@ -120,106 +232,41 @@ void SystemAccountUpdater::OnIdentityListChanged() {
 }
 
 void SystemAccountUpdater::OnIdentityUpdated(id<SystemIdentity> identity) {
-  UIImage* avatar =
-      system_identity_manager_->GetCachedAvatarForIdentity(identity);
-
-  NSString* file_name = [NSString stringWithFormat:@"%@.png", identity.gaiaID];
-  NSURL* identity_file =
-      [app_group::WidgetsAvatarFolder() URLByAppendingPathComponent:file_name];
-
-  if (!avatar) {
-    // No avatar available, remove any existing avatar file for this identity
-    // Note: If this task is skipped, the avatar file will remain on disk
-    // temporarily but will be cleaned up automatically during the next UpdateLoadedAccounts()
-    // call via RemoveAvatarDataFromDisk().
-    base::ThreadPool::PostTaskAndReply(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&RemoveSingleAvatarFromDisk, identity_file),
-        base::BindOnce(&ReloadAllTimelines));
-    return;
-  }
-
-  // Update the identity avatar info on disk and update widgets.
-  base::ThreadPool::PostTaskAndReply(
+  task_runner_->PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&StoreAvatarToDisk, identity_file, avatar),
-      base::BindOnce(&ReloadAllTimelines));
+      base::BindOnce(
+          &WriteAvatar,
+          ConvertSystemIdentityInfo(SystemIdentityInfo(
+              identity, system_identity_manager_->GetCachedAvatarForIdentity(
+                            identity)))));
 }
 
 #pragma mark - Private
 
-// Callback for SystemIdentityManager::IterateOverIdentities().
-SystemIdentityManager::IteratorResult SystemAccountUpdater::IdentitiesOnDevice(
-    NSMutableDictionary* accounts,
-    NSMutableDictionary* avatars,
-    id<SystemIdentity> identity) {
-  NSMutableDictionary* account = [[NSMutableDictionary alloc] init];
-  [account setObject:identity.userEmail forKey:app_group::kEmail];
-  [account setObject:identity.userFullName ?: @"" forKey:app_group::kFullName];
-  // Add the account to the dictionary of accounts.
-  [accounts setObject:account forKey:identity.gaiaID];
-
-  UIImage* avatar =
-      system_identity_manager_->GetCachedAvatarForIdentity(identity);
-  // Add the avatar info to the dictionary of avatars.
-  if (avatar) {
-    [avatars setObject:avatar forKey:identity.gaiaID];
-  }
-
-  return SystemIdentityManager::IteratorResult::kContinueIteration;
-}
-
 void SystemAccountUpdater::UpdateLoadedAccounts() {
+  SystemIdentityInfoList list =
+      CollectSystemIdentityInfo(*system_identity_manager_);
+
+  auto callback = base::BarrierCallback<SystemIdentityInfoData>(
+      list.size(),
+      base::BindPostTask(task_runner_, base::BindOnce(&WriteAvatars)));
+
   NSMutableDictionary* accounts = [[NSMutableDictionary alloc] init];
-  NSMutableDictionary* avatars = [[NSMutableDictionary alloc] init];
-
-  // base::Unretained(...) is safe because the callback is
-  // called synchronously from IterateOverIdentities(...).
-  system_identity_manager_->IterateOverIdentities(
-      base::BindRepeating(&SystemAccountUpdater::IdentitiesOnDevice,
-                          base::Unretained(this), accounts, avatars));
-
-  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
-  [shared_defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
-  NSDictionary* urls_info =
-      [shared_defaults objectForKey:app_group::kSuggestedItemsForMultiprofile];
-  NSDictionary* last_modification_dates_info = [shared_defaults
-      objectForKey:app_group::
-                       kSuggestedItemsLastModificationDateForMultiprofile];
-
-  // An account was removed, 'urls_info' and
-  // 'last_modification_dates_info' need to be updated.
-  // The +1 is needed because 'urls_info' contains also info about
-  // most visited urls when there is no signed-in acoount.
-  if (urls_info.count > accounts.count + 1) {
-    NSMutableDictionary* updated_urls = [NSMutableDictionary dictionary];
-    NSMutableDictionary* updated_dates = [NSMutableDictionary dictionary];
-
-    for (NSString* gaia in urls_info) {
-      if (accounts[gaia] || [gaia isEqualToString:app_group::kNoAccount] ||
-          [gaia isEqualToString:app_group::kDefault]) {
-        updated_urls[gaia] = urls_info[gaia];
-        updated_dates[gaia] = last_modification_dates_info[gaia];
-      }
-    }
-    [shared_defaults setObject:updated_urls
-                        forKey:app_group::kSuggestedItemsForMultiprofile];
-    [shared_defaults
-        setObject:updated_dates
-           forKey:app_group::
-                      kSuggestedItemsLastModificationDateForMultiprofile];
+  for (auto& info : list) {
+    [accounts setObject:info.AsDictionary() forKey:info.gaia_id()];
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ConvertSystemIdentityInfo, std::move(info))
+                       .Then(callback));
   }
 
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&UpdateAvatars, avatars),
-      base::BindOnce(&ReloadAllTimelines));
+  NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
+  [defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
+
+  RemoveUnknownAccounts(defaults, accounts,
+                        app_group::kSuggestedItemsForMultiprofile);
+  RemoveUnknownAccounts(
+      defaults, accounts,
+      app_group::kSuggestedItemsLastModificationDateForMultiprofile);
 }
 
 void SystemAccountUpdater::HandleMigrationIfNeeded() {

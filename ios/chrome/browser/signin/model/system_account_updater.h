@@ -8,8 +8,9 @@
 #import <UIKit/UIKit.h>
 
 #import "base/memory/raw_ref.h"
-#import "base/memory/weak_ptr.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/scoped_observation.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 
@@ -27,19 +28,14 @@ class SystemAccountUpdater : public SystemIdentityManagerObserver {
   void OnIdentityUpdated(id<SystemIdentity> identity) final;
 
  private:
-  SystemIdentityManager::IteratorResult IdentitiesOnDevice(
-      NSMutableDictionary* accounts,
-      NSMutableDictionary* avatars,
-      id<SystemIdentity> identity);
   void UpdateLoadedAccounts();
   void HandleMigrationIfNeeded();
 
   const raw_ref<SystemIdentityManager> system_identity_manager_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::ScopedObservation<SystemIdentityManager, SystemIdentityManagerObserver>
       system_identity_manager_observation_{this};
-
-  base::WeakPtrFactory<SystemAccountUpdater> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SYSTEM_ACCOUNT_UPDATER_H_
