@@ -587,6 +587,28 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(HttpsNotAttemptedReason) -->
+
+<enum name="HttpsNotAttemptedReason">
+  <int value="0" label="Unknown">The reason is unknown.</int>
+  <int value="1" label="QueryingHttpsDisabled">Querying HTTPS is disabled.</int>
+  <int value="2" label="BuiltInResolverDisabled">
+    Built-in DNS resolver is disabled.
+  </int>
+  <int value="3" label="NoDnsClient">No DnsClient.</int>
+  <int value="4" label="FallbackFromInsecureTransactionPreferred">
+    DnsTask wasn't scheduled because it hadn't been working for a while.
+  </int>
+  <int value="5" label="InsecureDnsTaskDisabled">
+    Insecure DnsTask was not allowed to query HTTPS.
+  </int>
+  <int value="6" label="FallbackToSystemTaskAfterDnsTask">
+    DnsTask was executed but fell back to the system task.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/host_resolver_manager_job.h:HttpsNotAttemptedReason) -->
+
 <enum name="HttpssvcDnsRcode">
   <summary>
     Tracks the result of querying for an INTEGRITY or HTTPSSVC record. This enum

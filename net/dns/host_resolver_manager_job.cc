@@ -652,6 +652,7 @@ void HostResolverManager::Job::OnSystemTaskComplete(
     // This HostResolverSystemTask was a fallback resolution after a failed
     // insecure DnsTask.
     resolver_->OnFallbackResolve(dns_task_error_);
+    fallback_to_system_task_after_dns_task_ = true;
   }
 
   if (ContainsIcannNameCollisionIp(addr_list.endpoints())) {
@@ -708,6 +709,7 @@ void HostResolverManager::Job::StartDnsTask(bool secure) {
       key_.query_types, &*key_.resolve_context, secure, key_.secure_dns_mode,
       this, net_log_, tick_clock_, !tasks_.empty() /* fallback_available */,
       https_svcb_options_);
+  dns_task_executed_ = true;
   if (resolver_->IsHappyEyeballsV3Enabled()) {
     dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
         this, key_.host, key_.query_types, net_log_);
@@ -796,6 +798,8 @@ void HostResolverManager::Job::OnDnsTaskComplete(
                      legacy_results, secure);
     return;
   }
+
+  dns_task_https_disabled_ = dns_task_->https_disabled();
 
   base::UmaHistogramLongTimes100(
       base::StrCat(
@@ -1012,6 +1016,40 @@ void HostResolverManager::Job::RecordJobHistograms(
   }
 }
 
+void HostResolverManager::Job::RecordJobHttpsHistograms() {
+  const bool https_attempted = key_.query_types.Has(DnsQueryType::HTTPS) &&
+                               dns_task_executed_ && !dns_task_https_disabled_;
+  base::UmaHistogramBoolean("Net.DNS.JobAttemptedHttps", https_attempted);
+
+  if (!https_attempted) {
+    auto calculate_reason = [&]() {
+      if (!base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb)) {
+        return HttpsNotAttemptedReason::kQueryingHttpsDisabled;
+      }
+      if (!base::FeatureList::IsEnabled(features::kAsyncDns)) {
+        return HttpsNotAttemptedReason::kBuiltInResolverDisabled;
+      }
+      if (!resolver_->dns_client_) {
+        return HttpsNotAttemptedReason::kNoDnsClient;
+      }
+      if (resolver_->dns_client_->FallbackFromInsecureTransactionPreferred()) {
+        return HttpsNotAttemptedReason::
+            kFallbackFromInsecureTransactionPreferred;
+      }
+      if (dns_task_https_disabled_) {
+        return HttpsNotAttemptedReason::kInsecureDnsTaskDisabled;
+      }
+      if (fallback_to_system_task_after_dns_task_) {
+        return HttpsNotAttemptedReason::kFallbackToSystemTaskAfterDnsTask;
+      }
+      return HttpsNotAttemptedReason::kUnknown;
+    };
+
+    base::UmaHistogramEnumeration("Net.DNS.JobHttpsNotAttemptedReason",
+                                  calculate_reason());
+  }
+}
+
 void HostResolverManager::Job::MaybeCacheResult(const HostCache::Entry& results,
                                                 base::TimeDelta ttl,
                                                 bool secure) {
@@ -1058,6 +1096,10 @@ void HostResolverManager::Job::CompleteRequests(
   }
 
   RecordJobHistograms(results, task_type);
+  if (results.error() == OK && had_non_speculative_request_ &&
+      key_.source == HostResolverSource::ANY) {
+    RecordJobHttpsHistograms();
+  }
 
   // Complete all of the requests that were attached to the job and
   // detach them.

@@ -2521,6 +2521,29 @@ chromium-metrics-reviews@google.com.
   <token key="secure" variants="DnsOverHttpsSecure"/>
 </histogram>
 
+<histogram name="Net.DNS.JobAttemptedHttps" enum="Boolean"
+    expires_after="2025-11-15">
+  <owner>bashi@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Record whether a HostResolverManager::Job attempted HTTPS query. Recorded
+    when the Job succeeded, had non speculative requests, and source type is ANY
+    (which means that the Job could have queried more than one query).
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.JobHttpsNotAttemptedReason"
+    enum="HttpsNotAttemptedReason" expires_after="2025-11-15">
+  <owner>bashi@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Record why a HostResolverManager::Job didn't attempt HTTPS query. Recorded
+    when the Job succeeded, had non speculative requests, source type is ANY
+    (which means that the Job could have queried more than one query), and
+    didn't attempt HTTPS query.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.JobQueueTime.Failure" units="ms"
     expires_after="2026-08-21">
   <owner>bashi@chromium.org</owner>

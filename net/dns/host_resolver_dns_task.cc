@@ -388,6 +388,7 @@ DnsQueryTypeSet HostResolverDnsTask::MaybeDisableAdditionalQueries(
 
   if (types.Has(DnsQueryType::HTTPS)) {
     if (!secure_ && !client_->CanQueryAdditionalTypesViaInsecureDns()) {
+      https_disabled_ = true;
       types.Remove(DnsQueryType::HTTPS);
     } else {
       DCHECK(!httpssvc_metrics_);

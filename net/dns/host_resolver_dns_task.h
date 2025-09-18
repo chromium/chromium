@@ -115,6 +115,8 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
   bool secure() const { return secure_; }
 
+  bool https_disabled() const { return https_disabled_; }
+
   void StartNextTransaction();
 
   base::WeakPtr<HostResolverDnsTask> AsWeakPtr() {
@@ -264,6 +266,9 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
   bool fallback_available_;
 
   const HostResolver::HttpsSvcbOptions https_svcb_options_;
+
+  // Set to true when HTTPS query is disabled.
+  bool https_disabled_ = false;
 
   base::WeakPtrFactory<HostResolverDnsTask> weak_ptr_factory_{this};
 };
