@@ -201,7 +201,7 @@ void ComposeboxHandler::AddTabContext(int32_t tab_id,
     return;
   }
 
-  RecordDuplicateTabTitleClickedMetric(tab);
+  RecordTabClickedMetric(tab);
 
   lens::TabContextualizationController* tab_contextualization_controller =
       tab->GetTabFeatures()->tab_contextualization_controller();
@@ -213,8 +213,7 @@ void ComposeboxHandler::AddTabContext(int32_t tab_id,
   std::move(callback).Run(token);
 }
 
-void ComposeboxHandler::RecordDuplicateTabTitleClickedMetric(
-    tabs::TabInterface* const tab) {
+void ComposeboxHandler::RecordTabClickedMetric(tabs::TabInterface* const tab) {
   bool has_duplicate_title = false;
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
@@ -239,6 +238,8 @@ void ComposeboxHandler::RecordDuplicateTabTitleClickedMetric(
       }
     }
   }
+
+  UMA_HISTOGRAM_BOOLEAN("NewTabPage.Composebox.TabContextAdded", true);
 
   UMA_HISTOGRAM_BOOLEAN("NewTabPage.Composebox.TabWithDuplicateTitleClicked",
                         has_duplicate_title);

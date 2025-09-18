@@ -107,7 +107,7 @@ class ComposeboxHandler
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
-  void RecordDuplicateTabTitleClickedMetric(tabs::TabInterface* const tab);
+  void RecordTabClickedMetric(tabs::TabInterface* const tab);
 
   std::set<base::UnguessableToken> deleted_context_tokens_;
   std::unique_ptr<ComposeboxQueryController> query_controller_;
