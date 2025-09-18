@@ -418,7 +418,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('saveToDriveState_') &&
         changedPrivateProperties.get('saveToDriveState_') ===
-            SaveToDriveState.UPLOADING) {
+            SaveToDriveState.UPLOADING &&
+        this.saveToDriveState_ !== SaveToDriveState.UNINITIALIZED) {
       this.getSaveToDriveBubble_().showAt(
           this.$.toolbar.getSaveToDriveBubbleAnchor(),
           /*autoDismiss=*/ true);
@@ -1340,6 +1341,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case SaveToDriveBubbleRequestType.CANCEL_UPLOAD:
         PdfViewerPrivateProxyImpl.getInstance().saveToDrive(
             /*saveRequestType=undefined*/);
+        this.saveToDriveState_ = SaveToDriveState.UNINITIALIZED;
         break;
       case SaveToDriveBubbleRequestType.MANAGE_STORAGE:
         assert(this.saveToDriveProgress_.accountEmail);
@@ -1348,7 +1350,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
                 this.saveToDriveProgress_.accountEmail,
                 this.saveToDriveProgress_.accountIsManaged ?? false),
             WindowOpenDisposition.NEW_FOREGROUND_TAB);
-        // TODO(crbug.com/427449996): Add testing for this case.
+        this.saveToDriveState_ = SaveToDriveState.UNINITIALIZED;
+        // TODO(crbug.com/427449996): Add url testing for this case.
         break;
       case SaveToDriveBubbleRequestType.OPEN_IN_DRIVE:
         assert(this.saveToDriveProgress_.accountEmail);
@@ -1358,7 +1361,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
                 this.saveToDriveProgress_.accountEmail,
                 this.saveToDriveProgress_.driveItemId),
             WindowOpenDisposition.NEW_FOREGROUND_TAB);
-        // TODO(crbug.com/427449996): Add testing for this case.
+        this.saveToDriveState_ = SaveToDriveState.UNINITIALIZED;
+        // TODO(crbug.com/427449996): Add url testing for this case.
         break;
       case SaveToDriveBubbleRequestType.RETRY:
         PdfViewerPrivateProxyImpl.getInstance().saveToDrive(

@@ -49,6 +49,14 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
     this.streamUrl_ = streamUrl;
   }
 
+  sendQuotaExceededError(): void {
+    this.sendSaveToDriveProgress({
+      status: SaveToDriveStatus.UPLOAD_IN_PROGRESS,
+      errorType: SaveToDriveErrorType.QUOTA_EXCEEDED,
+      accountEmail: 'test@gmail.com',
+    });
+  }
+
   sendSessionTimeoutError(): void {
     this.sendSaveToDriveProgress({
       status: SaveToDriveStatus.UPLOAD_IN_PROGRESS,
@@ -73,6 +81,7 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
       driveItemId: 'test-drive-item-id',
       parentFolderName: 'test-parent-folder-name',
       fileName: 'save_to_drive_test.pdf',
+      accountEmail: 'test@gmail.com',
     });
   }
 
@@ -269,14 +278,62 @@ const tests = [
     assertBubbleAndProgressBar(bubble, 0, 100);
 
     // Click the cancel button in the bubble and verify the saveToDrive API is
-    // called with the cancelUpload flag.
+    // called with the cancelUpload flag and the bubble is closed.
     const cancelButton = getRequiredElement(bubble, '#cancel-upload-button');
     cancelButton.click();
-    await microtasksFinished();
-    const args = await privateProxy.whenCalled('saveToDrive');
-    chrome.test.assertEq(args, null);
-
+    await privateProxy.whenCalled('saveToDrive');
     chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    // Cancel button click should reset the state, so click on the save button
+    // again to make sure it initiates a new upload.
+    controls.$.save.click();
+    await privateProxy.whenCalled('saveToDrive');
+    chrome.test.assertEq(2, privateProxy.getCallCount('saveToDrive'));
+    chrome.test.assertFalse(bubble.$.dialog.open);
+    const args = privateProxy.getArgs('saveToDrive');
+    chrome.test.assertEq(2, args.length);
+    // Cancel upload click.
+    chrome.test.assertEq(null, args[0]);
+    // Save button click.
+    chrome.test.assertEq('ORIGINAL', args[1]);
+
+    chrome.test.succeed();
+  },
+
+  async function testSaveToDriveBubbleQuotaExceededAndManageStorageClick() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+
+    // Set quota exceeded state and open the bubble.
+    privateProxy.sendQuotaExceededError();
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+    controls.$.save.click();
+    await microtasksFinished();
+
+    const description = getRequiredElement(bubble, '#description');
+    chrome.test.assertTrue(!!description.textContent);
+    chrome.test.assertEq(
+        'Your Google Drive storage is full', description.textContent.trim());
+
+    // Click the manage storage button in the bubble and verify the bubble is
+    // closed.
+    const button = getRequiredElement(bubble, '#manage-storage-button');
+    button.click();
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    // Manage storage click should reset the state, so clicking on the save
+    // button again to make sure it initiates a new upload.
+    chrome.test.assertEq(0, privateProxy.getCallCount('saveToDrive'));
+    controls.$.save.click();
+    await privateProxy.whenCalled('saveToDrive');
+    chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    // TODO(crbug.com/427451594): Write tests for clicking on the manage
+    // storage button to test the URL is correct.
 
     chrome.test.succeed();
   },
@@ -301,17 +358,23 @@ const tests = [
     chrome.test.assertTrue(!!filename.textContent);
     chrome.test.assertEq('save_to_drive_test.pdf', filename.textContent.trim());
 
-    const button = bubble.shadowRoot.querySelector<HTMLButtonElement>(
-        '#open-in-drive-button')!;
-    chrome.test.assertTrue(!!button);
-
-    // TODO(crbug.com/427451594): Write tests for clicking on the open in Drive
-    // button once it is hooked up to open the Drive URL.
-
-    // Resetting the bubble open state for the next test.
-    bubble.$.dialog.close();
+    // Click the open in Drive button in the bubble and verify the bubble is
+    // closed.
+    const button = getRequiredElement(bubble, '#open-in-drive-button');
+    button.click();
     await microtasksFinished();
     chrome.test.assertFalse(bubble.$.dialog.open);
+
+    // Open in Drive click should reset the state. Clicking on the save button
+    // again and make sure it initiates a new upload.
+    chrome.test.assertEq(0, privateProxy.getCallCount('saveToDrive'));
+    controls.$.save.click();
+    await privateProxy.whenCalled('saveToDrive');
+    chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    // TODO(crbug.com/427451594): Write tests for clicking on the open in Drive
+    // button to test the URL is correct.
 
     chrome.test.succeed();
   },
