@@ -33,11 +33,6 @@ html {
   }
 }
 
-img {
-  width: 100%;
-  height: auto;
-}
-
 /* Margins and paddings. */
 
 /* Reset default margins to prevent conflicts and ensure consistency. */
@@ -92,7 +87,14 @@ h2, h3, h4, h5, h6 {
     font-weight: bold;
 }
 
-img, figcaption {
+/* Styles for images and captions. */
+
+img {
+    width: 100%;
+    height: auto;
+}
+
+img, figcaption, picture:first-child + p:last-child {
     font-size: 0.75rem; /* 12px */
     line-height: 1.125rem; /* 18px */
     font-style: italic;
