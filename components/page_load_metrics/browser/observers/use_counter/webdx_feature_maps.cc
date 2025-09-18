@@ -455,6 +455,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kDevicePosture, WebDXFeature::kDevicePosture},
           {WebFeature::kXRDepthSensing, WebDXFeature::kWebxrDepthSensing},
           {WebFeature::kXRDOMOverlay, WebDXFeature::kWebxrDomOverlays},
+          {WebFeature::kReportingObserver, WebDXFeature::kReporting},
+          {WebFeature::kReportingEndpointsHeader, WebDXFeature::kReporting},
           // Add new features above this line.
       }};
 

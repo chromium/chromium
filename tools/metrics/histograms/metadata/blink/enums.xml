@@ -6265,6 +6265,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5661" label="CSSPseudoElementUsesImplicitAnchor"/>
   <int value="5662" label="LineClampByLinesOverflows"/>
   <int value="5663" label="PointerRawUpdateEventsInInsecureContext"/>
+  <int value="5664" label="ReportToHeader"/>
+  <int value="5665" label="ReportingEndpointsHeader"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -8582,6 +8584,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="407" label="WebxrHandInput"/>
   <int value="408" label="WebxrHitTest"/>
   <int value="409" label="WebxrLightingEstimation"/>
+  <int value="410" label="Reporting"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

@@ -4972,6 +4972,8 @@ enum WebFeature {
   kCSSPseudoElementUsesImplicitAnchor = 5661,
   kLineClampByLinesOverflows = 5662,
   kPointerRawUpdateEventsInInsecureContext = 5663,
+  kReportToHeader = 5664,
+  kReportingEndpointsHeader = 5665,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
