@@ -578,8 +578,13 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
   browser()->tab_strip_model()->ChangeTabGroupVisuals(group, visual_data);
 
-  EXPECT_TRUE(
-      ExtensionTabUtil::TabIsInSavedTabGroup(raw_contents, GetTabStripModel()));
+  // Check that the tab is in a saved tab group.
+  TabStripModel* tab_strip_model = GetTabStripModel();
+  int index = tab_strip_model->GetIndexOfWebContents(raw_contents);
+  std::optional<tab_groups::TabGroupId> tab_group_id =
+      tab_strip_model->GetTabGroupForTab(index);
+  ASSERT_TRUE(tab_group_id.has_value());
+  EXPECT_TRUE(saved_service->GetGroup(tab_group_id.value()).has_value());
 
   {  // Test the active state change for a saved tab.
     GetTabStripModel()->ActivateTabAt(

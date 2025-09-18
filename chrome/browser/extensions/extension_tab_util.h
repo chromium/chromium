@@ -397,9 +397,6 @@ class ExtensionTabUtil {
   // TODO(https://crbug.com/430344931): Remove this in favor of
   // GetEditableTabList().
   static TabStripModel* GetEditableTabStripModel(Browser* browser);
-
-  static bool TabIsInSavedTabGroup(content::WebContents* contents,
-                                   TabStripModel* tab_strip_model);
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 
