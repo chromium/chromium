@@ -274,8 +274,10 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
 }
 
 ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
+    content::WebContents* web_contents,
     content::RenderFrameHost* render_frame_host)
-    : render_frame_host_id_(render_frame_host->GetGlobalId()),
+    : WebContentsUserData(*web_contents),
+      render_frame_host_id_(render_frame_host->GetGlobalId()),
       dialog_model_(base::MakeRefCounted<AuthenticatorRequestDialogModel>(
           GetRenderFrameHost())),
       dialog_controller_(std::make_unique<AuthenticatorRequestDialogController>(
@@ -288,14 +290,17 @@ ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
 }
 
 ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate() {
-  // Currently, completion of the request is indicated by //content destroying
-  // this delegate.
   dialog_model_->OnRequestComplete();
   dialog_model_->observers.RemoveObserver(this);
 
   if (g_observer) {
-    g_observer->OnDestroy(this);
+    g_observer->Destroyed(this);
   }
+}
+
+void ChromeAuthenticatorRequestDelegate::Cleanup() {
+  GetWebContents().RemoveUserData(
+      ChromeAuthenticatorRequestDelegate::UserDataKey());
 }
 
 // static
@@ -1279,3 +1284,5 @@ void ChromeAuthenticatorRequestDelegate::UpdateModelForTransportAvailability(
   dialog_model_->is_off_the_record = tai.is_off_the_record_context;
   dialog_model_->platform_has_biometrics = tai.platform_has_biometrics;
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAuthenticatorRequestDelegate);

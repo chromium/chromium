@@ -168,8 +168,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   //
   // Chrome may return nullptr here in order to ensure that at most one request
   // per WebContents is ongoing at once.
-  virtual std::unique_ptr<AuthenticatorRequestClientDelegate>
-  MaybeCreateRequestDelegate();
+  virtual AuthenticatorRequestClientDelegate* MaybeCreateRequestDelegate();
 
  private:
   friend class AuthenticatorImplTest;

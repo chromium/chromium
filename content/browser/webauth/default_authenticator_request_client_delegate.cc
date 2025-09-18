@@ -9,9 +9,6 @@
 namespace content {
 
 DefaultAuthenticatorRequestClientDelegate::
-    DefaultAuthenticatorRequestClientDelegate() = default;
-
-DefaultAuthenticatorRequestClientDelegate::
     ~DefaultAuthenticatorRequestClientDelegate() = default;
 
 void DefaultAuthenticatorRequestClientDelegate::StartObserving(
@@ -23,5 +20,17 @@ void DefaultAuthenticatorRequestClientDelegate::StopObserving(
     device::FidoRequestHandlerBase* request_handler) {
   request_handler_observation_.Reset();
 }
+
+void DefaultAuthenticatorRequestClientDelegate::Cleanup() {
+  GetWebContents().RemoveUserData(
+      DefaultAuthenticatorRequestClientDelegate::UserDataKey());
+}
+
+DefaultAuthenticatorRequestClientDelegate::
+    DefaultAuthenticatorRequestClientDelegate(WebContents* web_contents)
+    : WebContentsUserData<DefaultAuthenticatorRequestClientDelegate>(
+          *web_contents) {}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(DefaultAuthenticatorRequestClientDelegate);
 
 }  // namespace content

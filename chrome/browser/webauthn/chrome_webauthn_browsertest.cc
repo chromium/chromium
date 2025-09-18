@@ -1185,7 +1185,7 @@ class ChallengeUrlBrowserTest : public WebAuthnBrowserTest {
       test_instance_->UpdateRequestDelegate(delegate);
     }
 
-    void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) override {
+    void Destroyed(ChromeAuthenticatorRequestDelegate* delegate) override {
       test_instance_->UpdateRequestDelegate(nullptr);
     }
 

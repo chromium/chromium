@@ -26,6 +26,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
@@ -63,7 +64,8 @@ class PrefRegistrySyncable;
 
 class ChromeAuthenticatorRequestDelegate
     : public content::AuthenticatorRequestClientDelegate,
-      public AuthenticatorRequestDialogModel::Observer {
+      public AuthenticatorRequestDialogModel::Observer,
+      public content::WebContentsUserData<ChromeAuthenticatorRequestDelegate> {
  public:
   // TestObserver is an interface that observes certain events related to this
   // class for testing purposes. Only a single instance of this interface can
@@ -72,7 +74,7 @@ class ChromeAuthenticatorRequestDelegate
    public:
     virtual void Created(ChromeAuthenticatorRequestDelegate* delegate) {}
 
-    virtual void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) {}
+    virtual void Destroyed(ChromeAuthenticatorRequestDelegate* delegate) {}
 
     virtual void OnTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate,
@@ -103,8 +105,8 @@ class ChromeAuthenticatorRequestDelegate
   };
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-  // The |render_frame_host| must outlive this instance.
   explicit ChromeAuthenticatorRequestDelegate(
+      content::WebContents* web_contents,
       content::RenderFrameHost* render_frame_host);
 
   ChromeAuthenticatorRequestDelegate(
@@ -133,6 +135,7 @@ class ChromeAuthenticatorRequestDelegate
   GPMEnclaveController* enclave_controller_for_testing() const;
 
   // content::AuthenticatorRequestClientDelegate:
+  void Cleanup() override;
   void SetRelyingPartyId(const std::string& rp_id) override;
   void SetUIPresentation(UIPresentation ui_presentation) override;
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override;
@@ -214,6 +217,9 @@ class ChromeAuthenticatorRequestDelegate
   content::RenderFrameHost* GetRenderFrameHost() const;
 
  private:
+  friend class content::WebContentsUserData<ChromeAuthenticatorRequestDelegate>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
                            DaysSinceDate);
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,

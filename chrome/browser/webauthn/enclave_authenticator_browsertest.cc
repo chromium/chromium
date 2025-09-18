@@ -686,7 +686,7 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
       transports_observed_ = std::nullopt;
     }
 
-    void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) override {
+    void Destroyed(ChromeAuthenticatorRequestDelegate* delegate) override {
       test_instance_->UpdateRequestDelegate(nullptr);
       destruction_run_loop_->QuitWhenIdle();
     }

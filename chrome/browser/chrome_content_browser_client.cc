@@ -6836,7 +6836,7 @@ ChromeContentBrowserClient::GetDirectSocketsDelegate() {
   return direct_sockets_delegate_.get();
 }
 
-std::unique_ptr<content::AuthenticatorRequestClientDelegate>
+content::AuthenticatorRequestClientDelegate*
 ChromeContentBrowserClient::GetWebAuthenticationRequestDelegate(
     content::RenderFrameHost* render_frame_host) {
   return AuthenticatorRequestScheduler::CreateRequestDelegate(

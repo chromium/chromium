@@ -2426,13 +2426,19 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual WebAuthenticationDelegate* GetWebAuthenticationDelegate();
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Returns an AuthenticatorRequestClientDelegate subclass instance to provide
-  // embedder-specific configuration for a single Web Authentication API request
-  // being serviced in a given RenderFrame. The instance is guaranteed to be
-  // destroyed before the RenderFrame goes out of scope. The embedder may choose
-  // to return nullptr to indicate that the request cannot be serviced right
-  // now.
-  virtual std::unique_ptr<AuthenticatorRequestClientDelegate>
+  // Returns an AuthenticatorRequestClientDelegate instance to provide
+  // embedder-specific configuration for a Web Authentication API request being
+  // serviced in a given RenderFrameHost.
+  //
+  // The delegate is owned by the WebContents and its lifetime is scoped to a
+  // single request. The returned pointer is guaranteed to be valid until the
+  // request completes, at which point `Cleanup()` is called on the delegate,
+  // triggering its destruction.
+  //
+  // The embedder may choose to return nullptr to indicate that the request
+  // cannot be serviced right now (for example, if a request is already in
+  // progress for the WebContents).
+  virtual AuthenticatorRequestClientDelegate*
   GetWebAuthenticationRequestDelegate(RenderFrameHost* render_frame_host);
 #endif
 

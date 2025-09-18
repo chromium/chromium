@@ -312,7 +312,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
     test_case++;
 
     MockCableDiscoveryFactory discovery_factory;
-    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+    ChromeAuthenticatorRequestDelegate delegate(web_contents(), main_rfh());
     delegate.SetRelyingPartyId(kRpId);
     delegate.ConfigureDiscoveries(
         url::Origin::Create(GURL(test.origin)), test.origin,
@@ -359,7 +359,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {
   for (const bool disable_ui : {false, true}) {
     SCOPED_TRACE(disable_ui);
 
-    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+    ChromeAuthenticatorRequestDelegate delegate(web_contents(), main_rfh());
     delegate.SetRelyingPartyId(kRpId);
     if (disable_ui) {
       delegate.SetUIPresentation(UIPresentation::kDisabled);
@@ -394,7 +394,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
   // Enabling conditional mode should cause the modal dialog to stay hidden at
   // the beginning of a request. An omnibar icon might be shown instead.
   for (bool conditional_ui : {true, false}) {
-    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+    ChromeAuthenticatorRequestDelegate delegate(web_contents(), main_rfh());
     delegate.SetUIPresentation(conditional_ui ? UIPresentation::kAutofill
                                               : UIPresentation::kModal);
     delegate.SetRelyingPartyId(kRpId);
@@ -477,7 +477,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
     data.has_icloud_keychain_credential = device::FidoRequestHandlerBase::
         RecognizedCredential::kHasRecognizedCredential;
 
-    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+    ChromeAuthenticatorRequestDelegate delegate(web_contents(), main_rfh());
     delegate.SetRelyingPartyId(test.rp_id);
     delegate.RegisterActionCallbacks(
         base::DoNothing(), base::DoNothing(), base::DoNothing(),
@@ -527,7 +527,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   data.has_platform_authenticator_credential = device::FidoRequestHandlerBase::
       RecognizedCredential::kHasRecognizedCredential;
 
-  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  ChromeAuthenticatorRequestDelegate delegate(web_contents(), main_rfh());
   delegate.SetRelyingPartyId(kGoogleRpId);
   delegate.RegisterActionCallbacks(
       base::DoNothing(), base::DoNothing(), base::DoNothing(),
@@ -710,7 +710,7 @@ TEST_P(ChromeAuthenticatorRequestDelegateTestWithPassword, DiscoverPasswords) {
   bool enable_password = GetParam();
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL(kOrigin));
-  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  ChromeAuthenticatorRequestDelegate delegate(web_contents(), main_rfh());
   auto* password_fetcher = new FakePasswordCredentialFetcher(main_rfh());
   PasswordCredentialFetcher::SetInstanceForTesting(password_fetcher);
   auto password_ui_controller =
@@ -751,7 +751,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TryToShowUiNoImmediateCredentials) {
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL(kOrigin));
-  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  ChromeAuthenticatorRequestDelegate delegate(web_contents(), main_rfh());
   auto* password_fetcher = new FakePasswordCredentialFetcher(main_rfh());
   PasswordCredentialFetcher::SetInstanceForTesting(password_fetcher);
   auto password_ui_controller =
@@ -794,7 +794,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TryToShowUiHasImmediateCredentials) {
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL(kOrigin));
-  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  ChromeAuthenticatorRequestDelegate delegate(web_contents(), main_rfh());
   auto* password_fetcher = new FakePasswordCredentialFetcher(main_rfh());
   PasswordCredentialFetcher::SetInstanceForTesting(password_fetcher);
   auto password_ui_controller =
@@ -851,7 +851,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ImmediateMediationRateLimit) {
   // Navigate to commit the origin.
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL(kOrigin));
-  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  ChromeAuthenticatorRequestDelegate delegate(web_contents(), main_rfh());
   delegate.SetRelyingPartyId(kRpId);
   delegate.SetUIPresentation(UIPresentation::kModalImmediate);
 
