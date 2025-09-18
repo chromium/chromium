@@ -18,9 +18,6 @@ enum class SuppressReason {
   kNotSuppressed,
   // Suggestions are not shown because an ablation experiment is enabled.
   kAblation,
-  // Address suggestions are not shown because the field is annotated with
-  // autocomplete=off and the directive is being observed by the browser.
-  kAutocompleteOff,
   // Suggestions are not shown because this form is on a secure site, but
   // submits insecurely. This is only used when the user has started typing,
   // otherwise a warning is shown.

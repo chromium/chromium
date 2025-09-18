@@ -525,11 +525,6 @@ bool ShouldSuppressSuggestions(SuppressReason suppress_reason,
                           << LogMessage::kSuggestionSuppressed
                           << " Reason: Insecure form";
       return true;
-    case SuppressReason::kAutocompleteOff:
-      LOG_AF(log_manager) << LoggingScope::kFilling
-                          << LogMessage::kSuggestionSuppressed
-                          << " Reason: autocomplete=off";
-      return true;
     case SuppressReason::kAutocompleteUnrecognized:
       LOG_AF(log_manager) << LoggingScope::kFilling
                           << LogMessage::kSuggestionSuppressed
