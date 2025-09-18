@@ -491,8 +491,10 @@ void CanvasResourceSharedImage::OnBitmapImageDestroyed(
     resource->owning_thread_data().bitmap_image_read_refs--;
     if (resource->owning_thread_data().bitmap_image_read_refs == 0u &&
         resource->RasterInterface()) {
-      resource->RasterInterface()->EndSharedImageAccessDirectCHROMIUM(
-          resource->owning_thread_data().texture_id_for_read_access);
+      // This point is not reachable following shipping of OOP-C.
+      // TODO(crbug.com/391648152): Remove the entire `has_read_ref_on_texture`
+      // logic here and all related state.
+      NOTREACHED();
     }
   }
 
@@ -559,8 +561,10 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
     owning_thread_data().bitmap_image_read_refs++;
     if (owning_thread_data().bitmap_image_read_refs == 1u &&
         RasterInterface()) {
-      RasterInterface()->BeginSharedImageAccessDirectCHROMIUM(
-          texture_id_for_image, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+      // This point is not reachable following shipping of OOP-C.
+      // TODO(crbug.com/391648152): Remove the entire `has_read_ref_on_texture`
+      // logic here and all related state.
+      NOTREACHED();
     }
   }
 
