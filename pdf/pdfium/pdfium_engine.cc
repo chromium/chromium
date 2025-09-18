@@ -1442,7 +1442,7 @@ PDFiumEngine::PointData PDFiumEngine::GetPointData(const gfx::PointF& point) {
 
 // TODO(crbug.com/443275584): Handle vertical text.
 int PDFiumEngine::GetCharIndexBasedOnPointData(const PointData& point_data) {
-  DCHECK(PageIndexInBounds(point_data.page_index));
+  CHECK(PageIndexInBounds(point_data.page_index));
 
   bool point_is_left_of_char =
       point_data.pdf_point.x() <
@@ -1904,8 +1904,8 @@ void PDFiumEngine::OnMouseEnter(const blink::WebMouseEvent& event) {
 }
 
 bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
-  DCHECK(PageIndexInBounds(point_data.page_index));
-  DCHECK_GE(point_data.char_index, 0);
+  CHECK(PageIndexInBounds(point_data.page_index));
+  CHECK_GE(point_data.char_index, 0);
 
   const int page_index = point_data.page_index;
   const int char_index = GetCharIndexBasedOnPointData(point_data);
@@ -4413,7 +4413,7 @@ void PDFiumEngine::MoveRangeSelectionExtent(const gfx::Point& extent) {
   selection_.push_back(PDFiumRange(pages_[point_data.page_index].get(),
                                    point_data.char_index, 0));
 
-  // This should always succeeed because the range selection base should have
+  // This should always succeed because the range selection base should have
   // already been selected.
   ExtendSelection(GetPointData(gfx::PointF(range_selection_base_)));
 }
