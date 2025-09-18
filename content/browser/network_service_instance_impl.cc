@@ -80,7 +80,9 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/socket_broker.mojom.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/background_thread_pool_field_trial.h"
+#else
 #include "content/browser/network_sandbox.h"
 #endif
 
@@ -310,6 +312,19 @@ void CreateInProcessNetworkService(
             network::features::kNetworkServiceTaskScheduler)) {
       network::ConfigureSequenceManager(options);
     }
+#if BUILDFLAG(IS_ANDROID)
+    // Local testing shows that when priority inheritance (PI) locks are enabled
+    // on Android, the network service thread is frequently queued behind thread
+    // pool worker threads when contending for a PI lock, regressing startup
+    // time. This is because of the Linux kernel enforcing FIFO ordering on
+    // threads of same priority contending on a PI lock. Increase the network
+    // thread's priority when PI locks are enabled to compensate for the shift
+    // from an unfair to a fair lock.
+    if (base::android::BackgroundThreadPoolFieldTrial::
+            ShouldUsePriorityInheritanceLocks()) {
+      options.thread_type = base::ThreadType::kDisplayCritical;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     GetNetworkServiceDedicatedThread().StartWithOptions(std::move(options));
     task_runner = GetNetworkServiceDedicatedThread().task_runner();
     task_runner->PostTask(

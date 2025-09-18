@@ -78,7 +78,7 @@ BackgroundThreadPoolFieldTrial::GetConfiguration() {
 #if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
 BackgroundThreadPoolFieldTrial::TrialInfo
 BackgroundThreadPoolFieldTrial::GetPISupportedTrialInfo() {
-  const std::string_view kVersionSuffix = "_20250505";
+  constexpr std::string_view kVersionSuffix = "_20250917";
   std::string_view group_name;
 
   switch (GetConfiguration()) {
@@ -108,7 +108,7 @@ BackgroundThreadPoolFieldTrial::GetPISupportedTrialInfo() {
 
 BackgroundThreadPoolFieldTrial::TrialInfo
 BackgroundThreadPoolFieldTrial::GetGeneralTrialInfo() {
-  const std::string_view kVersionSuffix = "_20250505";
+  constexpr std::string_view kVersionSuffix = "_20250505";
   std::string_view group_name;
 
   switch (GetConfiguration()) {
