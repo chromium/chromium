@@ -9,8 +9,19 @@
 
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
 
+@class AIMInputItemCell;
+
+// Delegate for AIMInputItemCell.
+@protocol AIMInputItemCellDelegate <NSObject>
+// Called when the close button is tapped.
+- (void)aimInputItemCellDidTapCloseButton:(AIMInputItemCell*)cell;
+@end
+
 // A versatile cell for displaying any AIMInputItem.
 @interface AIMInputItemCell : UICollectionViewCell
+
+// The delegate for the cell.
+@property(nonatomic, weak) id<AIMInputItemCellDelegate> delegate;
 
 // Configures the cell with the given item.
 - (void)configureWithItem:(AIMInputItem*)item;

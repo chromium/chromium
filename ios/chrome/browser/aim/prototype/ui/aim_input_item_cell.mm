@@ -53,6 +53,10 @@ const CGFloat kMaxCellHeight = 42;
     AddSameConstraints(self.contentView, _inputItemView);
     AddSameConstraints(self.contentView, _scrimView);
 
+    [_inputItemView.closeButton addTarget:self
+                                   action:@selector(closeButtonTapped)
+                         forControlEvents:UIControlEventTouchUpInside];
+
     [NSLayoutConstraint activateConstraints:@[
       [self.heightAnchor constraintLessThanOrEqualToConstant:kMaxCellHeight],
       [_loadingIndicator.centerXAnchor
@@ -91,6 +95,12 @@ const CGFloat kMaxCellHeight = 42;
                                                   blue:0.0
                                                  alpha:0.5];
   }
+}
+
+#pragma mark private
+
+- (void)closeButtonTapped {
+  [self.delegate aimInputItemCellDidTapCloseButton:self];
 }
 
 @end

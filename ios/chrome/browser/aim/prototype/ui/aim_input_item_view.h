@@ -12,6 +12,9 @@
 // The aim input item view.
 @interface AimInputItemView : UIView
 
+/// The close button.
+@property(nonatomic, strong, readonly) UIButton* closeButton;
+
 /// Updates the UI based on the item's type.
 - (void)configureWithItem:(AIMInputItem*)item;
 

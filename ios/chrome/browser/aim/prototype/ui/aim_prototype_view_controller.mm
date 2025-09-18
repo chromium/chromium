@@ -74,7 +74,8 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 const CGFloat kFadeViewWidth = 30.0f;
 }
 
-@interface AIMPrototypeViewController () <UITextViewDelegate>
+@interface AIMPrototypeViewController () <UITextViewDelegate,
+                                          AIMInputItemCellDelegate>
 
 /// Whether the AI mode is enabled.
 @property(nonatomic, assign) BOOL AIModeEnabled;
@@ -417,6 +418,16 @@ const CGFloat kFadeViewWidth = 30.0f;
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
 }
 
+#pragma mark - AIMInputItemCellDelegate
+
+- (void)aimInputItemCellDidTapCloseButton:(AIMInputItemCell*)cell {
+  NSIndexPath* indexPath = [_carouselView indexPathForCell:cell];
+  if (indexPath) {
+    AIMInputItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
+    [self.mutator removeItem:item];
+  }
+}
+
 #pragma mark - AIMPrototypeConsumer
 
 - (void)setItems:(NSArray<AIMInputItem*>*)items {
@@ -526,6 +537,7 @@ const CGFloat kFadeViewWidth = 30.0f;
                           kItemCellReuseIdentifier
                                                 forIndexPath:indexPath];
                   [cell configureWithItem:item];
+                  cell.delegate = self;
                   return cell;
                 }];
 }

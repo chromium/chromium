@@ -29,6 +29,13 @@ const CGFloat kPreviewImageSize = 30.0;
 const CGFloat kPreviewImageTopBottomPadding = 6.0;
 }  // namespace
 
+@interface AimInputItemView ()
+
+/// Redefined internally as readwrite.
+@property(nonatomic, strong, readwrite) UIButton* closeButton;
+
+@end
+
 @implementation AimInputItemView {
   // The leading icon for file/tab type of items.
   UIImageView* _leadingIconImageView;
@@ -38,8 +45,6 @@ const CGFloat kPreviewImageTopBottomPadding = 6.0;
   UILabel* _titleLabel;
   // The subtitle label for file/tab type of items.
   UILabel* _subtitleLabel;
-  // The close button.
-  UIButton* _closeButton;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -121,6 +126,7 @@ const CGFloat kPreviewImageTopBottomPadding = 6.0;
       @[ [UIColor colorNamed:kTextSecondaryColor], UIColor.whiteColor ]);
   [_closeButton setImage:image forState:UIControlStateNormal];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+
   [_closeButton
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];

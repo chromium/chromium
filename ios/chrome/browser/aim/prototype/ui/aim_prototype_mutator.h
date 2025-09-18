@@ -8,13 +8,18 @@
 #import <Foundation/Foundation.h>
 
 /// Mutator for the AIM prototype.
-@protocol AIMPrototypeMutator
+@protocol AIMPrototypeMutator <NSObject>
+
+/// Removes the given `item` from the context.
+- (void)removeItem:(AIMInputItem*)item;
 
 /// Sends `text` to start a query.
 - (void)sendText:(NSString*)text;
+
 /// Sets `enabled` state for AIM.
 - (void)setAIModeEnabled:(BOOL)enabled;
-/// Adds tab content.
+
+// Attaches the current tab's content to the context.
 - (void)attachCurrentTabContent;
 
 @end

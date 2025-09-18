@@ -221,6 +221,16 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - AIMPrototypeMutator
 
+- (void)removeItem:(AIMInputItem*)item {
+  [_items removeObject:item];
+
+  if (_composeboxQueryController) {
+    _composeboxQueryController->DeleteFile(item.token);
+  }
+
+  [self.consumer setItems:_items];
+}
+
 - (void)sendText:(NSString*)text {
   GURL URL = _composeboxQueryController->CreateAimUrl(
       base::SysNSStringToUTF8(text), base::Time::Now());
