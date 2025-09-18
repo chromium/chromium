@@ -6,5 +6,6 @@
 'use strict';
 
 const largeString = ' '.repeat(largeSendDataLength);
-rtc_data_channel_send_close_test(/*sendData=*/ largeString,
-                                 /*dataChannelOptions=*/ {});
+rtc_data_channel_send_close_test(
+    /*sendData=*/ largeString,
+    /*dataChannelOptions=*/ {negotiated: true, id: 0});
