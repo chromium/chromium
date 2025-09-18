@@ -30,6 +30,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -55,7 +56,14 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     private static final int CUSTOM_ACTION_REQUEST_CODE_BASE = 112;
     @VisibleForTesting static final String EXTRA_SHARE_CUSTOM_ACTION = "EXTRA_SHARE_CUSTOM_ACTION";
 
+    private static @Nullable Runnable sShareWithLastUsedComponentHookForTesting;
+
     private ShareHelper() {}
+
+    public static void setShareWithLastUsedComponentHookForTesting(Runnable hook) {
+        sShareWithLastUsedComponentHookForTesting = hook;
+        ResettersForTesting.register(() -> sShareWithLastUsedComponentHookForTesting = null);
+    }
 
     /**
      * Shares the params using the system share sheet.
@@ -219,6 +227,10 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * @param params The container holding the share parameters.
      */
     static void shareWithLastUsedComponent(ShareParams params) {
+        if (sShareWithLastUsedComponentHookForTesting != null) {
+            sShareWithLastUsedComponentHookForTesting.run();
+            return;
+        }
         ComponentName component = getLastShareComponentName();
         if (component == null) return;
         assert params.getCallback() == null;
@@ -362,7 +374,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         private final @Nullable TargetChosenCallback mOriginalCallback;
         private final @Nullable Profile mProfile;
 
-        public SaveComponentCallback(
+        SaveComponentCallback(
                 @Nullable Profile profile, @Nullable TargetChosenCallback originalCallback) {
             mOriginalCallback = originalCallback;
             mProfile = profile;

@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -50,6 +51,7 @@ import java.util.function.Supplier;
 public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private static final String TAG = "AndroidShare";
 
+    private static @Nullable Runnable sShowShareSheetHookForTesting;
     private final BottomSheetController mController;
     private final Supplier<@Nullable Tab> mTabProvider;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -85,6 +87,10 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             Callback<Tab> printCallback,
             TabGroupSharingController tabGroupSharingController,
             DeviceLockActivityLauncher deviceLockActivityLauncher) {
+        if (sShowShareSheetHookForTesting != null) {
+            sShowShareSheetHookForTesting.run();
+            return;
+        }
         var newController =
                 new AndroidShareSheetController(
                         controller,
@@ -99,6 +105,11 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         if (!newController.processShareWithLinkToText(params, chromeShareExtras)) {
             newController.showShareSheetWithCustomAction(params, chromeShareExtras, true);
         }
+    }
+
+    public static void setShowShareSheetHookForTesting(Runnable hook) {
+        sShowShareSheetHookForTesting = hook;
+        ResettersForTesting.register(() -> sShowShareSheetHookForTesting = null);
     }
 
     /**
