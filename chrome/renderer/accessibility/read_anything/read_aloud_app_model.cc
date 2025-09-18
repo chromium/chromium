@@ -23,6 +23,7 @@
 #include "chrome/renderer/accessibility/phrase_segmentation/token_boundaries.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/tokenized_sentence.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
+#include "read_aloud_app_model.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
@@ -87,6 +88,10 @@ void ReadAloudAppModel::ResetGranularityIndex() {
 void ReadAloudAppModel::InitAXPositionWithNode(
     ui::AXNode* ax_node,
     const ui::AXTreeID& active_tree_id) {
+  if (IsTsTextSegmentationEnabled()) {
+    return;
+  }
+
   // If instance is Null or Empty, create the next AxPosition. Don't create a
   // new position if the node's manager is missing, as that means we've
   // received incorrect data somewhere.
@@ -115,6 +120,9 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetCurrentText(
     bool is_pdf,
     bool is_docs,
     const std::set<ui::AXNodeID>* current_nodes) {
+  if (IsTsTextSegmentationEnabled()) {
+    return a11y::ReadAloudCurrentGranularity();
+  }
   while (processed_granularities_on_current_page_.size() <=
          processed_granularity_index_) {
     a11y::ReadAloudCurrentGranularity next_granularity =
@@ -139,6 +147,9 @@ void ReadAloudAppModel::PreprocessTextForSpeech(
     bool is_pdf,
     bool is_docs,
     const std::set<ui::AXNodeID>* current_nodes) {
+  if (IsTsTextSegmentationEnabled()) {
+    return;
+  }
   a11y::ReadAloudCurrentGranularity current_granularity =
       GetNextNodes(is_pdf, is_docs, current_nodes);
 
@@ -590,7 +601,8 @@ ReadAloudAppModel::GetNextValidPositionFromCurrentPosition(
 }
 
 int ReadAloudAppModel::GetCurrentTextStartIndex(const ui::AXNodeID& node_id) {
-  if (processed_granularities_on_current_page_.size() < 1 ||
+  if (IsTsTextSegmentationEnabled() ||
+      processed_granularities_on_current_page_.size() < 1 ||
       processed_granularity_index_ >=
           processed_granularities_on_current_page_.size()) {
     return -1;
@@ -607,7 +619,8 @@ int ReadAloudAppModel::GetCurrentTextStartIndex(const ui::AXNodeID& node_id) {
 }
 
 int ReadAloudAppModel::GetCurrentTextEndIndex(const ui::AXNodeID& node_id) {
-  if (processed_granularities_on_current_page_.size() < 1 ||
+  if (IsTsTextSegmentationEnabled() ||
+      processed_granularities_on_current_page_.size() < 1 ||
       processed_granularity_index_ >=
           processed_granularities_on_current_page_.size()) {
     return -1;
@@ -639,6 +652,10 @@ bool ReadAloudAppModel::NodeBeenOrWillBeSpoken(
 }
 
 void ReadAloudAppModel::ResetReadAloudState() {
+  if (IsTsTextSegmentationEnabled()) {
+    return;
+  }
+
   ax_position_ = ui::AXNodePosition::AXPosition::CreateNullPosition();
   current_text_index_ = 0;
   processed_granularity_index_ = 0;
@@ -779,4 +796,8 @@ void ReadAloudAppModel::LogAudioDelay(bool success) {
   } else {
     base::UmaHistogramLongTimes(kAudioStartTimeFailureHistogramName, delay);
   }
+}
+
+bool ReadAloudAppModel::IsTsTextSegmentationEnabled() const {
+  return features::IsReadAnythingReadAloudTSTextSegmentationEnabled();
 }

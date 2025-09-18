@@ -187,6 +187,8 @@ class ReadAloudAppModel {
  private:
   friend ReadAnythingReadAloudAppModelTest;
 
+  bool IsTsTextSegmentationEnabled() const;
+
   void LogAudioDelay(bool success);
 
   // Helper method for GetCurrentText.
