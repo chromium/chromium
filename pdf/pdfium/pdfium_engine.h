@@ -554,7 +554,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   }
 
   // Tells if the page is in `progressive_paints_`
-  bool IsPageScheduledForPaint(int page_index) const;
+  bool IsPageScheduledForPaint(uint32_t page_index) const;
 
   // Unloads the page if it is not visible or prevented from unloading.
   void MaybeUnloadPage(int page_index);
@@ -760,7 +760,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Checks if a page is now available, and if so marks it as such and returns
   // true.  Otherwise, it will return false and will add the index to the given
   // array if it's not already there.
-  bool CheckPageAvailable(int index, std::vector<int>* pending);
+  bool CheckPageAvailable(uint32_t index, std::vector<uint32_t>* pending);
 
   // Helper function to get a given page's size in pixels.  Converting from
   // points to pixels are rounded down as part of generating integer values.
@@ -854,7 +854,7 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Starts a progressive paint operation given a rectangle in screen
   // coordinates. Returns the index in `progressive_paints_`.
-  size_t StartPaint(int page_index, const gfx::Rect& dirty);
+  size_t StartPaint(uint32_t page_index, const gfx::Rect& dirty);
 
   // Continues a paint operation that was started earlier.  Returns true if the
   // paint is done, or false if it needs to be continued.
@@ -890,7 +890,7 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Given a page index, returns the corresponding index in
   // `progressive_paints_`, or nullopt if it does not exist.
-  std::optional<size_t> GetProgressiveIndex(int page_index) const;
+  std::optional<size_t> GetProgressiveIndex(uint32_t page_index) const;
 
   // Creates a FPDF_BITMAP from a rectangle in screen coordinates.
   ScopedFPDFBitmap CreateBitmap(const gfx::Rect& rect,
@@ -926,7 +926,7 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Helper function to convert device coordinates to PDF coordinates.  If the
   // page is not yet loaded, returns (0, 0).
-  gfx::PointF DeviceToPdf(int page_index, const gfx::PointF& device_point);
+  gfx::PointF DeviceToPdf(uint32_t page_index, const gfx::PointF& device_point);
 
   // Helper function to convert device coordinates to screen coordinates.
   // Normalizes `device_point` based on `position_` and `current_zoom_`.
@@ -1119,10 +1119,10 @@ class PDFiumEngine : public DocumentLoader::Client,
   std::vector<std::unique_ptr<PDFiumPage>> pages_;
 
   // The indexes of the pages currently visible.
-  std::vector<int> visible_pages_;
+  std::vector<uint32_t> visible_pages_;
 
   // The indexes of the pages pending download.
-  std::vector<int> pending_pages_;
+  std::vector<uint32_t> pending_pages_;
 
   // During handling of input events we don't want to unload any pages in
   // callbacks to us from PDFium, since the current page can change while PDFium
@@ -1229,12 +1229,12 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Pending progressive paints.
   class ProgressivePaint {
    public:
-    ProgressivePaint(int page_index, const gfx::Rect& rect);
+    ProgressivePaint(uint32_t page_index, const gfx::Rect& rect);
     ProgressivePaint(ProgressivePaint&& that) noexcept;
     ProgressivePaint& operator=(ProgressivePaint&& that) noexcept;
     ~ProgressivePaint();
 
-    int page_index() const { return page_index_; }
+    uint32_t page_index() const { return page_index_; }
     const gfx::Rect& rect() const { return rect_; }
     FPDF_BITMAP bitmap() const { return bitmap_.get(); }
     bool painted() const { return painted_; }
@@ -1243,7 +1243,7 @@ class PDFiumEngine : public DocumentLoader::Client,
     void SetBitmapAndImageData(ScopedFPDFBitmap bitmap, SkBitmap image_data);
 
    private:
-    int page_index_;
+    uint32_t page_index_;
     gfx::Rect rect_;            // In screen coordinates.
     SkBitmap image_data_;       // Maintains reference while |bitmap_| exists.
     ScopedFPDFBitmap bitmap_;   // Must come after |image_data_|.

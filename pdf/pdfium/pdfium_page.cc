@@ -402,7 +402,7 @@ PDFiumPage::LinkTarget::LinkTarget(const LinkTarget& other) = default;
 
 PDFiumPage::LinkTarget::~LinkTarget() = default;
 
-PDFiumPage::PDFiumPage(PDFiumEngine* engine, int i)
+PDFiumPage::PDFiumPage(PDFiumEngine* engine, uint32_t i)
     : engine_(engine), index_(i) {}
 
 PDFiumPage::PDFiumPage(PDFiumPage&& that) = default;

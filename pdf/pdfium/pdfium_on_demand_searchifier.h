@@ -5,6 +5,8 @@
 #ifndef PDF_PDFIUM_PDFIUM_ON_DEMAND_SEARCHIFIER_H_
 #define PDF_PDFIUM_PDFIUM_ON_DEMAND_SEARCHIFIER_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <vector>
 
@@ -35,12 +37,12 @@ class PDFiumOnDemandSearchifier {
 
   // Checks if the page is queued to be searchified or the searchifying process
   // has started for it but not finished yet.
-  bool IsPageScheduled(int page_index) const;
+  bool IsPageScheduled(uint32_t page_index) const;
 
   // Puts a page in the queue to be searchified. This function can be called
   // before `Start` and if so, the page stays in the queue until `Start` is
   // called.
-  void SchedulePage(int page_index);
+  void SchedulePage(uint32_t page_index);
 
   bool HasFailed() const { return state_ == State::kFailed; }
   bool PerformedOCR() const { return performed_ocr_; }
@@ -116,7 +118,7 @@ class PDFiumOnDemandSearchifier {
   bool performed_ocr_ = false;
 
   // Scheduled pages to be searchified.
-  base::circular_deque<int> pages_queue_;
+  base::circular_deque<uint32_t> pages_queue_;
 
   State state_ = State::kIdle;
 

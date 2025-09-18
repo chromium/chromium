@@ -749,7 +749,7 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
   }
 
   for (size_t i = 0; i < visible_pages_.size(); ++i) {
-    int index = visible_pages_[i];
+    uint32_t index = visible_pages_[i];
     // Convert the current page's rectangle to screen rectangle.  We do this
     // instead of the reverse (converting the dirty rectangle from screen to
     // PDF coordinates) because then we'd have to convert back to screen
@@ -922,8 +922,8 @@ void PDFiumEngine::OnPendingRequestComplete() {
   // LoadDocument() will result in `pending_pages_` being reset so there's no
   // need to run the code below in that case.
   bool update_pages = false;
-  std::vector<int> still_pending;
-  for (int pending_page : pending_pages_) {
+  std::vector<uint32_t> still_pending;
+  for (uint32_t pending_page : pending_pages_) {
     if (CheckPageAvailable(pending_page, &still_pending)) {
       update_pages = true;
       if (IsPageVisible(pending_page)) {
@@ -1408,29 +1408,29 @@ void PDFiumEngine::PrintEnd() {
 
 PDFiumEngine::PointData PDFiumEngine::GetPointData(const gfx::PointF& point) {
   PointData point_data;
-  int page = -1;
+  std::optional<uint32_t> page;
   const gfx::Point screen_point = DeviceToScreen(point);
-  for (int visible_page : visible_pages_) {
+  for (uint32_t visible_page : visible_pages_) {
     if (pages_[visible_page]->rect().Contains(screen_point)) {
       page = visible_page;
       break;
     }
   }
-  if (page == -1) {
+  if (!page.has_value()) {
     return point_data;
   }
 
   // If the page hasn't finished rendering, calling into the page sometimes
   // leads to hangs.
   for (const auto& paint : progressive_paints_) {
-    if (paint.page_index() == page) {
+    if (paint.page_index() == page.value()) {
       return point_data;
     }
   }
 
-  point_data.page_index = page;
-  point_data.pdf_point = DeviceToPdf(page, point);
-  PDFiumPage::Area result = pages_[page]->GetCharInfo(
+  point_data.page_index = page.value();
+  point_data.pdf_point = DeviceToPdf(page.value(), point);
+  PDFiumPage::Area result = pages_[page.value()]->GetCharInfo(
       point_data.pdf_point, &point_data.char_index, &point_data.char_bounds,
       &point_data.form_type, &point_data.target);
   point_data.area =
@@ -1907,7 +1907,7 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
   CHECK(PageIndexInBounds(point_data.page_index));
   CHECK_GE(point_data.char_index, 0);
 
-  const int page_index = point_data.page_index;
+  const uint32_t page_index = point_data.page_index;
   const int char_index = GetCharIndexBasedOnPointData(point_data);
 
   // Check if the user has decreased their selection area and we need to remove
@@ -1923,7 +1923,7 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
     return false;
   }
 
-  const int last_page_index = selection_.back().page_index();
+  const uint32_t last_page_index = selection_.back().page_index();
   const int last_char_index = selection_.back().char_index();
   if (last_page_index == page_index) {
     // Selecting within a page.
@@ -1947,7 +1947,7 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
 
     // First make sure that there are no gaps in selection, i.e. if mousedown on
     // page one but we only get mousemove over page three, we want page two.
-    for (int i = last_page_index + 1; i < page_index; ++i) {
+    for (uint32_t i = last_page_index + 1; i < page_index; ++i) {
       if (pages_[i]->GetCharCount()) {
         selection_.push_back(PDFiumRange::AllTextOnPage(pages_[i].get()));
       }
@@ -1968,7 +1968,7 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
 
     // First make sure that there are no gaps in selection, i.e. if mousedown on
     // page three but we only get mousemove over page one, we want page two.
-    for (int i = last_page_index - 1; i > page_index; --i) {
+    for (uint32_t i = last_page_index - 1; i > page_index; --i) {
       if (pages_[i]->GetCharCount()) {
         selection_.push_back(PDFiumRange::AllTextOnPage(pages_[i].get()));
       }
@@ -2300,7 +2300,7 @@ void PDFiumEngine::AddFindResult(PDFiumRange result) {
   // Figure out where to insert the new location, since we could have
   // started searching midway and now we wrapped.
   size_t result_index;
-  int page_index = result.page_index();
+  uint32_t page_index = result.page_index();
   int char_index = result.char_index();
   for (result_index = 0; result_index < find_results_.size(); ++result_index) {
     if (find_results_[result_index].page_index() > page_index ||
@@ -3252,7 +3252,7 @@ void PDFiumEngine::CalculateVisiblePages() {
 
   visible_pages_.clear();
   gfx::Rect visible_rect(plugin_size());
-  for (int i = 0; i < static_cast<int>(pages_.size()); ++i) {
+  for (size_t i = 0; i < pages_.size(); ++i) {
     // Check an entire PageScreenRect, since we might need to repaint side
     // borders and shadows even if the page itself is not visible.
     // For example, when user use pdf with different page sizes and zoomed in
@@ -3277,7 +3277,7 @@ void PDFiumEngine::CalculateVisiblePages() {
 
   std::vector<draw_utils::IndexedPage> visible_pages_rects;
   visible_pages_rects.reserve(visible_pages_.size());
-  for (int visible_page_index : visible_pages_) {
+  for (uint32_t visible_page_index : visible_pages_) {
     visible_pages_rects.emplace_back(visible_page_index,
                                      pages_[visible_page_index]->rect());
   }
@@ -3306,12 +3306,13 @@ void PDFiumEngine::ScrollToPage(int page) {
   client_->ScrollToPage(page);
 }
 
-bool PDFiumEngine::CheckPageAvailable(int index, std::vector<int>* pending) {
+bool PDFiumEngine::CheckPageAvailable(uint32_t index,
+                                      std::vector<uint32_t>* pending) {
   if (!doc()) {
     return false;
   }
 
-  const int num_pages = static_cast<int>(pages_.size());
+  const size_t num_pages = pages_.size();
   if (index < num_pages && pages_[index]->available()) {
     return true;
   }
@@ -3391,7 +3392,7 @@ std::optional<size_t> PDFiumEngine::GetAdjacentPageIndexForTwoUpView(
   return adjacent_page_index;
 }
 
-size_t PDFiumEngine::StartPaint(int page_index, const gfx::Rect& dirty) {
+size_t PDFiumEngine::StartPaint(uint32_t page_index, const gfx::Rect& dirty) {
   // For the first time we hit paint, do nothing and just record the paint for
   // the next callback.  This keeps the UI responsive in case the user is doing
   // a lot of scrolling.
@@ -3586,7 +3587,7 @@ void PDFiumEngine::DrawSelections(size_t progressive_index,
 
   CHECK_LT(progressive_index, progressive_paints_.size());
 
-  int page_index = progressive_paints_[progressive_index].page_index();
+  uint32_t page_index = progressive_paints_[progressive_index].page_index();
   gfx::Rect dirty_in_screen = progressive_paints_[progressive_index].rect();
 
   const std::optional<RegionData> region =
@@ -3647,7 +3648,8 @@ void PDFiumEngine::PaintUnavailablePage(int page_index,
   loading_text_in_screen = GetScreenRect(loading_text_in_screen);
 }
 
-std::optional<size_t> PDFiumEngine::GetProgressiveIndex(int page_index) const {
+std::optional<size_t> PDFiumEngine::GetProgressiveIndex(
+    uint32_t page_index) const {
   for (size_t i = 0; i < progressive_paints_.size(); ++i) {
     if (progressive_paints_[i].page_index() == page_index) {
       return i;
@@ -3935,7 +3937,7 @@ bool PDFiumEngine::MouseDownState::Matches(
   return true;
 }
 
-gfx::PointF PDFiumEngine::DeviceToPdf(int page_index,
+gfx::PointF PDFiumEngine::DeviceToPdf(uint32_t page_index,
                                       const gfx::PointF& device_point) {
   gfx::Point screen_point = DeviceToScreen(device_point);
 
@@ -3961,8 +3963,8 @@ gfx::Point PDFiumEngine::DeviceToScreen(const gfx::PointF& device_point) const {
 int PDFiumEngine::GetVisiblePageIndex(FPDF_PAGE page) {
   // Copy `visible_pages_` since it can change as a result of loading the page
   // in GetPage(). See https://crbug.com/822091.
-  std::vector<int> visible_pages_copy(visible_pages_);
-  for (int page_index : visible_pages_copy) {
+  std::vector<uint32_t> visible_pages_copy(visible_pages_);
+  for (uint32_t page_index : visible_pages_copy) {
     if (pages_[page_index]->GetPage() == page) {
       return page_index;
     }
@@ -4705,7 +4707,7 @@ void PDFiumEngine::OnHasSearchifyText() {
   }
 }
 
-bool PDFiumEngine::IsPageScheduledForPaint(int page_index) const {
+bool PDFiumEngine::IsPageScheduledForPaint(uint32_t page_index) const {
   for (const auto& progressive_paint : progressive_paints_) {
     if (progressive_paint.page_index() == page_index) {
       return true;
@@ -5009,7 +5011,7 @@ PDFiumEngine::InkStrokeData& PDFiumEngine::InkStrokeData::operator=(
 PDFiumEngine::InkStrokeData::~InkStrokeData() = default;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
-PDFiumEngine::ProgressivePaint::ProgressivePaint(int index,
+PDFiumEngine::ProgressivePaint::ProgressivePaint(uint32_t index,
                                                  const gfx::Rect& rect)
     : page_index_(index), rect_(rect) {}
 

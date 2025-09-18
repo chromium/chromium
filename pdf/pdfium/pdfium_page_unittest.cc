@@ -53,8 +53,8 @@ TEST(PDFiumPageHelperTest, ToPDFiumRotation) {
 
 TEST(PDFiumPageHelperTest, ScopedUnloadPreventer) {
   // Should not DCHECK in its dtor due to ScopedUnloadPreventer usage.
-  PDFiumPage page1(/*engine=*/nullptr, 1);
-  PDFiumPage page2(/*engine=*/nullptr, 2);
+  PDFiumPage page1(/*engine=*/nullptr, 1u);
+  PDFiumPage page2(/*engine=*/nullptr, 2u);
   PDFiumPage::ScopedUnloadPreventer prevent_unload1(&page1);
   PDFiumPage::ScopedUnloadPreventer prevent_unload2(&page2);
   PDFiumPage::ScopedUnloadPreventer prevent_unload3(prevent_unload2);
@@ -147,8 +147,8 @@ constexpr struct {
 using PDFiumPageTest = PDFiumTestBase;
 
 TEST_P(PDFiumPageTest, Constructor) {
-  PDFiumPage page(/*engine=*/nullptr, 2);
-  EXPECT_EQ(page.index(), 2);
+  PDFiumPage page(/*engine=*/nullptr, 2u);
+  EXPECT_EQ(page.index(), 2u);
   EXPECT_TRUE(page.rect().IsEmpty());
   EXPECT_FALSE(page.available());
 }

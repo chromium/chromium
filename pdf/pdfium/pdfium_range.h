@@ -5,6 +5,8 @@
 #ifndef PDF_PDFIUM_PDFIUM_RANGE_H_
 #define PDF_PDFIUM_PDFIUM_RANGE_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
@@ -54,7 +56,7 @@ class PDFiumRange {
   // backwards.
   void SetCharCount(int char_count);
 
-  int page_index() const { return page_->index(); }
+  uint32_t page_index() const { return page_->index(); }
   int char_index() const { return char_index_; }
   int char_count() const { return char_count_; }
 

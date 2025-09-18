@@ -61,7 +61,7 @@ TEST_P(PDFiumTextFragmentFinderTest, OnlyTextStart) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 9);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartAndEnd) {
@@ -78,7 +78,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartAndEnd) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 0);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartAndTextSuffix) {
@@ -94,7 +94,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartAndTextSuffix) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 4141);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartEndAndSuffix) {
@@ -113,7 +113,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartEndAndSuffix) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 704);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixAndTextStart) {
@@ -129,7 +129,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixAndTextStart) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 489);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndSuffix) {
@@ -145,7 +145,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndSuffix) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 2072);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndEnd) {
@@ -164,7 +164,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndEnd) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 840);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartEndAndSuffix) {
@@ -182,7 +182,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartEndAndSuffix) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 3591);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, MultipleTextFragments) {
@@ -202,25 +202,25 @@ TEST_P(PDFiumTextFragmentFinderTest, MultipleTextFragments) {
   EXPECT_EQ(range.GetText(), kExpectedString1);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString1.size()));
   EXPECT_EQ(range.char_index(), 9);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[1];
   EXPECT_EQ(range.GetText(), kExpectedString1);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString1.size()));
   EXPECT_EQ(range.char_index(), 489);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[2];
   EXPECT_EQ(range.GetText(), kExpectedString1);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString1.size()));
   EXPECT_EQ(range.char_index(), 2072);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[3];
   EXPECT_EQ(range.GetText(), kExpectedString2);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString2.size()));
   EXPECT_EQ(range.char_index(), 3591);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, MultiPage) {
@@ -241,31 +241,31 @@ TEST_P(PDFiumTextFragmentFinderTest, MultiPage) {
   EXPECT_EQ(range.GetText(), kExpectedString1);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString1.size()));
   EXPECT_EQ(range.char_index(), 0);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[1];
   EXPECT_EQ(range.GetText(), kExpectedString1);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString1.size()));
   EXPECT_EQ(range.char_index(), 27);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[2];
   EXPECT_EQ(range.GetText(), kExpectedString2);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString2.size()));
   EXPECT_EQ(range.char_index(), 7);
-  EXPECT_EQ(range.page_index(), 1);
+  EXPECT_EQ(range.page_index(), 1u);
 
   range = highlights[3];
   EXPECT_EQ(range.GetText(), kExpectedString3);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString3.size()));
   EXPECT_EQ(range.char_index(), 59);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[4];
   EXPECT_EQ(range.GetText(), kExpectedString4);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString4.size()));
   EXPECT_EQ(range.char_index(), 7);
-  EXPECT_EQ(range.page_index(), 1);
+  EXPECT_EQ(range.page_index(), 1u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, FragmentNotInPDF) {
@@ -331,7 +331,7 @@ TEST_P(PDFiumTextFragmentFinderTest,
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 0);
-  EXPECT_EQ(range.page_index(), 1);
+  EXPECT_EQ(range.page_index(), 1u);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumTextFragmentFinderTest, testing::Bool());

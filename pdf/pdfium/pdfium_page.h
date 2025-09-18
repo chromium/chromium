@@ -5,6 +5,8 @@
 #ifndef PDF_PDFIUM_PDFIUM_PAGE_H_
 #define PDF_PDFIUM_PDFIUM_PAGE_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <optional>
 #include <set>
@@ -64,7 +66,7 @@ class PDFiumPage {
     raw_ptr<PDFiumPage> page_;
   };
 
-  PDFiumPage(PDFiumEngine* engine, int i);
+  PDFiumPage(PDFiumEngine* engine, uint32_t i);
   PDFiumPage(const PDFiumPage&) = delete;
   PDFiumPage& operator=(const PDFiumPage&) = delete;
   PDFiumPage(PDFiumPage&& that);
@@ -271,7 +273,7 @@ class PDFiumPage {
   gfx::Size GetThumbnailSize(float device_pixel_ratio);
 #endif
 
-  int index() const { return index_; }
+  uint32_t index() const { return index_; }
 
   const gfx::Rect& rect() const { return rect_; }
   void set_rect(const gfx::Rect& r) { rect_ = r; }
@@ -492,7 +494,7 @@ class PDFiumPage {
   raw_ptr<PDFiumEngine> engine_;
   ScopedFPDFPage page_;
   ScopedFPDFTextPage text_page_;
-  int index_;
+  uint32_t index_;
   int preventing_unload_count_ = 0;
   gfx::Rect rect_;
   bool calculated_links_ = false;
