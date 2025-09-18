@@ -104,7 +104,7 @@ void LensComposeboxHandler::ClearFiles() {
   // composebox is not yet supported.
 }
 
-void LensComposeboxHandler::GetTabs(GetTabsCallback callback) {
+void LensComposeboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
   // Ignored, intentionally unimplemented for Lens.
 }
 
