@@ -33,7 +33,8 @@ class CookieControlsController;
 // controls page action, including logic for showing/hiding and executing the
 // page action.
 class CookieControlsPageActionController
-    : public content_settings::CookieControlsObserver {
+    : public content_settings::CookieControlsObserver,
+      public page_actions::PageActionObserver {
  public:
   // An interface for interacting with the Cookie Controls bubble.
   class BubbleDelegate {
@@ -59,6 +60,10 @@ class CookieControlsPageActionController
   ~CookieControlsPageActionController() override;
 
   void Init();
+
+  // PageActionObserver
+  void OnPageActionChipShown(
+      const page_actions::PageActionState& page_action) override;
 
   // CookieControlsObserver:
   void OnCookieControlsIconStatusChanged(
@@ -110,6 +115,9 @@ class CookieControlsPageActionController
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
       controller_observation_{this};
+
+  // Timer used to collapse from the chip state after some time.
+  base::OneShotTimer hide_chip_timer_;
 
   base::WeakPtrFactory<CookieControlsPageActionController> weak_ptr_factory_{
       this};

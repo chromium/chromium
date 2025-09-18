@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
@@ -168,8 +169,13 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
 
   tabs::MockTabInterface& mock_tab_interface() { return mock_tab_interface_; }
 
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -514,6 +520,17 @@ TEST_P(CookieControlsPageActionControllerTest, WebContentsChangeUpdatesIcon) {
       /*icon_visible=*/true, CookieControlsState::kAllowed3pc, GetParam(),
       /*should_highlight=*/false);
   EXPECT_EQ(page_action_controller().last_text(), AllowedLabel());
+}
+
+TEST_P(CookieControlsPageActionControllerTest, ChipHidesAfterTimeout) {
+  EXPECT_CALL(page_action_controller(),
+              HideSuggestionChip(kActionShowCookieControls))
+      .Times(1);
+
+  page_actions::PageActionState state;
+  controller().OnPageActionChipShown(state);
+
+  task_environment().FastForwardBy(base::Seconds(12));
 }
 
 struct ActionTestParams {

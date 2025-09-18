@@ -6,6 +6,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -127,7 +128,8 @@ CookieControlsPageActionController::CookieControlsPageActionController(
     tabs::TabInterface& tab_interface,
     Profile& profile,
     page_actions::PageActionController& page_action_controller)
-    : tab_(tab_interface),
+    : PageActionObserver(kActionShowCookieControls),
+      tab_(tab_interface),
       page_action_controller_(page_action_controller),
       cookie_controls_controller_(
           std::make_unique<content_settings::CookieControlsController>(
@@ -140,6 +142,7 @@ CookieControlsPageActionController::CookieControlsPageActionController(
               profile.IsIncognitoProfile())),
       bubble_delegate_(std::make_unique<BubbleDelegateImpl>(tab_interface)) {
   CHECK(IsPageActionMigrated(PageActionIconType::kCookieControls));
+  RegisterAsPageActionObserver(page_action_controller_.get());
 }
 
 CookieControlsPageActionController::~CookieControlsPageActionController() =
@@ -164,6 +167,17 @@ void CookieControlsPageActionController::Init() {
             cookies_controller.Update(new_contents);
           },
           std::ref(*cookie_controls_controller_)));
+}
+
+void CookieControlsPageActionController::OnPageActionChipShown(
+    const page_actions::PageActionState& page_action) {
+  hide_chip_timer_.Start(
+      FROM_HERE, base::Seconds(12),
+      base::BindOnce(
+          [](page_actions::PageActionController& controller) {
+            controller.HideSuggestionChip(kActionShowCookieControls);
+          },
+          std::ref(page_action_controller_.get())));
 }
 
 void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
