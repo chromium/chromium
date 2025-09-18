@@ -175,11 +175,10 @@ BASE_FEATURE(kWebAuthnLargeBlobForGPM,
              "WebAuthenticationLargeBlobGPM",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Deprecation flag. Intended to be disabled once the enclave no longer requires
-// a PIN generation number.
+// Deprecation flag. Disabled by default in M142. Remove in or after M145.
 BASE_FEATURE(kWebAuthnSendPinGeneration,
              "WebAuthenticationSendPinGeneration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabled by default in M141. Remove in or after M144.
 BASE_FEATURE(kWebAuthnWrapCohortData,
