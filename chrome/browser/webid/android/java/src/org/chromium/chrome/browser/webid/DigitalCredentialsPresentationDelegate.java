@@ -17,6 +17,7 @@ import android.os.ResultReceiver;
 
 import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
+import androidx.credentials.Credential;
 import androidx.credentials.GetDigitalCredentialOption;
 import androidx.credentials.provider.PendingIntentHandler;
 
@@ -46,10 +47,6 @@ public class DigitalCredentialsPresentationDelegate {
 
     // Arbitrary request code that is used when invoking the GMSCore API.
     private static final int REQUEST_CODE_DIGITAL_CREDENTIALS = 777;
-
-    @VisibleForTesting
-    public static final String BUNDLE_KEY_REQUEST_JSON =
-            "androidx.credentials.BUNDLE_KEY_REQUEST_JSON";
 
     @VisibleForTesting public static final String DC_API_RESPONSE_PROTOCOL_KEY = "protocol";
     @VisibleForTesting public static final String DC_API_RESPONSE_DATA_KEY = "data";
@@ -185,11 +182,11 @@ public class DigitalCredentialsPresentationDelegate {
         if (response == null) {
             return null;
         }
-        Bundle dataBundle = response.getCredential().getData();
-        if (dataBundle == null) {
+        Credential c = response.getCredential();
+        if (!(c instanceof androidx.credentials.DigitalCredential)) {
             return null;
         }
-        String credentialJson = dataBundle.getString(BUNDLE_KEY_REQUEST_JSON);
+        String credentialJson = ((androidx.credentials.DigitalCredential) c).getCredentialJson();
         if (credentialJson == null) {
             return null;
         }

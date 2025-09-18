@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_IDENTITY_TOKEN;
 import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_PROVIDER_DATA;
-import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_REQUEST_JSON;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -57,6 +56,11 @@ public class DigitalCredentialsPresentationDelegateTest {
     private static final String JSON_WITHOUT_PROTOCOL = "{\"data\": {\"test_key\":\"test_value\"}}";
     private static final byte[] LEGACY_RESPONSE = "{\"legacy_key\":\"legacy_value\"}".getBytes();
 
+    private static final String BUNDLE_KEY_REQUEST_JSON =
+            "androidx.credentials.BUNDLE_KEY_REQUEST_JSON";
+
+    // TODO(crbug.com/445426828): Move to using the helper method to populate the response instead
+    // of adjusting the fields directly.
     private void packageResponseJsonInLegacyFormat(byte[] response, Intent intent) {
         Bundle dataBundle = new Bundle();
         dataBundle.putByteArray(BUNDLE_KEY_IDENTITY_TOKEN, response);
@@ -191,14 +195,14 @@ public class DigitalCredentialsPresentationDelegateTest {
     }
 
     @Test
-    public void testExtractDigitalCredentialFromGetResponse_JSONException()
+    public void testExtractDigitalCredentialFromGetResponse_GetCredentialException()
             throws JSONException, NullPointerException, GetCredentialException {
         Intent intent = new Intent();
         packageResponseJsonInNewFormat("{invalidjson", intent);
         Bundle bundle = packageIntentInResponseBundle(intent);
 
         assertThrows(
-                JSONException.class,
+                GetCredentialException.class,
                 () -> {
                     DigitalCredentialsPresentationDelegate
                             .extractDigitalCredentialFromResponseBundle(Activity.RESULT_OK, bundle);
