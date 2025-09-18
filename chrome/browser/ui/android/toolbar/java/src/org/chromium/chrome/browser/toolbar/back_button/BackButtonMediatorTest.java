@@ -311,4 +311,14 @@ public class BackButtonMediatorTest {
         mMediator.getFadeAnimator(false);
         assertEquals("View should be opaque", 1f, mModel.get(BackButtonProperties.ALPHA), 0.01f);
     }
+
+    @Test
+    public void testSetBackgroundInsets() {
+        final var insets = androidx.core.graphics.Insets.of(1, 2, 3, 4);
+        mMediator.setBackgroundInsets(insets);
+        assertEquals(
+                "Padding should be equal to insets.",
+                insets,
+                mModel.get(BackButtonProperties.PADDING));
+    }
 }

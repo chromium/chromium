@@ -350,4 +350,14 @@ public class ReloadButtonMediatorTest {
                 "Click listener should be set to null",
                 mModel.get(ReloadButtonProperties.CLICK_LISTENER));
     }
+
+    @Test
+    public void testSetBackgroundInsets() {
+        final var insets = androidx.core.graphics.Insets.of(1, 2, 3, 4);
+        mMediator.setBackgroundInsets(insets);
+        assertEquals(
+                "Padding should be equal to insets.",
+                insets,
+                mModel.get(ReloadButtonProperties.PADDING));
+    }
 }
