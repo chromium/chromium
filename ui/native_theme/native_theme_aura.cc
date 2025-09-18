@@ -197,10 +197,15 @@ void NativeThemeAura::PaintArrowButton(
     SkScalar ul = 0, ll = 0, ur = 0, lr = 0;
     if (part == kScrollbarDownArrow) {
       (extra_params.right_to_left ? ll : lr) = radius;
+    } else if (part == kScrollbarLeftArrow) {
+      ll = radius;
+    } else if (part == kScrollbarRightArrow) {
+      lr = radius;
     } else if (part == kScrollbarUpArrow) {
       (extra_params.right_to_left ? ul : ur) = radius;
     }
     const gfx::RRectF rrect(gfx::RectF(rect), ul, ul, ur, ur, lr, lr, ll, ll);
+    bg_flags.setAntiAlias(true);
     canvas->drawRRect(static_cast<SkRRect>(rrect), bg_flags);
   }
 
