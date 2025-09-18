@@ -115,7 +115,7 @@ void TabContextualizationController::
   data->is_page_context_eligible = page_context_eligible;
   data->primary_content_type = lens::MimeType::kAnnotatedPageContent;
   data->context_input = std::vector<lens::ContextualInput>();
-  if (!page_context_eligible) {
+  if (!page_context_eligible || !result.has_value()) {
     // Early return if the page is not context eligible.
     std::move(callback).Run(std::move(data));
     return;
