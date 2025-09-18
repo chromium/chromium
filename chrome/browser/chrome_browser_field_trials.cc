@@ -189,8 +189,7 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(
       features::kAlwaysUseAudioManagerOutputFramesPerBuffer);
   // TODO(crbug.com/440210010): Remove when the feature experiment is done.
-  feature_overrides.EnableFeature(
-      features::kAudioStereoInputStreamParameters);
+  feature_overrides.EnableFeature(features::kAudioStereoInputStreamParameters);
   // Enables picture-in-picture in the right-click context menu.
   // TODO(crbug.com/403851785): Remove when the feature is verified to be stable
   // on desktop Android.
@@ -210,6 +209,8 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/444486763): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(chrome::android::kAndroidTabHighlighting);
+  // TODO(b/441672693): Remove when the feature is stable on other form factors.
+  feature_overrides.EnableFeature(features::kAndroidAudioDeviceListener);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
