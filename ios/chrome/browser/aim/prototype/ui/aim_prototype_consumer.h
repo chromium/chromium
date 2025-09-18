@@ -17,6 +17,10 @@
 // Updates the state for the item with the given token.
 - (void)updateState:(AIMInputItemState)state
     forItemWithToken:(const base::UnguessableToken&)token;
+
+// Updates the mic button visibility.
+- (void)hideMicButton:(BOOL)hidden;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AIM_PROTOTYPE_UI_AIM_PROTOTYPE_CONSUMER_H_

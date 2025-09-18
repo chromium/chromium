@@ -241,6 +241,25 @@ void AIMOmniboxClient::OnResultChanged(
   }
 }
 
+void AIMOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
+                                     bool user_input_in_progress,
+                                     const std::u16string& user_text,
+                                     const AutocompleteResult& result,
+                                     bool has_focus) {
+  const AutocompleteMatch* default_match = result.default_match();
+  std::u16string text = u"";
+  if (!user_input_in_progress && default_match) {
+    // Handle pre-edit state where the user text is empty.
+    text = default_match->fill_into_edit;
+  } else {
+    text = user_text;
+  }
+  [delegate_
+      omniboxDidChangeText:text
+             isSearchQuery:AutocompleteMatch::IsSearchType(current_match.type)
+       userInputInProgress:user_input_in_progress];
+}
+
 void AIMOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   // If a search was done, donate the Search In Chrome intent to the OS for
   // future Siri suggestions.

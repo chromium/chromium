@@ -82,6 +82,11 @@ class AIMOmniboxClient final : public OmniboxClient,
                        bool default_match_changed,
                        bool should_prerender,
                        const BitmapFetchedCallback& on_bitmap_fetched) override;
+  void OnTextChanged(const AutocompleteMatch& current_match,
+                     bool user_input_in_progress,
+                     const std::u16string& user_text,
+                     const AutocompleteResult& result,
+                     bool has_focus) override;
   void OnURLOpenedFromOmnibox(OmniboxLog* log) override;
   void DiscardNonCommittedNavigations() override;
   const std::u16string& GetTitle() const override;

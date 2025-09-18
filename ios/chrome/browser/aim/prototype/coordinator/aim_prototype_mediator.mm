@@ -587,6 +587,12 @@ CreateInputDataFromAnnotatedPageContent(
   }
 }
 
+- (void)omniboxDidChangeText:(const std::u16string&)text
+               isSearchQuery:(BOOL)isSearchQuery
+         userInputInProgress:(BOOL)userInputInProgress {
+  [self.consumer hideMicButton:text.length()];
+}
+
 #pragma mark - Private helpers
 
 - (void)dismissAimPrototype {

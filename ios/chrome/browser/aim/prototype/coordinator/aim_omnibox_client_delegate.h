@@ -14,6 +14,11 @@
               destinationURL:(const GURL&)destinationURL
                 isSearchType:(BOOL)isSearchType;
 
+/// Omnibox did change text.
+- (void)omniboxDidChangeText:(const std::u16string&)text
+               isSearchQuery:(BOOL)isSearchQuery
+         userInputInProgress:(BOOL)userInputInProgress;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_OMNIBOX_CLIENT_DELEGATE_H_

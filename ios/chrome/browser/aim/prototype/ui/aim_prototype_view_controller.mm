@@ -49,7 +49,7 @@ const CGFloat kInputPlatePadding = 10.0f;
 /// The vertical padding for the input plate stack view.
 const CGFloat kInputPlateStackViewVerticalPadding = 10.0f;
 /// The leading padding for the input plate stack view.
-const CGFloat kInputPlateStackViewLeadingPadding = 20.0f;
+const CGFloat kInputPlateStackViewLeadingPadding = 10.0f;
 /// The trailing padding for the input plate stack view.
 const CGFloat kInputPlateStackViewTrailingPadding = 12.0f;
 /// The font size for the AIM mode button title.
@@ -65,6 +65,11 @@ const CGFloat kGenericButtonHeight = 32.0f;
 const CGFloat kGlowEffectDuration = 1.0f;
 /// The width of the glow effect border.
 const CGFloat kGlowEffectWidth = 4.0f;
+
+/// The top padding between the omnibox container and the mic button.
+const CGFloat kMicButtonTopPadding = 2.0f;
+/// The trailing padding between the omnibox container and the mic button.
+const CGFloat kMicButtonTrailingPadding = 5.0f;
 
 /// The size for the close button.
 const CGFloat kCloseButtonSize = 30.0f;
@@ -99,6 +104,8 @@ const CGFloat kFadeViewWidth = 30.0f;
   UIButton* _aimButton;
   /// The glow effect around the input plate container.
   UIView<GlowEffect>* _glowEffectView;
+  /// The mic button for voice search.
+  UIButton* _micButton;
   /// The fade view for the carousel.
   UIView* _carouselFadeView;
   /// The carousel container.
@@ -187,6 +194,22 @@ const CGFloat kFadeViewWidth = 30.0f;
   }
 
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  _micButton = [self
+      createButtonWithImage:DefaultSymbolWithPointSize(kMicrophoneSymbol,
+                                                       kSymbolActionPointSize)];
+  [_micButton addTarget:self
+                 action:@selector(micButtonTapped)
+       forControlEvents:UIControlEventTouchUpInside];
+  [_omniboxContainer addSubview:_micButton];
+  [NSLayoutConstraint activateConstraints:@[
+    [_micButton.topAnchor constraintEqualToAnchor:_omniboxContainer.topAnchor
+                                         constant:kMicButtonTopPadding],
+    [_micButton.widthAnchor constraintEqualToConstant:kGenericButtonWidth],
+    [_micButton.heightAnchor constraintEqualToConstant:kGenericButtonHeight],
+    [_micButton.trailingAnchor
+        constraintEqualToAnchor:_omniboxContainer.trailingAnchor
+                       constant:-kMicButtonTrailingPadding],
+  ]];
 
   // Carousel view
   UICollectionViewFlowLayout* layout =
@@ -311,18 +334,9 @@ const CGFloat kFadeViewWidth = 30.0f;
   [_aimButton.widthAnchor constraintEqualToConstant:kAIMButtonWidth].active =
       YES;
 
-  UIButton* micButton = [self
-      createButtonWithImage:DefaultSymbolWithPointSize(kMicrophoneSymbol,
-                                                       kSymbolActionPointSize)];
-  [micButton addTarget:self
-                action:@selector(micButtonTapped)
-      forControlEvents:UIControlEventTouchUpInside];
-
   // Horizontal stack view for buttons
-  UIStackView* buttonsStackView =
-      [[UIStackView alloc] initWithArrangedSubviews:@[
-        plusButton, _aimButton, [UIView new], micButton
-      ]];
+  UIStackView* buttonsStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ plusButton, _aimButton, [UIView new] ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
   buttonsStackView.spacing = kButtonsStackViewSpacing;
@@ -465,6 +479,10 @@ const CGFloat kFadeViewWidth = 30.0f;
       [currentSnapshot copy];
   [newSnapshot reconfigureItemsWithIdentifiers:@[ itemToUpdate ]];
   [_dataSource applySnapshot:newSnapshot animatingDifferences:YES];
+}
+
+- (void)hideMicButton:(BOOL)hidden {
+  _micButton.hidden = hidden;
 }
 
 #pragma mark - Actions
