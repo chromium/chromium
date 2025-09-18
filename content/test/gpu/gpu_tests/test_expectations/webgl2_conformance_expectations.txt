@@ -28,8 +28,8 @@
 #         web-engine-shell
 #         cros-chrome ]
 # GPU
-# tags: [ amd amd-0x150e amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
-#             amd-0x7480
+# tags: [ amd amd-0x150e amd-0x1900 amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821
+#             amd-0x7340 amd-0x7480
 #         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -793,6 +793,10 @@ crbug.com/1152588 [ linux amd-0x7340 angle-opengl passthrough ] conformance2/ren
 ## Linux AMD RX 7600 ##
 
 crbug.com/436274257 [ linux amd-0x7480 ] deqp/functional/gles3/uniformbuffers/multi_nested_struct.html [ Failure ]
+
+## Linux AMD 780M ##
+
+crbug.com/445727124 [ linux amd-0x1900 ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
 
 ## Linux Intel Mesa Version **
 

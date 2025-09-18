@@ -28,8 +28,8 @@
 #         web-engine-shell
 #         cros-chrome ]
 # GPU
-# tags: [ amd amd-0x150e amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
-#             amd-0x7480
+# tags: [ amd amd-0x150e amd-0x1900 amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821
+#             amd-0x7340 amd-0x7480
 #         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -528,6 +528,9 @@ crbug.com/437973213 [ android android-brya ] Pixel_Video_MP4_Rounded_Corner [ Fa
 
 # Win11/RTX 4070 Super failures after upgrading to driver 580.88
 crbug.com/438515327 [ win11 nvidia-0x2783 ] Pixel_Canvas2DRedBoxScrgbLinear [ RetryOnFailure ]
+
+# Linux/AMD 780M failures
+crbug.com/445727123 [ linux amd-0x1900 ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
