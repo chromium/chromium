@@ -44,6 +44,11 @@
 
 namespace {
 
+/// Minimum number of whitespace to auto trigger AIM.
+constexpr size_t kMinWhitespaceTriggerAIM = 1;
+/// Minimum number of characters to auto trigger AIM.
+constexpr size_t kMinCharTriggerAIM = 10;
+
 // Reads data from a file URL. Runs on a background thread.
 NSData* ReadDataFromURL(GURL url) {
   NSURL* ns_url = net::NSURLWithGURL(url);
@@ -110,6 +115,14 @@ CreateInputDataFromAnnotatedPageContent(
   return input_data;
 }
 
+/// Returns the number of whitespace in `string`.
+size_t WhitespaceCount(const std::u16string& string) {
+  return std::count_if(
+      string.begin(), string.end(),
+      [](unsigned char c) { return std::isspace(c); }  // The condition
+  );
+}
+
 }  // namespace
 
 @implementation AIMPrototypeMediator {
@@ -169,7 +182,7 @@ CreateInputDataFromAnnotatedPageContent(
   AIMInputItem* item = [[AIMInputItem alloc]
       initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeImage];
   [_items addObject:item];
-  [self.consumer setItems:_items];
+  [self updateConsumerItems];
   const base::UnguessableToken& token = item.token;
 
   __weak __typeof(self) weakSelf = self;
@@ -200,7 +213,7 @@ CreateInputDataFromAnnotatedPageContent(
   item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
   item.subtitle = @"PDF";
   [_items addObject:item];
-  [self.consumer setItems:_items];
+  [self updateConsumerItems];
   const base::UnguessableToken& token = item.token;
 
   // Read the data in the background then call `onDataReadForItem`.
@@ -228,7 +241,7 @@ CreateInputDataFromAnnotatedPageContent(
     _composeboxQueryController->DeleteFile(item.token);
   }
 
-  [self.consumer setItems:_items];
+  [self updateConsumerItems];
 }
 
 - (void)sendText:(NSString*)text {
@@ -390,7 +403,7 @@ CreateInputDataFromAnnotatedPageContent(
 
   if (!item.previewImage) {
     item.previewImage = image;
-    [self.consumer setItems:_items];
+    [self updateConsumerItems];
   }
 
   base::OnceClosure task;
@@ -466,7 +479,7 @@ CreateInputDataFromAnnotatedPageContent(
   item.title = base::SysUTF16ToNSString(webState->GetTitle());
   item.subtitle = base::SysUTF8ToNSString(webState->GetVisibleURL().host());
   [_items addObject:item];
-  [self.consumer setItems:_items];
+  [self updateConsumerItems];
   __block const base::UnguessableToken& token = item.token;
 
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
@@ -597,13 +610,30 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)omniboxDidChangeText:(const std::u16string&)text
                isSearchQuery:(BOOL)isSearchQuery
          userInputInProgress:(BOOL)userInputInProgress {
+  // Update mic button visibility.
   [self.consumer hideMicButton:text.length()];
+
+  // Auto trigger AIM if conditions are met.
+  if (!_AIModeEnabled && userInputInProgress && isSearchQuery) {
+    if (text.length() >= kMinCharTriggerAIM &&
+        WhitespaceCount(text) >= kMinWhitespaceTriggerAIM) {
+      [self.consumer setAIModeEnabled:YES];
+    }
+  }
 }
 
 #pragma mark - Private helpers
 
 - (void)dismissAimPrototype {
   [self.delegate dismissAimPrototype];
+}
+
+/// Updates the consumer items and maybe trigger AIM.
+- (void)updateConsumerItems {
+  [self.consumer setItems:_items];
+  if (_items.count > 0) {
+    [self.consumer setAIModeEnabled:YES];
+  }
 }
 
 @end

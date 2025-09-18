@@ -11,6 +11,7 @@
 
 // Consumer for the AIM prototype.
 @protocol AIMPrototypeConsumer
+
 // Sets the current list of items to be displayed.
 - (void)setItems:(NSArray<AIMInputItem*>*)items;
 
@@ -20,6 +21,9 @@
 
 // Updates the mic button visibility.
 - (void)hideMicButton:(BOOL)hidden;
+
+// Sets whether AI mode is enabled.
+- (void)setAIModeEnabled:(BOOL)AIModeEnabled;
 
 @end
 
