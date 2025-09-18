@@ -3,6 +3,12 @@
 # found in the LICENSE file.
 
 declare_args() {
+  # Controls whether Chrome links with MaterialComponents.framework or
+  # gets the implementation from its downstream provider. Ignored if
+  # MaterialComponents is not build as a framework.
+  # Ignored. Will be removed soon.
+  ios_chrome_links_with_material_components_framework = false
+
   # Controls whether Chrome links with Lottie.framework or gets the
   # implementation from its downstream provider. Ignored if Lottie is
   # not build as a framework.
