@@ -348,8 +348,8 @@ public class NtpCustomizationConfigManager {
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
-    public void setBackgroundImageDrawableForTesting(@Nullable BitmapDrawable bitmapDrawable) {
-        mBackgroundImageDrawable = bitmapDrawable;
+    public void setBackgroundColorForTesting(@ColorInt int color) {
+        mBackgroundColor = color;
     }
 
     public @ColorInt int getBackgroundColorForTesting() {

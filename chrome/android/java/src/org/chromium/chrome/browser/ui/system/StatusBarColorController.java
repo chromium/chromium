@@ -177,7 +177,10 @@ public class StatusBarColorController
         mIncognitoDefaultThemeColor =
                 SurfaceColorUpdateUtils.getDefaultThemeColor(context, /* isIncognito= */ true);
         var ntpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
-        mBackgroundColorForNtp = ntpCustomizationConfigManager.getBackgroundColor(context);
+        mBackgroundColorForNtp =
+                supportEdgeToEdge
+                        ? ntpCustomizationConfigManager.getBackgroundColor(context)
+                        : ContextCompat.getColor(context, R.color.home_surface_background_color);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
 
         // TODO(b/41494931): Share code with LocationBarCoordinator's constructor.
@@ -583,5 +586,10 @@ public class StatusBarColorController
      */
     private boolean isStandardNtp() {
         return mCurrentTab != null && mCurrentTab.getNativePage() instanceof NewTabPage;
+    }
+
+    @ColorInt
+    int getBackgroundColorForNtpForTesting() {
+        return mBackgroundColorForNtp;
     }
 }
