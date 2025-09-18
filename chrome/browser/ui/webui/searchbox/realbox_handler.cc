@@ -55,6 +55,7 @@
 #include "ui/base/window_open_disposition_utils.h"
 
 namespace {
+
 class RealboxOmniboxClient final : public SearchboxOmniboxClient {
  public:
   RealboxOmniboxClient(Profile* profile, content::WebContents* web_contents);
@@ -80,6 +81,28 @@ RealboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
 void RealboxOmniboxClient::OnBookmarkLaunched() {
   RecordBookmarkLaunch(BookmarkLaunchLocation::kOmnibox,
                        profile_metrics::GetBrowserProfileType(profile_));
+}
+
+searchbox::mojom::SelectionLineState ConvertLineState(
+    OmniboxPopupSelection::LineState state) {
+  switch (state) {
+    case OmniboxPopupSelection::LineState::NORMAL:
+      return searchbox::mojom::SelectionLineState::kNormal;
+    case OmniboxPopupSelection::LineState::KEYWORD_MODE:
+      return searchbox::mojom::SelectionLineState::kKeywordMode;
+    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM:
+      // WebUi currently only cares about popup matches' selection states. No
+      // need to pipe in a selection state that's unique to the omnibox input.
+      return searchbox::mojom::SelectionLineState::kNormal;
+    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION:
+      return searchbox::mojom::SelectionLineState::kFocusedButtonAction;
+    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_REMOVE_SUGGESTION:
+      return searchbox::mojom::SelectionLineState::
+          kFocusedButtonRemoveSuggestion;
+    default:
+      // Realbox doesn't support the other UIs and their focus states.
+      NOTREACHED() << state;
+  }
 }
 
 }  // namespace
@@ -161,23 +184,6 @@ void RealboxHandler::ExecuteAction(uint8_t line,
       action_index);
   edit_model()->OpenSelection(selection, match_selection_timestamp,
                               disposition);
-}
-
-searchbox::mojom::SelectionLineState ConvertLineState(
-    OmniboxPopupSelection::LineState state) {
-  switch (state) {
-    case OmniboxPopupSelection::LineState::NORMAL:
-      return searchbox::mojom::SelectionLineState::kNormal;
-    case OmniboxPopupSelection::LineState::KEYWORD_MODE:
-      return searchbox::mojom::SelectionLineState::kKeywordMode;
-    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION:
-      return searchbox::mojom::SelectionLineState::kFocusedButtonAction;
-    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_REMOVE_SUGGESTION:
-      return searchbox::mojom::SelectionLineState::
-          kFocusedButtonRemoveSuggestion;
-    default:
-      NOTREACHED();
-  }
 }
 
 void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
