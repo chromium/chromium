@@ -1281,6 +1281,7 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix:
     case wgpu::FeatureName::TextureComponentSwizzle:
     case wgpu::FeatureName::TextureFormatsTier1:
+    case wgpu::FeatureName::TextureFormatsTier2:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     case wgpu::FeatureName::AdapterPropertiesD3D:
     case wgpu::FeatureName::AdapterPropertiesVk:

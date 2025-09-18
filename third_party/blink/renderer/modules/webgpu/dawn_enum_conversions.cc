@@ -737,6 +737,8 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::PrimitiveIndex;
     case V8GPUFeatureName::Enum::kTextureFormatsTier1:
       return wgpu::FeatureName::TextureFormatsTier1;
+    case V8GPUFeatureName::Enum::kTextureFormatsTier2:
+      return wgpu::FeatureName::TextureFormatsTier2;
   }
 }
 

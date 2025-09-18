@@ -58,6 +58,8 @@ std::optional<V8GPUFeatureName::Enum> GPUSupportedFeatures::ToV8FeatureNameEnum(
       return V8GPUFeatureName::Enum::kPrimitiveIndex;
     case wgpu::FeatureName::TextureFormatsTier1:
       return V8GPUFeatureName::Enum::kTextureFormatsTier1;
+    case wgpu::FeatureName::TextureFormatsTier2:
+      return V8GPUFeatureName::Enum::kTextureFormatsTier2;
     default:
       return std::nullopt;
   }
