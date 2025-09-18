@@ -67,6 +67,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ModelExecutionFeature">
+  <variant name="AmountExtraction" summary="Amount Extraction"/>
   <variant name="BlingPrototyping" summary="Bling Prototyping"/>
   <variant name="Compose" summary="Compose"/>
   <variant name="EnhancedCalendar" summary="Enhanced Calendar"/>

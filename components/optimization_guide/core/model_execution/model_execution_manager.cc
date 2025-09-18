@@ -115,6 +115,7 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kEnhancedCalendar:
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
+    case ModelBasedCapabilityKey::kAmountExtraction:
       return 1;
     case ModelBasedCapabilityKey::kFormsClassifications:
       // Since there can be multiple forms on a single page, multiple parallel

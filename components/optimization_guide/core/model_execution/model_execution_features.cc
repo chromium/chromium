@@ -154,6 +154,7 @@ std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
     case ModelBasedCapabilityKey::kEnhancedCalendar:
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
+    case ModelBasedCapabilityKey::kAmountExtraction:
       return std::nullopt;
   }
 }

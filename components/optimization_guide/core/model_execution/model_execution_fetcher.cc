@@ -263,6 +263,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
       // TODO(crbug.com/441680019): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
+    case ModelBasedCapabilityKey::kAmountExtraction:
+      // TODO(crbug.com/445712869): Add network traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kPromptApi:
@@ -315,6 +318,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kEnhancedCalendar:
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
+    case ModelBasedCapabilityKey::kAmountExtraction:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:
       return !base::FeatureList::IsEnabled(
