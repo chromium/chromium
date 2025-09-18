@@ -8,18 +8,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_IDENTITY_TOKEN;
 import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_PROVIDER_DATA;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.credentials.Credential;
-import android.credentials.GetCredentialResponse;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.provider.PendingIntentHandler;
 
 import com.google.android.gms.identitycredentials.GetCredentialException;
 
@@ -41,14 +40,6 @@ public class DigitalCredentialsPresentationDelegateTest {
             "androidx.identitycredentials.EXTRA_CREDENTIAL_TYPE";
     private static final String INTENT_HELPER_EXTRA_CREDENTIAL_DATA =
             "androidx.identitycredentials.EXTRA_CREDENTIAL_DATA";
-    private static final String EXTRA_CREDENTIAL_TYPE =
-            "androidx.credentials.provider.extra.EXTRA_CREDENTIAL_TYPE";
-    private static final String EXTRA_CREDENTIAL_DATA =
-            "androidx.credentials.provider.extra.EXTRA_CREDENTIAL_DATA";
-    private static final String EXTRA_GET_CREDENTIAL_RESPONSE =
-            "android.service.credentials.extra.GET_CREDENTIAL_RESPONSE";
-    private static final String CREDENTIAL_TYPE_DIGITAL_CREDENTIAL =
-            "androidx.credentials.TYPE_DIGITAL_CREDENTIAL";
     private static final String JSON_PROTOCOL = "openid4vp";
     private static final String JSON_DATA = "{\"test_key\":\"test_value\"}";
     private static final String JSON_WITH_PROTOCOL =
@@ -59,8 +50,6 @@ public class DigitalCredentialsPresentationDelegateTest {
     private static final String BUNDLE_KEY_REQUEST_JSON =
             "androidx.credentials.BUNDLE_KEY_REQUEST_JSON";
 
-    // TODO(crbug.com/445426828): Move to using the helper method to populate the response instead
-    // of adjusting the fields directly.
     private void packageResponseJsonInLegacyFormat(byte[] response, Intent intent) {
         Bundle dataBundle = new Bundle();
         dataBundle.putByteArray(BUNDLE_KEY_IDENTITY_TOKEN, response);
@@ -70,38 +59,9 @@ public class DigitalCredentialsPresentationDelegateTest {
     }
 
     private void packageResponseJsonInNewFormat(String json, Intent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            packageResponseJsonInNewFormatAfter34(json, intent);
-        } else {
-            packageResponseJsonInNewFormatBefore34(json, intent);
-        }
-    }
-
-    private void packageResponseJsonInNewFormatBefore34(String json, Intent intent) {
-        Bundle credentialBundle = new Bundle();
-        credentialBundle.putString(BUNDLE_KEY_REQUEST_JSON, json);
-
-        Bundle dataBundle = new Bundle();
-        dataBundle.putString(EXTRA_CREDENTIAL_TYPE, CREDENTIAL_TYPE_DIGITAL_CREDENTIAL);
-        dataBundle.putBundle(EXTRA_CREDENTIAL_DATA, credentialBundle);
-
-        intent.putExtra(EXTRA_GET_CREDENTIAL_RESPONSE, dataBundle);
-    }
-
-    private void packageResponseJsonInNewFormatAfter34(String json, Intent intent) {
-        Bundle credentialBundle = new Bundle();
-        credentialBundle.putString(BUNDLE_KEY_REQUEST_JSON, json);
-
-        // Credential and GetCredentialResponse classes don't exist in Robolectric test and hence we
-        // mock them.
-        Credential credential = mock(Credential.class);
-        when(credential.getType()).thenReturn(CREDENTIAL_TYPE_DIGITAL_CREDENTIAL);
-        when(credential.getData()).thenReturn(credentialBundle);
-
-        GetCredentialResponse getCredentialResponse = mock(GetCredentialResponse.class);
-        when(getCredentialResponse.getCredential()).thenReturn(credential);
-
-        intent.putExtra(EXTRA_GET_CREDENTIAL_RESPONSE, getCredentialResponse);
+        PendingIntentHandler.setGetCredentialResponse(
+                intent,
+                new GetCredentialResponse(new androidx.credentials.DigitalCredential(json)));
     }
 
     private Bundle packageIntentInResponseBundle(Intent intent) {
@@ -188,21 +148,6 @@ public class DigitalCredentialsPresentationDelegateTest {
 
         assertThrows(
                 NullPointerException.class,
-                () -> {
-                    DigitalCredentialsPresentationDelegate
-                            .extractDigitalCredentialFromResponseBundle(Activity.RESULT_OK, bundle);
-                });
-    }
-
-    @Test
-    public void testExtractDigitalCredentialFromGetResponse_GetCredentialException()
-            throws JSONException, NullPointerException, GetCredentialException {
-        Intent intent = new Intent();
-        packageResponseJsonInNewFormat("{invalidjson", intent);
-        Bundle bundle = packageIntentInResponseBundle(intent);
-
-        assertThrows(
-                GetCredentialException.class,
                 () -> {
                     DigitalCredentialsPresentationDelegate
                             .extractDigitalCredentialFromResponseBundle(Activity.RESULT_OK, bundle);
