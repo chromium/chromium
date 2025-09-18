@@ -305,7 +305,6 @@ class ProfileMenuViewPixelTest
     // 3. Get default-enabled features.
     std::vector<base::test::FeatureRefAndParams> enabled_features_and_params = {
         {features::kEnterpriseProfileBadgingForMenu, {}},
-        {features::kEnterpriseProfileBadgingPolicies, {}},
         {syncer::kReplaceSyncPromosWithSignInPromos, {}}};
 
     // 4. Get default-enabled features without params-disabled.

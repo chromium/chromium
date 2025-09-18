@@ -381,10 +381,6 @@ bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
           features::kEnterpriseProfileBadgingForMenu)) {
     return true;
   }
-  if (!base::FeatureList::IsEnabled(
-          features::kEnterpriseProfileBadgingPolicies)) {
-    return false;
-  }
 
   // The check for supervised users is here as a precaution since the
   // kEnterpriseLogoUrlForProfile should be set by policy.
@@ -395,24 +391,8 @@ bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
 }
 
 bool CanShowEnterpriseBadgingForAvatar(Profile* profile) {
-  if (!CanShowEnterpriseProfileUI(profile)) {
-    return false;
-  }
-  if (!IsEnterpriseBadgingEnabledForToolbar(profile)) {
-    return false;
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kEnterpriseProfileBadgingForAvatar)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::kEnterpriseProfileBadgingPolicies)) {
-    return false;
-  }
-
-  return !profile->GetPrefs()
-              ->GetString(prefs::kEnterpriseCustomLabelForProfile)
-              .empty();
+  return CanShowEnterpriseProfileUI(profile) &&
+         IsEnterpriseBadgingEnabledForToolbar(profile);
 }
 
 bool CanShowEnterpriseProfileUI(Profile* profile) {

@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -97,7 +96,6 @@ class ManagedBrowserUtilsTest : public testing::Test {
   std::unique_ptr<policy::MockConfigurationPolicyProvider> mock_provider_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile> profile_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ManagedBrowserUtilsTest, HasMachineLevelPolicies) {
@@ -113,8 +111,6 @@ TEST_F(ManagedBrowserUtilsTest, HasMachineLevelPolicies) {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(ManagedBrowserUtilsTest, WorkProfileDefaultLabel) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnterpriseProfileBadgingForAvatar);
   // Ensure enterprise badging can be shown.
   std::u16string work_label = u"Work";
 
@@ -149,8 +145,6 @@ TEST_F(ManagedBrowserUtilsTest, WorkProfileDefaultLabel) {
 }
 
 TEST_F(ManagedBrowserUtilsTest, DefaultLabelDisabledbyPolicy) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnterpriseProfileBadgingForAvatar);
   std::u16string work_label = u"Work";
   profile()->GetPrefs()->SetInteger(
       prefs::kEnterpriseProfileBadgeToolbarSettings, 1);
@@ -164,8 +158,6 @@ TEST_F(ManagedBrowserUtilsTest, DefaultLabelDisabledbyPolicy) {
 }
 
 TEST_F(ManagedBrowserUtilsTest, CustomLabelDisabledbyPolicy) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnterpriseProfileBadgingForAvatar);
   profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabelForProfile,
                                    "Custom Label");
   profile()->GetPrefs()->SetInteger(
@@ -180,8 +172,6 @@ TEST_F(ManagedBrowserUtilsTest, CustomLabelDisabledbyPolicy) {
 }
 
 TEST_F(ManagedBrowserUtilsTest, CustomLabelTruncated) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnterpriseProfileBadgingForAvatar);
   profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabelForProfile,
                                    "Custom Label Can Be Max 16 Characters");
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
@@ -194,18 +184,6 @@ TEST_F(ManagedBrowserUtilsTest, CustomLabelTruncated) {
   // The text should be truncated to 16 characters followed by ellipsis.
   EXPECT_EQ(enterprise_util::GetEnterpriseLabel(profile(), true),
             u"Custom Label Can…");
-}
-
-TEST_F(ManagedBrowserUtilsTest, DefaultLabelGatedBehindFeature) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kEnterpriseProfileBadgingForAvatar);
-  enterprise_util::SetUserAcceptedAccountManagement((profile()), true);
-  policy::ScopedManagementServiceOverrideForTesting platform_management(
-      policy::ManagementServiceFactory::GetForProfile(profile()),
-      policy::EnterpriseManagementAuthority::CLOUD);
-
-  // The text should be truncated to 16 characters followed by ellipsis.
-  EXPECT_EQ(enterprise_util::GetEnterpriseLabel((profile())), std::u16string());
 }
 #endif
 

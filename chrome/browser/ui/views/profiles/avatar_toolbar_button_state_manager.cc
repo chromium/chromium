@@ -1823,16 +1823,11 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
           std::move(history_sync_optin_state_provider);
     }
 
-    if (base::FeatureList::IsEnabled(
-            features::kEnterpriseProfileBadgingForAvatar) ||
-        base::FeatureList::IsEnabled(
-            features::kEnterpriseProfileBadgingPolicies)) {
-      // Contains both Work and School.
-      states_[ButtonState::kManagement] =
-          std::make_unique<ManagementStateProvider>(
-              profile,
-              /*state_observer=*/this, &avatar_toolbar_button_.get());
-    }
+    // Contains both Work and School.
+    states_[ButtonState::kManagement] =
+        std::make_unique<ManagementStateProvider>(
+            profile,
+            /*state_observer=*/this, &avatar_toolbar_button_.get());
 
     states_[ButtonState::kSigninPending] =
         std::make_unique<SigninPendingStateProvider>(
@@ -1998,7 +1993,8 @@ AvatarToolbarButtonStateManager::CreateScopedInfiniteDelayOverrideForTesting(
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-base::AutoReset<std::optional<base::TimeDelta>> AvatarToolbarButtonStateManager::
+base::AutoReset<std::optional<base::TimeDelta>>
+AvatarToolbarButtonStateManager::
     CreateScopedZeroDelayOverrideSigninPendingTextForTesting() {
   return base::AutoReset<std::optional<base::TimeDelta>>(
       &g_show_signin_pending_text_delay_for_testing, base::Seconds(0));

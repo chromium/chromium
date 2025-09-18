@@ -334,10 +334,6 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
   std::map<content::BrowserContext*,
            raw_ptr<FakeDiceWebSigninInterceptorDelegate, CtnExperimental>>
       interceptor_delegates_;
-  // `GetLocalProfileName` validation would fail without enabling the feature
-  // in non-fieldtrial tests where `UserAcceptedAccountManagement` is true.
-  base::test::ScopedFeatureList feature_list_{
-      features::kEnterpriseProfileBadgingForAvatar};
 };
 
 // Tests the complete profile switch flow when the profile is not loaded.

@@ -372,24 +372,12 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
 BASE_FEATURE(kThreeButtonPasswordSaveDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables enterprise profile badging for managed profiles on the toolbar
-// avatar. On managed profiles, a "Work" or "School" label will be used in the
-// toolbar.
-BASE_FEATURE(kEnterpriseProfileBadgingForAvatar,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables enterprise profile badging for managed profiles on the toolbar avatar
 // and in the profile menu. On managed profiles, a building icon will be used as
 // a badge in the profile menu.
 BASE_FEATURE(kEnterpriseProfileBadgingForMenu,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables enterprise profile badging for managed profiles on the toolbar avatar
-// and in the profile menu when the policies are set. This acts as a kill
-// switch. This has no effect if `kEnterpriseProfileBadging` is enabled.
-BASE_FEATURE(kEnterpriseProfileBadgingPolicies,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables enterprise badging for managed bnpwser on the new tab page footer.
 // On managed browsers, a building icon and "Managed by <domain>" string will be
 // shown in the footer, unless the icon and label are customized by the admin.

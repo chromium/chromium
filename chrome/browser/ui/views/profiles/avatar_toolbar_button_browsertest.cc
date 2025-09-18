@@ -2184,10 +2184,8 @@ INSTANTIATE_TEST_SUITE_P(,
 class AvatarToolbarButtonEnterpriseBadgingBrowserTest
     : public AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest {
  public:
-  AvatarToolbarButtonEnterpriseBadgingBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnterpriseProfileBadgingForAvatar}, {});
-  }
+  AvatarToolbarButtonEnterpriseBadgingBrowserTest() = default;
+
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
         true /* is_initialization_complete_return */,
@@ -2211,7 +2209,6 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       scoped_browser_management_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
