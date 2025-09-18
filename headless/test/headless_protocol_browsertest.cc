@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "components/headless/test/shared_test_util.h"
 #include "content/public/common/content_switches.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
@@ -321,6 +322,19 @@ HEADLESS_PROTOCOL_TEST(BrowserSetInitialProxyConfig,
 
 HEADLESS_PROTOCOL_TEST(BrowserUniversalNetworkAccess,
                        "sanity/universal-network-access.js")
+
+// TODO(445548057): the test actually passes on regular Linux
+// configurations that include D-Bus, however they take 25s
+// due to an unrelated problem. Once this is fixed, the tests
+// can be re-enabled on linux.
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#define MAYBE_GetClientCapabilities DISABLED_GetClientCapabilities
+#else
+#define MAYBE_GetClientCapabilities GetClientCapabilities
+#endif
+
+HEADLESS_PROTOCOL_TEST(MAYBE_GetClientCapabilities,
+                       "sanity/get-client-capabilities.js")
 
 HEADLESS_PROTOCOL_TEST(ShowDirectoryPickerNoCrash,
                        "sanity/show-directory-picker-no-crash.js")

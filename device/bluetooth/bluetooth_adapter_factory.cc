@@ -36,31 +36,29 @@ BluetoothAdapterFactory* BluetoothAdapterFactory::Get() {
   return factory.get();
 }
 
+static constexpr bool kBluetoothSupportedByPlatform =
+#if !defined(NO_PLATFORM_BLUETOOTH)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE);
+#else
+    false;
+#endif
+
 // static
 bool BluetoothAdapterFactory::IsBluetoothSupported() {
   // SetAdapterForTesting() may be used to provide a test or mock adapter
   // instance even on platforms that would otherwise not support it.
-  if (Get()->adapter_)
+  if (Get()->adapter_) {
     return true;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
-  return true;
-#else
-  return false;
-#endif
+  }
+  return kBluetoothSupportedByPlatform;
 }
 
 bool BluetoothAdapterFactory::IsLowEnergySupported() {
   if (override_values_) {
     return override_values_->GetLESupported();
   }
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-  return true;
-#else
-  return false;
-#endif
+  return kBluetoothSupportedByPlatform;
 }
 
 void BluetoothAdapterFactory::GetAdapter(AdapterCallback callback) {

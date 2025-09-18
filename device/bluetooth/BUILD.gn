@@ -641,6 +641,7 @@ component("bluetooth") {
           "//chromecast/device/bluetooth/le",
         ]
       } else {
+        defines += [ "NO_PLATFORM_BLUETOOTH" ]
         sources += [ "bluetooth_adapter_stub.cc" ]
       }
     }
