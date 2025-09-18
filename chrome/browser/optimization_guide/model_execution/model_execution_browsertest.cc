@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -700,6 +701,13 @@ class OnDeviceModelExecutionEnabledBrowserTest
          {features::kOnDeviceModelPerformanceParams,
           {{"compatible_on_device_performance_classes", "*"}}}},
         {});
+
+    // This test depends on the disk information being available in a timely
+    // manner (see crbug.com/346579988). Use this flag to have the information
+    // retrieved with higher priority which reduces the chances of flakiness.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        optimization_guide::switches::
+            kGetFreeDiskSpaceWithUserVisiblePriorityTask);
   }
 
   OptimizationGuideGlobalState* broker_state() {
