@@ -218,3 +218,5 @@ _mirror_builder(
     name = "win-x64-libfuzzer-asan-rel-tests",
     os = os.WINDOWS_DEFAULT,
 )
+
+_mirror_builder(name = "linux-x64-centipede-asan-rel-tests")

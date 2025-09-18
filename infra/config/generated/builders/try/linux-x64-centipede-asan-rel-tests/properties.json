@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/linux-x64-centipede-asan-rel-tests/gn-args.json"
+        "infra/config/generated/builders/try/linux-x64-centipede-asan-rel-tests/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -39,14 +39,7 @@
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-x64-centipede-asan-rel-tests",
-          "group": "tryserver.chromium.fuzz"
-        }
-      ],
-      "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-x64-centipede-asan-rel-tests/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-x64-centipede-asan-rel-tests/targets"
     }
   },
   "$build/siso": {
@@ -58,8 +51,8 @@
     "enable_cloud_trace": true,
     "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": -1
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -68,6 +61,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fuzz",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.fuzz",
+  "recipe": "chromium_trybot"
 }

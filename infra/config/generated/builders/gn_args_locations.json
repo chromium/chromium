@@ -781,6 +781,7 @@
     "linux-tsan-rel": "try/linux-tsan-rel/gn-args.json",
     "linux-ubsan-rel": "try/linux-ubsan-rel/gn-args.json",
     "linux-ubsan-vptr-rel": "try/linux-ubsan-vptr-rel/gn-args.json",
+    "linux-x64-centipede-asan-rel-tests": "try/linux-x64-centipede-asan-rel-tests/gn-args.json",
     "linux-x64-libfuzzer-asan-dbg-tests": "try/linux-x64-libfuzzer-asan-dbg-tests/gn-args.json",
     "linux-x64-libfuzzer-asan-rel-tests": "try/linux-x64-libfuzzer-asan-rel-tests/gn-args.json",
     "linux-x64-libfuzzer-msan-rel-tests": "try/linux-x64-libfuzzer-msan-rel-tests/gn-args.json",
