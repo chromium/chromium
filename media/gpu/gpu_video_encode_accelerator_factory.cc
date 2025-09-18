@@ -123,8 +123,13 @@ std::unique_ptr<VideoEncodeAccelerator> CreateD3D12VEA(
     LOG(ERROR) << "Failed to get an adapter by LUID";
     return nullptr;
   }
+  ComD3D12Device d3d12_device = CreateD3D12Device(adapter.Get());
+  if (!d3d12_device) {
+    LOG(ERROR) << "Failed to create D3D12 device";
+    return nullptr;
+  }
   return base::WrapUnique<VideoEncodeAccelerator>(
-      new D3D12VideoEncodeAccelerator(CreateD3D12Device(adapter.Get()),
+      new D3D12VideoEncodeAccelerator(std::move(d3d12_device),
                                       gpu_workarounds));
 }
 #endif
