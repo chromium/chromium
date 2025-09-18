@@ -66,7 +66,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   void QueueOrShowBubble(bool force_show = false);
 
   // Setter for `bubble_view`.
-  void SetBubbleView(AutofillBubbleBase* bubble_view);
+  void SetBubbleView(AutofillBubbleBase& bubble_view);
 
   // Resets the `bubble_view` and informs the bubble manager about it.
   void ResetBubbleViewAndInformBubbleManager(bool show_next_bubble);

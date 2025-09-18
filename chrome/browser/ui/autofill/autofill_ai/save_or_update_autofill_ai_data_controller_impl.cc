@@ -349,9 +349,9 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetPageActionIconType() {
 
 void SaveOrUpdateAutofillAiDataControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  SetBubbleView(browser->window()
-                    ->GetAutofillBubbleHandler()
-                    ->ShowSaveAutofillAiDataBubble(web_contents(), this));
+  SetBubbleView(*browser->window()
+                     ->GetAutofillBubbleHandler()
+                     ->ShowSaveAutofillAiDataBubble(web_contents(), this));
   CHECK(bubble_view());
 }
 

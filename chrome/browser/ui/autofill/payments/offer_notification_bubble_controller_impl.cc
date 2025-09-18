@@ -217,10 +217,10 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  SetBubbleView(browser->window()
-                    ->GetAutofillBubbleHandler()
-                    ->ShowOfferNotificationBubble(web_contents(), this,
-                                                  is_user_gesture_));
+  SetBubbleView(*browser->window()
+                     ->GetAutofillBubbleHandler()
+                     ->ShowOfferNotificationBubble(web_contents(), this,
+                                                   is_user_gesture_));
   DCHECK(bubble_view());
 
   // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()

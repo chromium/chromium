@@ -237,12 +237,12 @@ void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
     java_controller_bridge_.Reset();
     return;
   }
-  SetBubbleView(view_android_.get());
+  SetBubbleView(*view_android_.get());
 #else
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
       browser->window()->GetAutofillBubbleHandler();
-  SetBubbleView(autofill_bubble_handler->ShowMandatoryReauthBubble(
+  SetBubbleView(*autofill_bubble_handler->ShowMandatoryReauthBubble(
       web_contents(), this, /*is_user_gesture=*/false, current_bubble_type_));
 #endif  // BUILDFLAG(IS_ANDROID)
 }

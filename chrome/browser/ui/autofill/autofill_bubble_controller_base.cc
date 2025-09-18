@@ -100,8 +100,8 @@ void AutofillBubbleControllerBase::QueueOrShowBubble(bool force_show) {
 }
 
 void AutofillBubbleControllerBase::SetBubbleView(
-    AutofillBubbleBase* bubble_view) {
-  bubble_view_ = bubble_view;
+    AutofillBubbleBase& bubble_view) {
+  bubble_view_ = &bubble_view;
 }
 
 void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager(

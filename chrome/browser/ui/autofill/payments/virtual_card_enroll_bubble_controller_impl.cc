@@ -342,9 +342,9 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 
   if (enrollment_status_ == EnrollmentStatus::kCompleted) {
     SetBubbleView(
-        browser->window()
-            ->GetAutofillBubbleHandler()
-            ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
+        *browser->window()
+             ->GetAutofillBubbleHandler()
+             ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
     LogVirtualCardEnrollmentConfirmationViewShown(
         /*is_shown=*/true, confirmation_ui_params_->is_success);
 
@@ -352,10 +352,10 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
     // For reprompts after link clicks, `is_user_gesture` is set to false.
     bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
 
-    SetBubbleView(browser->window()
-                      ->GetAutofillBubbleHandler()
-                      ->ShowVirtualCardEnrollBubble(web_contents(), this,
-                                                    user_gesture_reprompt));
+    SetBubbleView(*browser->window()
+                       ->GetAutofillBubbleHandler()
+                       ->ShowVirtualCardEnrollBubble(web_contents(), this,
+                                                     user_gesture_reprompt));
   }
   DCHECK(bubble_view());
   // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()

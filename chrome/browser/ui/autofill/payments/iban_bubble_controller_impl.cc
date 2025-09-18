@@ -147,7 +147,7 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
       chrome::FindBrowserWithTab(web_contents())
           ->window()
           ->GetAutofillBubbleHandler();
-  SetBubbleView(autofill_bubble_handler->ShowSaveIbanConfirmationBubble(
+  SetBubbleView(*autofill_bubble_handler->ShowSaveIbanConfirmationBubble(
       web_contents(), this));
   // Auto close confirmation bubble when IBAN saved is successful.
   if (iban_saved) {
@@ -448,7 +448,7 @@ void IbanBubbleControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
       browser->window()->GetAutofillBubbleHandler();
-  SetBubbleView(autofill_bubble_handler->ShowIbanBubble(
+  SetBubbleView(*autofill_bubble_handler->ShowIbanBubble(
       web_contents(), this,
       /*is_user_gesture=*/is_reshow_, current_bubble_type_));
   CHECK(bubble_view());

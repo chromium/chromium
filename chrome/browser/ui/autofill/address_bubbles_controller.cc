@@ -233,7 +233,7 @@ void AddressBubblesController::DoShowBubble() {
   CHECK(!bubble_view());
   CHECK(show_bubble_view_callback_);
 
-  SetBubbleView(show_bubble_view_callback_.Run(
+  SetBubbleView(*show_bubble_view_callback_.Run(
       web_contents(), shown_by_user_gesture_, GetWeakPtr()));
 
   CHECK(bubble_view());
@@ -323,7 +323,7 @@ void AddressBubblesController::MaybeShowSignInPromo(
   HideBubble(/*show_next_bubble=*/false);
 
   // Open the bubble with the sign in promo.
-  SetBubbleView(ShowSignInPromo(web_contents(), autofill_profile.value()));
+  SetBubbleView(*ShowSignInPromo(web_contents(), autofill_profile.value()));
   CHECK(bubble_view());
   is_showing_sign_in_promo_ = true;
   UpdatePageActionIcon();

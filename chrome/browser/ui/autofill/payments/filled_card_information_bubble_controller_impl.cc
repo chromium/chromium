@@ -386,10 +386,10 @@ void FilledCardInformationBubbleControllerImpl::DoShowBubble() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  SetBubbleView(browser->window()
-                    ->GetAutofillBubbleHandler()
-                    ->ShowFilledCardInformationBubble(web_contents(), this,
-                                                      is_user_gesture_));
+  SetBubbleView(*browser->window()
+                     ->GetAutofillBubbleHandler()
+                     ->ShowFilledCardInformationBubble(web_contents(), this,
+                                                       is_user_gesture_));
   DCHECK(bubble_view());
   bubble_has_been_shown_ = true;
 
