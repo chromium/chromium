@@ -1450,15 +1450,6 @@ IN_PROC_BROWSER_TEST_F(ChallengeUrlBrowserTest,
   EXPECT_THAT(result, testing::HasSubstr("NotAllowedError"));
 }
 
-#if BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/393055190): There is segfault in Linux during the move of the
-// newly constructed `request_handler` to the `RequestState` in
-// `AuthenticatorCommonImpl::StartGetAssertionRequest`. Fix and re-enable.
-#define WebAuthnImmediateGetTest DISABLED_WebAuthnImmediateGetTest
-#else
-#define WebAuthnImmediateGetTest WebAuthnImmediateGetTest
-#endif
-
 class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {
  protected:
   static constexpr std::string_view kRequestWithPasswordTemplate = R"(
