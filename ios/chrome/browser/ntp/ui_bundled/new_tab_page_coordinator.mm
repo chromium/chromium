@@ -1280,7 +1280,6 @@
 - (void)updateModuleVisibility {
   [_customizationCoordinator updateMenuData];
   [self handleChangeInModules];
-  [self cancelOmniboxEdit];
   [self setContentOffsetToTop];
   [self.feedHeaderViewController updateForFeedVisibilityChanged];
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
