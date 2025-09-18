@@ -675,7 +675,15 @@ void DataSharingServiceImpl::SetSDKDelegate(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(!sdk_delegate || (sdk_delegate && !sdk_delegate_));
 
-  sdk_delegate_ = std::move(sdk_delegate);
+  // As GroupDataModel keeps a raw_ptr<DataSharingSDKDelegate> it needs to
+  // be deleted before the DataSharingSDKDelegate. The deletion happens in
+  // OnSDKDelegateUpdated(), so swap the parameter and the member variable
+  // to avoid having a dangling pointer.
+  //
+  // See https://crbug.com/445761354 for an example of crash caused by the
+  // wrong destruction order of the variables when the client code sets the
+  // delegate to null.
+  std::swap(sdk_delegate, sdk_delegate_);
 
   OnSDKDelegateUpdated();
 }
