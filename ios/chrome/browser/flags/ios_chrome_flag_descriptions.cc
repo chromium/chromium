@@ -1562,6 +1562,11 @@ const char kSkipDefaultBrowserPromoInFirstRunDescription[] =
     "When enabled, users in the EEA will not see a Default Browser Promo in "
     "the FRE.";
 
+const char kSmartTabGroupingName[] = "Enable Smart Tab Grouping";
+const char kSmartTabGroupingDescription[] =
+    "When enabled, users will have access to use the smart tab grouping "
+    "feature in the tab grid.";
+
 const char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
 const char kStrokesAPIEnabledDescription[] =
     "When enabled, Lens will use the Strokes API.";

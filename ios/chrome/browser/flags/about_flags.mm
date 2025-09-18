@@ -2945,7 +2945,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"aim-multiline-omnibox", flag_descriptions::kIOSOmniboxUseTextViewName,
      flag_descriptions::kIOSOmniboxUseTextViewDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSOmniboxUseTextView)},
-};
+    {"smart-tab-grouping", flag_descriptions::kSmartTabGroupingName,
+     flag_descriptions::kSmartTabGroupingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kSmartTabGrouping)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

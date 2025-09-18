@@ -921,6 +921,9 @@ extern const char kSignInButtonNoAvatarDescription[];
 extern const char kSkipDefaultBrowserPromoInFirstRunName[];
 extern const char kSkipDefaultBrowserPromoInFirstRunDescription[];
 
+extern const char kSmartTabGroupingName[];
+extern const char kSmartTabGroupingDescription[];
+
 extern const char kStrokesAPIEnabledName[];
 extern const char kStrokesAPIEnabledDescription[];
 

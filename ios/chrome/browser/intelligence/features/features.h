@@ -112,4 +112,10 @@ bool ShouldDeleteGeminiConsentPref();
 // Feature flag to delete the Gemini consent pref.
 BASE_DECLARE_FEATURE(kDeleteGeminiConsentPref);
 
+// Feature flag to enable smart tab grouping.
+BASE_DECLARE_FEATURE(kSmartTabGrouping);
+
+// Returns true if smart tab grouping is enabled.
+bool IsSmartTabGroupingEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

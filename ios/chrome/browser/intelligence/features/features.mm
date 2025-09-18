@@ -135,3 +135,9 @@ bool ShouldDeleteGeminiConsentPref() {
 }
 
 BASE_FEATURE(kDeleteGeminiConsentPref, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSmartTabGrouping, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSmartTabGroupingEnabled() {
+  return base::FeatureList::IsEnabled(kSmartTabGrouping);
+}
