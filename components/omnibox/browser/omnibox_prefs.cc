@@ -49,6 +49,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kFocusedSrpWebCount, 0);
 }
 
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kIsOmniboxInBottomPosition, false);
+}
+
 void SetUserPreferenceForZeroSuggestCachedResponse(
     PrefService* prefs,
     const std::string& page_url,

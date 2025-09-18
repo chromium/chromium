@@ -36,6 +36,11 @@ inline constexpr char kGroupIdToggledOnHistogram[] =
 // Alphabetical list of preference names specific to the omnibox component.
 // Keep alphabetized, and document each.
 
+// Boolean that specifies whether the omnibox should be positioned at the bottom
+// of the screen.
+inline constexpr char kIsOmniboxInBottomPosition[] =
+    "omnibox.is_in_bottom_position";
+
 // Enum specifying the active behavior for the intranet redirect detector.
 // The browser pref kDNSInterceptionChecksEnabled also impacts the redirector.
 // Values are defined in omnibox::IntranetRedirectorBehavior.
@@ -98,6 +103,10 @@ inline constexpr char kAIModeSettings[] = "omnibox.ai_mode_settings";
 // Many of the prefs defined above are registered locally where they're used.
 // New prefs should be added here and ordered the same as they're defined above.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// Registers the omnibox prefs that are stored in Local State. These prefs are
+// not tied to a specific profile.
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Updates the ZPS dictionary preference to cache the given |response| value
 // using the |page_url| as the cache key.
