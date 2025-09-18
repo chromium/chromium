@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/process/memory.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -468,11 +469,8 @@ class MetricsServiceBrowserNoUploadTest
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserNoUploadTest, FilesRemoved) {
   // SetUp() has removed consent and made metrics "sampled-in" (enabled).
-  auto non_pma_files = FindNonPMAFiles();
-  for (const auto& file : non_pma_files) {
-    LOG(INFO) << "Found non-PMA file:" << file;
-  }
-  EXPECT_TRUE(non_pma_files.empty());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return FindNonPMAFiles().empty(); }));
 }
 
 // Specific class for testing when metrics upload is disabled by sampling.
@@ -499,9 +497,6 @@ class MetricsServiceBrowserSampledOutTest
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserSampledOutTest, FilesRemoved) {
   // SetUp() has provided consent and made metrics "sampled-out" (disabled).
-  auto non_pma_files = FindNonPMAFiles();
-  for (const auto& file : non_pma_files) {
-    LOG(INFO) << "Found non-PMA file:" << file;
-  }
-  EXPECT_TRUE(non_pma_files.empty());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return FindNonPMAFiles().empty(); }));
 }
