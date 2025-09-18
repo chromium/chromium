@@ -556,7 +556,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                                     const gfx::ColorSpace&,
                                     WebGraphicsSharedImageInterfaceProvider*,
                                     Delegate*);
-  ~CanvasResourceProviderSharedImage() override = default;
+  ~CanvasResourceProviderSharedImage() override;
 
   bool IsAccelerated() const final { return is_accelerated_; }
   bool SupportsDirectCompositing() const override { return true; }
@@ -634,6 +634,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       cc::PaintImage::kInvalidContentId;
 
   bool notified_context_lost_ = false;
+  base::WeakPtrFactory<CanvasResourceProviderSharedImage> weak_ptr_factory_{
+      this};
 
   void ClearUnusedResources() override { unused_resources_.clear(); }
   void RegisterUnusedResource(
@@ -689,7 +691,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void MaybePostUnusedResourcesReclaimTask();
   void ClearOldUnusedResources();
 
-  virtual base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr() = 0;
+  base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr();
 };
 
 }  // namespace blink

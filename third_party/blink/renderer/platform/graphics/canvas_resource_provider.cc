@@ -189,7 +189,18 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
       use_oop_rasterization_(is_accelerated && ContextProviderWrapper()
                                                    ->ContextProvider()
                                                    .GetCapabilities()
-                                                   .gpu_rasterization) {}
+                                                   .gpu_rasterization) {
+  if (raster_context_provider_) {
+    raster_context_provider_->AddObserver(this);
+  }
+
+  resource_ = NewOrRecycledResource();
+  GetFlushForImageListener()->AddObserver(this);
+
+  if (resource_) {
+    EnsureWriteAccess();
+  }
+}
 
 CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
     gfx::Size size,
@@ -212,7 +223,33 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
       is_accelerated_(false),
       shared_image_usage_flags_(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY),
       use_oop_rasterization_(false),
-      is_software_(true) {}
+      is_software_(true) {
+  if (shared_image_interface_provider_) {
+    shared_image_interface_provider_->AddGpuChannelLostObserver(this);
+  }
+}
+
+CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
+  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
+                             max_inflight_resources_, 20);
+  if (is_software_) {
+    if (shared_image_interface_provider_) {
+      shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
+    }
+    return;
+  }
+
+  if (raster_context_provider_) {
+    raster_context_provider_->RemoveObserver(this);
+  }
+
+  GetFlushForImageListener()->RemoveObserver(this);
+}
+
+base::WeakPtr<CanvasResourceProviderSharedImage>
+CanvasResourceProviderSharedImage::CreateWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
 
 scoped_refptr<CanvasResourceSharedImage>
 CanvasResourceProviderSharedImage::CreateResource() {
@@ -948,84 +985,6 @@ void CanvasResourceProviderSharedImage::OnMemoryDump(
   }
 }
 
-// TODO(crbug.com/391648152): Fold this class into
-// CanvasResourceProviderSharedImage.
-class CanvasResourceProviderSharedImageImpl
-    : public CanvasResourceProviderSharedImage {
- public:
-  CanvasResourceProviderSharedImageImpl(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-      Delegate* delegate)
-      : CanvasResourceProviderSharedImage(size,
-                                          format,
-                                          alpha_type,
-                                          color_space,
-                                          shared_image_interface_provider,
-                                          delegate) {
-    if (shared_image_interface_provider_) {
-      shared_image_interface_provider_->AddGpuChannelLostObserver(this);
-    }
-  }
-
-  CanvasResourceProviderSharedImageImpl(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper,
-      bool is_accelerated,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      Delegate* delegate)
-      : CanvasResourceProviderSharedImage(size,
-                                          format,
-                                          alpha_type,
-                                          color_space,
-                                          std::move(context_provider_wrapper),
-                                          is_accelerated,
-                                          shared_image_usage_flags,
-                                          delegate) {
-    if (raster_context_provider_) {
-      raster_context_provider_->AddObserver(this);
-    }
-
-    resource_ = NewOrRecycledResource();
-    GetFlushForImageListener()->AddObserver(this);
-
-    if (resource_) {
-      EnsureWriteAccess();
-    }
-  }
-
-  ~CanvasResourceProviderSharedImageImpl() override {
-    UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
-                               max_inflight_resources_, 20);
-    if (is_software_) {
-      if (shared_image_interface_provider_) {
-        shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
-      }
-      return;
-    }
-
-    if (raster_context_provider_) {
-      raster_context_provider_->RemoveObserver(this);
-    }
-
-    GetFlushForImageListener()->RemoveObserver(this);
-  }
-
-  base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  base::WeakPtrFactory<CanvasResourceProviderSharedImageImpl> weak_ptr_factory_{
-      this};
-};
-
 // * Renders to back buffer of a shared image swap chain.
 // * Presents swap chain and exports front buffer mailbox to compositor to
 //   support low latency mode.
@@ -1227,7 +1186,7 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
   CHECK(format == viz::SharedImageFormat::N32Format() ||
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
-  auto provider = std::make_unique<CanvasResourceProviderSharedImageImpl>(
+  auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
       size, format, alpha_type, color_space, shared_image_interface_provider,
       delegate);
   if (provider->IsValid()) {
@@ -1347,7 +1306,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
   }
 #endif
 
-  auto provider = std::make_unique<CanvasResourceProviderSharedImageImpl>(
+  auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
       size, format, alpha_type, color_space, context_provider_wrapper,
       is_accelerated, shared_image_usage_flags, delegate);
   if (provider->IsValid()) {

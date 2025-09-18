@@ -590,8 +590,9 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
     return scoped_refptr<CanvasResource>(CanvasResourceSharedImage::Create(
         Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-        SharedGpuContext::ContextProviderWrapper(), CreateWeakPtr(),
-        IsAccelerated(), shared_image_usage_flags_));
+        SharedGpuContext::ContextProviderWrapper(),
+        weak_ptr_factory_.GetWeakPtr(), IsAccelerated(),
+        shared_image_usage_flags_));
   }
   bool SupportsDirectCompositing() const override {
     return supports_direct_compositing_;
@@ -617,10 +618,6 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
                int y));
 
  private:
-  base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
   bool supports_direct_compositing_;
   base::WeakPtrFactory<FakeCanvasResourceProvider> weak_ptr_factory_{this};
 };
