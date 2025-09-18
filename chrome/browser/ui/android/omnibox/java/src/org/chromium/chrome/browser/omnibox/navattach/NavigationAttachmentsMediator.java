@@ -111,8 +111,6 @@ class NavigationAttachmentsMediator {
      * @param enabled Whether the AI mode is enabled.
      */
     void onUseAiModeChanged(boolean enabled) {
-        mNavigationFulfillmentTypeSupplier.set(
-                enabled ? NavigationFulfillmentType.AI_MODE : NavigationFulfillmentType.DEFAULT);
         setComposeboxSessionState(enabled);
     }
 
@@ -136,6 +134,9 @@ class NavigationAttachmentsMediator {
     private void setComposeboxSessionState(boolean enabled) {
         if (mComposeBoxQueryControllerBridge == null) return;
         if (mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) == enabled) return;
+
+        mNavigationFulfillmentTypeSupplier.set(
+                enabled ? NavigationFulfillmentType.AI_MODE : NavigationFulfillmentType.DEFAULT);
 
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, enabled);
         if (enabled) {

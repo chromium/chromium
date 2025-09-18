@@ -1931,6 +1931,11 @@ class LocationBarMediator
                         mContext, mWindowAndroid, mProfileSupplier.get());
     }
 
+    public ObservableSupplier<@NavigationFulfillmentType Integer>
+            getNavigationFulfillmentTypeSupplier() {
+        return mNavigationFulfillmentTypeSupplier;
+    }
+
     @Override
     public void onSearchBoxHintTextChanged(String newHintText) {
         mUrlCoordinator.setUrlBarHintText(newHintText);

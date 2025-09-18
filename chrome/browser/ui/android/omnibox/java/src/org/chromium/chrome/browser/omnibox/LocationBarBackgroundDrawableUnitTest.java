@@ -41,7 +41,7 @@ public class LocationBarBackgroundDrawableUnitTest {
     public void setUp() {
         mDrawable =
                 new LocationBarBackgroundDrawable(
-                        mGradientDrawable, 10f, 1f, new int[] {Color.RED, Color.BLUE});
+                        mGradientDrawable, 10f, 1f, new int[] {Color.RED, Color.BLUE}, null);
     }
 
     @Test

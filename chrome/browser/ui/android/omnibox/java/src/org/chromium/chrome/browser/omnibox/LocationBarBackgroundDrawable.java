@@ -37,6 +37,7 @@ public class LocationBarBackgroundDrawable extends Drawable {
     private final Rect mInsets = new Rect();
     private final Rect mEffectiveBounds = new Rect();
     private final int[] mColors;
+    private final float @Nullable [] mPositions;
 
     private final float mStrokePx;
     private float mCornerRadiusPx;
@@ -58,15 +59,14 @@ public class LocationBarBackgroundDrawable extends Drawable {
                 cornerRadiusPx,
                 strokePx,
                 new int[] {
-                    0xFFE91E63, // pink
-                    0xFFFF5722, // deep orange
-                    0xFFFFC107, // amber
-                    0xFF8BC34A, // light green
-                    0xFF03A9F4, // light blue
-                    0xFF3F51B5, // indigo
-                    0xFF9C27B0, // purple
-                    0xFFE91E63 // back to pink to close the loop
-                });
+                    0xFFFF4641, // red
+                    0xFF3186FF, // blue
+                    0x1EFFFFFF, // white 30%
+                    0xFF34A853, // green
+                    0xFFFFD314, // yellow
+                    0xFFFF4641, // red
+                },
+                new float[] {0.0f, 0.2f, 0.5f, 0.7f, 0.9f, 1.0f});
     }
 
     /**
@@ -76,16 +76,19 @@ public class LocationBarBackgroundDrawable extends Drawable {
      * @param cornerRadiusPx The corner radius in pixels.
      * @param strokePx The stroke width in pixels.
      * @param colors The colors to use for the rainbow hairline.
+     * @param positions Offsets for each of the colors of the rainbow hairline.
      */
     public LocationBarBackgroundDrawable(
             GradientDrawable backgroundGradient,
             float cornerRadiusPx,
             float strokePx,
-            int[] colors) {
+            int[] colors,
+            float @Nullable [] positions) {
         mBackgroundGradient = backgroundGradient;
         mCornerRadiusPx = cornerRadiusPx;
         mStrokePx = strokePx;
         mColors = colors;
+        mPositions = positions;
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(mStrokePx);
 
@@ -131,7 +134,7 @@ public class LocationBarBackgroundDrawable extends Drawable {
                         mEffectiveBounds.centerX(),
                         mEffectiveBounds.centerY(),
                         mColors,
-                        /* positions= */ null);
+                        mPositions);
         mPaint.setShader(mShader);
     }
 

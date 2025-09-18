@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.navattach.NavigationFulfillmentType;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
@@ -397,6 +398,13 @@ public class ToolbarPhone extends ToolbarLayout
     @Initializer
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
+        mLocationBar
+                .getNavigationFulfillmentTypeSupplier()
+                .addObserver(
+                        (type) -> {
+                            mLocationBarBackground.setDrawHairline(
+                                    type == NavigationFulfillmentType.AI_MODE);
+                        });
         Resources res = getResources();
         mLocationBarBackgroundVerticalInset =
                 res.getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
@@ -428,7 +436,7 @@ public class ToolbarPhone extends ToolbarLayout
                         /* cornerRadiusPx= */ context.getResources()
                                 .getDimensionPixelSize(
                                         R.dimen.modern_toolbar_background_corner_radius),
-                        /* strokePx= */ 10);
+                        /* strokePx= */ 5);
         drawable.setBackgroundColor(
                 SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
                         context, /* isIncognito= */ false));

@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinatorPhone;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.navattach.NavigationFulfillmentType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -567,6 +568,9 @@ public class ToolbarControlContainerTest {
 
         ToolbarPhone toolbarPhone = controlContainer.findViewById(R.id.toolbar);
         doReturn(mLocationBarCoordinatorPhone).when(mLocationBarCoordinator).getPhoneCoordinator();
+        doReturn(new ObservableSupplierImpl<>(NavigationFulfillmentType.DEFAULT))
+                .when(mLocationBarCoordinator)
+                .getNavigationFulfillmentTypeSupplier();
         doReturn(mNewTabPageDelegate).when(mToolbarDataProvider).getNewTabPageDelegate();
         doReturn(new GURL(UrlConstants.ABOUT_URL)).when(mToolbarDataProvider).getCurrentGurl();
         toolbarPhone.setLocationBarCoordinator(mLocationBarCoordinator);

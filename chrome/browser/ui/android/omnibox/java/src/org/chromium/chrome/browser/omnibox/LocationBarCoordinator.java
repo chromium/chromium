@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinat
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsCoordinator;
+import org.chromium.chrome.browser.omnibox.navattach.NavigationFulfillmentType;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
@@ -924,5 +925,10 @@ public class LocationBarCoordinator
      */
     public void updateButtonBackground(@DrawableRes int backgroundResId) {
         mLocationBarMediator.updateButtonBackground(backgroundResId);
+    }
+
+    public ObservableSupplier<@NavigationFulfillmentType Integer>
+            getNavigationFulfillmentTypeSupplier() {
+        return mLocationBarMediator.getNavigationFulfillmentTypeSupplier();
     }
 }
