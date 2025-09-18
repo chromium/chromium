@@ -174,5 +174,6 @@ export enum SaveToDriveBubbleRequestType {
   MANAGE_STORAGE = 'manage-storage',
   OPEN_IN_DRIVE = 'open-in-drive',
   RETRY = 'retry',
+  DIALOG_CLOSED = 'dialog-closed',
 }
 // </if>

@@ -149,6 +149,9 @@ export class ViewerSaveToDriveBubbleElement extends
   }
 
   protected onCloseClick_() {
+    this.fire(
+        'save-to-drive-bubble-action',
+        SaveToDriveBubbleRequestType.DIALOG_CLOSED);
     this.$.dialog.close();
   }
 

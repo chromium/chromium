@@ -201,6 +201,19 @@ function convertSaveToDriveProgressToSaveToDriveState(
       assertNotReached();
   }
 }
+
+function saveToDriveStateIsFinalState(state: SaveToDriveState): boolean {
+  switch (state) {
+    case SaveToDriveState.SUCCESS:
+    case SaveToDriveState.CONNECTION_ERROR:
+    case SaveToDriveState.STORAGE_FULL_ERROR:
+    case SaveToDriveState.SESSION_TIMEOUT_ERROR:
+    case SaveToDriveState.UNKNOWN_ERROR:
+      return true;
+    default:
+      return false;
+  }
+}
 // </if> enable_pdf_save_to_drive
 
 export interface PdfViewerElement {
@@ -1350,6 +1363,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case SaveToDriveBubbleRequestType.RETRY:
         PdfViewerPrivateProxyImpl.getInstance().saveToDrive(
             this.saveToDriveRequestType_);
+        break;
+      case SaveToDriveBubbleRequestType.DIALOG_CLOSED:
+        if (saveToDriveStateIsFinalState(this.saveToDriveState_)) {
+          this.saveToDriveState_ = SaveToDriveState.UNINITIALIZED;
+        }
         break;
       default:
         console.warn(

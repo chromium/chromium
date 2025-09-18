@@ -191,6 +191,68 @@ const tests = [
 
     chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
 
+    // Reset the bubble open state for the next test.
+    bubble.$.dialog.close();
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    chrome.test.succeed();
+  },
+
+  async function testSaveToDriveBubbleCloseButtonAndStateResets() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+
+    // Set the save to Drive state to upload complete and open the bubble.
+    privateProxy.sendUploadCompleted();
+    controls.$.save.click();
+    await microtasksFinished();
+    chrome.test.assertTrue(bubble.$.dialog.open);
+    chrome.test.assertEq(0, privateProxy.getCallCount('saveToDrive'));
+
+    // Click the close button in the bubble and verify the bubble is closed.
+    const closeButton = getRequiredElement(bubble, '#close');
+    closeButton.click();
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    // Click on the save button again and make sure it initiates a new upload
+    // and the bubble is not open.
+    controls.$.save.click();
+    await privateProxy.whenCalled('saveToDrive');
+    chrome.test.assertFalse(bubble.$.dialog.open);
+    chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
+
+    chrome.test.succeed();
+  },
+
+  async function testSaveToDriveBubbleCloseButtonNotResetting() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+
+    // Set the save to Drive state to upload in progress.
+    privateProxy.sendUploadInProgress(0, 100);
+    controls.$.save.click();
+    await microtasksFinished();
+    chrome.test.assertTrue(bubble.$.dialog.open);
+
+    // Click the close button in the bubble and verify the bubble is closed.
+    const closeButton = getRequiredElement(bubble, '#close');
+    closeButton.click();
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    // Click on the save button again. It should just open the bubble and not
+    // initiate a new upload.
+    controls.$.save.click();
+    await microtasksFinished();
+    chrome.test.assertTrue(bubble.$.dialog.open);
+    chrome.test.assertEq(0, privateProxy.getCallCount('saveToDrive'));
+
     chrome.test.succeed();
   },
 
@@ -386,9 +448,6 @@ const tests = [
 
     chrome.test.succeed();
   },
-
-  // TODO(crbug.com/427451594): Write a test to check that the parent folder
-  // name is in the description for the `SUCCESS` state.
 ];
 
 chrome.test.runTests(tests);

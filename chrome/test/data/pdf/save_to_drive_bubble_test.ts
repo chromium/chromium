@@ -65,10 +65,8 @@ const tests = [
     await microtasksFinished();
     chrome.test.assertTrue(element.$.dialog.open);
 
-    const closeButton =
-        element.shadowRoot.querySelector<HTMLButtonElement>('#close')!;
-    closeButton.click();
-    await microtasksFinished();
+    await testEventDispatchedFromButtonClick(
+        element, '#close', SaveToDriveBubbleRequestType.DIALOG_CLOSED);
     chrome.test.assertFalse(element.$.dialog.open);
 
     chrome.test.succeed();
