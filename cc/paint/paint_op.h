@@ -1196,6 +1196,7 @@ class CC_PAINT_EXPORT SaveLayerFiltersOp final
     : public PaintOpWithFlagsBaseInternal {
  public:
   static constexpr PaintOpType kType = PaintOpType::kSaveLayerFilters;
+  static constexpr int kMaxFiltersPerLayer = SkCanvas::kMaxFiltersPerLayer;
   explicit SaveLayerFiltersOp(base::span<const sk_sp<PaintFilter>> filters,
                               const PaintFlags& flags);
   ~SaveLayerFiltersOp();
@@ -1204,7 +1205,8 @@ class CC_PAINT_EXPORT SaveLayerFiltersOp final
                               SkCanvas* canvas,
                               const PlaybackParams& params);
   bool IsValid() const {
-    return flags.IsValid() && (!flags.getImageFilter() || filters.empty());
+    return flags.IsValid() && (!flags.getImageFilter() || filters.empty()) &&
+           filters.size() <= kMaxFiltersPerLayer;
   }
   bool EqualsForTesting(const SaveLayerFiltersOp& other) const;
   bool HasSaveLayerOps() const { return true; }

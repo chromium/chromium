@@ -2692,6 +2692,21 @@ TEST(PaintOpBufferTest, ValidateSkBlendMode) {
   }
 }
 
+TEST(PaintOpBufferTest, SaveLayerFiltersOpIsValid) {
+  std::vector<sk_sp<PaintFilter>> filters;
+  for (int i = 0; i < SaveLayerFiltersOp::kMaxFiltersPerLayer; ++i) {
+    filters.push_back(sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr));
+  }
+
+  PaintFlags flags;
+  SaveLayerFiltersOp op_at_limit(filters, flags);
+  EXPECT_TRUE(op_at_limit.IsValid());
+
+  filters.push_back(sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr));
+  SaveLayerFiltersOp op_over_limit(filters, flags);
+  EXPECT_FALSE(op_over_limit.IsValid());
+}
+
 TEST(PaintOpBufferTest, BoundingRect_DrawImageOp) {
   PaintOpBuffer buffer;
   PushDrawImageOps(&buffer);
