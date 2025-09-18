@@ -160,6 +160,7 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
                                               PlaneInfo plane) {
   // Don't process frames if we are no longer doing anything.
   if (finishing_) {
+    base::android::RunRunnableAndroid(plane.release_cb);
     return;
   }
 
