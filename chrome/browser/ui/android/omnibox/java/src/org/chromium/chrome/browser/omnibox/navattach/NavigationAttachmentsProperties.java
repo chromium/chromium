@@ -14,6 +14,10 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 /** The properties associated with the Navigation Attachments bar. */
 @NullMarked
 class NavigationAttachmentsProperties {
+    /** Whether the AI mode is enabled. */
+    public static final WritableBooleanPropertyKey AI_MODE_ENABLED =
+            new WritableBooleanPropertyKey();
+
     /** The adapter for the attachments RecyclerView. */
     public static final WritableObjectPropertyKey<SimpleRecyclerViewAdapter> ADAPTER =
             new WritableObjectPropertyKey<>();
@@ -55,6 +59,7 @@ class NavigationAttachmentsProperties {
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
+        AI_MODE_ENABLED,
         ADAPTER,
         ATTACHMENTS_VISIBLE,
         BUTTON_ADD_CLICKED,

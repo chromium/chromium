@@ -20,6 +20,9 @@ class NavigationAttachmentsViewBinder {
             PropertyModel model, NavigationAttachmentsViewHolder view, PropertyKey propertyKey) {
         if (propertyKey == NavigationAttachmentsProperties.ADAPTER) {
             view.attachmentsView.setAdapter(model.get(NavigationAttachmentsProperties.ADAPTER));
+        } else if (propertyKey == NavigationAttachmentsProperties.AI_MODE_ENABLED) {
+            view.navigationType.setChecked(
+                    model.get(NavigationAttachmentsProperties.AI_MODE_ENABLED));
         } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);

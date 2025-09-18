@@ -57,9 +57,10 @@ class NavigationAttachmentsMediator {
     private final NavigationAttachmentsPopup mPopup;
     private final ModelList mModelList;
     private final Drawable mFallbackDrawable;
-    private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private final ObservableSupplierImpl<@NavigationFulfillmentType Integer>
             mNavigationFulfillmentTypeSupplier;
+    private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private boolean mAiModeSessionActive;
 
     NavigationAttachmentsMediator(
             Context context,
@@ -111,7 +112,20 @@ class NavigationAttachmentsMediator {
      * @param enabled Whether the AI mode is enabled.
      */
     void onUseAiModeChanged(boolean enabled) {
-        setComposeboxSessionState(enabled);
+        if (mComposeBoxQueryControllerBridge == null) return;
+        if (mAiModeSessionActive == enabled) return;
+
+        mAiModeSessionActive = enabled;
+        mNavigationFulfillmentTypeSupplier.set(
+                enabled ? NavigationFulfillmentType.AI_MODE : NavigationFulfillmentType.DEFAULT);
+        mModel.set(NavigationAttachmentsProperties.AI_MODE_ENABLED, enabled);
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, enabled);
+        if (enabled) {
+            mComposeBoxQueryControllerBridge.notifySessionStarted();
+        } else {
+            mComposeBoxQueryControllerBridge.notifySessionAbandoned();
+            mModelList.clear();
+        }
     }
 
     /**
@@ -127,24 +141,7 @@ class NavigationAttachmentsMediator {
 
         mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, visible);
         if (!visible) {
-            setComposeboxSessionState(false);
-        }
-    }
-
-    private void setComposeboxSessionState(boolean enabled) {
-        if (mComposeBoxQueryControllerBridge == null) return;
-        if (mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) == enabled) return;
-
-        mNavigationFulfillmentTypeSupplier.set(
-                enabled ? NavigationFulfillmentType.AI_MODE : NavigationFulfillmentType.DEFAULT);
-
-        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, enabled);
-        if (enabled) {
-            mComposeBoxQueryControllerBridge.notifySessionStarted();
-        } else {
-            mComposeBoxQueryControllerBridge.notifySessionAbandoned();
-            mModelList.clear();
-            mPopup.dismiss();
+            onUseAiModeChanged(false);
         }
     }
 
@@ -330,7 +327,7 @@ class NavigationAttachmentsMediator {
      */
     /* package */ void addAttachment(AttachmentDetailsFetcher.AttachmentDetails attachmentDetails) {
         String token = uploadAttachment(attachmentDetails);
-        setComposeboxSessionState(true);
+        onUseAiModeChanged(true);
 
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentItemProperties.ALL_KEYS)

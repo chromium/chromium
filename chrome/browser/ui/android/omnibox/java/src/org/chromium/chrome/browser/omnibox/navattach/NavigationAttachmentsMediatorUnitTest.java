@@ -175,7 +175,9 @@ public class NavigationAttachmentsMediatorUnitTest {
         modelList.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
         assertEquals(1, modelList.size());
 
-        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
+        mMediator.onUseAiModeChanged(true);
+        assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
+
         mMediator.onUseAiModeChanged(false);
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         assertEquals(0, modelList.size());
