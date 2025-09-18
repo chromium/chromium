@@ -168,8 +168,6 @@ CrxInstaller::CrxInstaller(content::BrowserContext* context,
 
   if (approval->bypassed_safebrowsing_friction)
     install_flags_ = kInstallFlagBypassedSafeBrowsingFriction;
-
-  show_dialog_callback_ = approval->show_dialog_callback;
 }
 
 CrxInstaller::~CrxInstaller() {
@@ -802,7 +800,7 @@ void CrxInstaller::ConfirmInstall() {
     AddRef();  // Balanced in OnInstallPromptDone().
     client_->ShowDialog(
         base::BindOnce(&CrxInstaller::OnInstallPromptDone, this), extension(),
-        nullptr, show_dialog_callback_);
+        nullptr, ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   } else {
     UpdateCreationFlagsAndCompleteInstall(kDontWithholdPermissions);
   }

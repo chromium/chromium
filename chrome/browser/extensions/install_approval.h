@@ -82,9 +82,6 @@ struct InstallApproval : public base::SupportsUserData::Data {
   // manifest.
   ManifestCheckLevel manifest_check_level = ManifestCheckLevel::kStrict;
 
-  // Used to show the install dialog.
-  ExtensionInstallPrompt::ShowDialogCallback show_dialog_callback;
-
   // The icon to use to display the extension while it is installing.
   gfx::ImageSkia installing_icon;
 

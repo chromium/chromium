@@ -551,9 +551,6 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // Lazily initialized by GetUnpackerTaskRunner().
   scoped_refptr<base::SequencedTaskRunner> unpacker_task_runner_;
 
-  // Used to show the install dialog.
-  ExtensionInstallPrompt::ShowDialogCallback show_dialog_callback_;
-
   // Whether the update is initiated by the user from the extension settings
   // page.
   bool update_from_settings_page_;
