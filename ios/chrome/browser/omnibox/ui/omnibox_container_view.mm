@@ -48,7 +48,7 @@ const CGFloat kLeadingImageTrailingMarginLensOverlay = 9;
 /// Space between the clear button and the edge of the omnibox.
 const CGFloat kTextInputViewClearButtonTrailingOffset = 4;
 /// The maximum number of lines for the text view before it starts scrolling.
-const int kMaxLines = 5;
+const int kMaxLines = 3;
 
 /// Clear button inset on all sides.
 const CGFloat kClearButtonInset = 4.0f;
