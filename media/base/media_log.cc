@@ -51,11 +51,7 @@ std::string MediaLog::GetErrorMessageLocked() {
 void MediaLog::Stop() {}
 
 bool MediaLog::ShouldLogToDebugConsole() const {
-#if DCHECK_IS_ON()
   return true;
-#else
-  return false;
-#endif
 }
 
 void MediaLog::AddMessage(MediaLogMessageLevel level, std::string message) {

@@ -102,7 +102,7 @@ class MEDIA_EXPORT MediaLog {
         CreateRecord(MediaLogRecord::Type::kMediaStatus);
     base::Value serialized = MediaSerialize(status.data_);
     DCHECK(serialized.is_dict());
-    if (DCHECK_IS_ON() && DLOG_IS_ON(ERROR) && ShouldLogToDebugConsole()) {
+    if (ShouldLogToDebugConsole()) {
       EmitConsoleErrorLog(serialized.GetDict().Clone());
     }
     record->params.Merge(std::move(serialized.GetDict()));
