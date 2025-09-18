@@ -23,11 +23,9 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
  public:
   explicit FakeWebGraphicsContext3DProvider(
       gpu::gles2::GLES2Interface* gl,
-      cc::ImageDecodeCache* cache = nullptr,
-      viz::TestContextProvider* raster_context_provider = nullptr)
+      cc::ImageDecodeCache* cache = nullptr)
       : gl_(gl),
-        image_decode_cache_(cache ? cache : &stub_image_decode_cache_),
-        raster_context_provider_(raster_context_provider) {
+        image_decode_cache_(cache ? cache : &stub_image_decode_cache_) {
     webgpu_interface_ = std::make_unique<gpu::webgpu::WebGPUInterfaceStub>();
 
     // enable all gpu features.
