@@ -22,7 +22,9 @@ enum class ThreadType {
 struct Thread {
   Thread(ThreadType type,
          const std::string& server_id,
-         const std::string& title);
+         const std::string& title,
+         const std::string& conversation_turn_id);
+  Thread(const Thread& other);
   ~Thread();
 
   // The type of conversation.
@@ -31,6 +33,11 @@ struct Thread {
   std::string server_id;
   // Title of the thread that will be displayed to user.
   std::string title;
+
+  // The unique server-side identifier for this specific conversation.
+  // Since conversations can fork into a tree-like structure, this ID
+  // represents a single path or branch within that tree.
+  std::string conversation_turn_id;
 };
 
 // A task is a representation of a user's journey to accomplish a goal. It
@@ -51,9 +58,7 @@ class ContextualTask {
 
   // Adds the server-side conversation to the task. If a task already has a
   // thread attached to it, it will be overwritten.
-  void AddThread(ThreadType type,
-                 const std::string& server_id,
-                 const std::string& title);
+  void AddThread(const Thread& thread);
 
   // Removes the server-side conversation from the task.
   void RemoveThread(ThreadType type, const std::string& server_id);

@@ -61,7 +61,8 @@ void ContextualTasksServiceImpl::AddThreadToTask(const base::Uuid& task_id,
     // Task not found, but we have a task ID. Create the task on the fly.
     it = tasks_.emplace(task_id, ContextualTask(task_id)).first;
   }
-  it->second.AddThread(thread.type, thread.server_id, thread.title);
+
+  it->second.AddThread(thread);
 }
 
 void ContextualTasksServiceImpl::RemoveThreadFromTask(

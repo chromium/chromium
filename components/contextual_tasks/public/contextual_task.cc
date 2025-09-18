@@ -14,8 +14,13 @@ namespace contextual_tasks {
 
 Thread::Thread(ThreadType type,
                const std::string& server_id,
-               const std::string& title)
-    : type(type), server_id(server_id), title(title) {}
+               const std::string& title,
+               const std::string& conversation_turn_id)
+    : type(type),
+      server_id(server_id),
+      title(title),
+      conversation_turn_id(conversation_turn_id) {}
+Thread::Thread(const Thread& other) = default;
 Thread::~Thread() = default;
 
 ContextualTask::ContextualTask(const base::Uuid& task_id) : task_id_(task_id) {}
@@ -30,10 +35,8 @@ const base::Uuid& ContextualTask::GetTaskId() const {
   return task_id_;
 }
 
-void ContextualTask::AddThread(ThreadType type,
-                               const std::string& server_id,
-                               const std::string& title) {
-  thread_.emplace(type, server_id, title);
+void ContextualTask::AddThread(const Thread& thread) {
+  thread_ = thread;
 }
 
 void ContextualTask::RemoveThread(ThreadType type,

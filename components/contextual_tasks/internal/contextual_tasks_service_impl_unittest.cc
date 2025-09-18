@@ -105,8 +105,10 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask) {
   ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
+  std::string conversation_turn_id = "conversation_turn_id";
 
-  service_.AddThreadToTask(task.GetTaskId(), Thread(type, server_id, title));
+  service_.AddThreadToTask(
+      task.GetTaskId(), Thread(type, server_id, title, conversation_turn_id));
 
   std::optional<ContextualTask> result = service_.GetTaskById(task.GetTaskId());
   ASSERT_TRUE(result.has_value());
@@ -115,6 +117,7 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask) {
   EXPECT_EQ(server_id, thread->server_id);
   EXPECT_EQ(type, thread->type);
   EXPECT_EQ(title, thread->title);
+  EXPECT_EQ(conversation_turn_id, thread->conversation_turn_id);
 }
 
 TEST_F(ContextualTasksServiceImplTest, AddAndRemoveThread_MultipleTasks) {
@@ -125,9 +128,13 @@ TEST_F(ContextualTasksServiceImplTest, AddAndRemoveThread_MultipleTasks) {
   std::string server_id2 = "server_id2";
   std::string title1 = "foo1";
   std::string title2 = "foo2";
+  std::string conversation_turn_id1 = "conversation_turn_id1";
+  std::string conversation_turn_id2 = "conversation_turn_id2";
 
-  service_.AddThreadToTask(task1.GetTaskId(), Thread(type, server_id1, title1));
-  service_.AddThreadToTask(task2.GetTaskId(), Thread(type, server_id2, title2));
+  service_.AddThreadToTask(task1.GetTaskId(), Thread(type, server_id1, title1,
+                                                     conversation_turn_id1));
+  service_.AddThreadToTask(task2.GetTaskId(), Thread(type, server_id2, title2,
+                                                     conversation_turn_id2));
 
   std::vector<ContextualTask> tasks = service_.GetTasks();
   ASSERT_EQ(2u, tasks.size());
@@ -165,8 +172,10 @@ TEST_F(ContextualTasksServiceImplTest, RemoveThreadFromTask) {
   ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
+  std::string conversation_turn_id = "conversation_turn_id";
 
-  service_.AddThreadToTask(task.GetTaskId(), Thread(type, server_id, title));
+  service_.AddThreadToTask(
+      task.GetTaskId(), Thread(type, server_id, title, conversation_turn_id));
 
   std::vector<ContextualTask> tasks = service_.GetTasks();
   ASSERT_EQ(1u, tasks.size());
@@ -189,8 +198,10 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask_TaskDoesNotExist) {
   ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
+  std::string conversation_turn_id = "conversation_turn_id";
 
-  service_.AddThreadToTask(task_id, Thread(type, server_id, title));
+  service_.AddThreadToTask(
+      task_id, Thread(type, server_id, title, conversation_turn_id));
 
   std::vector<ContextualTask> tasks = service_.GetTasks();
   ASSERT_EQ(1u, tasks.size());
@@ -200,6 +211,7 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask_TaskDoesNotExist) {
   EXPECT_EQ(server_id, thread->server_id);
   EXPECT_EQ(type, thread->type);
   EXPECT_EQ(title, thread->title);
+  EXPECT_EQ(conversation_turn_id, thread->conversation_turn_id);
 }
 
 TEST_F(ContextualTasksServiceImplTest, AttachUrlToTask) {

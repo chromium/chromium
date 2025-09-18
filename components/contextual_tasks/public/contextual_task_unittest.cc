@@ -39,20 +39,24 @@ TEST(ContextualTaskTest, AddThread) {
   ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
+  std::string conversation_turn_id = "conversation_turn_id";
 
-  task.AddThread(type, server_id, title);
+  task.AddThread(Thread(type, server_id, title, conversation_turn_id));
   EXPECT_TRUE(task.GetThread().has_value());
   EXPECT_EQ(task.GetThread()->type, type);
   EXPECT_EQ(task.GetThread()->server_id, server_id);
   EXPECT_EQ(task.GetThread()->title, title);
+  EXPECT_EQ(task.GetThread()->conversation_turn_id, conversation_turn_id);
 
   std::string server_id_2 = "server_id_2";
   std::string title_2 = "foo_2";
-  task.AddThread(type, server_id_2, title_2);
+  std::string conversation_turn_id_2 = "conversation_turn_id_2";
+  task.AddThread(Thread(type, server_id_2, title_2, conversation_turn_id_2));
   EXPECT_TRUE(task.GetThread().has_value());
   EXPECT_EQ(task.GetThread()->type, type);
   EXPECT_EQ(task.GetThread()->server_id, server_id_2);
   EXPECT_EQ(task.GetThread()->title, title_2);
+  EXPECT_EQ(task.GetThread()->conversation_turn_id, conversation_turn_id_2);
 }
 
 TEST(ContextualTaskTest, RemoveThread) {
@@ -60,8 +64,10 @@ TEST(ContextualTaskTest, RemoveThread) {
   ContextualTask task(task_id);
   ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
+  std::string title = "foo";
+  std::string conversation_turn_id = "conversation_turn_id";
 
-  task.AddThread(type, server_id, "foo");
+  task.AddThread(Thread(type, server_id, title, conversation_turn_id));
   EXPECT_TRUE(task.GetThread().has_value());
 
   task.RemoveThread(type, "wrong_server_id");
