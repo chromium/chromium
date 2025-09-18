@@ -41,9 +41,7 @@ class IdentityProviderInfo {
   std::optional<blink::mojom::Format> format;
   IdentityProviderDataPtr data;
   gfx::Image decoded_idp_brand_icon;
-  // nullopt if the server did not send a value or if the FedCmIframeOrigin
-  // flag is not enabled.
-  std::optional<bool> client_matches_top_frame_origin;
+  bool client_is_third_party_to_top_frame_origin{false};
 };
 
 }  // namespace content

@@ -1934,19 +1934,18 @@ TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
   ASSERT_EQ(GURL(), data.privacy_policy_url);
   ASSERT_EQ(GURL(), data.terms_of_service_url);
   ASSERT_EQ(GURL(), data.brand_icon_url);
-  ASSERT_FALSE(data.client_matches_top_frame_origin.has_value());
+  EXPECT_FALSE(data.client_is_third_party_to_top_frame_origin);
 }
 
 // Tests the "matches top frame" boolean.
-TEST_F(IdpNetworkRequestManagerTest, ClientMatchesTopFrameOrigin) {
+TEST_F(IdpNetworkRequestManagerTest, ClientIsThirdPartyToTopFrameOrigin) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmIframeOrigin);
 
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
-      "clientid", R"({"client_matches_top_frame_origin": false})",
+      "clientid", R"({"client_is_third_party_to_top_frame_origin": true})",
       "https://toplevel.example");
-  ASSERT_TRUE(data.client_matches_top_frame_origin.has_value());
-  EXPECT_FALSE(*data.client_matches_top_frame_origin);
+  EXPECT_TRUE(data.client_is_third_party_to_top_frame_origin);
 }
 
 // Tests that we correctly records metrics regarding approved_clients.

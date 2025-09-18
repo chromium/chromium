@@ -2712,7 +2712,7 @@ RelyingPartyData RequestService::CreateRpData(
   // We want to show the iframe origin if any IDP requests it.
   bool show_iframe_origin = false;
   for (const auto& entry : idp_infos_) {
-    if (!entry.second->client_matches_top_frame_origin.value_or(true)) {
+    if (entry.second->client_is_third_party_to_top_frame_origin) {
       show_iframe_origin = true;
       break;
     }

@@ -339,7 +339,7 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
   bool need_client_metadata = false;
   if (IsIframeOriginEnabled()) {
     // For cross-site iframes, we need to fetch client metadata in case the
-    // IDP sends `client_matches_top_frame_origin: false`.
+    // IDP sends `client_is_third_party_to_top_frame_origin: true`.
     url::Origin embedding_origin =
         render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
     url::Origin rp_origin = render_frame_host_->GetLastCommittedOrigin();
@@ -420,8 +420,8 @@ void AccountsFetcher::OnFetchDataForIdpSucceeded(
                      client_metadata.brand_icon_url, rp_brand_icon},
       idp_info->rp_context, idp_info->format, disclosure_fields,
       /*has_login_status_mismatch=*/false);
-  idp_info->client_matches_top_frame_origin =
-      client_metadata.client_matches_top_frame_origin;
+  idp_info->client_is_third_party_to_top_frame_origin =
+      client_metadata.client_is_third_party_to_top_frame_origin;
   for (auto& account : accounts) {
     account->identity_provider = idp_info->data;
   }

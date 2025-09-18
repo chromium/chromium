@@ -74,14 +74,15 @@ constexpr char kNonce[] = "nonce123";
 constexpr char kAccountId[] = "1234";
 constexpr char kToken[] = "[not a real token]";
 
-// If true, will send `client_matches_top_frame_origin: false` in the client
-// metadata request.
-static bool sSendClientMatchesTopFrameOrigin = false;
 static std::vector<IdentityRequestAccountPtr> kAccounts;
 
 // IdpNetworkRequestManager which returns valid data from IdP.
 class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
  public:
+  void SetSendClientIsThirdPartyToTopFrameOrigin(bool value) {
+    send_client_is_third_party_to_top_frame_origin_ = value;
+  }
+
   void FetchWellKnown(const GURL& provider,
                       FetchWellKnownCallback callback) override {
     IdpNetworkRequestManager::WellKnown well_known;
@@ -101,7 +102,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     IdpNetworkRequestManager::Endpoints endpoints;
     endpoints.token = GURL(kTokenEndpoint);
     endpoints.accounts = GURL(kAccountsEndpoint);
-    if (sSendClientMatchesTopFrameOrigin) {
+    if (send_client_is_third_party_to_top_frame_origin_) {
       endpoints.client_metadata = GURL(kClientMetadataEndpoint);
     }
 
@@ -144,8 +145,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                            int rp_brand_icon_minimum_size,
                            FetchClientMetadataCallback callback) override {
     ClientMetadata client_metadata;
-    if (sSendClientMatchesTopFrameOrigin) {
-      client_metadata.client_matches_top_frame_origin = false;
+    if (send_client_is_third_party_to_top_frame_origin_) {
+      client_metadata.client_is_third_party_to_top_frame_origin = true;
     }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
@@ -153,6 +154,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
  private:
+  // If true, will send `client_is_third_party_to_top_frame_origin: true` in the
+  // client metadata request.
+  bool send_client_is_third_party_to_top_frame_origin_{false};
   FetchStatus kFetchStatusSuccess{
       IdpNetworkRequestManager::ParseStatus::kSuccess, net::HTTP_OK};
 };
@@ -251,7 +255,6 @@ class RequestServiceMultipleFramesTest : public RenderViewHostImplTestHarness {
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels
         )};
-    sSendClientMatchesTopFrameOrigin = false;
     test_api_permission_delegate_ =
         std::make_unique<TestApiPermissionDelegate>();
     mock_auto_reauthn_permission_delegate_ =
@@ -291,7 +294,8 @@ class RequestServiceMultipleFramesTest : public RenderViewHostImplTestHarness {
       RenderFrameHost& render_frame_host,
       mojo::Remote<blink::mojom::FederatedAuthRequest>& request_remote,
       TestDialogController::AccountsDialogAction accounts_dialog_action,
-      TestDialogController::State* dialog_controller_state) {
+      TestDialogController::State* dialog_controller_state,
+      TestIdpNetworkRequestManager** out_network_manager = nullptr) {
     RequestService* federated_auth_request_impl =
         &RequestService::CreateForTesting(
             render_frame_host, test_api_permission_delegate_.get(),
@@ -301,8 +305,12 @@ class RequestServiceMultipleFramesTest : public RenderViewHostImplTestHarness {
     federated_auth_request_impl->SetDialogControllerForTests(
         std::make_unique<TestDialogController>(accounts_dialog_action,
                                                dialog_controller_state));
+    auto network_manager = std::make_unique<TestIdpNetworkRequestManager>();
+    if (out_network_manager) {
+      *out_network_manager = network_manager.get();
+    }
     federated_auth_request_impl->SetNetworkManagerForTests(
-        std::make_unique<TestIdpNetworkRequestManager>());
+        std::move(network_manager));
     return federated_auth_request_impl;
   }
 
@@ -757,12 +765,13 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframeSendClientMetadata) {
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
+  TestIdpNetworkRequestManager* network_manager = nullptr;
   CreateRequestService(
       *cross_site_iframe, iframe_request_remote,
       TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state);
+      &iframe_dialog_state, &network_manager);
+  network_manager->SetSendClientIsThirdPartyToTopFrameOrigin(true);
 
-  sSendClientMatchesTopFrameOrigin = true;
   AuthRequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());

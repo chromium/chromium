@@ -112,8 +112,8 @@ constexpr char kIdpBrandingForegroundColorKey[] = "color";
 // Client metadata keys.
 constexpr char kPrivacyPolicyKey[] = "privacy_policy_url";
 constexpr char kTermsOfServiceKey[] = "terms_of_service_url";
-constexpr char kClientMatchesTopFrameOriginKey[] =
-    "client_matches_top_frame_origin";
+constexpr char kClientIsThirdPartyToTopFrameOriginKey[] =
+    "client_is_third_party_to_top_frame_origin";
 
 // Accounts endpoint response keys.
 constexpr char kAccountsKey[] = "accounts";
@@ -730,8 +730,9 @@ void OnClientMetadataParsed(
   data.privacy_policy_url = ExtractUrl(response, kPrivacyPolicyKey);
   data.terms_of_service_url = ExtractUrl(response, kTermsOfServiceKey);
   if (is_cross_site_iframe) {
-    data.client_matches_top_frame_origin =
-        response.FindBool(kClientMatchesTopFrameOriginKey);
+    data.client_is_third_party_to_top_frame_origin =
+        response.FindBool(kClientIsThirdPartyToTopFrameOriginKey)
+            .value_or(false);
   }
 
   const base::Value::List* icons_value = response.FindList(kBrandingIconsKey);
