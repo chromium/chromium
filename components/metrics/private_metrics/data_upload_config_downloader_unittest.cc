@@ -19,7 +19,7 @@ namespace metrics::private_metrics {
 namespace {
 
 inline constexpr char kDataUploadConfigGstaticUrl[] =
-    "https://www.gstatic.com/chrome/private-metrics/data-upload-config.pb";
+    "https://www.gstatic.com/chrome/private-metrics/data-upload-config";
 
 void AddValidDataUploadConfigResponse(
     network::TestURLLoaderFactory& test_url_loader_factory) {

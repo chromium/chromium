@@ -76,7 +76,7 @@ constexpr net::NetworkTrafficAnnotationTag kPrivateMetricsKeyNetworkTag =
         })");
 
 inline constexpr char kDataUploadConfigGstaticUrl[] =
-    "https://www.gstatic.com/chrome/private-metrics/data-upload-config.pb";
+    "https://www.gstatic.com/chrome/private-metrics/data-upload-config";
 }  // namespace
 
 std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(
