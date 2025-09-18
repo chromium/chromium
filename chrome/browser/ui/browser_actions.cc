@@ -432,7 +432,7 @@ void BrowserActions::InitializeBrowserActions() {
 
                 autofill::MandatoryReauthBubbleControllerImpl::FromWebContents(
                     tab_interface->GetContents())
-                    ->ShowBubble();
+                    ->QueueOrShowBubble(/*force_show=*/true);
               },
               bwi))
           .SetActionId(kActionAutofillMandatoryReauth)

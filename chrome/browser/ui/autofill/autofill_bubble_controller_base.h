@@ -36,6 +36,12 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   explicit AutofillBubbleControllerBase(content::WebContents* web_contents);
   ~AutofillBubbleControllerBase() override;
 
+  // Calls the bubble manager to show the bubble if bubble manager is enabled.
+  // Otherwise just shows the bubble.
+  // `force_show` indicates to the bubble manager to show this bubble
+  // irrespective of its priority.
+  void QueueOrShowBubble(bool force_show = false);
+
   // BubbleControllerBase:
   void ShowBubble() override;
   void HideBubble(bool show_next_bubble) override;
@@ -58,12 +64,6 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   // If the BubbleManager feature is enabled, this returns `false` if a bubble
   // is already queued to be shown.
   [[nodiscard]] bool MaySetUpBubble();
-
-  // Calls the bubble manager to show the bubble if bubble manager is enabled.
-  // Otherwise just shows the bubble.
-  // `force_show` indicates to the bubble manager to show this bubble
-  // irrespective of its priority.
-  void QueueOrShowBubble(bool force_show = false);
 
   // Setter for `bubble_view`.
   void SetBubbleView(AutofillBubbleBase& bubble_view);
