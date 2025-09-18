@@ -3574,10 +3574,9 @@ public class StripLayoutHelperTest {
         // Remove tab from model and verify that the tab strip has not yet updated.
         int closedTabId = 1;
         int expectedNumTabs = tabCount;
+        Tab tab = mModel.getTabAt(closedTabId);
         mModel.getTabRemover()
-                .closeTabs(
-                        TabClosureParams.closeTab(mModel.getTabAt(closedTabId)).build(),
-                        /* allowDialog= */ false);
+                .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ false);
         assertEquals(
                 "Tab strip should not yet have changed.",
                 expectedNumTabs,
@@ -3585,7 +3584,7 @@ public class StripLayoutHelperTest {
 
         // Trigger update and verify the tab strip matches the tab model.
         expectedNumTabs = 9;
-        mStripLayoutHelper.tabClosed(closedTabId);
+        mStripLayoutHelper.tabClosed(tab);
         assertEquals(
                 "Tab strip should match tab model.",
                 expectedNumTabs,
@@ -3828,7 +3827,7 @@ public class StripLayoutHelperTest {
 
         // Fake a tab closure.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.tabClosed(tabs[0].getTabId());
+        mStripLayoutHelper.tabClosed(mModel.getTabAt(0));
 
         // Verify state is cleared.
         verifyPendingMouseTabClosure(/* expectedPendingMouseTabClosure= */ false);

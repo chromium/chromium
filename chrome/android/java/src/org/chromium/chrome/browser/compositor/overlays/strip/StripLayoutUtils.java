@@ -187,6 +187,7 @@ public class StripLayoutUtils {
         return groupTitle.getWidth() + totalTabWidth;
     }
 
+    /** Returns a list of the {@link StripLayoutTab}s in a given group. */
     public static List<StripLayoutTab> getGroupedTabs(
             TabModel tabModel, StripLayoutTab[] stripTabs, Token tabGroupId) {
         ArrayList<StripLayoutTab> groupedTabs = new ArrayList<>();
@@ -196,6 +197,20 @@ public class StripLayoutUtils {
             if (tab != null && tabGroupId.equals(tab.getTabGroupId())) groupedTabs.add(stripTab);
         }
         return groupedTabs;
+    }
+
+    /** Returns the number of non-closing {@link StripLayoutTab}s in a given group. */
+    public static int getNumLiveGroupedTabs(
+            TabModel tabModel, StripLayoutTab[] stripTabs, Token tabGroupId) {
+        // TODO(crbug.com/443337907): This will be obsolete once we immediately close in the
+        //  TabModel, as we could then instead use TabGroupModelFilter#getTabCountForGroup.
+        List<StripLayoutTab> groupedTabs = getGroupedTabs(tabModel, stripTabs, tabGroupId);
+
+        int numLiveGroupedTabs = 0;
+        for (StripLayoutTab tab : groupedTabs) {
+            if (!tab.isDying()) numLiveGroupedTabs++;
+        }
+        return numLiveGroupedTabs;
     }
 
     // ============================================================================================

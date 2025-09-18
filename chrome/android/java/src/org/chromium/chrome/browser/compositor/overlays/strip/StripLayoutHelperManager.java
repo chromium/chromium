@@ -1382,7 +1382,7 @@ public class StripLayoutHelperManager
 
                     @Override
                     public void tabRemoved(Tab tab) {
-                        getStripLayoutHelper(tab.isIncognitoBranded()).tabClosed(tab.getId());
+                        getStripLayoutHelper(tab.isIncognitoBranded()).tabClosed(tab);
                         updateModelSwitcherButton();
                     }
 
@@ -1426,7 +1426,7 @@ public class StripLayoutHelperManager
                     @Override
                     public void onFinishingTabClosure(
                             Tab tab, @TabClosingSource int closingSource) {
-                        getStripLayoutHelper(tab.isIncognitoBranded()).tabClosed(tab.getId());
+                        getStripLayoutHelper(tab.isIncognitoBranded()).tabClosed(tab);
                         updateModelSwitcherButton();
                     }
 
