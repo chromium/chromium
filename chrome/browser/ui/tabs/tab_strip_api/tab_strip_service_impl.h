@@ -43,7 +43,7 @@ class TabStripServiceImpl : public TabStripService {
   mojom::TabStripService::SetSelectedTabsResult SetSelectedTabs(
       const std::vector<tabs_api::NodeId>& selection,
       const tabs_api::NodeId& tab_to_activate) override;
-  mojom::TabStripService::MoveTabResult MoveTab(
+  mojom::TabStripService::MoveNodeResult MoveNode(
       const tabs_api::NodeId& id,
       const tabs_api::Position& position) override;
 

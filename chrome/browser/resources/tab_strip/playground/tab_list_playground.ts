@@ -248,7 +248,7 @@ export class TabListPlaygroundElement extends CustomElement {
     if (sourceParent === targetParent && originalIndex < targetIdx) {
       targetIdx--;
     }
-    this.tabStripService_.moveTab(
+    this.tabStripService_.moveNode(
         draggedElement.dataset['nodeId']!,
         {parentId: parentId, index: targetIdx});
   }

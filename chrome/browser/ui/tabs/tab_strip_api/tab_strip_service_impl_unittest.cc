@@ -342,8 +342,8 @@ TEST_F(TabStripServiceImplTest, MoveTab) {
   // Check that the target is at the beginning before the move.
   ASSERT_EQ(0, tab_strip_->GetIndexForHandle(target_handle).value());
 
-  mojom::TabStripService::MoveTabResult result;
-  bool success = client_->MoveTab(tab_id, std::move(position), &result);
+  mojom::TabStripService::MoveNodeResult result;
+  bool success = client_->MoveNode(tab_id, std::move(position), &result);
 
   ASSERT_TRUE(success);
   ASSERT_TRUE(result.has_value());
@@ -366,8 +366,8 @@ TEST_F(TabStripServiceImplTest, MoveTab_OutOfRange) {
 
   auto position = tabs_api::Position(9001);
 
-  mojom::TabStripService::MoveTabResult result;
-  bool success = client_->MoveTab(tab_id, std::move(position), &result);
+  mojom::TabStripService::MoveNodeResult result;
+  bool success = client_->MoveNode(tab_id, std::move(position), &result);
 
   ASSERT_TRUE(success);
   ASSERT_FALSE(result.has_value());

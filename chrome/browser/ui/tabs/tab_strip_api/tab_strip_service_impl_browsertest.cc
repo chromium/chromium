@@ -626,9 +626,9 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
 
   size_t target_idx = 1;
   base::RunLoop move_loop;
-  remote->MoveTab(
+  remote->MoveNode(
       to_move_id, tabs_api::Position(target_idx),
-      base::BindLambdaForTesting([&](TabStripService::MoveTabResult result) {
+      base::BindLambdaForTesting([&](TabStripService::MoveNodeResult result) {
         ASSERT_TRUE(result.has_value());
         move_loop.Quit();
       }));
@@ -678,9 +678,9 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
       tabs_api::NodeId::Type::kContent,
       base::NumberToString(tab_to_move->GetHandle().raw_value()));
   base::RunLoop move_loop;
-  remote->MoveTab(
+  remote->MoveNode(
       to_move_id, position,
-      base::BindLambdaForTesting([&](TabStripService::MoveTabResult result) {
+      base::BindLambdaForTesting([&](TabStripService::MoveNodeResult result) {
         ASSERT_TRUE(result.has_value());
         move_loop.Quit();
       }));
@@ -734,9 +734,9 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveGroupCollection) {
 
   // Move the group to the beginning of the unpinned tabs at index 0.
   base::RunLoop move_loop;
-  remote->MoveTab(
+  remote->MoveNode(
       group_node_id, tabs_api::Position(0),
-      base::BindLambdaForTesting([&](TabStripService::MoveTabResult result) {
+      base::BindLambdaForTesting([&](TabStripService::MoveNodeResult result) {
         ASSERT_TRUE(result.has_value());
         move_loop.Quit();
       }));
@@ -787,9 +787,9 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveSplitCollection) {
   ASSERT_FALSE(split_node_id.Id().empty());
 
   base::RunLoop move_loop;
-  remote->MoveTab(
+  remote->MoveNode(
       split_node_id, tabs_api::Position(0),
-      base::BindLambdaForTesting([&](TabStripService::MoveTabResult result) {
+      base::BindLambdaForTesting([&](TabStripService::MoveNodeResult result) {
         ASSERT_TRUE(result.has_value());
         move_loop.Quit();
       }));

@@ -63,9 +63,9 @@ class TabStripServiceMojoHandler
   void SetSelectedTabs(const std::vector<tabs_api::NodeId>& selection,
                        const tabs_api::NodeId& tab_to_activate,
                        SetSelectedTabsCallback callback) override;
-  void MoveTab(const tabs_api::NodeId& id,
-               const tabs_api::Position& position,
-               MoveTabCallback callback) override;
+  void MoveNode(const tabs_api::NodeId& id,
+                const tabs_api::Position& position,
+                MoveNodeCallback callback) override;
 
   // tabs_api::mojom::TabStripExperimentalService overrides
   //

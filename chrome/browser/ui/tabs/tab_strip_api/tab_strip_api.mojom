@@ -69,9 +69,11 @@ interface TabStripService {
   SetSelectedTabs(array<NodeId> selection, NodeId tab_to_activate)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
-  // Moves a tab or a tab collection identified by id to a specified position.
+  // Moves a node identified by id to a specified position.
+  // "Node" is the generic term for any item which can be a tab or a tab
+  // collection.
   [Sync]
-  MoveTab(NodeId id, Position position)
+  MoveNode(NodeId id, Position position)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 

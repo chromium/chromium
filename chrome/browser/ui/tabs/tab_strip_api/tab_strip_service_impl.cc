@@ -301,7 +301,7 @@ TabStripServiceImpl::SetSelectedTabs(
   return std::monostate();
 }
 
-mojom::TabStripService::MoveTabResult TabStripServiceImpl::MoveTab(
+mojom::TabStripService::MoveNodeResult TabStripServiceImpl::MoveNode(
     const tabs_api::NodeId& id,
     const tabs_api::Position& position) {
   auto session = session_controller_->CreateSession();

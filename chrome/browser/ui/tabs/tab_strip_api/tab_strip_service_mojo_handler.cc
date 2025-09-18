@@ -83,10 +83,10 @@ void TabStripServiceMojoHandler::SetSelectedTabs(
       tab_strip_service_->SetSelectedTabs(selection, tab_to_activate));
 }
 
-void TabStripServiceMojoHandler::MoveTab(const tabs_api::NodeId& id,
-                                         const tabs_api::Position& position,
-                                         MoveTabCallback callback) {
-  std::move(callback).Run(tab_strip_service_->MoveTab(id, position));
+void TabStripServiceMojoHandler::MoveNode(const tabs_api::NodeId& id,
+                                          const tabs_api::Position& position,
+                                          MoveNodeCallback callback) {
+  std::move(callback).Run(tab_strip_service_->MoveNode(id, position));
 }
 
 void TabStripServiceMojoHandler::UpdateTabGroupVisual(
