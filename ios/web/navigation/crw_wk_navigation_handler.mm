@@ -1402,6 +1402,11 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return YES;
   }
 
+  if (pageTransition & ui::PAGE_TRANSITION_RELOAD) {
+    // Allow reload navigations.
+    return YES;
+  }
+
   // Allow navigating to chrome:// pages if the navigation happens due to
   //  - user typing the url in the omnibox,
   //  - user tapping on a suggestion in the omnibox,
