@@ -497,6 +497,11 @@ void FrameSinkVideoCapturerImpl::Start(
   // Stop(), make that call on its behalf.
   consumer_.set_disconnect_handler(base::BindOnce(
       &FrameSinkVideoCapturerImpl::Stop, base::Unretained(this)));
+
+  // Inform the consumer of the change ahead of the first frame (which will
+  // essentially have the same message implicit in its metadata).
+  consumer_->OnNewCaptureVersion(capture_version());
+
   RefreshEntireSourceNow();
 }
 

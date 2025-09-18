@@ -1921,12 +1921,13 @@ TEST_P(FrameSinkVideoCapturerTest, ChangeTargetIncreasesCaptureVersion) {
       .WillRepeatedly(Return(&frame_sink_));
 
   MockConsumer consumer;
+  EXPECT_CALL(consumer, OnNewCaptureVersion(media::CaptureVersion(
+                            /*source=*/kSourceId, /*sub_capture=*/0)))
+      .Times(1);
   StartCapture(&consumer);
 
-  // The initial capture-version is (kSourceId, 0).
-  EXPECT_CALL(consumer, OnNewCaptureVersion(_)).Times(0);
-  capturer_->ChangeTarget(target, /*sub_capture_target_version=*/0);
   PropagateMojoTasks();
+  testing::Mock::VerifyAndClearExpectations(&consumer);
 
   // The capture-version is increased from (kSourceId, 0) to a larger value.
   const media::CaptureVersion capture_version(/*source=*/kSourceId,
@@ -1934,6 +1935,7 @@ TEST_P(FrameSinkVideoCapturerTest, ChangeTargetIncreasesCaptureVersion) {
   EXPECT_CALL(consumer, OnNewCaptureVersion(capture_version)).Times(1);
   capturer_->ChangeTarget(target, capture_version.sub_capture);
   PropagateMojoTasks();
+  testing::Mock::VerifyAndClearExpectations(&consumer);
 }
 
 TEST_P(FrameSinkVideoCapturerTest, RegionCaptureCropId) {
