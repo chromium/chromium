@@ -1262,16 +1262,6 @@ BASE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider,
 );
 #endif  // !BUILDFLAG(IS_WIN)
 
-// Use TaskRunner for each MojoVideoEncodeAcceleratorService. Replaces
-// per-accelerator encoding task runner.
-BASE_FEATURE(kUseTaskRunnerForMojoVEAService,
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // Feature flag to run the MojoAudioDecoderService in a sequence different than
 // the other mojo media services. On some Android devices, MediaCodec may block
 // the thread which leads to frequent audio decoder underrun in renderer.
