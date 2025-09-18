@@ -147,11 +147,6 @@ using chrome_test_util::TabGroupCreationView;
 // Tests that the tab group creation view is dismissed when the blocking UI is
 // shown.
 - (void)testTabGroupCreationDismissedBeforeReauthScreen {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
-
   // Open the Incognito tab grid with a new Incognito tab.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGreyUI openTabGrid];
@@ -184,11 +179,6 @@ using chrome_test_util::TabGroupCreationView;
 
 // Tests that the tab group view is dismissed when the blocking UI is shown.
 - (void)testTabGroupViewDismissedBeforeReauthScreen {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
-
   // Open the Incognito tab grid with a new Incognito tab.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGreyUI openTabGrid];

@@ -1773,23 +1773,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [[EarlGrey selectElementWithMatcher:ShareButton()] performAction:grey_tap()];
 
   NSString* hostString = base::SysUTF8ToNSString(URL.host());
-  if (@available(iOS 17, *)) {
-    XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
-    BOOL hostStringPresent = [currentApplication.otherElements[hostString]
-        waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
-    BOOL pageTitlePresent = [currentApplication.otherElements[pageTitle]
-        waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
-    GREYAssert(hostStringPresent || pageTitlePresent,
-               @"Either hostString %d or pageTitle %d was not present",
-               hostStringPresent, pageTitlePresent);
-  } else {
-    // On iOS 16, LPLinkView and LPTextView are marked isAccessible=N.
-    ScopedMatchNonAccessibilityElements enabler;
-
-    // Page title is added asynchronously, so wait for its appearance.
-    [self waitForMatcher:grey_allOf(ActivityViewHeader(hostString, pageTitle),
-                                    grey_sufficientlyVisible(), nil)];
-  }
+  XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
+  BOOL hostStringPresent = [currentApplication.otherElements[hostString]
+      waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+  BOOL pageTitlePresent = [currentApplication.otherElements[pageTitle]
+      waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+  GREYAssert(hostStringPresent || pageTitlePresent,
+             @"Either hostString %d or pageTitle %d was not present",
+             hostStringPresent, pageTitlePresent);
 
   // Dismiss the Activity View by tapping outside its bounds.
   [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
@@ -1831,83 +1822,56 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 #pragma mark - ActivitySheet utilities
 
 - (void)verifyActivitySheetVisible {
-  if (@available(iOS 17.0, *)) {
-    NSError* error = nil;
-    GREYAssert([EarlGrey activitySheetPresentWithError:&error],
-               @"Activity sheet not visible");
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(kActivityMenuIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
+  NSError* error = nil;
+  GREYAssert([EarlGrey activitySheetPresentWithError:&error],
+             @"Activity sheet not visible");
 }
 
 - (void)verifyActivitySheetNotVisible {
-  if (@available(iOS 17.0, *)) {
-    NSError* error = nil;
-    // Note that -activitySheetAbsentWithError's return value is incorrect, so
-    // only check the error.
-    [EarlGrey activitySheetAbsentWithError:&error];
-    EG_TEST_HELPER_ASSERT_NO_ERROR(error);
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(kActivityMenuIdentifier)]
-        assertWithMatcher:grey_nil()];
-  }
+  NSError* error = nil;
+  // Note that -activitySheetAbsentWithError's return value is incorrect, so
+  // only check the error.
+  [EarlGrey activitySheetAbsentWithError:&error];
+  EG_TEST_HELPER_ASSERT_NO_ERROR(error);
 }
 
 - (void)verifyTextNotVisibleInActivitySheetWithID:(NSString*)text {
-  if (@available(iOS 17, *)) {
-    NSError* error = nil;
-    GREYAssert([EarlGrey activitySheetPresentWithError:&error],
-               @"Activity sheet not visible");
-    XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
-    XCUIElement* activitySheet =
-        currentApplication.otherElements[@"ActivityListView"];
-    XCUIElementQuery* activityTexts =
-        [activitySheet descendantsMatchingType:XCUIElementTypeStaticText];
-    XCUIElement* staticText =
-        [activityTexts elementMatchingType:XCUIElementTypeStaticText
-                                identifier:text];
-    GREYAssert(!staticText.exists, @"staticText %@ visible", text);
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(text)]
-        assertWithMatcher:grey_notVisible()];
-  }
+  NSError* error = nil;
+  GREYAssert([EarlGrey activitySheetPresentWithError:&error],
+             @"Activity sheet not visible");
+  XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
+  XCUIElement* activitySheet =
+      currentApplication.otherElements[@"ActivityListView"];
+  XCUIElementQuery* activityTexts =
+      [activitySheet descendantsMatchingType:XCUIElementTypeStaticText];
+  XCUIElement* staticText =
+      [activityTexts elementMatchingType:XCUIElementTypeStaticText
+                              identifier:text];
+  GREYAssert(!staticText.exists, @"staticText %@ visible", text);
 }
 
 - (void)verifyTextVisibleInActivitySheetWithID:(NSString*)text {
-  if (@available(iOS 17, *)) {
-    NSError* error = nil;
-    GREYAssert([EarlGrey activitySheetPresentWithError:&error],
-               @"Activity sheet not visible");
+  NSError* error = nil;
+  GREYAssert([EarlGrey activitySheetPresentWithError:&error],
+             @"Activity sheet not visible");
 
-    XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
-    XCUIElement* activitySheet =
-        currentApplication.otherElements[@"ActivityListView"];
-    XCUIElementQuery* activityTexts =
-        [activitySheet descendantsMatchingType:XCUIElementTypeStaticText];
-    XCUIElement* staticText =
-        [activityTexts elementMatchingType:XCUIElementTypeStaticText
-                                identifier:text];
-    GREYAssert(staticText.exists, @"staticText %@ not visible", text);
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(text)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
+  XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
+  XCUIElement* activitySheet =
+      currentApplication.otherElements[@"ActivityListView"];
+  XCUIElementQuery* activityTexts =
+      [activitySheet descendantsMatchingType:XCUIElementTypeStaticText];
+  XCUIElement* staticText =
+      [activityTexts elementMatchingType:XCUIElementTypeStaticText
+                              identifier:text];
+  GREYAssert(staticText.exists, @"staticText %@ not visible", text);
 }
 
 - (void)tapButtonInActivitySheetWithID:(NSString*)buttonLabel {
-  if (@available(iOS 17, *)) {
-    NSError* error = nil;
-    GREYAssertTrue([EarlGrey tapButtonInActivitySheetWithId:buttonLabel
-                                                      error:&error],
-                   @"Button %@ not present in activity sheet", buttonLabel);
-    EG_TEST_HELPER_ASSERT_NO_ERROR(error);
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(buttonLabel)]
-        performAction:grey_tap()];
-  }
+  NSError* error = nil;
+  GREYAssertTrue([EarlGrey tapButtonInActivitySheetWithId:buttonLabel
+                                                    error:&error],
+                 @"Button %@ not present in activity sheet", buttonLabel);
+  EG_TEST_HELPER_ASSERT_NO_ERROR(error);
 }
 
 - (void)closeActivitySheet {
