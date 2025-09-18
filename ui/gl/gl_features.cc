@@ -277,6 +277,14 @@ bool IsSwiftShaderAllowed(const base::CommandLine* command_line) {
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kAllowD3D11WarpFallback, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsWARPAllowedByFeature() {
+  return base::FeatureList::IsEnabled(kAllowD3D11WarpFallback);
+}
+#else
+bool IsWARPAllowedByFeature() {
+  return false;
+}
 #endif
 
 bool IsAnySoftwareGLAllowed(const base::CommandLine* command_line) {
