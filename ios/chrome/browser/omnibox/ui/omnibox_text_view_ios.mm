@@ -392,11 +392,10 @@ using enum OmniboxKeyboardAction;
 - (void)enterPreEditState {
   // Empty omnibox should show the insertion point immediately. There is
   // nothing to erase.
-  if (!self.text.length || UIAccessibilityIsVoiceOverRunning()) {
+  if (!self.text.length || UIAccessibilityIsVoiceOverRunning() ||
+      self.preEditing) {
     return;
   }
-
-  self.preEditing = YES;
 
   NSMutableDictionary<NSAttributedStringKey, id>* attributes =
       self.typingAttributes.mutableCopy;
@@ -405,7 +404,15 @@ using enum OmniboxKeyboardAction;
                 forKey:NSBackgroundColorAttributeName];
   self.typingAttributes = attributes;
 
+  // Also apply the attributes to the whole text.
+  NSMutableAttributedString* attributedText = [self.attributedText mutableCopy];
+  [attributedText addAttributes:attributes
+                          range:NSMakeRange(0, self.attributedText.length)];
+  self.attributedText = attributedText;
+
+  // clearsOnInsertion calls selectAll which remove preEditing.
   self.clearsOnInsertion = YES;
+  self.preEditing = YES;
 }
 
 /// Exits pre-edit state.
