@@ -270,6 +270,7 @@ regional_capabilities::FunnelStage ToFunnelStage(
     case SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation:
     case SearchEngineChoiceScreenConditions::kAccountNotEligible:
     case SearchEngineChoiceScreenConditions::kIneligibleSurface:
+    case SearchEngineChoiceScreenConditions::kManaged:
       return regional_capabilities::FunnelStage::kNotEligible;
   }
   NOTREACHED();
@@ -323,6 +324,29 @@ bool IsChoiceImported(const ChoiceCompletionMetadata& completion_metadata,
   }
 
   return false;
+}
+
+bool ManagementStatusEligibleForChoiceScreen(
+    const regional_capabilities::ChoiceScreenEligibilityConfig& config,
+    policy::ManagementService& management_service) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kChoiceScreenEligibilityCheckManagementStatus)) {
+    return true;
+  }
+
+  if (config.managed_users_can_be_eligible) {
+    return true;
+  }
+
+  switch (management_service.GetManagementAuthorityTrustworthiness()) {
+    case policy::ManagementAuthorityTrustworthiness::NONE:
+      return true;
+    case policy::ManagementAuthorityTrustworthiness::LOW:
+    case policy::ManagementAuthorityTrustworthiness::TRUSTED:
+    case policy::ManagementAuthorityTrustworthiness::FULLY_TRUSTED:
+      return false;
+  }
+  NOTREACHED();
 }
 
 // Checks account properties against the eligibility config to determine if the
@@ -449,6 +473,10 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
+  if (status == ChoiceStatus::kManaged) {
+    return SearchEngineChoiceScreenConditions::kManaged;
+  }
+
   // Initially exclude users with this type of override. Consult b/302675777 for
   // next steps.
   if (profile_prefs_->HasPrefPath(prefs::kSearchProviderOverrides)) {
@@ -508,6 +536,8 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
       return SearchEngineChoiceScreenConditions::kEligible;
     case ChoiceStatus::kAccountNotEligible:
       return SearchEngineChoiceScreenConditions::kAccountNotEligible;
+    case ChoiceStatus::kManaged:
+      return SearchEngineChoiceScreenConditions::kManaged;
   }
   NOTREACHED();
 #endif
@@ -902,13 +932,19 @@ SearchEngineChoiceService::EvaluateSearchProviderChoice(
 
   // -- Stage 3: Optional program-controlled DSP checks
 
-  // 3.1: Check eligibility based on account type.
+  // 3.1: Check eligibility based on management status.
+  if (!ManagementStatusEligibleForChoiceScreen(eligibility_config,
+                                               *management_service_)) {
+    return ChoiceStatus::kManaged;
+  }
+
+  // 3.2: Check eligibility based on account type.
   if (!AccountCanMakeChoiceScreenChoice(eligibility_config,
                                         *identity_manager_)) {
     return ChoiceStatus::kAccountNotEligible;
   }
 
-  // 3.2: Is it a non-prepopulated entry, that had to be explicitly user-added?
+  // 3.3: Is it a non-prepopulated entry, that had to be explicitly user-added?
 
   if (eligibility_config.should_preserve_non_prepopulated_dse) {
     if (!template_url_service.IsPrepopulatedOrDefaultProviderByPolicy(
@@ -925,13 +961,13 @@ SearchEngineChoiceService::EvaluateSearchProviderChoice(
     }
   }
 
-  // 3.3: Was the choice made on a different device?
+  // 3.4: Was the choice made on a different device?
 
   if (renewal_reasons.Has(ChoiceRenewalReason::kOutdated)) {
     return ChoiceStatus::kFromRestoredDevice;
   }
 
-  // 3.4: Is the current DSP non-Google?
+  // 3.5: Is the current DSP non-Google?
 
   if (eligibility_config.should_preserve_non_google_dse) {
     if (default_search_provider->GetEngineType(

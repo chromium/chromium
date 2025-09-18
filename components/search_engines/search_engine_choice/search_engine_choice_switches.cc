@@ -11,4 +11,7 @@ namespace switches {
 BASE_FEATURE(kChoiceScreenEligibilityCheckAccountCapabilities,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kChoiceScreenEligibilityCheckManagementStatus,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace switches

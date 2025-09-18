@@ -210,6 +210,9 @@ class SearchEngineChoiceService : public KeyedService {
     // The user is not eligible for the choice screen based on their account
     // capabilities.
     kAccountNotEligible,
+    // The device is not eligible for the choice screen based on its management
+    // status.
+    kManaged,
   };
   ChoiceStatus EvaluateSearchProviderChoiceForTesting(
       const TemplateURLService& template_url_service);

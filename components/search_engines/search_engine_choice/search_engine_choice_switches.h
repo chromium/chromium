@@ -15,6 +15,11 @@ namespace switches {
 COMPONENT_EXPORT(SEARCH_ENGINE_CHOICE_SWITCHES)
 BASE_DECLARE_FEATURE(kChoiceScreenEligibilityCheckAccountCapabilities);
 
+// When enabled, include management status checks in choice screen eligibility
+// evaluation.
+COMPONENT_EXPORT(SEARCH_ENGINE_CHOICE_SWITCHES)
+BASE_DECLARE_FEATURE(kChoiceScreenEligibilityCheckManagementStatus);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SWITCHES_H_
