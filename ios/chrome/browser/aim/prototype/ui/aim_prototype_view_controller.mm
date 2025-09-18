@@ -579,15 +579,13 @@ const CGFloat kFadeViewWidth = 30.0f;
   config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
   config.imagePadding = 5;
   config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  config.image = CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
+                                           kAIMButtonSymbolPointSize);
 
   if (self.AIModeEnabled) {
-    config.image =
-        DefaultSymbolWithPointSize(kCheckmarkSymbol, kAIMButtonSymbolPointSize);
-    config.background.backgroundColor = [UIColor colorNamed:kBlue100Color];
+    config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
     config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
   } else {
-    config.image = CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
-                                             kAIMButtonSymbolPointSize);
     config.background.backgroundColor =
         [UIColor colorNamed:kSecondaryBackgroundColor];
     config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
