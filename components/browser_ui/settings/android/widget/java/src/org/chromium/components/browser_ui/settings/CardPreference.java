@@ -137,11 +137,4 @@ public class CardPreference extends TextMessagePreference {
     public int getCustomBackgroundColor() {
         return mBackgroundColor;
     }
-
-    @Override
-    public int getCustomHorizontalMargin() {
-        // TODO (crbug.com/439911511): Remove the custom horizontal margin along with
-        // android:layout_marginHorizontal value in card_preference.xml.
-        return 0;
-    }
 }

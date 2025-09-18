@@ -29,7 +29,6 @@ import org.chromium.components.browser_ui.settings.CustomStyledContainer.Backgro
 import org.chromium.components.browser_ui.settings.test.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /** Tests for {@link SettingsStylingController}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -53,7 +52,7 @@ public class SettingsStylingControllerTest {
     private Context mContext;
     private SettingsStylingController mController;
     private PreferenceScreen mPreferenceScreen;
-    private List<Preference> mVisiblePreferences;
+    private ArrayList<Preference> mVisiblePreferences;
     private ArrayList<SettingsContainerStyle> mPreferenceStyles;
 
     @Before
@@ -61,7 +60,7 @@ public class SettingsStylingControllerTest {
         mSettingsRule.launchPreference(PlaceholderSettingsForTest.class);
         mContext = mSettingsRule.getActivity();
         mPreferenceScreen = mSettingsRule.getPreferenceScreen();
-        mController = new SettingsStylingController(mContext, mPreferenceScreen);
+        mController = new SettingsStylingController(mContext);
         mDefaultRadius =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.settings_item_rounded_corner_radius_default);
@@ -86,14 +85,8 @@ public class SettingsStylingControllerTest {
         // Manually add preferences with custom margins
         addPreferencesWithCustomMargins();
 
-        mVisiblePreferences = new ArrayList<>();
-        for (int i = 0; i < mPreferenceScreen.getPreferenceCount(); i++) {
-            Preference p = mPreferenceScreen.getPreference(i);
-            if (p.isVisible()) {
-                mVisiblePreferences.add(p);
-            }
-        }
-        mPreferenceStyles = mController.generatePreferenceStyles();
+        mVisiblePreferences = SettingsUtils.getVisiblePreferences(mPreferenceScreen);
+        mPreferenceStyles = mController.generatePreferenceStyles(mVisiblePreferences);
     }
 
     @Test

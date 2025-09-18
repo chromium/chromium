@@ -13,19 +13,28 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceGroup;
-import androidx.preference.PreferenceScreen;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.CustomStyledContainer.BackgroundStyle;
 
 import java.util.ArrayList;
 
-/** Controller to assign styling to preferences in a settings screen. */
+/**
+ * Controller that assigns styling to items in a settings screen.
+ *
+ * <p>The controller's main responsibility is to process a list of items and determine the style for
+ * each one based on its position within a "styling section." A section is a contiguous block of
+ * standard items. Special items that require custom styling (see {@link #isCustomStyledPreference})
+ * act as delimiters that break up these sections.
+ *
+ * <p>For a standard item, the controller determines if it's at the top, middle, bottom, or is a
+ * standalone item in its section. This position is then used to create a default style with the
+ * correct corner radii and margins.
+ *
+ * <p>Custom preferences are handled separately, allowing them to override the default style.
+ */
 @NullMarked
 public class SettingsStylingController {
-
-    private final PreferenceScreen mPreferenceScreen;
     private final float mDefaultRadius;
     private final float mInnerRadius;
     private final int mDefaultVerticalMargin;
@@ -37,11 +46,8 @@ public class SettingsStylingController {
      * Constructor for the styling controller.
      *
      * @param context The context to get the resources from.
-     * @param preferenceScreen The preference screen to be styled.
      */
-    public SettingsStylingController(
-            @NonNull Context context, @NonNull PreferenceScreen preferenceScreen) {
-        mPreferenceScreen = preferenceScreen;
+    public SettingsStylingController(@NonNull Context context) {
         mDefaultRadius =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.settings_item_rounded_corner_radius_default);
@@ -56,8 +62,7 @@ public class SettingsStylingController {
         mSectionBottomAdditionalMargin =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.settings_section_bottom_margin);
-        mDefaultBackgroundColor =
-                getSettingsContainerBackgroundColor(mPreferenceScreen.getContext());
+        mDefaultBackgroundColor = getSettingsContainerBackgroundColor(context);
     }
 
     /**
@@ -66,45 +71,13 @@ public class SettingsStylingController {
      *
      * @return A list of {@link SettingsContainerStyle} objects.
      */
-    public ArrayList<SettingsContainerStyle> generatePreferenceStyles() {
-        ArrayList<Preference> visiblePreferences = getVisiblePreferences();
+    public ArrayList<SettingsContainerStyle> generatePreferenceStyles(
+            ArrayList<Preference> visiblePreferences) {
         ArrayList<SettingsContainerStyle> preferenceStyles = new ArrayList<>();
         for (int i = 0; i < visiblePreferences.size(); i++) {
             preferenceStyles.add(getPreferenceStyleForPosition(visiblePreferences, i));
         }
         return preferenceStyles;
-    }
-
-    private ArrayList<Preference> getVisiblePreferences() {
-        ArrayList<Preference> visiblePreferences = new ArrayList<>();
-        if (mPreferenceScreen == null) return visiblePreferences;
-
-        for (int i = 0; i < mPreferenceScreen.getPreferenceCount(); i++) {
-            Preference preference = mPreferenceScreen.getPreference(i);
-            if (preference.isVisible()) {
-                addVisiblePreferences(preference, visiblePreferences);
-            }
-        }
-        return visiblePreferences;
-    }
-
-    /**
-     * Recursively adds all visible preferences.
-     *
-     * @param preference The preference to start from.
-     * @param visiblePreferences The list to add visible preferences to.
-     */
-    private void addVisiblePreferences(
-            Preference preference, ArrayList<Preference> visiblePreferences) {
-        visiblePreferences.add(preference);
-        if (preference instanceof PreferenceGroup preferenceGroup) {
-            for (int i = 0; i < preferenceGroup.getPreferenceCount(); i++) {
-                Preference nestedPreference = preferenceGroup.getPreference(i);
-                if (nestedPreference.isVisible()) {
-                    addVisiblePreferences(nestedPreference, visiblePreferences);
-                }
-            }
-        }
     }
 
     /**
@@ -113,7 +86,7 @@ public class SettingsStylingController {
      * @param preference The preference to check.
      * @return Whether the preference has custom styling.
      */
-    private boolean hasCustomStyling(Preference preference) {
+    private boolean isCustomStyledPreference(Preference preference) {
         if (preference instanceof CustomStyledContainer customStyledPreference) {
             return customStyledPreference.getCustomBackgroundStyle() != BackgroundStyle.STANDARD;
         }
@@ -124,7 +97,7 @@ public class SettingsStylingController {
             ArrayList<Preference> visiblePreferences, int position) {
         Preference currentPref = visiblePreferences.get(position);
 
-        if (hasCustomStyling(currentPref)) {
+        if (isCustomStyledPreference(currentPref)) {
             return getPreferenceStyleForCustomPreference(currentPref);
         }
 
@@ -134,34 +107,10 @@ public class SettingsStylingController {
                         ? visiblePreferences.get(position + 1)
                         : null;
 
-        float topRadius = mDefaultRadius;
-        float bottomRadius = mDefaultRadius;
-        int bottomMargin = mDefaultVerticalMargin;
+        boolean isTop = (prefAbove == null) || isCustomStyledPreference(prefAbove);
+        boolean isBottom = (prefBelow == null) || isCustomStyledPreference(prefBelow);
 
-        boolean isTop = (prefAbove == null) || hasCustomStyling(prefAbove);
-        boolean isBottom = (prefBelow == null) || hasCustomStyling(prefBelow);
-
-        if (isTop && isBottom) {
-            // Standalone items have an additional bottom margin
-            bottomMargin = mSectionBottomAdditionalMargin + mDefaultVerticalMargin;
-        } else if (isTop) {
-            bottomRadius = mInnerRadius;
-        } else if (isBottom) {
-            // Items at the end of a section have an additional bottom margin
-            bottomMargin = mSectionBottomAdditionalMargin + mDefaultVerticalMargin;
-            topRadius = mInnerRadius;
-        } else {
-            topRadius = mInnerRadius;
-            bottomRadius = mInnerRadius;
-        }
-        return new SettingsContainerStyle.Builder()
-                .setTopRadius(topRadius)
-                .setBottomRadius(bottomRadius)
-                .setTopMargin(mDefaultVerticalMargin)
-                .setBottomMargin(bottomMargin)
-                .setHorizontalMargin(mDefaultHorizontalMargin)
-                .setBackgroundColor(mDefaultBackgroundColor)
-                .build();
+        return createBuilderWithDefaultStyle(isTop, isBottom);
     }
 
     private SettingsContainerStyle getPreferenceStyleForCustomPreference(Preference preference) {
@@ -195,7 +144,35 @@ public class SettingsStylingController {
                         .build();
             }
         }
-
         return SettingsContainerStyle.EMPTY;
+    }
+
+    private SettingsContainerStyle createBuilderWithDefaultStyle(boolean isTop, boolean isBottom) {
+        float topRadius = mDefaultRadius;
+        float bottomRadius = mDefaultRadius;
+        int bottomMargin = mDefaultVerticalMargin;
+
+        if (isTop && isBottom) { // Standalone
+            // Standalone items have an additional bottom margin
+            bottomMargin += mSectionBottomAdditionalMargin;
+        } else if (isTop) { // Top
+            bottomRadius = mInnerRadius;
+        } else if (isBottom) { // Bottom
+            // Items at the end of a section have an additional bottom margin
+            topRadius = mInnerRadius;
+            bottomMargin += mSectionBottomAdditionalMargin;
+        } else { // Middle
+            topRadius = mInnerRadius;
+            bottomRadius = mInnerRadius;
+        }
+
+        return new SettingsContainerStyle.Builder()
+                .setTopRadius(topRadius)
+                .setBottomRadius(bottomRadius)
+                .setTopMargin(mDefaultVerticalMargin)
+                .setBottomMargin(bottomMargin)
+                .setHorizontalMargin(mDefaultHorizontalMargin)
+                .setBackgroundColor(mDefaultBackgroundColor)
+                .build();
     }
 }

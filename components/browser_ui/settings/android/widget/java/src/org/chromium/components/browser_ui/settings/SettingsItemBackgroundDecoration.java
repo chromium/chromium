@@ -6,8 +6,6 @@ package org.chromium.components.browser_ui.settings;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -64,11 +62,7 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
             return;
         }
 
-        SettingsContainerStyle style = mPreferenceStyles.get(position);
-        outRect.top = style.getTopMargin();
-        outRect.bottom = style.getBottomMargin();
-        outRect.left = style.getHorizontalMargin();
-        outRect.right = style.getHorizontalMargin();
+        SettingsViewStyler.applyMargins(view, mPreferenceStyles.get(position));
     }
 
     @Override
@@ -82,47 +76,9 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
             if (position == RecyclerView.NO_POSITION || position >= mPreferenceStyles.size()) {
                 continue;
             }
-            applyBackgroundStyle(childView, mPreferenceStyles.get(position));
+            SettingsViewStyler.applyBackgroundStyle(childView, mPreferenceStyles.get(position));
         }
         mUpdateBackgrounds = false;
         super.onDraw(c, parent, state);
-    }
-
-    /**
-     * Applies the specified background style to the given view.
-     *
-     * @param view The view to apply the background to.
-     * @param style The {@link SettingsContainerStyle} to apply.
-     */
-    private void applyBackgroundStyle(View view, @NonNull SettingsContainerStyle style) {
-        if (style == SettingsContainerStyle.EMPTY) {
-            view.setBackground(null);
-            return;
-        }
-        view.setBackground(
-                createRoundedDrawable(
-                        style.getTopRadius(), style.getBottomRadius(), style.getBackgroundColor()));
-    }
-
-    /**
-     * Creates a rounded drawable with the specified top and bottom radii.
-     *
-     * @param topRadius The radius for the top corners.
-     * @param bottomRadius The radius for the bottom corners.
-     * @param color The background color of the drawable.
-     * @return A new {@link Drawable} with the specified properties.
-     */
-    private static Drawable createRoundedDrawable(float topRadius, float bottomRadius, int color) {
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setShape(GradientDrawable.RECTANGLE);
-        drawable.setColor(color);
-        drawable.setCornerRadii(
-                new float[] {
-                    topRadius, topRadius,
-                    topRadius, topRadius,
-                    bottomRadius, bottomRadius,
-                    bottomRadius, bottomRadius
-                });
-        return drawable;
     }
 }

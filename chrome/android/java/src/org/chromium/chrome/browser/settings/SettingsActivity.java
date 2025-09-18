@@ -58,6 +58,7 @@ import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsItemBackgroundDecoration;
 import org.chromium.components.browser_ui.settings.SettingsStylingController;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -287,8 +288,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 .post(
                         () -> {
                             SettingsStylingController controller =
-                                    new SettingsStylingController(
-                                            SettingsActivity.this, fragment.getPreferenceScreen());
+                                    new SettingsStylingController(SettingsActivity.this);
                             SettingsItemBackgroundDecoration itemDecoration =
                                     mItemDecorations.get(fragment);
                             if (itemDecoration == null) {
@@ -297,7 +297,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                                 fragment.getListView().addItemDecoration(itemDecoration);
                             }
                             itemDecoration.updatePreferenceStyles(
-                                    controller.generatePreferenceStyles());
+                                    controller.generatePreferenceStyles(
+                                            SettingsUtils.getVisiblePreferences(
+                                                    fragment.getPreferenceScreen())));
                             fragment.getListView().invalidateItemDecorations();
                         });
     }

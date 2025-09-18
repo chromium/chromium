@@ -13,7 +13,7 @@ found in the LICENSE file.
     style="@style/PreferenceLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp">
+    android:layout_marginHorizontal="@dimen/settings_item_horizontal_margin">
 
   <LinearLayout
       android:id="@+id/preference_card"

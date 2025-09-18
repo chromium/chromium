@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/settings/SettingsNavigation.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsStylingController.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsUtils.java",
+    "java/src/org/chromium/components/browser_ui/settings/SettingsViewStyler.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ButtonPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardWithButtonPreference.java",
