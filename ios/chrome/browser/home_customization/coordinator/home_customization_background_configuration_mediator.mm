@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer_bridge.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
+#import "ios/chrome/browser/home_customization/model/home_customization_seed_colors.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "skia/ext/skia_utils_ios.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
@@ -67,26 +69,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
         }
         )");
-
-// Represents a seed color and its associated scheme variant.
-struct SeedColor {
-  SkColor color;
-  ui::ColorProviderKey::SchemeVariant variant;
-};
-
-// Array of seed colors (in ARGB integer format) and variants used to generate
-// background color palette configurations in the color picker.
-const SeedColor kSeedColors[] = {
-    {0xff8cabe4, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Blue
-    {0xff26a69a, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Aqua
-    {0xff00ff00, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Green
-    {0xff87ba81, ui::ColorProviderKey::SchemeVariant::kNeutral},    // Viridian
-    {0xfffadf73, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Citron
-    {0xffff8000, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Orange
-    {0xfff3b2be, ui::ColorProviderKey::SchemeVariant::kNeutral},    // Rose
-    {0xffff00ff, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Fuchsia
-    {0xffe5d5fc, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Violet
-};
 
 }  // namespace
 
@@ -222,7 +204,9 @@ const SeedColor kSeedColors[] = {
     BackgroundCustomizationConfigurationItem* item =
         [[BackgroundCustomizationConfigurationItem alloc]
             initWithBackgroundColor:UIColorFromRGB(seedColor.color)
-                       colorVariant:seedColor.variant];
+                       colorVariant:seedColor.variant
+                  accessibilityName:l10n_util::GetNSString(
+                                        seedColor.accessibilityNameId)];
     collectionConfiguration.configurations[item.configurationID] = item;
     [collectionConfiguration.configurationOrder addObject:item.configurationID];
 
@@ -534,12 +518,23 @@ const SeedColor kSeedColors[] = {
     sync_pb::UserColorTheme colorTheme =
         std::get<sync_pb::UserColorTheme>(recentBackground);
 
+    auto it = std::find_if(kSeedColors.begin(), kSeedColors.end(),
+                           [&colorTheme](const SeedColor& seedColor) {
+                             return seedColor.color == colorTheme.color();
+                           });
+
+    NSString* accessibilityName =
+        it == kSeedColors.end()
+            ? nil
+            : l10n_util::GetNSString(it->accessibilityNameId);
+
     UIColor* backgroundColor = UIColorFromRGB(colorTheme.color());
     ui::ColorProviderKey::SchemeVariant colorVariant =
         ProtoEnumToSchemeVariant(colorTheme.browser_color_variant());
     return [[BackgroundCustomizationConfigurationItem alloc]
         initWithBackgroundColor:backgroundColor
-                   colorVariant:colorVariant];
+                   colorVariant:colorVariant
+              accessibilityName:accessibilityName];
   }
 }
 

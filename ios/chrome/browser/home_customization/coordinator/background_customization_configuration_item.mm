@@ -30,6 +30,8 @@
   HomeCustomizationFramingCoordinates* _userUploadedFramingCoordinates;
 }
 
+@synthesize accessibilityName = _accessibilityName;
+
 - (instancetype)initWithUserUploadedImagePath:(NSString*)imagePath
                            framingCoordinates:
                                (const FramingCoordinates&)coordinates {
@@ -79,8 +81,9 @@
 }
 
 - (instancetype)initWithBackgroundColor:(UIColor*)backgroundColor
-                           colorVariant:(ui::ColorProviderKey::SchemeVariant)
-                                            colorVariant {
+                           colorVariant:
+                               (ui::ColorProviderKey::SchemeVariant)colorVariant
+                      accessibilityName:(NSString*)accessibilityName {
   self = [super init];
   if (self) {
     _backgroundStyle = HomeCustomizationBackgroundStyle::kColor;
@@ -89,6 +92,7 @@
                          _backgroundStyle, backgroundColor.description];
     _backgroundColor = backgroundColor;
     _colorVariant = colorVariant;
+    _accessibilityName = accessibilityName;
   }
   return self;
 }

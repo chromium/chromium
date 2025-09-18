@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 // Define constants within the namespace.
 namespace {
@@ -45,6 +47,7 @@ const CGFloat kGapBorderWidth = 3.0;
   self = [super initWithFrame:frame];
   if (self) {
     self.contentView.backgroundColor = UIColor.clearColor;
+    self.isAccessibilityElement = YES;
 
     // Outer container view that holds the highlight border.
     _borderWrapperView = [[UIView alloc] init];
@@ -149,10 +152,18 @@ const CGFloat kGapBorderWidth = 3.0;
     _borderWrapperView.layer.borderColor =
         [UIColor colorNamed:kStaticBlueColor].CGColor;
     _borderWrapperView.layer.borderWidth = kHighlightBorderWidth;
+    self.accessibilityValue = l10n_util::GetNSString(
+        IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_SELECTED_ACCESSIBILITY_VALUE);
   } else {
     _borderWrapperView.layer.borderColor = nil;
     _borderWrapperView.layer.borderWidth = 0;
+    self.accessibilityValue = nil;
   }
+}
+
+- (UIAccessibilityTraits)accessibilityTraits {
+  return UIAccessibilityTraitButton |
+         (self.isSelected ? UIAccessibilityTraitSelected : 0);
 }
 
 @end

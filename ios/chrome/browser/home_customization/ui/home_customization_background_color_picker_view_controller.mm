@@ -190,8 +190,11 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
     defaultColorPalette.darkColor =
         DynamicNamedColor(kBlueColor, kTextPrimaryColor);
     cell.colorPalette = defaultColorPalette;
+    cell.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_DEFAULT_ACCESSIBILITY_LABEL);
   } else {
     cell.colorPalette = backgroundConfiguration.colorPalette;
+    cell.accessibilityLabel = backgroundConfiguration.accessibilityName;
   }
 
   if ([_selectedColorId

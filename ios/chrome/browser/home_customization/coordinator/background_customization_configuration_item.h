@@ -36,10 +36,11 @@ class NtpCustomBackground;
     (const sync_pb::NtpCustomBackground&)customBackground;
 
 // Initializes a new instance of the background customization configuration
-// with the provided background color and a variant.
+// with the provided background color, its accessibility name and a variant.
 - (instancetype)initWithBackgroundColor:(UIColor*)backgroundColor
-                           colorVariant:(ui::ColorProviderKey::SchemeVariant)
-                                            colorVariant;
+                           colorVariant:
+                               (ui::ColorProviderKey::SchemeVariant)colorVariant
+                      accessibilityName:(NSString*)accessibilityName;
 
 // Initializes a new instance of the background customization configuration
 /// with no background.
