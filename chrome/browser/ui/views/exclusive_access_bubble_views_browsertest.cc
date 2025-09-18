@@ -10,11 +10,13 @@
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
+#include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -68,21 +70,22 @@ std::u16string GetEscShortcutString(bool press_and_hold) {
 
 }  // namespace
 
-class ExclusiveAccessBubbleViewsTest : public TestWithBrowserView {
+class ExclusiveAccessBubbleViewsTest : public InProcessBrowserTest {
  public:
   ExclusiveAccessBubbleViewsTest() = default;
 
-  void SetUp() override {
-    TestWithBrowserView::SetUp();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     ExclusiveAccessBubbleParams params{
         .type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION};
     bubble_view_ = std::make_unique<ExclusiveAccessBubbleViews>(
-        browser_view(), params, base::NullCallback());
+        BrowserView::GetBrowserViewForBrowser(browser()), params,
+        base::NullCallback());
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     bubble_view_.reset();
-    TestWithBrowserView::TearDown();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void UpdateExclusiveAccessBubbleType(ExclusiveAccessBubbleType type,
@@ -97,7 +100,7 @@ class ExclusiveAccessBubbleViewsTest : public TestWithBrowserView {
     return u"Fullscreen";
 #else
     ui::Accelerator accelerator;
-    chrome::AcceleratorProviderForBrowser(browser_view()->browser())
+    chrome::AcceleratorProviderForBrowser(browser())
         ->GetAcceleratorForCommandId(IDC_FULLSCREEN, &accelerator);
     return accelerator.GetShortcutText();
 #endif
@@ -151,15 +154,16 @@ class ExclusiveAccessBubbleViewsInstructionTextTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(ExclusiveAccessBubbleViewsInstructionTextTest, UpdateViewContent) {
+IN_PROC_BROWSER_TEST_P(ExclusiveAccessBubbleViewsInstructionTextTest,
+                       UpdateViewContent) {
   const InstructionTextTestCase& test_case = GetParam();
   UpdateExclusiveAccessBubbleType(test_case.type, /*has_download=*/false);
   EXPECT_EQ(GetInstructionViewText(),
             CreateInstructionText(test_case.goal, test_case.shortcut));
 }
 
-TEST_F(ExclusiveAccessBubbleViewsTest,
-       SubtleNotificationViewAccessibleProperties) {
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
+                       SubtleNotificationViewAccessibleProperties) {
   ui::AXNodeData data;
   GetSubtleNotificationView()->GetViewAccessibility().GetAccessibleNodeData(
       &data);
@@ -224,11 +228,12 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 // Tests the creation of a has_download, non-overriding notification.
-TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
   ExclusiveAccessBubbleParams params{.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
                                      .has_download = true};
   bubble_view_ = std::make_unique<ExclusiveAccessBubbleViews>(
-      browser_view(), params, base::NullCallback());
+      BrowserView::GetBrowserViewForBrowser(browser()), params,
+      base::NullCallback());
   EXPECT_TRUE(base::StartsWith(
       GetInstructionViewText(),
       CreateInstructionText(UserGoal::kSeeDownload, Shortcut::kPressEsc)));
@@ -236,11 +241,13 @@ TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
 
 // Tests the updating of a has_download, non-overriding notification with a
 // second one of the same.
-TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownloadUpdateForDownload) {
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
+                       CreateForDownloadUpdateForDownload) {
   ExclusiveAccessBubbleParams params{.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
                                      .has_download = true};
   bubble_view_ = std::make_unique<ExclusiveAccessBubbleViews>(
-      browser_view(), params, base::NullCallback());
+      BrowserView::GetBrowserViewForBrowser(browser()), params,
+      base::NullCallback());
   UpdateExclusiveAccessBubbleType(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
                                   /*has_download=*/true);
   EXPECT_TRUE(base::StartsWith(
@@ -252,8 +259,8 @@ TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownloadUpdateForDownload) {
 // download notification.
 using ExclusiveAccessBubbleViewsTestWithDownload =
     ExclusiveAccessBubbleViewsInstructionTextTest;
-TEST_P(ExclusiveAccessBubbleViewsTestWithDownload,
-       UpdateViewContentThenDownload) {
+IN_PROC_BROWSER_TEST_P(ExclusiveAccessBubbleViewsTestWithDownload,
+                       UpdateViewContentThenDownload) {
   const InstructionTextTestCase& test_case = GetParam();
   UpdateExclusiveAccessBubbleType(test_case.type, /*has_download=*/false);
   // Download notifications pass the type NONE.
@@ -264,8 +271,8 @@ TEST_P(ExclusiveAccessBubbleViewsTestWithDownload,
 }
 
 // Tests the above but with the Update() calls coming in the other order.
-TEST_P(ExclusiveAccessBubbleViewsTestWithDownload,
-       UpdateViewContentAfterDownload) {
+IN_PROC_BROWSER_TEST_P(ExclusiveAccessBubbleViewsTestWithDownload,
+                       UpdateViewContentAfterDownload) {
   const InstructionTextTestCase& test_case = GetParam();
   // Update it for a download.
   UpdateExclusiveAccessBubbleType(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
