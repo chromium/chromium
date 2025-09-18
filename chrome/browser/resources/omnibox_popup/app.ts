@@ -106,6 +106,13 @@ export class OmniboxPopupAppElement extends CrLitElement {
   }
 
   private onAutocompleteResultChanged_(result: AutocompleteResult) {
+    // Skip empty results. Otherwise, blurring/closing the omnibox would clear
+    // the results in the debug UI.
+    if (new URLSearchParams(window.location.search).has('debug') &&
+        !result.matches.length) {
+      return;
+    }
+
     this.result_ = result;
 
     if (result.matches[0]?.allowedToBeDefaultMatch) {
