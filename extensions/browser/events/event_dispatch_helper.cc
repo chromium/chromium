@@ -272,7 +272,7 @@ void EventDispatchHelper::DispatchEventToActiveListener(
   dispatch_to_process_function_.Run(
       listener->extension_id(), listener->listener_url(), process,
       listener->service_worker_version_id(), listener->worker_thread_id(),
-      std::move(dispatched_event), listener->filter(), /*did_enqueue=*/false);
+      std::move(dispatched_event), /*did_enqueue=*/false);
 }
 
 void EventDispatchHelper::TryQueueEventForLazyListener(

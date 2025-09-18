@@ -453,7 +453,6 @@ class EventRouter : public KeyedService,
                               int64_t service_worker_version_id,
                               int worker_thread_id,
                               std::unique_ptr<Event> event,
-                              const base::Value::Dict* listener_filter,
                               bool did_enqueue);
 
   // Adds a filter to an event.

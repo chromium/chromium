@@ -45,7 +45,6 @@ class EventDispatchHelper {
                                    int64_t service_worker_version_id,
                                    int worker_thread_id,
                                    std::unique_ptr<Event> event,
-                                   const base::Value::Dict* listener_filter,
                                    bool did_enqueue)>;
 
   EventDispatchHelper(const EventDispatchHelper&) = delete;

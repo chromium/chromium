@@ -1005,7 +1005,6 @@ void EventRouter::DispatchEventToProcess(
     int64_t service_worker_version_id,
     int worker_thread_id,
     std::unique_ptr<Event> event,
-    const base::Value::Dict* listener_filter,
     bool did_enqueue) {
   BrowserContext* listener_context = process->GetBrowserContext();
   ProcessMap* process_map = ProcessMap::Get(listener_context);
@@ -1318,7 +1317,7 @@ void EventRouter::DispatchPendingEvent(
     DispatchEventToProcess(
         params->extension_id, params->url, params->render_process_host,
         params->service_worker_version_id, params->worker_thread_id,
-        std::move(event), nullptr, true /* did_enqueue */);
+        std::move(event), /*did_enqueue=*/true);
   } else if (event->cannot_dispatch_callback) {
     // Even after spinning up the lazy background context, there's no registered
     // event. This can happen if the extension asynchronously registers event
