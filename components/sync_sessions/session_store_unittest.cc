@@ -15,7 +15,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"

@@ -925,6 +925,7 @@ static_library("browser") {
     ":amount_extraction_heuristic_regexes_proto",
     ":country_data",
     ":legal_message_line",
+    ":payments_sync_utils",
     "//components/autofill/core/browser/payments:card_unmask_challenge_option",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/browser/proto:autofill_ai_proto",
@@ -961,6 +962,7 @@ static_library("browser") {
     ":buildflags",
     ":entity_schema_enums_and_functions",
     ":generate_country_native_names",
+    ":payments_sync_utils",
     ":regex_patterns_inl_h",
     "//base",
     "//base:i18n",
@@ -1064,6 +1066,19 @@ static_library("legal_message_line") {
     "//url",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("payments_sync_utils") {
+  sources = [
+    "webdata/payments/payments_sync_util.cc",
+    "webdata/payments/payments_sync_util.h",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/base",
+    "//components/sync/protocol",
+    "//components/sync/protocol:util",
+  ]
 }
 
 static_library("test_support") {
@@ -1281,6 +1296,7 @@ static_library("test_support") {
 
   deps = [
     ":autofill_address_rewriter_resources",
+    ":payments_sync_utils",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",

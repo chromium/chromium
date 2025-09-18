@@ -27,8 +27,8 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_util.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -300,7 +300,7 @@ std::string AutofillWalletSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_wallet());
 
-  return syncer::GetUnhashedClientTagFromAutofillWalletSpecifics(
+  return GetUnhashedClientTagFromAutofillWalletSpecifics(
       entity_data.specifics.autofill_wallet());
 }
 
@@ -308,14 +308,14 @@ std::string AutofillWalletSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_wallet());
   return GetStorageKeyForWalletDataClientTag(
-      syncer::GetUnhashedClientTagFromAutofillWalletSpecifics(
+      GetUnhashedClientTagFromAutofillWalletSpecifics(
           entity_data.specifics.autofill_wallet()));
 }
 
 bool AutofillWalletSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   CHECK(entity_data.specifics.has_autofill_wallet());
-  return !syncer::GetUnhashedClientTagFromAutofillWalletSpecifics(
+  return !GetUnhashedClientTagFromAutofillWalletSpecifics(
               entity_data.specifics.autofill_wallet())
               .empty();
 }

@@ -185,6 +185,7 @@ static_library("engine") {
   deps = [
     "//base:i18n",
     "//build:branding_buildflags",
+    "//components/autofill/core/browser:payments_sync_utils",
     "//components/variations/net",
 
     # For engine/nigori.

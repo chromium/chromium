@@ -35,8 +35,6 @@ static_library("base") {
     "deletion_origin.h",
     "extensions_activity.cc",
     "extensions_activity.h",
-    "hash_util.cc",
-    "hash_util.h",
     "legacy_directory_deletion.cc",
     "legacy_directory_deletion.h",
     "page_transition_conversion.cc",

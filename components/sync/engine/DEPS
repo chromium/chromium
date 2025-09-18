@@ -9,4 +9,5 @@ include_rules = [
   "+services/network/public",
   "+services/network/test",
   "+third_party/protobuf",
+  "+components/autofill/core/browser/webdata/payments",
 ]

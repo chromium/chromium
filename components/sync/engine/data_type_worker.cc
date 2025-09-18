@@ -28,11 +28,11 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_util.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
@@ -142,18 +142,21 @@ void AdaptClientTagForFullUpdateData(DataType data_type,
   if (data_type == AUTOFILL_WALLET_DATA) {
     CHECK(data->specifics.has_autofill_wallet());
     data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_WALLET_DATA, GetUnhashedClientTagFromAutofillWalletSpecifics(
-                                  data->specifics.autofill_wallet()));
+        AUTOFILL_WALLET_DATA,
+        autofill::GetUnhashedClientTagFromAutofillWalletSpecifics(
+            data->specifics.autofill_wallet()));
   } else if (data_type == AUTOFILL_WALLET_OFFER) {
     CHECK(data->specifics.has_autofill_offer());
     data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_WALLET_OFFER, GetUnhashedClientTagFromAutofillOfferSpecifics(
-                                   data->specifics.autofill_offer()));
+        AUTOFILL_WALLET_OFFER,
+        autofill::GetUnhashedClientTagFromAutofillOfferSpecifics(
+            data->specifics.autofill_offer()));
   } else if (data_type == AUTOFILL_VALUABLE) {
     CHECK(data->specifics.has_autofill_valuable());
     data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_VALUABLE, GetUnhashedClientTagFromAutofillValuableSpecifics(
-                               data->specifics.autofill_valuable()));
+        AUTOFILL_VALUABLE,
+        autofill::GetUnhashedClientTagFromAutofillValuableSpecifics(
+            data->specifics.autofill_valuable()));
   } else {
     NOTREACHED();
   }

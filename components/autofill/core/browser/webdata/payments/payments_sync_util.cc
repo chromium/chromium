@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/hash_util.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_util.h"
 
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -12,7 +12,7 @@
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 
-namespace syncer {
+namespace autofill {
 
 std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
     const sync_pb::AutofillWalletSpecifics& specifics) {
@@ -60,4 +60,5 @@ std::string GetUnhashedClientTagFromAutofillValuableSpecifics(
   return specifics.id();
 }
 
-}  // namespace syncer
+
+}  // namespace autofill

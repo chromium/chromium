@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_BASE_HASH_UTIL_H_
-#define COMPONENTS_SYNC_BASE_HASH_UTIL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_SYNC_UTIL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_SYNC_UTIL_H_
 
 #include <string>
+
 
 namespace sync_pb {
 class AutofillOfferSpecifics;
@@ -13,11 +14,7 @@ class AutofillWalletSpecifics;
 class AutofillValuableSpecifics;
 }  // namespace sync_pb
 
-// TODO(crbug.com/41412176): Rename this file to data_type_util.h or something
-// else that better reflects GetUnhashedClientTagFromAutofillWalletSpecifics()
-// has nothing to do with hashes.
-
-namespace syncer {
+namespace autofill {
 
 // A helper for extracting client tag out of the specifics for wallet data (as
 // client tags don't get populated by the server). This is required in more than
@@ -38,6 +35,7 @@ std::string GetUnhashedClientTagFromAutofillOfferSpecifics(
 std::string GetUnhashedClientTagFromAutofillValuableSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics);
 
-}  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_BASE_HASH_UTIL_H_
+}  // namespace autofill
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_SYNC_UTIL_H_
