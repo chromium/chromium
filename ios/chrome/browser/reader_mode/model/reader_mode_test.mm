@@ -126,7 +126,7 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
       ^(GURL url_copy) {
         // Overrides the result from DOM distiller heuristic with a custom
         // entry.
-        tab_helper->HandleReaderModeHeuristicResult(url_copy, result);
+        tab_helper->HandleReaderModeHeuristicResult(result);
         web_frame->set_call_java_script_function_callback(base::DoNothing());
       },
       url));

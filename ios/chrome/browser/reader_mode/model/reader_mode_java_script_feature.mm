@@ -21,12 +21,11 @@ const char kScriptHandlerName[] = "ReaderModeMessageHandler";
 
 // Tab helper method to process the result of the DOM distiller heuristic.
 void ReaderModeHeuristicResultAvailable(web::WebState* web_state,
-                                        const GURL& original_url,
                                         ReaderModeHeuristicResult result) {
   ReaderModeTabHelper* tab_helper =
       ReaderModeTabHelper::FromWebState(web_state);
   if (tab_helper) {
-    tab_helper->HandleReaderModeHeuristicResult(original_url, result);
+    tab_helper->HandleReaderModeHeuristicResult(result);
   }
 }
 
@@ -68,7 +67,7 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
 
   if (!message.body() || !message.body()->is_dict()) {
     ReaderModeHeuristicResultAvailable(
-        web_state, url.value(), ReaderModeHeuristicResult::kMalformedResponse);
+        web_state, ReaderModeHeuristicResult::kMalformedResponse);
     return;
   }
 
@@ -76,7 +75,7 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
       TransformToDerivedFeatures(message.body()->GetDict(), url.value());
   if (!result.has_value()) {
     ReaderModeHeuristicResultAvailable(
-        web_state, url.value(), ReaderModeHeuristicResult::kMalformedResponse);
+        web_state, ReaderModeHeuristicResult::kMalformedResponse);
     return;
   }
 
@@ -102,7 +101,7 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
     heuristic_result =
         ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength;
   }
-  ReaderModeHeuristicResultAvailable(web_state, url.value(), heuristic_result);
+  ReaderModeHeuristicResultAvailable(web_state, heuristic_result);
 }
 
 void ReaderModeJavaScriptFeature::TriggerReaderModeHeuristic(

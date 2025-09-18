@@ -297,6 +297,7 @@ void ReaderModeTabHelper::ResetUrlEligibility(const GURL& url) {
     // past navigation have been recorded.
     metrics_helper_.Flush();
   }
+  eligibility_heuristic_url_.reset();
 
   // Do not reset URL eligibility for same-page navigations.
   if (!reader_mode_eligible_url_.EqualsIgnoringRef(url)) {
@@ -387,28 +388,32 @@ base::WeakPtr<ReaderModeTabHelper> ReaderModeTabHelper::GetWeakPtr() {
 }
 
 void ReaderModeTabHelper::HandleReadabilityHeuristicResult(
-    const GURL& url,
     const base::Value* result) {
-  HandleReaderModeHeuristicResult(url, GetReaderModeHeuristicResult(result));
+  HandleReaderModeHeuristicResult(GetReaderModeHeuristicResult(result));
 }
 
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
-    const GURL& url,
     ReaderModeHeuristicResult result) {
   metrics_helper_.RecordReaderHeuristicCompleted(result);
 
-  if (url != web_state_->GetLastCommittedURL()) {
+  if (!eligibility_heuristic_url_.has_value() ||
+      !eligibility_heuristic_url_->EqualsIgnoringRef(
+          web_state_->GetLastCommittedURL())) {
     // There has been a change in the committed URL since the last heuristic
-    // run. Re-run the heuristic and reset the eligible URL.
-    TriggerReaderModeHeuristicAsync(web_state_->GetLastCommittedURL());
+    // run, do not process the result.
+    eligibility_heuristic_url_.reset();
     return;
   }
   reader_mode_eligible_url_ =
-      result == ReaderModeHeuristicResult::kReaderModeEligible ? url : GURL();
-  if (last_committed_url_without_ref_.EqualsIgnoringRef(url)) {
+      result == ReaderModeHeuristicResult::kReaderModeEligible
+          ? eligibility_heuristic_url_.value()
+          : GURL();
+  if (last_committed_url_without_ref_.EqualsIgnoringRef(
+          eligibility_heuristic_url_.value())) {
     last_committed_url_eligibility_ready_ = true;
     CallLastCommittedUrlEligibilityCallbacks(CurrentPageIsDistillable());
   }
+  eligibility_heuristic_url_.reset();
 }
 
 void ReaderModeTabHelper::TriggerReaderModeHeuristic(const GURL& url) {
@@ -435,11 +440,12 @@ void ReaderModeTabHelper::TriggerReaderModeHeuristic(const GURL& url) {
   }
 
   metrics_helper_.RecordReaderHeuristicTriggered();
+  eligibility_heuristic_url_ = url;
   if (base::FeatureList::IsEnabled(kEnableReadabilityHeuristic)) {
     main_frame->ExecuteJavaScript(
         base::UTF8ToUTF16(dom_distiller::GetReadabilityTriggeringScript()),
         base::BindOnce(&ReaderModeTabHelper::HandleReadabilityHeuristicResult,
-                       weak_ptr_factory_.GetWeakPtr(), url));
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     ReaderModeJavaScriptFeature::GetInstance()->TriggerReaderModeHeuristic(
         main_frame);
