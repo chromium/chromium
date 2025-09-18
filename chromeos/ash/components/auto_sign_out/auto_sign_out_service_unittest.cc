@@ -6,8 +6,11 @@
 
 #include <memory>
 
+#include "chromeos/constants/pref_names.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/test/test_sync_service.h"
@@ -67,6 +70,8 @@ class AutoSignOutTest : public testing::Test {
     return session_manager_.get();
   }
 
+  TestingPrefServiceSimple* prefs() { return &prefs_; }
+
   session_manager::FakeSessionManagerDelegate* fake_session_manager_delegate() {
     return fake_session_manager_delegate_.get();
   }
@@ -106,6 +111,15 @@ class AutoSignOutTest : public testing::Test {
 
     session_manager_ =
         std::make_unique<session_manager::SessionManager>(std::move(delegate));
+
+    // Set `kAutoSignOutEnabled` as true by default since we need it enabled for
+    // most tests.
+    prefs_.registry()->RegisterBooleanPref(chromeos::prefs::kAutoSignOutEnabled,
+                                           true);
+    prefs_.registry()->RegisterBooleanPref(chromeos::prefs::kFloatingSsoEnabled,
+                                           false);
+    prefs_.registry()->RegisterBooleanPref(
+        chromeos::prefs::kFloatingWorkspaceV2Enabled, false);
   }
 
   void TearDown() override {
@@ -121,6 +135,8 @@ class AutoSignOutTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   syncer::TestSyncService test_sync_service_;
+
+  TestingPrefServiceSimple prefs_;
 
   std::unique_ptr<syncer::FakeDeviceInfoSyncService>
       fake_device_info_sync_service_;
@@ -138,8 +154,9 @@ TEST_F(AutoSignOutTest, TimestampUpdatedAfterServiceCreation) {
   EXPECT_FALSE(
       local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
 
-  AutoSignOutService auto_sign_out_service(
-      fake_device_info_sync_service(), test_sync_service(), session_manager());
+  AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
+                                           test_sync_service(),
+                                           session_manager(), prefs());
 
   EXPECT_TRUE(
       local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
@@ -147,8 +164,9 @@ TEST_F(AutoSignOutTest, TimestampUpdatedAfterServiceCreation) {
 
 // Verifies that a sign-out is triggered when a newer device signs in.
 TEST_F(AutoSignOutTest, SignOutTriggeredForNewerDeviceSignIn) {
-  AutoSignOutService auto_sign_out_service(
-      fake_device_info_sync_service(), test_sync_service(), session_manager());
+  AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
+                                           test_sync_service(),
+                                           session_manager(), prefs());
 
   fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
       CreateFakeDeviceInfo("guid1", "device1",
@@ -168,8 +186,9 @@ TEST_F(AutoSignOutTest, SignOutTriggeredForNewerDeviceSignIn) {
 // Verifies that a sign-out is not triggered when an older device is already
 // signed in.
 TEST_F(AutoSignOutTest, SignOutNotTriggeredForOlderDeviceSignIn) {
-  AutoSignOutService auto_sign_out_service(
-      fake_device_info_sync_service(), test_sync_service(), session_manager());
+  AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
+                                           test_sync_service(),
+                                           session_manager(), prefs());
 
   fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
       CreateFakeDeviceInfo("guid1", "device1",
@@ -186,8 +205,9 @@ TEST_F(AutoSignOutTest, SignOutNotTriggeredForOlderDeviceSignIn) {
 
 // Verifies that a sign-out is not triggered when the same device signs in.
 TEST_F(AutoSignOutTest, SignOutNotTriggeredWithSameDeviceInfoGuid) {
-  AutoSignOutService auto_sign_out_service(
-      fake_device_info_sync_service(), test_sync_service(), session_manager());
+  AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
+                                           test_sync_service(),
+                                           session_manager(), prefs());
 
   fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
       CreateFakeDeviceInfo("guid1", "device1",
@@ -208,8 +228,9 @@ TEST_F(AutoSignOutTest, SignOutNotTriggeredWithSameDeviceInfoGuid) {
 // Verifies that device info timestamp is updated on unlock after wake-up from
 // sleep.
 TEST_F(AutoSignOutTest, TimestampUpdatedOnUnlockAfterWakeUpFromSleep) {
-  AutoSignOutService auto_sign_out_service(
-      fake_device_info_sync_service(), test_sync_service(), session_manager());
+  AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
+                                           test_sync_service(),
+                                           session_manager(), prefs());
 
   const base::Time timestamp_before_sleep =
       local_device_info()->auto_sign_out_last_signin_timestamp().value();
@@ -240,8 +261,9 @@ TEST_F(AutoSignOutTest, TimestampUpdatedOnUnlockAfterWakeUpFromSleep) {
 // Verifies that device info timestamp is not updated on unlock if device wasn't
 // previously asleep.
 TEST_F(AutoSignOutTest, TimestampNotUpdatedOnUnlockWithoutPreviousSleep) {
-  AutoSignOutService auto_sign_out_service(
-      fake_device_info_sync_service(), test_sync_service(), session_manager());
+  AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
+                                           test_sync_service(),
+                                           session_manager(), prefs());
 
   const base::Time timestamp_before_unlock =
       local_device_info()->auto_sign_out_last_signin_timestamp().value();
@@ -257,11 +279,12 @@ TEST_F(AutoSignOutTest, TimestampNotUpdatedOnUnlockWithoutPreviousSleep) {
   EXPECT_EQ(timestamp_after_unlock, timestamp_before_unlock);
 }
 
-// Verify that receiving new device info immediately after waking up doesn't
+// Verifies that receiving new device info immediately after waking up doesn't
 // trigger sign-out.
 TEST_F(AutoSignOutTest, SignOutNotTriggeredOnWakeUp) {
-  AutoSignOutService auto_sign_out_service(
-      fake_device_info_sync_service(), test_sync_service(), session_manager());
+  AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
+                                           test_sync_service(),
+                                           session_manager(), prefs());
 
   // Simulate sleep.
   fake_power_manager_client()->SendSuspendImminent(
@@ -288,9 +311,114 @@ TEST_F(AutoSignOutTest, SignOutNotTriggeredOnWakeUp) {
 
   test_sync_service()->FireStateChanged();
 
-  // Verify sign-out is not requested since our device has woken up after the
+  // Verifies sign-out is not requested since our device has woken up after the
   // sign-in timestamp of the other device.
   EXPECT_EQ(fake_session_manager_delegate()->request_sign_out_count(), 0);
 }
+
+// Verifies that toggling the `kAutoSignOutEnabled` pref correctly handles the
+// sign-out request when a newer device signs in.
+TEST_F(AutoSignOutTest, ServiceReactsToPrefChangesForNewerDeviceSignIn) {
+  AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
+                                           test_sync_service(),
+                                           session_manager(), prefs());
+
+  // Newer device signs in for the first time.
+  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
+      CreateFakeDeviceInfo("guid1", "device1",
+                           base::Time::Now() + base::Seconds(10)));
+
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::DEVICE_INFO},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+
+  ASSERT_EQ(fake_session_manager_delegate()->request_sign_out_count(), 0);
+
+  test_sync_service()->FireStateChanged();
+
+  // Sign-out count increased since pref is enabled.
+  EXPECT_EQ(fake_session_manager_delegate()->request_sign_out_count(), 1);
+
+  prefs()->SetBoolean(chromeos::prefs::kAutoSignOutEnabled, false);
+
+  // Newer device signs in for the second time.
+  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
+      CreateFakeDeviceInfo("guid1", "device1",
+                           base::Time::Now() + base::Seconds(10)));
+
+  test_sync_service()->FireStateChanged();
+
+  // Sign-out count remained the same since pref is disabled.
+  EXPECT_EQ(fake_session_manager_delegate()->request_sign_out_count(), 1);
+
+  prefs()->SetBoolean(chromeos::prefs::kAutoSignOutEnabled, true);
+
+  test_sync_service()->FireStateChanged();
+
+  // Sign-out count increased since pref is enabled.
+  EXPECT_EQ(fake_session_manager_delegate()->request_sign_out_count(), 2);
+}
+
+namespace {
+
+struct TestConfig {
+  bool auto_sign_out_enabled = false;
+  bool floating_sso_enabled = false;
+  bool floating_workspace_v2_enabled = false;
+  int expected_sign_out_count = 0;
+};
+
+}  // namespace
+
+// Test fixture that is used to test various pref combinations.
+class AutoSignOutPrefTest : public AutoSignOutTest,
+                            public testing::WithParamInterface<TestConfig> {};
+
+// Verifies that a sign-out is triggered for a newer device sign-in when any of
+// the policies is enabled.
+TEST_P(AutoSignOutPrefTest,
+       SignOutTriggeredForNewerDeviceSignInWhenAnyPrefIsEnabled) {
+  const TestConfig& test_config = GetParam();
+
+  prefs()->SetBoolean(chromeos::prefs::kAutoSignOutEnabled,
+                      test_config.auto_sign_out_enabled);
+  prefs()->SetBoolean(chromeos::prefs::kFloatingSsoEnabled,
+                      test_config.floating_sso_enabled);
+  prefs()->SetBoolean(chromeos::prefs::kFloatingWorkspaceV2Enabled,
+                      test_config.floating_workspace_v2_enabled);
+
+  AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
+                                           test_sync_service(),
+                                           session_manager(), prefs());
+
+  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
+      CreateFakeDeviceInfo("guid1", "device1",
+                           base::Time::Now() + base::Seconds(10)));
+
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::DEVICE_INFO},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+
+  ASSERT_EQ(fake_session_manager_delegate()->request_sign_out_count(), 0);
+
+  test_sync_service()->FireStateChanged();
+
+  EXPECT_EQ(fake_session_manager_delegate()->request_sign_out_count(),
+            test_config.expected_sign_out_count);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrefCombinations,
+    AutoSignOutPrefTest,
+    ::testing::Values(
+        TestConfig{},
+        TestConfig{.auto_sign_out_enabled = true, .expected_sign_out_count = 1},
+        TestConfig{.floating_sso_enabled = true, .expected_sign_out_count = 1},
+        TestConfig{.floating_workspace_v2_enabled = true,
+                   .expected_sign_out_count = 1},
+        TestConfig{.auto_sign_out_enabled = true,
+                   .floating_sso_enabled = true,
+                   .floating_workspace_v2_enabled = true,
+                   .expected_sign_out_count = 1}));
 
 }  // namespace ash

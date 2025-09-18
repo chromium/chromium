@@ -12,8 +12,11 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/sync/service/sync_service_observer.h"
+
+class PrefService;
 
 namespace session_manager {
 class SessionManager;
@@ -40,9 +43,12 @@ class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
   // is responsible for ensuring that it doesn't outlive these KeyedServices.
   // SessionManager shutdown happens after primary profile shutdown, which is
   // where AutoSignOutService is destroyed, so it is guaranteed to outlive it.
+  // PrefService is tied to the user's Profile, which is guaranteed to outlive
+  // AutoSignOutService.
   AutoSignOutService(syncer::DeviceInfoSyncService* device_info_sync_service,
                      syncer::SyncService* sync_service,
-                     session_manager::SessionManager* session_manager);
+                     session_manager::SessionManager* session_manager,
+                     PrefService* prefs);
   AutoSignOutService(const AutoSignOutService&) = delete;
   AutoSignOutService& operator=(const AutoSignOutService&) = delete;
 
@@ -60,6 +66,14 @@ class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
  private:
+  // Registers listeners to call `UpdateObservations` upon a change to any
+  // relevant pref value.
+  void RegisterPrefListeners();
+
+  // Updates observers to needed services based on relevant pref values. It is
+  // responsible for starting or stopping the AutoSignOutService dynamically.
+  void UpdateObservations();
+
   // Checks if local device info is ready before updating device.
   void UpdateLocalDeviceInfoWhenReady();
 
@@ -71,6 +85,10 @@ class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
   const raw_ref<syncer::SyncService> sync_service_;
 
   const raw_ref<session_manager::SessionManager> session_manager_;
+
+  const raw_ref<PrefService> prefs_;
+
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::Time initialization_time_;
 

@@ -71,6 +71,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
@@ -320,10 +321,11 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
       primary_profile->GetProfilePolicyConnector()->IsManaged());
 
   if (ash::features::IsAutoSignOutEnabled()) {
+    PrefService* prefs = primary_profile->GetPrefs();
     auto_sign_out_service_ = std::make_unique<ash::AutoSignOutService>(
         DeviceInfoSyncServiceFactory::GetForProfile(primary_profile),
         SyncServiceFactory::GetForProfile(primary_profile),
-        session_manager_.get());
+        session_manager_.get(), prefs);
   }
 }
 

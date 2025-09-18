@@ -12,7 +12,9 @@ component("auto_sign_out") {
 
   deps = [
     "//base",
+    "//chromeos/constants",
     "//chromeos/dbus/power",
+    "//components/prefs",
     "//components/session_manager/core",
     "//components/sync",
     "//components/sync_device_info",
@@ -26,7 +28,10 @@ source_set("unit_tests") {
 
   deps = [
     ":auto_sign_out",
+    "//chromeos/constants",
     "//chromeos/dbus/power",
+    "//components/prefs",
+    "//components/prefs:test_support",
     "//components/session_manager/core",
     "//components/session_manager/core:test_support",
     "//components/sync:test_support",
