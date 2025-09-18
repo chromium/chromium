@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 
 using signin_metrics::AccessPoint;
@@ -50,6 +52,9 @@ using signin_metrics::PromoAction;
     CHECK(browser);
     CHECK_EQ(browser->type(), Browser::Type::kRegular,
              base::NotFatalUntil::M145);
+    auto* authService =
+        AuthenticationServiceFactory::GetForProfile(self.profile);
+    CHECK(authService->SigninEnabled(), base::NotFatalUntil::M146);
     _contextStyle = contextStyle;
     _accessPoint = accessPoint;
     _creationTimeTicks = base::TimeTicks::Now();
@@ -68,6 +73,9 @@ using signin_metrics::PromoAction;
                                            browser:(Browser*)browser
                                 baseViewController:
                                     (UIViewController*)baseViewController {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
+  CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M146);
   SigninCoordinator* signinCoordinator;
   switch (command.operation) {
     case AuthenticationOperation::kResignin: {

@@ -18,6 +18,10 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -33,7 +37,12 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
     profile_state_ = OCMClassMock([ProfileState class]);
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.profileState = profile_state_;
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder = TestProfileIOS::Builder();
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     base_view_controller_mock_ = OCMStrictClassMock([UIViewController class]);
 
@@ -158,6 +167,7 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   // Required for UI blocker.
   ProfileState* profile_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
 // Tests that all coordinators are stopped and delegates are set to nil when
