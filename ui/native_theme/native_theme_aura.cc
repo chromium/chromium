@@ -45,30 +45,6 @@ BASE_FEATURE(kNewScrollbarArrowRadius, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
-gfx::Size NativeThemeAura::GetPartSize(Part part,
-                                       State state,
-                                       const ExtraParams& extra_params) const {
-  if (use_overlay_scrollbar()) {
-    constexpr int minimum_length = 32 + 2 * kOverlayScrollbarStrokeWidth;
-
-    // Aura overlay scrollbars need a slight tweak from the base sizes.
-    switch (part) {
-      case kScrollbarHorizontalThumb:
-        return gfx::Size(minimum_length, scrollbar_width_);
-      case kScrollbarVerticalThumb:
-        return gfx::Size(scrollbar_width_, minimum_length);
-
-      default:
-        // TODO(bokan): We should probably make sure code using overlay
-        // scrollbars isn't asking for part sizes that don't exist.
-        // crbug.com/657159.
-        break;
-    }
-  }
-
-  return NativeThemeBase::GetPartSize(part, state, extra_params);
-}
-
 gfx::Insets NativeThemeAura::GetScrollbarSolidColorThumbInsets(
     Part part) const {
   if (use_overlay_scrollbar()) {
@@ -79,7 +55,8 @@ gfx::Insets NativeThemeAura::GetScrollbarSolidColorThumbInsets(
   auto insets = gfx::Insets::VH(
       // If there are no buttons then provide some padding so that the thumb
       // doesn't touch the end of the track.
-      scrollbar_button_length() == 0 ? kThumbPadding : 0, kThumbPadding);
+      GetVerticalScrollbarButtonSize().IsEmpty() ? kThumbPadding : 0,
+      kThumbPadding);
   if (part == kScrollbarHorizontalTrack) {
     insets.Transpose();
   }
@@ -109,28 +86,37 @@ gfx::Rect NativeThemeAura::GetNinePatchAperture(Part part) const {
 
 NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbar) {
   set_use_overlay_scrollbar(use_overlay_scrollbar);
-  if (use_overlay_scrollbar) {
-    // NOTE: The overlay scrollbar thumb omits the stroke on the trailing
-    // "thickness" edge, so only including its width a single time here is
-    // intentional.
-    scrollbar_width_ =
-        kOverlayScrollbarThumbWidthPressed + kOverlayScrollbarStrokeWidth;
-  }
-#if BUILDFLAG(IS_CHROMEOS)
-  // CrOS does not draw scrollbar buttons.
-  set_scrollbar_button_length(0);
-#endif
 }
 
 NativeThemeAura::NativeThemeAura(SystemTheme system_theme)
-    : NativeThemeBase(system_theme) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // CrOS does not draw scrollbar buttons.
-  set_scrollbar_button_length(0);
-#endif
-}
+    : NativeThemeBase(system_theme) {}
 
 NativeThemeAura::~NativeThemeAura() = default;
+
+gfx::Size NativeThemeAura::GetVerticalScrollbarButtonSize() const {
+  gfx::Size size = NativeThemeBase::GetVerticalScrollbarButtonSize();
+  if (use_overlay_scrollbar()) {
+    // NOTE: The overlay scrollbar thumb omits the stroke on the trailing
+    // "thickness" edge, so only including its width a single time here is
+    // intentional.
+    size.set_width(kOverlayScrollbarThumbWidthPressed +
+                   kOverlayScrollbarStrokeWidth);
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // CrOS does not draw scrollbar buttons. Be careful to leave the width valid,
+  // however, as that value is also used for the track width.
+  size.set_height(0);
+#endif
+  return size;
+}
+
+gfx::Size NativeThemeAura::GetVerticalScrollbarThumbSize() const {
+  if (use_overlay_scrollbar()) {
+    return gfx::Size(GetVerticalScrollbarButtonSize().width(),
+                     32 + 2 * kOverlayScrollbarStrokeWidth);
+  }
+  return NativeThemeBase::GetVerticalScrollbarThumbSize();
+}
 
 std::optional<ColorId> NativeThemeAura::GetScrollbarThumbColorId(
     State state,

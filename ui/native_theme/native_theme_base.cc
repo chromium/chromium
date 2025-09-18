@@ -120,8 +120,8 @@ gfx::Size NativeThemeBase::GetPartSize(Part part,
   }
   gfx::Size size =
       (part == kScrollbarHorizontalThumb || part == kScrollbarVerticalThumb)
-          ? gfx::Size(scrollbar_width_, 2 * scrollbar_width_)
-          : gfx::Size(scrollbar_width_, scrollbar_button_length_);
+          ? GetVerticalScrollbarThumbSize()
+          : GetVerticalScrollbarButtonSize();
   if (part == kInnerSpinButton || part == kScrollbarHorizontalTrack ||
       part == kScrollbarVerticalTrack) {
     size.set_height(0);
@@ -237,7 +237,7 @@ void NativeThemeBase::PaintImpl(cc::PaintCanvas* canvas,
     case kScrollbarUpArrow:
     case kScrollbarLeftArrow:
     case kScrollbarRightArrow:
-      if (scrollbar_button_length_ > 0) {
+      if (!GetVerticalScrollbarButtonSize().IsEmpty()) {
         PaintArrowButton(canvas, color_provider, rect, part, state,
                          forced_colors, dark_mode, contrast,
                          std::get<ScrollbarArrowExtraParams>(extra_params));
@@ -286,6 +286,15 @@ void NativeThemeBase::PaintImpl(cc::PaintCanvas* canvas,
     default:
       NOTREACHED();
   }
+}
+
+gfx::Size NativeThemeBase::GetVerticalScrollbarButtonSize() const {
+  return gfx::Size(15, 14);
+}
+
+gfx::Size NativeThemeBase::GetVerticalScrollbarThumbSize() const {
+  const int thickness = GetVerticalScrollbarButtonSize().width();
+  return gfx::Size(thickness, thickness * 2);
 }
 
 void NativeThemeBase::AdjustCheckboxRadioRectForPadding(SkRect* rect) const {

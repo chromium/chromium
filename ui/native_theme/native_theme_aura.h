@@ -18,9 +18,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
   NativeThemeAura& operator=(const NativeThemeAura&) = delete;
 
   // NativeThemeBase:
-  gfx::Size GetPartSize(Part part,
-                        State state,
-                        const ExtraParams& extra_params) const override;
   gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
@@ -32,6 +29,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
   ~NativeThemeAura() override;
 
   // NativeThemeBase:
+  gfx::Size GetVerticalScrollbarButtonSize() const override;
+  gfx::Size GetVerticalScrollbarThumbSize() const override;
   std::optional<ColorId> GetScrollbarThumbColorId(
       State state,
       const ScrollbarThumbExtraParams& extra_params) const override;

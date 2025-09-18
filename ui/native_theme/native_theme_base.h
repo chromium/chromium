@@ -103,11 +103,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   using NativeTheme::NativeTheme;
   ~NativeThemeBase() override;
 
-  int scrollbar_button_length() const { return scrollbar_button_length_; }
-  void set_scrollbar_button_length(int length) {
-    scrollbar_button_length_ = length;
-  }
-
   // NativeTheme:
   void PaintImpl(cc::PaintCanvas* canvas,
                  const ColorProvider* color_provider,
@@ -126,6 +121,17 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   // have different padding from those on desktop Chrome. Get rid of this when
   // crbug.com/530746 is resolved.
   virtual void AdjustCheckboxRadioRectForPadding(SkRect* rect) const;
+
+  // Returns the size of a vertical scrollbar button. Horizontal scrollbars
+  // transpose this value.
+  //
+  // NOTE: The width here is also assumed to be the track width, so should be
+  // nonzero even if buttons should not be drawn.
+  virtual gfx::Size GetVerticalScrollbarButtonSize() const;
+
+  // Returns the size of a vertical scrollbar thumb. Horizontal scrollbars
+  // transpose this value.
+  virtual gfx::Size GetVerticalScrollbarThumbSize() const;
 
   virtual SkColor GetControlColor(ControlColorId color_id,
                                   bool dark_mode,
@@ -347,8 +353,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                       bool dark_mode,
                       PreferredContrast contrast) const;
 
-  int scrollbar_width_ = 15;
-
  private:
   friend class NativeThemeAuraTest;
   friend class NativeThemeBaseTest;
@@ -378,9 +382,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                                   bool dark_mode,
                                   PreferredContrast contrast,
                                   std::optional<SkColor> accent_color) const;
-
-  // The length of the arrow buttons, 0 means no buttons are drawn.
-  int scrollbar_button_length_ = 14;
 };
 
 }  // namespace ui

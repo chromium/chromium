@@ -50,50 +50,23 @@ constexpr float kScrollbarTrackOutlineWidth = 1.0f;
 
 }  // namespace
 
-gfx::Size NativeThemeFluent::GetPartSize(
-    Part part,
-    State state,
-    const ExtraParams& extra_params) const {
-  switch (part) {
-    case kScrollbarHorizontalThumb:
-      return gfx::Size(17, 9);
-    case kScrollbarVerticalThumb:
-      return gfx::Size(9, 17);
-    case kScrollbarHorizontalTrack:
-      return gfx::Size(0, scrollbar_width_);
-    case kScrollbarVerticalTrack:
-      return gfx::Size(scrollbar_width_, 0);
-    case kScrollbarUpArrow:
-    case kScrollbarDownArrow:
-      return gfx::Size(scrollbar_width_, kScrollbarButtonSideLength);
-    case kScrollbarLeftArrow:
-    case kScrollbarRightArrow:
-      return gfx::Size(kScrollbarButtonSideLength, scrollbar_width_);
-    default:
-      break;
-  }
-
-  return NativeThemeBase::GetPartSize(part, state, extra_params);
-}
-
 int NativeThemeFluent::GetPaintedScrollbarTrackInset() const {
   return 1;
 }
 
-gfx::Insets NativeThemeFluent::GetScrollbarSolidColorThumbInsets(
-    Part part) const {
-  // TODO(crbug.com/40213017): We should probably move the thumb rect insetting
-  // logic from blink::ScrollbarThemeFluent::ThumbRect() to here, to make sure
-  // the web UI and the native UI use the same thumb insetting logic.
-  return gfx::Insets();
-}
-
 NativeThemeFluent::NativeThemeFluent() {
   set_use_overlay_scrollbar(IsFluentOverlayScrollbarEnabled());
-  scrollbar_width_ = kScrollbarThickness;
 }
 
 NativeThemeFluent::~NativeThemeFluent() = default;
+
+gfx::Size NativeThemeFluent::GetVerticalScrollbarButtonSize() const {
+  return gfx::Size(kScrollbarThickness, kScrollbarButtonSideLength);
+}
+
+gfx::Size NativeThemeFluent::GetVerticalScrollbarThumbSize() const {
+  return gfx::Size(9, 17);
+}
 
 std::optional<ColorId> NativeThemeFluent::GetScrollbarThumbColorId(
     State state,

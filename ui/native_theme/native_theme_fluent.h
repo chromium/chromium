@@ -44,11 +44,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   NativeThemeFluent& operator=(const NativeThemeFluent&) = delete;
 
   // NativeThemeBase:
-  gfx::Size GetPartSize(Part part,
-                        State state,
-                        const ExtraParams& extra_params) const override;
   int GetPaintedScrollbarTrackInset() const override;
-  gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
 
   // Gets whether arrow icons are treated as available for metric computations.
   bool ArrowIconsAvailable() const {
@@ -60,6 +56,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   ~NativeThemeFluent() override;
 
   // NativeThemeBase:
+  gfx::Size GetVerticalScrollbarButtonSize() const override;
+  gfx::Size GetVerticalScrollbarThumbSize() const override;
   std::optional<ColorId> GetScrollbarThumbColorId(
       State state,
       const ScrollbarThumbExtraParams& extra_params) const override;
