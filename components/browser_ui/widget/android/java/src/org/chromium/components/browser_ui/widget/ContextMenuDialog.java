@@ -239,6 +239,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                             }
                             if (mIsFlyout) {
                                 builder.setSpecCalculator(new FlyoutPopupSpecCalculator());
+                                builder.setAnimationStyle(R.style.PopupWindowAnimFade);
                             }
 
                             mPopupWindow = builder.build();

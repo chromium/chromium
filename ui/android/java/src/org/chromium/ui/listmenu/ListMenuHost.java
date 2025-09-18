@@ -246,6 +246,7 @@ public class ListMenuHost
                         .setFocusable(true)
                         .setTouchModal(false)
                         .setAnimateFromAnchor(false)
+                        .setAnimationStyle(R.style.PopupWindowAnimFade)
                         .setSpecCalculator(new FlyoutPopupSpecCalculator())
                         .build();
 

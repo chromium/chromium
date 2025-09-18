@@ -400,6 +400,10 @@ found in the LICENSE file.
         <item name="android:windowEnterAnimation">@anim/menu_enter_raiseup</item>
         <item name="android:windowExitAnimation">@anim/menu_exit_raiseup</item>
     </style>
+    <style name="PopupWindowAnimFade">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_fade</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_fade</item>
+    </style>
 
     <!-- ListMenu -->
     <style name="ListMenuItemStyle">
