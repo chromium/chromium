@@ -1479,7 +1479,7 @@ chromium-metrics-reviews@google.com.
       variants="AttributionReportingAggregatableContextType"/>
 </histogram>
 
-<histogram name="Conversions.{ReportType}.NetworkConnectionTypeOnFailure"
+<histogram name="Conversions.{ReportType}.NetworkConnectionTypeOnFailure2"
     enum="NetworkConnectionType" expires_after="2026-02-22">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

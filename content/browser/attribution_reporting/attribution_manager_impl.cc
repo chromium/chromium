@@ -335,12 +335,12 @@ void RecordNetworkConnectionTypeOnFailure(
   switch (report_type) {
     case AttributionReport::Type::kEventLevel:
       base::UmaHistogramEnumeration(
-          "Conversions.EventLevelReport.NetworkConnectionTypeOnFailure",
+          "Conversions.EventLevelReport.NetworkConnectionTypeOnFailure2",
           connection_type);
       break;
     case AttributionReport::Type::kAggregatableAttribution:
       base::UmaHistogramEnumeration(
-          "Conversions.AggregatableReport.NetworkConnectionTypeOnFailure",
+          "Conversions.AggregatableReport.NetworkConnectionTypeOnFailure2",
           connection_type);
       break;
     case AttributionReport::Type::kNullAggregatable:
@@ -1276,11 +1276,13 @@ void AttributionManagerImpl::SendReport(AttributionReport report,
   report_sender_->SendReport(
       std::move(report), is_debug_report,
       base::BindOnce(
-          [](ReportSentCallback callback, const AttributionReport& report,
-             SendResult::Sent sent) {
+          [](ReportSentCallback callback,
+             network::mojom::ConnectionType connection_type,
+             const AttributionReport& report, SendResult::Sent sent) {
+            sent.connection_type = connection_type;
             std::move(callback).Run(report, SendResult(std::move(sent)));
           },
-          std::move(callback)));
+          std::move(callback), scheduler_timer_->connection_type()));
 }
 
 void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
@@ -1299,13 +1301,11 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                            return std::nullopt;
                          case SendResult::Sent::Result::kTransientFailure:
                            RecordNetworkConnectionTypeOnFailure(
-                               report.GetReportType(),
-                               scheduler_timer_->connection_type());
+                               report.GetReportType(), sent.connection_type);
                            return HandleTransientFailureOnSendReport(report);
                          case SendResult::Sent::Result::kFailure:
                            RecordNetworkConnectionTypeOnFailure(
-                               report.GetReportType(),
-                               scheduler_timer_->connection_type());
+                               report.GetReportType(), sent.connection_type);
                            return std::nullopt;
                        }
                      },

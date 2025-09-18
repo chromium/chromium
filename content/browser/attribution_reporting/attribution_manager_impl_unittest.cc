@@ -606,7 +606,7 @@ TEST_F(AttributionManagerImplTest,
       "Conversions.TimeFromTriggerToReportSentSuccessfully", 0);
 
   static constexpr char kNetworkConnectionTypeOnFailureHistogram[] =
-      "Conversions.EventLevelReport.NetworkConnectionTypeOnFailure";
+      "Conversions.EventLevelReport.NetworkConnectionTypeOnFailure2";
 
   histograms.ExpectBucketCount(
       kNetworkConnectionTypeOnFailureHistogram,
