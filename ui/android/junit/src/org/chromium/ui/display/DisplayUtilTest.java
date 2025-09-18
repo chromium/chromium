@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.util.Pair;
 import android.view.WindowInsets;
 import android.view.WindowMetrics;
 
@@ -58,6 +59,7 @@ public class DisplayUtilTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private DisplayAndroid mDisplayAndroid;
+    @Mock private DisplayAndroidManager mDisplayAndroidManager;
 
     private static final int TEST_STATUS_BAR_HEIGHT = 100;
     private static final int TEST_NAVIGATION_BAR_HEIGHT = 100;
@@ -73,7 +75,6 @@ public class DisplayUtilTest {
             new WindowInsets.Builder()
                     .setInsets(WindowInsets.Type.systemBars(), TEST_SYSTEM_BAR_INSETS)
                     .build();
-    private static final float TEST_DENSITY = 2.0f;
     private static final int TEST_DISPLAY_ID = 73;
 
     @Test
@@ -304,10 +305,6 @@ public class DisplayUtilTest {
                         });
     }
 
-    private void coordinateTranslationTestsSetup() {
-        coordinateTranslationTestsSetup(TEST_DENSITY);
-    }
-
     private void coordinateTranslationTestsSetup(float density) {
         when(mDisplayAndroid.getDipScale()).thenReturn(density);
         when(mDisplayAndroid.getDisplayId()).thenReturn(TEST_DISPLAY_ID);
@@ -316,7 +313,7 @@ public class DisplayUtilTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testPassesContextDisplayId() {
-        coordinateTranslationTestsSetup();
+        coordinateTranslationTestsSetup(1.0f);
         RectF globalCoordinates = new RectF(0, 0, 0, 0);
         assertEquals(
                 "The display ID returned should be equal to the display ID of the provided display",
@@ -618,5 +615,133 @@ public class DisplayUtilTest {
                 "Scaling a rect with 0.5 fractional results.",
                 new Rect(-11, -21, 11, 21),
                 DisplayUtil.scaleToEnclosingRect(rect, 1.05f));
+    }
+
+    private void prepareDisplayAndroid(Rect bounds, Rect localBounds, float dipScale) {
+        when(mDisplayAndroid.getBounds()).thenReturn(bounds);
+        when(mDisplayAndroid.getLocalBounds()).thenReturn(localBounds);
+        when(mDisplayAndroid.getDipScale()).thenReturn(dipScale);
+    }
+
+    @Test
+    public void testConvertGlobalDipToLocalPxCoordinates() {
+        DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
+
+        // No matching display
+        {
+            Rect globalCoordinatesDip = new Rect(100, 200, 300, 400);
+            when(mDisplayAndroidManager.getDisplayMatching(globalCoordinatesDip)).thenReturn(null);
+
+            assertEquals(
+                    "Conversion should return Pair.create(null, null) when no display matches: ",
+                    Pair.create(null, null),
+                    DisplayUtil.convertGlobalDipToLocalPxCoordinates(globalCoordinatesDip));
+        }
+        // Empty coordinates
+        {
+            prepareDisplayAndroid(new Rect(0, 0, 1536, 864), new Rect(0, 0, 1920, 1080), 1.25f);
+            Rect globalCoordinatesDip = new Rect(0, 0, 0, 0);
+            when(mDisplayAndroidManager.getDisplayMatching(globalCoordinatesDip))
+                    .thenReturn(mDisplayAndroid);
+
+            assertEquals(
+                    "Conversion of an empty DIP rect should result in an empty px rect: ",
+                    Pair.create(mDisplayAndroid, new Rect(0, 0, 0, 0)),
+                    DisplayUtil.convertGlobalDipToLocalPxCoordinates(globalCoordinatesDip));
+        }
+        // Coordinates match display bounds
+        {
+            prepareDisplayAndroid(new Rect(0, 0, 1027, 578), new Rect(0, 0, 1920, 1080), 1.87f);
+            Rect globalCoordinatesDip = new Rect(0, 0, 1027, 578);
+
+            when(mDisplayAndroidManager.getDisplayMatching(globalCoordinatesDip))
+                    .thenReturn(mDisplayAndroid);
+
+            assertEquals(
+                    "DIP coordinates matching display bounds should convert to display local px"
+                            + " bounds:",
+                    Pair.create(mDisplayAndroid, new Rect(0, 0, 1920, 1080)),
+                    DisplayUtil.convertGlobalDipToLocalPxCoordinates(globalCoordinatesDip));
+        }
+        // Coordinates almost match display bounds
+        {
+            prepareDisplayAndroid(new Rect(0, 0, 1536, 864), new Rect(0, 0, 1920, 1080), 1.25f);
+            Rect globalCoordinatesDip = new Rect(1, 1, 1535, 863);
+            when(mDisplayAndroidManager.getDisplayMatching(globalCoordinatesDip))
+                    .thenReturn(mDisplayAndroid);
+
+            assertEquals(
+                    "Conversion for coordinates close to the display bounds failed: ",
+                    Pair.create(mDisplayAndroid, new Rect(1, 1, 1919, 1079)),
+                    DisplayUtil.convertGlobalDipToLocalPxCoordinates(globalCoordinatesDip));
+        }
+        // Scale factor 1.5
+        {
+            prepareDisplayAndroid(new Rect(-640, -360, 640, 360), new Rect(0, 0, 1920, 1080), 1.5f);
+            Rect globalCoordinatesDip = new Rect(-505, -307, 621, 353);
+            when(mDisplayAndroidManager.getDisplayMatching(globalCoordinatesDip))
+                    .thenReturn(mDisplayAndroid);
+
+            assertEquals(
+                    "Conversion for scale factor 1.5 failed: ",
+                    Pair.create(mDisplayAndroid, new Rect(202, 79, 1892, 1070)),
+                    DisplayUtil.convertGlobalDipToLocalPxCoordinates(globalCoordinatesDip));
+        }
+        // Coordinates fully inside display
+        {
+            prepareDisplayAndroid(
+                    new Rect(-70, -179, 1105, 576), new Rect(0, 0, 1983, 1275), 1.69f);
+            Rect globalCoordinatesDip = new Rect(-57, -124, 354, 489);
+
+            when(mDisplayAndroidManager.getDisplayMatching(globalCoordinatesDip))
+                    .thenReturn(mDisplayAndroid);
+
+            assertEquals(
+                    "Conversion for coordinates fully inside the display failed: ",
+                    Pair.create(mDisplayAndroid, new Rect(21, 92, 714, 1128)),
+                    DisplayUtil.convertGlobalDipToLocalPxCoordinates(globalCoordinatesDip));
+        }
+        // Coordinates fully cover display
+        {
+            prepareDisplayAndroid(
+                    new Rect(170, -1411, 2705, 438), new Rect(0, 0, 1983, 1275), 0.69f);
+            Rect globalCoordinatesDip = new Rect(111, -1574, 2899, 442);
+
+            when(mDisplayAndroidManager.getDisplayMatching(globalCoordinatesDip))
+                    .thenReturn(mDisplayAndroid);
+
+            assertEquals(
+                    "Conversion for coordinates fully covering the display failed: ",
+                    Pair.create(mDisplayAndroid, new Rect(-41, -113, 2117, 1278)),
+                    DisplayUtil.convertGlobalDipToLocalPxCoordinates(globalCoordinatesDip));
+        }
+        // Coordinates intersect display
+        {
+            prepareDisplayAndroid(
+                    new Rect(-960, -720, 1536, 864), new Rect(0, 0, 3120, 1980), 1.25f);
+            Rect globalCoordinatesDip = new Rect(-1280, -480, 1760, 320);
+
+            when(mDisplayAndroidManager.getDisplayMatching(globalCoordinatesDip))
+                    .thenReturn(mDisplayAndroid);
+
+            assertEquals(
+                    "Conversion for coordinates partially intersecting the display failed: ",
+                    Pair.create(mDisplayAndroid, new Rect(-400, 300, 3400, 1300)),
+                    DisplayUtil.convertGlobalDipToLocalPxCoordinates(globalCoordinatesDip));
+        }
+        // Coordinates are between display's px and dp coordinates
+        {
+            prepareDisplayAndroid(
+                    new Rect(-960, -720, 1536, 864), new Rect(0, 0, 3120, 1980), 1.25f);
+            Rect globalCoordinatesDip = new Rect(-1107, -797, 1772, 999);
+
+            when(mDisplayAndroidManager.getDisplayMatching(globalCoordinatesDip))
+                    .thenReturn(mDisplayAndroid);
+
+            assertEquals(
+                    "Conversion for coordinates between display's px and dp coordinates failed: ",
+                    Pair.create(mDisplayAndroid, new Rect(-184, -97, 3415, 2149)),
+                    DisplayUtil.convertGlobalDipToLocalPxCoordinates(globalCoordinatesDip));
+        }
     }
 }

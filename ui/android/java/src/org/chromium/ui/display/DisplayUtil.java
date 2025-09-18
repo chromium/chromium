@@ -421,6 +421,49 @@ public abstract class DisplayUtil {
     }
 
     /**
+     * Converts global dip coordinates (as in Web API spec) to local coordinates (display and pixel
+     * coordinates relative to the origin of the display). Display is chosen by the most
+     * intersection area. If none of the displays intersect with the given area a pair of {null,
+     * null} is returned.
+     *
+     * @param globalDipCoordinates Global coordinates in dip.
+     * @return A pair of {@link DisplayAndroid} and local coordinates in pixels.
+     */
+    public static Pair<DisplayAndroid, Rect> convertGlobalDipToLocalPxCoordinates(
+            Rect globalDipCoordinates) {
+        DisplayAndroid display =
+                DisplayAndroidManager.getInstance().getDisplayMatching(globalDipCoordinates);
+
+        if (display == null) {
+            return Pair.create(null, null);
+        }
+
+        final Rect displayGlobalDipBounds = display.getBounds();
+        final Rect displayLocalPxBounds = display.getLocalBounds();
+        final float displayDipScale = display.getDipScale();
+
+        final RectF floatLocalCoordinatesPx =
+                new RectF(
+                        displayLocalPxBounds.left
+                                + (globalDipCoordinates.left - displayGlobalDipBounds.left)
+                                        * displayDipScale,
+                        displayLocalPxBounds.top
+                                + (globalDipCoordinates.top - displayGlobalDipBounds.top)
+                                        * displayDipScale,
+                        displayLocalPxBounds.right
+                                + (globalDipCoordinates.right - displayGlobalDipBounds.right)
+                                        * displayDipScale,
+                        displayLocalPxBounds.bottom
+                                + (globalDipCoordinates.bottom - displayGlobalDipBounds.bottom)
+                                        * displayDipScale);
+
+        final Rect localCoordinatesPx = new Rect();
+        floatLocalCoordinatesPx.roundOut(localCoordinatesPx);
+
+        return Pair.create(display, localCoordinatesPx);
+    }
+
+    /**
      * Scales a given rectangle by a specified factor and rounds the result to the smallest
      * integer-based rectangle that encloses it.
      *

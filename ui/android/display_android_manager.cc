@@ -250,4 +250,12 @@ void DisplayAndroidManager::SetPrimaryDisplayId(
   primary_display_id_ = sdkDisplayId;
 }
 
+jint DisplayAndroidManager::GetDisplaySdkMatching(JNIEnv* env,
+                                                  jint x,
+                                                  jint y,
+                                                  jint width,
+                                                  jint height) {
+  return GetDisplayMatching(gfx::Rect(x, y, width, height)).id();
+}
+
 }  // namespace ui

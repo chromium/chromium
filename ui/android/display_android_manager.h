@@ -64,6 +64,12 @@ class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
   void SetPrimaryDisplayId(JNIEnv* env,
                            jint sdkDisplayId);
 
+  jint GetDisplaySdkMatching(JNIEnv* env,
+                             jint x,
+                             jint y,
+                             jint width,
+                             jint height);
+
  private:
   friend class WindowAndroid;
   friend class DisplayAndroidManagerTest;

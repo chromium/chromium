@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
@@ -353,6 +354,29 @@ public class DisplayAndroidManager {
                         displayAndroid.isInternal());
     }
 
+    /**
+     * Matches the given rectangle in dip to the display it most closely intersects.
+     *
+     * @param matchRect Area in dip that should be matched.
+     * @return {@link DisplayAndroid} that most closely intersects the given rectangle, or {@code
+     *     null} if no matching display is found.
+     */
+    /* package */ @Nullable DisplayAndroid getDisplayMatching(Rect matchRect) {
+        if (mNativePointer == 0) {
+            return null;
+        }
+
+        int sdkDisplayId =
+                DisplayAndroidManagerJni.get()
+                        .getDisplaySdkMatching(
+                                mNativePointer,
+                                matchRect.left,
+                                matchRect.top,
+                                matchRect.width(),
+                                matchRect.height());
+        return mIdMap.get(sdkDisplayId);
+    }
+
     @NativeMethods
     interface Natives {
         void updateDisplay(
@@ -377,6 +401,13 @@ public class DisplayAndroidManager {
         void removeDisplay(long nativeDisplayAndroidManager, int sdkDisplayId);
 
         void setPrimaryDisplayId(long nativeDisplayAndroidManager, int sdkDisplayId);
+
+        int getDisplaySdkMatching(
+                long nativeDisplayAndroidManager, int x, int y, int width, int height);
+    }
+
+    public static void setInstanceForTesting(DisplayAndroidManager displayAndroidManager) {
+        sDisplayAndroidManager = displayAndroidManager;
     }
 
     /** Clears the object returned by {@link #getInstance()} */
