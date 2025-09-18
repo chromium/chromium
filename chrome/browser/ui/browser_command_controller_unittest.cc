@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
@@ -591,6 +592,23 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
   browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/1,
                                                    TabCloseTypes::CLOSE_NONE);
   EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_BOOKMARK_ALL_TABS));
+}
+
+TEST_F(BrowserCommandControllerTest,
+       GroupAllUngroupedTabsUserMetricActionEmitted) {
+  base::UserActionTester user_action_tester;
+  chrome::BrowserCommandController command_controller(browser());
+  // We need at least one active tab before we can group all ungrouped tabs.
+  AddTab(browser(), GURL("https://google.com"));
+
+  ASSERT_TRUE(command_controller.IsCommandEnabled(IDC_GROUP_UNGROUPED_TABS));
+
+  command_controller.ExecuteCommand(
+      IDC_GROUP_UNGROUPED_TABS,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("TabGroups_GroupAllUngroupedTabs"));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)

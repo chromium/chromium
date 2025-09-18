@@ -1123,6 +1123,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_GROUP_UNGROUPED_TABS:
       GroupAllUngroupedTabs(browser_);
+      base::RecordAction(
+          base::UserMetricsAction("TabGroups_GroupAllUngroupedTabs"));
       break;
 
     case IDC_WINDOW_CLOSE_TABS_TO_RIGHT:

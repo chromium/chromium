@@ -45945,6 +45945,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_GroupAllUngroupedTabs">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User created a tab group by opening the system menu and selecting the group
+    all ungrouped tabs button.
+  </description>
+</action>
+
 <action name="TabGroups_SavedTabGroups_Closed">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
