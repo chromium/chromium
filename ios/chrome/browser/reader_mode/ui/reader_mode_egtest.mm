@@ -1240,6 +1240,10 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 // Tests that the killswitch to disable the omnibox entrypoint does not
 // interfere with other Reading Mode entrypoints.
 - (void)testOmniboxEntryPointDisabled {
+  // TODO(crbug.com/445861550): Re-enable the test on device.
+#if !TARGET_OS_SIMULATOR
+  EARL_GREY_TEST_DISABLED(@"Test disabled on device.");
+#endif
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
