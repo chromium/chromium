@@ -90,9 +90,7 @@
 class BrowserViewTest : public InProcessBrowserTest {
  public:
   BrowserViewTest() : devtools_(nullptr) {
-    // TODO(crbug.com/415071842): Re-enable once DevTools is migrated to
-    // ContentsWebView.
-    scoped_feature_list_.InitWithFeatures({}, {features::kSideBySide});
+    scoped_feature_list_.InitWithFeatures({features::kSideBySide}, {});
   }
 
   BrowserViewTest(const BrowserViewTest&) = delete;
@@ -109,10 +107,6 @@ class BrowserViewTest : public InProcessBrowserTest {
         ->devtools_web_view();
   }
 
-  ContentsContainerView* contents_container_view() {
-    return browser_view()->GetActiveContentsContainerView();
-  }
-
   views::WebView* contents_web_view() {
     return browser_view()->contents_web_view();
   }
@@ -127,10 +121,16 @@ class BrowserViewTest : public InProcessBrowserTest {
         ->contents_scrim_view();
   }
 
-  SidePanel* side_panel() { return browser_view()->unified_side_panel(); }
+  ContentsContainerView* active_contents_container_view() {
+    return browser_view()
+        ->multi_contents_view()
+        ->GetActiveContentsContainerView();
+  }
 
-  views::View* side_panel_rounded_corner() {
-    return browser_view()->GetSidePanelRoundedCornerForTesting();
+  ContentsContainerView* inactive_contents_container_view() {
+    return browser_view()
+        ->multi_contents_view()
+        ->GetInactiveContentsContainerView();
   }
 
   void OpenDevToolsWindow(bool docked) {
@@ -152,10 +152,25 @@ class BrowserViewTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-namespace {
+class BrowserViewWithoutSideBySideTest : public BrowserViewTest {
+ public:
+  BrowserViewWithoutSideBySideTest() {
+    scoped_feature_list_.InitWithFeatures({}, {features::kSideBySide});
+  }
 
-// Used to simulate scenario in a crash. When WebContentsDestroyed() is invoked
-// updates the navigation state of another tab.
+  SidePanel* side_panel() { return browser_view()->unified_side_panel(); }
+
+  views::View* side_panel_rounded_corner() {
+    return browser_view()->GetSidePanelRoundedCornerForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+namespace {
+// Used to simulate scenario in a crash. When WebContentsDestroyed() is
+// invoked updates the navigation state of another tab.
 class TestWebContentsObserver : public content::WebContentsObserver {
  public:
   TestWebContentsObserver(content::WebContents* source,
@@ -176,8 +191,8 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   raw_ptr<content::WebContents, DanglingUntriaged> other_;
 };
 
-// Waits for a different view to claim focus within a widget with the specified
-// name.
+// Waits for a different view to claim focus within a widget with the
+// specified name.
 class TestFocusChangeWaiter : public views::FocusChangeListener {
  public:
   TestFocusChangeWaiter(views::FocusManager* focus_manager,
@@ -288,8 +303,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsDockedUpdatesBrowserWindow) {
     GTEST_SKIP();
   }
 #endif
-  gfx::Rect full_bounds =
-      browser_view()->GetContentsContainerForTest()->GetLocalBounds();
+  gfx::Rect full_bounds = active_contents_container_view()->GetLocalBounds();
   gfx::Rect small_bounds(10, 20, 30, 40);
 
   browser_view()->UpdateDevTools(active_web_contents());
@@ -333,8 +347,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsUndockedUpdatesBrowserWindow) {
     GTEST_SKIP();
   }
 #endif
-  gfx::Rect full_bounds =
-      browser_view()->GetContentsContainerForTest()->GetLocalBounds();
+  gfx::Rect full_bounds = active_contents_container_view()->GetLocalBounds();
   gfx::Rect small_bounds(10, 20, 30, 40);
 
   OpenDevToolsWindow(false);
@@ -447,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowResetsSize) {
 }
 
 // Verifies that the side panel's rounded corner is being correctly layed out.
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, SidePanelRoundedCornerLayout) {
+IN_PROC_BROWSER_TEST_F(BrowserViewWithoutSideBySideTest,
+                       SidePanelRoundedCornerLayout) {
   SidePanelCoordinator* coordinator =
       (browser())->GetFeatures().side_panel_coordinator();
   coordinator->SetNoDelaysForTesting(true);
@@ -679,39 +693,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForBrowserWindowModal) {
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-class SideBySideBrowserViewTest : public InProcessBrowserTest {
- public:
-  SideBySideBrowserViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
-
-  SideBySideBrowserViewTest(const SideBySideBrowserViewTest&) = delete;
-  SideBySideBrowserViewTest& operator=(const SideBySideBrowserViewTest&) =
-      delete;
-
- protected:
-  BrowserView* browser_view() {
-    return BrowserView::GetBrowserViewForBrowser(browser());
-  }
-
-  ContentsContainerView* active_contents_container_view() {
-    return browser_view()
-        ->multi_contents_view()
-        ->GetActiveContentsContainerView();
-  }
-
-  ContentsContainerView* inactive_contents_container_view() {
-    return browser_view()
-        ->multi_contents_view()
-        ->GetInactiveContentsContainerView();
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that GetInactiveSplitTabIndex returns correctly with two adjacent
 // splits.
-IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, SplitViewActiveIndexTest) {
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewActiveIndexTest) {
   // Add enough tabs to create two split views.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   chrome::AddTabAt(browser(), GURL(), -1, true);
@@ -746,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, SplitViewActiveIndexTest) {
 
 // Verifies that page and devtools WebViews are being correctly laid out
 // when DevTools is opened/closed/updated while docked.
-IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
                        DevToolsDockedRemainsOpenInWithFocusInSplit) {
   // Add enough tabs to create two split views.
   chrome::AddTabAt(browser(), GURL(), -1, true);
@@ -811,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
 
 // Verifies that page and devtools WebViews are being correctly laid out
 // when DevTools is opened/closed/updated while docked.
-IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
                        DevToolsRemainsCorrectlyDockedAfterSwappingSplit) {
   // Add enough tabs to create two split views.
   chrome::AddTabAt(browser(), GURL(), -1, true);
@@ -845,8 +829,7 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
 #else
 #define MAYBE_DragNotSupportedInFullscreen DISABLED_DragNotSupportedInFullscreen
 #endif
-IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
-                       MAYBE_DragNotSupportedInFullscreen) {
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_DragNotSupportedInFullscreen) {
   // Add enough tabs to create two split views.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   // Add tabs to splits.
@@ -872,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
                    .IsDropTimerRunningForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, ScrimForTabModalInSplitView) {
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModalInSplitView) {
   // Create a split view with two tabs followed by a third that will show the
   // scrim.
   chrome::AddTabAt(browser(), GURL(), -1, true);
@@ -908,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, ScrimForTabModalInSplitView) {
 }
 
 // Tests that GetAccessibleTabLabel correctly labels each tab in a split.
-IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, AccessibleTabLabel) {
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
   // Create a pinned split.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   browser()->tab_strip_model()->SetTabPinned(0, true);
@@ -969,26 +952,8 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, AccessibleTabLabel) {
 }
 
 #if BUILDFLAG(IS_MAC)
-class MacSideBySideBrowserViewTest : public InProcessBrowserTest {
- public:
-  MacSideBySideBrowserViewTest() {
-    scoped_feature_list_.InitWithFeatures({features::kSideBySide}, {});
-  }
 
-  MacSideBySideBrowserViewTest(const MacSideBySideBrowserViewTest&) = delete;
-  MacSideBySideBrowserViewTest& operator=(const MacSideBySideBrowserViewTest&) =
-      delete;
-
- protected:
-  BrowserView* browser_view() {
-    return BrowserView::GetBrowserViewForBrowser(browser());
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(MacSideBySideBrowserViewTest,
-                       SplitViewFullscreenLayout) {
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewFullscreenLayout) {
   // Disable always show toolbar in fullscreen
   chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), false);
 
@@ -1019,8 +984,7 @@ IN_PROC_BROWSER_TEST_F(MacSideBySideBrowserViewTest,
   EXPECT_EQ(browser_view(), top_container->parent());
 }
 
-IN_PROC_BROWSER_TEST_F(MacSideBySideBrowserViewTest,
-                       SplitViewTabRevealFullscreen) {
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewTabRevealFullscreen) {
   // Disable always show toolbar in fullscreen
   chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), false);
 
