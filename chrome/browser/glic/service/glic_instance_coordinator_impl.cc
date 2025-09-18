@@ -55,13 +55,6 @@
 namespace glic {
 
 // TODO(refactor): Remove.
-Host& GlicInstanceCoordinatorImpl::host() {
-  NOTIMPLEMENTED();
-  CHECK(!instances_.empty());
-  return instances_.begin()->second->host();
-}
-
-// TODO(refactor): Remove.
 HostManager& GlicInstanceCoordinatorImpl::host_manager() {
   NOTIMPLEMENTED();
   return *host_manager_;
@@ -86,14 +79,18 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
 
-GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceForTab(
+GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTab(
     tabs::TabInterface* tab) {
+  if (!tab) {
+    return nullptr;
+  }
+
   auto* helper = GlicInstanceHelper::From(tab);
   CHECK(helper);
 
   auto instance_id = helper->GetInstanceId();
   if (instance_id.has_value()) {
-    if (auto* instance = GetInstanceFor(instance_id.value())) {
+    if (auto* instance = GetInstanceImplFor(instance_id.value())) {
       return instance;
     }
   }
@@ -110,10 +107,23 @@ void GlicInstanceCoordinatorImpl::OnInstanceOrphaned(GlicInstance* instance) {
 }
 
 Host* GlicInstanceCoordinatorImpl::GetHostForTab(tabs::TabInterface* tab) {
-  if (GlicInstance* instance = GetInstanceForTab(tab)) {
+  if (GlicInstance* instance = GetInstanceImplForTab(tab)) {
     return &instance->host();
   }
   return nullptr;
+}
+
+std::vector<GlicInstance*> GlicInstanceCoordinatorImpl::GetInstances() {
+  std::vector<GlicInstance*> instances;
+  for (auto& entry : instances_) {
+    instances.push_back(entry.second.get());
+  }
+  return instances;
+}
+
+GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
+    tabs::TabInterface* tab) {
+  return GetInstanceImplForTab(tab);
 }
 
 void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
@@ -324,7 +334,7 @@ void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
 
 std::unique_ptr<views::View>
 GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface& tab) {
-  GlicInstanceImpl* instance = GetOrCreateGlicInstanceForTab(&tab);
+  GlicInstanceImpl* instance = GetOrCreateGlicInstanceImplForTab(&tab);
   CHECK(instance);
   return instance->CreateViewForSidePanel(&tab);
 }
@@ -351,9 +361,10 @@ void GlicInstanceCoordinatorImpl::DetachInstance(GlicInstance* instance) {
   NOTIMPLEMENTED();
 }
 
-GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceForTab(
+GlicInstanceImpl*
+GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
     tabs::TabInterface* tab) {
-  if (GlicInstanceImpl* instance = GetInstanceForTab(tab)) {
+  if (GlicInstanceImpl* instance = GetInstanceImplForTab(tab)) {
     return instance;
   }
 
@@ -366,7 +377,7 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceForTab(
   return new_instance;
 }
 
-GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceFor(
+GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplFor(
     const InstanceId& id) {
   auto it = instances_.find(id);
   if (it != instances_.end()) {
@@ -401,7 +412,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   if (!tab) {
     return;
   }
-  auto* instance = GetOrCreateGlicInstanceForTab(tab);
+  auto* instance = GetOrCreateGlicInstanceImplForTab(tab);
   instance->Toggle(GlicInstanceImpl::EmbedderType::kSidePanel, tab);
 }
 

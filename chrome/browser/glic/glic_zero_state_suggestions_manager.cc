@@ -41,7 +41,7 @@ Host& GlicZeroStateSuggestionsManager::host() {
   // TODO(refactor): Eventually GlicInstance should own a
   // GlicZeroStateSuggestionsManager, and that GlicInstance's host should be
   // used.
-  return window_controller_->host();
+  return window_controller_->GetInstances()[0]->host();
 }
 
 void GlicZeroStateSuggestionsManager::

@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -76,12 +77,13 @@ class GlicWindowController {
   GlicWindowController() = default;
   virtual ~GlicWindowController() = default;
 
-  // TODO(refactor): Add multi-instance Host getters
-  virtual Host& host() = 0;
   virtual HostManager& host_manager() = 0;
 
   virtual std::vector<Host*> GetHosts() = 0;
   virtual Host* GetHostForTab(tabs::TabInterface* tab) = 0;
+  // TODO(refactor): remove GetHosts and GetHostForTab and use these instead.
+  virtual std::vector<GlicInstance*> GetInstances() = 0;
+  virtual GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) = 0;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.

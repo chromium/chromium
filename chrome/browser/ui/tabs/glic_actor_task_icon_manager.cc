@@ -64,8 +64,11 @@ void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   // Reset suppression every time a new actor task state change occurs.
   suppress_task_icon_text_ = false;
   current_task_id_ = task_id;
-  UpdateTaskIcon(window_controller_->state(),
-                 window_controller_->host().GetPrimaryCurrentView());
+  // TODO(b/445224605): instead retrieve a glic instance based on the task's
+  // InstanceId.
+  UpdateTaskIcon(
+      window_controller_->state(),
+      window_controller_->GetInstances()[0]->host().GetPrimaryCurrentView());
 }
 
 void GlicActorTaskIconManager::Shutdown() {}

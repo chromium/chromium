@@ -60,10 +60,11 @@ class GlicInstanceCoordinatorImpl
   void OnInstanceOrphaned(GlicInstance* instance) override;
 
   // GlicWindowController implementation
-  Host& host() override;
   HostManager& host_manager() override;
   std::vector<Host*> GetHosts() override;
   Host* GetHostForTab(tabs::TabInterface* tab) override;
+  std::vector<GlicInstance*> GetInstances() override;
+  GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) override;
 
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
@@ -119,9 +120,9 @@ class GlicInstanceCoordinatorImpl
       FloatyStateChangeCallback callback) override;
 
  private:
-  GlicInstanceImpl* GetOrCreateGlicInstanceForTab(tabs::TabInterface* tab);
-  GlicInstanceImpl* GetInstanceFor(const InstanceId& id);
-  GlicInstanceImpl* GetInstanceForTab(tabs::TabInterface* tab);
+  GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
+  GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id);
+  GlicInstanceImpl* GetInstanceImplForTab(tabs::TabInterface* tab);
   GlicInstanceImpl* CreateGlicInstance();
 
   void ToggleFloaty();

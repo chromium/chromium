@@ -800,18 +800,8 @@ std::vector<Host*> GlicKeyedService::GetAllHosts() {
 }
 
 Host* GlicKeyedService::GetHostForActiveTab(BrowserWindowInterface* bwi) {
-  if (UseDefaultWindowController()) {
-    return &window_controller().host();
-  }
-
-  // TODO(refactor): Add a method for getting the floating instance.
-  CHECK(bwi);
-  tabs::TabInterface* tab = bwi->GetActiveTabInterface();
-  if (!tab) {
-    return nullptr;
-  }
-
-  return window_controller().GetHostForTab(tab);
+  return window_controller().GetHostForTab(bwi ? bwi->GetActiveTabInterface()
+                                               : nullptr);
 }
 
 }  // namespace glic

@@ -303,7 +303,8 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
       host_(profile),
       window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service),
-      enabling_(enabling) {
+      enabling_(enabling),
+      id_(base::Uuid::GenerateRandomV4()) {
   host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
   if (window_config_.ShouldResetOnStart()) {
     previous_position_.reset();
@@ -630,6 +631,10 @@ Host& GlicWindowControllerImpl::host() {
   return host_;
 }
 
+const InstanceId& GlicWindowControllerImpl::id() const {
+  return id_;
+}
+
 HostManager& GlicWindowControllerImpl::host_manager() {
   return *host_manager_;
 }
@@ -640,6 +645,15 @@ std::vector<Host*> GlicWindowControllerImpl::GetHosts() {
 
 Host* GlicWindowControllerImpl::GetHostForTab(tabs::TabInterface* tab) {
   return &host_;
+}
+
+std::vector<GlicInstance*> GlicWindowControllerImpl::GetInstances() {
+  return {this};
+}
+
+GlicInstance* GlicWindowControllerImpl::GetInstanceForTab(
+    tabs::TabInterface* tab) {
+  return this;
 }
 
 bool GlicWindowControllerImpl::BeforeViewCreated(

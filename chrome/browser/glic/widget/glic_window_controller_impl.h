@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_window_config.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
@@ -59,7 +60,8 @@ class GlicWindowControllerImpl
       public Host::Delegate,
       public Host::Observer,
       public web_modal::WebContentsModalDialogManagerDelegate,
-      public web_modal::WebContentsModalDialogHost {
+      public web_modal::WebContentsModalDialogHost,
+      public GlicInstance {
  public:
   GlicWindowControllerImpl(const GlicWindowControllerImpl&) = delete;
   GlicWindowControllerImpl& operator=(const GlicWindowControllerImpl&) = delete;
@@ -145,10 +147,15 @@ class GlicWindowControllerImpl
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
-  Host& host() override;
   HostManager& host_manager() override;
   std::vector<Host*> GetHosts() override;
   Host* GetHostForTab(tabs::TabInterface* tab) override;
+  std::vector<GlicInstance*> GetInstances() override;
+  GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) override;
+
+  // GlicInstance implementation
+  Host& host() override;
+  const InstanceId& id() const override;
 
  private:
   // Sets the floating attributes of the glic window.
@@ -394,6 +401,7 @@ class GlicWindowControllerImpl
   raw_ptr<GlicKeyedService> glic_service_;  // Owns this.
   raw_ptr<GlicEnabling> enabling_;
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
+  const InstanceId id_;
 
   base::WeakPtrFactory<GlicWindowControllerImpl> weak_ptr_factory_{this};
 };
