@@ -495,12 +495,11 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
       InputOperandLayout::kNhwc, Resample2DAxes::kChannelsLast,
       BatchNormalizationAxis::kAny,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
-      {/*input=*/{kAllDataTypesExceptUint4, SupportedRanks::UpTo(8)},
-       /*constant=*/{kAllDataTypesExceptUint4, SupportedRanks::UpTo(8)},
+      {/*input=*/kAllDataTypesExceptUint4,
+       /*constant=*/kAllDataTypesExceptUint4,
        /*arg_min_max_input=*/
        {kFloat16To32AndInt8To32AndUint8, SupportedRanks::NonScalarUpTo(8)},
-       /*arg_min_max_output=*/
-       {DataTypeConstraint::kInt32To64, SupportedRanks::UpTo(8)},
+       /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
        // BatchNormalization is emulated by sub, mul, add and div ops that only
        // support max rank up to 5.
        /*batch_normalization_input=*/
@@ -646,8 +645,6 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
        /*gru_bias=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
-       /*gru_output_sequence=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*gru_cell_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
        /*gru_cell_bias=*/
@@ -675,8 +672,6 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
        /*lstm_bias=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
-       /*lstm_output_sequence=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*lstm_cell_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
        /*lstm_cell_bias=*/
@@ -3465,8 +3460,8 @@ auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
     -> base::expected<OperatorOffset, std::string> {
   CHECK(context_properties_.data_type_limits.arg_min_max_input.Supports(
       GetOperand(arg_min_max.input_operand_id).descriptor));
-  CHECK(context_properties_.data_type_limits.arg_min_max_output.Supports(
-      GetOperand(arg_min_max.output_operand_id).descriptor));
+  CHECK(context_properties_.data_type_limits.arg_min_max_output.Has(
+      GetOperand(arg_min_max.output_operand_id).descriptor.data_type()));
 
   // The WebNN axis option is uint32 data type, but TFLite axis needs int32
   // type, so the axis need to be validated here to not overflow.

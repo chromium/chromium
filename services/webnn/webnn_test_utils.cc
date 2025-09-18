@@ -575,12 +575,12 @@ ContextProperties GetContextPropertiesForTesting() {
       InputOperandLayout::kNchw, Resample2DAxes::kAny,
       BatchNormalizationAxis::kAny,
       /*tensor_byte_length_limit=*/INT_MAX,
-      {/*input=*/{SupportedDataTypes::All(), kMaxRank},
-       /*constant=*/{SupportedDataTypes::All(), kMaxRank},
+      {/*input=*/SupportedDataTypes::All(),
+       /*constant=*/SupportedDataTypes::All(),
        /*arg_min_max_input=*/
        {SupportedDataTypes::All(), kMaxRank},
        /*arg_min_max_output=*/
-       {{OperandDataType::kInt32, OperandDataType::kInt64}, kMaxRank},
+       {OperandDataType::kInt32, OperandDataType::kInt64},
        /*batch_normalization_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*batch_normalization_mean=*/{SupportedDataTypes::All(), kMaxRank},
        /*cast_input=*/{SupportedDataTypes::All(), kMaxRank},
@@ -643,7 +643,6 @@ ContextProperties GetContextPropertiesForTesting() {
        /*gemm_c=*/{SupportedDataTypes::All(), kMaxRank},
        /*gru_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*gru_bias=*/{SupportedDataTypes::All(), kMaxRank},
-       /*gru_output_sequence=*/{SupportedDataTypes::All(), kMaxRank},
        /*gru_cell_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*gru_cell_bias=*/{SupportedDataTypes::All(), kMaxRank},
        /*hard_sigmoid_input=*/
@@ -658,7 +657,6 @@ ContextProperties GetContextPropertiesForTesting() {
        /*linear_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*lstm_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*lstm_bias=*/{SupportedDataTypes::All(), kMaxRank},
-       /*lstm_output_sequence=*/{SupportedDataTypes::All(), kMaxRank},
        /*lstm_cell_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*lstm_cell_bias=*/{SupportedDataTypes::All(), kMaxRank},
        /*matmul_input=*/{SupportedDataTypes::All(), kMaxRank},

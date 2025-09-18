@@ -2230,10 +2230,6 @@ bool OperationValidationContext::ValidateReshape(const mojom::Reshape& reshape,
           input->descriptor)) {
     return false;
   }
-  if (!context_properties_->data_type_limits.reshape_input.ranks.Supports(
-          output->descriptor.Rank())) {
-    return false;
-  }
   if (output->descriptor.data_type() != input->descriptor.data_type()) {
     return false;
   }
@@ -3034,8 +3030,8 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
           // Input names must be unique.
           return std::nullopt;
         }
-        if (!context_properties.data_type_limits.input.Supports(
-                operand->descriptor)) {
+        if (!context_properties.data_type_limits.input.Has(
+                operand->descriptor.data_type())) {
           // Input data type not supported.
           return std::nullopt;
         }
@@ -3055,8 +3051,8 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
             // Output names must be unique.
             return std::nullopt;
           }
-          if (!context_properties.data_type_limits.input.Supports(
-                  operand->descriptor)) {
+          if (!context_properties.data_type_limits.input.Has(
+                  operand->descriptor.data_type())) {
             // Output data type not supported.
             return std::nullopt;
           }

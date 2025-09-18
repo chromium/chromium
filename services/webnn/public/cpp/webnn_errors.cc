@@ -29,36 +29,6 @@ std::string SupportedDataTypesString(SupportedDataTypes supported_types) {
       {", must be one of [", base::JoinString(type_strings, ", "), "]."});
 }
 
-std::string SupportedRanksString(SupportedRanks supported_ranks) {
-  return base::StrCat({", must be in range [",
-                       base::NumberToString(supported_ranks.min), ", ",
-                       base::NumberToString(supported_ranks.max), "]."});
-}
-
-std::string NotSupportedTensorsError(std::string_view operand_kind,
-                                     std::string_view operand_name,
-                                     const OperandDescriptor& descriptor,
-                                     SupportedTensors supported_tensors) {
-  std::string operand_str = base::StrCat({" for ", operand_kind});
-  if (!operand_name.empty()) {
-    base::StrAppend(&operand_str, {" named '", operand_name, "'"});
-  }
-
-  if (!supported_tensors.data_types.Has(descriptor.data_type())) {
-    return base::StrCat(
-        {"Unsupported data type ", DataTypeToString(descriptor.data_type()),
-         operand_str, SupportedDataTypesString(supported_tensors.data_types)});
-  }
-
-  if (!supported_tensors.ranks.Supports(descriptor.Rank())) {
-    return base::StrCat({"Unsupported rank ",
-                         base::NumberToString(descriptor.Rank()), operand_str,
-                         SupportedRanksString(supported_tensors.ranks)});
-  }
-
-  NOTREACHED();
-}
-
 }  // namespace
 std::string DataTypeToString(OperandDataType type) {
   switch (type) {
@@ -101,20 +71,28 @@ std::string NotSupportedArgumentError(std::string_view argument_name,
                                          supported_tensors.data_types);
   }
 
-  if (!supported_tensors.ranks.Supports(descriptor.Rank())) {
-    return base::StrCat({"Unsupported rank ",
-                         base::NumberToString(descriptor.Rank()),
-                         " for argument ", argument_name,
-                         SupportedRanksString(supported_tensors.ranks)});
+  if (descriptor.Rank() < supported_tensors.ranks.min) {
+    return base::StrCat(
+        {"Unsupported rank ", base::NumberToString(descriptor.Rank()),
+         " for argument ", argument_name, " (must be at least ",
+         base::NumberToString(supported_tensors.ranks.min), ")."});
+  }
+
+  if (descriptor.Rank() > supported_tensors.ranks.max) {
+    return base::StrCat(
+        {"Unsupported rank ", base::NumberToString(descriptor.Rank()),
+         " for argument ", argument_name, " (must be at most ",
+         base::NumberToString(supported_tensors.ranks.max), ")."});
   }
 
   NOTREACHED();
 }
 
-std::string NotSupportedConstantError(const OperandDescriptor& descriptor,
-                                      SupportedTensors supported_tensors) {
-  return NotSupportedTensorsError("constant", /*operand_name=*/"", descriptor,
-                                  supported_tensors);
+std::string NotSupportedConstantTypeError(OperandDataType type,
+                                          SupportedDataTypes supported_types) {
+  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
+                       " for constant",
+                       SupportedDataTypesString(supported_types)});
 }
 
 std::string NotSupportedInputArgumentTypeError(
@@ -128,33 +106,27 @@ std::string NotSupportedInputArgumentError(const OperandDescriptor& descriptor,
   return NotSupportedArgumentError(kInputParam, descriptor, supported_tensors);
 }
 
-std::string NotSupportedInputError(std::string_view input_name,
-                                   const OperandDescriptor& descriptor,
-                                   SupportedTensors supported_tensors) {
-  return NotSupportedTensorsError("input", input_name, descriptor,
-                                  supported_tensors);
-}
-
-std::string NotSupportedOpOutputRankError(uint32_t rank,
-                                          SupportedRanks supported_ranks) {
-  CHECK(!supported_ranks.Supports(rank));
-  return base::StrCat({"Unsupported rank ", base::NumberToString(rank),
-                       " for output", SupportedRanksString(supported_ranks)});
+std::string NotSupportedInputTypeError(std::string_view input_name,
+                                       OperandDataType type,
+                                       SupportedDataTypes supported_types) {
+  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
+                       " for input operand named '", input_name, "'",
+                       SupportedDataTypesString(supported_types)});
 }
 
 std::string NotSupportedOpOutputTypeError(OperandDataType type,
                                           SupportedDataTypes supported_types) {
-  CHECK(!supported_types.Has(type));
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for output",
                        SupportedDataTypesString(supported_types)});
 }
 
-std::string NotSupportedOutputError(std::string_view output_name,
-                                    const OperandDescriptor& descriptor,
-                                    SupportedTensors supported_tensors) {
-  return NotSupportedTensorsError("output", output_name, descriptor,
-                                  supported_tensors);
+std::string NotSupportedOutputTypeError(std::string_view output_name,
+                                        OperandDataType type,
+                                        SupportedDataTypes supported_types) {
+  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
+                       " for output operand named '", output_name, "'",
+                       SupportedDataTypesString(supported_types)});
 }
 
 std::string NotSupportedMLTensorTypeError(OperandDataType type,

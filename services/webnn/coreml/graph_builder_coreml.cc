@@ -1174,13 +1174,13 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
       BatchNormalizationAxis::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
-      {/*input=*/{kFloatsAndInt32, kMaxRank},
-       /*constant=*/{kConstantSupportedDataTypes, kMaxRank},
+      {/*input=*/kFloatsAndInt32,
+       /*constant=*/kConstantSupportedDataTypes,
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.reduction.reduce_argmax
        /*arg_min_max_input=*/
        {arg_min_max_input_supported_data_types, kNonScalarMaxRank},
        /*arg_min_max_output=*/
-       {kArgMinMaxOutputSupportedDataTypes, kMaxRank},
+       kArgMinMaxOutputSupportedDataTypes,
        // TODO(crbug.com/338529225): Support ND input.
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.normalization.batch_norm
        /*batch_normalization_input=*/{DataTypeConstraint::kFloat16To32, {3, 5}},
@@ -1293,8 +1293,6 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
        /*gru_bias=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
-       /*gru_output_sequence=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*gru_cell_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
        /*gru_cell_bias=*/
@@ -1320,8 +1318,6 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
        /*lstm_bias=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
-       /*lstm_output_sequence=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        // LstmCell is implemented with lstm, they should have the same
        // constraints.
        /*lstm_cell_input=*/
@@ -2003,7 +1999,7 @@ GraphBuilderCoreml::AddOperationForArgMinMax(
 
   const OperandInfo& output_operand_info =
       GetOperandInfo(operation.output_operand_id);
-  CHECK(context_properties_.data_type_limits.arg_min_max_output.data_types.Has(
+  CHECK(context_properties_.data_type_limits.arg_min_max_output.Has(
       MILDataTypeToOperandType(output_operand_info.mil_data_type)));
 
   OperandId input_operand_id = operation.input_operand_id;

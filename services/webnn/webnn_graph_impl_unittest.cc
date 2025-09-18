@@ -2509,22 +2509,6 @@ TEST_F(WebNNGraphImplTest, ExpandTest) {
     builder.BuildExpand(input_operand_id, input_operand_id);
     EXPECT_FALSE(builder.IsValidGraphForTesting(context_properties));
   }
-  {
-    // Test the invalid graph that output rank exceeds limits.
-    auto context_properties = GetContextPropertiesForTesting();
-    static constexpr SupportedRanks kRankLimit = SupportedRanks::UpTo(4);
-    context_properties.data_type_limits.expand_input.ranks.IntersectWith(
-        kRankLimit);
-    mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
-        BindNewGraphBuilderRemote();
-    GraphInfoBuilder builder(remote);
-    OperandId input_operand_id =
-        builder.BuildInput("input", {2}, OperandDataType::kFloat32);
-    OperandId output_operand_id = builder.BuildOutput(
-        "output", {1, 1, 1, 1, 2}, OperandDataType::kFloat32);
-    builder.BuildExpand(input_operand_id, output_operand_id);
-    EXPECT_FALSE(builder.IsValidGraphForTesting(context_properties));
-  }
 }
 
 struct GatherAttributes {
@@ -6060,22 +6044,6 @@ TEST_F(WebNNGraphImplTest, ReshapeTest) {
         .output = {.type = OperandDataType::kInt32, .dimensions = {2}},
         .expected = false}
         .Test(*this);
-  }
-  {
-    // Test the invalid graph that output rank exceeds limits.
-    auto context_properties = GetContextPropertiesForTesting();
-    static constexpr SupportedRanks kRankLimit = SupportedRanks::UpTo(4);
-    context_properties.data_type_limits.reshape_input.ranks.IntersectWith(
-        kRankLimit);
-    mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
-        BindNewGraphBuilderRemote();
-    GraphInfoBuilder builder(remote);
-    OperandId input_operand_id =
-        builder.BuildInput("input", {2}, OperandDataType::kFloat32);
-    OperandId output_operand_id = builder.BuildOutput(
-        "output", {2, 1, 1, 1, 1}, OperandDataType::kFloat32);
-    builder.BuildReshape(input_operand_id, output_operand_id);
-    EXPECT_FALSE(builder.IsValidGraphForTesting(context_properties));
   }
 }
 

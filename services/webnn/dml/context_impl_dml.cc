@@ -101,14 +101,14 @@ ContextProperties ContextImplDml::GetProperties(
       /*input_operand_layout=*/InputOperandLayout::kNchw, Resample2DAxes::kAny,
       BatchNormalizationAxis::kAny,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
-      {/*input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*constant=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+      {/*input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       /*constant=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_argmax_operator_desc#tensor-support
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_argmin_operator_desc#tensor-support
        /*arg_min_max_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*arg_min_max_output=*/{DataTypeConstraint::kInt32To64, kMaxRank},
+       /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc#tensor-support
        /*batch_normalization_input=*/
@@ -302,8 +302,6 @@ ContextProperties ContextImplDml::GetProperties(
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
        /*gru_bias=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
-       /*gru_output_sequence=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*gru_cell_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
        /*gru_cell_bias=*/
@@ -339,8 +337,6 @@ ContextProperties ContextImplDml::GetProperties(
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
        /*lstm_bias=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
-       /*lstm_output_sequence=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*lstm_cell_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
        /*lstm_cell_bias=*/
@@ -574,8 +570,8 @@ ContextProperties ContextImplDml::GetProperties(
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_6_3) {
-    properties.data_type_limits.input.data_types = SupportedDataTypes::All();
-    properties.data_type_limits.constant.data_types = SupportedDataTypes::All();
+    properties.data_type_limits.input = SupportedDataTypes::All();
+    properties.data_type_limits.constant = SupportedDataTypes::All();
     properties.data_type_limits.dequantize_linear_input.data_types = kInts4To32;
     properties.data_type_limits.dequantize_linear_zero_point.data_types =
         kInts4To32;

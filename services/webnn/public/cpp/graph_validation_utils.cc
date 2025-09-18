@@ -446,12 +446,12 @@ base::expected<OperandDescriptor, std::string> ValidateArgMinMaxAndInferOutput(
             input, context_properties.data_type_limits.arg_min_max_input)));
   }
 
-  if (!context_properties.data_type_limits.arg_min_max_output.data_types.Has(
+  if (!context_properties.data_type_limits.arg_min_max_output.Has(
           output_data_type)) {
     return base::unexpected(ErrorWithLabel(
         label, NotSupportedOpOutputTypeError(
-                   output_data_type, context_properties.data_type_limits
-                                         .arg_min_max_output.data_types)));
+                   output_data_type,
+                   context_properties.data_type_limits.arg_min_max_output)));
   }
 
   ASSIGN_OR_RETURN(std::vector<uint32_t> output_shape,
@@ -1074,14 +1074,6 @@ base::expected<OperandDescriptor, std::string> ValidateExpandAndInferOutput(
     return base::unexpected(ErrorWithLabel(
         label, NotSupportedInputArgumentError(
                    input, context_properties.data_type_limits.expand_input)));
-  }
-
-  if (!context_properties.data_type_limits.expand_input.ranks.Supports(
-          new_shape.size())) {
-    return base::unexpected(ErrorWithLabel(
-        label, NotSupportedOpOutputRankError(
-                   static_cast<uint32_t>(new_shape.size()),
-                   context_properties.data_type_limits.expand_input.ranks)));
   }
 
   std::optional<std::vector<uint32_t>> output_shape =
@@ -3011,11 +3003,9 @@ base::expected<void, std::string> ValidateTensor(
 
   // TODO(crbug.com/356905054): Consider adding `DataTypeLimits` specific to
   // `MLTensor` rather than using `input`.
-  if (!context_properties.data_type_limits.input.data_types.Has(
-          descriptor.data_type())) {
+  if (!context_properties.data_type_limits.input.Has(descriptor.data_type())) {
     return base::unexpected(NotSupportedMLTensorTypeError(
-        descriptor.data_type(),
-        context_properties.data_type_limits.input.data_types));
+        descriptor.data_type(), context_properties.data_type_limits.input));
   }
 
   const size_t byte_length = descriptor.PackedByteLength();
