@@ -70,25 +70,36 @@ void ContentsBorderController::ContentsContainerViewBorderController::
           &ContentsContainerViewBorderController::OnTabCaptureChange,
           base::Unretained(this)));
 
-  const bool is_tab_capturing = contents_border_helper->IsTabCapturing();
-  OnTabCaptureChange(is_tab_capturing,
-                     is_tab_capturing
-                         ? contents_border_helper->GetBlueBorderLocation()
+  tab_capture_location_change_subscription_ =
+      contents_border_helper->AddOnTabCaptureLocationChangeCallback(
+          base::BindRepeating(&ContentsContainerViewBorderController::
+                                  OnTabCaptureLocationChange,
+                              base::Unretained(this)));
+
+  const bool should_show_border =
+      contents_border_helper->ShouldShowBlueBorder();
+  OnTabCaptureLocationChange(
+      should_show_border ? contents_border_helper->GetBlueBorderLocation()
                          : std::nullopt);
+  OnTabCaptureChange(should_show_border);
 }
 
 void ContentsBorderController::ContentsContainerViewBorderController::
     OnWebContentsDetached(views::WebView* web_view) {
   tab_capture_change_subscription_ = base::CallbackListSubscription();
-  OnTabCaptureChange(false, std::nullopt);
+  OnTabCaptureChange(false);
 }
 
 void ContentsBorderController::ContentsContainerViewBorderController::
-    OnTabCaptureChange(bool is_capturing,
-                       std::optional<gfx::Rect> border_location) {
+    OnTabCaptureChange(bool is_capturing) {
   if (is_capturing) {
-    contents_container_view_->ShowCaptureContentsBorder(border_location);
+    contents_container_view_->ShowCaptureContentsBorder();
   } else {
     contents_container_view_->HideCaptureContentsBorder();
   }
+}
+
+void ContentsBorderController::ContentsContainerViewBorderController::
+    OnTabCaptureLocationChange(std::optional<gfx::Rect> border_location) {
+  contents_container_view_->SetCaptureContentsBorderLocation(border_location);
 }

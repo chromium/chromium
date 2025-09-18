@@ -67,18 +67,33 @@ void TabCaptureContentsBorderHelper::OnRegionCaptureRectChanged(
     session_to_bounds_[capture_session_id] = std::nullopt;
   }
 
-  capture_change_callbacks_.Notify(true,
-                                   session_to_bounds_[capture_session_id]);
+  capture_location_change_callbacks_.Notify(
+      session_to_bounds_[capture_session_id]);
 }
 
 bool TabCaptureContentsBorderHelper::IsTabCapturing() const {
   return !session_to_bounds_.empty();
 }
 
+bool TabCaptureContentsBorderHelper::ShouldShowBlueBorder() const {
+  bool show_border = IsTabCapturing();
+#if BUILDFLAG(IS_CHROMEOS)
+  show_border = show_border && base::FeatureList::IsEnabled(
+                                   features::kTabCaptureBlueBorderCrOS);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return show_border;
+}
+
 base::CallbackListSubscription
 TabCaptureContentsBorderHelper::AddOnTabCaptureChangeCallback(
     CaptureChangeCallbackList::CallbackType callback) {
   return capture_change_callbacks_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+TabCaptureContentsBorderHelper::AddOnTabCaptureLocationChangeCallback(
+    CaptureChangeLocationCallbackList::CallbackType callback) {
+  return capture_location_change_callbacks_.Add(std::move(callback));
 }
 
 void TabCaptureContentsBorderHelper::Update() {
@@ -104,9 +119,11 @@ void TabCaptureContentsBorderHelper::Update() {
       (web_contents == browser->tab_strip_model()->GetActiveWebContents());
   const bool contents_border_needed = tab_visible && IsTabCapturing();
 
-  capture_change_callbacks_.Notify(
-      contents_border_needed,
-      contents_border_needed ? GetBlueBorderLocation() : std::nullopt);
+  if (contents_border_needed) {
+    capture_location_change_callbacks_.Notify(GetBlueBorderLocation());
+  }
+
+  capture_change_callbacks_.Notify(contents_border_needed);
 }
 
 std::optional<gfx::Rect> TabCaptureContentsBorderHelper::GetBlueBorderLocation()

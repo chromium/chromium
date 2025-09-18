@@ -8,11 +8,13 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
 #include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -143,3 +145,38 @@ IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
       SelectTab(kTabStripElementId, 1), WaitForHide(kContentsCaptureBorder),
       CheckIsCaptureContentsBorderShowing(0, false));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class ChromeOsTabSharingTest : public TabSharingMultiContentsViewTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {
+                features::kTabCaptureBlueBorderCrOS,
+            });
+  }
+
+  TabCaptureContentsBorderHelper* GetTabCaptureContentsBorderHelper(int index) {
+    TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+    return TabCaptureContentsBorderHelper::FromWebContents(
+        tab_strip_model->GetWebContentsAt(index));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeOsTabSharingTest, BorderStaysHidden) {
+  RunTestSequence(
+      InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
+      SelectTab(kTabStripElementId, 0), ShareTab(0),
+      EnsureNotPresent(kContentsCaptureBorder), Check([=, this]() {
+        return GetTabCaptureContentsBorderHelper(0)->IsTabCapturing();
+      }),
+      StopSharingTab(), EnsureNotPresent(kContentsCaptureBorder),
+      Check([=, this]() {
+        return !GetTabCaptureContentsBorderHelper(0)->IsTabCapturing();
+      }));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)

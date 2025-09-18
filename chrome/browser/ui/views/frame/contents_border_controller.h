@@ -43,8 +43,8 @@ class ContentsBorderController {
     void OnWebContentsAttached(views::WebView* web_view);
     void OnWebContentsDetached(views::WebView* web_view);
 
-    void OnTabCaptureChange(bool is_capturing,
-                            std::optional<gfx::Rect> border_location);
+    void OnTabCaptureChange(bool is_capturing);
+    void OnTabCaptureLocationChange(std::optional<gfx::Rect> border_location);
 
    private:
     void UpdateWebContentsSubscription(content::WebContents* web_contents);
@@ -54,6 +54,7 @@ class ContentsBorderController {
     base::CallbackListSubscription web_contents_attached_subscription_;
     base::CallbackListSubscription web_contents_detached_subscription_;
     base::CallbackListSubscription tab_capture_change_subscription_;
+    base::CallbackListSubscription tab_capture_location_change_subscription_;
   };
 
  private:
