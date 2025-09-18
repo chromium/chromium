@@ -28,7 +28,6 @@ CSSAnimationData::CSSAnimationData() : CSSTimingData(InitialDuration()) {
       InitialTimelineTriggerExitRangeStart());
   timeline_trigger_exit_range_end_list_.push_back(
       InitialTimelineTriggerExitRangeEnd());
-  trigger_names_list_.push_back(InitialTriggerNames());
   trigger_attachments_list_.push_back(InitialTriggerAttachments());
 }
 

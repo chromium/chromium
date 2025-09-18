@@ -20,7 +20,6 @@ namespace blink {
 
 class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
  public:
-  using TriggerNamesListType = Vector<std::optional<Vector<AtomicString>>>;
   using TriggerAttachmentsListType =
       HeapVector<Member<const StyleTriggerAttachmentVector>>;
 
@@ -93,9 +92,6 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   }
   const StyleTimeline& GetTimelineTriggerTimeline(size_t index) const;
 
-  const TriggerNamesListType& TriggerNamesList() const {
-    return trigger_names_list_;
-  }
   const TriggerAttachmentsListType& TriggerAttachmentsList() const {
     return trigger_attachments_list_;
   }
@@ -146,7 +142,6 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<StyleTimeline>& TimelineTriggerTimelineList() {
     return timeline_trigger_timeline_list_;
   }
-  TriggerNamesListType& TriggerNamesList() { return trigger_names_list_; }
   TriggerAttachmentsListType& TriggerAttachmentsList() {
     return trigger_attachments_list_;
   }
@@ -199,9 +194,6 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return TimelineOffsetOrAuto();
   }
   static const StyleTimeline& InitialTimelineTriggerTimeline();
-  static std::optional<Vector<AtomicString>> InitialTriggerNames() {
-    return std::nullopt;
-  }
   static Member<StyleTriggerAttachmentVector> InitialTriggerAttachments() {
     return nullptr;
   }
@@ -224,11 +216,6 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<TimelineOffsetOrAuto> timeline_trigger_exit_range_start_list_;
   Vector<TimelineOffsetOrAuto> timeline_trigger_exit_range_end_list_;
   Vector<StyleTimeline> timeline_trigger_timeline_list_;
-
-  // Note that this is a list of a list of names as animation-trigger specifies
-  // a comma-separated list of space-separated lists of dashed idents.
-  // TODO: Delete this deprecated member and associated methods.
-  TriggerNamesListType trigger_names_list_;
 
   TriggerAttachmentsListType trigger_attachments_list_;
 };
