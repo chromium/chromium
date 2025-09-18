@@ -1707,6 +1707,11 @@
       status: "experimental",
       depends_on: ["CustomizableSelectInPage"],
     },
+    // see crbug.com/341313078
+    {
+      name: "CustomScrollbarApplyMinimumThumbLength",
+      status: "stable",
+    },
     {
       // Replaces \r\n and \r with \n in setCustomValidity.
       // https://github.com/whatwg/html/pull/10350

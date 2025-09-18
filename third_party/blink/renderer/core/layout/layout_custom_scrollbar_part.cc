@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/paint/custom_scrollbar_theme.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -108,48 +109,66 @@ void LayoutCustomScrollbarPart::Trace(Visitor* visitor) const {
 // ToInt() in the following functions.
 // TODO(crbug.com/40339056): This could handle intrinsic sizing keywords
 // and calc-size() a bit better than it does.
-int LayoutCustomScrollbarPart::ComputeSize(const Length& length,
-                                           int container_size) const {
+int LayoutCustomScrollbarPart::ComputeSize(
+    const Length& length,
+    int container_size,
+    ScrollbarSizeComputeMode compute_mode) const {
   NOT_DESTROYED();
   if (!length.HasAutoOrContentOrIntrinsic() && !length.HasStretch()) {
     CHECK(length.HasOnlyFixedAndPercent());
     return MinimumValueForLength(length, LayoutUnit(container_size)).ToInt();
   }
+
+  if (RuntimeEnabledFeatures::CustomScrollbarApplyMinimumThumbLengthEnabled() &&
+      compute_mode == ScrollbarSizeComputeMode::kLength &&
+      part_ == kThumbPart) {
+    return CustomScrollbarTheme::GetCustomScrollbarTheme()
+        ->NativeThemeMinimumThumbLength(*scrollbar_);
+  }
+
   return CustomScrollbarTheme::GetCustomScrollbarTheme()->ScrollbarThickness(
       scrollbar_->ScaleFromDIP(), StyleRef().UsedScrollbarWidth());
 }
 
-int LayoutCustomScrollbarPart::ComputeWidth(int container_width) const {
+int LayoutCustomScrollbarPart::ComputeWidth(
+    int container_width,
+    ScrollbarSizeComputeMode compute_mode) const {
   NOT_DESTROYED();
   const auto& style = StyleRef();
   if (style.Display() == EDisplay::kNone) {
     return 0;
   }
 
-  int width = ComputeSize(style.Width(), container_width);
-  int min_width = style.MinWidth().IsAuto()
-                      ? 0
-                      : ComputeSize(style.MinWidth(), container_width);
-  int max_width = style.MaxWidth().IsNone()
-                      ? width
-                      : ComputeSize(style.MaxWidth(), container_width);
+  int width = ComputeSize(style.Width(), container_width, compute_mode);
+  int min_width =
+      style.MinWidth().IsAuto()
+          ? 0
+          : ComputeSize(style.MinWidth(), container_width, compute_mode);
+  int max_width =
+      style.MaxWidth().IsNone()
+          ? width
+          : ComputeSize(style.MaxWidth(), container_width, compute_mode);
   return std::max(min_width, std::min(max_width, width));
 }
 
-int LayoutCustomScrollbarPart::ComputeHeight(int container_height) const {
+int LayoutCustomScrollbarPart::ComputeHeight(
+    int container_height,
+    ScrollbarSizeComputeMode compute_mode) const {
   NOT_DESTROYED();
   const auto& style = StyleRef();
   if (style.Display() == EDisplay::kNone) {
     return 0;
   }
 
-  int height = ComputeSize(style.Height(), container_height);
-  int min_height = style.MinHeight().IsAuto()
-                       ? 0
-                       : ComputeSize(style.MinHeight(), container_height);
-  int max_height = style.MaxHeight().IsNone()
-                       ? height
-                       : ComputeSize(style.MaxHeight(), container_height);
+  int height = ComputeSize(style.Height(), container_height, compute_mode);
+  int min_height =
+      style.MinHeight().IsAuto()
+          ? 0
+          : ComputeSize(style.MinHeight(), container_height, compute_mode);
+  int max_height =
+      style.MaxHeight().IsNone()
+          ? height
+          : ComputeSize(style.MaxHeight(), container_height, compute_mode);
   return std::max(min_height, std::min(max_height, height));
 }
 
@@ -159,9 +178,10 @@ int LayoutCustomScrollbarPart::ComputeThickness() const {
 
   // Use 0 for container width/height, so percentage size will be ignored.
   // We have never supported that.
-  if (scrollbar_->Orientation() == kHorizontalScrollbar)
-    return ComputeHeight(0);
-  return ComputeWidth(0);
+  if (scrollbar_->Orientation() == kHorizontalScrollbar) {
+    return ComputeHeight(0, ScrollbarSizeComputeMode::kThickness);
+  }
+  return ComputeWidth(0, ScrollbarSizeComputeMode::kThickness);
 }
 
 int LayoutCustomScrollbarPart::ComputeLength() const {
@@ -169,9 +189,11 @@ int LayoutCustomScrollbarPart::ComputeLength() const {
   DCHECK_NE(kScrollbarBGPart, part_);
 
   if (scrollbar_->Orientation() == kHorizontalScrollbar) {
-    return ComputeWidth(scrollbar_->FrameRect().width());
+    return ComputeWidth(scrollbar_->FrameRect().width(),
+                        ScrollbarSizeComputeMode::kLength);
   }
-  return ComputeHeight(scrollbar_->FrameRect().height());
+  return ComputeHeight(scrollbar_->FrameRect().height(),
+                       ScrollbarSizeComputeMode::kLength);
 }
 
 void LayoutCustomScrollbarPart::SetOverriddenSize(const PhysicalSize& size) {
@@ -265,10 +287,14 @@ void LayoutCustomScrollbarPart::RecordPercentLengthStats() const {
   // "==" below tests both direct percent length and percent used in calculated
   // length.
   if (scrollbar_->Orientation() == width_orientation) {
-    if (ComputeWidth(0) == ComputeWidth(LayoutUnit::NearlyMax().ToInt()))
+    if (ComputeWidth(0, ScrollbarSizeComputeMode::kThickness) ==
+        ComputeWidth(LayoutUnit::NearlyMax().ToInt(),
+                     ScrollbarSizeComputeMode::kThickness)) {
       return;
-  } else if (ComputeHeight(0) ==
-             ComputeHeight(LayoutUnit::NearlyMax().ToInt())) {
+    }
+  } else if (ComputeHeight(0, ScrollbarSizeComputeMode::kThickness) ==
+             ComputeHeight(LayoutUnit::NearlyMax().ToInt(),
+                           ScrollbarSizeComputeMode::kThickness)) {
     return;
   }
 
