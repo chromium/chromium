@@ -245,9 +245,8 @@ void ClipboardPromise::RejectFromReadOrDecodeFailure() {
 void ClipboardPromise::HandleRead(ClipboardReadOptions* options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (options && options->hasUnsanitized() &&
-      !options->unsanitized()->empty()) {
-    Vector<String> unsanitized_formats = *options->unsanitized();
+  if (options && options->hasUnsanitized() && !options->unsanitized().empty()) {
+    Vector<String> unsanitized_formats = options->unsanitized();
     if (unsanitized_formats.size() > 1) {
       script_promise_resolver_->RejectWithDOMException(
           DOMExceptionCode::kNotAllowedError,
@@ -261,8 +260,8 @@ void ClipboardPromise::HandleRead(ClipboardReadOptions* options) {
                   " is not supported."}));
       return;
     }
-    // HTML is the only standard format that can be read without any processing
-    // for now.
+    // HTML is the only standard format that can be read without any
+    // processing for now.
     will_read_unprocessed_html_ = true;
   }
 

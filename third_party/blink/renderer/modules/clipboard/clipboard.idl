@@ -11,7 +11,7 @@ dictionary ClipboardReadOptions {
   // performed. If `types` is undefined, all available MIME types will be
   // read.
   [RuntimeEnabled=SelectiveClipboardFormatRead] sequence<DOMString>? types;
-  sequence<DOMString>? unsanitized;
+  sequence<DOMString> unsanitized;
 };
 
 [
