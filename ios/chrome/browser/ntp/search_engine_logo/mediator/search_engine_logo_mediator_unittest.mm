@@ -169,4 +169,21 @@ TEST_F(SearchEngineLogoMediatorTest, TestFetchRestartedWhenCanceled) {
   run_loop2.Run();
 }
 
+// Tests that there is no crash if the mediator is disconnected during a logo
+// fetch.
+TEST_F(SearchEngineLogoMediatorTest, TestDisconnectMediatorWhileFetching) {
+  search_provider_logos::LogoCallback logo_callback;
+  EXPECT_CALL(*logo_service_, GetLogo(_, false))
+      .WillOnce([&logo_callback](search_provider_logos::LogoCallbacks callbacks,
+                                 bool for_doodle) {
+        logo_callback = std::move(callbacks.on_fresh_decoded_logo_available);
+      });
+  [mediator_ searchEngineChanged];
+  // Disconnect first, and then call the callback.
+  [mediator_ disconnect];
+  search_provider_logos::Logo logo;
+  std::move(logo_callback)
+      .Run(search_provider_logos::LogoCallbackReason::DETERMINED, logo);
+}
+
 }  // anonymous namespace
