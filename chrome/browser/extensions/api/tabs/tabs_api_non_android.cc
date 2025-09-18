@@ -199,7 +199,7 @@ bool IsValidStateForWindowsCreateFunction(
 // different from the source.
 int MoveTabToWindow(ExtensionFunction* function,
                     int tab_id,
-                    Browser* target_browser,
+                    BrowserWindowInterface* target_browser,
                     int new_index,
                     std::string* error) {
   WindowController* source_window = nullptr;
@@ -217,30 +217,34 @@ int MoveTabToWindow(ExtensionFunction* function,
     return -1;
   }
 
-  // TODO(crbug.com/40638654): Rather than calling is_type_normal(), should
-  // this call SupportsWindowFeature(Browser::FEATURE_TABSTRIP)?
-  if (!target_browser->is_type_normal()) {
+  // TODO(crbug.com/40638654): Rather than calling checking against
+  // TYPE_NORMAL, should this call
+  // SupportsWindowFeature(Browser::FEATURE_TABSTRIP)?
+  if (target_browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
     *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
     return -1;
   }
 
-  if (target_browser->profile() != source_window->profile()) {
+  if (target_browser->GetProfile() != source_window->profile()) {
     *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError;
     return -1;
   }
 
-  TabStripModel* target_tab_strip =
-      ExtensionTabUtil::GetEditableTabStripModel(target_browser);
-  DCHECK(target_tab_strip);
+  TabListInterface* target_tab_list =
+      ExtensionTabUtil::GetEditableTabList(*target_browser);
+  DCHECK(target_tab_list);
 
   // Clamp move location to the last position.
   // This is ">" because it can append to a new index position.
   // -1 means set the move location to the last position.
   int target_index = new_index;
-  if (target_index > target_tab_strip->count() || target_index < 0) {
-    target_index = target_tab_strip->count();
+  if (target_index > target_tab_list->GetTabCount() || target_index < 0) {
+    target_index = target_tab_list->GetTabCount();
   }
 
+  TabStripModel* target_tab_strip = ExtensionTabUtil::GetEditableTabStripModel(
+      target_browser->GetBrowserForMigrationOnly());
+  DCHECK(target_tab_strip);
   if (target_tab_strip->SupportsTabGroups()) {
     std::optional<tab_groups::TabGroupId> next_tab_dst_group =
         target_tab_strip->GetTabGroupForTab(target_index);
@@ -255,22 +259,28 @@ int MoveTabToWindow(ExtensionFunction* function,
     }
   }
 
-  Browser* source_browser = source_window->GetBrowser();
+  BrowserWindowInterface* source_browser =
+      source_window->GetBrowserWindowInterface();
   if (!source_browser) {
     *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
     return -1;
   }
 
-  std::unique_ptr<TabModel> detached_tab =
-      source_browser->tab_strip_model()->DetachTabAtForInsertion(source_index);
-  if (!detached_tab) {
+  TabListInterface* source_tab_list = TabListInterface::From(source_browser);
+  ::tabs::TabInterface* tab = source_tab_list->GetTab(source_index);
+  if (!tab) {
     *error = ErrorUtils::FormatErrorMessage(ExtensionTabUtil::kTabNotFoundError,
                                             base::NumberToString(tab_id));
     return -1;
   }
 
-  return target_tab_strip->InsertDetachedTabAt(
-      target_index, std::move(detached_tab), AddTabTypes::ADD_NONE);
+  source_tab_list->MoveTabToWindow(
+      tab->GetHandle(), target_browser->GetSessionID(), target_index);
+
+  // The new index may differ from `target_index` if the target index was
+  // invalid for any reason, or could be -1 if the move failed.
+  int final_index = target_tab_list->GetIndexOfTab(tab->GetHandle());
+  return final_index;
 }
 
 class ScopedPinBrowserAtFront {
@@ -1085,7 +1095,8 @@ bool TabsMoveFunction::MoveTab(int tab_id,
       return false;
     }
 
-    Browser* target_browser = target_controller->GetBrowser();
+    BrowserWindowInterface* target_browser =
+        target_controller->GetBrowserWindowInterface();
     int inserted_index =
         MoveTabToWindow(this, tab_id, target_browser, *new_index, error);
     if (inserted_index < 0) {
@@ -1114,15 +1125,21 @@ bool TabsMoveFunction::MoveTab(int tab_id,
   // Clamp move location to the last position.
   // This is ">=" because the move must be to an existing location.
   // -1 means set the move location to the last position.
-  TabStripModel* source_tab_strip =
-      source_window->GetBrowser()->tab_strip_model();
-  if (*new_index >= source_tab_strip->count() || *new_index < 0) {
-    *new_index = source_tab_strip->count() - 1;
+  TabListInterface* source_tab_list =
+      TabListInterface::From(source_window->GetBrowserWindowInterface());
+  if (*new_index >= source_tab_list->GetTabCount() || *new_index < 0) {
+    *new_index = source_tab_list->GetTabCount() - 1;
   }
 
+  ::tabs::TabInterface* tab = source_tab_list->GetTab(tab_index);
+  // We retrieved the tab index for the tab above, so it should always be valid.
+  CHECK(tab);
+
   if (*new_index != tab_index) {
-    *new_index =
-        source_tab_strip->MoveWebContentsAt(tab_index, *new_index, false);
+    source_tab_list->MoveTab(tab->GetHandle(), *new_index);
+    // The actual new index may be different from requested one if the
+    // requested index was invalid.
+    *new_index = source_tab_list->GetIndexOfTab(tab->GetHandle());
   }
 
   if (has_callback()) {
