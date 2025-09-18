@@ -337,10 +337,6 @@ class IntentChipButtonBrowserUiTest
     }
     const views::Button* intent_chip = GetIntentChip(browser());
 
-    if (!WaitForPageActionButtonVisible(browser())) {
-      return false;
-    }
-
     bool is_intent_chip_visible_and_expanded =
         intent_chip && intent_chip->GetVisible() &&
         !IsIntentChipFullyCollapsed(browser());
