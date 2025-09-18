@@ -1088,6 +1088,11 @@ enum class PasskeyUserVerificationStatus {
 - (void)createPasskeyWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
                             gaia:(NSString*)gaia
            securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets {
+  if (!securityDomainSecrets.count) {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
   BOOL didCompleteUserVerification =
       _userVerificationStatus == PasskeyUserVerificationStatus::kCompleted;
 
@@ -1132,6 +1137,11 @@ enum class PasskeyUserVerificationStatus {
     passkeyAssertionWithCredential:(id<Credential>)credential
              passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails
              securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets {
+  if (!securityDomainSecrets.count) {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
   BOOL didCompleteUserVerification =
       _userVerificationStatus == PasskeyUserVerificationStatus::kCompleted;
 
