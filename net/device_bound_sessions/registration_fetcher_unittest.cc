@@ -219,6 +219,16 @@ class RegistrationTestWithOriginTrialFeedback : public RegistrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class RegistrationTestWithoutOriginTrialFeedback : public RegistrationTest {
+ protected:
+  RegistrationTestWithoutOriginTrialFeedback() {
+    feature_list_.InitAndDisableFeature(
+        features::kDeviceBoundSessionsOriginTrialFeedback);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
 std::unique_ptr<test_server::HttpResponse> ReturnResponse(
     HttpStatusCode code,
     std::string_view response_text,
@@ -1825,7 +1835,8 @@ TEST_F(RegistrationTest, ShutdownDuringRequest) {
   EXPECT_EQ(context_->url_requests()->size(), 0u);
 }
 
-TEST_F(RegistrationTest, RegistrationBySubdomain_Success) {
+TEST_F(RegistrationTestWithoutOriginTrialFeedback,
+       RegistrationBySubdomain_Success) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
 
   server_.RegisterRequestHandler(base::BindRepeating(
