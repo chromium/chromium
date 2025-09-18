@@ -165,6 +165,10 @@ IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
 // reapears.
 IN_PROC_BROWSER_TEST_P(SaveOrUpdateAutofillAiDataControllerImplTest,
                        LinkClicked_WebContentsBecomesVisible_ReshowBubble) {
+  if (GetParam()) {
+    GTEST_SKIP() << "BubbleManager doesn't get informed of the tab changes";
+  }
+
   ShowUi("SaveNewEntity");
 
   ASSERT_TRUE(controller()->IsShowingBubble());

@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
+#include "content/public/browser/visibility.h"
 
 namespace autofill {
 
@@ -265,6 +266,19 @@ bool BubbleManagerImpl::ShouldReplaceExistingBubble(
   // Otherwise, preempt based on priority.
   return GetPriorityForBubbleType(new_bubble_type) >
          GetPriorityForBubbleType(active_bubble_type);
+}
+
+void BubbleManagerImpl::OnVisibilityChanged(content::Visibility visibility) {
+  if (visibility == content::Visibility::HIDDEN) {
+    if (active_bubble_controller_ &&
+        active_bubble_controller_->IsShowingBubble()) {
+      AddToPendingQueue(active_bubble_controller_);
+      active_bubble_controller_->HideBubble(/*show_next_bubble=*/false);
+      active_bubble_controller_ = nullptr;
+    }
+  } else if (visibility == content::Visibility::VISIBLE) {
+    ProcessPendingBubbles();
+  }
 }
 
 }  // namespace autofill

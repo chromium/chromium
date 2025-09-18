@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
@@ -191,6 +192,19 @@ void OfferNotificationBubbleControllerImpl::DismissNotification() {
 
 void OfferNotificationBubbleControllerImpl::OnVisibilityChanged(
     content::Visibility visibility) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowBubblesBasedOnPriorities)) {
+    if (visibility == content::Visibility::HIDDEN) {
+      if (bubble_state_ != BubbleState::kShowingIcon) {
+        bubble_state_ = BubbleState::kHidden;
+      }
+
+      // BubbleManager will hide the bubble.
+      bubble_shown_timestamp_ = std::nullopt;
+    }
+    return;
+  }
+
   if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
       bubble_state_ == BubbleState::kShowingIconAndBubble) {
     QueueOrShowBubble();

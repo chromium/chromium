@@ -749,6 +749,12 @@ SaveCardBubbleControllerImpl::IgnoreWindowActivationForTesting() {
 
 void SaveCardBubbleControllerImpl::OnVisibilityChanged(
     content::Visibility visibility) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowBubblesBasedOnPriorities)) {
+    // BubbleManager will handle the effects of tab changes.
+    return;
+  }
+
   if (visibility == content::Visibility::VISIBLE &&
       (was_url_opened_ ||
        current_bubble_type_ == PaymentsBubbleType::kUploadComplete)) {

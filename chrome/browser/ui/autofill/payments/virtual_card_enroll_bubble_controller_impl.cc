@@ -5,13 +5,16 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/visibility.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h"
@@ -301,6 +304,16 @@ bool VirtualCardEnrollBubbleControllerImpl::IsIconVisible() const {
 void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
     content::Visibility visibility) {
 #if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowBubblesBasedOnPriorities)) {
+    if (visibility == content::Visibility::HIDDEN &&
+        bubble_state_ != BubbleState::kShowingIcon) {
+      bubble_state_ = BubbleState::kHidden;
+    }
+    // BubbleManager will handle the effects of tab changes.
+    return;
+  }
+
   if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
       bubble_state_ == BubbleState::kShowingIconAndBubble) {
     QueueOrShowBubble();

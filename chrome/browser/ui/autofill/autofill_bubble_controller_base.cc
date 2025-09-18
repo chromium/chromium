@@ -27,6 +27,12 @@ AutofillBubbleControllerBase::~AutofillBubbleControllerBase() {
 
 void AutofillBubbleControllerBase::OnVisibilityChanged(
     content::Visibility visibility) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowBubblesBasedOnPriorities)) {
+    // BubbleManager will handle the effects of tab changes.
+    return;
+  }
+
   if (visibility == content::Visibility::HIDDEN) {
     HideBubble(/*show_next_bubble=*/false);
   }

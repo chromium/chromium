@@ -1361,6 +1361,12 @@ void ManagePasswordsUIController::PrimaryPageChanged(content::Page& page) {
 
 void ManagePasswordsUIController::OnVisibilityChanged(
     content::Visibility visibility) {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
+    // BubbleManager will handle the effects of tab changes.
+    return;
+  }
+
   if (visibility == content::Visibility::HIDDEN) {
     HideBubble(/*show_next_bubble=*/false);
   }

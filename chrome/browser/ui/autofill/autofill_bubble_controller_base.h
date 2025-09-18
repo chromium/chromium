@@ -20,6 +20,7 @@ namespace autofill {
 class AutofillBubbleBase;
 
 // Enum for the current showing state of the bubble.
+// TODO(crbug.com/445901842): Investigate if this can be removed.
 enum class BubbleState {
   // The bubble and the omnibox icon should be hidden.
   kHidden = 0,

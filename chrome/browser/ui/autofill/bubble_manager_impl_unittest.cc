@@ -435,4 +435,74 @@ TEST_F(BubbleManagerImplTest, RequestShow_ForceShow_PreemptsActiveBubble) {
   EXPECT_TRUE(address_controller->IsShowingBubble());
 }
 
+// Test that the active bubble is hidden and queued when the tab visibility
+// changes to hidden.
+TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Hidden_HidesAndQueuesBubble) {
+  std::unique_ptr<MockBubbleController> card_controller =
+      CreateController(BubbleType::kSaveUpdateCard);
+
+  // Show a bubble, making it active.
+  EXPECT_CALL(*card_controller, ShowBubble());
+  bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
+  ASSERT_TRUE(card_controller->IsShowingBubble());
+
+  // Expect the bubble to be hidden when visibility changes.
+  EXPECT_CALL(*card_controller, HideBubble(/*show_next_bubble=*/false));
+
+  // Simulate the tab becoming hidden.
+  bubble_manager_.OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  // The bubble should no longer be considered "showing".
+  EXPECT_FALSE(card_controller->IsShowingBubble());
+
+  // To verify it was queued, we can simulate the tab becoming visible again.
+  EXPECT_CALL(*card_controller, ShowBubble());
+  bubble_manager_.OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_TRUE(card_controller->IsShowingBubble());
+}
+
+// Test that a pending bubble is shown when the tab visibility changes to
+// visible.
+TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Visible_ShowsPendingBubble) {
+  std::unique_ptr<MockBubbleController> card_controller =
+      CreateController(BubbleType::kSaveUpdateCard);
+  std::unique_ptr<MockBubbleController> address_controller =
+      CreateController(BubbleType::kSaveUpdateAddress);
+
+  // Show a high-priority bubble, then queue a lower-priority one.
+  EXPECT_CALL(*card_controller, ShowBubble());
+  bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
+  bubble_manager_.RequestShowController(*address_controller,
+                                        /*force_show=*/false);
+  ASSERT_TRUE(card_controller->IsShowingBubble());
+  ASSERT_FALSE(address_controller->IsShowingBubble());
+
+  // Hide the active bubble and simulate the tab becoming hidden.
+  // This leaves the address bubble in the queue.
+  EXPECT_CALL(*card_controller, HideBubble(/*show_next_bubble=*/false));
+  bubble_manager_.OnVisibilityChanged(content::Visibility::HIDDEN);
+  ASSERT_FALSE(card_controller->IsShowingBubble());
+
+  // When the tab becomes visible again, the card bubble should show again as
+  // it has higher priority.
+  EXPECT_CALL(*card_controller, ShowBubble());
+  bubble_manager_.OnVisibilityChanged(content::Visibility::VISIBLE);
+
+  EXPECT_TRUE(card_controller->IsShowingBubble());
+}
+
+// Test that no action is taken when the tab becomes hidden and there is no
+// active bubble.
+TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Hidden_NoActiveBubble) {
+  // Ensure no mock calls are expected on any controllers.
+  // We can create a controller but never show it.
+  std::unique_ptr<MockBubbleController> card_controller =
+      CreateController(BubbleType::kSaveUpdateCard);
+  EXPECT_CALL(*card_controller, HideBubble(_)).Times(0);
+
+  // Simulate the tab becoming hidden. The test will fail if any unexpected
+  // methods are called.
+  bubble_manager_.OnVisibilityChanged(content::Visibility::HIDDEN);
+}
+
 }  // namespace autofill

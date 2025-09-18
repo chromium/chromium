@@ -11,10 +11,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace autofill {
 
-class BubbleManagerImpl : public BubbleManager {
+class BubbleManagerImpl : public BubbleManager,
+                          public content::WebContentsObserver {
  public:
   BubbleManagerImpl();
   ~BubbleManagerImpl() override;
@@ -28,6 +31,9 @@ class BubbleManagerImpl : public BubbleManager {
   void OnBubbleHiddenByController(BubbleControllerBase& controller_to_hide,
                                   bool show_next_bubble) override;
   bool HasPendingBubbleOfSameType(const BubbleType bubble_type) const override;
+
+  // content::WebContentsObserver:
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:
   struct PendingRequest {
