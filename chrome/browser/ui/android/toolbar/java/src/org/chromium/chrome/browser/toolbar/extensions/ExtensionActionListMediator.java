@@ -159,15 +159,31 @@ class ExtensionActionListMediator implements Destroyable {
                     }
                 };
 
-        BasicListMenu listMenu =
+        BasicListMenu basicListMenu =
                 BrowserUiListMenuUtils.getBasicListMenu(mContext, modelList, buttonDelegate);
 
-        listMenu.setupCallbacksRecursively(
+        basicListMenu.setupCallbacksRecursively(
                 () -> {
                     buttonView.dismiss();
                 },
                 /* drillDownOverrideValue= */ null,
                 new ListMenuFlyoutController(buttonView.getHost()));
+
+        ListMenu listMenu =
+                new ListMenu() {
+                    @Override
+                    public View getContentView() {
+                        return basicListMenu.getContentView();
+                    }
+
+                    @Override
+                    public void addContentViewClickRunnable(Runnable runnable) {}
+
+                    @Override
+                    public int getMaxItemWidth() {
+                        return basicListMenu.getMaxItemWidth();
+                    }
+                };
 
         ListMenuDelegate listDelegate =
                 new ListMenuDelegate() {
