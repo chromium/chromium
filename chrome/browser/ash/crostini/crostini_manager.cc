@@ -3059,6 +3059,20 @@ void CrostiniManager::OnStartTerminaVm(
       break;
   }
 
+  uint32_t seneschal_server_handle =
+      response->vm_info().seneschal_server_handle();
+
+  if (response->status() == vm_tools::concierge::VM_STATUS_RUNNING) {
+    // Baguette does not start containers (which is the only case we get a
+    // VM_STATUS_STARTING), so we need to share fonts as soon as possible.
+    if (GetTerminaFlavor(profile_) == TerminaFlavor::BAGUETTE) {
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->SharePath(
+          vm_name, seneschal_server_handle,
+          base::FilePath(file_manager::util::kSystemFontsPath),
+          base::DoNothing());
+    }
+  }
+
   // The UI can only resize the default VM, so only (maybe) show the
   // notification for the default VM, if we got a value, and if the value isn't
   // an error (the API we call for space returns -1 on error).
@@ -3107,8 +3121,6 @@ void CrostiniManager::OnStartTerminaVm(
   DCHECK_EQ(response->status(), vm_tools::concierge::VM_STATUS_STARTING);
   bool wait_for_tremplin = running_vms_.find(vm_name) == running_vms_.end();
 
-  uint32_t seneschal_server_handle =
-      response->vm_info().seneschal_server_handle();
   running_vms_[vm_name] =
       VmInfo{VmState::STARTING, std::move(response->vm_info()), false};
   // If we thought a container was running for this VM, we're wrong. This can
