@@ -678,9 +678,9 @@ void OnListFamilyMembersResponse(
   }
 }
 
-- (void)handleExternalIntents {
+- (BOOL)handleExternalIntents {
   if (![self canHandleIntents]) {
-    return;
+    return NO;
   }
   UserActivityBrowserAgent* userActivityBrowserAgent =
       UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
@@ -706,7 +706,7 @@ void OnListFamilyMembersResponse(
     WidgetContext* context = [self findContextRequiringAccountChange:contexts];
     // Perform profile switching if needed.
     if ([self changeProfileForContext:context contexts:contexts openURL:NO]) {
-      return;
+      return YES;
     }
   }
 
@@ -785,6 +785,7 @@ void OnListFamilyMembersResponse(
       [self showToastWhenOpenExternalIntentInUnexpectedMode];
     }
   }
+  return NO;
 }
 
 // Handles a tab move activity as part of an intent when launching a
@@ -1252,9 +1253,11 @@ void OnListFamilyMembersResponse(
       [self tryPresentSigninUpgradePromo];
     }
 
-    // TODO(crbug.com/443728200): handleExternalIntents may change profile, code
-    // below should not be executed if profile was changed.
-    [self handleExternalIntents];
+    if ([self handleExternalIntents]) {
+      // handleExternalIntents may change profile, don't execute code below if
+      // profile was changed.
+      return;
+    }
 
     if (!initializingUIInColdStart &&
         transitionedToForegroundActiveFromBackground &&
