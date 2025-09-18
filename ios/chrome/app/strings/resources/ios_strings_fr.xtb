@@ -479,6 +479,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2797029671965852011">Afficher l'historique</translation>
 <translation id="2797302972324086597">Code pays</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fichier}one{{COUNT} fichier}other{{COUNT} fichiers}}</translation>
+<translation id="2816149645002567541">Téléchargement suspendu</translation>
 <translation id="2816489851009559785">Menu → Réglages → Navigateur par défaut</translation>
 <translation id="2818821771744632548">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPhone. Pour vous reconnecter, appuyez sur "Continuer" ci-dessous.</translation>
 <translation id="2819667972867209401">Lorsque cette option est activée, les données sont enregistrées dans votre compte Google. Désactivez-la pour n'enregistrer les données que sur cet appareil et les supprimer si vous vous déconnectez.</translation>
@@ -735,6 +736,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3921585859122905677">Position de la barre d'adresse</translation>
 <translation id="3922185497376658606">Précharger les pages Web</translation>
 <translation id="3922395466317605522">Personnaliser le menu</translation>
+<translation id="3926703470020109118">Téléchargement annulé</translation>
 <translation id="3929457972718048006">Adresses</translation>
 <translation id="3931215329146376310">{count,plural, =1{Nouveau mot de passe pour ce site}one{Nouveau mot de passe pour ce site}other{Nouveaux mots de passe pour ce site}}</translation>
 <translation id="3934905113567851655">Pincez pour redimensionner</translation>
@@ -787,6 +789,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4113957097611235433">Modifiez vos mots de passe</translation>
 <translation id="4120936477286528673">Ce site a tenté à plusieurs reprises d'ouvrir une autre appli.</translation>
 <translation id="4121993058175073134">Configurez compte mess. dans appli Paramètres pour envoyer données net-export.</translation>
+<translation id="4132991308423633339">Exporter les mots de passe et les clés d'accès…</translation>
 <translation id="4133139945030148655">Vous êtes fin prêt</translation>
 <translation id="4133265950310064865">Protection renforcée</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1172,6 +1175,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="561269594905823128">Appuyez sur <ph name="BEGIN_BOLD" />Sélectionner votre fichier<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Trier par "Les plus récents"</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
+<translation id="5617769621178348890">Ouvrir dans l'appli Fichiers</translation>
 <translation id="5619871095170816857">Cette fiche indique le dernier onglet ouvert utilisé sur l'ensemble de vos appareils synchronisés au cours des dernières 24 heures.</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>
 <translation id="5624637933505983014">Ne pas synchroniser</translation>
@@ -1899,6 +1903,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8289930144142009940">Notifications désactivées concernant les <ph name="FEATURE_NAME" /></translation>
 <translation id="8290077367744012649">Suivez les prix dans vos onglets</translation>
+<translation id="8292893224181644074">Téléchargement terminé</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="8307481894409578819">Impossible d'importer ce fichier</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>

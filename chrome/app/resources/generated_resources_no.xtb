@@ -2183,6 +2183,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2471469610750100598">Svart (standard)</translation>
 <translation id="2471506181342525583">Posisjonstilgang tillates</translation>
 <translation id="2471632709106952369">Sammenligningstabeller</translation>
+<translation id="2472855537207709205">Gruppér alle faner som ikke er gruppert</translation>
 <translation id="2473195200299095979">Oversett denne siden</translation>
 <translation id="2475982808118771221">Det oppsto en feil</translation>
 <translation id="2476435723907345463">Tilgangen til passnøkler er fjernet</translation>
@@ -2798,6 +2799,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2900247416110050639">Google Dokumenter, Regneark og Presentasjoner krever at filene lagres i Google Disk. Lokale filer blir flyttet, og filer fra andre steder blir kopiert. Du finner filene dine i Google Disk-mappen i Filer-appen.</translation>
 <translation id="290105521672621980">Filen bruker funksjoner som ikke støttes</translation>
 <translation id="2901348420151309559">Nylige bilder og apper</translation>
+<translation id="2901431118738474110">Denne passnøkkelen fungerer ikke lenger. Den ble slettet fra <ph name="RPID" />, og den slettes snart her. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;Om passnøkler&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> kunne ikke kommunisere med denne skriveren. Sørg for at skriveren er koblet til, og prøv igjen.</translation>
 <translation id="2902265136119311513">Gjestesurfing</translation>
 <translation id="2902312830803030883">Flere handlinger</translation>
@@ -4597,6 +4599,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4132364317545104286">Gi nytt navn til eSIM-kortprofilen</translation>
 <translation id="4132969033912447558">Fortsett å laste ned <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">Åpne appen for å endre passordet</translation>
+<translation id="4133265950310064865">Økt beskyttelse</translation>
 <translation id="4134838386867070505">Trinn 1 av 4: Beskriv problemet</translation>
 <translation id="413534985210133938">«<ph name="LOCAL_FOLDER" />» er bare lagret på denne enheten. Hvis du flytter dette bokmerket til «<ph name="LOCAL_FOLDER" />», mister du tilgang til det på de andre enhetene dine.</translation>
 <translation id="4135746311382563554">Tilleggsvilkår for bruk av Google Chrome og ChromeOS</translation>
@@ -5215,6 +5218,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4581774856936278355">Feil under gjenoppretting av Linux</translation>
 <translation id="4582297591746054421">Nettsteder leser vanligvis utklippstavlen din for å kunne tilby funksjoner som å beholde formateringen på teksten du har kopiert</translation>
 <translation id="4582563038311694664">Tilbakestill alle innstillingene</translation>
+<translation id="4584094413232466841">Vil du fjerne denne informasjonen fra autofyll i Chrome?</translation>
 <translation id="4584770411839426377">Vindu</translation>
 <translation id="4584836561445313300">Organisasjonen din kan se og administrere eksisterende nettlesingsdata, for eksempel passord</translation>
 <translation id="4585793705637313973">Endre siden</translation>
@@ -11519,10 +11523,12 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8993945059918628059">Trykk på fingeravtrykkssensoren med fingeren. Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="899403249577094719">Primære nettadresse for Netscape-sertifikat</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Denne utvidelsen er lagret i Google-kontoen din, men eventuelle data den bare har lagret på denne enheten, kan bli slettet}other{Disse utvidelsene er lagret i Google-kontoen din, men eventuelle data de har lagret bare på denne enheten, kan bli slettet}}</translation>
+<translation id="8997659961727384862">Gruppér alle faner som ikke er gruppert</translation>
 <translation id="8999027165951679951">Inaktiv fane: <ph name="MEMORY_SAVINGS" /> er frigjort</translation>
 <translation id="8999560016882908256">Syntaksfeil i seksjon: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Redusert bevegelse på skjermen</translation>
 <translation id="9000185763019430629">Trykk på fingeravtrykkssensoren på høyre side av <ph name="DEVICE_TYPE" />. Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
+<translation id="900267527532832868">Denne passnøkkelen fungerer ikke lenger. Den slettes snart fra <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Skriv inn siffer <ph name="NUM_DIGIT" /> av 6 i PIN-koden. Bruk tilbaketasten eller Delete for å fjerne det siste sifferet.</translation>
 <translation id="9003185744423389627">Tilkoblingen til tjeneren for enhetsadministrasjon mislyktes med statusen «<ph name="STATUS_TEXT" />» <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Vil du automatisk skanne etter tilgjengelige eSIM-kortprofiler?</translation>

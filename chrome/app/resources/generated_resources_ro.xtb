@@ -4592,6 +4592,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4132364317545104286">Redenumește profilul eSIM</translation>
 <translation id="4132969033912447558">Reia <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">Deschide aplicația pentru a schimba parola</translation>
+<translation id="4133265950310064865">Protecție îmbunătățită</translation>
 <translation id="4134838386867070505">Pasul 1 din 4: descrie problema</translation>
 <translation id="413534985210133938"><ph name="LOCAL_FOLDER" /> se salvează numai pe acest dispozitiv. Dacă muți marcajul în <ph name="LOCAL_FOLDER" />, nu îl vei mai putea accesa pe celelalte dispozitive.</translation>
 <translation id="4135746311382563554">Termenii și condițiile suplimentare pentru Google Chrome și sistemul de operare Chrome</translation>
@@ -5210,6 +5211,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4581774856936278355">Eroare la restabilirea Linux</translation>
 <translation id="4582297591746054421">Site-urile citesc de obicei clipboardul pentru a face acțiuni precum păstrarea formatării textului pe care l-ai copiat</translation>
 <translation id="4582563038311694664">Restabilește toate setările</translation>
+<translation id="4584094413232466841">Elimini aceste informații din completarea automată din Chrome?</translation>
 <translation id="4584770411839426377">Fereastră</translation>
 <translation id="4584836561445313300">Organizația ta va putea să vadă și să gestioneze toate datele de navigare existente, cum ar fi parolele și altele</translation>
 <translation id="4585793705637313973">Editează pagina</translation>

@@ -4585,6 +4585,7 @@
 <translation id="4132364317545104286">eSIM プロファイルの名前変更</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> を再開</translation>
 <translation id="4133076602192971179">アプリを開いてパスワードを変更</translation>
+<translation id="4133265950310064865">保護強化機能</translation>
 <translation id="4134838386867070505">ステップ 1/4: 問題の内容を入力</translation>
 <translation id="413534985210133938">「<ph name="LOCAL_FOLDER" />」は、このデバイスのみに保存されます。このブックマークを「<ph name="LOCAL_FOLDER" />」に移動すると、他のデバイスからはアクセスできなくなります。</translation>
 <translation id="4135746311382563554">Google Chrome および ChromeOS 追加利用規約</translation>
@@ -5201,6 +5202,7 @@
 <translation id="4581774856936278355">Linux の復元中にエラーが発生しました</translation>
 <translation id="4582297591746054421">多くのサイトは、コピーしたテキストの書式を保持するなどのためにクリップボードを読み取ります。</translation>
 <translation id="4582563038311694664">すべての設定をリセット</translation>
+<translation id="4584094413232466841">Chrome の自動入力からこの情報を削除しますか？</translation>
 <translation id="4584770411839426377">ウィンドウ</translation>
 <translation id="4584836561445313300">組織は、既存の閲覧データ（パスワードなど）を確認、管理できるようになります</translation>
 <translation id="4585793705637313973">ページの編集</translation>

@@ -4592,6 +4592,7 @@
 <translation id="4132364317545104286">Վերանվանել eSIM-ի պրոֆիլը</translation>
 <translation id="4132969033912447558">Վերսկսել <ph name="FILE_NAME" /> ֆայլի ներբեռնումը</translation>
 <translation id="4133076602192971179">Գաղտնաբառը փոխելու համար բացեք հավելվածը</translation>
+<translation id="4133265950310064865">Կատարելագործված պաշտպանություն</translation>
 <translation id="4134838386867070505">Քայլ 1/4․ Նկարագրեք խնդիրը</translation>
 <translation id="413534985210133938">«<ph name="LOCAL_FOLDER" />» պանակը պահվում է միայն այս սարքում։ Եթե այս էջանիշը տեղափոխեք «<ph name="LOCAL_FOLDER" />» պանակ, այն այլևս չեք տեսնի ձեր մյուս սարքերում։</translation>
 <translation id="4135746311382563554">Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմաններ</translation>
@@ -5210,6 +5211,7 @@
 <translation id="4581774856936278355">Չհաջողվեց վերականգնել Լինուքսը սխալի պատճառով</translation>
 <translation id="4582297591746054421">Կայքերը սովորաբար դիտում են սեղմատախտակը՝ պատճենված տեքստի ձևաչափը պահպանելու և նման այլ գործառույթների համար</translation>
 <translation id="4582563038311694664">Վերակայել բոլոր կարգավորումները</translation>
+<translation id="4584094413232466841">Հեռացնե՞լ այս տեղեկությունները Chrome-ի ինքնալրացումից</translation>
 <translation id="4584770411839426377">Պատուհան</translation>
 <translation id="4584836561445313300">Ձեր կազմակերպությունը կկարողանա տեսնել և կառավարել այցելությունների պատմության բոլոր տվյալները, ինչպիսիք են գաղտնաբառերը և այլն</translation>
 <translation id="4585793705637313973">Փոխել էջը</translation>
@@ -9325,7 +9327,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Փակե՞լ ներդիրը և ջնջել խումբը}=1{Փակե՞լ ներդիրները և ջնջել խումբը}one{Փակե՞լ ներդիրները և ջնջել խումբը}other{Փակե՞լ ներդիրները և ջնջել խմբերը}}</translation>
 <translation id="7509097596023256288">Կառավարման պարամետրերը կարգավորվում են</translation>
 <translation id="7509539379068593709">Ապատեղադրել հավելվածը</translation>
-<translation id="7513438205469584978">Առաջարկները հիմնված են <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-ում ձեր գործողություններ<ph name="END_LINK_GOOGLE_ACTIVITY" /> վրա</translation>
+<translation id="7513438205469584978">Առաջարկները հիմնված են <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-ում ձեր գործողությունների<ph name="END_LINK_GOOGLE_ACTIVITY" /> հիման վրա</translation>
 <translation id="7514239104543605883">Պատճենել սարքում</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7514417110442087199">Ավելացնել նշանակում</translation>

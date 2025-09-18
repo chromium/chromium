@@ -441,6 +441,9 @@
 <translation id="6180522807229584611">Для работы этой вкладки используются дополнительные ресурсы. Разрешите Chrome сделать ее неактивной, и производительность повысится.</translation>
 <translation id="6182736845697986886">Выполнить установку не удалось из-за внутренней ошибки сервера.</translation>
 <translation id="6192058120268468905">Ваш аккаунт в Chrome</translation>
+<translation id="6220551899604141979">Партнер "<ph name="PARTNER_NAME" />" установил расширение, которое может влиять на работу Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Разрешить в Google Chrome передачу входящего трафика по протоколу mDNS</translation>
 <translation id="624230925347970731">Chrome скоро будет закрыт</translation>
 <translation id="6247557882553405851">Google Менеджер паролей</translation>

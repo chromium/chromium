@@ -103,7 +103,7 @@
 <translation id="1061904396131502319">È quasi ora di fare una pausa</translation>
 <translation id="10619348099955377">Copia nome visualizzato</translation>
 <translation id="1062407476771304334">Sostituisci</translation>
-<translation id="1065369186007547872">Chrome ritiene che tu non voglia ricevere notifiche da questo sito. Le richieste sono nascoste per ridurre le interruzioni.</translation>
+<translation id="1065369186007547872">Chrome ritiene che tu non voglia ricevere notifiche da questo sito. Pertanto, le richieste vengono nascoste per ridurre le interruzioni.</translation>
 <translation id="1066964438793906105">Verifica la presenza di malware</translation>
 <translation id="1067661089446014701">Per maggiore sicurezza, puoi criptare le password sul dispositivo prima che vengano salvate nel tuo Account Google</translation>
 <translation id="1067922213147265141">Altri servizi Google</translation>
@@ -1009,7 +1009,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1673137583248014546"><ph name="URL" /> vuole accedere a marca e modello del token di sicurezza</translation>
 <translation id="1674073353928166410">Apri tutti gli URL (<ph name="URL_COUNT" />) nella finestra di navigazione in incognito</translation>
 <translation id="1674142805528405174">Gestore delle password di Google può aggiornare il tuo account con una password efficace e salvarla per te nel tuo account <ph name="EMAIL" />.</translation>
-<translation id="1674945585974615438">Disattiva automaticamente le ottimizzazioni di JavaScript sui siti sconosciuti</translation>
+<translation id="1674945585974615438">Disattiva automaticamente gli strumenti di ottimizzazione JavaScript sui siti sconosciuti</translation>
 <translation id="1677306805708094828">Impossibile aggiungere <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
 <translation id="1678849866171627536">Analisi non riuscita. Questo file potrebbe essere un virus o un malware.</translation>
@@ -3296,7 +3296,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3269612321104318480">Verde acqua e bianco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# file}}</translation>
 <translation id="3270965368676314374">Leggere, modificare ed eliminare foto, musica e altri contenuti multimediali del computer</translation>
-<translation id="3273033807960054795">Estendi Navigazione sicura avanzata</translation>
+<translation id="3273033807960054795">Estendi la Navigazione sicura avanzata</translation>
 <translation id="3275464924531706548">Comprimi <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Il tuo token di sicurezza interno al momento non è sicuro. Rimuovilo dai servizi con cui l'hai utilizzato. Per risolvere il problema, reimposta il token di sicurezza.</translation>
 <translation id="3275778913554317645">Apri come finestra</translation>
@@ -3422,7 +3422,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3364159059299045452">Alt + passaggio del mouse sopra</translation>
 <translation id="3364986687961713424">Dal tuo amministratore: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Usa il tasto CTRL o ALT</translation>
-<translation id="3365651640097487828">Per condividere le schede e collaborare con altri, verifica la tua identità e sincronizza la cronologia e le schede</translation>
+<translation id="3365651640097487828">Per condividere le schede e collaborare con altri utenti, verifica la tua identità e sincronizza la cronologia e le schede</translation>
 <translation id="3368662179834713970">Casa</translation>
 <translation id="3368922792935385530">Connesso</translation>
 <translation id="3369067987974711168">Mostra altre azioni per questa porta</translation>
@@ -3888,7 +3888,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3679126865530709868">Touchpad integrato</translation>
 <translation id="3680683624079082902">Voce per sintesi vocale</translation>
 <translation id="3681017028939109078">Mostra suggerimenti per le finestre all'avvio dello schermo diviso</translation>
-<translation id="3681191721636073359">Chrome ritiene che tu non voglia usare la tua posizione su questo sito. Le richieste sono nascoste per ridurre le interruzioni.</translation>
+<translation id="3681191721636073359">Chrome ritiene che tu non voglia usare la tua posizione su questo sito. Pertanto, le richieste vengono nascoste per ridurre le interruzioni.</translation>
 <translation id="3681311097828166361">Grazie per il tuo feedback. Adesso sei offline; il tuo rapporto verrà inviato in un secondo momento.</translation>
 <translation id="3681548574519135185">Anello stato attivo</translation>
 <translation id="3683524264665795342">Richiesta di condivisione dello schermo da parte di <ph name="APP_NAME" /></translation>
@@ -4592,6 +4592,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4132364317545104286">Rinomina profilo eSIM</translation>
 <translation id="4132969033912447558">Riprendi <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">Apri l'app per cambiare la password</translation>
+<translation id="4133265950310064865">Protezione avanzata</translation>
 <translation id="4134838386867070505">Passaggio 1 di 4: descrivi il problema</translation>
 <translation id="413534985210133938">La cartella "<ph name="LOCAL_FOLDER" />" è salvata solo su questo dispositivo. Se sposti questo preferito in "<ph name="LOCAL_FOLDER" />", non lo vedrai più sugli altri dispositivi.</translation>
 <translation id="4135746311382563554">Termini di servizio aggiuntivi di Google Chrome e ChromeOS</translation>
@@ -5210,6 +5211,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4581774856936278355">Errore durante il ripristino di Linux</translation>
 <translation id="4582297591746054421">In genere, i siti leggono gli appunti per funzionalità come il mantenimento della formattazione del testo copiato</translation>
 <translation id="4582563038311694664">Ripristina tutte le impostazioni</translation>
+<translation id="4584094413232466841">Rimuovere queste informazioni dalla compilazione automatica di Chrome?</translation>
 <translation id="4584770411839426377">Finestra</translation>
 <translation id="4584836561445313300">La tua organizzazione potrà vedere e gestire i dati di navigazione esistenti, ad esempio le password e altro ancora</translation>
 <translation id="4585793705637313973">Modifica pagina</translation>
@@ -5586,7 +5588,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="485088796993065002">I siti potrebbero riprodurre suoni per fornire audio per musica, video e altri contenuti multimediali</translation>
 <translation id="4850919322897956733">Dati eliminati.</translation>
-<translation id="4852030988197799562">Blocca l'accesso allo strumento di ottimizzazione JavaScript sui siti appena visitati</translation>
+<translation id="4852030988197799562">Blocca l'accesso allo strumento di ottimizzazione JavaScript sui nuovi siti visitati</translation>
 <translation id="4852383141291180386">Gestisci le notifiche delle app</translation>
 <translation id="4852916668365817106">Colore del puntatore del mouse</translation>
 <translation id="4853020600495124913">Apri in &amp;un'altra finestra</translation>
@@ -9463,7 +9465,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7617263010641145920">Attivare il Play Store</translation>
 <translation id="7617648809369507487">Usa messaggi più discreti</translation>
 <translation id="7619937211696316184">La manutenzione è stata completata</translation>
-<translation id="7620083113061729689">Cronologia di sincronizzazione</translation>
+<translation id="7620083113061729689">Sincronizza cronologia</translation>
 <translation id="7620616707541471029">Scegli un account per continuare</translation>
 <translation id="7621382409404463535">Il sistema non è riuscito a salvare la configurazione del dispositivo.</translation>
 <translation id="7621595347123595643">Non potrai recuperare i dati locali se non ricordi la password o il PIN.</translation>

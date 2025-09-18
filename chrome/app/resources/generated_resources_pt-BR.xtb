@@ -2190,6 +2190,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2471469610750100598">Preto (padrão)</translation>
 <translation id="2471506181342525583">Acesso à localização permitido</translation>
 <translation id="2471632709106952369">Tabelas de comparação</translation>
+<translation id="2472855537207709205">Agrupar todas as guias desagrupadas</translation>
 <translation id="2473195200299095979">Traduzir esta página</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
 <translation id="2476435723907345463">Chaves de acesso removidas</translation>
@@ -2804,6 +2805,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2900247416110050639">Os apps Documentos, Planilhas e Apresentações Google exigem que os arquivos sejam armazenados no Google Drive. Os arquivos locais serão transferidos, e os outros serão copiados. Seus arquivos podem ser encontrados na pasta do Google Drive no app Arquivos.</translation>
 <translation id="290105521672621980">O arquivo utiliza recursos não compatíveis</translation>
 <translation id="2901348420151309559">Fotos e apps recentes</translation>
+<translation id="2901431118738474110">Essa chave de acesso não funciona mais. Ela foi excluída de <ph name="RPID" /> e será excluída daqui em breve. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;Sobre as chaves de acesso&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> não conseguiu se comunicar com esta impressora. Verifique se a impressora está conectada e tente novamente.</translation>
 <translation id="2902265136119311513">Navegar como visitante</translation>
 <translation id="2902312830803030883">Mais ações</translation>
@@ -4606,6 +4608,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4132364317545104286">Renomear o perfil do eSIM</translation>
 <translation id="4132969033912447558">Retomar <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">Abra o app para mudar sua senha</translation>
+<translation id="4133265950310064865">Proteção reforçada</translation>
 <translation id="4134838386867070505">Etapa 1 de 4: descreva o problema</translation>
 <translation id="413534985210133938">"<ph name="LOCAL_FOLDER" />" foi salvo apenas neste dispositivo. Se você mover esse favorito para "<ph name="LOCAL_FOLDER" />", ele não vai mais aparecer nos seus outros dispositivos.</translation>
 <translation id="4135746311382563554">Termos de Serviço Adicionais do Chrome e do ChromeOS</translation>
@@ -5224,6 +5227,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4581774856936278355">Erro ao restaurar o Linux</translation>
 <translation id="4582297591746054421">Os sites geralmente leem a área de transferência para recursos como manter a formatação do texto copiado</translation>
 <translation id="4582563038311694664">Redefinir todas as configurações</translation>
+<translation id="4584094413232466841">Remover essas informações do preenchimento automático do Chrome?</translation>
 <translation id="4584770411839426377">Janela</translation>
 <translation id="4584836561445313300">Sua organização vai poder ver e gerenciar todos os dados de navegação, como senhas e muito mais</translation>
 <translation id="4585793705637313973">Editar página</translation>
@@ -11535,10 +11539,12 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8993945059918628059">Toque no sensor de impressão digital. Seus dados de impressão digital são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="899403249577094719">URL base do certificado do Netscape</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Essa extensão é salva na sua Conta do Google, mas os dados salvos por ela apenas neste dispositivo podem ser excluídos}one{Essa extensão é salva na sua Conta do Google, mas os dados salvos por ela apenas neste dispositivo podem ser excluídos}other{Essas extensões são salvas na sua Conta do Google, mas os dados salvos por elas apenas neste dispositivo podem ser excluídos}}</translation>
+<translation id="8997659961727384862">Agrupar todas as guias desagrupadas</translation>
 <translation id="8999027165951679951">Guia inativa: <ph name="MEMORY_SAVINGS" /> liberados</translation>
 <translation id="8999560016882908256">Erro de sintaxe na seção: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Movimento reduzido na tela</translation>
 <translation id="9000185763019430629">Toque no sensor de impressão digital no lado direito do <ph name="DEVICE_TYPE" />. Seus dados de impressão digital são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
+<translation id="900267527532832868">Essa chave de acesso não funciona mais. Ela será excluída em breve do <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Informe o dígito <ph name="NUM_DIGIT" /> de 6 do PIN. Use a tecla Backspace ou Delete para remover o último dígito.</translation>
 <translation id="9003185744423389627">A conexão com o Servidor de gerenciamento de dispositivos falhou, apresentando o status "<ph name="STATUS_TEXT" />" (<ph name="FAILURE_TIME" />)</translation>
 <translation id="90033698482696970">Procurar automaticamente perfis de eSIM disponíveis?</translation>

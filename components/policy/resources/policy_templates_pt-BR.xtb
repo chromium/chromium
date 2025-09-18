@@ -33,6 +33,23 @@ As origens precisam corresponder a aplicativos da Web de instalação forçada q
 
 Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="101438888985615157">Girar a tela em 180 graus</translation>
+<translation id="1016249716881514655">Esses recursos no <ph name="CHROME_DEVTOOLS_NAME" /> usam modelos de IA generativa para dar mais informações de depuração. Para usá-los, o <ph name="PRODUCT_NAME" /> precisa coletar dados, como mensagens de erro, stack traces, snippets de código e solicitações de rede, e enviar essas informações a um servidor do Google, que executa um modelo de IA generativa. O corpo da resposta ou a autenticação e os cabeçalhos de cookie em solicitações de rede não são incluídos nos dados enviados ao servidor.
+
+Se a política for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para aprimorar os modelos de IA. Esses dados podem incluir comandos, entradas, respostas, materiais de fonte e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para aperfeiçoar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, respostas, materiais de fonte e feedback por escrito) para aprimorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se a política for definida como 2, o recurso não será habilitado.
+
+Se não for definida, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Os recursos da IA generativa do <ph name="CHROME_DEVTOOLS_NAME" /> incluem:
+
+– Console Insights: explica as mensagens do console e oferece sugestões para corrigir erros.
+
+– Assistência de IA no Chrome DevTools: ajuda a explicar os estilos CSS (desde a versão 131), as solicitações de rede, o desempenho e os arquivos (todos desde a versão 132).
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="1017967144265860778">Gerenciamento de energia na tela de login</translation>
 <translation id="1018427234617066902">Força a ativação da correção ortográfica de idiomas. Os idiomas não reconhecidos incluídos na lista serão ignorados.
 
@@ -1167,6 +1184,7 @@ política foi a 121. O suporte foi removido na versão 122.</translation>
 <translation id="1715151459541210849">Ativar recurso de acessibilidade de ditado</translation>
 <translation id="1716468109214130396">Impedir que o Chrome seja iniciado se não estiver registrado no Gerenciamento de nuvem do navegador Chrome</translation>
 <translation id="1719033799014769396">Desativar relatórios sobre o modo de inicialização do dispositivo</translation>
+<translation id="1720377398791729541">Permitir Recursos de IA Generativa do <ph name="CHROME_DEVTOOLS_NAME" /> e aprimorar os modelos de IA.</translation>
 <translation id="1721158690981421598">Se a política for definida, os nomes de domínio impostos aos hosts de acesso remoto serão especificados. Os usuários não poderão mudar isso. Os hosts podem ser compartilhados somente por contas registradas em um dos nomes de domínio especificados.
 
       Se a política for definida como uma lista vazia ou deixada sem definição, os hosts poderão ser compartilhados usando qualquer conta.
@@ -2410,6 +2428,14 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       Se a política for definida como "Somente usuário" (valor 1), os usuários poderão gerenciar os próprios certificados, mas não os do dispositivo.</translation>
 <translation id="2593762551209145088">O "Navegação segura" nunca está ativado.</translation>
 <translation id="2594773358911436070">Configurações do WebRTC</translation>
+<translation id="2595513082972483165">Se esta política for ativada, a solicitação principal será bloqueada sempre que um aviso precisar ser
+mostrado no <ph name="CHROME_DEVTOOLS_NAME" />
+devido a falhas nas verificações de <ph name="PRIVATE_NETWORK_ACCESS" />.
+
+Se ela for desativada ou não for definida, os avisos de <ph name="PRIVATE_NETWORK_ACCESS" /> não
+serão aplicados e as solicitações não serão bloqueadas.
+
+Consulte as restrições de <ph name="PRIVATE_NETWORK_ACCESS" /> em https://wicg.github.io/private-network-access/ (página em inglês).</translation>
 <translation id="2600005880585324062">Permitir que o <ph name="PRODUCT_NAME" /> decida quais origens isolar de outras origens do mesmo site.</translation>
 <translation id="26023406105317310">Configurar contas do Kerberos</translation>
 <translation id="2603237557651009842">Bloquear a API WebPrinting nestes sites</translation>
@@ -4802,6 +4828,14 @@ Esta política foi usada para desativar o upgrade automático de conteúdo misto
 <translation id="4274691295133617461">Se a política for definida como "3", os sites poderão pedir acesso de leitura de arquivos e diretórios no sistema de arquivos do sistema operacional do host com a API File System. Se for definida como "2", o acesso será negado.
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
+<translation id="4274992013893672009">Se esta política for ativada, a solicitação principal será bloqueada sempre que um aviso precisar ser
+mostrado no <ph name="CHROME_DEVTOOLS_NAME" />
+devido a falhas nas verificações de <ph name="LOCAL_NETWORK_ACCCESS" />.
+
+Se ela for desativada ou não for definida, as solicitações de <ph name="LOCAL_NETWORK_ACCESS" /> vão usar o
+gerenciamento padrão.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (página em inglês).</translation>
 <translation id="4275048399551500192">Não mostrar controles de mídia para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos</translation>
 <translation id="4278656834593750050">Ativar sons de carregamento</translation>
 <translation id="4281322231545828290">Ativar mudança automática de senha</translation>
@@ -6306,6 +6340,7 @@ Ela é uma medida temporária e será removida em versões futuras do <ph name="
       Se um usuário inscrito iniciar um downgrade de canal, ele poderá escolher redefinir ou esperar. Dependendo do valor desta política, a escolha será feita por ele. Se um administrador iniciar um downgrade de canal por meio da definição de <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" />, o dispositivo só será revertido na próxima verificação de atualização se a reversão tiver sido selecionada. Caso contrário, o dispositivo esperará que o canal seja atualizado para a versão atual.
 
       Se a política não for definida ou for inválida, o comportamento será o mesmo de "Esperar que o canal conclua o downgrade de canal".</translation>
+<translation id="5228086789188938988">Não permitir os Recursos de IA Generativa do <ph name="CHROME_DEVTOOLS_NAME" />.</translation>
 <translation id="5229339291699779956">Ativa o encapsulamento de PCIe para dispositivos periféricos Thunderbolt/USB4, que funcionarão perfeitamente</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
 <translation id="5235607513961923779">Informa o estado da atividade do dispositivo em dispositivos registrados para usuários afiliados.
@@ -7223,6 +7258,7 @@ Se ela for definida como "<ph name="AUTOMATED_NAME" />", o <ph name="MICROSOFT_O
 Se a política não for definida, isso será funcionalmente equivalente a defini-la como "<ph name="ALLOWED_NAME" />" para usuários comuns. Para usuários corporativos, o padrão da política é "<ph name="DISALLOWED_NAME" />".
 
 É possível adicionar outras restrições de conta usando a política <ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />.</translation>
+<translation id="5804702826910437814">Permitir os Recursos de IA Generativa do <ph name="CHROME_DEVTOOLS_NAME" /> sem aprimorar os modelos de IA.</translation>
 <translation id="5804795151506109282">Não pedir para os usuários migrarem.</translation>
 <translation id="5806128552675651249">Permitir impressão apenas sem gráficos de segundo plano</translation>
 <translation id="5809210507920527553">Controla configurações do contêiner Linux (Crostini).</translation>
@@ -10548,6 +10584,7 @@ também é seguro.</translation>
 <translation id="8044493735196713914">Informar modo de inicialização do dispositivo</translation>
 <translation id="80453040817068401">Disponibilizar o navegador <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Permitir o uso da depuração remota</translation>
+<translation id="8047264240841615226">Configurações dos Recursos de IA Generativa do <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="8047600674992048328">Nome desta configuração visível para o usuário</translation>
 <translation id="804935152359592405">Configurar a restrição de rede para <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="8050080920415773384">Impressão nativa</translation>

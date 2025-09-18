@@ -4015,6 +4015,7 @@
 <translation id="7613889955535752492">Λήξη: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για να δείτε και να διαχειριστείτε τους κωδικούς πρόσβασής σας στις ρυθμίσεις του Chrome.</translation>
 <translation id="7615932826417658001">Προσθήκη ταυτότητας</translation>
+<translation id="7616390733770379387">Οι παρακάτω εμφανίζονται με τυχαία σειρά.</translation>
 <translation id="7616645509853975347">Ο διαχειριστής σας ενεργοποίησε το Chrome Enterprise Connectors στο πρόγραμμα περιήγησής σας. Αυτές οι εφαρμογές σύνδεσης έχουν πρόσβαση σε ορισμένα από τα δεδομένα σας.</translation>
 <translation id="7617825962482469577">Φάκελος C7/C6</translation>
 <translation id="7618270539713451657">Πολεμικές τέχνες</translation>
@@ -4841,6 +4842,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618">Ο ιστότοπος <ph name="URL" /> θέλει να αναζητήσει και να συνδεθεί σε οποιαδήποτε συσκευή στο τοπικό σας δίκτυο</translation>
 <translation id="9046864189129893978">Μικρόφωνα (<ph name="MICS_COUNT" />)</translation>
+<translation id="9047528041803621289">Η προεπιλεγμένη μηχανή αναζήτησης σας επιτρέπει να κάνετε αναζήτηση στον ιστό. Μπορείτε να την αλλάξετε στις ρυθμίσεις.</translation>
 <translation id="9048035366624198823">Αυτές οι ενέργειες απαιτούν η πολιτική <ph name="POLICY_NAME" /> να έχει οριστεί σε <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 ίντσες</translation>
 <translation id="9049981332609050619">Επιχειρήσατε να μεταβείτε στον <ph name="DOMAIN" /> , αλλά ο διακομιστής παρουσίασε ένα μη έγκυρο πιστοποιητικό.</translation>

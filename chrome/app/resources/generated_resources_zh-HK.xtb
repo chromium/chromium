@@ -2189,6 +2189,7 @@
 <translation id="2471469610750100598">黑色 (預設)</translation>
 <translation id="2471506181342525583">目前允許存取位置</translation>
 <translation id="2471632709106952369">比較表格</translation>
+<translation id="2472855537207709205">將未分組的分頁加入新群組</translation>
 <translation id="2473195200299095979">翻譯這個網頁</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
 <translation id="2476435723907345463">已移除密鑰存取權</translation>
@@ -2803,6 +2804,7 @@
 <translation id="2900247416110050639">Google 文件、試算表和簡報要求將檔案儲存在「Google 雲端硬碟」中。系統會移動本機檔案，並複製其他位置的檔案。你可在「檔案」應用程式的「Google 雲端硬碟」資料夾中找到檔案。</translation>
 <translation id="290105521672621980">檔案使用的功能不受支援</translation>
 <translation id="2901348420151309559">最近的相片和應用程式</translation>
+<translation id="2901431118738474110">此密鑰已失效，已從 <ph name="RPID" /> 刪除，亦即將從這裡刪除。&lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;關於密鑰&lt;/a&gt;</translation>
 <translation id="2902127500170292085">「<ph name="EXTENSION_NAME" />」無法與此打印機通訊。請確定已插上打印機，然後再試一次。</translation>
 <translation id="2902265136119311513">以訪客身份瀏覽</translation>
 <translation id="2902312830803030883">更多操作</translation>
@@ -4599,6 +4601,7 @@
 <translation id="4132364317545104286">重新命名 eSIM 卡設定檔</translation>
 <translation id="4132969033912447558">繼續下載 <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">開啟應用程式以變更密碼</translation>
+<translation id="4133265950310064865">強化保護功能</translation>
 <translation id="4134838386867070505">第 1 步 (共 4 步)：描述問題</translation>
 <translation id="413534985210133938">「<ph name="LOCAL_FOLDER" />」只會儲存至此裝置。如果將此書籤移至「<ph name="LOCAL_FOLDER" />」，就無法在其他裝置上存取。</translation>
 <translation id="4135746311382563554">Google Chrome 和 Chrome OS 的《附加服務條款》</translation>
@@ -5217,6 +5220,7 @@
 <translation id="4581774856936278355">還原 Linux 時發生錯誤</translation>
 <translation id="4582297591746054421">網站通常會讀取剪貼簿，以提供保留複製文字格式等功能</translation>
 <translation id="4582563038311694664">重設所有設定</translation>
+<translation id="4584094413232466841">要從 Chrome 自動填入功能中移除這項資料嗎？</translation>
 <translation id="4584770411839426377">視窗</translation>
 <translation id="4584836561445313300">你的機構將可以查看和管理任何現有瀏覽資料 (例如密碼)</translation>
 <translation id="4585793705637313973">編輯頁面</translation>
@@ -11512,10 +11516,12 @@
 <translation id="8993945059918628059">用手指輕觸指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="899403249577094719">Netscape 憑證基底網址</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{此擴充程式已儲存至 Google 帳戶，但系統可能會刪除擴充程式儲存在此裝置上的所有資料}other{這些擴充程式已儲存至 Google 帳戶，但系統可能會刪除擴充程式儲存在此裝置上的所有資料}}</translation>
+<translation id="8997659961727384862">將未分組的分頁加入新群組</translation>
 <translation id="8999027165951679951">閒置分頁：釋出咗 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">部分語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">減少畫面上的動態效果</translation>
 <translation id="9000185763019430629">請輕觸 <ph name="DEVICE_TYPE" /> 右側的指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
+<translation id="900267527532832868">此密鑰已失效，即將從「<ph name="GOOGLE_PASSWORD_MANAGER" />」中刪除。</translation>
 <translation id="9003031149571024583">請輸入 6 位數 PIN 嘅第 <ph name="NUM_DIGIT" /> 碼，同埋用 Backspace 掣或者 Delete 掣移除最後一個數字。</translation>
 <translation id="9003185744423389627">連線至「裝置管理工具伺服器」失敗，系統在<ph name="FAILURE_TIME" />報告了以下狀態：「<ph name="STATUS_TEXT" />」</translation>
 <translation id="90033698482696970">要自動掃瞄可用的 eSIM 設定檔嗎？</translation>

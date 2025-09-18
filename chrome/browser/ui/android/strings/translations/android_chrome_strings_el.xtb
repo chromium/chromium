@@ -710,6 +710,7 @@
 <translation id="4380055775103003110">Αν αυτό το πρόβλημα δεν επιλυθεί, μπορείτε να δοκιμάσετε άλλους τρόπους για να συνεχίσετε στο <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Χρήση του Sogou για αναζήτηση</translation>
 <translation id="4387647248986092471">Δημιουργία κλειδώματος προφίλ αυτοκινήτου</translation>
+<translation id="4387817230000841154">Άνοιγμα Λήψεων</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Καρτέλες και ομάδες που δεν έχουν χρησιμοποιηθεί για 1 ημέρα ή περισσότερο}other{Καρτέλες και ομάδες που δεν έχουν χρησιμοποιηθεί για # ημέρες ή περισσότερο}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Λήψη…</translation>
 <translation id="4404568932422911380">Δεν υπάρχουν σελιδοδείκτες</translation>
@@ -1700,7 +1701,6 @@
 <translation id="8617240290563765734">Άνοιγμα της προτεινόμενης διεύθυνσης URL που καθορίζεται στο ληφθέν περιεχόμενο;</translation>
 <translation id="8635399646025169806">Να διατηρηθεί η ομάδα καρτελών;</translation>
 <translation id="8636825310635137004">Για να εμφανίζονται οι καρτέλες από τις άλλες συσκευές σας, ενεργοποιήστε τον συγχρονισμό.</translation>
-<translation id="864544049772947936">Διαχείριση παραθύρων (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8662474268934425487">Σύνδεση στο <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Το αρχείο υπάρχει ήδη</translation>
 <translation id="8676276370198826499">Εγγραφείτε στο <ph name="SITE_ETLD_PLUS_ONE" /> με το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

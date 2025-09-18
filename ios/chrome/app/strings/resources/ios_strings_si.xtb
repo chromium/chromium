@@ -479,6 +479,7 @@
 <translation id="2797029671965852011">ඉතිහාසය පෙන්වන්න</translation>
 <translation id="2797302972324086597">රටේ කේතය</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} ගොනුවක්}one{ගොනු {COUNT}ක්}other{ගොනු {COUNT}ක්}}</translation>
+<translation id="2816149645002567541">බාගැනීම විරාම කරන ලදි</translation>
 <translation id="2816489851009559785">මෙනුව → සැකසීම් → පෙරනිමි බ්‍රවුසරය</translation>
 <translation id="2818821771744632548">ඔබේ iPhone යළි සැකසීමේ කොටසක් ලෙස, ඔබ ඔබේ <ph name="USER_NAME" /> ගිණුමෙන් වරන ලදි. නැවත පුරන්නට, පහත "ඉදිරියට යන්න" වෙත තට්ටු කරන්න.</translation>
 <translation id="2819667972867209401">ක්‍රියාත්මක වන විට, දත්ත ඔබේ Google ගිණුමේ සුරකිනු ලැබේ. ක්‍රියාවිරහිත වූ විට, දත්ත සුරැකෙන්නේ මෙම උපාංගයට පමණක් වන අතර ඔබ වරනය වුවහොත් මකනු ලැබේ.</translation>
@@ -735,6 +736,7 @@
 <translation id="3921585859122905677">ලිපින තීරුවේ පිහිටීම</translation>
 <translation id="3922185497376658606">පෙර පුර්ණයවූ වෙබ්පිටු</translation>
 <translation id="3922395466317605522">අභිරුචිකරණ මෙනුව</translation>
+<translation id="3926703470020109118">බාගැනීම අවලංගු කරන ලදි</translation>
 <translation id="3929457972718048006">ලිපින</translation>
 <translation id="3931215329146376310">{count,plural, =1{මෙම අඩවිය සඳහා නව මුරපදය}one{මෙම අඩවිය සඳහා නව මුරපද}other{මෙම අඩවිය සඳහා නව මුරපද}}</translation>
 <translation id="3934905113567851655">ප්‍රමාණය වෙනස් කිරීමට කොණින් කොණට අදින්න</translation>
@@ -787,6 +789,7 @@
 <translation id="4113957097611235433">ඔබේ මුරපද වෙනස් කරන්න</translation>
 <translation id="4120936477286528673">මෙම වෙබ් අඩවිය නැවත නැවතත් වෙනත් යෙදුමක් විවෘත කිරීමට උත්සාහ කරයි.</translation>
 <translation id="4121993058175073134">ශුද්ධ-නිර්යාත දත්ත යැවීමට, කරුණාකර සැකසුම් යෙදුම තුළ ඔබගේ ඊතැපැල් ගිණුම වින්‍යාස කරන්න.</translation>
+<translation id="4132991308423633339">මුරපද සහ මුරයතුරු නිර්යාත කරන්න…</translation>
 <translation id="4133139945030148655">ඔබ සියල්ල සකසා ඇත</translation>
 <translation id="4133265950310064865">වැඩිදියුණු කළ ආරක්‍ෂාව</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1172,6 +1175,7 @@
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />ඔබේ ගොනුව තෝරන්න<ph name="END_BOLD" /> තට්ටු කරන්න</translation>
 <translation id="5613297089029360427">නවතම අනුව පිළිවෙලට සකසන්න</translation>
 <translation id="5614553682702429503">මුරපදය සුරකින්න ද?</translation>
+<translation id="5617769621178348890">Files යෙදුම තුළ විවෘත කරන්න</translation>
 <translation id="5619871095170816857">මෙම කාඩ්පත පසුගිය පැය 24 තුළ ඔබේ සියලු සමමුහුර්ත උපාංග හරහා ඔබ අවසන් වරට භාවිත කළ විවෘත පටිත්ත පෙන්වයි.</translation>
 <translation id="5624120631404540903">මුරපද පාලනය</translation>
 <translation id="5624637933505983014">සමමුහුර්ත කිරීම ක්‍රියාත්මක නොකරන්න</translation>
@@ -1588,6 +1592,7 @@
 <translation id="7102005569666697658">බාගනිමින්… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">මෙනුව → සැකසීම් → ගෙවීමේ ක්‍රම</translation>
 <translation id="7108338896283013870">සඟවන්න</translation>
+<translation id="7127922377013221748">මෙවලම් තීරුව සඟවන්න</translation>
 <translation id="7128693485119315539">ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය සහ මුරපද වැනි ඔබගේ කළමනාකරණය කළ ගිණුමට බැඳී ඇති බ්‍රවුස් කිරීමේ දත්ත බැලීමට සහ කළමනාකරණය කිරීමට ඔබේ සංවිධානයට අවශ්‍ය විය හැක.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">කැමරාව නොතිබේ</translation>
@@ -1898,6 +1903,7 @@
 <translation id="8283172974887967105">සකසන්න…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> දැනුම්දීම් ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="8290077367744012649">ඔබේ පටිති වලින් මිල ගණන් නිරීක්ෂණය කරන්න</translation>
+<translation id="8292893224181644074">බාගැනීම සම්පූර්ණයි</translation>
 <translation id="8299417921174340354">මුරපද භාවිත කිරීමට, ඔබ පළමුව ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
 <translation id="8307481894409578819">මෙම ගොනුව උඩුගත කළ නොහැකි විය</translation>
 <translation id="8319076807703933069">අලුත් සෙවීම</translation>

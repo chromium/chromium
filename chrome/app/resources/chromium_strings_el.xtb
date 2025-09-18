@@ -15,6 +15,9 @@
 <translation id="1131805035311359397">Για να ελέγξετε αν οι κωδικοί πρόσβασής σας είναι ασφαλείς από παραβιάσεις δεδομένων και άλλα ζητήματα ασφαλείας, <ph name="BEGIN_LINK" />συνδεθείτε στο Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Κάντε κλικ στο μενού του Chromium</translation>
 <translation id="1157985233335035034">Πρόσφατες γλώσσες</translation>
+<translation id="1171831736360285680">Ο συνεργάτης <ph name="PARTNER_NAME" /> πρόσθεσε μια επέκταση που ενδέχεται να αλλάξει τον τρόπο λειτουργίας του Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Η εγκατάσταση απέτυχε επειδή η έκδοση των Windows που χρησιμοποιείτε δεν υποστηρίζεται.</translation>
 <translation id="1185134272377778587">Σχετικά με το Chromium</translation>
 <translation id="1203500561924088507">Ευχαριστούμε για την εγκατάσταση. Πρέπει να επανεκκινήσετε το πρόγραμμα περιήγησής σας πριν από τη χρήση του <ph name="BUNDLE_NAME" />.</translation>

@@ -4602,6 +4602,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4132364317545104286">Преименуване на потребителския профил на електронната SIM карта</translation>
 <translation id="4132969033912447558">Възобновяване на <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">Отворете приложението, за да промените паролата си</translation>
+<translation id="4133265950310064865">Подобрена защита</translation>
 <translation id="4134838386867070505">Стъпка 1 от 4: Опишете проблема</translation>
 <translation id="413534985210133938">Папката „<ph name="LOCAL_FOLDER" />“ е запазена само на това устройство. Ако преместите тази отметка в(ъв) „<ph name="LOCAL_FOLDER" />“, тя вече няма да се показва на другите ви устройства.</translation>
 <translation id="4135746311382563554">Допълнителни общи условия на Google Chrome и Chrome OS</translation>
@@ -5220,6 +5221,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4581774856936278355">Грешка при възстановяването на Linux</translation>
 <translation id="4582297591746054421">Сайтовете обикновено четат буферната ви памет, за да осигуряват функции като запазване на форматирането на копирания от вас текст</translation>
 <translation id="4582563038311694664">Нулиране на всички настройки</translation>
+<translation id="4584094413232466841">Да се премахне ли тази информация от функцията на Chrome за автоматично попълване?</translation>
 <translation id="4584770411839426377">Прозорец</translation>
 <translation id="4584836561445313300">Организацията ви ще може да вижда и управлява всички съществуващи данни за сърфирането, като например паролите и др.</translation>
 <translation id="4585793705637313973">Редактиране на страницата</translation>

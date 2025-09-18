@@ -17,6 +17,9 @@
 <translation id="1131805035311359397">За да проверите дали вашите лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Кликнете на менито на Chromium</translation>
 <translation id="1157985233335035034">Неодамнешни јазици</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> додаде екстензија што може да го промени начинот на функционирање на Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Инсталирањето не успеа бидејќи вашата верзија на Windows не е поддржана.</translation>
 <translation id="1185134272377778587">За Chromium</translation>
 <translation id="1203500561924088507">Фала за инсталирањето. Мора да го рестартирате прелистувачот пред да користите <ph name="BUNDLE_NAME" />.</translation>
@@ -173,6 +176,7 @@
 <translation id="3068187312562070417">Други профили на Chromium</translation>
 <translation id="3068515742935458733">Помогнете да го подобриме Chromium со испраќање извештаи за падови и <ph name="UMA_LINK" /> до Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Една или повеќе екстензии за Chromium пристапуваа до 1 USB-уред}=1{Една или повеќе екстензии за Chromium пристапуваат до 1 USB-уред}one{Една или повеќе екстензии за Chromium пристапуваа до # USB-уред}other{Една или повеќе екстензии за Chromium пристапуваа до # USB-уреди}}</translation>
+<translation id="3095811995836568724">Историја на Chromium</translation>
 <translation id="3101560983689755071">Вашата историја на прелистувањето влијае на рекламите што ги гледате и на интересите како што е проценето подолу. За да ја заштити приватноста, Chromium автоматски ги брише вашите интереси секој месец. Интересите може да се освежуваат освен ако не ги отстраните.</translation>
 <translation id="3103660991484857065">Инсталаторот не успеа да ја декомпримира архивата. Преземете го Chromium повторно.</translation>
 <translation id="310459126943037700">Задачите не можеше да се сопрат.</translation>

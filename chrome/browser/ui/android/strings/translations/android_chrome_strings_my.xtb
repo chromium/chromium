@@ -710,6 +710,7 @@
 <translation id="4380055775103003110">ဤပြဿနာဆက်ဖြစ်နေပါက <ph name="SITE_ETLD_PLUS_ONE" /> တွင် အခြားနည်းလမ်းများကို စမ်းကြည့်နိုင်သည်။</translation>
 <translation id="4384468725000734951">ရှာဖွေမှုအတွက် Sogou ကို အသုံးပြုသည်</translation>
 <translation id="4387647248986092471">ကားပရိုဖိုင်လော့ခ် ပြုလုပ်ရန်</translation>
+<translation id="4387817230000841154">ဒေါင်းလုဒ်များကို ဖွင့်ရန်</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{၁ ရက်နှင့်အထက် အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများ}other{# ရက်နှင့်အထက် အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများ}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ဒေါင်းလုဒ်လုပ်နေသည်…</translation>
 <translation id="4404568932422911380">မည်သည့်လိပ်စာမျှ မရှိပါ</translation>
@@ -1699,7 +1700,6 @@
 <translation id="8617240290563765734">ဒေါင်းလုပ်လုပ်ထားသည့် အကြောင်းအရာတွင် သတ်မှတ်ထားသည့် အကြံပြု URL ကိုဖွင့်မလား?</translation>
 <translation id="8635399646025169806">တဘ်အုပ်စု ဆက်ထားမလား။</translation>
 <translation id="8636825310635137004">သင်၏ အခြားစက်ပစ္စည်းများမှ တဘ်များကိုအသုံးပြုရန် စင့်ခ်ကို ဖွင့်ပါ။</translation>
-<translation id="864544049772947936">ဝင်းဒိုး (<ph name="INSTANCE_COUNTS" />) ခုကို စီမံရန်</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="8664979001105139458">ဖိုင်အမည် ရှိပြီးသားဖြစ်သည်</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> သို့ စာရင်းသွင်းပါ</translation>

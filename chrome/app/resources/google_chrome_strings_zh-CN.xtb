@@ -441,6 +441,9 @@
 <translation id="6180522807229584611">此标签页正在占用额外的资源。请通过 Chrome 将其设为非活跃状态，以便提升性能。</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
 <translation id="6192058120268468905">设置 Chrome 账号</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" />添加了一个扩展程序，该扩展程序可能会改变 Chrome 的工作方式。
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Google Chrome的入站规则，允许mDNS流量。</translation>
 <translation id="624230925347970731">Chrome 即将关闭</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>

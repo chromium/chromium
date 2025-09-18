@@ -33,6 +33,23 @@ Oorsprongen moeten overeenkomen met web-apps die afgedwongen geïnstalleerde ge�
 
 Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="101438888985615157">Scherm 180 graden draaien</translation>
+<translation id="1016249716881514655">Deze functies in <ph name="CHROME_DEVTOOLS_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+De generatieve AI-functies in <ph name="CHROME_DEVTOOLS_NAME" /> zijn onder andere:
+
+- Console Insights: Hier vind je uitleg over consoleberichten en suggesties om consolefouten op te lossen.
+
+- AI-ondersteuning: Krijg hulp bij het begrijpen van css-stijlen (vanaf versie 131), netwerkverzoeken, prestaties en bestanden (allemaal vanaf versie 132).
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="1017967144265860778">Energiebeheer op het inlogscherm</translation>
 <translation id="1018427234617066902">De spellingcontrole voor talen is verplicht. Niet-herkende talen in de lijst worden genegeerd.
 
@@ -1096,6 +1113,7 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
 <translation id="1715151459541210849">Toegankelijkheidsfunctie voor dicteren aanzetten</translation>
 <translation id="1716468109214130396">Voorkomen dat Chrome wordt geopend als je niet bent ingeschreven voor Cloudbeheer voor de Chrome-browser</translation>
 <translation id="1719033799014769396">Rapportage voor opstartmodus van apparaat uitzetten</translation>
+<translation id="1720377398791729541">Sta generatieve AI-functies van <ph name="CHROME_DEVTOOLS_NAME" /> toe en verbeter AI-modellen.</translation>
 <translation id="1721158690981421598">Als je dit beleid instelt, geeft je de domeinnamen op die worden opgelegd aan hosts voor externe toegang en voorkom je dat gebruikers deze wijzigen. Hosts kunnen alleen worden gedeeld met accounts die zijn geregistreerd op een van de opgegeven domeinnamen.
 
       Als je het beleid instelt op een lege lijst of niet instelt, kunnen hosts worden gedeeld met elk account.
@@ -2294,6 +2312,11 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
       Als je het beleid instelt op AlleenGebruiker (waarde 1), kunnen gebruikers gebruikerscertificaten beheren, maar niet alle certificaten op het apparaat.</translation>
 <translation id="2593762551209145088">Safe Browsing is nooit actief.</translation>
 <translation id="2594773358911436070">WebRTC-instellingen</translation>
+<translation id="2595513082972483165">Als je dit beleid toepast, wordt het hoofdverzoek geblokkeerd als er een waarschuwing moet worden getoond in <ph name="CHROME_DEVTOOLS_NAME" /> omdat de <ph name="PRIVATE_NETWORK_ACCESS" />-controles mislukken.
+
+Als je dit beleid niet toepast of niet instelt, worden alle <ph name="PRIVATE_NETWORK_ACCESS" />-waarschuwingen niet afgedwongen en worden de verzoeken niet geblokkeerd.
+
+Zie https://wicg.github.io/private-network-access/ voor beperkingen voor <ph name="PRIVATE_NETWORK_ACCESS" />.</translation>
 <translation id="2600005880585324062">Laat <ph name="PRODUCT_NAME" /> beslissen welke oorsprongen moeten worden geïsoleerd van andere oorsprongen van dezelfde site.</translation>
 <translation id="26023406105317310">Kerberos-accounts configureren</translation>
 <translation id="2603237557651009842">WebPrinting API blokkeren op deze sites</translation>
@@ -4597,6 +4620,11 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 <translation id="4274691295133617461">Als je het beleid instelt op 3, kunnen websites leestoegang vragen tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API. Als je het beleid instelt op 2, wordt toegang geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="4274992013893672009">Als je dit beleid toepast, wordt het hoofdverzoek geblokkeerd als er een waarschuwing moet worden getoond in <ph name="CHROME_DEVTOOLS_NAME" /> omdat de <ph name="LOCAL_NETWORK_ACCCESS" />-controles mislukken.
+
+Als je dit beleid niet toepast of niet instelt, wordt de standaardafhandeling van deze verzoeken gebruikt voor <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken.
+
+Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="4275048399551500192">Mediabediening niet tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten</translation>
 <translation id="4278656834593750050">Oplaadgeluiden aanzetten</translation>
 <translation id="4281322231545828290">Geautomatiseerde wachtwoordwijziging aanzetten</translation>
@@ -6026,6 +6054,7 @@ Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versie
       Als een ingeschreven gebruiker een kanaaldowngrade start, kan de gebruiker besluiten om te resetten of te wachten. Afhankelijk van de waarde van het beleid kan de keuze ook voor de gebruiker worden gemaakt. Als een beheerder een kanaaldowngrade start via de instelling <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" />, krijgt het apparaat bij de volgende check op updates alleen een rollback als de optie voor rollback is geselecteerd. Zo niet, dan wacht het apparaat tot het doelkanaal is geüpdatet naar de huidige versie.
 
       Als het beleid niet is ingesteld of ongeldig is, is het gedrag hetzelfde als voor 'Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt'.</translation>
+<translation id="5228086789188938988">Sta generatieve AI-functies van <ph name="CHROME_DEVTOOLS_NAME" /> niet toe.</translation>
 <translation id="5229339291699779956">Hiermee zet je PCIe-tunneling voor Thunderbolt/USB4-randapparaten aan, waardoor alle mogelijkheden van de randapparaten werken</translation>
 <translation id="523505283826916779">Toegankelijkheidsinstellingen</translation>
 <translation id="5235607513961923779">Rapporteert de apparaatactiviteitsstatus op ingeschreven apparaten voor aangesloten gebruikers.
@@ -6918,6 +6947,7 @@ Als je het beleid instelt op <ph name="AUTOMATED_NAME" />, wordt geprobeerd <ph 
 Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instellen op <ph name="ALLOWED_NAME" /> voor gewone gebruikers. Voor zakelijke gebruikers waarvoor het beleid niet is ingesteld, wordt standaard <ph name="DISALLOWED_NAME" /> gebruikt.
 
 Je kunt meer accountbeperkingen toevoegen met het beleid <ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />.</translation>
+<translation id="5804702826910437814">Sta generatieve AI-functies van <ph name="CHROME_DEVTOOLS_NAME" /> toe zonder AI-modellen te verbeteren.</translation>
 <translation id="5804795151506109282">Gebruikers niet vragen om te migreren.</translation>
 <translation id="5806128552675651249">Alleen afdrukken zonder achtergrondbeelden toestaan</translation>
 <translation id="5809210507920527553">Beheert instellingen voor de Linux-container (Crostini).</translation>
@@ -10078,6 +10108,7 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="80453040817068401">De <ph name="LACROS_NAME" />-browser beschikbaar maken</translation>
 <translation id="804619600634661088">Het gebruik van foutopsporing op afstand toestaan</translation>
+<translation id="8047264240841615226">Instellingen voor generatieve AI-functies van <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="8047600674992048328">Voor de gebruiker zichtbare naam voor deze configuratie</translation>
 <translation id="804935152359592405">Netwerkbeperking voor <ph name="CLASS_TOOLS_NAME" /> instellen</translation>
 <translation id="8050080920415773384">Systeemeigen printer</translation>

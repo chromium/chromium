@@ -2169,6 +2169,7 @@
 <translation id="2471469610750100598">黑色（默认）</translation>
 <translation id="2471506181342525583">已允许使用位置信息</translation>
 <translation id="2471632709106952369">比较表格</translation>
+<translation id="2472855537207709205">将所有未分组的标签页放入一个分组</translation>
 <translation id="2473195200299095979">翻译此页</translation>
 <translation id="2475982808118771221">出现错误</translation>
 <translation id="2476435723907345463">已撤消通行密钥访问权限</translation>
@@ -2783,6 +2784,7 @@
 <translation id="2900247416110050639">Google 文档、表格和幻灯片要求将文件存储在 Google 云端硬盘中。系统会移动本地文件，并复制其他位置的文件。您可在“文件”应用内的 Google 云端硬盘文件夹中找到您的文件。</translation>
 <translation id="290105521672621980">文件使用了不支持的功能</translation>
 <translation id="2901348420151309559">近期的照片和应用</translation>
+<translation id="2901431118738474110">此通行密钥已失效，目前已从 <ph name="RPID" /> 中删除，很快也会从此处删除。&lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;关于通行密钥&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" />无法与此打印机通信。请确保此打印机已插好并重试。</translation>
 <translation id="2902265136119311513">以访客身份浏览</translation>
 <translation id="2902312830803030883">更多操作</translation>
@@ -4581,6 +4583,7 @@
 <translation id="4132364317545104286">重命名 eSIM 卡配置文件</translation>
 <translation id="4132969033912447558">继续下载 <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">打开应用以更改密码</translation>
+<translation id="4133265950310064865">增强型保护</translation>
 <translation id="4134838386867070505">步骤 1/4：描述问题</translation>
 <translation id="413534985210133938">“<ph name="LOCAL_FOLDER" />”仅会保存到此设备上。如果您将此书签移至“<ph name="LOCAL_FOLDER" />”，您将无法再在其他设备上获取它。</translation>
 <translation id="4135746311382563554">Google Chrome 和 Chrome 操作系统附加服务条款</translation>
@@ -5199,6 +5202,7 @@
 <translation id="4581774856936278355">恢复 Linux 容器时出错</translation>
 <translation id="4582297591746054421">网站通常会读取您的剪贴板内容以实现某些功能（例如保留您所复制文字的格式）</translation>
 <translation id="4582563038311694664">重置所有设置</translation>
+<translation id="4584094413232466841">要从 Chrome 自动填充功能中移除此信息吗？</translation>
 <translation id="4584770411839426377">窗口</translation>
 <translation id="4584836561445313300">您的组织将能够查看和管理任何现有的浏览数据，例如密码等</translation>
 <translation id="4585793705637313973">修改启动页</translation>
@@ -11501,10 +11505,12 @@
 <translation id="8993945059918628059">用手指轻触指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="899403249577094719">Netscape 证书基本网址</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{此扩展程序已保存在您的 Google 账号中，但它仅保存在此设备上的所有数据可能会被删除}other{这些扩展程序已保存在您的 Google 账号中，但它们仅保存在此设备上的所有数据可能会被删除}}</translation>
+<translation id="8997659961727384862">将所有未分组的标签页放入一个分组</translation>
 <translation id="8999027165951679951">闲置标签页：已释放 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">区段语法错误：<ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">减少界面中的动画效果</translation>
 <translation id="9000185763019430629">轻触 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
+<translation id="900267527532832868">此通行密钥已失效，很快就会从 <ph name="GOOGLE_PASSWORD_MANAGER" />中删除。</translation>
 <translation id="9003031149571024583">请输入 PIN 码的第 <ph name="NUM_DIGIT" /> 位，共 6 位。可以使用退格键或 Delete 键移除最后一个数字。</translation>
 <translation id="9003185744423389627">未能成功连接到设备管理服务器，状态为“<ph name="STATUS_TEXT" />”，失败时间为 <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">自动扫描查找可用的 eSIM 卡配置文件？</translation>

@@ -479,6 +479,7 @@
 <translation id="2797029671965852011">Показати історію</translation>
 <translation id="2797302972324086597">Код країни</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файли}many{{COUNT} файлів}other{{COUNT} файлу}}</translation>
+<translation id="2816149645002567541">Завантаження призупинено</translation>
 <translation id="2816489851009559785">Меню → Налаштування → Вебпереглядач за умовчанням</translation>
 <translation id="2818821771744632548">Ви вийшли з облікового запису <ph name="USER_NAME" />, коли було скинуто налаштування iPhone. Щоб увійти знову, натисніть "Продовжити" нижче.</translation>
 <translation id="2819667972867209401">Коли цей параметр увімкнено, дані зберігаються в обліковому записі Google. Якщо його вимкнути, дані зберігатимуться лише на пристрої і видалятимуться, коли ви вийдете з облікового запису.</translation>
@@ -735,6 +736,7 @@
 <translation id="3921585859122905677">Розташування адресного рядка</translation>
 <translation id="3922185497376658606">Попереднє завантаження вебсторінок</translation>
 <translation id="3922395466317605522">Налаштувати меню</translation>
+<translation id="3926703470020109118">Завантаження скасовано</translation>
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3931215329146376310">{count,plural, =1{Новий пароль для цього сайту}one{Нові паролі для цього сайту}few{Нові паролі для цього сайту}many{Нові паролі для цього сайту}other{Нові паролі для цього сайту}}</translation>
 <translation id="3934905113567851655">Щоб змінити розмір, розведіть чи зведіть пальці</translation>
@@ -787,6 +789,7 @@
 <translation id="4113957097611235433">Змініть паролі</translation>
 <translation id="4120936477286528673">Цей сайт знову намагається відкрити інший додаток.</translation>
 <translation id="4121993058175073134">Щоб надсил. дані про чистий експорт, налашт. обл. запис у програмі Налаштування.</translation>
+<translation id="4132991308423633339">Експортувати паролі й ключі доступу…</translation>
 <translation id="4133139945030148655">Усе готово</translation>
 <translation id="4133265950310064865">Покращений захист</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1172,6 +1175,7 @@
 <translation id="561269594905823128">Натисніть <ph name="BEGIN_BOLD" />Вибрати файл<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Сортувати за категорією "Останні"</translation>
 <translation id="5614553682702429503">Зберегти пароль?</translation>
+<translation id="5617769621178348890">Відкрити в додатку Файли</translation>
 <translation id="5619871095170816857">На цій картці показано вкладку, яку ви востаннє відкривали на всіх синхронізованих пристроях протягом останніх 24 годин.</translation>
 <translation id="5624120631404540903">Керувати паролями</translation>
 <translation id="5624637933505983014">Не вмикати синхронізацію</translation>
@@ -1899,6 +1903,7 @@
 <translation id="8283172974887967105">Так…</translation>
 <translation id="8289930144142009940">Сповіщення функції "<ph name="FEATURE_NAME" />" вимкнено</translation>
 <translation id="8290077367744012649">Відстежуйте ціни на вкладках</translation>
+<translation id="8292893224181644074">Завантаження завершено</translation>
 <translation id="8299417921174340354">Щоб використовувати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="8307481894409578819">Не вдалося завантажити цей файл</translation>
 <translation id="8319076807703933069">Новий пошук</translation>

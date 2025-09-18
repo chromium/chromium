@@ -4598,6 +4598,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4132364317545104286">eSIM-i profiili ümbernimetamine</translation>
 <translation id="4132969033912447558">Jätka: <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">Parooli muutmiseks avage rakendus</translation>
+<translation id="4133265950310064865">Täiustatud kaitse</translation>
 <translation id="4134838386867070505">1. toiming 4-st: kirjeldage probleemi</translation>
 <translation id="413534985210133938">„<ph name="LOCAL_FOLDER" />“ on salvestatud ainult sellesse seadmesse. Kui teisaldate selle järjehoidja kausta „<ph name="LOCAL_FOLDER" />“, ei saa te seda enam teistesse seadmetesse.</translation>
 <translation id="4135746311382563554">Google Chrome'i ja Chrome OS-i lisateenusetingimused</translation>
@@ -5216,6 +5217,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4581774856936278355">Viga Linuxi taastamisel</translation>
 <translation id="4582297591746054421">Saidid loevad teie lõikelaual olevat sisu näiteks teie kopeeritud teksti vormingu säilitamiseks</translation>
 <translation id="4582563038311694664">Lähtesta kõik seaded</translation>
+<translation id="4584094413232466841">Kas eemaldada see teave Chrome’i automaattäitefunktsioonist?</translation>
 <translation id="4584770411839426377">Aken</translation>
 <translation id="4584836561445313300">Teie organisatsioon saab näha ja hallata kõiki olemasolevaid sirvimisandmeid, nagu paroole ja muud</translation>
 <translation id="4585793705637313973">Lehe muutmine</translation>

@@ -2184,6 +2184,7 @@
 <translation id="2471469610750100598">أسود (تلقائي)</translation>
 <translation id="2471506181342525583">تم السماح بالوصول إلى الموقع الجغرافي</translation>
 <translation id="2471632709106952369">جداول المقارنة</translation>
+<translation id="2472855537207709205">تجميع كل علامات التبويب غير المجمَّعة</translation>
 <translation id="2473195200299095979">ترجمة هذه الصفحة</translation>
 <translation id="2475982808118771221">حدث خطأ</translation>
 <translation id="2476435723907345463">تمت إزالة إمكانية الوصول إلى مفاتيح المرور</translation>
@@ -2798,6 +2799,7 @@
 <translation id="2900247416110050639">‏تتطلب "مستندات Google" و"جداول بيانات Google" و"العروض التقديمية من Google" تخزين الملفات في Google Drive. سيتم نقل الملفات المتوفّرة على الجهاز ونسخ الملفات من أماكن أخرى. يمكن العثور على ملفاتك في مجلّد Google Drive في تطبيق "الملفات".</translation>
 <translation id="290105521672621980">يستخدم الملف ميزات غير معتمدة</translation>
 <translation id="2901348420151309559">الصور والتطبيقات الحديثة</translation>
+<translation id="2901431118738474110">‏لم يعُد مفتاح المرور هذا صالحًا، حيث تم حذفه من <ph name="RPID" />، وسيتم حذفه من هنا قريبًا. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;لمحة عن مفاتيح المرور&lt;/a&gt;</translation>
 <translation id="2902127500170292085">تعذّر على "<ph name="EXTENSION_NAME" />" التواصل مع هذه الطابعة. يُرجى التأكّد من توصيل الطابعة بالكهرباء وإعادة المحاولة.</translation>
 <translation id="2902265136119311513">التصفّح كضيف</translation>
 <translation id="2902312830803030883">مزيد من الإجراءات</translation>
@@ -3944,7 +3946,7 @@
 <translation id="3707163604290651814">تم تسجيل الدخول حاليًا باسم <ph name="NAME" /></translation>
 <translation id="3707348585109246684">فتح الرابط في علامة تبويب جديدة في <ph name="APP" /></translation>
 <translation id="3708295717182051206">الترجمة والشرح</translation>
-<translation id="3708684582558000260">عدم السماح للمواقع الإلكترونية بإكمال عمليات إرسال البيانات أو تلقيّها</translation>
+<translation id="3708684582558000260">عدم السماح للمواقع الإلكترونية التي تم إغلاقها بإكمال عمليات إرسال البيانات أو استلامها</translation>
 <translation id="3709244229496787112">تم إيقاف المتصفح قبل انتهاء التنزيل.</translation>
 <translation id="3710501561113687889">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> مع هذا الموقع الإلكتروني.</translation>
 <translation id="3711931198657368127">ل&amp;صق والانتقال إلى <ph name="URL" /></translation>
@@ -4596,6 +4598,7 @@
 <translation id="4132364317545104286">‏إعادة تسمية الملف الشخصي لشريحة eSIM</translation>
 <translation id="4132969033912447558">استئناف تنزيل "<ph name="FILE_NAME" />"</translation>
 <translation id="4133076602192971179">فتح التطبيق لتغيير كلمة المرور</translation>
+<translation id="4133265950310064865">الحماية المحسَّنة</translation>
 <translation id="4134838386867070505">الخطوة 1 من 4: وصف المشكلة</translation>
 <translation id="413534985210133938">تم حفظ "<ph name="LOCAL_FOLDER" />" على هذا الجهاز فقط. وفي حال نقل هذه الإشارة المرجعية إلى "<ph name="LOCAL_FOLDER" />"، لن يعود بإمكانك الوصول إليها على أجهزتك الأخرى.</translation>
 <translation id="4135746311382563554">‏بنود الخدمة الإضافية لكلٍ من متصفِّح Google Chrome ونظام التشغيل Chrome</translation>
@@ -5214,6 +5217,7 @@
 <translation id="4581774856936278355">‏حدث خطأ أثناء استعادة Linux</translation>
 <translation id="4582297591746054421">تقرأ المواقع الإلكترونية عادةً الحافظة لتتيح ميزات، مثل الحفاظ على صيغة النص الذي نسخته.</translation>
 <translation id="4582563038311694664">إعادة ضبط كل الإعدادات</translation>
+<translation id="4584094413232466841">‏هل أردت إزالة هذه المعلومات من ميزة "الملء التلقائي" في Chrome؟</translation>
 <translation id="4584770411839426377">نافذة</translation>
 <translation id="4584836561445313300">ستتمكن مؤسستك من الاطّلاع على أي بيانات تصفّح حالية وإدارتها، مثل كلمات المرور وغيرها</translation>
 <translation id="4585793705637313973">تعديل الصفحة</translation>
@@ -11533,10 +11537,12 @@
 <translation id="8993945059918628059">المِس أداة استشعار بصمة الإصبع بإصبعك. يتم تخزين بيانات بصمة الإصبع بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> فقط.</translation>
 <translation id="899403249577094719">‏عنوان URL الأساسي لشهادة Netscape</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{‏يتم حفظ هذه الإضافة في حسابك على Google، ولكن قد يتم حذف أي بيانات حفظتها على هذا الجهاز فقط}zero{‏يتم حفظ هذه الإضافات في حسابك على Google، ولكن قد يتم حذف أي بيانات حفظتها على هذا الجهاز فقط}two{‏يتم حفظ هاتين الإضافتَين في حسابك على Google، ولكن قد يتم حذف أي بيانات حفظتها على هذا الجهاز فقط}few{‏يتم حفظ هذه الإضافات في حسابك على Google، ولكن قد يتم حذف أي بيانات حفظتها على هذا الجهاز فقط}many{‏يتم حفظ هذه الإضافات في حسابك على Google، ولكن قد يتم حذف أي بيانات حفظتها على هذا الجهاز فقط}other{‏يتم حفظ هذه الإضافات في حسابك على Google، ولكن قد يتم حذف أي بيانات حفظتها على هذا الجهاز فقط}}</translation>
+<translation id="8997659961727384862">تجميع كل علامات التبويب غير المجمَّعة</translation>
 <translation id="8999027165951679951">علامة التبويب غير النشطة: تم إخلاء <ph name="MEMORY_SAVINGS" /> من مساحة التخزين</translation>
 <translation id="8999560016882908256">خطأ في بنية القسم: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">الحدّ من الحركة على الشاشة</translation>
 <translation id="9000185763019430629">عليك لمس أداة استشعار بصمة الإصبع في الجانب الأيمن من جهاز <ph name="DEVICE_TYPE" />. يتم تخزين بيانات بصمة الإصبع بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> فقط.</translation>
+<translation id="900267527532832868">لم يعُد مفتاح المرور هذا صالحًا، وسيتم حذفه قريبًا من "<ph name="GOOGLE_PASSWORD_MANAGER" />".</translation>
 <translation id="9003031149571024583">‏يرجى إدخال الرقم <ph name="NUM_DIGIT" /> من رقم التعريف الشخصي المكوَّن من 6 أرقام. يمكنك استخدام مفتاح Backspace أو Delete لإزالة آخر رقم.</translation>
 <translation id="9003185744423389627">تعذّر الاتصال بخادم إدارة الأجهزة - حالة العملية "<ph name="STATUS_TEXT" />" الوقت <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">‏إجراء بحث تلقائي عن الملفات الشخصية المتوفّرة لشريحة eSIM؟</translation>

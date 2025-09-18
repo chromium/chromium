@@ -15,6 +15,9 @@
 <translation id="1131805035311359397">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Натисніть меню Chromium</translation>
 <translation id="1157985233335035034">Останні мови</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> додає розширення, яке може вплинути на роботу Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Не вдалося встановити, оскільки ваша версія ОС Windows не підтримується.</translation>
 <translation id="1185134272377778587">Про Chromium</translation>
 <translation id="1203500561924088507">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити веб-переглядач.</translation>
@@ -171,6 +174,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3068187312562070417">Інші профілі Chromium</translation>
 <translation id="3068515742935458733">Допоможіть покращити Chromium, надсилаючи звіти про аварійне завершення роботи та <ph name="UMA_LINK" /> в Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Щонайменше одне розширення Chromium отримало доступ до 1 пристрою USB}=1{Щонайменше одне розширення Chromium має доступ до 1 пристрою USB}one{Щонайменше одне розширення Chromium має доступ до # пристрою USB}few{Щонайменше одне розширення Chromium має доступ до # пристроїв USB}many{Щонайменше одне розширення Chromium має доступ до # пристроїв USB}other{Щонайменше одне розширення Chromium має доступ до # пристрою USB}}</translation>
+<translation id="3095811995836568724">Історія Chromium</translation>
 <translation id="3101560983689755071">Ваша історія веб-перегляду впливає на оголошення, що вам показуються, а також на наведений нижче список інтересів. З міркувань конфіденційності Chromium щомісяця автоматично видаляє ваші інтереси. Інтереси можуть оновлюватись, якщо ви не вилучите їх.</translation>
 <translation id="3103660991484857065">Програмі встановлення не вдалося видобути архів. Завантажте Chromium ще раз.</translation>
 <translation id="310459126943037700">Не вдалося завершити завдання.</translation>

@@ -450,6 +450,9 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6180522807229584611">Картичкава користи дополнителни ресурси. За да се подобри изведбата, дозволете му на Chrome да ја деактивира.</translation>
 <translation id="6182736845697986886">Инсталацијата не успеа поради внатрешна грешка на серверот за ажурирање.</translation>
 <translation id="6192058120268468905">Вашата сметка во Chrome</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> додаде екстензија што може да го промени начинот на функционирање на Chrome.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Дојдовно правило за Google Chrome за да овозможи сообраќај mDNS.</translation>
 <translation id="624230925347970731">Chrome ќе се затвори наскоро</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>

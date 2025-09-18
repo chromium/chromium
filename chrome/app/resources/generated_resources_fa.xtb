@@ -2186,6 +2186,7 @@
 <translation id="2471469610750100598">سیاه (پیش‌فرض)</translation>
 <translation id="2471506181342525583">دسترسی به مکان مجاز شد</translation>
 <translation id="2471632709106952369">جدول‌های مقایسه</translation>
+<translation id="2472855537207709205">گروه‌بندی همه زبانه‌های گروه‌بندی‌نشده</translation>
 <translation id="2473195200299095979">ترجمه این صفحه</translation>
 <translation id="2475982808118771221">یک خطا روی داد</translation>
 <translation id="2476435723907345463">دسترسی به گذرکلیدها برداشته شد</translation>
@@ -2801,6 +2802,7 @@
 <translation id="2900247416110050639">‏«سندنگار»، «کاربرگ‌نگار»، و «اسلایدنگار Google» ملزم می‌دانند فایل‌ها در Google Drive ذخیره شود. فایل‌های محلی منتقل خواهند شد و فایل‌هایی که از مکان‌های دیگر هستند کپی خواهند شد. فایل‌ها را می‌توانید در پوشه Google Drive در برنامه Files پیدا کنید.</translation>
 <translation id="290105521672621980">فایل از قابلیت‌های پشتیبانی‌نشده استفاده می‌کند</translation>
 <translation id="2901348420151309559">عکس‌ها و برنامه‌های اخیر</translation>
+<translation id="2901431118738474110">‏این گذرکلید دیگر کار نمی‌کند. این گذرکلید از <ph name="RPID" /> حذف شده است و به‌زودی از اینجا نیز حذف خواهد شد. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;درباره گذرکلیدها&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> نتوانست با این چاپگر ارتباط برقرار کند. مطمئن شوید چاپگر روشن است و دوباره امتحان کنید.</translation>
 <translation id="2902265136119311513">مرور به‌عنوان مهمان</translation>
 <translation id="2902312830803030883">کنش‌های بیشتر</translation>
@@ -4602,6 +4604,7 @@
 <translation id="4132364317545104286">تغییر دادن نام نمایه سیم‌کارت داخلی</translation>
 <translation id="4132969033912447558">ازسرگیری <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">برای تغییر دادن گذرواژه، برنامه را باز کنید</translation>
+<translation id="4133265950310064865">محافظت بهبودیافته</translation>
 <translation id="4134838386867070505">مرحله ۱ از ۴: شرح مشکل</translation>
 <translation id="413534985210133938">‫«<ph name="LOCAL_FOLDER" />» فقط در این دستگاه ذخیره می‌شود. اگر این نشانک را به «<ph name="LOCAL_FOLDER" />» منتقل کنید، دیگر آن را در سایر دستگاه‌های خود دریافت نخواهید کرد.</translation>
 <translation id="4135746311382563554">‏شرایط خدمات تکمیلی Google Chrome و ChromeOS</translation>
@@ -5220,6 +5223,7 @@
 <translation id="4581774856936278355">‏خطا هنگام بازیابی Linux</translation>
 <translation id="4582297591746054421">سایت‌ها معمولاً بریده‌دان را برای ارائه ویژگی‌هایی مانند حفظ قالب نوشتاری که کپی می‌کنید می‌خوانند</translation>
 <translation id="4582563038311694664">بازنشانی همه تنظیمات</translation>
+<translation id="4584094413232466841">‏این اطلاعات از تکمیل خودکار Chrome برداشته شود؟</translation>
 <translation id="4584770411839426377">پنجره</translation>
 <translation id="4584836561445313300">سازمانتان می‌تواند همه داده‌های مرور موجود، مثل گذرواژه‌ها و موارد دیگر را ببیند و مدیریت کند</translation>
 <translation id="4585793705637313973">ویرایش صفحه</translation>
@@ -11530,10 +11534,12 @@
 <translation id="8993945059918628059">حسگر اثر انگشت را با انگشتتان لمس کنید. داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود.</translation>
 <translation id="899403249577094719">‏نشانی وب گواهی Netscape</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{‏این افزونه در «حساب Google» شما ذخیره شده است، اما هر داده‌ای که فقط در این دستگاه ذخیره کرده باشد ممکن است حذف شود}one{‏این افزونه در «حساب Google» شما ذخیره شده است، اما هر داده‌ای که فقط در این دستگاه ذخیره کرده باشد ممکن است حذف شود}other{‏این افزونه در «حساب Google» شما ذخیره شده است، اما هر داده‌ای که فقط در این دستگاه ذخیره کرده باشد ممکن است حذف شود}}</translation>
+<translation id="8997659961727384862">گروه‌بندی همه زبانه‌های گروه‌بندی‌نشده</translation>
 <translation id="8999027165951679951">برگه غیرفعال: <ph name="MEMORY_SAVINGS" /> آزاد شد</translation>
 <translation id="8999560016882908256">خطای دستوری بخش: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">کاهش یافتن حرکت در صفحه</translation>
 <translation id="9000185763019430629">حسگر اثر انگشت را در سمت راست <ph name="DEVICE_TYPE" /> لمس کنید. داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود.</translation>
+<translation id="900267527532832868">این گذرکلید دیگر کار نمی‌کند. این گذرکلید به‌زودی از «<ph name="GOOGLE_PASSWORD_MANAGER" />» حذف خواهد شد.</translation>
 <translation id="9003031149571024583">رقم <ph name="NUM_DIGIT" /> از پین ۶ رقمی را وارد کنید. برای برداشتن رقم آخر، از کلید «پس‌بَر» یا «حذف» استفاده کنید.</translation>
 <translation id="9003185744423389627">اتصال ناموفق به «سرور مدیریت دستگاه» در تاریخ <ph name="FAILURE_TIME" /> با نشان دادن وضعیت «<ph name="STATUS_TEXT" />»</translation>
 <translation id="90033698482696970">نمایه‌های سیم‌کارت داخلی موجود به‌طور خودکار اسکن شود؟</translation>

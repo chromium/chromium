@@ -479,6 +479,7 @@
 <translation id="2797029671965852011">Паказаць гісторыю</translation>
 <translation id="2797302972324086597">Код краіны</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файлы}many{{COUNT} файлаў}other{{COUNT} файла}}</translation>
+<translation id="2816149645002567541">Спампоўванне прыпынена</translation>
 <translation id="2816489851009559785">Меню → Налады → Стандартны браўзер</translation>
 <translation id="2818821771744632548">У выніку скіду налад iPhone адбыўся выхад з уліковага запісу <ph name="USER_NAME" />. Каб увайсці зноў, націсніце "Працягнуць" ніжэй.</translation>
 <translation id="2819667972867209401">Калі гэта функцыя ўключана, даныя захоўваюцца ва Уліковым запісе Google. Калі выключана – даныя захоўваюцца толькі на гэтай прыладзе і выдаляюцца пры выхадзе з уліковага запісу.</translation>
@@ -735,6 +736,7 @@
 <translation id="3921585859122905677">Размяшчэнне адраснага радка</translation>
 <translation id="3922185497376658606">Перадзагрузка старонак</translation>
 <translation id="3922395466317605522">Наладжванне меню</translation>
+<translation id="3926703470020109118">Спампоўванне скасавана</translation>
 <translation id="3929457972718048006">Адрасы</translation>
 <translation id="3931215329146376310">{count,plural, =1{Новы пароль для гэта сайта}one{Новыя паролі для гэта сайта}few{Новыя паролі для гэта сайта}many{Новыя паролі для гэта сайта}other{Новыя паролі для гэта сайта}}</translation>
 <translation id="3934905113567851655">Каб змяніць памер, звядзіце або развядзіце пальцы</translation>
@@ -787,6 +789,7 @@
 <translation id="4113957097611235433">Змяніце паролі</translation>
 <translation id="4120936477286528673">Гэты сайт сістэматычна спрабуе адкрыць іншую праграму.</translation>
 <translation id="4121993058175073134">Для экспарту даных па сетцы наладзьце электронную пошту праз праграму "Налады".</translation>
+<translation id="4132991308423633339">Экспартаваць паролі і ключы доступу…</translation>
 <translation id="4133139945030148655">Усё гатова</translation>
 <translation id="4133265950310064865">Палепшаная абарона</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1172,6 +1175,7 @@
 <translation id="561269594905823128">Націсніце <ph name="BEGIN_BOLD" />Выбраць файл<ph name="END_BOLD" />.</translation>
 <translation id="5613297089029360427">Сартаваць па апошняй даце</translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>
+<translation id="5617769621178348890">Адкрыць у праграме "Файлы"</translation>
 <translation id="5619871095170816857">На гэтай картцы паказваецца апошняя ўкладка, якую вы адкрывалі на любой са сваіх сінхранізаваных прылад за апошнія 24 гадзіны.</translation>
 <translation id="5624120631404540903">Кіраваць паролямі</translation>
 <translation id="5624637933505983014">Не ўключаць сінхранізацыю</translation>
@@ -1465,6 +1469,7 @@
 <translation id="6627583120233659107">Рэдагаваць папку</translation>
 <translation id="6629759408545977279">Крыніца: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Ваша арганізацыя адключыла рэжым інкогніта</translation>
+<translation id="6637478299472506933">Збой спампоўвання</translation>
 <translation id="6638511529934826365">Змяніць памер тэксту…</translation>
 <translation id="6640268266988685324">Адкрытая ўкладка</translation>
 <translation id="6641465290890659327">Абагульце копію свайго пароля</translation>
@@ -1587,6 +1592,7 @@
 <translation id="7102005569666697658">Ідзе спампоўванне… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Налады → Спосабы аплаты</translation>
 <translation id="7108338896283013870">Схаваць</translation>
+<translation id="7127922377013221748">Схаваць панэль інструментаў</translation>
 <translation id="7128693485119315539">Вашай арганізацыі можа спатрэбіцца праглядаць даныя пра работу ў браўзеры (напрыклад, гісторыю прагляду сайтаў і паролі), прывязаныя да вашага ўліковага запісу пад кіраваннем, і кіраваць імі.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Камера недаступная</translation>
@@ -1897,6 +1903,7 @@
 <translation id="8283172974887967105">Так…</translation>
 <translation id="8289930144142009940">Апавяшчэнні па тэме "<ph name="FEATURE_NAME" />" выключаны</translation>
 <translation id="8290077367744012649">Адсочваць цэны з вашых укладак</translation>
+<translation id="8292893224181644074">Спампоўванне завершана</translation>
 <translation id="8299417921174340354">Каб выкарыстоўваць паролі, на прыладзе трэба спачатку наладзіць блакіроўку экрана.</translation>
 <translation id="8307481894409578819">Запампаваць гэты файл не ўдалося</translation>
 <translation id="8319076807703933069">Новы пошук</translation>
