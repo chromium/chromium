@@ -62,7 +62,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                         BrowserWindowType.NORMAL, activityWindowAndroid, tabModel);
 
         // Assert.
-        assertEquals(1, chromeAndroidTask.getId());
+        assertEquals(1, chromeAndroidTask.getId().getAsInt());
         assertEquals(activityWindowAndroid, chromeAndroidTask.getActivityWindowAndroid());
     }
 
@@ -98,7 +98,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         // Assert.
         assertEquals(chromeAndroidTask1, chromeAndroidTask2);
-        assertEquals(taskId, chromeAndroidTask2.getId());
+        assertEquals(taskId, chromeAndroidTask2.getId().getAsInt());
         assertEquals(activityWindowAndroid2, chromeAndroidTask2.getActivityWindowAndroid());
     }
 
@@ -291,7 +291,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         verify(observer).onTaskAdded(chromeAndroidTask);
 
         // Act (remove task).
-        mChromeAndroidTaskTracker.remove(chromeAndroidTask.getId());
+        mChromeAndroidTaskTracker.remove(chromeAndroidTask.getId().getAsInt());
 
         // Assert (remove task).
         verify(observer).onTaskRemoved(chromeAndroidTask);
@@ -387,7 +387,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         // Assert.
         // task2 was the last activated, so task1 (the second to last) should be activated.
-        verify(activityManager2, never()).moveTaskToFront(eq(task2.getId()), anyInt());
-        verify(activityManager1).moveTaskToFront(eq(task1.getId()), anyInt());
+        verify(activityManager2, never()).moveTaskToFront(eq(task2.getId().getAsInt()), anyInt());
+        verify(activityManager1).moveTaskToFront(eq(task1.getId().getAsInt()), anyInt());
     }
 }

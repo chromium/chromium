@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.browser_window;
 
 import static androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -21,6 +23,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowCompat;
 
 import org.chromium.base.ApplicationStatus;
@@ -58,7 +61,14 @@ final class ChromeAndroidTaskImpl
     private static final String TAG = "ChromeAndroidTask";
 
     /** States of this {@link ChromeAndroidTask}. */
-    private enum State {
+    @VisibleForTesting
+    enum State {
+        /** The Task is not yet initialized. */
+        UNKNOWN,
+
+        /** The Task is pending and not yet associated with an Activity. */
+        PENDING,
+
         /* The Task is alive. */
         ALIVE,
 
@@ -69,11 +79,11 @@ final class ChromeAndroidTaskImpl
         DESTROYED,
     }
 
-    private final AtomicReference<State> mState = new AtomicReference<>(State.ALIVE);
+    private final AtomicReference<State> mState = new AtomicReference<>(State.UNKNOWN);
 
     private final @BrowserWindowType int mBrowserWindowType;
 
-    private final int mId;
+    private OptionalInt mId;
 
     private final AndroidBrowserWindow mAndroidBrowserWindow;
     private final Profile mInitialProfile;
@@ -131,16 +141,25 @@ final class ChromeAndroidTaskImpl
             ActivityWindowAndroid activityWindowAndroid,
             TabModel tabModel) {
         mBrowserWindowType = browserWindowType;
-        mId = getActivity(activityWindowAndroid).getTaskId();
+        mId = OptionalInt.of(getActivity(activityWindowAndroid).getTaskId());
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
         assert tabModel.getProfile() != null
                 : "ChromeAndroidTask must be initialized with a non-null profile";
         mInitialProfile = tabModel.getProfile();
+        mState.set(State.ALIVE);
         setActivityWindowAndroidInternal(activityWindowAndroid, tabModel);
     }
 
+    ChromeAndroidTaskImpl(AndroidBrowserWindowCreateParams createParams) {
+        mBrowserWindowType = createParams.getWindowType();
+        mId = OptionalInt.empty();
+        mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
+        mInitialProfile = createParams.getProfile();
+        mState.set(State.PENDING);
+    }
+
     @Override
-    public int getId() {
+    public OptionalInt getId() {
         return mId;
     }
 
@@ -486,14 +505,28 @@ final class ChromeAndroidTaskImpl
         return mObservedTabModel;
     }
 
+    @VisibleForTesting
+    State getState() {
+        return assumeNonNull(mState.get());
+    }
+
     private void setActivityWindowAndroidInternal(
             ActivityWindowAndroid activityWindowAndroid, TabModel tabModel) {
         synchronized (mActivityWindowAndroidLock) {
-            assertAlive();
             assert mActivityWindowAndroid.get() == null
                     : "This Task already has an ActivityWindowAndroid.";
-            assert mId == getActivity(activityWindowAndroid).getTaskId()
-                    : "The new ActivityWindowAndroid doesn't belong to this Task.";
+            switch (getState()) {
+                case PENDING:
+                    assert mId.isEmpty();
+                    break;
+                case ALIVE:
+                    assert mId.isPresent();
+                    assert mId.getAsInt() == getActivity(activityWindowAndroid).getTaskId()
+                            : "The new ActivityWindowAndroid doesn't belong to this Task.";
+                    break;
+                default:
+                    assert false : "Found unexpected Task state.";
+            }
 
             mActivityWindowAndroid = new WeakReference<>(activityWindowAndroid);
 
@@ -502,6 +535,13 @@ final class ChromeAndroidTaskImpl
             // Update and register TabModel
             tabModel.addObserver(this);
             mObservedTabModel = tabModel;
+
+            // Transition from PENDING to ALIVE.
+            if (mState.get() == State.PENDING) {
+                mId = OptionalInt.of(getActivity(activityWindowAndroid).getTaskId());
+                mState.set(State.ALIVE);
+                // TODO (crbug.com/444745184): Dispatch pending actions.
+            }
         }
     }
 

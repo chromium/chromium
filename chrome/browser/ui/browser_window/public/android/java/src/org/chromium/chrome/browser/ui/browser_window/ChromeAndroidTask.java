@@ -50,10 +50,12 @@ import java.util.OptionalInt;
 public interface ChromeAndroidTask {
 
     /**
-     * Returns the ID of this {@link ChromeAndroidTask}, which is the same as defined by {@link
-     * android.app.TaskInfo#taskId}.
+     * Returns an {@link OptionalInt} holding the the ID of this {@link ChromeAndroidTask}, which is
+     * the same as defined by {@link android.app.TaskInfo#taskId}, if the {@link OptionalInt} is
+     * non-empty. The {@link OptionalInt} will be empty for a {@code State.PENDING} {@link
+     * ChromeAndroidTask} that is not yet associated with a live {@code ChromeActivity}.
      */
-    int getId();
+    OptionalInt getId();
 
     /**
      * Returns the browser window type of this {@link ChromeAndroidTask}.

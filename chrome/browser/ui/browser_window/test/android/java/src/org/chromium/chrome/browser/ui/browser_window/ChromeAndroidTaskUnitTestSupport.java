@@ -200,4 +200,18 @@ public final class ChromeAndroidTaskUnitTestSupport {
 
         return mockAndroidBrowserWindowNatives;
     }
+
+    /**
+     * Creates an {@link AndroidBrowserWindowCreateParams} mock.
+     *
+     * @return The {@link AndroidBrowserWindowCreateParams} mock.
+     */
+    static AndroidBrowserWindowCreateParams createMockAndroidBrowserWindowCreateParams() {
+        var mockParams = mock(AndroidBrowserWindowCreateParams.class);
+        when(mockParams.getWindowType()).thenReturn(BrowserWindowType.NORMAL);
+        Profile mockProfile = mock(Profile.class);
+        when(mockParams.getProfile()).thenReturn(mockProfile);
+
+        return mockParams;
+    }
 }
