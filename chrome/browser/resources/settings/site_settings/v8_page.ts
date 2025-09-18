@@ -33,7 +33,7 @@ export class V8PageElement extends V8PageElementBase {
     return {
       searchTerm: String,
 
-      isBlockV8OptimizerOnUnfamiliarSitesEnabled_: {
+      enableBlockV8OptimizerOnUnfamiliarSites_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
@@ -56,7 +56,7 @@ export class V8PageElement extends V8PageElementBase {
   }
 
   declare searchTerm: string;
-  declare private isBlockV8OptimizerOnUnfamiliarSitesEnabled_: boolean;
+  declare private enableBlockV8OptimizerOnUnfamiliarSites_: boolean;
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
