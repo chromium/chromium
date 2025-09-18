@@ -626,9 +626,6 @@ std::string SearchboxHandler::AutocompleteMatchVectorIconToResourceName(
   } else if (icon.name == omnibox::kProductIcon.name ||
              icon.name == omnibox::kProductChromeRefreshIcon.name) {
     return kChromeProductIconResourceName;
-  } else if (icon.name == vector_icons::kSearchIcon.name ||
-             icon.name == vector_icons::kSearchChromeRefreshIcon.name) {
-    return kSearchIconResourceName;
   } else if (icon.name == omnibox::kTrendingUpIcon.name ||
              icon.name == omnibox::kTrendingUpChromeRefreshIcon.name) {
     return kTrendingUpIconResourceName;
@@ -736,6 +733,10 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
     // so use the search icon instead.
     // TODO(crbug.com/419077032): Allow the derived class to override these
     // icons so that there is not conditional logic based on one derived class.
+    return kSearchIconResourceName;
+  }
+  if (icon.name == vector_icons::kSearchIcon.name ||
+      icon.name == vector_icons::kSearchChromeRefreshIcon.name) {
     return kSearchIconResourceName;
   }
   NOTREACHED() << "Every vector icon returned by OmniboxAction::GetVectorIcon "
