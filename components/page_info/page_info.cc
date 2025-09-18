@@ -758,6 +758,17 @@ void PageInfo::OnSitePermissionChanged(
     constraints.set_lifetime(
         permissions::kStorageAccessAPIExplicitPermissionLifetime);
   }
+  // Enable last-visit tracking for eligible permissions granted from
+  // Site Settings UI. This allows Safety Hub to auto-revoke the permission
+  // if the site is not visited for a finite amount of time.
+  if (base::FeatureList::IsEnabled(
+          permissions::features::
+              kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
+      setting &&
+      content_settings::CanBeAutoRevokedAsUnusedPermission(
+          type, info->delegate().ToValue(*setting), is_one_time)) {
+    constraints.set_track_last_visit_for_autoexpiration(true);
+  }
 
   map->SetNarrowestContentSetting(primary_url, site_url_, type, setting,
                                   constraints);

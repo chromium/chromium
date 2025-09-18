@@ -22,6 +22,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -497,6 +497,113 @@ TEST_F(PageInfoTest, NonFactoryDefaultAndRecentlyChangedPermissionsShown) {
                                        /*is_one_time=*/false);
   EXPECT_EQ(expected_visible_permissions.size() + 1,
             last_permission_info_list().size());
+}
+
+// Test suite for verifying that permissions granted through Page Info are
+// correctly marked as eligible for Safety Hub auto-revocation when the
+// kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is enabled.
+//
+// Only permissions of certain `ContentSettingType` are eligible. They are
+// marked as such upon grant by initializing the `last_visited` timestamp from
+// a default null value to the (coarsened) current time. Once initialized, the
+// timestamp is updated on each navigation to the origin for which the
+// permission was granted. Then permissions with a `last_visited` timestamp
+// older than a certain threshold are eventually auto-revoked by Safety Hub.
+class PageInfoUnusedPermissionRevocationForAllSurfacesTest
+    : public PageInfoTest {
+ protected:
+  void SetUp() override {
+    PageInfoTest::SetUp();
+
+    feature_list_.InitAndEnableFeature(
+        permissions::features::
+            kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+    // HistoryService is required for UKM recording when revoking a permission.
+    HistoryServiceFactory::GetInstance()->SetTestingFactory(
+        browser_context(), HistoryServiceFactory::GetDefaultFactory());
+
+    map_ = HostContentSettingsMapFactory::GetForProfile(profile());
+  }
+
+  void TearDown() override {
+    map_ = nullptr;
+    PageInfoTest::TearDown();
+  }
+
+  HostContentSettingsMap* map() { return map_; }
+
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<HostContentSettingsMap> map_;
+};
+
+TEST_F(PageInfoUnusedPermissionRevocationForAllSurfacesTest,
+       OnSitePermissionChanged_LastVisited_EligibleType) {
+  {
+    // Simulate the user switching toggle to "Allow".
+    page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
+                                         CONTENT_SETTING_ALLOW, std::nullopt,
+                                         false);
+
+    // Verify that `last_visited` was recorded and lies within the past 7 days.
+    //
+    // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to
+    // privacy. It rounds given timestamp down to the nearest multiple of 7 in
+    // the past. [1]
+    // components/content_settings/core/browser/content_settings_utils.cc
+    content_settings::SettingInfo info;
+    base::Time now = base::Time::Now();
+    map_->GetWebsiteSetting(url(), url(), ContentSettingsType::GEOLOCATION,
+                            &info);
+    EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+    EXPECT_LE(info.metadata.last_visited(), now);
+  }
+  {
+    // Simulate the user switching toggle to "Block".
+    page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
+                                         CONTENT_SETTING_BLOCK, std::nullopt,
+                                         false);
+
+    // Verify that 'last_visited` is not recorded unless the value is ALLOW.
+    content_settings::SettingInfo info;
+    map_->GetContentSetting(url(), url(), ContentSettingsType::GEOLOCATION,
+                            &info);
+    EXPECT_EQ(base::Time(), info.metadata.last_visited());
+  }
+}
+
+TEST_F(PageInfoUnusedPermissionRevocationForAllSurfacesTest,
+       OnSitePermissionChanged_LastVisited_IneligibleType) {
+  // Simulate the user switching toggle to "Allow".
+  page_info()->OnSitePermissionChanged(ContentSettingsType::NOTIFICATIONS,
+                                       CONTENT_SETTING_ALLOW, std::nullopt,
+                                       false);
+
+  // Verify that `last_visited` is not recorded for ineligible types
+  // (e.g. NOTIFICATIONS).
+  content_settings::SettingInfo info;
+  map_->GetContentSetting(url(), url(), ContentSettingsType::NOTIFICATIONS,
+                          &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(PageInfoUnusedPermissionRevocationForAllSurfacesTest,
+       OnSitePermissionChanged_LastVisited_FeatureOff) {
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  // Simulate the user switching toggle to "Allow".
+  page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
+                                       CONTENT_SETTING_ALLOW, std::nullopt,
+                                       false);
+
+  // Verify that `last_visited` is not recorded when the feature is off.
+  content_settings::SettingInfo info;
+  map_->GetContentSetting(url(), url(), ContentSettingsType::GEOLOCATION,
+                          &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
 }
 
 TEST_F(PageInfoTest, StorageAccessGrantsAreFiltered) {

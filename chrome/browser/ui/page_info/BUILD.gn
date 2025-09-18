@@ -116,6 +116,7 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/file_system_access",
+    "//chrome/browser/history",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/usb",
     "//chrome/common:chrome_features",
