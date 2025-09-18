@@ -150,12 +150,12 @@ void AddSharedGroup(BOOL owner,
   NSString* url = base::SysUTF8ToNSString(
       GetQueryTitleURL(test_server, kSharedTabTitle).spec());
   [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner url:url];
-  // Sleep for 1 second to make sure that the shared group data are correctly
-  // fetched.
-  base::PlatformThread::Sleep(base::Seconds(1));
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          TabGridCloseButtonForCellAtIndex(0)]
+  // Close the tab grid once the button is available.
+  id<GREYMatcher> closeButtonMatcher =
+      chrome_test_util::TabGridCloseButtonForCellAtIndex(0);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:closeButtonMatcher];
+  [[EarlGrey selectElementWithMatcher:closeButtonMatcher]
       performAction:grey_tap()];
 }
 
@@ -1369,11 +1369,6 @@ void WaitForFakeJoinFlowView() {
 // Tests that the badge on the tab switcher appears when a shared group is
 // updated and disappears when a user visits the updated page.
 - (void)testTabSwitcherBadge {
-  // TODO(crbug.com/440475033): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
