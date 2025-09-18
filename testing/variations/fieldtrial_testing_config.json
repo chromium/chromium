@@ -4260,6 +4260,21 @@
             ]
         }
     ],
+    "CADisplayLink": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enableds",
+                    "enable_features": [
+                        "CADisplayLink"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTAdaptiveButton": [
         {
             "platforms": [
