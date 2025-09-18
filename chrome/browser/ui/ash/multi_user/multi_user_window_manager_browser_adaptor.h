@@ -25,7 +25,8 @@ class Window;
 
 namespace ash {
 
-class MultiUserWindowManager;
+class MultiUserWindowManagerImpl;
+using MultiUserWindowManager = MultiUserWindowManagerImpl;
 class MultiUserWindowManagerBrowserAdaptorTest;
 
 // This class acts as a helper to keep ash's MultiUserWindowManager in sync with

@@ -266,17 +266,6 @@ bool MultiUserWindowManagerImpl::IsWindowOnDesktopOfUser(
   return (!presenting_user.is_valid()) || presenting_user == account_id;
 }
 
-const AccountId& MultiUserWindowManagerImpl::GetUserPresentingWindow(
-    aura::Window* window) const {
-  WindowToEntryMap::const_iterator it = window_to_entry_.find(window);
-  // If the window is not owned by anyone it is shown on all desktops and we
-  // return the empty string.
-  if (it == window_to_entry_.end())
-    return EmptyAccountId();
-  // Otherwise we ask the object for its desktop.
-  return it->second->show_for_user();
-}
-
 void MultiUserWindowManagerImpl::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   CHECK(current_account_id_ != account_id);

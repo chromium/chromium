@@ -7,9 +7,9 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
@@ -22,6 +22,10 @@
 #include "ui/display/display_observer.h"
 #include "ui/wm/core/transient_window_observer.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace display {
 enum class TabletState;
 }  // namespace display
@@ -29,6 +33,7 @@ enum class TabletState;
 namespace ash {
 
 class MultiUserWindowManagerBrowserAdaptorTest;
+class MultiUserWindowManagerObserver;
 class UserSwitchAnimator;
 
 // MultiUserWindowManager associates windows with users and ensures the
@@ -51,8 +56,7 @@ class UserSwitchAnimator;
 //   changed back to its requested state upon showing by us - or when the window
 //   gets detached from its current owning parent.
 class ASH_EXPORT MultiUserWindowManagerImpl
-    : public MultiUserWindowManager,
-      public SessionObserver,
+    : public SessionObserver,
       public aura::WindowObserver,
       public ::wm::TransientWindowObserver,
       public display::DisplayObserver {
@@ -83,21 +87,42 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   // (so the following tests will run with MultiUserSignIn).
   [[nodiscard]] static base::AutoReset<bool> DisableForTesting();
 
-  // MultiUserWindowManager:
-  void SetWindowOwner(aura::Window* window,
-                      const AccountId& account_id) override;
-  void ShowWindowForUser(aura::Window* window,
-                         const AccountId& account_id) override;
-  const AccountId& GetWindowOwner(const aura::Window* window) const override;
-  bool AreWindowsSharedAmongUsers() const override;
-  std::set<AccountId> GetOwnersOfVisibleWindows() const override;
-  const AccountId& GetUserPresentingWindow(
-      const aura::Window* window) const override;
+  // Associates a window with a particular account. This may result in hiding
+  // |window|. This should *not* be called more than once with a different
+  // account. If |window| was created by a user gesture
+  // (aura::client::kCreatedByUserGesture), then the 'shown' account is set to
+  // the current account.
+  void SetWindowOwner(aura::Window* window, const AccountId& account_id);
+
+  // Shows a previously registered window for the specified account.
+  void ShowWindowForUser(aura::Window* window, const AccountId& account_id);
+
+  const AccountId& GetWindowOwner(const aura::Window* window) const;
+
+  // Returns true if at least one window's 'owner' account differs from its
+  // 'shown' account. In other words, a window from one account is shown with
+  // windows from another account.
+  bool AreWindowsSharedAmongUsers() const;
+
+  // Returns the set owners for the visible windows.
+  std::set<AccountId> GetOwnersOfVisibleWindows() const;
+
+  // Returns the user for which the window is currently shown. An empty
+  // AccountId() is returned if the window is presented for every user.
+  const AccountId& GetUserPresentingWindow(const aura::Window* window) const;
+
+  // Returns true if the 'shown' owner of |window| is |account_id|.
   bool IsWindowOnDesktopOfUser(aura::Window* window,
-                               const AccountId& account_id) const override;
-  const AccountId& CurrentAccountId() const override;
-  void AddObserver(MultiUserWindowManagerObserver* observer) override;
-  void RemoveObserver(MultiUserWindowManagerObserver* observer) override;
+                               const AccountId& account_id) const;
+
+  // Returns the id of the currently active user.
+  const AccountId& CurrentAccountId() const;
+
+  // Registers `observer` to be notified.
+  void AddObserver(MultiUserWindowManagerObserver* observer);
+
+  // Unregisters `observer` from the instance.
+  void RemoveObserver(MultiUserWindowManagerObserver* observer);
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -172,9 +197,6 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   using WindowToEntryMap =
       std::map<aura::Window*, std::unique_ptr<WindowEntry>>;
 
-  // Returns the 'shown' owner.
-  const AccountId& GetUserPresentingWindow(aura::Window* window) const;
-
   // Show a window for a user without switching the user.
   // Returns true when the window moved to a new desktop.
   bool ShowWindowForUserIntern(aura::Window* window,
@@ -246,6 +268,11 @@ class ASH_EXPORT MultiUserWindowManagerImpl
 
   display::ScopedDisplayObserver display_observer_{this};
 };
+
+// Alias for backward compatibility for short-term migration period.
+// TODO(crbug.com/444572622): Remove this alias on renaming
+// MultiUserWindowManagerImpl to MultiUserWindowManager.
+using MultiUserWindowManager = MultiUserWindowManagerImpl;
 
 }  // namespace ash
 

@@ -200,7 +200,7 @@ class MouseKeysController;
 class MruWindowTracker;
 class MultiDeviceNotificationPresenter;
 class MultiDisplayMetricsController;
-class MultiUserWindowManager;
+class MultiUserWindowManagerImpl;
 class NearbyShareControllerImpl;
 class NearbyShareDelegate;
 class NightLightControllerImpl;
@@ -667,7 +667,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   MultiDisplayMetricsController* multi_display_metrics_controller() {
     return multi_display_metrics_controller_.get();
   }
-  MultiUserWindowManager* multi_user_window_manager() {
+  MultiUserWindowManagerImpl* multi_user_window_manager() {
     return multi_user_window_manager_.get();
   }
   NearbyShareControllerImpl* nearby_share_controller() {
@@ -1099,7 +1099,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       multi_display_metrics_controller_;
   std::unique_ptr<MultiDeviceNotificationPresenter>
       multidevice_notification_presenter_;
-  std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
+  std::unique_ptr<MultiUserWindowManagerImpl> multi_user_window_manager_;
   std::unique_ptr<chromeos::MultitaskMenuNudgeController::Delegate>
       multitask_menu_nudge_delegate_;
   std::unique_ptr<NearbyShareControllerImpl> nearby_share_controller_;
