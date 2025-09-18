@@ -246,9 +246,13 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
 
     /** Retrieves the currently active RecyclerView based on the bottom sheet's state. */
     @Nullable RecyclerView getActiveRecyclerView() {
+        Integer bottomSheetType = mCurrentBottomSheetTypeSupplier.get();
+        if (bottomSheetType == null) {
+            return null;
+        }
+
         // TODO(crbug.com/423579377): Pass in a delegate here will make it easier to support other
         // bottom sheets later on.
-        @BottomSheetType int bottomSheetType = mCurrentBottomSheetTypeSupplier.get();
         if (bottomSheetType == THEME_COLLECTIONS) {
             return mContentView.findViewById(R.id.theme_collections_recycler_view);
         } else if (bottomSheetType == SINGLE_THEME_COLLECTION) {
