@@ -4268,7 +4268,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enableds",
+                    "name": "Enabled",
                     "enable_features": [
                         "CADisplayLink"
                     ]
