@@ -282,7 +282,11 @@ source_set("libpfm4") {
   if (target_cpu == "arm") {
     defines += [ "CONFIG_PFMLIB_ARCH_ARM" ]
     if (is_linux) {
-      sources += [ "src/lib/pfmlib_arm_perf_event.c" ]
+      sources += [
+        "src/lib/pfmlib_arm_armv8_kunpeng_unc_perf_event.c",
+        "src/lib/pfmlib_arm_armv8_thunderx2_unc_perf_event.c",
+        "src/lib/pfmlib_arm_perf_event.c",
+      ]
     }
 
     sources += [
@@ -313,13 +317,19 @@ source_set("libpfm4") {
       "src/lib/events/arm_neoverse_v3_events.h",
       "src/lib/events/arm_hisilicon_kunpeng_events.h",
       "src/lib/events/arm_hisilicon_kunpeng_unc_events.h",
+      "src/lib/pfmlib_perf_event_priv.h",
+      "src/lib/pfmlib_arm_armv8_unc_priv.h",
     ]
   }
 
   if (target_cpu == "arm64") {
     defines += [ "CONFIG_PFMLIB_ARCH_ARM64" ]
     if (is_linux) {
-      sources += [ "src/lib/pfmlib_arm_perf_event.c" ]
+      sources += [
+        "src/lib/pfmlib_arm_armv8_kunpeng_unc_perf_event.c",
+        "src/lib/pfmlib_arm_armv8_thunderx2_unc_perf_event.c",
+        "src/lib/pfmlib_arm_perf_event.c",
+      ]
     }
 
     sources += [
@@ -346,6 +356,8 @@ source_set("libpfm4") {
       "src/lib/events/arm_neoverse_v3_events.h",
       "src/lib/events/arm_hisilicon_kunpeng_events.h",
       "src/lib/events/arm_hisilicon_kunpeng_unc_events.h",
+      "src/lib/pfmlib_perf_event_priv.h",
+      "src/lib/pfmlib_arm_armv8_unc_priv.h",
     ]
   }
 
