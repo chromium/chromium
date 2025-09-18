@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/files/file_path.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
@@ -32,6 +33,9 @@ typedef NS_OPTIONS(NSUInteger, DownloadListItemAction) {
 
 /// Returns the file name for this download item.
 @property(nonatomic, copy, readonly) NSString* fileName;
+
+/// Returns the absolute file path for this download item.
+@property(nonatomic, assign, readonly) base::FilePath filePath;
 
 /// Returns the icon for this download item.
 @property(nonatomic, strong, readonly) UIImage* fileTypeIcon;

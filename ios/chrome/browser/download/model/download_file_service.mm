@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/uuid.h"
+#import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_record_service.h"
 
 DownloadFileService::DownloadFileService(
@@ -83,8 +84,11 @@ void DownloadFileService::OnFileMoveComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   if (move_success && download_record_service_) {
+    // Convert absolute path to relative path for storage.
+    base::FilePath relative_path =
+        ConvertToRelativeDownloadPath(destination_path);
     download_record_service_->UpdateDownloadFilePathAsync(download_id,
-                                                          destination_path);
+                                                          relative_path);
   }
 
   if (callback) {

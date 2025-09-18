@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/shared/ui/util/file_size_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -106,6 +107,10 @@ NSString* const kStatusTextEmptyString = @"";
   }
   NSString* filename = base::SysUTF8ToNSString(_downloadRecord.file_name);
   return (filename.length > 0) ? filename : self.defaultFileName;
+}
+
+- (base::FilePath)filePath {
+  return ConvertToAbsoluteDownloadPath(_downloadRecord.file_path);
 }
 
 - (UIImage*)fileTypeIcon {

@@ -13,6 +13,7 @@
 #import "base/run_loop.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_service.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -97,9 +98,15 @@ class DownloadFileServiceTest : public PlatformTest {
     dest_dir_ = temp_dir_.GetPath().AppendASCII("destination");
     ASSERT_TRUE(base::CreateDirectory(source_dir_));
     ASSERT_TRUE(base::CreateDirectory(dest_dir_));
+
+    // Set up test downloads directory override.
+    test::SetDownloadsDirectoryForTesting(&dest_dir_);
   }
 
   void TearDown() override {
+    // Reset downloads directory override.
+    test::SetDownloadsDirectoryForTesting(nullptr);
+
     service_.reset();
     mock_download_record_service_.reset();
     PlatformTest::TearDown();
@@ -133,8 +140,11 @@ TEST_F(DownloadFileServiceTest, MoveDownloadFileSuccess) {
   base::FilePath dest_path = dest_dir_.AppendASCII(kTestFileName);
 
   // Expect UpdateDownloadFilePathAsync to be called.
-  EXPECT_CALL(*mock_download_record_service_,
-              UpdateDownloadFilePathAsync(kTestDownloadId, dest_path, _))
+  base::FilePath expected_relative_path =
+      ConvertToRelativeDownloadPath(dest_path);
+  EXPECT_CALL(
+      *mock_download_record_service_,
+      UpdateDownloadFilePathAsync(kTestDownloadId, expected_relative_path, _))
       .Times(1);
 
   base::RunLoop run_loop;
@@ -342,15 +352,17 @@ TEST_F(DownloadFileServiceTest, CheckFileExists) {
 TEST_F(DownloadFileServiceTest, MoveDownloadFileCreateDestinationDirectory) {
   base::FilePath source_path =
       CreateTestFile(source_dir_, kTestFileName, kTestFileContent);
-  base::FilePath new_dest_dir =
-      temp_dir_.GetPath().AppendASCII("new_destination");
+  base::FilePath new_dest_dir = dest_dir_.AppendASCII("new_subdirectory");
   base::FilePath dest_path = new_dest_dir.AppendASCII(kTestFileName);
 
   // Verify destination directory doesn't exist initially.
   EXPECT_FALSE(base::PathExists(new_dest_dir));
 
-  EXPECT_CALL(*mock_download_record_service_,
-              UpdateDownloadFilePathAsync(kTestDownloadId, dest_path, _))
+  base::FilePath expected_relative_path =
+      ConvertToRelativeDownloadPath(dest_path);
+  EXPECT_CALL(
+      *mock_download_record_service_,
+      UpdateDownloadFilePathAsync(kTestDownloadId, expected_relative_path, _))
       .Times(1);
 
   base::RunLoop run_loop;

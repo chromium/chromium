@@ -74,6 +74,22 @@ class DownloadListCoordinatorTest : public PlatformTest {
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
   }
 
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    // Set up test downloads directory.
+    ASSERT_TRUE(test_downloads_dir_.CreateUniqueTempDir());
+    downloads_path_ = test_downloads_dir_.GetPath().AppendASCII("downloads");
+    ASSERT_TRUE(base::CreateDirectory(downloads_path_));
+    test::SetDownloadsDirectoryForTesting(&downloads_path_);
+  }
+
+  void TearDown() override {
+    // Reset downloads directory override.
+    test::SetDownloadsDirectoryForTesting(nullptr);
+    PlatformTest::TearDown();
+  }
+
   ~DownloadListCoordinatorTest() override {
     CommandDispatcher* dispatcher = browser_.get()->GetCommandDispatcher();
     [dispatcher stopDispatchingForProtocol:@protocol(DownloadListCommands)];
@@ -84,7 +100,6 @@ class DownloadListCoordinatorTest : public PlatformTest {
     browser_.reset();
     profile_.reset();
     task_environment_.RunUntilIdle();
-
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -94,6 +109,8 @@ class DownloadListCoordinatorTest : public PlatformTest {
   UIViewController* base_view_controller_;
   ScopedKeyWindow scoped_key_window_;
   DownloadListCoordinator* coordinator_;
+  base::ScopedTempDir test_downloads_dir_;
+  base::FilePath downloads_path_;
 };
 
 // Tests that the coordinator initializes with the correct base view controller
@@ -162,7 +179,7 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordPDF) {
   // Create a PDF download record.
   DownloadRecord pdf_record;
   pdf_record.download_id = "test_pdf_id";
-  pdf_record.file_name = "document.pdf";
+  pdf_record.file_path = base::FilePath("document.pdf");
   pdf_record.mime_type = kAdobePortableDocumentFormatMimeType;
   pdf_record.original_url = "https://example.com/document.pdf";
 
@@ -217,7 +234,7 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordNonPDF) {
   // Create an image download record.
   DownloadRecord image_record;
   image_record.download_id = "test_image_id";
-  image_record.file_name = "test.jpg";
+  image_record.file_path = base::FilePath("test.jpg");
   image_record.mime_type = "image/jpeg";
   image_record.original_url = "https://example.com/test.jpg";
 
@@ -254,7 +271,7 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordFileNotExists) {
   // Create a download record for a non-existent file.
   DownloadRecord missing_record;
   missing_record.download_id = "missing_file_id";
-  missing_record.file_name = "nonexistent.pdf";
+  missing_record.file_path = base::FilePath("nonexistent.pdf");
   missing_record.mime_type = kAdobePortableDocumentFormatMimeType;
   missing_record.original_url = "https://example.com/nonexistent.pdf";
 
