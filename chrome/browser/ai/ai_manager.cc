@@ -722,6 +722,9 @@ blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {
 
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));
+  if (!service) {
+    return model_info;
+  }
   auto sampling_params_config = service->GetSamplingParamsConfig(
       optimization_guide::ModelBasedCapabilityKey::kPromptApi);
 
