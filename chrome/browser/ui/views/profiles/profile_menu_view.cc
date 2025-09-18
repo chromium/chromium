@@ -812,12 +812,12 @@ void ProfileMenuView::OnBatchUploadDataReceived(
     return;
   }
 
-  AddPromoButton(
+  AddFeatureButton(
       l10n_util::GetPluralStringFUTF16(IDS_PROFILE_MENU_BATCH_UPLOAD_BUTTON,
                                        local_data_count),
       base::BindRepeating(&ProfileMenuView::OnBuildBatchUploadButtonClicked,
                           base::Unretained(this)),
-      vector_icons::kSaveCloudIcon);
+      vector_icons::kSaveCloudIcon, /*icon_to_image_ratio=*/1.0f, /*index=*/0);
 
   // Adding the button being asynchronous, the menu may be already been shown,
   // update the view size to accommodate for the addition of the button. In

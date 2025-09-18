@@ -168,10 +168,13 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                       base::RepeatingClosure action,
                       const gfx::VectorIcon& icon);
 
+  // If `index` is specified, it must be lower or equal to the current number of
+  // children.
   void AddFeatureButton(const std::u16string& text,
                         base::RepeatingClosure action,
                         const gfx::VectorIcon& icon,
-                        float icon_to_image_ratio = 1.0f);
+                        float icon_to_image_ratio = 1.0f,
+                        std::optional<size_t> index = std::nullopt);
   void SetProfileManagementHeading(const std::u16string& heading);
   void AddAvailableProfile(const ui::ImageModel& image_model,
                            const std::u16string& name,

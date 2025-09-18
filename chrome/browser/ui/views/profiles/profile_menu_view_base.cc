@@ -546,17 +546,23 @@ void ProfileMenuViewBase::AddPromoButton(const std::u16string& text,
 void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
                                            base::RepeatingClosure action,
                                            const gfx::VectorIcon& icon,
-                                           float icon_to_image_ratio) {
+                                           float icon_to_image_ratio,
+                                           std::optional<size_t> index) {
   // Initialize layout if this is the first time a button is added.
   if (!features_container_->GetLayoutManager()) {
     features_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
   }
 
-  features_container_->AddChildView(CreateMenuRowButton(
-      std::move(action),
-      std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio),
-      text));
+  const size_t children_count = features_container_->children().size();
+  const size_t button_index = index.value_or(children_count);
+  CHECK_LE(button_index, children_count);
+  features_container_->AddChildViewAt(
+      CreateMenuRowButton(
+          std::move(action),
+          std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio),
+          text),
+      button_index);
 }
 
 void ProfileMenuViewBase::SetProfileManagementHeading(
