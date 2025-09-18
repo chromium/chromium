@@ -501,9 +501,6 @@ HEADLESS_MODE_PROTOCOL_TEST(
     EmulateTouchFromMouseEventScreenCoordinates,
     "shared/emulate-touch-from-mouse-event-screen-coordinates.js")
 
-// These are only supported on Linux and Mac at this time,
-// see http://crbug.com/437387607.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(GetScreenInfos, "shared/get-screen-infos.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(AddScreen, "shared/add-screen.js")
@@ -522,6 +519,5 @@ HEADLESS_MODE_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
                             "shared/remove-screen-get-screen-details.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 }  // namespace headless

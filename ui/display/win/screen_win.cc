@@ -948,6 +948,8 @@ gfx::Rect ScreenWin::DIPToScreenRectInWindow(gfx::NativeWindow window,
 
 void ScreenWin::UpdateFromDisplayInfos(
     const std::vector<internal::DisplayInfo>& display_infos) {
+  std::vector<Display> old_displays = std::move(displays_);
+
   // Retrieve the primary monitor info here, instead of later below. This is a
   // speculative workaround for the issue observed on older version of Windows
   // 10.  See crbug.com/394622418 for more detail.
@@ -1021,6 +1023,11 @@ void ScreenWin::UpdateFromDisplayInfos(
     }
   }
   SetInternalDisplayIds(internal_display_ids);
+
+  // It's possible notifying of display changes may trigger reentrancy. Copy
+  // `displays_` to ensure there are no problems if reentrancy happens.
+  std::vector<Display> displays_copy = displays_;
+  change_notifier_.NotifyDisplaysChanged(old_displays, displays_copy);
 }
 
 void ScreenWin::Initialize() {
@@ -1116,12 +1123,7 @@ void ScreenWin::OnColorProfilesChanged() {
 void ScreenWin::UpdateAllDisplaysAndNotify() {
   TRACE_EVENT0("ui", "ScreenWin::UpdateAllDisplaysAndNotify");
 
-  std::vector<Display> old_displays = std::move(displays_);
   UpdateFromDisplayInfos(GetDisplayInfosFromSystem());
-  // It's possible notifying of display changes may trigger reentrancy. Copy
-  // `displays_` to ensure there are no problems if reentrancy happens.
-  std::vector<Display> displays_copy = displays_;
-  change_notifier_.NotifyDisplaysChanged(old_displays, displays_copy);
 }
 
 void ScreenWin::UpdateAllDisplaysIfPrimaryMonitorChanged() {
