@@ -154,6 +154,7 @@ const CGFloat kFadeViewWidth = 30.0f;
   [self.view addSubview:closeButton];
 
   // Omnibox popup container.
+  _omniboxPopupContainer.hidden = YES;
   _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_omniboxPopupContainer];
 
@@ -427,9 +428,11 @@ const CGFloat kFadeViewWidth = 30.0f;
 }
 
 - (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter {
+  _omniboxPopupContainer.hidden = NO;
 }
 
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
+  _omniboxPopupContainer.hidden = YES;
 }
 
 #pragma mark - AIMInputItemCellDelegate
