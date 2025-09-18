@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/scroll_animator.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
@@ -198,6 +199,8 @@ class VIEWS_EXPORT ScrollBar : public View,
   explicit ScrollBar(Orientation orientation);
 
   BaseScrollBarThumb* GetThumb() const;
+
+  ui::NativeTheme::PreferredColorScheme GetColorScheme() const;
 
   // Wrapper functions that calls the controller. We need this since native
   // scrollbars wrap around a different scrollbar. When calling the controller
