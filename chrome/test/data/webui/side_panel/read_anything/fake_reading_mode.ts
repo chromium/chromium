@@ -210,6 +210,9 @@ export class FakeReadingMode {
     }
   }
 
+  // Called when there is no text content after building the tree but we're
+  // not showing the empty page either.
+  onNoTextContent() {}
 
   // Called when a user toggles links via the webui toolbar.
   onLinksEnabledToggled() {

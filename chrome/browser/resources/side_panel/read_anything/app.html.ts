@@ -46,7 +46,7 @@ export function getHtml(this: AppElement) {
     </read-anything-toolbar>
   </div>
   <div id="containerParent" class="sp-card"
-      ?hidden="${!this.hasContent_}">
+      ?hidden="${!this.computeHasContent()}">
     <div id="containerScroller" class="sp-scroller"
         @scroll="${this.onContainerScroll_}"
         @scrollend="${this.onContainerScrollEnd_}">
@@ -62,11 +62,11 @@ export function getHtml(this: AppElement) {
       Load More
     </cr-button>
   </div>
-  <div id="empty-state-container" ?hidden="${this.hasContent_}">
-    <sp-empty-state image-path="${this.emptyStateImagePath_}"
-        dark-image-path="${this.emptyStateDarkImagePath_}"
-        heading="${this.emptyStateHeading_}"
-        body="${this.emptyStateSubheading_}">
+  <div id="empty-state-container" ?hidden="${this.computeHasContent()}">
+    <sp-empty-state image-path="${this.contentState_.imagePath}"
+        dark-image-path="${this.contentState_.darkImagePath}"
+        heading="${this.contentState_.heading}"
+        body="${this.contentState_.subheading}">
     </sp-empty-state>
   </div>
 </div>

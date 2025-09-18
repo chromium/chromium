@@ -12,15 +12,15 @@ import './language_toast.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
-import {LOG_EMPTY_DELAY_MS, minOverflowLengthToScroll} from './common.js';
-import {ContentController} from './content_controller.js';
+import {minOverflowLengthToScroll} from './common.js';
+import {ContentController, ContentType} from './content_controller.js';
+import type {ContentListener, ContentState} from './content_controller.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
 import {getReadAloudModel} from './read_aloud/read_aloud_model_browser_proxy.js';
@@ -47,8 +47,9 @@ export interface AppElement {
   };
 }
 
-export class AppElement extends AppElementBase implements
-    SpeechListener, VoiceLanguageListener {
+export class AppElement extends AppElementBase implements SpeechListener,
+                                                          VoiceLanguageListener,
+                                                          ContentListener {
   static get is() {
     return 'read-anything-app';
   }
@@ -71,24 +72,16 @@ export class AppElement extends AppElementBase implements
       availableVoices_: {type: Array},
       previewVoicePlaying_: {type: Object},
       localeToDisplayName_: {type: Object},
-      hasContent_: {type: Boolean},
+      contentState_: {type: Object},
       speechEngineLoaded_: {type: Boolean},
       willDrawAgainSoon_: {type: Boolean},
-      emptyStateImagePath_: {type: String},
-      emptyStateDarkImagePath_: {type: String},
-      emptyStateHeading_: {type: String},
-      emptyStateSubheading_: {type: String},
     };
   }
 
   private startTime = Date.now();
   private constructorTime: number;
 
-  protected accessor hasContent_ = false;
-  protected accessor emptyStateImagePath_: string|undefined;
-  protected accessor emptyStateDarkImagePath_: string|undefined;
-  protected accessor emptyStateHeading_: string|undefined;
-  protected accessor emptyStateSubheading_ = '';
+  protected accessor contentState_: ContentState;
 
   private previousRootId_?: number;
 
@@ -155,6 +148,7 @@ export class AppElement extends AppElementBase implements
     ColorChangeUpdater.forDocument().start();
     TextSegmenter.getInstance().updateLanguage(
         chrome.readingMode.baseLanguageForSpeech);
+    this.contentState_ = this.contentController_.getState();
   }
 
   override disconnectedCallback() {
@@ -180,6 +174,7 @@ export class AppElement extends AppElementBase implements
     this.styleUpdater_.setMaxLineWidth();
     this.showLoading();
 
+    this.contentController_.addListener(this);
     if (this.isReadAloudEnabled_) {
       this.speechController_.addListener(this);
       this.voiceLanguageController_.addListener(this);
@@ -187,7 +182,6 @@ export class AppElement extends AppElementBase implements
 
       // Clear state. We don't do this in disconnectedCallback because that's
       // not always reliabled called.
-      this.hasContent_ = false;
       this.nodeStore_.clearDomNodes();
     }
 
@@ -204,7 +198,8 @@ export class AppElement extends AppElementBase implements
       // When Read Aloud is playing, user-selection is disabled on the Read
       // Anything panel, so don't attempt to update selection, as this can
       // end up clearing selection in the main part of the browser.
-      if (!this.hasContent_ || this.speechController_.isSpeechActive()) {
+      if (!this.contentController_.hasContent() ||
+          this.speechController_.isSpeechActive()) {
         return;
       }
 
@@ -256,7 +251,7 @@ export class AppElement extends AppElementBase implements
     };
 
     chrome.readingMode.showEmpty = () => {
-      this.showEmpty();
+      this.contentController_.setEmpty();
     };
 
     chrome.readingMode.restoreSettingsFromPrefs = () => {
@@ -280,7 +275,7 @@ export class AppElement extends AppElementBase implements
     };
 
     chrome.readingMode.onNodeWillBeDeleted = (nodeId: number) => {
-      this.onNodeWillBeDeleted(nodeId);
+      this.contentController_.onNodeWillBeDeleted(nodeId);
     };
   }
 
@@ -295,46 +290,8 @@ export class AppElement extends AppElementBase implements
     this.nodeStore_.estimateWordsSeenWithDelay();
   }
 
-  showEmpty() {
-    if (this.isEmptyState()) {
-      return;
-    }
-    // Log the empty state only after a short delay. Sometimes the empty state
-    // is only shown very briefly before the content is distilled, so we don't
-    // need to count those instances as a failure to distill.
-    setTimeout(() => {
-      if (this.isEmptyState() && !this.hasContent_) {
-        this.logger_.logEmptyState();
-      }
-    }, LOG_EMPTY_DELAY_MS);
-    if (!chrome.readingMode.isGoogleDocs) {
-      this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
-    } else {
-      this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');
-    }
-    this.emptyStateImagePath_ = './images/empty_state.svg';
-    this.emptyStateDarkImagePath_ = './images/empty_state.svg';
-    this.emptyStateSubheading_ = loadTimeData.getString('emptyStateSubheader');
-    this.hasContent_ = false;
-  }
-
-  isEmptyState(): boolean {
-    // In rare cases it is possible for hasContent_ to be false but the loading
-    // screen to be shown without ever terminating, such as when reading mode
-    // receives bad selection data. When this happens, reading mode needs to
-    // check whether or not the empty state is currently showing, not whether
-    // or not there is content.
-    return this.emptyStateImagePath_ === './images/empty_state.svg';
-  }
-
   showLoading() {
-    this.emptyStateImagePath_ = '//resources/images/throbber_small.svg';
-    this.emptyStateDarkImagePath_ =
-        '//resources/images/throbber_small_dark.svg';
-    this.emptyStateHeading_ =
-        loadTimeData.getString('readAnythingLoadingMessage');
-    this.emptyStateSubheading_ = '';
-    this.hasContent_ = false;
+    this.contentController_.setState(ContentType.LOADING);
     this.resetForNewContent();
   }
 
@@ -383,17 +340,15 @@ export class AppElement extends AppElementBase implements
       // without showing the empty page, but we end up not actually having any
       // content and also not showing the empty page sometimes. In this case,
       // send that info back to the controller.
-      if (this.hasContent_) {
-        this.hasContent_ = false;
+      if (this.contentController_.hasContent()) {
+        this.contentController_.setEmpty();
         chrome.readingMode.onNoTextContent();
-      } else if (!this.isEmptyState()) {
-        // If no text content is found but reading mode is not showing the
-        // empty state, signal back to the renderer that this is the case.
+      } else if (!this.contentController_.isEmpty()) {
         // This is possible when the AXTree returns bad selection data and
         // reading mode believes it has selected content to distll but
         // nothing valid is selected. This can cause the loading screen
         // to never switch to the empty state.
-        this.showEmpty();
+        this.contentController_.setEmpty();
       }
       return;
     }
@@ -410,7 +365,7 @@ export class AppElement extends AppElementBase implements
     this.isDocsLoadMoreButtonVisible_ =
         chrome.readingMode.isDocsLoadMoreButtonVisible;
 
-    this.hasContent_ = true;
+    this.contentController_.setState(ContentType.HAS_CONTENT);
     container.appendChild(node);
     this.updateImages_();
 
@@ -460,11 +415,11 @@ export class AppElement extends AppElementBase implements
   }
 
   protected updateLinks_() {
-    this.contentController_.updateLinks(this.hasContent_, this.shadowRoot);
+    this.contentController_.updateLinks(this.shadowRoot);
   }
 
   protected updateImages_() {
-    this.contentController_.updateImages(this.hasContent_, this.shadowRoot);
+    this.contentController_.updateImages(this.shadowRoot);
   }
 
   protected onDocsLoadMoreButtonClick_() {
@@ -502,6 +457,10 @@ export class AppElement extends AppElementBase implements
   protected onPlayPauseClick_() {
     this.speechController_.onPlayPauseToggle(
         this.getSelection(), this.$.container);
+  }
+
+  onContentStateChange(): void {
+    this.contentState_ = this.contentController_.getState();
   }
 
   onIsSpeechActiveChange(): void {
@@ -620,19 +579,6 @@ export class AppElement extends AppElementBase implements
     this.styleUpdater_.setHighlight();
   }
 
-  onNodeWillBeDeleted(nodeId: number) {
-    const deletedNode = this.nodeStore_.getDomNode(nodeId) as ChildNode;
-    if (deletedNode) {
-      this.nodeStore_.removeDomNode(deletedNode);
-      deletedNode.remove();
-    }
-    const root = this.nodeStore_.getDomNode(chrome.readingMode.rootId);
-    if (this.hasContent_ && !root?.textContent) {
-      this.hasContent_ = false;
-      chrome.readingMode.onNoTextContent();
-    }
-  }
-
   languageChanged() {
     this.$.toolbar.updateFonts();
     if (this.isReadAloudEnabled_) {
@@ -642,9 +588,14 @@ export class AppElement extends AppElementBase implements
         chrome.readingMode.baseLanguageForSpeech);
   }
 
+  protected computeHasContent(): boolean {
+    return this.contentState_.type === ContentType.HAS_CONTENT;
+  }
+
   protected computeIsReadAloudPlayable(): boolean {
-    return this.hasContent_ && this.speechEngineLoaded_ &&
-        !!this.selectedVoice_ && !this.willDrawAgainSoon_;
+    return (this.contentState_.type === ContentType.HAS_CONTENT) &&
+        this.speechEngineLoaded_ && !!this.selectedVoice_ &&
+        !this.willDrawAgainSoon_;
   }
 
   protected onKeyDown_(e: KeyboardEvent) {

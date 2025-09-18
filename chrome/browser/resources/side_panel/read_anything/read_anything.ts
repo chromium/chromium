@@ -11,7 +11,7 @@ export type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 export type {AppElement} from './app.js';
 export {AppStyleUpdater} from './app_style_updater.js';
 export {getWordCount, isRectMostlyVisible, isRectVisible, LOG_EMPTY_DELAY_MS, MOSTLY_VISIBLE_PERCENT, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
-export {ContentController, HIGHLIGHTED_LINK_CLASS} from './content_controller.js';
+export {ContentController, ContentListener, ContentState, ContentType, HIGHLIGHTED_LINK_CLASS} from './content_controller.js';
 export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
 export type {LanguageMenuElement} from './language_menu.js';
 export type {LanguageToastElement} from './language_toast.js';

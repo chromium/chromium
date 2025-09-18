@@ -7,11 +7,15 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ContentController, HIGHLIGHTED_LINK_CLASS, NodeStore, previousReadHighlightClass, ReadAloudNode, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {ContentController, ContentType, HIGHLIGHTED_LINK_CLASS, LOG_EMPTY_DELAY_MS, NodeStore, previousReadHighlightClass, ReadAloudNode, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {ContentListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('ContentController', () => {
@@ -19,6 +23,9 @@ suite('ContentController', () => {
   let readingMode: FakeReadingMode;
   let nodeStore: NodeStore;
   let speechController: SpeechController;
+  let metrics: TestMetricsBrowserProxy;
+  let listener: ContentListener;
+  let receivedContentStateChange: boolean;
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -26,12 +33,162 @@ suite('ContentController', () => {
     readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
+    metrics = mockMetrics();
     nodeStore = new NodeStore();
     NodeStore.setInstance(nodeStore);
     SpeechBrowserProxyImpl.setInstance(new TestSpeechBrowserProxy());
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
     contentController = new ContentController();
+
+    receivedContentStateChange = false;
+    listener = {
+      onContentStateChange() {
+        receivedContentStateChange = true;
+      },
+    };
+    contentController.addListener(listener);
+  });
+
+  suite('setEmpty', () => {
+    setup(() => {
+      contentController.setState(ContentType.HAS_CONTENT);
+    });
+
+    test('sets empty state', () => {
+      const emptyPath = 'empty_state.svg';
+
+      contentController.setEmpty();
+
+      const empty = contentController.getState();
+      assertTrue(contentController.isEmpty());
+      assertStringContains(empty.darkImagePath, emptyPath);
+      assertStringContains(empty.imagePath, emptyPath);
+    });
+
+    test('logs if still empty after delay', () => {
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+
+      contentController.setEmpty();
+      assertTrue(contentController.isEmpty());
+      assertEquals(0, metrics.getCallCount('recordEmptyState'));
+
+      mockTimer.tick(LOG_EMPTY_DELAY_MS);
+      assertTrue(contentController.isEmpty());
+      assertEquals(1, metrics.getCallCount('recordEmptyState'));
+
+      mockTimer.uninstall();
+    });
+
+    test('does not log if not empty after delay', () => {
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+
+      contentController.setEmpty();
+      assertEquals(0, metrics.getCallCount('recordEmptyState'));
+
+      contentController.setState(ContentType.HAS_CONTENT);
+      mockTimer.tick(LOG_EMPTY_DELAY_MS);
+      assertEquals(0, metrics.getCallCount('recordEmptyState'));
+
+      mockTimer.uninstall();
+    });
+
+    test('logs empty state once if still empty', () => {
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+
+      contentController.setEmpty();
+      mockTimer.tick(LOG_EMPTY_DELAY_MS);
+      assertEquals(1, metrics.getCallCount('recordEmptyState'));
+      assertTrue(contentController.isEmpty());
+
+      contentController.setEmpty();
+      mockTimer.tick(LOG_EMPTY_DELAY_MS);
+      assertEquals(1, metrics.getCallCount('recordEmptyState'));
+      assertTrue(contentController.isEmpty());
+
+      mockTimer.uninstall();
+    });
+  });
+
+  test('setState notifies listeners of state change', () => {
+    contentController.setState(ContentType.HAS_CONTENT);
+    assertTrue(receivedContentStateChange);
+
+    // Don't notify a second time for the same state.
+    receivedContentStateChange = false;
+    contentController.setState(ContentType.HAS_CONTENT);
+    assertFalse(receivedContentStateChange);
+  });
+
+  test('setEmpty depends on google docs', () => {
+    chrome.readingMode.isGoogleDocs = true;
+    contentController.setEmpty();
+    const docsHeading = contentController.getState().heading;
+
+    chrome.readingMode.isGoogleDocs = false;
+    contentController.setEmpty();
+    const regularHeading = contentController.getState().heading;
+
+    assertNotEquals(docsHeading, regularHeading);
+  });
+
+  test('hasContent', () => {
+    assertFalse(contentController.hasContent());
+
+    contentController.setState(ContentType.HAS_CONTENT);
+    assertTrue(contentController.hasContent());
+
+    contentController.setState(ContentType.LOADING);
+    assertFalse(contentController.hasContent());
+
+    contentController.setEmpty();
+    assertFalse(contentController.hasContent());
+  });
+
+  test('isEmpty', () => {
+    assertTrue(contentController.isEmpty());
+
+    contentController.setState(ContentType.HAS_CONTENT);
+    assertFalse(contentController.isEmpty());
+
+    contentController.setState(ContentType.LOADING);
+    assertFalse(contentController.isEmpty());
+
+    contentController.setEmpty();
+    assertTrue(contentController.isEmpty());
+  });
+
+  test('onNodeWillBeDeleted removes node', () => {
+    const id1 = 10;
+    const id2 = 12;
+    chrome.readingMode.rootId = id2;
+    const node1 = document.createTextNode('Huntrx don\'t miss');
+    const node2 = document.createTextNode('How it\'s done done done');
+    nodeStore.setDomNode(node1, id1);
+    nodeStore.setDomNode(node2, id2);
+    contentController.setState(ContentType.HAS_CONTENT);
+
+    contentController.onNodeWillBeDeleted(id1);
+
+    assertFalse(!!nodeStore.getDomNode(id1));
+    assertTrue(contentController.hasContent());
+  });
+
+  test('onNodeWillBeDeleted shows empty if no more nodes', () => {
+    const id = 10;
+    const node = document.createTextNode('Huntrx don\'t quit');
+    chrome.readingMode.rootId = id;
+    nodeStore.setDomNode(node, id);
+    contentController.setState(ContentType.HAS_CONTENT);
+
+    contentController.onNodeWillBeDeleted(id);
+
+    assertFalse(!!nodeStore.getDomNode(id));
+    assertFalse(contentController.hasContent());
+    assertTrue(contentController.isEmpty());
   });
 
   suite('buildSubtree', () => {
@@ -220,7 +377,8 @@ suite('ContentController', () => {
 
     test('does nothing if no content', () => {
       chrome.readingMode.linksEnabled = false;
-      contentController.updateLinks(false, shadowRoot);
+      contentController.setState(ContentType.NO_CONTENT);
+      contentController.updateLinks(shadowRoot);
       assertFalse(!!shadowRoot.firstChild);
     });
 
@@ -229,7 +387,8 @@ suite('ContentController', () => {
       shadowRoot.appendChild(link);
       nodeStore.setDomNode(link, linkId);
 
-      contentController.updateLinks(true, shadowRoot);
+      contentController.setState(ContentType.HAS_CONTENT);
+      contentController.updateLinks(shadowRoot);
 
       assertFalse(!!shadowRoot.querySelector('a'));
       const span = shadowRoot.querySelector('span[data-link]');
@@ -244,7 +403,8 @@ suite('ContentController', () => {
       nodeStore.setDomNode(span, linkId);
       chrome.readingMode.linksEnabled = true;
 
-      contentController.updateLinks(true, shadowRoot);
+      contentController.setState(ContentType.HAS_CONTENT);
+      contentController.updateLinks(shadowRoot);
 
       assertFalse(!!shadowRoot.querySelector('span[data-link]'));
       const link = shadowRoot.querySelector('a');
@@ -260,7 +420,8 @@ suite('ContentController', () => {
       nodeStore.setDomNode(link, linkId);
       chrome.readingMode.linksEnabled = false;
 
-      contentController.updateLinks(true, shadowRoot);
+      contentController.setState(ContentType.HAS_CONTENT);
+      contentController.updateLinks(shadowRoot);
 
       const newInnerSpan = shadowRoot.querySelector('span[data-link] span');
       assertTrue(!!newInnerSpan);
@@ -278,7 +439,8 @@ suite('ContentController', () => {
       nodeStore.setDomNode(outerSpan, linkId);
       chrome.readingMode.linksEnabled = true;
 
-      contentController.updateLinks(true, shadowRoot);
+      contentController.setState(ContentType.HAS_CONTENT);
+      contentController.updateLinks(shadowRoot);
 
       const newInnerSpan = shadowRoot.querySelector('a span');
       assertTrue(!!newInnerSpan);
@@ -296,7 +458,8 @@ suite('ContentController', () => {
           nodeStore.setDomNode(link, linkId);
           chrome.readingMode.linksEnabled = false;
 
-          contentController.updateLinks(true, shadowRoot);
+          contentController.setState(ContentType.HAS_CONTENT);
+          contentController.updateLinks(shadowRoot);
 
           const newInnerSpan = shadowRoot.querySelector('span[data-link] span');
           assertTrue(!!newInnerSpan);
@@ -317,7 +480,8 @@ suite('ContentController', () => {
           nodeStore.setDomNode(outerSpan, linkId);
           chrome.readingMode.linksEnabled = true;
 
-          contentController.updateLinks(true, shadowRoot);
+          contentController.setState(ContentType.HAS_CONTENT);
+          contentController.updateLinks(shadowRoot);
 
           const newInnerSpan = shadowRoot.querySelector('a span');
           assertTrue(!!newInnerSpan);
@@ -338,7 +502,8 @@ suite('ContentController', () => {
           chrome.readingMode.linksEnabled = false;
 
           contentController.onSelectionChange(shadowRoot);
-          contentController.updateLinks(true, shadowRoot);
+          contentController.setState(ContentType.HAS_CONTENT);
+          contentController.updateLinks(shadowRoot);
 
           const newInnerSpan = shadowRoot.querySelector('span[data-link] span');
           assertTrue(!!newInnerSpan);
@@ -451,8 +616,9 @@ suite('ContentController', () => {
     test('hides images and associated text nodes when disabled', async () => {
       chrome.readingMode.imagesFeatureEnabled = true;
       chrome.readingMode.imagesEnabled = false;
+      contentController.setState(ContentType.HAS_CONTENT);
 
-      contentController.updateImages(true, shadowRoot);
+      contentController.updateImages(shadowRoot);
       await microtasksFinished();
 
       assertEquals('none', canvas.style.display);
@@ -467,8 +633,9 @@ suite('ContentController', () => {
       nodeStore.hideImageNode(textId);
       canvas.style.display = 'none';
       figure.style.display = 'none';
+      contentController.setState(ContentType.HAS_CONTENT);
 
-      contentController.updateImages(true, shadowRoot);
+      contentController.updateImages(shadowRoot);
       await microtasksFinished();
 
       assertEquals('', canvas.style.display);

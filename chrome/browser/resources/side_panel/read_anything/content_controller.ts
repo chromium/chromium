@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 
+import {LOG_EMPTY_DELAY_MS} from './common.js';
 import {NodeStore} from './node_store.js';
 import {previousReadHighlightClass} from './read_aloud/movement.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
+import {ReadAnythingLogger} from './read_anything_logger.js';
 
 const DATA_PREFIX = 'data-';
 const LINK_DATA_ATTR = 'link';
@@ -38,10 +41,131 @@ const TAG_TO_RM_TAG: Map<string, string> = new Map([
   ['video', 'canvas'],
 ]);
 
+export interface ContentListener {
+  onContentStateChange(): void;
+}
+
+export enum ContentType {
+  // Reading mode is loading and may or may not have content when it finishes.
+  LOADING,
+  // There is no content to display but the user can try to select text to get
+  // content.
+  NO_CONTENT,
+  // There is no content to display and the user cannot select text to get
+  // content.
+  NO_SELECTABLE_CONTENT,
+  // There is content displayed in Reading mode.
+  HAS_CONTENT,
+}
+
+export interface ContentState {
+  type: ContentType;
+  imagePath: string;
+  darkImagePath: string;
+  heading: string;
+  subheading: string;
+}
+
+// Use a Record to enforce that every ContentType has a corresponding
+// ContentState.
+const CONTENT_STATES: Record<ContentType, ContentState> = {
+  [ContentType.LOADING]: {
+    type: ContentType.LOADING,
+    imagePath: '//resources/images/throbber_small.svg',
+    darkImagePath: '//resources/images/throbber_small_dark.svg',
+    heading: loadTimeData.getString('readAnythingLoadingMessage'),
+    subheading: '',
+  },
+  [ContentType.NO_CONTENT]: {
+    type: ContentType.NO_CONTENT,
+    imagePath: './images/empty_state.svg',
+    darkImagePath: './images/empty_state.svg',
+    heading: loadTimeData.getString('emptyStateHeader'),
+    subheading: loadTimeData.getString('emptyStateSubheader'),
+  },
+  [ContentType.NO_SELECTABLE_CONTENT]: {
+    type: ContentType.NO_SELECTABLE_CONTENT,
+    imagePath: './images/empty_state.svg',
+    darkImagePath: './images/empty_state.svg',
+    heading: loadTimeData.getString('notSelectableHeader'),
+    subheading: loadTimeData.getString('emptyStateSubheader'),
+  },
+  [ContentType.HAS_CONTENT]: {
+    type: ContentType.HAS_CONTENT,
+    imagePath: '',
+    darkImagePath: '',
+    heading: '',
+    subheading: '',
+  },
+};
+
 // Handles the business logic for the visual content of the Reading mode panel.
 export class ContentController {
   private nodeStore_: NodeStore = NodeStore.getInstance();
   private speechController_: SpeechController = SpeechController.getInstance();
+  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
+
+  private readonly listeners_: ContentListener[] = [];
+  private currentState_: ContentState = CONTENT_STATES[ContentType.NO_CONTENT];
+
+  getState(): ContentState {
+    return this.currentState_;
+  }
+
+  setState(type: ContentType) {
+    if (type === this.currentState_.type) {
+      return;
+    }
+    this.currentState_ = CONTENT_STATES[type];
+    this.listeners_.forEach(l => l.onContentStateChange());
+  }
+
+  hasContent(): boolean {
+    return this.currentState_.type === ContentType.HAS_CONTENT;
+  }
+
+  isEmpty(): boolean {
+    return this.currentState_.type === ContentType.NO_CONTENT ||
+        this.currentState_.type === ContentType.NO_SELECTABLE_CONTENT;
+  }
+
+  setEmpty() {
+    const noContentType = this.getNoContentType_();
+    if (this.isEmpty() && this.currentState_.type === noContentType) {
+      return;
+    }
+    // Log the empty state only after a short delay. Sometimes the empty state
+    // is only shown very briefly before the content is distilled, so we don't
+    // need to count those instances as a failure to distill.
+    setTimeout(() => {
+      if (this.isEmpty()) {
+        this.logger_.logEmptyState();
+      }
+    }, LOG_EMPTY_DELAY_MS);
+    this.setState(noContentType);
+  }
+
+  private getNoContentType_() {
+    return chrome.readingMode.isGoogleDocs ? ContentType.NO_SELECTABLE_CONTENT :
+                                             ContentType.NO_CONTENT;
+  }
+
+  addListener(listener: ContentListener) {
+    this.listeners_.push(listener);
+  }
+
+  onNodeWillBeDeleted(nodeId: number) {
+    const deletedNode = this.nodeStore_.getDomNode(nodeId) as ChildNode;
+    if (deletedNode) {
+      this.nodeStore_.removeDomNode(deletedNode);
+      deletedNode.remove();
+    }
+    const root = this.nodeStore_.getDomNode(chrome.readingMode.rootId);
+    if (this.hasContent() && !root?.textContent) {
+      this.setState(this.getNoContentType_());
+      chrome.readingMode.onNoTextContent();
+    }
+  }
 
   buildSubtree(nodeId: number): Node {
     let htmlTag = chrome.readingMode.getHtmlTag(nodeId);
@@ -147,8 +271,8 @@ export class ContentController {
     return parentElement;
   }
 
-  updateLinks(hasContent: boolean, shadowRoot?: ShadowRoot) {
-    if (!shadowRoot || !hasContent) {
+  updateLinks(shadowRoot?: ShadowRoot) {
+    if (!shadowRoot || !this.hasContent()) {
       return;
     }
 
@@ -254,9 +378,9 @@ export class ContentController {
     }
   }
 
-  updateImages(hasContent: boolean, shadowRoot?: ShadowRoot) {
+  updateImages(shadowRoot?: ShadowRoot) {
     if (!shadowRoot || !chrome.readingMode.imagesFeatureEnabled ||
-        !hasContent) {
+        !this.hasContent()) {
       return;
     }
 

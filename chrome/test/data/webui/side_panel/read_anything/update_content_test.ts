@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, MIN_MS_TO_READ, SpeechBrowserProxyImpl, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ContentController, MIN_MS_TO_READ, SpeechBrowserProxyImpl, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
@@ -37,6 +37,7 @@ suite('UpdateContent', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     const speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
+    ContentController.setInstance(new ContentController());
     VoiceLanguageController.setInstance(new VoiceLanguageController());
     metrics = mockMetrics();
 
