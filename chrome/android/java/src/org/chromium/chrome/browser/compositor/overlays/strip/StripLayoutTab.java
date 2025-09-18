@@ -75,20 +75,6 @@ public class StripLayoutTab extends StripLayoutView {
                 }
             };
 
-    /** A property for animations to use for changing the width of the tab. */
-    public static final FloatProperty<StripLayoutTab> WIDTH =
-            new FloatProperty<>("width") {
-                @Override
-                public void setValue(StripLayoutTab object, float value) {
-                    object.setWidth(value);
-                }
-
-                @Override
-                public Float get(StripLayoutTab object) {
-                    return object.getWidth();
-                }
-            };
-
     /** A property for animations to use for changing the bottom margin of the tab. */
     public static final FloatProperty<StripLayoutTab> BOTTOM_MARGIN =
             new FloatProperty<>("bottomMargin") {
@@ -159,7 +145,6 @@ public class StripLayoutTab extends StripLayoutView {
     private final Size mCloseButtonSize;
     private TintedCompositorButton mCloseButton;
 
-    private boolean mIsDying;
     private boolean mIsClosed;
     private boolean mIsSelected;
     private boolean mIsPinned;
@@ -359,7 +344,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     @Override
     public void getVirtualViews(List<VirtualView> views) {
-        if (isCollapsed() || mIsDying) return;
+        if (isCollapsed() || isDying()) return;
         super.getVirtualViews(views);
         if (mShowingCloseButton || mIsSelected) mCloseButton.getVirtualViews(views);
     }
@@ -568,23 +553,6 @@ public class StripLayoutTab extends StripLayoutView {
     @Override
     public void setIncognito(boolean incognito) {
         assert false : "Incognito state of a tab cannot change";
-    }
-
-    /**
-     * Mark this tab as in the process of dying. This lets us track which tabs are closed after
-     * animations.
-     *
-     * @param isDying Whether or not the tab is dying.
-     */
-    public void setIsDying(boolean isDying) {
-        mIsDying = isDying;
-    }
-
-    /**
-     * @return Whether or not the tab is dying.
-     */
-    public boolean isDying() {
-        return mIsDying;
     }
 
     /**

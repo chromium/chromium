@@ -82,6 +82,20 @@ public abstract class StripLayoutView implements VirtualView {
                 }
             };
 
+    /** A property for animations to use for changing the width of the view. */
+    public static final FloatProperty<StripLayoutView> WIDTH =
+            new FloatProperty<>("width") {
+                @Override
+                public void setValue(StripLayoutView object, float value) {
+                    object.setWidth(value);
+                }
+
+                @Override
+                public Float get(StripLayoutView object) {
+                    return object.getWidth();
+                }
+            };
+
     /** A property for animations to use for changing the trailingMargin of the view. */
     public static final FloatProperty<StripLayoutView> TRAILING_MARGIN =
             new FloatProperty<>("trailingMargin") {
@@ -121,6 +135,7 @@ public abstract class StripLayoutView implements VirtualView {
     private boolean mIsDraggedOffStrip;
     private boolean mIsNonDragReordering;
     private boolean mWillClose;
+    private boolean mIsDying;
 
     // A11y variables.
     private String mAccessibilityDescription = "";
@@ -378,6 +393,21 @@ public abstract class StripLayoutView implements VirtualView {
     /** Returns whether or not the view will be closed due to an incoming TabModel update. */
     public boolean willClose() {
         return mWillClose;
+    }
+
+    /**
+     * Mark this view as in the process of dying. This lets us track which views are closed after
+     * animations.
+     *
+     * @param isDying Whether or not the view is dying.
+     */
+    public void setIsDying(boolean isDying) {
+        mIsDying = isDying;
+    }
+
+    /** Returns whether or not the view is dying. */
+    public boolean isDying() {
+        return mIsDying;
     }
 
     /**
