@@ -6,7 +6,16 @@
 
 namespace page_actions {
 
-MockPageActionController::MockPageActionController() = default;
+MockPageActionController::MockPageActionController() {
+  ON_CALL(*this, AddObserver(testing::_, testing::_))
+      .WillByDefault(testing::Invoke(
+          [&](actions::ActionId id,
+              base::ScopedObservation<PageActionModelInterface,
+                                      PageActionModelObserver>& observation) {
+            observation.Observe(&model_);
+          }));
+}
+
 MockPageActionController::~MockPageActionController() = default;
 
 }  // namespace page_actions
