@@ -1073,57 +1073,6 @@ TEST_P(PrintContextTest, Canvas2DAutoFlushingSuppressed) {
   PrintSinglePage(canvas);
 }
 
-// For testing printing behavior when 2d canvases are gpu-accelerated.
-class PrintContextAcceleratedCanvasTest : public PrintContextTest {
- public:
-  void SetUp() override {
-    accelerated_canvas_scope_ =
-        std::make_unique<ScopedAccelerated2dCanvasForTest>(true);
-    test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
-
-    PrintContextTest::SetUp();
-
-    GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
-  }
-
-  void TearDown() override {
-    // Call base class TeardDown first to ensure Canvas2DLayerBridge is
-    // destroyed before the TestContextProvider.
-    PrintContextTest::TearDown();
-
-    SharedGpuContext::Reset();
-    test_context_provider_ = nullptr;
-    accelerated_canvas_scope_ = nullptr;
-  }
-
- private:
-  scoped_refptr<viz::TestContextProvider> test_context_provider_;
-  std::unique_ptr<ScopedAccelerated2dCanvasForTest> accelerated_canvas_scope_;
-};
-
-INSTANTIATE_PAINT_TEST_SUITE_P(PrintContextAcceleratedCanvasTest);
-
-TEST_P(PrintContextAcceleratedCanvasTest, Canvas2DBeforePrint) {
-  MockPageContextCanvas canvas;
-  SetBodyInnerHTML("<canvas id='c' width=100 height=100></canvas>");
-  GetDocument().GetSettings()->SetScriptEnabled(true);
-  Element* const script_element =
-      GetDocument().CreateRawElement(html_names::kScriptTag);
-  script_element->setTextContent(
-      "window.addEventListener('beforeprint', (ev) => {"
-      "const ctx = document.getElementById('c').getContext('2d');"
-      "ctx.fillRect(0, 0, 10, 10);"
-      "ctx.fillRect(50, 50, 10, 10);"
-      "});");
-  GetDocument().body()->AppendChild(script_element);
-
-  // 2 fillRects.
-  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(testing::Exactly(2));
-
-  PrintSinglePage(canvas);
-}
-
 namespace {
 
 class AcceleratedCompositingTestPlatform
