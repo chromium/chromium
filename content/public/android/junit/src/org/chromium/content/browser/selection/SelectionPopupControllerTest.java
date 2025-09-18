@@ -23,6 +23,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
+import android.app.PendingIntent;
+import android.app.RemoteAction;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,11 +34,13 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.provider.Settings;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.ViewGroup;
+import android.view.textclassifier.TextClassification;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,6 +57,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content.browser.GestureListenerManagerImpl;
@@ -247,7 +252,7 @@ public class SelectionPopupControllerTest {
         SelectionClient.Result returnResult = mController.getClassificationResult();
         assertEquals(-5, returnResult.startAdjust);
         assertEquals(8, returnResult.endAdjust);
-        assertEquals("Maps", returnResult.label);
+        assertEquals("Maps", returnResult.textClassification.getActions().get(0).getTitle());
 
         assertTrue(mController.isActionModeValid());
     }
@@ -297,7 +302,7 @@ public class SelectionPopupControllerTest {
         SelectionClient.Result returnResult = mController.getClassificationResult();
         assertEquals(-21, returnResult.startAdjust);
         assertEquals(15, returnResult.endAdjust);
-        assertEquals("Maps", returnResult.label);
+        assertEquals("Maps", returnResult.textClassification.getActions().get(0).getTitle());
 
         // Second adjustSelectionByCharacterOffset() triggered.
         showSelectionMenu(
@@ -357,7 +362,7 @@ public class SelectionPopupControllerTest {
         SelectionClient.Result returnResult = mController.getClassificationResult();
         assertEquals(-21, returnResult.startAdjust);
         assertEquals(15, returnResult.endAdjust);
-        assertEquals("Maps", returnResult.label);
+        assertEquals("Maps", returnResult.textClassification.getActions().get(0).getTitle());
 
         // Second adjustSelectionByCharacterOffset() triggered.
         showSelectionMenu(
@@ -1041,7 +1046,7 @@ public class SelectionPopupControllerTest {
         SelectionClient.Result result = new SelectionClient.Result();
         result.startAdjust = -5;
         result.endAdjust = 8;
-        result.label = "Maps";
+        result.textClassification = createSingleActionTextClassification("Maps");
         return result;
     }
 
@@ -1050,7 +1055,7 @@ public class SelectionPopupControllerTest {
         SelectionClient.Result result = new SelectionClient.Result();
         result.startAdjust = -21;
         result.endAdjust = 15;
-        result.label = "Maps";
+        result.textClassification = createSingleActionTextClassification("Maps");
         return result;
     }
 
@@ -1058,7 +1063,19 @@ public class SelectionPopupControllerTest {
         SelectionClient.Result result = new SelectionClient.Result();
         result.startAdjust = 0;
         result.endAdjust = 0;
-        result.label = "Maps";
+        result.textClassification = createSingleActionTextClassification("Maps");
         return result;
+    }
+
+    private TextClassification createSingleActionTextClassification(String title) {
+        Icon actionIcon = Icon.createWithData(new byte[] {}, 0, 0);
+        PendingIntent intent =
+                PendingIntent.getBroadcast(
+                        mContext,
+                        0,
+                        new Intent(),
+                        IntentUtils.getPendingIntentMutabilityFlag(false));
+        RemoteAction action = new RemoteAction(actionIcon, title, "This is a menu item", intent);
+        return new TextClassification.Builder().addAction(action).build();
     }
 }

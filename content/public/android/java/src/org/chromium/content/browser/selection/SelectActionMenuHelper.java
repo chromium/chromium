@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -195,24 +194,23 @@ public class SelectActionMenuHelper {
         if (selectedText.isEmpty()) {
             return null;
         }
-        if (classificationResult == null || !classificationResult.hasNamedAction()) {
+        if (classificationResult == null
+                || classificationResult.textClassification == null
+                || classificationResult.textClassification.getActions().isEmpty()) {
             return null;
         }
         SelectionMenuGroup primaryAssistGroup =
                 new SelectionMenuGroup(
                         R.id.select_action_menu_assist_items, GroupItemOrder.ASSIST_ITEMS);
-        View.OnClickListener clickListener = null;
-        if (classificationResult.onClickListener != null) {
-            clickListener = classificationResult.onClickListener;
-        } else if (classificationResult.intent != null) {
-            clickListener = v -> context.startActivity(classificationResult.intent);
-        }
+        RemoteAction primaryAction = classificationResult.textClassification.getActions().get(0);
         primaryAssistGroup.addItem(
-                new SelectionMenuItem.Builder(classificationResult.label)
+                new SelectionMenuItem.Builder(primaryAction.getTitle())
                         .setId(android.R.id.textAssist)
-                        .setIcon(getPrimaryActionIconForClassificationResult(classificationResult))
+                        .setIcon(
+                                getPrimaryActionIconForClassificationResult(
+                                        classificationResult, context))
                         .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-                        .setClickListener(clickListener)
+                        .setClickListener(getActionClickListener(primaryAction))
                         .build());
         return primaryAssistGroup;
     }
@@ -250,7 +248,6 @@ public class SelectActionMenuHelper {
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate,
             @Nullable Result classificationResult,
             String selectedText) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return null;
         // We have to use android.R.id.textAssist as group id to make framework show icons for
         // menu items if there is selected text.
         @IdRes int groupId = selectedText.isEmpty() ? Menu.NONE : android.R.id.textAssist;
@@ -273,9 +270,6 @@ public class SelectActionMenuHelper {
             return null;
         }
         List<RemoteAction> actions = classification.getActions();
-        if (actions == null) {
-            return null;
-        }
         final int count = actions.size();
         if (count < 2) {
             // More than one item is needed as the first item is reserved for the
@@ -379,20 +373,27 @@ public class SelectActionMenuHelper {
     }
 
     private static @Nullable Drawable getPrimaryActionIconForClassificationResult(
-            SelectionClient.Result classificationResult) {
+            SelectionClient.Result classificationResult, Context context) {
         final List<Drawable> additionalIcons = classificationResult.additionalIcons;
         Drawable icon;
         if (additionalIcons != null && !additionalIcons.isEmpty()) {
             // The primary action is always first so check index 0.
             icon = additionalIcons.get(0);
         } else {
-            icon = classificationResult.icon;
+            if (classificationResult.textClassification == null) return null;
+            icon =
+                    classificationResult
+                            .textClassification
+                            .getActions()
+                            .get(0)
+                            .getIcon()
+                            .loadDrawable(context);
         }
         return icon;
     }
 
     private static View.@Nullable OnClickListener getActionClickListener(RemoteAction action) {
-        if (TextUtils.isEmpty(action.getTitle()) || action.getActionIntent() == null) {
+        if (TextUtils.isEmpty(action.getTitle())) {
             return null;
         }
         return v -> {

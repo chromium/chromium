@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import android.app.PendingIntent;
+import android.app.RemoteAction;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -12,12 +14,12 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.Build;
+import android.graphics.drawable.Icon;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.textclassifier.TextClassification;
 
 import androidx.test.filters.MediumTest;
-import androidx.test.filters.SdkSuppress;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -27,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -361,7 +364,6 @@ public class ContentTextSelectionTest {
     @Test
     @MediumTest
     @Feature({"TextSelection"})
-    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.P) /* getSecondaryAssistItems requires >= P */
     public void testCorrectPasteMenuItemsAddedWhenThereIsNoSelection() throws Throwable {
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();
@@ -402,8 +404,7 @@ public class ContentTextSelectionTest {
         mSelectionPopupController.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
         // For primary assist item.
         SelectionClient.Result result = new SelectionClient.Result();
-        result.label = "Phone";
-        result.intent = new Intent();
+        result.textClassification = createSingleActionTextClassification("Phone");
         TestSelectionClient client = new TestSelectionClient();
         client.setResult(result);
         client.setResultCallback(mSelectionPopupController.getResultCallback());
@@ -459,8 +460,7 @@ public class ContentTextSelectionTest {
         mSelectionPopupController.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
         // For primary assist item.
         SelectionClient.Result result = new SelectionClient.Result();
-        result.label = "Map";
-        result.intent = new Intent();
+        result.textClassification = createSingleActionTextClassification("Map");
         TestSelectionClient client = new TestSelectionClient();
         client.setResult(result);
         client.setResultCallback(mSelectionPopupController.getResultCallback());
@@ -662,7 +662,7 @@ public class ContentTextSelectionTest {
         SelectionClient.Result result = new SelectionClient.Result();
         result.startAdjust = -5;
         result.endAdjust = 8;
-        result.label = "Maps";
+        result.textClassification = createSingleActionTextClassification("Maps");
 
         TestSelectionClient client = new TestSelectionClient();
         client.setResult(result);
@@ -679,7 +679,7 @@ public class ContentTextSelectionTest {
         SelectionClient.Result returnResult = mSelectionPopupController.getClassificationResult();
         Assert.assertEquals(-5, returnResult.startAdjust);
         Assert.assertEquals(8, returnResult.endAdjust);
-        Assert.assertEquals("Maps", returnResult.label);
+        Assert.assertEquals("Maps", returnResult.textClassification.getActions().get(0).getTitle());
     }
 
     @Test
@@ -689,7 +689,7 @@ public class ContentTextSelectionTest {
         SelectionClient.Result result = new SelectionClient.Result();
         result.startAdjust = -5;
         result.endAdjust = 8;
-        result.label = "Maps";
+        result.textClassification = createSingleActionTextClassification("Maps");
 
         TestSelectionClient client = new TestSelectionClient();
         client.setResult(result);
@@ -706,7 +706,7 @@ public class ContentTextSelectionTest {
         SelectionClient.Result returnResult = mSelectionPopupController.getClassificationResult();
         Assert.assertEquals(-5, returnResult.startAdjust);
         Assert.assertEquals(8, returnResult.endAdjust);
-        Assert.assertEquals("Maps", returnResult.label);
+        Assert.assertEquals("Maps", returnResult.textClassification.getActions().get(0).getTitle());
 
         DOMUtils.clickNode(mWebContents, "smart_selection");
 
@@ -1100,6 +1100,18 @@ public class ContentTextSelectionTest {
         selectActionBarShare();
         i = mActivityTestRule.getActivity().getLastSentIntent();
         Assert.assertEquals(i.getFlags() & new_task_flag, new_task_flag);
+    }
+
+    private TextClassification createSingleActionTextClassification(String title) {
+        Icon actionIcon = Icon.createWithData(new byte[] {}, 0, 0);
+        PendingIntent intent =
+                PendingIntent.getBroadcast(
+                        mActivityTestRule.getActivity(),
+                        0,
+                        new Intent(),
+                        IntentUtils.getPendingIntentMutabilityFlag(false));
+        RemoteAction action = new RemoteAction(actionIcon, title, "This is a menu item", intent);
+        return new TextClassification.Builder().addAction(action).build();
     }
 
     private void selectActionBarPaste() {

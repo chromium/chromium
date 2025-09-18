@@ -4,9 +4,7 @@
 
 package org.chromium.content_public.browser;
 
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.view.View.OnClickListener;
 import android.view.textclassifier.TextClassification;
 import android.view.textclassifier.TextClassifier;
 import android.view.textclassifier.TextSelection;
@@ -39,22 +37,10 @@ public interface SelectionClient {
         public int startAdjust;
 
         /**
-         * The number of characters that the right boundary of the original
-         * selection should be moved. Negative number means moving left.
+         * The number of characters that the right boundary of the original selection should be
+         * moved. Negative number means moving left.
          */
         public int endAdjust;
-
-        /** Label for the suggested menu item. */
-        public @Nullable CharSequence label;
-
-        /** Icon for the suggested menu item. */
-        public @Nullable Drawable icon;
-
-        /** Intent for the suggested menu item. */
-        public @Nullable Intent intent;
-
-        /** OnClickListener for the suggested menu item. */
-        public @Nullable OnClickListener onClickListener;
 
         /** TextClassification for logging. */
         public @Nullable TextClassification textClassification;
@@ -71,14 +57,6 @@ public interface SelectionClient {
          */
         public void setTextClassificationForTesting(TextClassification textClassification) {
             this.textClassification = textClassification;
-        }
-
-        /**
-         * A helper method that returns true if the result has both visual info and an action so
-         * that, for instance, one can make a new menu item.
-         */
-        public boolean hasNamedAction() {
-            return (label != null || icon != null) && (intent != null || onClickListener != null);
         }
     }
 
