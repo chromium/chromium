@@ -1078,6 +1078,8 @@ component("net") {
     "ssl/client_cert_matcher.cc",
     "ssl/client_cert_matcher.h",
     "ssl/client_cert_store.h",
+    "ssl/client_cert_store_empty.cc",
+    "ssl/client_cert_store_empty.h",
     "ssl/openssl_private_key.cc",
     "ssl/openssl_private_key.h",
     "ssl/openssl_ssl_util.cc",

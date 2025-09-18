@@ -33,6 +33,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
+#include "net/ssl/client_cert_store_empty.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -171,21 +172,6 @@ std::unique_ptr<ClientCertStoreLoader> CreatePlatformClientCertLoader(
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// ClientCertStore implementation that always returns an empty list. The
-// CertificateProvisioningService implementation expects to wrap a platform
-// cert store, but here we only want to get results from the provisioning
-// service itself, so instead of a platform cert store we pass an
-// implementation that always returns an empty result when queried.
-class NullClientCertStore : public net::ClientCertStore {
- public:
-  ~NullClientCertStore() override = default;
-  void GetClientCerts(
-      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
-      ClientCertListCallback callback) override {
-    std::move(callback).Run({});
-  }
-};
-
 class ClientCertStoreFactoryProvisioned : public ClientCertStoreFactory {
  public:
   explicit ClientCertStoreFactoryProvisioned(
@@ -199,7 +185,7 @@ class ClientCertStoreFactoryProvisioned : public ClientCertStoreFactory {
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
     return client_certificates::ClientCertificatesService::Create(
         profile_provisioning_service_, browser_provisioning_service_,
-        std::make_unique<NullClientCertStore>());
+        std::make_unique<net::ClientCertStoreEmpty>());
   }
 
  private:
