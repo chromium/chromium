@@ -95,7 +95,8 @@ void AnchorPositionVisibilityObserver::UpdateForChainedAnchorVisibility(
   HeapVector<Member<AnchorPositionVisibilityObserver>>
       observers_with_chained_anchor;
   for (auto& client : clients) {
-    if (auto* scroll_data = DynamicTo<AnchorPositionScrollData>(client.Get())) {
+    auto* scroll_data = DynamicTo<AnchorPositionScrollData>(client.Get());
+    if (scroll_data && scroll_data->IsActive()) {
       if (auto* observer = scroll_data->GetAnchorPositionVisibilityObserver()) {
         observer->SetLayerInvisible(
             LayerPositionVisibility::kChainedAnchorsVisible, false);
