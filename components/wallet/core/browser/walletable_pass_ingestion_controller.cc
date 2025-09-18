@@ -62,15 +62,15 @@ void WalletablePassIngestionController::OnGetAnnotatedPageContent(
     return;
   }
 
-  ExtractWalletablePass(url.spec(), std::move(*annotated_page_content));
+  ExtractWalletablePass(url, std::move(*annotated_page_content));
 }
 
 void WalletablePassIngestionController::ExtractWalletablePass(
-    const std::string& url,
+    const GURL& url,
     optimization_guide::proto::AnnotatedPageContent annotated_page_content) {
   // Construct request
   optimization_guide::proto::WalletablePassExtractionRequest request;
-  request.mutable_page_context()->set_url(url);
+  request.mutable_page_context()->set_url(url.spec());
   request.mutable_page_context()->set_title(GetPageTitle());
   *request.mutable_page_context()->mutable_annotated_page_content() =
       std::move(annotated_page_content);

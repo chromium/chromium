@@ -30,9 +30,10 @@ class WalletablePassIngestionControllerTestApi {
   }
 
   void ExtractWalletablePass(
-      const std::string& url,
-      const optimization_guide::proto::AnnotatedPageContent& content) {
-    controller_->ExtractWalletablePass(url, content);
+      const GURL& url,
+      const optimization_guide::proto::AnnotatedPageContent&
+          annotated_page_content) {
+    controller_->ExtractWalletablePass(url, annotated_page_content);
   }
 
   void StartWalletablePassDetectionFlow(const GURL& url) {

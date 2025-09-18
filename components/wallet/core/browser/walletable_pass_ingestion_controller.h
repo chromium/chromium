@@ -63,7 +63,7 @@ class WalletablePassIngestionController {
   // Extracts a walletable pass from the provided page content. This method
   // invokes the Optimization Guide's model executor to perform the extraction.
   void ExtractWalletablePass(
-      const std::string& url,
+      const GURL& url,
       optimization_guide::proto::AnnotatedPageContent annotated_page_content);
 
  private:

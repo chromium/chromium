@@ -118,7 +118,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 
 TEST_F(WalletablePassIngestionControllerTest,
        ExtractWalletablePass_CallsModelExecutor) {
-  std::string url = "https://example.com";
+  GURL url("https://example.com");
   optimization_guide::proto::AnnotatedPageContent content;
   content.set_tab_id(123);
 
