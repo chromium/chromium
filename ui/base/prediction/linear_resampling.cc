@@ -22,11 +22,6 @@ constexpr auto kResampleMinDelta = base::Milliseconds(2);
 // far into the future. This time is further bounded by 50% of the last time
 // delta.
 constexpr auto kResampleMaxPrediction = base::Milliseconds(8);
-// Align events to a few milliseconds before frame_time. This is to make the
-// resampling either doing interpolation or extrapolating a closer future time
-// so that resampled result is more accurate and has less noise. This adds some
-// latency during resampling but a few ms should be fine.
-constexpr auto kResampleLatency = base::Milliseconds(-5);
 
 // Get position at |sample_time| by linear interpolate/extrapolate a and b.
 inline gfx::PointF lerp(const InputPredictor::InputData& a,
