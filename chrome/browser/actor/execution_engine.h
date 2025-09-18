@@ -69,6 +69,12 @@ class ExecutionEngine : public ToolDelegate {
     kComplete,
   };
 
+  class StateObserver : public base::CheckedObserver {
+   public:
+    ~StateObserver() override = default;
+    virtual void OnStateChanged(State old_state, State new_state) = 0;
+  };
+
   explicit ExecutionEngine(Profile* profile);
 
   // Old instances of ExecutionEngine assume that all actions are scoped to a
@@ -132,6 +138,10 @@ class ExecutionEngine : public ToolDelegate {
   static std::string StateToString(State state);
 
   bool ShouldGateNavigation(content::NavigationHandle& navigation_handle);
+
+  void AddObserver(StateObserver* observer);
+
+  void RemoveObserver(StateObserver* observer);
 
  private:
   class NewTabWebContentsObserver;
@@ -224,6 +234,8 @@ class ExecutionEngine : public ToolDelegate {
   ToolDelegate::CredentialSelectedCallback credential_selected_callback_;
 
   UserConfirmationDialogCallback user_confirmation_callback_;
+
+  base::ObserverList<StateObserver> observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -52,7 +52,12 @@ class PageTool : public Tool {
                               InvokeCallback callback) const override;
 
  private:
+  // Callback for navigation.
   void OnRenderFrameHostChanged();
+
+  // Callback when the renderer process is gone.
+  void OnRenderFrameGone();
+
   void FinishInvoke(mojom::ActionResultPtr result);
 
   void PostFinishInvoke(mojom::ActionResultCode result_code);

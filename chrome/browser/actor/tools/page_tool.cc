@@ -228,26 +228,41 @@ mojom::ObservedToolTargetPtr ToMojoObservedToolTarget(
 // Observer to track if the a given RenderFrameHost is changed.
 class RenderFrameChangeObserver : public WebContentsObserver {
  public:
-  RenderFrameChangeObserver(RenderFrameHost& rfh, base::OnceClosure callback)
+  RenderFrameChangeObserver(RenderFrameHost& rfh,
+                            base::OnceClosure on_frame_navigated_callback,
+                            base::OnceClosure on_frame_process_gone_callback)
       : WebContentsObserver(WebContents::FromRenderFrameHost(&rfh)),
         rfh_id_(rfh.GetGlobalId()),
-        callback_(std::move(callback)) {}
+        on_frame_navigated_callback_(std::move(on_frame_navigated_callback)),
+        on_frame_process_gone_callback_(
+            std::move(on_frame_process_gone_callback)) {}
 
-  // WebContentsObserver
+  // `WebContentsObserver`:
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* /*new_host*/) override {
-    if (!callback_) {
+    if (!on_frame_navigated_callback_) {
       return;
     }
 
     if (old_host && old_host->GetGlobalId() == rfh_id_) {
-      std::move(callback_).Run();
+      std::move(on_frame_navigated_callback_).Run();
+    }
+  }
+  void RenderFrameDeleted(RenderFrameHost* rfh) override {
+    // The scoped frame has exited. It is not safe to continue the task.
+    // TODO(crbug.com/423932492): Ideally the task could continue and the model
+    // should be able to refresh the page. Currently the model is not aware of
+    // the crashed frame because the screenshot does not include the sad tab
+    // WebUI.
+    if (rfh->GetGlobalId() == rfh_id_) {
+      std::move(on_frame_process_gone_callback_).Run();
     }
   }
 
  private:
-  GlobalRenderFrameHostId rfh_id_;
-  base::OnceClosure callback_;
+  const GlobalRenderFrameHostId rfh_id_;
+  base::OnceClosure on_frame_navigated_callback_;
+  base::OnceClosure on_frame_process_gone_callback_;
 };
 
 PageTool::PageTool(TaskId task_id,
@@ -362,21 +377,17 @@ void PageTool::Invoke(InvokeCallback callback) {
   // rather than the tool use. In that case we'll return success as if the tool
   // completed successfully (expecting that's fine, as a new observation will be
   // taken).
+  // The observer also listens to the process exit signal from the renderer
+  // (i.e., crashed). The invoke is finished with an error in this case.
   // `this` Unretained because the observer is owned by this class and thus
   // removed on destruction.
   frame_change_observer_ = std::make_unique<RenderFrameChangeObserver>(
-      frame, base::BindOnce(&PageTool::OnRenderFrameHostChanged,
-                            base::Unretained(this)));
+      frame,
+      base::BindOnce(&PageTool::OnRenderFrameHostChanged,
+                     base::Unretained(this)),
+      base::BindOnce(&PageTool::OnRenderFrameGone,
+                     base::Unretained(this)));
 
-  // `this` Unretained because this class owns the mojo pipe that invokes the
-  // callbacks.
-  // TODO(crbug.com/423932492): It's not clear why but it appears that sometimes
-  // the frame goes away before the RenderFrameChangeObserver fires. It should
-  // be ok to assume this happens as a result of a navigation and treat the tool
-  // invocation as successful but might be worth better understanding how this
-  // can happen.
-  chrome_render_frame_.set_disconnect_handler(base::BindOnce(
-      &PageTool::OnRenderFrameHostChanged, base::Unretained(this)));
   chrome_render_frame_->InvokeTool(
       std::move(invocation),
       base::BindOnce(&PageTool::FinishInvoke, base::Unretained(this)));
@@ -433,6 +444,10 @@ void PageTool::OnRenderFrameHostChanged() {
   // navigation. Finish the invocation successfully as the ToolController will
   // wait on the new page to load if needed.
   FinishInvoke(MakeOkResult());
+}
+
+void PageTool::OnRenderFrameGone() {
+  FinishInvoke(MakeResult(mojom::ActionResultCode::kFrameWentAway));
 }
 
 void PageTool::FinishInvoke(mojom::ActionResultPtr result) {

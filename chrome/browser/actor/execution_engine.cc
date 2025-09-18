@@ -144,6 +144,7 @@ void ExecutionEngine::SetState(State state) {
       }));
   DCHECK_STATE_TRANSITION(transitions, state_, state);
 #endif  // DCHECK_IS_ON()
+  observers_.Notify(&StateObserver::OnStateChanged, state_, state);
   state_ = state;
 }
 
@@ -184,6 +185,14 @@ bool ExecutionEngine::ShouldGateNavigation(
       navigation_handle.GetInitiatorOrigin();
   return initiator_origin &&
          !initiator_origin->IsSameOriginWith(navigation_url);
+}
+
+void ExecutionEngine::AddObserver(StateObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ExecutionEngine::RemoveObserver(StateObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
