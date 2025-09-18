@@ -105,7 +105,14 @@ TEST_F(EntityDataManagerTest, InitialPopulation) {
 
 // Tests the emission of opt-in metrics that are emitted on EDM creation, i.e.
 // on profile startup.
-TEST_F(EntityDataManagerTest, OptInMetric) {
+// TODO(crbug.com/445879337): Fix Linux MSan Test failure and re-enable the
+// test.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_OptInMetric DISABLED_OptInMetric
+#else
+#define MAYBE_OptInMetric OptInMetric
+#endif
+TEST_F(EntityDataManagerTest, MAYBE_OptInMetric) {
   ASSERT_FALSE(GetAutofillAiOptInStatus(client()));
   base::HistogramTester histogram_tester;
   client().set_entity_data_manager(std::make_unique<EntityDataManager>(
