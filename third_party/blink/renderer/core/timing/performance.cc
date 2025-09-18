@@ -101,7 +101,6 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "v8/include/v8-metrics.h"
 
 namespace blink {
@@ -1239,7 +1238,7 @@ int Performance::GetDroppedEntriesForTypes(PerformanceEntryTypeMask types) {
 DOMHighResTimeStamp Performance::ClampTimeResolution(
     base::TimeDelta time,
     bool cross_origin_isolated_capability) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(TimeClamper, clamper, ());
+  static TimeClamper clamper;
   return clamper.ClampTimeResolution(time, cross_origin_isolated_capability)
       .InMillisecondsF();
 }

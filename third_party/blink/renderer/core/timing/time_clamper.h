@@ -5,17 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_TIME_CLAMPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_TIME_CLAMPER_H_
 
+#include <stdint.h>
+
+#include <type_traits>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
-#include <stdint.h>
-
 namespace blink {
 
 class CORE_EXPORT TimeClamper {
-  USING_FAST_MALLOC(TimeClamper);
+  DISALLOW_NEW();
 
  public:
   static constexpr int kCoarseResolutionMicroseconds = 100;
@@ -42,8 +44,12 @@ class CORE_EXPORT TimeClamper {
   static inline double ToDouble(uint64_t value);
   static inline uint64_t MurmurHash3(uint64_t value);
 
-  uint64_t secret_;
+  const uint64_t secret_;
 };
+
+// Ensure that static TimeClamper instances are trivially destructible,
+// to simplify usage of static instances, e.g., static TimeClamper time_clamper;
+static_assert(std::is_trivially_destructible<TimeClamper>::value);
 
 }  // namespace blink
 
