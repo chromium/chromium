@@ -2641,6 +2641,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.TrustedIcons.ReadResult" enum="BooleanSuccess"
+    expires_after="2026-09-16">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Measures the result of reading trusted icons from the disk, whenever there
+    is a need to fetch the app's icon to be shown on UX surfaces. A value of
+    false indicates that the reading happened from the fallback path. This is
+    measured in a variety of cases, like while loading chrome://apps. This is
+    not measured if the trusted icon feature is disabled.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Uninstall.NonSyncIncompleteCount"
     units="Partially uninstalled webapps" expires_after="2024-03-17">
   <owner>dmurph@chromium.org</owner>

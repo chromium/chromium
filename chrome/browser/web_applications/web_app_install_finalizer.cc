@@ -646,6 +646,12 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
     IconsMap other_icon_bitmaps = web_app_info.other_icon_bitmaps;
     IconBitmaps trusted_icon_bitmaps = web_app_info.trusted_icon_bitmaps;
 
+    // Overwrite bitmaps if the trusted icon metadata is populated but trusted
+    // icons are not and needs to be overwritten.
+    if (overwrite_trusted_icons_with_manifest_ones) {
+      trusted_icon_bitmaps = icon_bitmaps;
+    }
+
     provider_->icon_manager().WriteData(
         app_id, std::move(icon_bitmaps), std::move(trusted_icon_bitmaps),
         std::move(shortcuts_menu_icon_bitmaps), std::move(other_icon_bitmaps),

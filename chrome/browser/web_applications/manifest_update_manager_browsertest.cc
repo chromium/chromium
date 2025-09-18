@@ -5596,9 +5596,11 @@ IN_PROC_BROWSER_TEST_P(
                                         ManifestUpdateResult::kAppUpdated, 0);
   }
 
+  bool manifest_icons_considered_trusted = IsDefaultApp() || IsPolicyApp();
+
   // If trusted icons are enabled, the largest icon will be chosen for all OSes,
   // which is 512.
-  if (IsTrustedIconsEnabled()) {
+  if (IsTrustedIconsEnabled() && !manifest_icons_considered_trusted) {
     ShortcutOsSizeColor expected_colors_post_trusted_icon_launch = {
         {{32, kAll}, SK_ColorBLUE},     {{48, kAll}, SK_ColorBLUE},
         {{64, kWin}, SK_ColorBLUE},     {{96, kWin}, SK_ColorBLUE},

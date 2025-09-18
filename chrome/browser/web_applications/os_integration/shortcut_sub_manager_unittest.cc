@@ -153,8 +153,9 @@ TEST_P(ShortcutSubManagerConfigureTest, ConfigureAppInstall) {
 
   ASSERT_THAT(state.value().shortcut().title(), testing::Eq("Test App"));
 
+  int icons_count = GetParam() ? icon_map.size() : kTotalIconSizes;
   ASSERT_THAT(state.value().shortcut().icon_data_any_size(),
-              testing::Eq(kTotalIconSizes));
+              testing::Eq(icons_count));
 
   for (const proto::os_state::ShortcutIconData& icon_time_map_data :
        state.value().shortcut().icon_data_any()) {

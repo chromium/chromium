@@ -916,6 +916,7 @@ source_set("web_applications_unit_tests") {
     "preinstalled_web_app_manager_unittest.cc",
     "preinstalled_web_app_utils_unittest.cc",
     "preinstalled_web_apps/preinstalled_web_app_definition_utils_unittest.cc",
+    "trusted_icon_installs_unittest.cc",
     "url_pattern_with_regex_matcher_unittest.cc",
     "visited_manifest_manager_unittest.cc",
     "web_app_command_manager_unittest.cc",

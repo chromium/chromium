@@ -31,6 +31,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -81,6 +83,12 @@ constexpr base::FilePath::CharType kPendingTrustedIconFolderName[] =
     FILE_PATH_LITERAL("Pending Trusted Icons");
 constexpr base::FilePath::CharType kPendingManifestIconFolderName[] =
     FILE_PATH_LITERAL("Pending Manifest Icons");
+
+// Records the result of reading trusted icons from disk to UMA.
+void RecordTrustedIconsReadResult(bool trusted_icon_used) {
+  base::UmaHistogramBoolean("WebApp.TrustedIcons.ReadResult",
+                            trusted_icon_used);
+}
 
 // This utility struct is to carry error logs between threads via return values.
 // If we weren't generating multithreaded errors we would just append the errors
@@ -230,19 +238,6 @@ base::FilePath GetManifestResourcesShortcutsMenuIconFileName(
 
   return manifest_shortcuts_menu_icon_dir.AppendASCII(
       base::NumberToString(icon_size_px) + ".png");
-}
-
-// `web_apps_directory` is the path to the directory where all web app data is
-// stored for the relevant profile.
-[[maybe_unused]] base::FilePath GetManifestResourcesOtherIconsFileName(
-    const base::FilePath& web_apps_directory,
-    const webapps::AppId& app_id,
-    const GURL& url,
-    int icon_size_px) {
-  return GetManifestResourcesDirectoryForApp(web_apps_directory, app_id)
-      .Append(GetOtherIconsRelativeDirectory())
-      .AppendASCII(GetDirectoryNameForUrl(url))
-      .AppendASCII(base::StringPrintf("%i.png", icon_size_px));
 }
 
 // Performs blocking I/O. May be called on another thread.
@@ -396,6 +391,7 @@ TypedResult<IconMetadataFromDisk> ReadTrustedIconsBlocking(
                              IconPurpose::MASKABLE, icon_sizes,
                              /*read_trusted_icons=*/true);
   if (!result.value.icons_map.empty()) {
+    RecordTrustedIconsReadResult(/*trusted_icon_used=*/true);
     result.value.purpose = IconPurpose::MASKABLE;
     return result;
   }
@@ -408,6 +404,7 @@ TypedResult<IconMetadataFromDisk> ReadTrustedIconsBlocking(
                              IconPurpose::ANY, icon_sizes,
                              /*read_trusted_icons=*/true);
   if (!result.value.icons_map.empty()) {
+    RecordTrustedIconsReadResult(/*trusted_icon_used=*/true);
     result.value.purpose = IconPurpose::ANY;
     return result;
   }
@@ -422,6 +419,7 @@ TypedResult<IconMetadataFromDisk> ReadTrustedIconsBlocking(
     result.value.purpose = purpose_for_fallback;
   }
 
+  RecordTrustedIconsReadResult(/*trusted_icon_used=*/false);
   return result;
 }
 
@@ -1210,7 +1208,8 @@ void WebAppIconManager::ReadTrustedIconsWithFallbackToManifestIcons(
       "ui", "WebAppIconManager::ReadTrustedIconsWithFallbackToManifestIcons");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!provider_->registrar_unsafe().GetAppById(app_id)) {
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  if (!web_app) {
     std::move(callback).Run(IconMetadataFromDisk());
     return;
   }

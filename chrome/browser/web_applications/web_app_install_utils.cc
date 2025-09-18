@@ -833,29 +833,31 @@ void SetWebAppProductIconFields(
     WebApp& web_app,
     bool should_consider_manifest_icons_as_trusted) {
   web_app.SetManifestIcons(web_app_info.manifest_icons);
+  web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
+
+  if (should_consider_manifest_icons_as_trusted) {
+    // Fallback to using manifest icons for trusted installs like policy and
+    // default installed apps.
+    web_app.SetTrustedIcons(web_app_info.manifest_icons);
+  } else {
+    web_app.SetTrustedIcons(web_app_info.trusted_icons);
+  }
+
+  IconBitmaps trusted_icon_bitmaps_to_store =
+      should_consider_manifest_icons_as_trusted
+          ? web_app_info.icon_bitmaps
+          : web_app_info.trusted_icon_bitmaps;
+
+  // Cache size information for icons stored on disk.
   for (IconPurpose purpose : kIconPurposes) {
     web_app.SetDownloadedIconSizes(
         purpose, GetSquareSizePxs(web_app_info.icon_bitmaps, purpose));
-  }
-  web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
-
-  if (!web_app_info.trusted_icons.empty()) {
-    web_app.SetTrustedIcons(web_app_info.trusted_icons);
-    // The stored trusted icon size cache is only used to mimic the bitmaps
-    // stored on disk, so do not fill up the fields if we fallback to storing
-    // the manifest icon metadata there anyway.
-    for (IconPurpose purpose : kIconPurposes) {
-      if (purpose == IconPurpose::MONOCHROME) {
-        continue;
-      }
-      web_app.SetStoredTrustedIconSizes(
-          purpose,
-          GetSquareSizePxs(web_app_info.trusted_icon_bitmaps, purpose));
+    if (trusted_icon_bitmaps_to_store.empty() ||
+        purpose == IconPurpose::MONOCHROME) {
+      continue;
     }
-  } else if (should_consider_manifest_icons_as_trusted) {
-    // Fallback to using manifest icons if the trusted icons are not found, if
-    // the call site deems it so (like for policy or preinstalled apps).
-    web_app.SetTrustedIcons(web_app_info.manifest_icons);
+    web_app.SetStoredTrustedIconSizes(
+        purpose, GetSquareSizePxs(trusted_icon_bitmaps_to_store, purpose));
   }
 }
 
