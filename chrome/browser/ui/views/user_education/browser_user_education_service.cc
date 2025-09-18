@@ -1140,10 +1140,8 @@ void MaybeRegisterChromeFeaturePromos(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
                 // Open account settings page.
-                // TODO(crbug.com/417947064): create URL constant for the
-                // setting page.
                 ShowSingletonTab(GetBrowser(ctx),
-                                 GURL("chrome://settings/account"));
+                                 GURL(chrome::kChromeUIAccountSettingsURL));
               }))
           .SetPromoSubtype(user_education::FeaturePromoSpecification::
                                PromoSubtype::kActionableAlert)

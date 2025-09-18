@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -3146,7 +3147,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
       WaitForPromo(feature_engagement::kIPHSignInBenefitsFeature),
       PressNonDefaultPromoButton(), InstrumentTab(kSecondTabContents, 1),
       WaitForWebContentsReady(kSecondTabContents,
-                              GURL("chrome://settings/account")),
+                              GURL(chrome::kChromeUIAccountSettingsURL)),
       CheckPromoActive(feature_engagement::kIPHSignInBenefitsFeature, false));
 }
 

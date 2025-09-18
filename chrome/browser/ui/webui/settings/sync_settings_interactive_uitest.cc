@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                                                "#acceptButton"};
   const DeepQuery kHistoryOptinRejectButton = {"history-sync-optin-app",
                                                "#rejectButton"};
-  const GURL kAccountSettingsUrl = GURL("chrome://settings/account");
+  const GURL kAccountSettingsUrl = GURL(chrome::kChromeUIAccountSettingsURL);
 
   RunTestSequence(
       InstrumentTab(kTabId, 0, browser()),
