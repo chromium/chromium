@@ -483,6 +483,13 @@ export class ComposeboxElement extends I18nMixinLit
     const inputElement = e.target as HTMLInputElement;
     this.input_ = inputElement.value;
     this.lastQueriedInput_ = this.input_;
+    // This is done to stop any in progress providers before requerying
+    // for on-focus (zero-suggest) inputs. The searchbox doesn't allow
+    // zero-suggest requests to be made while the ACController is not
+    // done.
+    if (this.lastQueriedInput_ === '') {
+      this.searchboxHandler_.stopAutocomplete(/*clearResult=*/ true);
+    }
     this.searchboxHandler_.queryAutocomplete(
         stringToMojoString16(this.$.input.value), false);
   }

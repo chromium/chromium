@@ -899,6 +899,30 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(0, handler.getCallCount('submitQuery'));
   });
 
+  test('composebox stops autocomplete when clearing input', async () => {
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Autocomplete should be queried when the composebox is created.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+    assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 0);
+
+    // Autocomplete complete should be queried when input is typed.
+    composeboxElement.$.input.value = 'T';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
+
+    // Deleting to empty input should stop autocomplete before querying it
+    // again.
+    composeboxElement.$.input.value = '';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 1);
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 3);
+  });
+
   suite('Context menu', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
