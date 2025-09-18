@@ -151,12 +151,6 @@ some common locales.
   [medium] 14 Haz 2023 16:50:00
   [long] 14 Haziran 2023 16:50:00 GMT+3
   [full] 14 Haziran 2023 Çarşamba 16:50:00 GMT+03:00
-[pa]
-  [default] 2023-06-14
-  [short] 2023-06-14 06:50 PM
-  [medium] 2023 M06 14 06:50:00 PM
-  [long] 2023 M06 14 06:50:00 PM GMT+5
-  [full] 2023 M06 14, Wed 06:50:00 PM Pakistan Standard Time
 [sw]
   [default] 14/6/2023
   [short] 14/06/2023, 16:50
@@ -205,12 +199,6 @@ some common locales.
   [medium] 14 มิ.ย. 2566 20:50:00
   [long] 14 มิถุนายน 2566 เวลา 20 นาฬิกา 50 นาที 00 วินาที GMT+7
   [full] วันพุธที่ 14 มิถุนายน พ.ศ. 2566 เวลา 20 นาฬิกา 50 นาที 00 วินาที เวลาอินโดจีน
-[jv]
-  [default] 6/14/2023
-  [short] 6/14/23, 8:50 PM
-  [medium] Jun 14, 2023, 8:50:00 PM
-  [long] June 14, 2023 at 8:50:00 PM GMT+7
-  [full] Wednesday, June 14, 2023 at 8:50:00 PM Western Indonesia Time
 [it]
   [default] 14/06/2023
   [short] 14/06/23, 15:50

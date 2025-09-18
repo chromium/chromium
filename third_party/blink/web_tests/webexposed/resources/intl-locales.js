@@ -133,10 +133,7 @@ const bigLocales = {
     currency: "TRY",
   },
   // 21. Western Punjabi
-  "pa": {
-    timeZone: "Asia/Karachi",
-    currency: "PKR",
-  },
+  // TODO(crbug.com/445771455): consider shipping "pa" locale data
   // 22. Swahili
   "sw": {
     timeZone: "Africa/Dar_es_Salaam",
@@ -179,10 +176,7 @@ const bigLocales = {
     currency: "THB",
   },
   // 30. Javanese
-  "jv": {
-    timeZone: "Asia/Jakarta",
-    currency: "IDR",
-  },
+  // TODO(crbug.com/445771455): consider shipping "jv" locale data
   // 31. Italian
   "it": {
     timeZone: "Europe/Rome",

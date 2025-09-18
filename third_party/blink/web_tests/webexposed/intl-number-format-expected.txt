@@ -122,11 +122,6 @@ some common locales.
   [default] 1.234
   [default] 12.345
   [TRY] ₺12.345,00
-[pa]
-  [default] 123
-  [default] 1,234
-  [default] 12,345
-  [PKR] PKR 12,345.00
 [sw]
   [default] 123
   [default] 1,234
@@ -167,11 +162,6 @@ some common locales.
   [default] 1,234
   [default] 12,345
   [THB] ฿12,345.00
-[jv]
-  [default] 123
-  [default] 1,234
-  [default] 12,345
-  [IDR] IDR 12,345.00
 [it]
   [default] 123
   [default] 1.234

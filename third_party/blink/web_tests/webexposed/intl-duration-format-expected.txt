@@ -126,11 +126,6 @@ some common locales.
   [narrow] 2s 35sn
   [short] 2 sa. 35 sn.
   [long] 2 saat 35 saniye
-[pa]
-  [digital] 2:00:35
-  [narrow] 2h, 35s
-  [short] 2 hr, 35 sec
-  [long] 2 hours, 35 seconds
 [sw]
   [digital] 2:00:35
   [narrow] saa 2 na sek 35
@@ -171,11 +166,6 @@ some common locales.
   [narrow] 2ชม. 35วิ
   [short] 2 ชม. 35 วิ
   [long] 2 ชั่วโมง และ 35 วินาที
-[jv]
-  [digital] 2:00:35
-  [narrow] 2h 35s
-  [short] 2 hr, 35 sec
-  [long] 2 hours, 35 seconds
 [it]
   [digital] 2:00:35
   [narrow] 2h 35s
