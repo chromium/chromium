@@ -9,15 +9,15 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/frame_view_chromeos.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
-#include "chromeos/ui/frame/non_client_frame_view_base.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
-class NonClientFrameViewTest : public ChromeOSBrowserUITest {
+class FrameViewChromeOSUiTest : public ChromeOSBrowserUITest {
  public:
   void SetUpOnMainThread() override {
     views::Widget::InitParams params(
@@ -31,12 +31,12 @@ class NonClientFrameViewTest : public ChromeOSBrowserUITest {
 
   aura::Window* window() { return widget_.GetNativeWindow(); }
 
-  views::NonClientFrameView* frame_view() {
+  views::FrameView* frame_view() {
     return widget_.non_client_view()->frame_view();
   }
 
   chromeos::HeaderView* header_view() {
-    return static_cast<chromeos::NonClientFrameViewBase*>(frame_view())
+    return static_cast<chromeos::FrameViewChromeOS*>(frame_view())
         ->GetHeaderView();
   }
 
@@ -50,7 +50,7 @@ class NonClientFrameViewTest : public ChromeOSBrowserUITest {
 // Regression test for:
 //   - https://crbug.com/839955
 //   - https://crbug.com/1385921
-IN_PROC_BROWSER_TEST_F(NonClientFrameViewTest,
+IN_PROC_BROWSER_TEST_F(FrameViewChromeOSUiTest,
                        ActiveStateOfButtonMatchesWidget) {
   // Wait for the widget to activate.
   ASSERT_TRUE(base::test::RunUntil([&]() { return widget()->IsActive(); }));
@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(NonClientFrameViewTest,
 }
 
 // Regression test for https://crbug.com/40223676
-IN_PROC_BROWSER_TEST_F(NonClientFrameViewTest,
+IN_PROC_BROWSER_TEST_F(FrameViewChromeOSUiTest,
                        TabletModeTitlebarHideForMaximizedWindow) {
   // TODO(https://crbug.com/325001477) Lacros updates inactive windows' state
   // late on tablet state change, so we have to wait for activation before
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(NonClientFrameViewTest,
             window()->GetProperty(aura::client::kTopViewInset));
 }
 
-IN_PROC_BROWSER_TEST_F(NonClientFrameViewTest,
+IN_PROC_BROWSER_TEST_F(FrameViewChromeOSUiTest,
                        TabletModeTitlebarHideForSnappedWindow) {
   if (!IsSnapWindowSupported()) {
     GTEST_SKIP() << "Ash is too old.";
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(NonClientFrameViewTest,
             window()->GetProperty(aura::client::kTopViewInset));
 }
 
-IN_PROC_BROWSER_TEST_F(NonClientFrameViewTest,
+IN_PROC_BROWSER_TEST_F(FrameViewChromeOSUiTest,
                        TabletModeTitlebarShowForFloatedWindow) {
   // TODO(https://crbug.com/325001477) Lacros updates inactive windows' state
   // late on tablet state change, so we have to wait for activation before

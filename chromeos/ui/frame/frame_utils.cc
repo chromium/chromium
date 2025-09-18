@@ -18,14 +18,14 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/views/window/hit_test_utils.h"
-#include "ui/views/window/non_client_view.h"
 
 namespace chromeos {
 
 using WindowOpacity = views::Widget::InitParams::WindowOpacity;
 
-int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
+int FrameBorderNonClientHitTest(views::FrameView* view,
                                 const gfx::Point& point_in_widget) {
   gfx::Rect expanded_bounds = view->bounds();
   int outside_bounds = chromeos::kResizeOutsideBoundsSize;

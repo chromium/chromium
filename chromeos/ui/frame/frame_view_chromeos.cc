@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ui/frame/non_client_frame_view_base.h"
+#include "chromeos/ui/frame/frame_view_chromeos.h"
 
 #include <memory>
 
@@ -24,14 +24,14 @@
 
 namespace chromeos {
 
-NonClientFrameViewBase::OverlayView::OverlayView(HeaderView* header_view)
+FrameViewChromeOS::OverlayView::OverlayView(HeaderView* header_view)
     : header_view_(header_view) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
 
-NonClientFrameViewBase::OverlayView::~OverlayView() = default;
+FrameViewChromeOS::OverlayView::~OverlayView() = default;
 
-void NonClientFrameViewBase::OverlayView::Layout(PassKey) {
+void FrameViewChromeOS::OverlayView::Layout(PassKey) {
   // Layout |header_view_| because layout affects the result of
   // GetPreferredOnScreenHeight().
   header_view_->DeprecatedLayoutImmediately();
@@ -49,7 +49,7 @@ void NonClientFrameViewBase::OverlayView::Layout(PassKey) {
   }
 }
 
-bool NonClientFrameViewBase::OverlayView::DoesIntersectRect(
+bool FrameViewChromeOS::OverlayView::DoesIntersectRect(
     const views::View* target,
     const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);
@@ -58,11 +58,10 @@ bool NonClientFrameViewBase::OverlayView::DoesIntersectRect(
   return header_view_->HitTestRect(rect);
 }
 
-BEGIN_METADATA(NonClientFrameViewBase, OverlayView)
+BEGIN_METADATA(FrameViewChromeOS, OverlayView)
 END_METADATA
 
-NonClientFrameViewBase::NonClientFrameViewBase(views::Widget* frame)
-    : frame_(frame) {
+FrameViewChromeOS::FrameViewChromeOS(views::Widget* frame) : frame_(frame) {
   DCHECK(frame_);
 
   auto header_view = std::make_unique<HeaderView>(frame_, this);
@@ -83,13 +82,13 @@ NonClientFrameViewBase::NonClientFrameViewBase(views::Widget* frame)
   UpdateDefaultFrameColors();
 }
 
-NonClientFrameViewBase::~NonClientFrameViewBase() = default;
+FrameViewChromeOS::~FrameViewChromeOS() = default;
 
-HeaderView* NonClientFrameViewBase::GetHeaderView() {
+HeaderView* FrameViewChromeOS::GetHeaderView() {
   return header_view_;
 }
 
-int NonClientFrameViewBase::NonClientTopBorderHeight() const {
+int FrameViewChromeOS::NonClientTopBorderHeight() const {
   const aura::Window* frame_window = frame_->GetNativeWindow();
   const WindowStateType window_state_type =
       frame_window->GetProperty(kWindowStateTypeKey);
@@ -109,45 +108,45 @@ int NonClientFrameViewBase::NonClientTopBorderHeight() const {
   return header_view_->GetPreferredHeight();
 }
 
-gfx::Rect NonClientFrameViewBase::GetBoundsForClientView() const {
+gfx::Rect FrameViewChromeOS::GetBoundsForClientView() const {
   gfx::Rect client_bounds = bounds();
   client_bounds.Inset(gfx::Insets::TLBR(NonClientTopBorderHeight(), 0, 0, 0));
   return client_bounds;
 }
 
-gfx::Rect NonClientFrameViewBase::GetWindowBoundsForClientBounds(
+gfx::Rect FrameViewChromeOS::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   gfx::Rect window_bounds = client_bounds;
   window_bounds.Inset(gfx::Insets::TLBR(-NonClientTopBorderHeight(), 0, 0, 0));
   return window_bounds;
 }
 
-int NonClientFrameViewBase::NonClientHitTest(const gfx::Point& point) {
+int FrameViewChromeOS::NonClientHitTest(const gfx::Point& point) {
   return FrameBorderNonClientHitTest(this, point);
 }
 
-void NonClientFrameViewBase::GetWindowMask(const gfx::Size& size,
-                                           SkPath* window_mask) {
+void FrameViewChromeOS::GetWindowMask(const gfx::Size& size,
+                                      SkPath* window_mask) {
   // No window masks in Aura.
 }
 
-void NonClientFrameViewBase::ResetWindowControls() {
+void FrameViewChromeOS::ResetWindowControls() {
   header_view_->ResetWindowControls();
 }
 
-void NonClientFrameViewBase::UpdateWindowTitle() {
+void FrameViewChromeOS::UpdateWindowTitle() {
   header_view_->SchedulePaintForTitle();
 }
 
-void NonClientFrameViewBase::SizeConstraintsChanged() {
+void FrameViewChromeOS::SizeConstraintsChanged() {
   header_view_->UpdateCaptionButtons();
 }
 
-views::View::Views NonClientFrameViewBase::GetChildrenInZOrder() {
+views::View::Views FrameViewChromeOS::GetChildrenInZOrder() {
   return header_view_->GetFrameHeader()->GetAdjustedChildrenInZOrder(this);
 }
 
-gfx::Size NonClientFrameViewBase::CalculatePreferredSize(
+gfx::Size FrameViewChromeOS::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   gfx::Size pref = frame_->client_view()->GetPreferredSize(available_size);
   gfx::Rect bounds(0, 0, pref.width(), pref.height());
@@ -156,8 +155,8 @@ gfx::Size NonClientFrameViewBase::CalculatePreferredSize(
       .size();
 }
 
-void NonClientFrameViewBase::Layout(PassKey) {
-  LayoutSuperclass<views::NonClientFrameView>(this);
+void FrameViewChromeOS::Layout(PassKey) {
+  LayoutSuperclass<views::FrameView>(this);
   if (!GetFrameEnabled())
     return;
   aura::Window* frame_window = frame_->GetNativeWindow();
@@ -165,7 +164,7 @@ void NonClientFrameViewBase::Layout(PassKey) {
                             NonClientTopBorderHeight());
 }
 
-gfx::Size NonClientFrameViewBase::GetMinimumSize() const {
+gfx::Size FrameViewChromeOS::GetMinimumSize() const {
   if (!GetFrameEnabled())
     return gfx::Size();
 
@@ -175,7 +174,7 @@ gfx::Size NonClientFrameViewBase::GetMinimumSize() const {
       NonClientTopBorderHeight() + min_client_view_size.height());
 }
 
-gfx::Size NonClientFrameViewBase::GetMaximumSize() const {
+gfx::Size FrameViewChromeOS::GetMaximumSize() const {
   gfx::Size max_client_size(frame_->client_view()->GetMaximumSize());
   int width = 0;
   int height = 0;
@@ -188,12 +187,12 @@ gfx::Size NonClientFrameViewBase::GetMaximumSize() const {
   return gfx::Size(width, height);
 }
 
-void NonClientFrameViewBase::OnThemeChanged() {
-  NonClientFrameView::OnThemeChanged();
+void FrameViewChromeOS::OnThemeChanged() {
+  FrameView::OnThemeChanged();
   UpdateDefaultFrameColors();
 }
 
-void NonClientFrameViewBase::UpdateDefaultFrameColors() {
+void FrameViewChromeOS::UpdateDefaultFrameColors() {
   aura::Window* frame_window = frame_->GetNativeWindow();
   if (!frame_window->GetProperty(kTrackDefaultFrameColors))
     return;
@@ -206,8 +205,8 @@ void NonClientFrameViewBase::UpdateDefaultFrameColors() {
                             color_provider->GetColor(ui::kColorFrameInactive));
 }
 
-bool NonClientFrameViewBase::DoesIntersectRect(const views::View* target,
-                                               const gfx::Rect& rect) const {
+bool FrameViewChromeOS::DoesIntersectRect(const views::View* target,
+                                          const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);
 
   // Give the OverlayView the first chance to handle events.
@@ -223,12 +222,12 @@ bool NonClientFrameViewBase::DoesIntersectRect(const views::View* target,
   return frame_->client_view()->HitTestRect(rect_in_client_view_coords);
 }
 
-void NonClientFrameViewBase::PaintAsActiveChanged() {
+void FrameViewChromeOS::PaintAsActiveChanged() {
   header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
   frame_->non_client_view()->DeprecatedLayoutImmediately();
 }
 
-void NonClientFrameViewBase::OnDisplayTabletStateChanged(
+void FrameViewChromeOS::OnDisplayTabletStateChanged(
     display::TabletState state) {
   switch (state) {
     case display::TabletState::kEnteringTabletMode:
@@ -244,7 +243,7 @@ void NonClientFrameViewBase::OnDisplayTabletStateChanged(
   }
 }
 
-BEGIN_METADATA(NonClientFrameViewBase)
+BEGIN_METADATA(FrameViewChromeOS)
 END_METADATA
 
 }  // namespace chromeos

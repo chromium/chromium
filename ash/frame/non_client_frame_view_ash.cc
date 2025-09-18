@@ -22,9 +22,9 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "chromeos/ui/frame/frame_view_chromeos.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
-#include "chromeos/ui/frame/non_client_frame_view_base.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -154,7 +154,7 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
 };
 
 NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
-    : chromeos::NonClientFrameViewBase(frame),
+    : chromeos::FrameViewChromeOS(frame),
       frame_context_menu_controller_(
           std::make_unique<FrameContextMenuController>(frame, this)) {
   header_view_->set_immersive_mode_changed_callback(base::BindRepeating(

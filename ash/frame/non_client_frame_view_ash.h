@@ -10,9 +10,9 @@
 #include "ash/ash_export.h"
 #include "ash/frame/frame_context_menu_controller.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ui/frame/frame_view_chromeos.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/highlight_border_overlay.h"
-#include "chromeos/ui/frame/non_client_frame_view_base.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -38,10 +38,10 @@ class NonClientFrameViewAshImmersiveHelper;
 // the top of the screen. See also views::DefaultFrameView and
 // BrowserFrameViewAsh.
 class ASH_EXPORT NonClientFrameViewAsh
-    : public chromeos::NonClientFrameViewBase,
+    : public chromeos::FrameViewChromeOS,
       public FrameContextMenuController::Delegate,
       public aura::WindowObserver {
-  METADATA_HEADER(NonClientFrameViewAsh, chromeos::NonClientFrameViewBase)
+  METADATA_HEADER(NonClientFrameViewAsh, chromeos::FrameViewChromeOS)
 
  public:
   // |control_immersive| controls whether ImmersiveFullscreenController is

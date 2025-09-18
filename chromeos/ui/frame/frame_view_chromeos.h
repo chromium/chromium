@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_UI_FRAME_NON_CLIENT_FRAME_VIEW_BASE_H_
-#define CHROMEOS_UI_FRAME_NON_CLIENT_FRAME_VIEW_BASE_H_
+#ifndef CHROMEOS_UI_FRAME_FRAME_VIEW_CHROMEOS_H_
+#define CHROMEOS_UI_FRAME_FRAME_VIEW_CHROMEOS_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -24,17 +24,17 @@ enum class TabletState;
 
 namespace chromeos {
 
-class NonClientFrameViewBase : public views::NonClientFrameView,
-                               public display::DisplayObserver {
-  METADATA_HEADER(NonClientFrameViewBase, views::NonClientFrameView)
+class FrameViewChromeOS : public views::FrameView,
+                          public display::DisplayObserver {
+  METADATA_HEADER(FrameViewChromeOS, views::FrameView)
 
  public:
-  explicit NonClientFrameViewBase(views::Widget* frame);
-  NonClientFrameViewBase(const NonClientFrameViewBase&) = delete;
-  NonClientFrameViewBase& operator=(const NonClientFrameViewBase&) = delete;
-  ~NonClientFrameViewBase() override;
+  explicit FrameViewChromeOS(views::Widget* frame);
+  FrameViewChromeOS(const FrameViewChromeOS&) = delete;
+  FrameViewChromeOS& operator=(const FrameViewChromeOS&) = delete;
+  ~FrameViewChromeOS() override;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
@@ -65,7 +65,7 @@ class NonClientFrameViewBase : public views::NonClientFrameView,
  protected:
   class OverlayView;
   virtual void UpdateDefaultFrameColors();
-  // views::NonClientFrameView:
+  // views::FrameView:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
   const raw_ptr<views::Widget> frame_;
@@ -83,7 +83,7 @@ class NonClientFrameViewBase : public views::NonClientFrameView,
 
   base::CallbackListSubscription paint_as_active_subscription_ =
       frame_->RegisterPaintAsActiveChangedCallback(
-          base::BindRepeating(&NonClientFrameViewBase::PaintAsActiveChanged,
+          base::BindRepeating(&FrameViewChromeOS::PaintAsActiveChanged,
                               base::Unretained(this)));
 
   display::ScopedDisplayObserver display_observer_{this};
@@ -92,8 +92,8 @@ class NonClientFrameViewBase : public views::NonClientFrameView,
 // View which takes up the entire widget and contains the HeaderView. HeaderView
 // is a child of OverlayView to avoid creating a larger texture than necessary
 // when painting the HeaderView to its own layer.
-class NonClientFrameViewBase::OverlayView : public views::View,
-                                            public views::ViewTargeterDelegate {
+class FrameViewChromeOS::OverlayView : public views::View,
+                                       public views::ViewTargeterDelegate {
   METADATA_HEADER(OverlayView, views::View)
 
  public:
@@ -115,4 +115,4 @@ class NonClientFrameViewBase::OverlayView : public views::View,
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_UI_FRAME_NON_CLIENT_FRAME_VIEW_BASE_H_
+#endif  // CHROMEOS_UI_FRAME_FRAME_VIEW_CHROMEOS_H_
