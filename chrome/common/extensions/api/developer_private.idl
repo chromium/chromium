@@ -820,6 +820,12 @@ namespace developerPrivate {
     static void uploadExtensionToAccount(DOMString extensionId,
                                          BoolCallback callback);
 
+    // Shows the site settings for the extension.
+    [platforms=("desktop_android")]
+    static void showSiteSettings(
+        DOMString extensionId
+    );
+
     [nocompile, deprecated="Use openDevTools"]
         static void inspect(InspectOptions options,
                             optional VoidCallback callback);

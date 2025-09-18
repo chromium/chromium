@@ -61,6 +61,7 @@ export interface ItemDelegate {
   recordUserAction(metricName: string): void;
   getItemStateChangedTarget():
       ChromeEvent<(data: chrome.developerPrivate.EventData) => void>;
+  showSiteSettings(id: string): void;
 }
 
 export class FakeChromeEvent {
@@ -114,6 +115,7 @@ export class DummyItemDelegate {
   getItemStateChangedTarget() {
     return new FakeChromeEvent();
   }
+  showSiteSettings(_id: string) {}
 }
 
 export interface ExtensionsItemElement {

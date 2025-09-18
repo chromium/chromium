@@ -11,3 +11,13 @@ DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction,
     "developerPrivate.dismissMv2DeprecationNoticeForExtension")
+
+namespace extensions::api {
+
+// TODO(crbug.com/445577526): Implement JNI for native settings
+ExtensionFunction::ResponseAction
+DeveloperPrivateShowSiteSettingsFunction::Run() {
+  return RespondNow(Error("Not implemented"));
+}
+
+}  // namespace extensions::api

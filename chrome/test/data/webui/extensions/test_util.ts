@@ -142,6 +142,8 @@ export class MockItemDelegate extends ClickMock implements ItemDelegate {
   getItemStateChangedTarget() {
     return this.itemStateChangedTarget;
   }
+
+  showSiteSettings(_id: string) {}
 }
 
 /**

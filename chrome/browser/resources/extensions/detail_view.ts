@@ -441,9 +441,14 @@ export class ExtensionsDetailViewElement extends
   }
 
   protected onSiteSettingsClick_() {
+    // <if expr="is_android">
+    this.delegate.showSiteSettings(this.data.id);
+    // </if>
+    // <if expr="not is_android">
     this.delegate.openUrl(
         `chrome://settings/content/siteDetails?site=chrome-extension://${
             this.data.id}`);
+    // </if>
   }
 
   protected onViewInStoreClick_() {

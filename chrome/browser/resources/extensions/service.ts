@@ -39,6 +39,7 @@ export interface ServiceInterface extends ActivityLogDelegate,
   shouldIgnoreUpdate(
       extensionId: string,
       eventType: chrome.developerPrivate.EventType): boolean;
+  showSiteSettings(extensionId: string): void;
 }
 
 export class Service implements ServiceInterface {
@@ -567,6 +568,10 @@ export class Service implements ServiceInterface {
 
   uploadItemToAccount(id: string): Promise<boolean> {
     return chrome.developerPrivate.uploadExtensionToAccount(id);
+  }
+
+  showSiteSettings(extensionId: string) {
+    chrome.developerPrivate.showSiteSettings(extensionId);
   }
 
   static getInstance(): ServiceInterface {

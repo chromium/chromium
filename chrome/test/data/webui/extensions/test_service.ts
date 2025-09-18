@@ -76,6 +76,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'shouldIgnoreUpdate',
       'showInFolder',
       'showItemOptionsPage',
+      'showSiteSettings',
       'updateAllExtensions',
       'updateExtensionCommandKeybinding',
       'updateExtensionCommandScope',
@@ -422,5 +423,9 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   uploadItemToAccount(id: string) {
     this.methodCalled('uploadItemToAccount', id);
     return Promise.resolve(false);
+  }
+
+  showSiteSettings(id: string) {
+    this.methodCalled('showSiteSettings', id);
   }
 }

@@ -20,4 +20,18 @@ DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     "developerPrivate.dismissMv2DeprecationNoticeForExtension",
     DEVELOPERPRIVATE_DISMISSMV2DEPRECATIONNOTICEFOREXTENSION);
 
+namespace extensions::api {
+
+class DeveloperPrivateShowSiteSettingsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.showSiteSettings",
+                             DEVELOPERPRIVATE_SHOWSITESETTINGS)
+
+ protected:
+  ~DeveloperPrivateShowSiteSettingsFunction() override {}
+  ResponseAction Run() override;
+};
+
+}  // namespace extensions::api
+
 #endif  // CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_ANDROID_H_

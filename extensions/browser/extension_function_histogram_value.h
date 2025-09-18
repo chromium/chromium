@@ -2008,6 +2008,7 @@ enum HistogramValue {
   PDFVIEWERPRIVATE_SAVETODRIVE = 1945,
   SIDEPANEL_GETLAYOUT = 1946,
   SIDEPANEL_CLOSE = 1947,
+  DEVELOPERPRIVATE_SHOWSITESETTINGS = 1948,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
