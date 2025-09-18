@@ -17586,6 +17586,7 @@
         {
             "platforms": [
                 "android",
+                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",
@@ -17593,15 +17594,18 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_1M_20250822",
+                    "name": "enabled_512K_20250912",
                     "params": {
-                        "PartitionAllocSchedulerLoopQuarantineConfig": "{\"browser\":{\"main\":{\"branch-capacity-in-bytes\":1048576,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false}}}",
+                        "PartitionAllocSchedulerLoopQuarantineConfig": "{\"browser\":{\"main\":{\"branch-capacity-in-bytes\":524288,\"enable-quarantine\":true,\"enable-zapping\":true,\"leak-on-destruction\":false}}}",
                         "enabled-processes": "browser-only"
                     },
                     "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",
                         "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
                         "PartitionAllocWithAdvancedChecks"
+                    ],
+                    "disable_features": [
+                        "ScreenAIPartitionAllocAdvancedChecksEnabled"
                     ]
                 }
             ]
@@ -22444,21 +22448,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "BocaSpotlightRobotRequester"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScreenAIPartitionAllocAdvancedChecksEnabled": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScreenAIPartitionAllocAdvancedChecksEnabled"
                     ]
                 }
             ]
