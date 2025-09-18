@@ -22,11 +22,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api_test_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/test/test_api.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
@@ -224,7 +224,7 @@ bool ExtensionApiTest::OpenTestURL(const GURL& url, bool open_in_incognito) {
 
 // Test that exactly one extension is loaded, and return it.
 const Extension* ExtensionApiTest::GetSingleLoadedExtension() {
-  return api_test_util::GetSingleLoadedExtension(profile(), message_);
+  return api_test_utils::GetSingleLoadedExtension(profile(), message_);
 }
 
 bool ExtensionApiTest::StartEmbeddedTestServer() {

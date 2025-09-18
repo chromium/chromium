@@ -343,8 +343,6 @@ static_library("test_support") {
 
   if (enable_extensions_core) {
     sources += [
-      "../browser/extensions/api_test_util.cc",
-      "../browser/extensions/api_test_util.h",
       "../browser/extensions/extension_apitest.cc",
       "../browser/extensions/extension_apitest.h",
       "../browser/extensions/extension_browser_test_util.cc",

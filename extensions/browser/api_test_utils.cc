@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/extension_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::ExtensionFunctionDispatcher;
@@ -225,6 +227,37 @@ bool RunFunction(scoped_refptr<ExtensionFunction> function,
 
   EXPECT_TRUE(response_helper.has_response());
   return response_helper.GetResponse();
+}
+
+const Extension* GetSingleLoadedExtension(content::BrowserContext* context,
+                                          std::string& message) {
+  ExtensionRegistry* registry = ExtensionRegistry::Get(context);
+
+  const Extension* result = nullptr;
+  for (const scoped_refptr<const Extension>& extension :
+       registry->enabled_extensions()) {
+    // Ignore any component extensions. They are automatically loaded into all
+    // profiles and aren't the extension we're looking for here.
+    if (extension->location() == mojom::ManifestLocation::kComponent) {
+      continue;
+    }
+
+    if (result != nullptr) {
+      // TODO(yoz): this is misleading; it counts component extensions.
+      message = base::StringPrintf(
+          "Expected only one extension to be present.  Found %u.",
+          static_cast<unsigned>(registry->enabled_extensions().size()));
+      return nullptr;
+    }
+
+    result = extension.get();
+  }
+
+  if (!result) {
+    message = "extension pointer is null.";
+    return nullptr;
+  }
+  return result;
 }
 
 }  // namespace api_test_utils
