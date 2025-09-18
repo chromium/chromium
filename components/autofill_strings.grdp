@@ -863,27 +863,6 @@
     Issue date
   </message>
 
-  <!-- Attributes of the flight reservation entity -->
-  <!-- TODO(crbug.com/436175248) - Add `desc` for all flight reservation attributes. -->
-  <!-- TODO(crbug.com/436175248) - Set `translateable` to `true` for all flight reservation attributes. -->
-  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_FLIGHT_NUMBER_ATTRIBUTE_NAME" translateable="false">
-    Flight number
-  </message>
-  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_TICKET_NUMBER_ATTRIBUTE_NAME" translateable="false">
-    Ticket number
-  </message>
-  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_CONFIRMATION_CODE_ATTRIBUTE_NAME" translateable="false">
-    Confirmation code
-  </message>
-  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_PASSENGER_NAME_ATTRIBUTE_NAME" translateable="false">
-    Passenger name
-  </message>
-  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_DEPARTURE_AIRPORT_ATTRIBUTE_NAME" translateable="false">
-    Departure airport
-  </message>
-  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ARRIVAL_AIRPORT_ATTRIBUTE_NAME" translateable="false">
-    Arrival airport
-  </message>
 
   <!-- Attributes of the national id card entity -->
   <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with enhanced autofill, we just call the value “Name”.">
