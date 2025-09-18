@@ -22,6 +22,17 @@ BASE_FEATURE(kCctSignInPrompt, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableSeamlessSignin, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Determines the sign-in promo UI that is shown when kEnableSeamlessSignin is
+// enabled.
+constexpr base::FeatureParam<SeamlessSigninPromoType>::Option
+    kSeamlessSigninPromoTypes[] = {
+        {SeamlessSigninPromoType::kCompact, "compact"},
+        {SeamlessSigninPromoType::kTwoButtons, "twoButtons"},
+};
+constexpr base::FeatureParam<SeamlessSigninPromoType> kSeamlessSigninPromoType{
+    &kEnableSeamlessSignin, "seamless-signin-promo-type",
+    SeamlessSigninPromoType::kCompact, &kSeamlessSigninPromoTypes};
+
 BASE_FEATURE(kForceHistoryOptInScreen, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a history sync educational tip in the magic stack on NTP.

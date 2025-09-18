@@ -33,6 +33,19 @@ BASE_DECLARE_FEATURE(kCctSignInPrompt);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableSeamlessSignin);
 
+enum class SeamlessSigninPromoType {
+  // Compact design with a single button to sign in and a dropdown icon for
+  // changing account.
+  kCompact,
+  // Design with a button to sign in and a button for changing account, similar
+  // to the current promo.
+  kTwoButtons,
+};
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<SeamlessSigninPromoType>
+    kSeamlessSigninPromoType;
+
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForceHistoryOptInScreen);
 
