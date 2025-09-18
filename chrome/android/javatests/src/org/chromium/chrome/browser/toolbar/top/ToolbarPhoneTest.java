@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +68,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -117,7 +117,7 @@ public class ToolbarPhoneTest {
     @Mock private Runnable mRequestRenderRunnable;
     @Mock ThemeColorProvider mThemeColorProvider;
     @Mock IncognitoStateProvider mIncognitoStateProvider;
-    @Mock GradientDrawable mLocationbarBackgroundDrawable;
+    @Mock LocationBarBackgroundDrawable mLocationbarBackgroundDrawable;
     @Mock OptionalButtonCoordinator mOptionalButtonCoordinator;
     @Mock private SearchEngineUtils mSearchEngineUtils;
 
@@ -318,7 +318,7 @@ public class ToolbarPhoneTest {
                                             BrandedColorScheme.APP_DEFAULT)));
                 });
         verify(mLocationbarBackgroundDrawable)
-                .setTint(
+                .setBackgroundColor(
                         OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
                                 mToolbar.getContext(), BrandedColorScheme.APP_DEFAULT));
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(focusedRadius);
@@ -337,7 +337,7 @@ public class ToolbarPhoneTest {
                                             mToolbar.getContext(),
                                             BrandedColorScheme.APP_DEFAULT)));
                 });
-        verify(mLocationbarBackgroundDrawable, atLeastOnce()).setTint(anyInt());
+        verify(mLocationbarBackgroundDrawable, atLeastOnce()).setBackgroundColor(anyInt());
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(nonFocusedRadius);
     }
 

@@ -13,21 +13,17 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
 
 import org.jni_zero.CheckDiscard;
 
@@ -718,23 +714,18 @@ public class SearchActivity extends AsyncInitializationActivity
     // defined on initialize in {@link SearchActivityLocationBarLayout}.
     private void setColorScheme(boolean isIncognito) {
         @ColorRes int anchorViewBackgroundColorRes = R.color.omnibox_suggestion_dropdown_bg;
-        GradientDrawable searchBoxBackground =
-                (GradientDrawable) ((LayerDrawable) mSearchBox.getBackground()).getDrawable(0);
+        @ColorRes int searchBoxColorRes = R.color.omnibox_suggestion_bg;
+
+        var searchBoxBackground = mSearchBox.getBackground();
 
         if (isIncognito) {
             anchorViewBackgroundColorRes = R.color.omnibox_dropdown_bg_incognito;
-            searchBoxBackground.setTintList(
-                    AppCompatResources.getColorStateList(
-                            this, R.color.toolbar_text_box_background_incognito));
-        } else {
-            searchBoxBackground.setTintList(null);
-            searchBoxBackground.setTint(
-                    ContextCompat.getColor(this, R.color.omnibox_suggestion_bg));
+            searchBoxColorRes = R.color.toolbar_text_box_background_incognito;
         }
 
-        @ColorInt int anchorViewBackgroundColor = getColor(anchorViewBackgroundColorRes);
         GradientDrawable anchorViewBackground = (GradientDrawable) mAnchorView.getBackground();
-        anchorViewBackground.setColor(anchorViewBackgroundColor);
+        anchorViewBackground.setColor(getColor(anchorViewBackgroundColorRes));
+        searchBoxBackground.setBackgroundColor(getColor(searchBoxColorRes));
         setStatusAndNavBarColors();
     }
 

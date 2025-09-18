@@ -29,11 +29,9 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import org.junit.After;
@@ -66,6 +64,7 @@ import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
+import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
@@ -202,8 +201,7 @@ public class SearchActivityUnitTest {
     private @Mock SearchActivityLocationBarLayout mLocationBar;
     private @Mock UmaActivityObserver mUmaObserver;
     private @Mock Callback<String> mSetCustomTabSearchClient;
-    private @Mock LayerDrawable mSearchBoxLayerDrawable;
-    private @Mock GradientDrawable mSearchBoxBackground;
+    private @Mock LocationBarBackgroundDrawable mSearchBoxBackground;
     private ObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
@@ -241,8 +239,7 @@ public class SearchActivityUnitTest {
         mAnchorView.setBackground(anchorViewBackground);
         mActivity.setAnchorViewForTesting(mAnchorView);
 
-        when(mLocationBar.getBackground()).thenReturn(mSearchBoxLayerDrawable);
-        when(mSearchBoxLayerDrawable.getDrawable(0)).thenReturn(mSearchBoxBackground);
+        when(mLocationBar.getBackground()).thenReturn(mSearchBoxBackground);
 
         ShadowSearchActivityUtils.sMockUtils = mUtils;
         ShadowWebContentsFactory.sMockWebContents = mWebContents;
@@ -1201,9 +1198,9 @@ public class SearchActivityUnitTest {
         assertEquals(
                 ColorStateList.valueOf(mActivity.getColor(R.color.omnibox_suggestion_dropdown_bg)),
                 ((GradientDrawable) mAnchorView.getBackground()).getColor());
-        verify(mSearchBoxBackground).setTintList(null);
         verify(mSearchBoxBackground)
-                .setTint(ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_bg));
+                .setBackgroundColor(
+                        ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_bg));
 
         // Toggle the incognito state and check that the search box has the correct color scheme.
         mDataProvider.setIsIncognitoForTesting(true);
@@ -1213,8 +1210,8 @@ public class SearchActivityUnitTest {
                 ColorStateList.valueOf(mActivity.getColor(R.color.omnibox_dropdown_bg_incognito)),
                 ((GradientDrawable) mAnchorView.getBackground()).getColor());
         verify(mSearchBoxBackground)
-                .setTintList(
-                        AppCompatResources.getColorStateList(
+                .setBackgroundColor(
+                        ContextCompat.getColor(
                                 mActivity, R.color.toolbar_text_box_background_incognito));
 
         // Toggle to non-incognito and check that the search box has the correct color scheme.
@@ -1224,8 +1221,8 @@ public class SearchActivityUnitTest {
         assertEquals(
                 ColorStateList.valueOf(mActivity.getColor(R.color.omnibox_suggestion_dropdown_bg)),
                 ((GradientDrawable) mAnchorView.getBackground()).getColor());
-        verify(mSearchBoxBackground, times(2)).setTintList(null);
         verify(mSearchBoxBackground, times(2))
-                .setTint(ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_bg));
+                .setBackgroundColor(
+                        ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_bg));
     }
 }

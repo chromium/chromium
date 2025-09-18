@@ -5,9 +5,6 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -20,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -65,9 +63,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
         findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
 
-        GradientDrawable backgroundDrawable =
-                ToolbarPhone.createModernLocationBarBackground(getContext());
-        backgroundDrawable.setTint(
+        var backgroundDrawable = ToolbarPhone.createModernLocationBarBackground(getContext());
+        backgroundDrawable.setBackgroundColor(
                 ContextCompat.getColor(getContext(), R.color.omnibox_suggestion_bg));
         backgroundDrawable.setCornerRadius(
                 getResources()
@@ -77,10 +74,9 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         int verticalInsets =
                 getResources().getDimensionPixelSize(R.dimen.location_bar_vertical_margin)
                         - OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(getContext()) / 2;
-        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[] {backgroundDrawable});
-        layerDrawable.setLayerInset(0, 0, verticalInsets, 0, verticalInsets); // Adjust padding
+        backgroundDrawable.setInsets(0, verticalInsets, 0, verticalInsets);
 
-        setBackground(layerDrawable);
+        setBackground(backgroundDrawable);
 
         // Expand status view's left and right space, and expand the vertical padding of the
         // location bar to match the expanded interface on the regular omnibox.
@@ -228,5 +224,10 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         return mInteractionFromWidget
                 ? LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET
                 : super.getLensEntryPoint();
+    }
+
+    @Override
+    public LocationBarBackgroundDrawable getBackground() {
+        return (LocationBarBackgroundDrawable) super.getBackground();
     }
 }
