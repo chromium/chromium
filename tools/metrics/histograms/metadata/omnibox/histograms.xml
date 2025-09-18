@@ -378,45 +378,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="RequestSource" variants="AimEligibilityRequestSource"/>
 </histogram>
 
-<histogram
-    name="Omnibox.AimEligibility.EligibilityResponse.is_eligible{RequestSource}"
-    enum="Boolean" expires_after="2026-08-05">
-  <owner>mahmadi@chromium.org</owner>
-  <owner>manukh@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    The AIM Eligibility service makes HTTP requests to determine which AIM
-    features the user is eligible for. The requests are triggered on startup and
-    when the state of accounts in the cookie jar changes.
-
-    This metric logs whether the response contained a &quot;is_eligible&quot;
-    field set to true, sliced by request source. If the field is missing or
-    false, this metric will log false. If the response fails (e.g. server is
-    down or response is poorly formatted), this metric will not be logged.
-  </summary>
-  <token key="RequestSource" variants="AimEligibilityRequestSource"/>
-</histogram>
-
-<histogram
-    name="Omnibox.AimEligibility.EligibilityResponse.is_pdf_upload_eligible{RequestSource}"
-    enum="Boolean" expires_after="2026-08-05">
-  <owner>mahmadi@chromium.org</owner>
-  <owner>manukh@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    The AIM Eligibility service makes HTTP requests to determine which AIM
-    features the user is eligible for. The requests are triggered on startup and
-    when the state of accounts in the cookie jar changes.
-
-    This metric logs whether the response contained a
-    &quot;is_pdf_upload_eligible&quot; field set to true, sliced by request
-    source. If the field is missing or false, this metric will log false. If the
-    response fails (e.g. server is down or response is poorly formatted), this
-    metric will not be logged.
-  </summary>
-  <token key="RequestSource" variants="AimEligibilityRequestSource"/>
-</histogram>
-
 <histogram name="Omnibox.AimEligibility.EligibilityResponseChange.is_eligible"
     enum="Boolean" expires_after="2026-08-05">
   <owner>mahmadi@chromium.org</owner>
@@ -483,6 +444,45 @@ Keep consistent with active providers. Doesn't need to include every provider in
     how often the clients are receiving a fresh response from the server, a
     stale response stored in the prefs, or the default value.
   </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.AimEligibility.EligibilityResponse{RequestSource}.is_eligible"
+    enum="Boolean" expires_after="2026-08-05">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The AIM Eligibility service makes HTTP requests to determine which AIM
+    features the user is eligible for. The requests are triggered on startup and
+    when the state of accounts in the cookie jar changes.
+
+    This metric logs whether the response contained a &quot;is_eligible&quot;
+    field set to true, sliced by request source. If the field is missing or
+    false, this metric will log false. If the response fails (e.g. server is
+    down or response is poorly formatted), this metric will not be logged.
+  </summary>
+  <token key="RequestSource" variants="AimEligibilityRequestSource"/>
+</histogram>
+
+<histogram
+    name="Omnibox.AimEligibility.EligibilityResponse{RequestSource}.is_pdf_upload_eligible"
+    enum="Boolean" expires_after="2026-08-05">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The AIM Eligibility service makes HTTP requests to determine which AIM
+    features the user is eligible for. The requests are triggered on startup and
+    when the state of accounts in the cookie jar changes.
+
+    This metric logs whether the response contained a
+    &quot;is_pdf_upload_eligible&quot; field set to true, sliced by request
+    source. If the field is missing or false, this metric will log false. If the
+    response fails (e.g. server is down or response is poorly formatted), this
+    metric will not be logged.
+  </summary>
+  <token key="RequestSource" variants="AimEligibilityRequestSource"/>
 </histogram>
 
 <histogram name="Omnibox.AimEntrypoint.Activated.UserTextPresent"
