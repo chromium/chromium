@@ -8824,7 +8824,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def testBidiIdInClassic(self):
     conn = self.createWebSocketConnection()
-    root_context = self.getContextId(conn, 0)
+    root_context = self.getContextIdForUrl(conn, 'about:blank')
 
     resp = conn.SendCommand({
       'method': 'script.evaluate',
