@@ -130,12 +130,12 @@ void ActorKeyedService::ResetForTesting() {
   inactive_tasks_.clear();
 }
 
-TaskId ActorKeyedService::CreateTask() {
+TaskId ActorKeyedService::CreateTask(webui::mojom::TaskOptionsPtr options) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
   auto actor_task = std::make_unique<ActorTask>(
       profile_.get(), std::move(execution_engine),
-      ui::NewUiEventDispatcher(GetActorUiStateManager()));
+      ui::NewUiEventDispatcher(GetActorUiStateManager()), std::move(options));
   return AddActiveTask(std::move(actor_task));
 }
 

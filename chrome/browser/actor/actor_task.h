@@ -19,6 +19,7 @@
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -45,7 +46,8 @@ class ActorTask {
   ActorTask() = delete;
   ActorTask(Profile* profile,
             std::unique_ptr<ExecutionEngine> execution_engine,
-            std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
+            std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
+            webui::mojom::TaskOptionsPtr options = nullptr);
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;
   ~ActorTask();
@@ -55,6 +57,8 @@ class ActorTask {
   TaskId id() const { return id_; }
   // Can only be called by unit tests.
   void SetIdForTesting(int id);
+
+  const std::string& title() const { return title_; }
 
   // Once state leaves kCreated it should never go back. One state enters
   // kFinished or kCancelled it should never change.
@@ -155,6 +159,8 @@ class ActorTask {
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   TaskId id_;
+
+  std::string title_;
 
   // A timer for the current state that is not paused.
   std::optional<base::ElapsedTimer> current_timer_ = base::ElapsedTimer();

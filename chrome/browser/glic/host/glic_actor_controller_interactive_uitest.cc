@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
@@ -223,13 +224,17 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
             expected_result_string, "ExecuteAction"));
   }
 
-  auto CreateTask(actor::TaskId& out_task) {
+  auto CreateTask(actor::TaskId& out_task, std::string_view title) {
     return InAnyContext(WithElement(
-        kGlicContentsElementId, [&out_task](ui::TrackedElement* el) mutable {
+        kGlicContentsElementId, [&out_task, title = std::string(title)](
+                                    ui::TrackedElement* el) mutable {
           content::WebContents* glic_contents =
               AsInstrumentedWebContents(el)->web_contents();
           const int result =
-              content::EvalJs(glic_contents, "client.browser.createTask()")
+              content::EvalJs(
+                  glic_contents,
+                  content::JsReplace("client.browser.createTask({title: $1})",
+                                     title))
                   .ExtractInt();
           out_task = actor::TaskId(result);
         }));
@@ -461,7 +466,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     return Steps(
         // clang-format off
       InstrumentNextTab(new_tab_id),
-      CreateTask(task_id_),
+      CreateTask(task_id_, ""),
       CreateTabAction(task_id_,
                       browser()->session_id(),
                       /*foreground=*/true),
@@ -1442,7 +1447,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, FirstActionIsntTabScoped) {
   RunTestSequence(
       // clang-format off
     InitializeWithOpenGlicWindow(),
-    CreateTask(task_id_),
+    CreateTask(task_id_, ""),
     WaitAction()
       // clang-format on
   );
@@ -1725,6 +1730,37 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, WindowManagementTools) {
           "Initial window remains active")
   );
   // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, CreateTaskWithTitle) {
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  const std::string task_title = "My test title";
+
+  RunTestSequence(InitializeWithOpenGlicWindow(),    //
+                  CreateTask(task_id_, task_title),  //
+                  CheckResult(
+                      [this]() {
+                        const actor::ActorTask* task = GetActorTask();
+                        CHECK(task);
+                        return task->title();
+                      },
+                      task_title, "Task has title"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, CreateTaskNoTitle) {
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  RunTestSequence(InitializeWithOpenGlicWindow(),  //
+                  CreateTask(task_id_, ""),        //
+                  CheckResult(
+                      [this]() {
+                        const actor::ActorTask* task = GetActorTask();
+                        CHECK(task);
+                        return task->title();
+                      },
+                      "", "Task has no title"));
 }
 
 class GlicActorControllerWithScriptToolsTest

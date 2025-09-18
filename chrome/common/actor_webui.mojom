@@ -8,8 +8,14 @@ import "skia/public/mojom/bitmap.mojom";
 import "url/mojom/origin.mojom";
 
 //
-// Place the mojom struct that is required by the WebUI in this file.
+// Place the mojom structs that require Javascript bindings here.
 //
+
+// Contains information about the task.
+struct TaskOptions {
+  // A user-facing string that describes the task.
+  string? title;
+};
 
 // Describes how long the user grants the actor with the permission to actuate.
 // Used when the actor is to actuate with sensitive data, such as entering

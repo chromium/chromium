@@ -218,12 +218,13 @@ export declare interface GlicBrowserHost {
       (params: ActInFocusedTabParams): Promise<ActInFocusedTabResult>;
 
   /**
-   * Creates a task and returns its ID.
+   * Creates a task and returns its ID. The optional @param taskOptions
+   * contains information about the task that is being created.
    *
    * @throws {ActInFocusedTabError} on failure.
    *
    */
-  createTask?(): Promise<number>;
+  createTask?(taskOptions?: TaskOptions): Promise<number>;
 
   /**
    * Performs actions on the task with the given ID.
@@ -1264,6 +1265,16 @@ export declare interface Screenshot {
   mimeType: string;
   /** Image annotations for this screenshot. */
   originAnnotations: ImageOriginAnnotations;
+}
+
+/**
+ * Contains information about the task.
+ */
+export declare interface TaskOptions {
+  /**
+   * A user-facing string that describes the task.
+   */
+  title?: string;
 }
 
 /** Maps the ErrorWithReason.reasonType to the type of reason. */

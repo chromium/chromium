@@ -72,7 +72,9 @@ class ActorKeyedService : public KeyedService {
   void ResetForTesting();
 
   // Starts a new task with an execution engine and returns the new task's id.
-  TaskId CreateTask();
+  // `options`, when provided, contains information used to initialize the
+  // task.
+  TaskId CreateTask(webui::mojom::TaskOptionsPtr options = nullptr);
 
   // Executes the given ToolRequest actions using the execution engine for the
   // given task id.

@@ -32,11 +32,16 @@ ActorTask::ActingTabState& ActorTask::ActingTabState::operator=(
 
 ActorTask::ActorTask(Profile* profile,
                      std::unique_ptr<ExecutionEngine> execution_engine,
-                     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher)
+                     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
+                     webui::mojom::TaskOptionsPtr options)
     : profile_(profile),
       execution_engine_(std::move(execution_engine)),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
-      ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {}
+      ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {
+  if (options && options->title.has_value()) {
+    title_ = options->title.value();
+  }
+}
 
 ActorTask::~ActorTask() = default;
 

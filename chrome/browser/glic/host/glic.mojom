@@ -588,7 +588,9 @@ interface WebClientHandler {
                            pending_remote<PinCandidatesObserver> observer);
 
   // Creates a new task in the actor framework and returns the new task's ID.
-  CreateTask() => result<int32, CreateTaskErrorReason>;
+  // `task_options` contains information used to initialize the task.
+  CreateTask(actor.webui.mojom.TaskOptions? task_options)
+      => result<int32, CreateTaskErrorReason>;
 
   // Executes the given actions. `action_proto` is a serialized proto of type
   // optimization_guide::proto::Actions. Returns the result of the actions as a
