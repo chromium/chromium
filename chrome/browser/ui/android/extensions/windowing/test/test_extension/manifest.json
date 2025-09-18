@@ -6,6 +6,9 @@
   "action": {
     "default_popup": "default_popup.html"
   },
+  "background": {
+    "service_worker": "window_event_listener_service_worker.js"
+  },
   "permissions": [
     "tabs"
   ]

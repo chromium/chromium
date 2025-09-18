@@ -69,6 +69,7 @@ async function initWindowIdTextInput() {
         const window = await chrome.windows.getCurrent();
         document.getElementById("get_window_id_input").value = window.id;
         document.getElementById("update_window_id_input").value = window.id;
+        document.getElementById("remove_window_id_input").value = window.id;
     } catch (error) {
         setApiReturnValue(
             `Unable to initialize window ID text input: ${error}`);
@@ -109,6 +110,15 @@ document.getElementById("get_window_button").onclick = async () => {
         setApiReturnValue(`${error}`);
     }
 };
+
+document.getElementById("remove_window_button").onclick = async () => {
+    try {
+        const windowId = getWindowIdFromTextInput("remove_window_id_input");
+        await chrome.windows.remove(windowId);
+    } catch (error) {
+        setApiReturnValue(`${error}`);
+    }
+}
 
 document.getElementById("update_window_button").onclick = async () => {
     try {
