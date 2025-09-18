@@ -7,10 +7,6 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-#container {
-  margin-top: 20px;
-}
-
 @keyframes spin {
   0% {
     transform: rotate(0deg);

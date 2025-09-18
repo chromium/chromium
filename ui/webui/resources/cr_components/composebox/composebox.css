@@ -200,7 +200,8 @@
 }
 
 #carousel {
-  padding-inline-start: var(--text-input-inline-start-spacing);
+  padding-inline-start: var(--text-input-left-spacing);
+  padding-bottom: 12px;
 }
 
 #textContainer {
@@ -326,7 +327,6 @@ ntp-composebox-dropdown {
 #contextEntrypoint {
   color: var(--color-searchbox-results-foreground);
   margin-inline-start: 6px;
-  margin-top: 8px;
 }
 
 #uploadContainer {
