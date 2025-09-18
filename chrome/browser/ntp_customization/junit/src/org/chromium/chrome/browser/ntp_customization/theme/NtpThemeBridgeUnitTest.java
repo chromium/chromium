@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,12 +18,14 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge.ThemeCollectionSelectionListener;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -42,6 +45,7 @@ public class NtpThemeBridgeUnitTest {
     @Mock private Profile mProfile;
     @Mock private Callback<List<BackgroundCollection>> mBackgroundCollectionsCallback;
     @Mock private Callback<List<CollectionImage>> mCollectionImagesCallback;
+    @Mock private ThemeCollectionSelectionListener mListener;
     @Captor private ArgumentCaptor<Callback<Object[]>> mObjectArrayCallbackCaptor;
 
     private NtpThemeBridge mNtpThemeBridge;
@@ -147,5 +151,35 @@ public class NtpThemeBridgeUnitTest {
         Assert.assertEquals(previewImageUrl, image.previewImageUrl);
         Assert.assertEquals(List.of("foo", "bar"), image.attribution);
         Assert.assertEquals(attributionUrl, image.attributionUrl);
+    }
+
+    @Test
+    public void testThemeSelection() {
+        // Initially, selection is null.
+        Assert.assertNull(mNtpThemeBridge.getSelectedThemeCollectionId());
+        Assert.assertNull(mNtpThemeBridge.getSelectedThemeCollectionImageUrl());
+
+        // Add a listener.
+        mNtpThemeBridge.addListener(mListener);
+
+        // Set a theme.
+        String collectionId = "test_id";
+        GURL imageUrl = JUnitTestGURLs.URL_1;
+        mNtpThemeBridge.setSelectedTheme(collectionId, imageUrl);
+
+        // Verify getters and listener callback.
+        Assert.assertEquals(collectionId, mNtpThemeBridge.getSelectedThemeCollectionId());
+        Assert.assertEquals(imageUrl, mNtpThemeBridge.getSelectedThemeCollectionImageUrl());
+        verify(mListener).onThemeCollectionSelectionChanged(eq(collectionId), eq(imageUrl));
+
+        // Remove the listener.
+        mNtpThemeBridge.removeListener(mListener);
+        Mockito.clearInvocations(mListener);
+
+        // Set a different theme.
+        mNtpThemeBridge.setSelectedTheme("id2", JUnitTestGURLs.URL_2);
+
+        // Verify the listener was not called again.
+        verify(mListener, never()).onThemeCollectionSelectionChanged(any(), any());
     }
 }

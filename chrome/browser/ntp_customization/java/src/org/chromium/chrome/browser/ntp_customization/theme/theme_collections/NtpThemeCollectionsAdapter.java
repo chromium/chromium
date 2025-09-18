@@ -40,6 +40,8 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
     private final View.@Nullable OnClickListener mOnClickListener;
     private final ImageFetcher mImageFetcher;
     private @Nullable RecyclerView mRecyclerView;
+    private @Nullable String mSelectedThemeCollectionId;
+    private @Nullable GURL mSelectedThemeCollectionImageUrl;
 
     @IntDef({
         ThemeCollectionsItemType.THEME_COLLECTIONS_ITEM,
@@ -103,12 +105,17 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         switch (holder.getItemViewType()) {
             case THEME_COLLECTIONS_ITEM:
                 BackgroundCollection collectionItem = (BackgroundCollection) mItems.get(position);
+                viewHolder.itemView.setActivated(
+                        collectionItem.id.equals(mSelectedThemeCollectionId));
                 viewHolder.mTitle.setText(collectionItem.label);
                 fetchImageWithPlaceholder(viewHolder, collectionItem.previewImageUrl);
                 break;
 
             case SINGLE_THEME_COLLECTION_ITEM:
                 CollectionImage imageItem = (CollectionImage) mItems.get(position);
+                viewHolder.itemView.setActivated(
+                        imageItem.collectionId.equals(mSelectedThemeCollectionId)
+                                && imageItem.imageUrl.equals(mSelectedThemeCollectionImageUrl));
                 viewHolder.mTitle.setVisibility(View.GONE);
                 fetchImageWithPlaceholder(viewHolder, imageItem.previewImageUrl);
                 break;
@@ -116,6 +123,7 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
             default:
                 assert false : "Theme collections item type not supported!";
         }
+
         viewHolder.mView.setOnClickListener(mOnClickListener);
     }
 
@@ -148,6 +156,21 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
                 holder.itemView.setOnClickListener(null);
             }
         }
+    }
+
+    /**
+     * Updates the currently selected theme collections item and refreshes the views.
+     *
+     * @param collectionId The ID of the selected theme collection.
+     * @param imageUrl The URL of the selected theme collection image.
+     */
+    @SuppressWarnings("notifyDataSetChanged")
+    public void setSelection(@Nullable String collectionId, @Nullable GURL imageUrl) {
+        mSelectedThemeCollectionId = collectionId;
+        mSelectedThemeCollectionImageUrl = imageUrl;
+        // TODO(https://crbug.com/440584354): Make NtpThemeCollectionsAdapter follow the MVC design
+        // patten and try to forbid notifyDataSetChanged.
+        notifyDataSetChanged();
     }
 
     /**

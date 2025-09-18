@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
@@ -25,6 +26,24 @@ public class NtpThemeBridge {
 
     private long mNativeNtpThemeBridge;
 
+    // The theme collection that the user has currently chosen.
+    private @Nullable String mSelectedThemeCollectionId;
+    // The theme collection image that the user has currently chosen.
+    private @Nullable GURL mSelectedThemeCollectionImageUrl;
+    private final ObserverList<ThemeCollectionSelectionListener> mThemeCollectionSelectionListeners;
+
+    /** An interface to get theme collection updates. */
+    public interface ThemeCollectionSelectionListener {
+        /**
+         * Called when the user selects a new theme collection image.
+         *
+         * @param themeCollectionId The ID of the theme collection the image belongs to.
+         * @param themeCollectionImageUrl The URL of the selected theme collection image.
+         */
+        default void onThemeCollectionSelectionChanged(
+                @Nullable String themeCollectionId, @Nullable GURL themeCollectionImageUrl) {}
+    }
+
     /**
      * Constructs a new NtpThemeBridge.
      *
@@ -32,6 +51,9 @@ public class NtpThemeBridge {
      */
     public NtpThemeBridge(Profile profile) {
         mNativeNtpThemeBridge = NtpThemeBridgeJni.get().init(profile);
+        mThemeCollectionSelectionListeners = new ObserverList<>();
+        // TODO(crbug.com/423579377): Load selected theme collection information from
+        // SharedPreferences here
     }
 
     /** Cleans up the C++ side of this class. */
@@ -134,6 +156,48 @@ public class NtpThemeBridge {
                 previewImageUrl,
                 Arrays.asList(attribution),
                 attributionUrl);
+    }
+
+    public @Nullable String getSelectedThemeCollectionId() {
+        return mSelectedThemeCollectionId;
+    }
+
+    public @Nullable GURL getSelectedThemeCollectionImageUrl() {
+        return mSelectedThemeCollectionImageUrl;
+    }
+
+    /**
+     * Sets the currently selected theme collection image from a theme collection.
+     *
+     * @param themeCollectionId The ID of the theme collection.
+     * @param themeCollectionImageUrl The URL of the theme collection image.
+     */
+    public void setSelectedTheme(
+            @Nullable String themeCollectionId, @Nullable GURL themeCollectionImageUrl) {
+        mSelectedThemeCollectionId = themeCollectionId;
+        mSelectedThemeCollectionImageUrl = themeCollectionImageUrl;
+
+        for (ThemeCollectionSelectionListener listener : mThemeCollectionSelectionListeners) {
+            listener.onThemeCollectionSelectionChanged(
+                    mSelectedThemeCollectionId, mSelectedThemeCollectionImageUrl);
+        }
+    }
+
+    /**
+     * Adds a {@link ThemeCollectionSelectionListener} to receive updates when the theme collection
+     * selection changes.
+     */
+    public void addListener(ThemeCollectionSelectionListener listener) {
+        mThemeCollectionSelectionListeners.addObserver(listener);
+    }
+
+    /**
+     * Removes the given listener from the selection listener list.
+     *
+     * @param listener The listener to remove.
+     */
+    public void removeListener(ThemeCollectionSelectionListener listener) {
+        mThemeCollectionSelectionListeners.removeObserver(listener);
     }
 
     @NativeMethods

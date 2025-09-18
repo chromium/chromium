@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link NtpThemeCollectionsCoordinator}. */
@@ -93,7 +94,19 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
     @Test
     public void testConstructor() {
         assertNotNull(mBottomSheetView);
-        verify(mNtpThemeBridgeJniMock).getBackgroundCollections(eq(1L), any());
+        verify(mNtpThemeBridgeJniMock).getBackgroundCollections(eq(1L), mCallbackCaptor.capture());
+
+        RecyclerView recyclerView =
+                mBottomSheetView.findViewById(R.id.theme_collections_recycler_view);
+        NtpThemeCollectionsAdapter adapter = (NtpThemeCollectionsAdapter) recyclerView.getAdapter();
+        NtpThemeCollectionsAdapter adapterSpy = spy(adapter);
+        mCoordinator.setNtpThemeCollectionsAdapterForTesting(adapterSpy);
+
+        Object[] collections = new Object[0];
+        mCallbackCaptor.getValue().onResult(collections);
+
+        verify(mBottomSheetController).expandSheet();
+        verify(adapterSpy).setSelection(any(), any());
     }
 
     @Test
@@ -135,8 +148,8 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
         RecyclerView recyclerView =
                 mBottomSheetView.findViewById(R.id.theme_collections_recycler_view);
         NtpThemeCollectionsAdapter adapter = (NtpThemeCollectionsAdapter) recyclerView.getAdapter();
-        NtpThemeCollectionsAdapter spiedAdapter = spy(adapter);
-        mCoordinator.setNtpThemeCollectionsAdapterForTesting(spiedAdapter);
+        NtpThemeCollectionsAdapter adapterSpy = spy(adapter);
+        mCoordinator.setNtpThemeCollectionsAdapterForTesting(adapterSpy);
         mCoordinator.setNtpSingleThemeCollectionCoordinatorForTesting(
                 mNtpSingleThemeCollectionCoordinator);
 
@@ -148,7 +161,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
 
         assertFalse(backButton.hasOnClickListeners());
         assertFalse(learnMoreButton.hasOnClickListeners());
-        verify(spiedAdapter).clearOnClickListeners();
+        verify(adapterSpy).clearOnClickListeners();
         verify(mNtpSingleThemeCollectionCoordinator).destroy();
         verify(mNtpThemeBridgeJniMock).destroy(eq(1L));
     }
@@ -195,5 +208,22 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                         eq(BottomSheetController.SheetState.FULL));
         verify(mBottomSheetDelegate, times(2))
                 .showBottomSheet(eq(BottomSheetType.SINGLE_THEME_COLLECTION));
+    }
+
+    @Test
+    public void testOnThemeSelectionChanged() {
+        RecyclerView recyclerView =
+                mBottomSheetView.findViewById(R.id.theme_collections_recycler_view);
+        NtpThemeCollectionsAdapter adapter = (NtpThemeCollectionsAdapter) recyclerView.getAdapter();
+        NtpThemeCollectionsAdapter adapterSpy = spy(adapter);
+        mCoordinator.setNtpThemeCollectionsAdapterForTesting(adapterSpy);
+
+        NtpThemeBridge ntpThemeBridge = mCoordinator.getNtpThemeBridgeForTesting();
+
+        String collectionId = "test_id";
+        GURL imageUrl = JUnitTestGURLs.URL_2;
+        ntpThemeBridge.setSelectedTheme(collectionId, imageUrl);
+
+        verify(adapterSpy).setSelection(eq(collectionId), eq(imageUrl));
     }
 }

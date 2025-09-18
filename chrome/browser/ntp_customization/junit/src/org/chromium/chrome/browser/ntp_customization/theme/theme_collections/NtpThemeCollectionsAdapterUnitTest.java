@@ -146,6 +146,7 @@ public class NtpThemeCollectionsAdapterUnitTest {
         assertEquals(THEME_COLLECTION_TITLE, viewHolder.mTitle.getText().toString());
         assertEquals(View.VISIBLE, viewHolder.mTitle.getVisibility());
         assertTrue(viewHolder.mView.hasOnClickListeners());
+        assertFalse(viewHolder.itemView.isActivated());
 
         ArgumentCaptor<ImageFetcher.Params> paramsCaptor =
                 ArgumentCaptor.forClass(ImageFetcher.Params.class);
@@ -169,6 +170,7 @@ public class NtpThemeCollectionsAdapterUnitTest {
 
         assertEquals(View.GONE, viewHolder.mTitle.getVisibility());
         assertTrue(viewHolder.mView.hasOnClickListeners());
+        assertFalse(viewHolder.itemView.isActivated());
 
         ArgumentCaptor<ImageFetcher.Params> paramsCaptor =
                 ArgumentCaptor.forClass(ImageFetcher.Params.class);
@@ -292,5 +294,74 @@ public class NtpThemeCollectionsAdapterUnitTest {
         firstCallback.onResult(bitmap);
 
         verify(viewHolder.mImage, never()).setImageBitmap(bitmap);
+    }
+
+    @Test
+    public void testSetSelection_themeCollectionItem() throws Exception {
+        NtpThemeCollectionsAdapter adapter =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItems, THEME_COLLECTIONS_ITEM, mOnClickListener, mImageFetcher);
+        ThemeCollectionViewHolder viewHolder =
+                (ThemeCollectionViewHolder)
+                        adapter.onCreateViewHolder(mParent, THEME_COLLECTIONS_ITEM);
+        Field itemViewTypeField = RecyclerView.ViewHolder.class.getDeclaredField("mItemViewType");
+        itemViewTypeField.setAccessible(true);
+        itemViewTypeField.set(viewHolder, THEME_COLLECTIONS_ITEM);
+
+        // Initially, nothing is selected.
+        adapter.onBindViewHolder(viewHolder, 0);
+        assertFalse(viewHolder.itemView.isActivated());
+
+        // Select the first item.
+        adapter.setSelection(mCollectionItems.get(0).id, null);
+        adapter.onBindViewHolder(viewHolder, 0);
+        assertTrue(viewHolder.itemView.isActivated());
+
+        // Bind a different item, it should not be selected.
+        ThemeCollectionViewHolder viewHolder2 =
+                (ThemeCollectionViewHolder)
+                        adapter.onCreateViewHolder(mParent, THEME_COLLECTIONS_ITEM);
+        itemViewTypeField.set(viewHolder2, THEME_COLLECTIONS_ITEM);
+        adapter.onBindViewHolder(viewHolder2, 1);
+        assertFalse(viewHolder2.itemView.isActivated());
+
+        // Select the second item.
+        adapter.setSelection(mCollectionItems.get(1).id, null);
+        adapter.onBindViewHolder(viewHolder, 0);
+        assertFalse(viewHolder.itemView.isActivated());
+        adapter.onBindViewHolder(viewHolder2, 1);
+        assertTrue(viewHolder2.itemView.isActivated());
+    }
+
+    @Test
+    public void testSetSelection_singleThemeCollectionItem() throws Exception {
+        NtpThemeCollectionsAdapter adapter =
+                new NtpThemeCollectionsAdapter(
+                        mImageItems, SINGLE_THEME_COLLECTION_ITEM, mOnClickListener, mImageFetcher);
+        ThemeCollectionViewHolder viewHolder =
+                (ThemeCollectionViewHolder)
+                        adapter.onCreateViewHolder(mParent, SINGLE_THEME_COLLECTION_ITEM);
+        Field itemViewTypeField = RecyclerView.ViewHolder.class.getDeclaredField("mItemViewType");
+        itemViewTypeField.setAccessible(true);
+        itemViewTypeField.set(viewHolder, SINGLE_THEME_COLLECTION_ITEM);
+
+        // Initially, nothing is selected.
+        adapter.onBindViewHolder(viewHolder, 0);
+        assertFalse(viewHolder.itemView.isActivated());
+
+        // Select the first item.
+        adapter.setSelection(mImageItems.get(0).collectionId, mImageItems.get(0).imageUrl);
+        adapter.onBindViewHolder(viewHolder, 0);
+        assertTrue(viewHolder.itemView.isActivated());
+
+        // Select with only matching collectionId, should not be activated.
+        adapter.setSelection(mImageItems.get(0).collectionId, JUnitTestGURLs.URL_2);
+        adapter.onBindViewHolder(viewHolder, 0);
+        assertFalse(viewHolder.itemView.isActivated());
+
+        // Select with only matching imageUrl, should not be activated.
+        adapter.setSelection("id2", mImageItems.get(0).imageUrl);
+        adapter.onBindViewHolder(viewHolder, 0);
+        assertFalse(viewHolder.itemView.isActivated());
     }
 }

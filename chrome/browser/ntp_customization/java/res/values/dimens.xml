@@ -42,4 +42,7 @@ found in the LICENSE file.
   <dimen name="ntp_customization_theme_collections_bottom_sheet_title_margin_top">16dp</dimen>
   <dimen name="ntp_customization_theme_collections_recycler_view_margin_top">4dp</dimen>
   <dimen name="ntp_customization_single_theme_collection_recycler_view_margin_top">12dp</dimen>
+  <dimen name="ntp_customization_theme_collections_list_item_background_radius">12dp</dimen>
+  <dimen name="ntp_customization_theme_collections_list_item_selected_background_inner_radius">8dp</dimen>
+  <dimen name="ntp_customization_theme_collections_list_item_selected_background_width">4dp</dimen>
 </resources>

@@ -19,11 +19,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge.ThemeCollectionSelectionListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +53,8 @@ public class NtpSingleThemeCollectionCoordinator {
     private final NtpThemeBridge mNtpThemeBridge;
     private final ImageFetcher mImageFetcher;
     private final BottomSheetDelegate mBottomSheetDelegate;
+    private final ThemeCollectionSelectionListener mThemeCollectionSelectionListener;
+    private boolean mHasDisplayedBefore;
 
     /**
      * Constructor for the single theme collection coordinator.
@@ -113,12 +118,26 @@ public class NtpSingleThemeCollectionCoordinator {
                 new NtpThemeCollectionsAdapter(
                         mThemeCollectionImageList,
                         SINGLE_THEME_COLLECTION_ITEM,
-                        /* onClickListener= */ null,
+                        this::handleThemeCollectionImageClick,
                         mImageFetcher);
         mSingleThemeCollectionBottomSheetRecyclerView.setAdapter(mNtpThemeCollectionsAdapter);
 
         // Fetches the images for the current collection.
-        fetchImagesForCollection(previousBottomSheetState, /* isDisplayedFirstTime= */ true);
+        fetchImagesForCollection(previousBottomSheetState);
+
+        mThemeCollectionSelectionListener =
+                new ThemeCollectionSelectionListener() {
+                    @Override
+                    public void onThemeCollectionSelectionChanged(
+                            @Nullable String themeCollectionId,
+                            @Nullable GURL themeCollectionImageUrl) {
+                        if (mNtpThemeCollectionsAdapter != null) {
+                            mNtpThemeCollectionsAdapter.setSelection(
+                                    themeCollectionId, themeCollectionImageUrl);
+                        }
+                    }
+                };
+        mNtpThemeBridge.addListener(mThemeCollectionSelectionListener);
     }
 
     void destroy() {
@@ -128,6 +147,8 @@ public class NtpSingleThemeCollectionCoordinator {
         if (mNtpThemeCollectionsAdapter != null) {
             mNtpThemeCollectionsAdapter.clearOnClickListeners();
         }
+
+        mNtpThemeBridge.removeListener(mThemeCollectionSelectionListener);
     }
 
     /**
@@ -145,10 +166,21 @@ public class NtpSingleThemeCollectionCoordinator {
         mThemeCollectionTitle = themeCollectionTitle;
 
         mTitle.setText(mThemeCollectionTitle);
-        fetchImagesForCollection(previousBottomSheetState, /* isDisplayedFirstTime= */ false);
+        fetchImagesForCollection(previousBottomSheetState);
     }
 
-    void handleLearnMoreClick(View view) {
+    private void handleThemeCollectionImageClick(View view) {
+        int position = mSingleThemeCollectionBottomSheetRecyclerView.getChildAdapterPosition(view);
+        if (position == RecyclerView.NO_POSITION) return;
+
+        CollectionImage image = mThemeCollectionImageList.get(position);
+
+        // TODO(crbug.com/423579377): This will trigger the notification to all listeners, updating
+        // both adapters. Should be updated to the service.
+        mNtpThemeBridge.setSelectedTheme(image.collectionId, image.imageUrl);
+    }
+
+    private void handleLearnMoreClick(View view) {
         launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
     }
 
@@ -157,11 +189,8 @@ public class NtpSingleThemeCollectionCoordinator {
      *
      * @param previousBottomSheetState The bottom sheet state in the previous theme collections
      *     bottom sheet.
-     * @param isDisplayedFirstTime True if the single theme collection bottom sheet is displayed for
-     *     the first time.
      */
-    private void fetchImagesForCollection(
-            @SheetState int previousBottomSheetState, boolean isDisplayedFirstTime) {
+    private void fetchImagesForCollection(@SheetState int previousBottomSheetState) {
         mNtpThemeBridge.getBackgroundImages(
                 mThemeCollectionId,
                 (images) -> {
@@ -173,12 +202,21 @@ public class NtpSingleThemeCollectionCoordinator {
                     }
                     mNtpThemeCollectionsAdapter.setItems(mThemeCollectionImageList);
 
-                    if (previousBottomSheetState == SheetState.HALF || isDisplayedFirstTime) {
+                    if (previousBottomSheetState == SheetState.HALF || !mHasDisplayedBefore) {
                         // The single theme collection bottom sheet will be shown in a half state if
                         // it's either displayed for the first time or if the previous theme
                         // collections bottom sheet was in a half state.
                         mBottomSheetDelegate.getBottomSheetController().expandSheet();
                     }
+
+                    if (!mHasDisplayedBefore) {
+                        // After setting items, apply the current selection from the manager.
+                        mNtpThemeCollectionsAdapter.setSelection(
+                                mNtpThemeBridge.getSelectedThemeCollectionId(),
+                                mNtpThemeBridge.getSelectedThemeCollectionImageUrl());
+                    }
+
+                    mHasDisplayedBefore = true;
                 });
     }
 
