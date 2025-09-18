@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.RawRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.widget.ImageViewCompat;
 
@@ -157,6 +158,7 @@ public class NewTabPageLayout extends LinearLayout
     private TextView mFakeSearchBoxEditText;
     private Callback<Logo> mOnLogoAvailableCallback;
     private boolean mIsComposeplateEnabled;
+    private boolean mIsComposeplateV2Enabled;
     private @Nullable Supplier<GURL> mComposeplateUrlSupplier;
     private OnClickListener mVoiceSearchButtonClickListener;
     private OnClickListener mLensButtonClickListener;
@@ -263,6 +265,9 @@ public class NewTabPageLayout extends LinearLayout
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet, profile);
+        mIsComposeplateV2Enabled =
+                mIsComposeplateEnabled
+                        && ChromeFeatureList.sAndroidComposeplateV2Enabled.getValue();
         if (mIsComposeplateEnabled) {
             mComposeplateUrlSupplier = composeplateUrlSupplier;
         }
@@ -285,6 +290,10 @@ public class NewTabPageLayout extends LinearLayout
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mSearchBoxCoordinator.initialize(
                 lifecycleDispatcher, mProfile.isOffTheRecord(), mWindowAndroid);
+        if (mIsComposeplateV2Enabled) {
+            mSearchBoxCoordinator.setHeight(
+                    getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height_tall));
+        }
         int searchBoxHeight = mSearchBoxCoordinator.getView().getLayoutParams().height;
         mSearchBoxBoundsVerticalInset =
                 (searchBoxHeight
@@ -463,30 +472,51 @@ public class NewTabPageLayout extends LinearLayout
     private void initializeComposeplate() {
         if (!mIsComposeplateEnabled) return;
 
-        mComposeplateButtonClickListener =
-                view -> {
-                    if (mComposeplateUrlSupplier == null) return;
-                    GURL composeplateUrl = mComposeplateUrlSupplier.get();
-                    if (composeplateUrl == null) return;
-                    mManager.getNativePageHost()
-                            .loadUrl(new LoadUrlParams(composeplateUrl), /* incognito= */ false);
-                    ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
-                };
-        mSearchBoxCoordinator.setComposeplateButtonClickListener(mComposeplateButtonClickListener);
-        int iconRawResId =
-                ColorUtils.inNightMode(mContext)
-                        ? R.raw.composeplate_loop_dark
-                        : R.raw.composeplate_loop_light;
-        mSearchBoxCoordinator.setComposeplateButtonIconRawResId(iconRawResId);
+        if (!mIsComposeplateV2Enabled) {
+            mComposeplateButtonClickListener =
+                    view -> {
+                        onComposeplateButtonClicked(view);
+                        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
+                    };
+            mSearchBoxCoordinator.setComposeplateButtonClickListener(
+                    mComposeplateButtonClickListener);
+            @RawRes
+            int iconRawResId =
+                    ColorUtils.inNightMode(mContext)
+                            ? R.raw.composeplate_loop_dark
+                            : R.raw.composeplate_loop_light;
+            mSearchBoxCoordinator.setComposeplateButtonIconRawResId(iconRawResId);
 
-        ViewGroup composeplateView =
-                (ViewGroup) ((ViewStub) findViewById(R.id.composeplate_view_stub)).inflate();
+            ViewStub composeplateViewStub = findViewById(R.id.composeplate_view_stub);
+            ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
+            mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
+
+            assert mVoiceSearchButtonClickListener != null && mLensButtonClickListener != null;
+            mComposeplateCoordinator.setVoiceSearchClickListener(mVoiceSearchButtonClickListener);
+            mComposeplateCoordinator.setLensClickListener(mLensButtonClickListener);
+            mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
+            return;
+        }
+
+        ViewStub composeplateViewStub = findViewById(R.id.composeplate_view_v2_stub);
+        ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
         mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
-
-        assert mVoiceSearchButtonClickListener != null && mLensButtonClickListener != null;
-        mComposeplateCoordinator.setVoiceSearchClickListener(mVoiceSearchButtonClickListener);
-        mComposeplateCoordinator.setLensClickListener(mLensButtonClickListener);
         mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
+        // Don't log click metrics in this listener, since the mComposeplateCoordinator will
+        // log.
+        mComposeplateButtonClickListener = this::onComposeplateButtonClicked;
+        mComposeplateCoordinator.setComposeplateButtonClickListener(
+                mComposeplateButtonClickListener);
+    }
+
+    private void onComposeplateButtonClicked(View view) {
+        if (mComposeplateUrlSupplier == null) return;
+
+        GURL composeplateUrl = mComposeplateUrlSupplier.get();
+        if (composeplateUrl == null) return;
+
+        mManager.getNativePageHost()
+                .loadUrl(new LoadUrlParams(composeplateUrl), /* incognito= */ false);
     }
 
     private void onIncognitoButtonClicked(View view) {
@@ -1026,13 +1056,22 @@ public class NewTabPageLayout extends LinearLayout
         boolean shouldShowVoiceSearchButton = mManager.isVoiceSearchEnabled();
         boolean shouldShowLensButton =
                 mSearchBoxCoordinator.isLensEnabled(LensEntryPoint.NEW_TAB_PAGE);
-        if (!mIsComposeplateEnabled) {
+        if (!mIsComposeplateEnabled || mIsComposeplateV2Enabled) {
             mSearchBoxCoordinator.setVoiceSearchButtonVisibility(shouldShowVoiceSearchButton);
             mSearchBoxCoordinator.setLensButtonVisibility(shouldShowLensButton);
+            boolean shouldShowComposeplateButton = false;
+            if (mIsComposeplateV2Enabled) {
+                shouldShowComposeplateButton =
+                        mSearchProviderIsGoogle && IncognitoUtils.isIncognitoModeEnabled(mProfile);
+                if (mComposeplateCoordinator != null) {
+                    mComposeplateCoordinator.setVisibility(
+                            shouldShowComposeplateButton, mManager.isCurrentPage());
+                }
+            }
             updatePreviousButtonVisibilityAndRecordMetrics(
                     shouldShowVoiceSearchButton,
                     shouldShowLensButton,
-                    /* isComposeplateButtonVisible= */ false);
+                    shouldShowComposeplateButton);
             return;
         }
 
@@ -1045,7 +1084,7 @@ public class NewTabPageLayout extends LinearLayout
         mSearchBoxCoordinator.setLensButtonVisibility(isLensButtonVisible);
         mSearchBoxCoordinator.setComposeplateButtonVisibility(shouldShowComposeplateButton);
         if (mComposeplateCoordinator != null) {
-            mComposeplateCoordinator.setVisibility(
+            mComposeplateCoordinator.setVisibilityV1(
                     shouldShowComposeplateButton, mManager.isCurrentPage());
         }
 

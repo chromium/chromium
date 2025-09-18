@@ -33,10 +33,20 @@ found in the LICENSE file.
         android:id="@+id/composeplate_view_stub"
         android:layout_width="match_parent"
         android:layout_height="@dimen/composeplate_view_height"
-        android:layout_marginTop="@dimen/composeplate_view_margin_top"
+        android:layout_marginTop="@dimen/composeplate_view_margin_top_v1"
         android:layout_marginStart="@dimen/mvt_container_lateral_margin"
         android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
         android:layout="@layout/composeplate_view_layout"
+        android:visibility="gone" />
+
+    <ViewStub
+        android:id="@+id/composeplate_view_v2_stub"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/composeplate_view_height"
+        android:layout_marginTop="@dimen/composeplate_view_margin_top"
+        android:layout_marginStart="@dimen/mvt_container_lateral_margin"
+        android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
+        android:layout="@layout/composeplate_view_layout_v2"
         android:visibility="gone" />
 
     <!-- Query tiles -->

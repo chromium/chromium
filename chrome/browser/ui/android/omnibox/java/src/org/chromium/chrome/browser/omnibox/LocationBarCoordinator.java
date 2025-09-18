@@ -319,8 +319,9 @@ public class LocationBarCoordinator
         mLensButton = mLocationBarLayout.findViewById(R.id.lens_camera_button);
         mLensButton.setOnClickListener(mLocationBarMediator::lensButtonClicked);
 
-        mComposeplateButton = mLocationBarLayout.findViewById(R.id.composeplate_button);
-        if (ChromeFeatureList.sAndroidComposeplate.isEnabled()) {
+        if (ChromeFeatureList.sAndroidComposeplate.isEnabled()
+                && !ChromeFeatureList.sAndroidComposeplateV2Enabled.getValue()) {
+            mComposeplateButton = mLocationBarLayout.findViewById(R.id.composeplate_button);
             mComposeplateButton.setOnClickListener(mLocationBarMediator::composeplateButtonClicked);
         }
 
@@ -396,8 +397,10 @@ public class LocationBarCoordinator
         mLensButton.setOnClickListener(null);
         mLensButton = null;
 
-        mComposeplateButton.setOnClickListener(null);
-        mComposeplateButton = null;
+        if (mComposeplateButton != null) {
+            mComposeplateButton.setOnClickListener(null);
+            mComposeplateButton = null;
+        }
 
         mInstallButton.setOnClickListener(null);
         mInstallButton = null;

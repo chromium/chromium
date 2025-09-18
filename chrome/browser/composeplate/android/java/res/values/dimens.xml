@@ -7,7 +7,10 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <dimen name="composeplate_view_margin_top">8dp</dimen>
+    <dimen name="composeplate_view_margin_top_v1">8dp</dimen>
+    <dimen name="composeplate_view_margin_top">6dp</dimen>
     <dimen name="composeplate_view_button_margin">8dp</dimen>
     <dimen name="composeplate_view_height">48dp</dimen>
+    <dimen name="composeplate_view_icon_size">24dp</dimen>
+    <dimen name="composeplate_view_long_button_padding_top">2dp</dimen>
 </resources>
