@@ -194,6 +194,12 @@ void TabContextualizationController::OnPdfBytesReceived(
     pdf::mojom::PdfListener::GetPdfBytesStatus status,
     const std::vector<uint8_t>& bytes,
     uint32_t page_count) {
+  content::WebContents* web_contents = tab_->GetContents();
+  if (!web_contents) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   data->primary_content_type = lens::MimeType::kPdf;
   data->context_input = std::vector<lens::ContextualInput>();
   // TODO(crbug.com/370530197): Show user error message if status is not
@@ -210,8 +216,33 @@ void TabContextualizationController::OnPdfBytesReceived(
   data->context_input->push_back(
       lens::ContextualInput(std::move(file_data_vector), lens::MimeType::kPdf));
 
+  // Get the most visible page index if the PDF helper exists.
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+  if (pdf_helper) {
+    // TODO(crbug.com/443743308): Parallelize the PDF page index fetch with the
+    // PDF bytes fetch.
+    pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
+        &TabContextualizationController::OnPdfPageIndexReceived,
+        weak_ptr_factory_.GetWeakPtr(), std::move(data), std::move(callback)));
+    return;
+  }
+
+  // If the PDF helper no longer exists, set nullopt for the PDF page index.
+  OnPdfPageIndexReceived(std::move(data), std::move(callback),
+                         /*page_index=*/std::nullopt);
+}
+
+void TabContextualizationController::OnPdfPageIndexReceived(
+    std::unique_ptr<lens::ContextualInputData> data,
+    GetPageContextCallback callback,
+    std::optional<uint32_t> page_index) {
+  if (page_index.has_value()) {
+    data->pdf_current_page = page_index.value();
+  }
+
   // TODO(crbug.com/443743308): Parallelize the screenshot capture with the
-  // PDF bytes fetch.
+  // PDF page index fetch.
   CaptureScreenshot(
       /*image_options=*/std::nullopt,
       base::BindOnce(&TabContextualizationController::OnScreenshotCaptured,

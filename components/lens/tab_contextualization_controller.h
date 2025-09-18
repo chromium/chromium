@@ -115,11 +115,20 @@ class TabContextualizationController : public content::WebContentsObserver {
       std::optional<optimization_guide::AIPageContentResult> result);
 
 #if BUILDFLAG(ENABLE_PDF)
+  // Callback for when the PDF bytes are received. Triggers the PDF page
+  // index fetch and adds the pdf data to the contextual input data.
   void OnPdfBytesReceived(std::unique_ptr<lens::ContextualInputData> data,
                           GetPageContextCallback callback,
                           pdf::mojom::PdfListener::GetPdfBytesStatus status,
                           const std::vector<uint8_t>& bytes,
                           uint32_t page_count);
+
+  // Callback for when the PDF page index is received.
+  // Adds the PDF page index to the contextual input data and returns it to the
+  // callback.
+  void OnPdfPageIndexReceived(std::unique_ptr<lens::ContextualInputData> data,
+                              GetPageContextCallback callback,
+                              std::optional<uint32_t> page_index);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   // Downscales the screenshot if it exceeds the max dimension and calls the

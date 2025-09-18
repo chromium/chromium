@@ -117,6 +117,7 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
 
   EXPECT_EQ(data->page_url, url);
   EXPECT_TRUE(data->page_title.has_value());
+  EXPECT_TRUE(data->pdf_current_page.has_value());
   EXPECT_EQ(data->primary_content_type, lens::MimeType::kPdf);
   EXPECT_EQ(data->context_input->size(), 1u);
   EXPECT_EQ(data->context_input->at(0).content_type_, lens::MimeType::kPdf);
