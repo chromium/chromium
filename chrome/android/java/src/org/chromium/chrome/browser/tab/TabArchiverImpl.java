@@ -123,10 +123,10 @@ public class TabArchiverImpl implements TabArchiver {
                 });
 
         TabGroupModelFilter regularTabGroupModelFilter =
-                assumeNonNull(
-                        selectorToArchive
-                                .getTabGroupModelFilterProvider()
-                                .getCurrentTabGroupModelFilter());
+                selectorToArchive
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(/* isIncognito= */ false);
+        assert regularTabGroupModelFilter != null;
         TabModel model = regularTabGroupModelFilter.getTabModel();
 
         // Skip archiving if the declutter pass arises from a UI theme change or user is inactive.

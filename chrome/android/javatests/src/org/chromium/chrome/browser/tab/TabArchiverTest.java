@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -94,13 +93,9 @@ public class TabArchiverTest {
     private static final String TEST_PATH_2 = "/chrome/test/data/android/google.html";
 
     private @Mock Clock mClock;
-    private @Mock TabModelSelector mSelector;
     private @Mock Tab mTab;
-    private @Mock TabGroupModelFilterProvider mTabGroupModelFilterProvider;
-    private @Mock TabGroupModelFilter mTabGroupModelFilter;
     private @Mock TabGroupSyncService mTabGroupSyncService;
 
-    private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private TabArchiverImpl mTabArchiver;
     private TabModelSelector mRegularTabModelSelector;
     private TabModel mArchivedTabModel;
@@ -113,7 +108,7 @@ public class TabArchiverTest {
 
     @Before
     public void setUp() throws Exception {
-        mArchivedTabModelOrchestrator =
+        ArchivedTabModelOrchestrator archivedTabModelOrchestrator =
                 runOnUiThreadBlocking(
                         () ->
                                 ArchivedTabModelOrchestrator.getForProfile(
@@ -123,24 +118,16 @@ public class TabArchiverTest {
                                                 .get()
                                                 .getOriginalProfile()));
         TabGroupModelFilter archivedTabGroupModelFilter =
-                mArchivedTabModelOrchestrator
+                archivedTabModelOrchestrator
                         .getTabModelSelector()
                         .getTabGroupModelFilterProvider()
                         .getCurrentTabGroupModelFilter();
         mArchivedTabModel = archivedTabGroupModelFilter.getTabModel();
-        mArchivedTabCreator = mArchivedTabModelOrchestrator.getArchivedTabCreatorForTesting();
+        mArchivedTabCreator = archivedTabModelOrchestrator.getArchivedTabCreatorForTesting();
 
         mRegularTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
         mRegularTabModel = mActivityTestRule.getActivity().getCurrentTabModel();
         mRegularTabCreator = mActivityTestRule.getActivity().getTabCreator(false);
-
-        doReturn(mRegularTabModel).when(mSelector).getModel(anyBoolean());
-        doReturn(true).when(mSelector).isTabStateInitialized();
-        doReturn(mTabGroupModelFilterProvider).when(mSelector).getTabGroupModelFilterProvider();
-        doReturn(mTabGroupModelFilter)
-                .when(mTabGroupModelFilterProvider)
-                .getCurrentTabGroupModelFilter();
-        doReturn(mRegularTabModel).when(mTabGroupModelFilter).getTabModel();
 
         mSharedPrefs = ChromeSharedPreferences.getInstance();
         runOnUiThreadBlocking(
@@ -192,11 +179,11 @@ public class TabArchiverTest {
         assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
 
         assertEquals(
+                new ArrayList<>(),
                 mTabArchiver.getTabsToArchive(
                         mRegularTabModelSelector
                                 .getTabGroupModelFilterProvider()
-                                .getCurrentTabGroupModelFilter()),
-                new ArrayList<>());
+                                .getCurrentTabGroupModelFilter()));
     }
 
     @Test
@@ -1144,14 +1131,6 @@ public class TabArchiverTest {
         watcher.assertExpected();
         assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabAutoDeleted"));
         assertEquals(1, mUserActionTester.getActionCount("TabGroups.ArchivedTabGroupAutoDeleted"));
-    }
-
-    @Test
-    @MediumTest
-    public void testTabModelSelectorUninitialized() {
-        doReturn(false).when(mSelector).isTabStateInitialized();
-        runOnUiThreadBlocking(() -> mTabArchiver.doArchivePass(mSelector));
-        verify(mSelector, times(0)).getModel(anyBoolean());
     }
 
     @Test

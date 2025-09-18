@@ -313,7 +313,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     public @Nullable TabModel getTabModel() {
-        // If the tab model selector isn't ready yet, then return a placeholder supplier
+        // If the tab model selector isn't ready yet, then return a placeholder supplier.
         if (getTabModelSelector() == null) return null;
         return getTabModelSelector().getModel(/* incognito= */ false);
     }
