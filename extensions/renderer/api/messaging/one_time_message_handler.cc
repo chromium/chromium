@@ -165,54 +165,6 @@ void DelayedOneTimeMessageCallbackHelper(
   std::move(*callback).Run(&arguments);
 }
 
-// Returns true if any of the listeners responded with `true` or (if enabled) a
-// Promise, indicating they will respond to the call asynchronously. If a
-// Promise is returned, `promise_*_function` are attached to its resolution.
-bool CheckAndHandleAsyncListenerReply(
-    v8::Isolate* isolate,
-    v8::Local<v8::Context> context,
-    v8::Local<v8::Value> result,
-    v8::Local<v8::Function> promise_resolved_function,
-    v8::Local<v8::Function> promise_rejected_function) {
-  v8::Local<v8::Array> results_array =
-      GetListenerResultArray(isolate, context, result, "results");
-  if (results_array.IsEmpty()) {
-    return false;
-  }
-
-  uint32_t results_count = results_array->Length();
-
-  for (uint32_t i = 0; i < results_count; ++i) {
-    v8::MaybeLocal<v8::Value> maybe_result = results_array->Get(context, i);
-    v8::Local<v8::Value> listener_return;
-    // Assume the result could throw due to changes at runtime by the
-    // extension's JS code.
-    if (!maybe_result.ToLocal(&listener_return)) {
-      continue;
-    }
-
-    // Check if any of the results is indicating it will reply async by
-    // returning `true`.
-    if (listener_return->IsBoolean() &&
-        listener_return.As<v8::Boolean>()->Value()) {
-      return true;
-    }
-
-    // Check if any of the returns are a promise -- indicating the listener
-    // will reply async. If they do, handle both the promise resolving or
-    // rejecting.
-    if (OnMessagePromisesSupported() && listener_return->IsPromise()) {
-      std::ignore = listener_return.As<v8::Promise>()->Then(
-          context, promise_resolved_function, promise_rejected_function);
-      // TODO(crbug.com/40753031): Consider setting lastError for caller when
-      // promise is rejected
-      return true;
-    }
-  }
-
-  return false;
-}
-
 // Checks the listener `result` for any errors thrown by listeners. If any are
 // found, this populates `error_message_out` with the first one found and
 // returns true. Otherwise, returns false.
@@ -920,6 +872,56 @@ void OneTimeMessageHandler::PromiseRejectedResponse(const PortId& port_id,
                                       promise_reject_error_message);
 }
 
+bool OneTimeMessageHandler::CheckAndHandleAsyncListenerReply(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> result,
+    const PortId& port_id,
+    // TODO(crbug.com/40753031): Move the creation of
+    // `promise_resolved_function` to just before promise handler attachment. It
+    // doesn't need to be created before that point.
+    v8::Local<v8::Function> promise_resolved_function) {
+  v8::Local<v8::Array> results_array =
+      GetListenerResultArray(isolate, context, result, "results");
+  if (results_array.IsEmpty()) {
+    return false;
+  }
+
+  uint32_t results_count = results_array->Length();
+
+  for (uint32_t i = 0; i < results_count; ++i) {
+    v8::MaybeLocal<v8::Value> maybe_result = results_array->Get(context, i);
+    v8::Local<v8::Value> listener_return;
+    // Assume the result could throw due to changes at runtime by the
+    // extension's JS code.
+    if (!maybe_result.ToLocal(&listener_return)) {
+      continue;
+    }
+
+    // Check if any of the results is indicating it will reply async by
+    // returning `true`.
+    if (listener_return->IsBoolean() &&
+        listener_return.As<v8::Boolean>()->Value()) {
+      return true;
+    }
+
+    // Check if any of the returns are a promise -- indicating the listener
+    // will reply async. If they do, handle both the promise resolving or
+    // rejecting.
+    if (OnMessagePromisesSupported() && listener_return->IsPromise()) {
+      v8::Local<v8::Function> promise_rejected_function =
+          CreatePromiseRejectedFunction(isolate, context, port_id);
+      std::ignore = listener_return.As<v8::Promise>()->Then(
+          context, promise_resolved_function, promise_rejected_function);
+      // TODO(crbug.com/40753031): Consider setting lastError for caller when
+      // promise is rejected.
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
                                          gin::Arguments* arguments) {
   v8::Isolate* isolate = arguments->isolate();
@@ -972,16 +974,12 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
   }
 
   v8::Local<v8::Function> promise_resolved_function;
-  v8::Local<v8::Function> promise_rejected_function;
   if (OnMessagePromisesSupported()) {
     promise_resolved_function = port.message_response_function.Get(isolate);
-    promise_rejected_function =
-        CreatePromiseRejectedFunction(isolate, context, port_id);
   }
 
-  if (CheckAndHandleAsyncListenerReply(isolate, context, result,
-                                       promise_resolved_function,
-                                       promise_rejected_function)) {
+  if (CheckAndHandleAsyncListenerReply(isolate, context, result, port_id,
+                                       promise_resolved_function)) {
     if (OnMessagePromisesSupported()) {
       // Ensure the global function doesn't outlive port closing.
       port.message_response_function.SetWeak();

@@ -927,15 +927,9 @@ TEST_P(OneTimeMessageHandlerGarbageCollectionTest,
       });
     });
   )";
-  // TODO(crbug.com/40753031): Let's not create the second callback unless we
-  // know a promise has been returned.
-  // When the listener returns `true`:
-  //   - Promise support disabled: creates one callback (`sendResponse`)
-  //   - Promise support enabled: creates two callbacks (`sendResponse`, and
-  //     speculatively a second in case a promise is returned)
-  RunTest(
-      kRegisterListener,
-      /*pending_callbacks_before_collection=*/IsParamFeatureEnabled() ? 2 : 1);
+  // When the listener returns `true`, one callback (`sendResponse`) is created.
+  RunTest(kRegisterListener,
+          /*pending_callbacks_before_collection=*/1);
 }
 
 // A version of OneTimeMessageHandlerGarbageCollectionTest that only runs with

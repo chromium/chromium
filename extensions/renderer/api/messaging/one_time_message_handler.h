@@ -195,6 +195,17 @@ class OneTimeMessageHandler {
   // listeners.
   void OnEventFired(const PortId& port_id, gin::Arguments* arguments);
 
+  // Returns true if any of the listeners responded with `true` or (if enabled)
+  // a Promise, indicating they will respond to the call asynchronously. If a
+  // Promise is returned, `promise_resolved_function` is attached to its resolve
+  // and a reject function is attached to its reject.
+  bool CheckAndHandleAsyncListenerReply(
+      v8::Isolate* isolate,
+      v8::Local<v8::Context> context,
+      v8::Local<v8::Value> result,
+      const PortId& port_id,
+      v8::Local<v8::Function> promise_resolved_function);
+
   // The associated bindings system. Outlives this object.
   const raw_ptr<NativeExtensionBindingsSystem> bindings_system_;
 
