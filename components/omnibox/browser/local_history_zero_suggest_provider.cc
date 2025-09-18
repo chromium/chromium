@@ -166,6 +166,7 @@ void LocalHistoryZeroSuggestProvider::DeleteMatch(
   // due to the small percentage of suggestions getting deleted relative to the
   // number of suggestions shown and the async nature of this lookup.
   history::QueryOptions opts;
+  opts.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   opts.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
   opts.begin_time = base::Time::Now() - base::Days(90);  // Full history length.
   history_service->QueryHistory(

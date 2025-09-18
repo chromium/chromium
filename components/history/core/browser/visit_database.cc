@@ -561,14 +561,13 @@ bool VisitDatabase::GetNon404VisitsForURL(URLID url_id, VisitVector* visits) {
 
 bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
                                            const QueryOptions& options,
-                                           VisitQuery404sPolicy policy_for_404s,
                                            VisitVector* visits) {
   visits->clear();
 
   sql::Statement statement;
   if (options.visit_order == QueryOptions::RECENT_FIRST) {
     if (options.app_id) {
-      switch (policy_for_404s) {
+      switch (options.policy_for_404_visits) {
         case VisitQuery404sPolicy::kInclude404s:
           // Recent first, filter by app id, include 404s.
           statement.Assign(GetDB().GetCachedStatement(
@@ -593,7 +592,7 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
           break;
       }
     } else {
-      switch (policy_for_404s) {
+      switch (options.policy_for_404_visits) {
         case VisitQuery404sPolicy::kInclude404s:
           // Recent first, don't filter by app id, include 404s.
           statement.Assign(GetDB().GetCachedStatement(
@@ -617,7 +616,7 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
     }
   } else {
     if (options.app_id) {
-      switch (policy_for_404s) {
+      switch (options.policy_for_404_visits) {
         case VisitQuery404sPolicy::kInclude404s:
           // Oldest first, filter by app id, include 404s.
           statement.Assign(GetDB().GetCachedStatement(
@@ -642,7 +641,7 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
           break;
       }
     } else {
-      switch (policy_for_404s) {
+      switch (options.policy_for_404_visits) {
         case VisitQuery404sPolicy::kInclude404s:
           // Oldest first, don't filter by app id, include 404s.
           statement.Assign(GetDB().GetCachedStatement(
@@ -806,10 +805,8 @@ GetAllAppIdsResult VisitDatabase::GetAllAppIds() {
   return result;
 }
 
-bool VisitDatabase::GetVisibleVisitsInRange(
-    const QueryOptions& options,
-    VisitQuery404sPolicy policy_for_404s,
-    VisitVector* visits) {
+bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
+                                            VisitVector* visits) {
   visits->clear();
   // The visit_time values can be duplicated in a redirect chain, so we sort
   // by id too, to ensure a consistent ordering just in case.
@@ -817,7 +814,7 @@ bool VisitDatabase::GetVisibleVisitsInRange(
   sql::Statement statement;
   if (options.visit_order == QueryOptions::RECENT_FIRST) {
     if (options.app_id) {
-      switch (policy_for_404s) {
+      switch (options.policy_for_404_visits) {
         case VisitQuery404sPolicy::kInclude404s:
           // Recent first, has app id, include 404s.
           statement.Assign(GetDB().GetCachedStatement(
@@ -843,7 +840,7 @@ bool VisitDatabase::GetVisibleVisitsInRange(
           break;
       }
     } else {
-      switch (policy_for_404s) {
+      switch (options.policy_for_404_visits) {
         case VisitQuery404sPolicy::kInclude404s:
           // Recent first, no app id, include 404s.
           statement.Assign(GetDB().GetCachedStatement(
@@ -868,7 +865,7 @@ bool VisitDatabase::GetVisibleVisitsInRange(
     }
   } else {
     if (options.app_id) {
-      switch (policy_for_404s) {
+      switch (options.policy_for_404_visits) {
         case VisitQuery404sPolicy::kInclude404s:
           // Oldest first, has app id, include 404s.
           statement.Assign(GetDB().GetCachedStatement(
@@ -894,7 +891,7 @@ bool VisitDatabase::GetVisibleVisitsInRange(
           break;
       }
     } else {
-      switch (policy_for_404s) {
+      switch (options.policy_for_404_visits) {
         case VisitQuery404sPolicy::kInclude404s:
           // Oldest first, no app id, include 404s.
           statement.Assign(GetDB().GetCachedStatement(

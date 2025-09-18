@@ -13,11 +13,13 @@
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "components/history/core/browser/browsing_history_driver.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/fake_web_history_service.h"
@@ -287,7 +289,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
     EXPECT_EQ(reached_beginning, result.second.reached_beginning);
     EXPECT_EQ(has_synced_results, result.second.has_synced_results);
     EXPECT_FALSE(result.second.sync_timed_out);
-    EXPECT_EQ(expected_entries.size(), result.first.size());
+    ASSERT_EQ(expected_entries.size(), result.first.size());
     for (size_t i = 0; i < expected_entries.size(); ++i) {
       VerifyEntry(expected_entries[i], result.first[i]);
     }
@@ -317,6 +319,29 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   raw_ptr<base::MockOneShotTimer, DanglingUntriaged> timer_;
   std::unique_ptr<TestBrowsingHistoryService> browsing_history_service_;
 };
+
+TEST_F(BrowsingHistoryServiceTest, QueryHistoryExcludes404s) {
+  // Allow saving 404 visits to History.
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitAndEnableFeature(history::kVisitedLinksOn404);
+
+  // Add a non-404 visit.
+  AddHistory({{kUrl1, 1, kLocal}});
+
+  // Add a 404 visit.
+  HistoryAddPageArgs page_404_args;
+  page_404_args.url = GURL(kUrl2);
+  page_404_args.time = OffsetToTime(2);
+  page_404_args.context_annotations = {.response_code = 404};
+  local_history()->AddPage(page_404_args);
+
+  BlockUntilHistoryProcessesPendingRequests();
+
+  // 404s should be excluded from query results.
+  VerifyQueryResult(/*reached_beginning=*/true,
+                    /*has_synced_results=*/true, {{kUrl1, 1, kLocal}},
+                    QueryHistory());
+}
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryNoSources) {
   driver()->SetWebHistory(nullptr);

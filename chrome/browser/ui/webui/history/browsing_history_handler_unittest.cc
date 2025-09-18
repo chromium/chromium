@@ -117,17 +117,18 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
       std::vector<BrowsingHistoryService::HistoryEntry> mock_results = {}) {
     EXPECT_CALL(
         *handler_->mock_service(),
-        QueryHistory(search_text,
-                     ::testing::FieldsAre(
-                         /*begin_time*/ options.begin_time,
-                         /*end_time*/ options.end_time,
-                         /*max_count*/ 150,
-                         /*duplicate_policy*/
-                         history::QueryOptions::REMOVE_DUPLICATES_PER_DAY,
-                         /*matching_algorithm*/ options.matching_algorithm,
-                         /*host_only*/ options.host_only,
-                         /*visit_order*/ options.visit_order,
-                         /*app_id*/ options.app_id)))
+        QueryHistory(
+            search_text,
+            ::testing::FieldsAre(
+                /*begin_time=*/options.begin_time,
+                /*end_time=*/options.end_time,
+                /*max_count=*/150, history::VisitQuery404sPolicy::kExclude404s,
+                /*duplicate_policy=*/
+                history::QueryOptions::REMOVE_DUPLICATES_PER_DAY,
+                /*matching_algorithm=*/options.matching_algorithm,
+                /*host_only=*/options.host_only,
+                /*visit_order=*/options.visit_order,
+                /*app_id=*/options.app_id)))
         .Times(1)
         .WillOnce([&, mock_results](const std::u16string& search_text,
                                     const QueryOptions& options) {

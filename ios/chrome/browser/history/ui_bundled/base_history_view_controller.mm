@@ -293,6 +293,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   std::u16string queryString =
       fetchAllHistory ? std::u16string() : base::SysNSStringToUTF16(query);
   history::QueryOptions options;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy =
       fetchAllHistory ? history::QueryOptions::REMOVE_DUPLICATES_PER_DAY
                       : history::QueryOptions::REMOVE_ALL_DUPLICATES;

@@ -328,9 +328,9 @@ class HistoryService : public KeyedService,
   // the results out of the passed in parameter and take ownership of them.
   using QueryHistoryCallback = base::OnceCallback<void(QueryResults)>;
 
-  // Queries all history with the given options (see QueryOptions in
-  // history_types.h).  If empty, all results matching the given options
-  // will be returned.
+  // Queries all history with the given options (see `QueryOptions` in
+  // history_types.h). If empty, all results matching the given options will be
+  // returned.
   virtual base::CancelableTaskTracker::TaskId QueryHistory(
       const std::u16string& text_query,
       const QueryOptions& options,
@@ -621,8 +621,7 @@ class HistoryService : public KeyedService,
       base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
   // Gets a vector of reverse-chronological `AnnotatedVisit` instances based on
   // `options`. Uses the same de-duplication and visibility logic as
-  // `HistoryService::QueryHistory()`. Won't return visits that had an HTTP
-  // response code of 404, even if those visits exist.
+  // `HistoryService::QueryHistory()`.
   //
   // If `compute_redirect_chain_start_properties` is true, the opener and
   // referring visit IDs for the start of the redirect chain will be computed.

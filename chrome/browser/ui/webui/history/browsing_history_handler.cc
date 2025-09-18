@@ -395,6 +395,7 @@ void BrowsingHistoryHandler::SendHistoryQuery(
     std::optional<double> begin_timestamp) {
   history::QueryOptions options;
   options.max_count = max_count;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
   std::string query_without_prefix = query;
 

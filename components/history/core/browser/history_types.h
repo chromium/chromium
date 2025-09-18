@@ -385,6 +385,12 @@ struct QueryOptions {
   // enough room. When 0, this will return everything.
   int max_count = 0;
 
+  // Temporarily defaulted to `kExclude404s`; this may change in the future.
+  // Callers are strongly encouraged to explicitly set a value, unless they are
+  // certain that the handling of 404 visits is irrelevant for their use case.
+  VisitQuery404sPolicy policy_for_404_visits =
+      VisitQuery404sPolicy::kExclude404s;
+
   enum DuplicateHandling {
     // Omit visits for which there is a more recent visit to the same URL.
     // Each URL in the results will appear only once.

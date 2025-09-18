@@ -140,6 +140,7 @@ bool BrowsingTopicsEligibleForURLVisit(history::HistoryService* history_service,
   bool topics_eligible;
 
   history::QueryOptions options;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
   base::RunLoop run_loop;

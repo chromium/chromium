@@ -478,6 +478,7 @@ void HistoryMenuBridge::FinishCreateMenu() {
   history::QueryOptions options;
   options.max_count = kVisitedCount;
   options.SetRecentDayRange(kVisitedScope);
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
 
   history_service_->QueryHistory(
       std::u16string(), options,

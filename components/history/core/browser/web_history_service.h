@@ -112,8 +112,10 @@ class WebHistoryService : public KeyedService {
   // Searches synced history for visits matching `text_query`. The timeframe to
   // search, along with other options, is specified in `options`. If
   // `text_query` is empty, all visits in the timeframe will be returned.
-  // This method is the equivalent of HistoryService::QueryHistory.
-  // The caller takes ownership of the returned Request. If it is destroyed, the
+  // This method is the equivalent of `HistoryService::QueryHistory`, except
+  // that this method cannot honor `QueryOptions::policy_for_404_visits`; 404
+  // visits will always be included, regardless of the policy specified. The
+  // caller takes ownership of the returned `Request`. If it is destroyed, the
   // request is cancelled.
   std::unique_ptr<Request> QueryHistory(
       const std::u16string& text_query,

@@ -1181,8 +1181,7 @@ TEST_F(HistoryBackendTest, KeywordGenerated) {
   visits.clear();
   QueryOptions query_options;
   query_options.max_count = 1;
-  backend_->db()->GetVisibleVisitsInRange(
-      query_options, VisitQuery404sPolicy::kInclude404s, &visits);
+  backend_->db()->GetVisibleVisitsInRange(query_options, &visits);
   EXPECT_TRUE(visits.empty());
 
   // Going back to the same entry should not increment the typed count.
@@ -4383,6 +4382,50 @@ TEST_F(HistoryBackendTest, GetAnnotatedVisits) {
   EXPECT_EQ(annotated_visits[0].visit_row.visit_id, 1);
   EXPECT_EQ(annotated_visits[0].visit_row.url_id, 1);
   EXPECT_EQ(annotated_visits[0].context_annotations.omnibox_url_copied, true);
+}
+
+TEST_F(HistoryBackendTest, GetAnnotatedVisits_404s) {
+  // Allow 404s to be persisted to the History DB.
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(kVisitedLinksOn404);
+
+  // Add a 404 visit.
+  const auto [url_id, visit_id] = backend_->AddPageVisit(
+      GURL("https://google.com/"), GetRelativeTime(0), /*referring_visit=*/0,
+      /*external_referrer_url=*/GURL(),
+      // Must set this so that the visit is considered 'visible'.
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_CHAIN_START |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      /*hidden=*/true, SOURCE_BROWSED, VisitResponseCodeCategory::k404,
+      /*should_increment_typed_count=*/true,
+      /*opener_visit=*/0, /*consider_for_ntp_most_visited=*/true);
+  VisitContextAnnotations context_annotations_404;
+  context_annotations_404.on_visit = {.response_code = 404};
+  backend_->AddContextAnnotationsForVisit(visit_id, context_annotations_404);
+
+  // Query for annotated visits, excluding 404s.
+  QueryOptions options;
+  options.policy_for_404_visits = VisitQuery404sPolicy::kExclude404s;
+  auto annotated_visits = backend_->GetAnnotatedVisits(
+      options, /*compute_redirect_chain_start_properties=*/false,
+      /*get_unclustered_visits_only=*/true);
+
+  // The only visit is a 404, so expect no results.
+  EXPECT_EQ(annotated_visits.size(), 0u);
+
+  // Query for annotated visits, including 404s this time.
+  options.policy_for_404_visits = VisitQuery404sPolicy::kInclude404s;
+  annotated_visits = backend_->GetAnnotatedVisits(
+      options, /*compute_redirect_chain_start_properties=*/false,
+      /*get_unclustered_visits_only=*/true);
+
+  // We should get the 404 visit back this time.
+  ASSERT_EQ(annotated_visits.size(), 1u);
+  EXPECT_EQ(annotated_visits[0].context_annotations.on_visit.response_code,
+            404);
+  EXPECT_EQ(annotated_visits[0].visit_row.visit_id, visit_id);
+  EXPECT_EQ(annotated_visits[0].visit_row.url_id, url_id);
 }
 
 TEST_F(HistoryBackendTest, GetAnnotatedVisits_Unclustered) {

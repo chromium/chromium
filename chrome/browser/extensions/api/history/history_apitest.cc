@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -102,6 +103,29 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          HistoryApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+class HistoryApi404Test : public HistoryApiTest {
+ public:
+  HistoryApi404Test() {
+    // Allow 404s to be saved to History.
+    scoped_feature_list_.InitAndEnableFeature(history::kVisitedLinksOn404);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Android only supports Manifest V3 and later, and persistent background
+// context is removed in MV3.
+#if !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         HistoryApi404Test,
+                         ::testing::Values(ContextType::kPersistentBackground));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         HistoryApi404Test,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 class SyncEnabledHistoryApiTest : public HistoryApiTest {
  public:
   void SetUpBrowserContextKeyedServices(
@@ -153,6 +177,80 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, DeleteProhibited) {
 IN_PROC_BROWSER_TEST_P(HistoryApiTest, GetVisits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/get_visits")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(HistoryApi404Test, GetVisits_Excludes404Visits) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+
+  // Add a non-404 visit for a.com to the History DB.
+  history::HistoryAddPageArgs add_page_args_a_200;
+  add_page_args_a_200.url = GURL("https://a.com/");
+  add_page_args_a_200.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  add_page_args_a_200.time = base::Time::Now() - base::Minutes(1);
+  add_page_args_a_200.context_annotations = {.response_code = 200};
+  history_service->AddPage(add_page_args_a_200);
+
+  // Add a 404 visit for a.com to the History DB.
+  history::HistoryAddPageArgs add_page_args_a_404;
+  add_page_args_a_404.url = GURL("https://a.com/");
+  add_page_args_a_404.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  add_page_args_a_404.time = base::Time::Now() - base::Minutes(1);
+  add_page_args_a_404.context_annotations = {.response_code = 404};
+  history_service->AddPage(add_page_args_a_404);
+
+  // Add a 404 visit for b.com to the History DB.
+  history::HistoryAddPageArgs add_page_args_b_404;
+  add_page_args_b_404.url = GURL("https://b.com/");
+  add_page_args_b_404.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+  add_page_args_b_404.time = base::Time::Now() - base::Minutes(1);
+  add_page_args_b_404.context_annotations = {.response_code = 404};
+  history_service->AddPage(add_page_args_b_404);
+
+  static constexpr char kManifest[] =
+      R"({
+        "name": "chrome.history",
+        "version": "0.1",
+        "manifest_version": 2,
+        "permissions": ["history"],
+        "background": {
+          "scripts": ["get_visits_404.js"],
+          "persistent": true
+        }
+      })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+        function getVisits() {
+          var query = {text: ''};
+          chrome.history.search(query, function(results) {
+            // We should only get a.com back, since b.com only has 404 visits.
+            chrome.test.assertEq(1, results.length);
+            chrome.test.assertEq('https://a.com/', results[0].url);
+
+            var urlId = results[0].id;
+            chrome.history.getVisits(
+                {url: results[0].url}, function(results) {
+                  // We should only get the non-404 visit back for a.com.
+                  chrome.test.assertEq(1, results.length);
+                  chrome.test.assertEq(urlId, results[0].id);
+                  chrome.test.succeed();
+                });
+          });
+        }
+      ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("get_visits_404.js"), kBackgroundJs);
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {

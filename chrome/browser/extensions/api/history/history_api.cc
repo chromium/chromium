@@ -285,6 +285,9 @@ ExtensionFunction::ResponseAction HistorySearchFunction::Run() {
   history::QueryOptions options;
   options.SetRecentDayRange(1);
   options.max_count = 100;
+  // TODO: crbug.com/443117133 - Change to `kInclude404s` after
+  //   `history::kVisitedLinksOn404` is enabled everywhere.
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
 
   if (params->query.start_time)
     options.begin_time = GetTime(*params->query.start_time);
