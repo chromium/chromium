@@ -254,6 +254,9 @@ class ArcApps : public KeyedService,
 
   std::unique_ptr<apps::WebApkManager> web_apk_manager_;
 
+  base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
+      arc_app_list_prefs_observation_{this};
+
   base::ScopedObservation<arc::ArcIntentHelperBridge,
                           arc::ArcIntentHelperObserver>
       arc_intent_helper_observation_{this};

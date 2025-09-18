@@ -571,7 +571,7 @@ void ArcApps::Initialize() {
   if (!prefs) {
     return;
   }
-  prefs->AddObserver(this);
+  arc_app_list_prefs_observation_.Observe(prefs);
   proxy()->SetArcIsRegistered();
 
   auto* intent_helper_bridge =
@@ -622,10 +622,7 @@ void ArcApps::Initialize() {
 void ArcApps::Shutdown() {
   // Disconnect the observee-observer connections that we made during the
   // constructor.
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  if (prefs) {
-    prefs->RemoveObserver(this);
-  }
+  arc_app_list_prefs_observation_.Reset();
 
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
