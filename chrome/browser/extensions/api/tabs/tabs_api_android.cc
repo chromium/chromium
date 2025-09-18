@@ -228,12 +228,6 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   return RespondNow(GetResult());
 }
 
-ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
-  std::optional<tabs::Move::Params> params = tabs::Move::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   std::optional<tabs::Group::Params> params =
       tabs::Group::Params::Create(args());

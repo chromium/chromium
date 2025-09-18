@@ -61,12 +61,10 @@ class ExtensionTabUtil {
 
   static constexpr char kNoCrashBrowserError[] =
       "I'm sorry. I'm afraid I can't do that.";
-#if !BUILDFLAG(IS_ANDROID)
   static constexpr char kCanOnlyMoveTabsWithinNormalWindowsError[] =
       "Tabs can only be moved to and from normal windows.";
   static constexpr char kCanOnlyMoveTabsWithinSameProfileError[] =
       "Tabs can only be moved between windows in the same profile.";
-#endif
   static constexpr char kNoCurrentWindowError[] = "No current window";
   static constexpr char kWindowNotFoundError[] = "No window with id: *.";
   static constexpr char kTabStripNotEditableError[] =
