@@ -280,6 +280,8 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
                                  .gpu_rasterization),
       alpha_type_(alpha_type),
       provider_(std::move(provider)) {
+  CHECK(use_oop_rasterization_ || !is_accelerated_);
+
   auto* shared_image_interface =
       context_provider_wrapper_->ContextProvider().SharedImageInterface();
   DCHECK(shared_image_interface);
@@ -337,8 +339,6 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
   auto* raster_interface = RasterInterface();
   DCHECK(raster_interface);
   owning_thread_data().client_shared_image = client_shared_image;
-
-  CHECK(use_oop_rasterization_ || !is_accelerated_);
 }
 
 scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
