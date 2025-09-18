@@ -29,8 +29,6 @@ class TabStateStorageService : public KeyedService,
   ~TabStateStorageService() override;
 
   void SaveTab(int id,
-               int parent_collection_id,
-               std::string_view position,
                int parent_tab_id,
                int root_id,
                long timestamp_millis,

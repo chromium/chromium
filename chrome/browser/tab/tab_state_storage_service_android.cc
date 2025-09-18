@@ -88,8 +88,6 @@ TabStateStorageServiceAndroid::~TabStateStorageServiceAndroid() = default;
 void TabStateStorageServiceAndroid::SaveTab(
     JNIEnv* env,
     int id,
-    int parent_collection_id,
-    std::string position,
     int parent_tab_id,
     int root_id,
     long timestamp_millis,
@@ -117,9 +115,9 @@ void TabStateStorageServiceAndroid::SaveTab(
   }
 
   tab_state_storage_service_->SaveTab(
-      id, parent_collection_id, position, parent_tab_id, root_id,
-      timestamp_millis, web_content_state_string.get(), opener_app_id,
-      theme_color, launch_type_at_creation, user_agent,
+      id, parent_tab_id, root_id, timestamp_millis,
+      web_content_state_string.get(), opener_app_id, theme_color,
+      launch_type_at_creation, user_agent,
       last_navigation_committed_timestamp_millis, tab_group_id.get(),
       tab_has_sensitive_content, is_pinned);
 }

@@ -39,13 +39,11 @@ void TabStateStorageBackend::Initialize() {
 }
 
 void TabStateStorageBackend::SaveTabState(int id,
-                                          int parent,
-                                          std::string position,
                                           tabs_pb::TabState tab_state) {
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::SaveTabState,
-                     base::Unretained(database_.get()), id, parent, position,
+                     base::Unretained(database_.get()), id,
                      std::move(tab_state)),
       base::BindOnce(&TabStateStorageBackend::OnWrite,
                      weak_ptr_factory_.GetWeakPtr()));

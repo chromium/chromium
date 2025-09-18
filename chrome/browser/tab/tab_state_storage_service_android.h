@@ -25,8 +25,6 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
 
   void SaveTab(JNIEnv* env,
                int id,
-               int parent_collection_id,
-               std::string position,
                int parent_tab_id,
                int root_id,
                long timestamp_millis,

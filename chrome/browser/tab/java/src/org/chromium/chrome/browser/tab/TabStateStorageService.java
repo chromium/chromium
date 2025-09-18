@@ -36,8 +36,6 @@ public class TabStateStorageService {
      * object.
      *
      * @param id The id of the tab.
-     * @param parentCollectionId The id of the parent.
-     * @param position A sortable field to decide the order of tabs in a given parent.
      * @param parentTabId The tab id of the tab that spawned this tab, optional.
      * @param rootId If the tab is part of a tab group, the owner tab id.
      * @param timestampMillis The last time it was shown.
@@ -53,8 +51,6 @@ public class TabStateStorageService {
      */
     public void saveTabData(
             int id,
-            int parentCollectionId,
-            String position,
             int parentTabId,
             int rootId,
             long timestampMillis,
@@ -71,8 +67,6 @@ public class TabStateStorageService {
                 .saveTab(
                         mNativeTabStateStorageService,
                         id,
-                        parentCollectionId,
-                        position,
                         parentTabId,
                         rootId,
                         timestampMillis,
@@ -136,8 +130,6 @@ public class TabStateStorageService {
         void saveTab(
                 long nativeTabStateStorageServiceAndroid,
                 int id,
-                int parentCollectionId,
-                @JniType("std::string") String position,
                 int parentTabId,
                 int rootId,
                 long timestampMillis,

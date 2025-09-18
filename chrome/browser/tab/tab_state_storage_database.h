@@ -30,10 +30,7 @@ class TabStateStorageDatabase {
   bool Initialize();
 
   // Saves a tab state to the database.
-  bool SaveTabState(int id,
-                    int parent,
-                    std::string position,
-                    tabs_pb::TabState tab_state);
+  bool SaveTabState(int id, tabs_pb::TabState tab_state);
 
   // Loads all tab states from the database.
   std::vector<tabs_pb::TabState> LoadAllTabStates();

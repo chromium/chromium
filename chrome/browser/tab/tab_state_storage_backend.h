@@ -29,10 +29,7 @@ class TabStateStorageBackend {
 
   void Initialize();
 
-  void SaveTabState(int id,
-                    int parent,
-                    std::string position,
-                    tabs_pb::TabState tab_state);
+  void SaveTabState(int id, tabs_pb::TabState tab_state);
 
   void LoadAllTabStates(
       base::OnceCallback<void(std::vector<tabs_pb::TabState>)> callback);

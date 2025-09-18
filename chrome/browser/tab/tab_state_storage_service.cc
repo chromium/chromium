@@ -18,8 +18,6 @@ TabStateStorageService::~TabStateStorageService() = default;
 
 void TabStateStorageService::SaveTab(
     int id,
-    int parent_collection_id,
-    std::string_view position,
     int parent_tab_id,
     int root_id,
     long timestamp_millis,
@@ -55,8 +53,7 @@ void TabStateStorageService::SaveTab(
 
   tab_state.set_tab_has_sensitive_content(tab_has_sensitive_content);
   tab_state.set_is_pinned(is_pinned);
-  tab_backend_->SaveTabState(id, parent_collection_id, std::string(position),
-                             tab_state);
+  tab_backend_->SaveTabState(id, tab_state);
 }
 
 void TabStateStorageService::LoadAllTabs(LoadAllTabsCallback callback) {

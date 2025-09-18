@@ -70,10 +70,6 @@ public class TabStateStore {
         WebContentsState state = tab.getWebContentsState();
         mTabStateStorageService.saveTabData(
                 tab.getId(),
-                // TODO(https://crbug.com/427254267): Provide a parentCollectionId.
-                0,
-                // TODO(https://crbug.com/427254267): Provide a position.
-                "",
                 tab.getParentId(),
                 tab.getRootId(),
                 tab.getTimestampMillis(),
