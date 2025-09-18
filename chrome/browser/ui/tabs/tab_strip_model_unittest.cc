@@ -25,6 +25,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -2050,6 +2051,26 @@ TEST_F(TabStripModelTest, AddToSplitInSelected) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
+TEST_F(TabStripModelTest, AddToSplitBlocked) {
+  // Create five tabs.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 0, {2}));
+
+  tabstrip()->SetTabBlocked(1, true);
+
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  EXPECT_EQ("0s 1s 2 3 4", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ(tabstrip()->active_index(), 1);
+  EXPECT_TRUE(tabstrip()->selection_model().IsSelected(0));
+  EXPECT_TRUE(tabstrip()->selection_model().IsSelected(1));
+
+  tabstrip()->CloseAllTabs();
+  EXPECT_TRUE(tabstrip()->empty());
+}
+
 TEST_F(TabStripModelTest, UnsplitOperation) {
   // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
@@ -2276,9 +2297,17 @@ TEST_F(TabStripModelTest, SwapActiveTabInSplit) {
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
 
+  base::MockCallback<base::RepeatingCallback<void(tabs::TabInterface*)>>
+      will_become_hiden_callback;
+  EXPECT_CALL(will_become_hiden_callback, Run).Times(1);
+  base::CallbackListSubscription subscription =
+      tabstrip()->GetTabAtIndex(0)->RegisterWillBecomeHidden(
+          will_become_hiden_callback.Get());
+
   tabstrip()->UpdateTabInSplit(tabstrip()->GetTabAtIndex(0), 3,
                                TabStripModel::SplitUpdateType::kSwap);
   EXPECT_EQ("2ps 3ps 1p 0 4", GetTabStripStateString(tabstrip()));
+  testing::Mock::VerifyAndClearExpectations(&will_become_hiden_callback);
 
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());
