@@ -296,7 +296,7 @@ ci.thin_tester(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.chrome_public_test_apk_desktop.filter",
                 ],
                 swarming = targets.swarming(
-                    shards = 2,
+                    shards = 3,
                 ),
             ),
             "chrome_public_unit_test_apk": targets.mixin(
