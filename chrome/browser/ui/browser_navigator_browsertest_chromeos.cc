@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/browser_navigator_browsertest.h"
 
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/window_pin_util.h"

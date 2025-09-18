@@ -109,7 +109,7 @@
 #include "ash/metrics/unlock_throughput_recorder.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
-#include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/policy/policy_recommendation_restorer.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"

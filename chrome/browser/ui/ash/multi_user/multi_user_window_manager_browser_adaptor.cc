@@ -7,7 +7,7 @@
 #include <set>
 #include <vector>
 
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "base/check_deref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"

@@ -50,6 +50,7 @@ specific_include_rules = {
     "+ash/wm/window_pin_util.h",
   ],
   r"browser_finder\.cc": [
+    "+ash/multi_user/multi_user_window_manager.h",
     "+ash/shell.h",
   ],
   r"browser_finder_chromeos_browsertest\.cc": [
@@ -60,15 +61,18 @@ specific_include_rules = {
   ],
   r"browser_finder_chromeos_unittest\.cc": [
     "+ash/shell.h",
+    "+ash/multi_user/multi_user_window_manager.h",
   ],
   r"browser_navigator\.cc": [
     "+ash/shell.h",
+    "+ash/multi_user/multi_user_window_manager.h",
   ],
   r"browser_navigator_browsertest\.cc": [
     "+ash/shell.h",
   ],
   r"browser_navigator_browsertest_chromeos\.cc": [
     "+ash/shell.h",
+    "+ash/multi_user/multi_user_window_manager.h",
     "+ash/wm/window_pin_util.h",
   ],
   r"browser_tabstrip_browsertest_chromeos\.cc": [

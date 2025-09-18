@@ -13,7 +13,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/command_line.h"

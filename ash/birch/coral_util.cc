@@ -5,7 +5,7 @@
 #include "ash/birch/coral_util.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"

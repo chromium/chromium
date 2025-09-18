@@ -7,7 +7,7 @@
 #include <memory>
 #include <optional>
 
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"

@@ -26,7 +26,7 @@
 #include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "base/check_is_test.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"

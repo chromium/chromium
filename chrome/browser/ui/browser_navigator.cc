@@ -69,7 +69,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/account_id/account_id.h"

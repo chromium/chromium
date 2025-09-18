@@ -3,6 +3,9 @@ specific_include_rules = {
   "browser_frame_view_chromeos\\..*": [
     "+ash",
   ],
+  "browser_frame_view_chromeos_browsertest\\.cc": [
+    "+ash/multi_user/multi_user_window_manager.h",
+  ],
   "browser_native_widget_ash\\.*": [
     "+ash",
     "+components/app_restore",
@@ -26,6 +29,7 @@ specific_include_rules = {
     "+cc/base/math_util.h",
   ],
   "system_menu_model_builder\\.cc": [
+    "+ash/multi_user/multi_user_window_manager.h",
     "+ash/shell.h",
   ],
 }

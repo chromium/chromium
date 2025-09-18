@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/session/session_util.h"
 
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

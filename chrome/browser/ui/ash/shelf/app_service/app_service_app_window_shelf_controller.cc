@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_IMPL_H_
-#define ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_IMPL_H_
+#ifndef ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_H_
+#define ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -276,4 +276,4 @@ using MultiUserWindowManager = MultiUserWindowManagerImpl;
 
 }  // namespace ash
 
-#endif  // ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_IMPL_H_
+#endif  // ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_H_

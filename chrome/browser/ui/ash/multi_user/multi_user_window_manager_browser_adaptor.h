@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "ash/public/cpp/multi_user_window_manager_observer.h"
+#include "ash/multi_user/multi_user_window_manager_observer.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"

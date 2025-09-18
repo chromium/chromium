@@ -4,7 +4,7 @@ include_rules = [
 
 specific_include_rules = {
   "single_client_nigori_sync_test\\.cc": [
-    "+ash/multi_user/multi_user_window_manager_impl.h",
+    "+ash/multi_user/multi_user_window_manager.h",
   ],
   "single_client_plus_address_sync_test\\.cc": [
     "+components/plus_addresses/core/browser",
@@ -13,6 +13,6 @@ specific_include_rules = {
     "+chrome/browser/ui/views",
   ],
   "two_client_web_apps_integration_test_base\\.cc": [
-    "+ash/multi_user/multi_user_window_manager_impl.h",
+    "+ash/multi_user/multi_user_window_manager.h",
   ],
 }

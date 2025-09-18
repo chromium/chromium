@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 
 #include <set>
 #include <vector>
 
 #include "ash/media/media_controller_impl.h"
+#include "ash/multi_user/multi_user_window_manager_observer.h"
 #include "ash/multi_user/user_switch_animator.h"
-#include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

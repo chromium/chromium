@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
 
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"

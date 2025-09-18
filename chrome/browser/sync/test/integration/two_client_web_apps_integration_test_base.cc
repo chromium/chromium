@@ -15,7 +15,7 @@
 #include "components/sync/base/user_selectable_type.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #endif
 
 namespace web_app::integration_tests {

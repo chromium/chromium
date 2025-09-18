@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_MULTI_USER_WINDOW_MANAGER_OBSERVER_H_
-#define ASH_PUBLIC_CPP_MULTI_USER_WINDOW_MANAGER_OBSERVER_H_
+#ifndef ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_OBSERVER_H_
+#define ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_OBSERVER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
@@ -37,4 +37,4 @@ class ASH_PUBLIC_EXPORT MultiUserWindowManagerObserver
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_MULTI_USER_WINDOW_MANAGER_OBSERVER_H_
+#endif  // ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_OBSERVER_H_

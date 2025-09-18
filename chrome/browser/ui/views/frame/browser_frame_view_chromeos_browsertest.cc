@@ -7,7 +7,7 @@
 #include <string>
 
 #include "ash/constants/web_app_id_constants.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/root_window_controller.h"

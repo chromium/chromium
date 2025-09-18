@@ -10,7 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/refresh_rate_controller.h"
-#include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/shelf_model.h"

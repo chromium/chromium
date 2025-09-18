@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"

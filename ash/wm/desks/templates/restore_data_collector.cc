@@ -4,8 +4,7 @@
 
 #include "ash/wm/desks/templates/restore_data_collector.h"
 
-#include "ash/multi_user/multi_user_window_manager_impl.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"

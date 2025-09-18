@@ -14,6 +14,7 @@ specific_include_rules = {
     "+ash/user_education/views/help_bubble_factory_views_ash.h",
   ],
   "chrome_web_dialog_view\.cc": [
+    "+ash/multi_user/multi_user_window_manager.h",
     "+ash/shell.h",
     "+ash/utility/wm_util.h",
   ],
@@ -43,6 +44,7 @@ specific_include_rules = {
   ".*test.*": [
    "!ash",
    "+ash/constants",
+   "+ash/multi_user/multi_user_window_manager.h",
    "+ash/public",
    "+ash/wm/window_pin_util.h",
    "+ash/system/mahi/fake_mahi_manager.h",

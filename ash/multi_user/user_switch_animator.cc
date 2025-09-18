@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/multi_user/multi_user_window_manager_impl.h"
-#include "ash/public/cpp/multi_user_window_manager_observer.h"
+#include "ash/multi_user/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager_observer.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desks_controller.h"

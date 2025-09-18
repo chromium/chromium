@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_menu_constants.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
