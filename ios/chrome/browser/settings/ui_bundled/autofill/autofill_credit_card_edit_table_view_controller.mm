@@ -506,7 +506,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* expirationYear =
       [self textfieldValueForItemType:ItemTypeExpirationYear];
   NSString* nickname = [self textfieldValueForItemType:ItemTypeNickname];
-  NSString* cvc = [self textfieldValueForItemType:ItemTypeCvc];
+  NSString* cvc = @"";
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
+    cvc = [self textfieldValueForItemType:ItemTypeCvc];
+  }
   return [AutofillCreditCardUtil
       isValidCreditCard:cardNumber
         expirationMonth:expirationMonth
