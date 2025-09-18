@@ -467,8 +467,10 @@ std::unique_ptr<ToolRequest> CreateForwardRequest(
 }
 
 std::unique_ptr<ToolRequest> CreateWaitRequest(const WaitAction& action) {
-  constexpr base::TimeDelta kWaitTime = base::Seconds(3);
-  return std::make_unique<WaitToolRequest>(kWaitTime);
+  const base::TimeDelta wait_time =
+      action.has_wait_time_ms() ? base::Milliseconds(action.wait_time_ms())
+                                : base::Seconds(3);
+  return std::make_unique<WaitToolRequest>(wait_time);
 }
 
 std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
