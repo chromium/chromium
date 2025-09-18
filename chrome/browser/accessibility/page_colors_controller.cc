@@ -92,8 +92,8 @@ void PageColorsController::SetRequestedPageColors(PageColors page_colors) {
 }
 
 void PageColorsController::RecomputePageColors() {
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-
+  // Get the current color/contrast values from the native UI theme.
+  const auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   ui::ColorProviderKey::ForcedColors forced_colors =
       native_theme->forced_colors();
   ui::NativeTheme::PreferredColorScheme preferred_color_scheme =
@@ -109,18 +109,14 @@ void PageColorsController::RecomputePageColors() {
        pref_value > base::to_underlying(PageColors::kMaxValue))
           ? PageColors::kNoPreference
           : static_cast<PageColors>(pref_value);
-
-  bool only_on_increased_contrast = profile_prefs_->GetBoolean(
-      prefs::kApplyPageColorsOnlyOnIncreasedContrast);
-
-  // The used value of Page Colors should be `kNoPreference` if
-  // kApplyPageColorsOnlyOnIncreasedContrast is true and the OS is not in an
-  // increased contrast mode.
-  if (only_on_increased_contrast &&
-      preferred_contrast != ui::NativeTheme::PreferredContrast::kMore) {
+  if (preferred_contrast != ui::NativeTheme::PreferredContrast::kMore &&
+      profile_prefs_->GetBoolean(
+          prefs::kApplyPageColorsOnlyOnIncreasedContrast)) {
     page_colors = PageColors::kNoPreference;
   }
 
+  // If there are explicit page colors, change the desired color/contrast values
+  // accordingly.
   if (page_colors != PageColors::kNoPreference) {
     static constexpr auto kColorMap =
         base::MakeFixedFlatMap<PageColors, ui::ColorProviderKey::ForcedColors>(

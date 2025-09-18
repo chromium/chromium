@@ -408,7 +408,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // `NotifyOnNativeThemeUpdated()`. This would make it easy to move the
   // underpinnings to the `OsSettingsProvider`, as well as replace
   // `NativeThemeObserver` with a `CallbackList`.
-  virtual void NotifyOnCaptionStyleUpdated();
+  void NotifyOnCaptionStyleUpdated();
 
   // Paints the provided `part`/`state`. This is largely a wrapper around
   // `PaintImpl()`.
@@ -451,11 +451,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // everywhere that currently calls these setters or writes directly to the
   // underlying members.
 
-  ui::SystemTheme system_theme() const { return system_theme_; }
+  SystemTheme system_theme() const { return system_theme_; }
 
-  bool use_overlay_scrollbar() const { return use_overlay_scrollbars_; }
+  bool use_overlay_scrollbar() const { return use_overlay_scrollbar_; }
   void set_use_overlay_scrollbar(bool use_overlay_scrollbar) {
-    use_overlay_scrollbars_ = use_overlay_scrollbar;
+    use_overlay_scrollbar_ = use_overlay_scrollbar;
   }
 
   ColorProviderKey::ForcedColors forced_colors() const {
@@ -501,8 +501,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   static bool IsForcedDarkMode();
 
  protected:
-  explicit NativeTheme(
-      ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
+  explicit NativeTheme(SystemTheme system_theme = SystemTheme::kDefault);
   virtual ~NativeTheme();
 
   // Whether high contrast is forced via command-line flag.
@@ -556,8 +555,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
 
   base::CallbackListSubscription os_settings_changed_subscription_;
   base::ObserverList<NativeThemeObserver> native_theme_observers_;
-  const ui::SystemTheme system_theme_;
-  bool use_overlay_scrollbars_ = false;
+  SystemTheme system_theme_;
+  bool use_overlay_scrollbar_ = false;
   ColorProviderKey::ForcedColors forced_colors_ =
       IsForcedHighContrast() ? ColorProviderKey::ForcedColors::kSystem
                              : ColorProviderKey::ForcedColors::kNone;

@@ -43,30 +43,6 @@ class NativeThemeTest : public ::testing::Test {
   MockOsSettingsProvider os_settings_provider_;
 };
 
-TEST_F(NativeThemeTest, TestOnNativeThemeUpdatedMetricsEmitted) {
-  base::HistogramTester histogram_tester;
-  TestNativeTheme theme;
-  histogram_tester.ExpectTotalCount(
-      "Views.Browser.TimeSpentProcessingOnNativeThemeUpdatedEvent", 0);
-  histogram_tester.ExpectUniqueSample(
-      "Views.Browser.NumColorProvidersInitializedDuringOnNativeThemeUpdated", 0,
-      0);
-
-  theme.NotifyOnNativeThemeUpdated();
-  histogram_tester.ExpectTotalCount(
-      "Views.Browser.TimeSpentProcessingOnNativeThemeUpdatedEvent", 1);
-  histogram_tester.ExpectUniqueSample(
-      "Views.Browser.NumColorProvidersInitializedDuringOnNativeThemeUpdated", 0,
-      1);
-
-  theme.NotifyOnNativeThemeUpdated();
-  histogram_tester.ExpectTotalCount(
-      "Views.Browser.TimeSpentProcessingOnNativeThemeUpdatedEvent", 2);
-  histogram_tester.ExpectUniqueSample(
-      "Views.Browser.NumColorProvidersInitializedDuringOnNativeThemeUpdated", 0,
-      2);
-}
-
 TEST_F(NativeThemeTest, PreferredContrast) {
   using enum NativeTheme::PreferredContrast;
   const auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
@@ -97,6 +73,25 @@ TEST_F(NativeThemeTest, CaretBlinkInterval) {
 
   native_theme->set_caret_blink_interval(base::TimeDelta());
   EXPECT_EQ(native_theme->caret_blink_interval(), base::TimeDelta());
+}
+
+TEST_F(NativeThemeTest, MetricsEmitted) {
+  auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
+  base::HistogramTester histogram_tester;
+
+  native_theme->NotifyOnNativeThemeUpdated();
+  histogram_tester.ExpectTotalCount(
+      "Views.Browser.TimeSpentProcessingOnNativeThemeUpdatedEvent", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Views.Browser.NumColorProvidersInitializedDuringOnNativeThemeUpdated", 0,
+      1);
+
+  native_theme->NotifyOnNativeThemeUpdated();
+  histogram_tester.ExpectTotalCount(
+      "Views.Browser.TimeSpentProcessingOnNativeThemeUpdatedEvent", 2);
+  histogram_tester.ExpectUniqueSample(
+      "Views.Browser.NumColorProvidersInitializedDuringOnNativeThemeUpdated", 0,
+      2);
 }
 
 }  // namespace ui

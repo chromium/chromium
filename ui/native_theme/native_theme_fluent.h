@@ -37,6 +37,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   static constexpr int kScrollbarThickness = 15;
   // LINT.ThenChange(//third_party/blink/web_tests/resources/scrollbar-util.js:FluentScrollbarThickness)
 
+  // Button height for the vertical scrollbar or width for the horizontal.
+  static constexpr int kScrollbarButtonSideLength = 18;
+
   NativeThemeFluent(const NativeThemeFluent&) = delete;
   NativeThemeFluent& operator=(const NativeThemeFluent&) = delete;
 
@@ -61,7 +64,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   ~NativeThemeFluent() override;
 
   // NativeThemeBase:
-  float GetContrastRatioForState(State state, Part part) const override;
+  float GetScrollbarPartContrastRatioForState(State state) const override;
   void PaintArrowButton(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,
@@ -98,26 +101,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   friend class base::NoDestructor<NativeThemeFluent>;
   friend class NativeThemeFluentTest;
 
-  void PaintButton(cc::PaintCanvas* canvas,
-                   const ColorProvider* color_provider,
-                   const gfx::Rect& rect,
-                   Part part,
-                   bool forced_colors,
-                   PreferredContrast contrast,
-                   const ScrollbarArrowExtraParams& extra_params) const;
-  void PaintArrow(cc::PaintCanvas* canvas,
-                  const ColorProvider* color_provider,
-                  const gfx::Rect& rect,
-                  Part part,
-                  State state,
-                  const ScrollbarArrowExtraParams& extra_params) const;
-
   // Calculates and returns the position and dimensions of the scaled arrow rect
   // within the scrollbar button rect. The goal is to keep the arrow in the
   // center of the button with the applied kFluentScrollbarArrowOffset.
   gfx::RectF GetArrowRect(const gfx::Rect& rect, Part part, State state) const;
-
-  const char* GetArrowCodePointForScrollbarPart(Part part) const;
 
   // Used by Overlay Fluent scrollbars to paint buttons with rounded corners.
   void PaintRoundedButton(cc::PaintCanvas* canvas,

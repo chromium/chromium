@@ -120,7 +120,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   // Returns the amount a hovered or pressed scrollbar part should contrast with
   // the normal version of that part. Used when there is a custom scrollbar part
   // color to try and mimic the default behavior.
-  virtual float GetContrastRatioForState(State state, Part part) const;
+  virtual float GetScrollbarPartContrastRatioForState(State state) const;
 
   virtual void PaintFrameTopArea(
       cc::PaintCanvas* canvas,
@@ -205,10 +205,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                                     bool dark_mode,
                                     const ColorProvider* color_provider) const;
 
-  SkColor SaturateAndBrighten(SkScalar* hsv,
-                              SkScalar saturate_amount,
-                              SkScalar brighten_amount) const;
-
   // For disabled controls, lightens the background so the translucent disabled
   // color works regardless of what it's over.
   void PaintLightenLayer(cc::PaintCanvas* canvas,
@@ -230,11 +226,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   // `state` is hovered or pressed, `color` (if present) will be adjusted to
   // contrast with the normal state. If `bg_color` is present, also attempts to
   // ensure `color` maintains visible contrast with it.
-  std::optional<SkColor> GetContrastingPressedOrHoveredColor(
+  std::optional<SkColor> GetContrastingColorForScrollbarPart(
       std::optional<SkColor> color,
       std::optional<SkColor> bg_color,
-      State state,
-      Part part) const;
+      State state) const;
 
   void PaintCheckbox(cc::PaintCanvas* canvas,
                      const ColorProvider* color_provider,
@@ -320,8 +315,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       State state,
       bool dark_mode,
       const ColorProvider* color_provider) const;
-
-  SkColor OutlineColor(SkScalar* hsv1, SkScalar* hsv2) const;
 
   // Draws the common elements of checkboxes and radio buttons. Returns the
   // rectangle within which any additional decorations should be drawn, or empty

@@ -13,7 +13,7 @@ namespace ui {
 
 OsSettingsProviderAndroid::OsSettingsProviderAndroid()
     : OsSettingsProvider(PriorityLevel::kProduction) {
-  accessibility_state_observation_.Observe(ui::AccessibilityState::Get());
+  accessibility_state_observation_.Observe(AccessibilityState::Get());
 }
 
 OsSettingsProviderAndroid::~OsSettingsProviderAndroid() = default;

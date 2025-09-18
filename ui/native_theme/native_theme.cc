@@ -13,7 +13,6 @@
 
 #include "base/callback_list.h"
 #include "base/command_line.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -38,7 +37,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/native_theme/os_settings_provider.h"
 
@@ -210,7 +208,7 @@ void NativeTheme::NotifyOnNativeThemeUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::ElapsedTimer timer;
-  auto& color_provider_manager = ui::ColorProviderManager::Get();
+  auto& color_provider_manager = ColorProviderManager::Get();
   const size_t initial_providers_initialized =
       color_provider_manager.num_providers_initialized();
 
@@ -277,7 +275,7 @@ void NativeTheme::Paint(cc::PaintCanvas* canvas,
 ColorProviderKey NativeTheme::GetColorProviderKey(
     scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
     bool use_custom_frame) const {
-  ui::ColorProviderKey key;
+  ColorProviderKey key;
   key.color_mode = preferred_color_scheme() == PreferredColorScheme::kDark
                        ? ColorProviderKey::ColorMode::kDark
                        : ColorProviderKey::ColorMode::kLight;
@@ -292,7 +290,6 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
   key.user_color = user_color();
   key.scheme_variant = scheme_variant();
   key.custom_theme = std::move(custom_theme);
-
   return key;
 }
 
@@ -303,7 +300,7 @@ bool NativeTheme::IsForcedDarkMode() {
   return kIsForcedDarkMode;
 }
 
-NativeTheme::NativeTheme(ui::SystemTheme system_theme)
+NativeTheme::NativeTheme(SystemTheme system_theme)
     : system_theme_(system_theme) {}
 
 NativeTheme::~NativeTheme() = default;
@@ -321,6 +318,7 @@ void NativeTheme::PaintMenuItemBackground(
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& extra_params) const {
+  const SkScalar radius = SkIntToScalar(extra_params.corner_radius);
   cc::PaintFlags flags;
   const ColorId id = (state == kHovered)
 #if BUILDFLAG(IS_CHROMEOS)
@@ -331,12 +329,7 @@ void NativeTheme::PaintMenuItemBackground(
                          : kColorMenuBackground;
 #endif
   flags.setColor(color_provider->GetColor(id));
-  if (extra_params.corner_radius > 0) {
-    const SkScalar radius = SkIntToScalar(extra_params.corner_radius);
-    canvas->drawRoundRect(gfx::RectToSkRect(rect), radius, radius, flags);
-    return;
-  }
-  canvas->drawRect(gfx::RectToSkRect(rect), flags);
+  canvas->drawRoundRect(gfx::RectToSkRect(rect), radius, radius, flags);
 }
 
 void NativeTheme::OnToolkitSettingsChanged(bool force_notify) {

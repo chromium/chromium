@@ -160,7 +160,7 @@ TEST_F(LabelButtonLabelTest, ColorIds) {
             label()->GetColorProvider()->GetColor(ui::kColorBadgeBackground));
 
   // Still overridden after a theme change.
-  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kLight);
+  SetPreferredColorScheme(ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(last_requested_color(), ui::kColorBadgeBackground);
   EXPECT_EQ(last_color(),
             label()->GetColorProvider()->GetColor(ui::kColorBadgeBackground));

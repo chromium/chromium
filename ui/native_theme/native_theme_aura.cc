@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -17,7 +16,6 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -78,15 +76,15 @@ gfx::Insets NativeThemeAura::GetScrollbarSolidColorThumbInsets(
     return {};
   }
 
-  // If there are no buttons then provide some padding so that the thumb doesn't
-  // touch the end of the track.
   static constexpr int kThumbPadding = 2;
-  const int extra_inset = scrollbar_button_length() == 0 ? kThumbPadding : 0;
-  if (part == NativeTheme::kScrollbarVerticalThumb) {
-    return gfx::Insets::VH(extra_inset, kThumbPadding);
+  auto insets = gfx::Insets::VH(
+      // If there are no buttons then provide some padding so that the thumb
+      // doesn't touch the end of the track.
+      scrollbar_button_length() == 0 ? kThumbPadding : 0, kThumbPadding);
+  if (part == kScrollbarHorizontalTrack) {
+    insets.Transpose();
   }
-  CHECK_EQ(part, NativeTheme::kScrollbarHorizontalThumb);
-  return gfx::Insets::VH(kThumbPadding, extra_inset);
+  return insets;
 }
 
 bool NativeThemeAura::SupportsNinePatch(Part part) const {
@@ -117,9 +115,8 @@ SkColor NativeThemeAura::GetScrollbarThumbColor(
   // Only non-overlay aura scrollbars use solid color thumb.
   CHECK(!use_overlay_scrollbar());
   if (extra_params.thumb_color.has_value()) {
-    return GetContrastingPressedOrHoveredColor(
-               extra_params.thumb_color, extra_params.track_color, state,
-               /*part=*/Part::kScrollbarVerticalThumb)
+    return GetContrastingColorForScrollbarPart(extra_params.thumb_color,
+                                               extra_params.track_color, state)
         .value();
   }
   ColorId color_id = kColorWebNativeControlScrollbarThumb;
@@ -134,26 +131,30 @@ SkColor NativeThemeAura::GetScrollbarThumbColor(
 NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbar) {
   set_use_overlay_scrollbar(use_overlay_scrollbar);
   if (use_overlay_scrollbar) {
+    // NOTE: The overlay scrollbar thumb omits the stroke on the trailing
+    // "thickness" edge, so only including its width a single time here is
+    // intentional.
     scrollbar_width_ =
         kOverlayScrollbarThumbWidthPressed + kOverlayScrollbarStrokeWidth;
   }
-  // We don't draw scrollbar buttons.
 #if BUILDFLAG(IS_CHROMEOS)
+  // CrOS does not draw scrollbar buttons.
   set_scrollbar_button_length(0);
 #endif
 }
 
 NativeThemeAura::NativeThemeAura(SystemTheme system_theme)
     : NativeThemeBase(system_theme) {
-  // We don't draw scrollbar buttons.
 #if BUILDFLAG(IS_CHROMEOS)
+  // CrOS does not draw scrollbar buttons.
   set_scrollbar_button_length(0);
 #endif
 }
 
 NativeThemeAura::~NativeThemeAura() = default;
 
-float NativeThemeAura::GetContrastRatioForState(State state, Part part) const {
+float NativeThemeAura::GetScrollbarPartContrastRatioForState(
+    State state) const {
   return state == kPressed ? 1.3f : 1.8f;
 }
 
@@ -162,25 +163,16 @@ void NativeThemeAura::PaintMenuPopupBackground(
     const ColorProvider* color_provider,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& extra_params) const {
-  DCHECK(color_provider);
-  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
-  SkColor4f color =
+  CHECK(color_provider);
+  // TODO(crbug.com/40219248): Use `SkColor4f` everywhere.
+  const auto color =
       SkColor4f::FromColor(color_provider->GetColor(kColorMenuBackground));
   if (extra_params.corner_radius > 0) {
+    const SkScalar r = SkIntToScalar(extra_params.corner_radius);
     cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
     flags.setColor(color);
-
-    SkPath path;
-    SkRect rect = SkRect::MakeWH(SkIntToScalar(size.width()),
-                                 SkIntToScalar(size.height()));
-    SkScalar radius = SkIntToScalar(extra_params.corner_radius);
-    SkScalar radii[8] = {radius, radius, radius, radius,
-                         radius, radius, radius, radius};
-    path.addRoundRect(rect, radii);
-
-    canvas->drawPath(path, flags);
+    canvas->drawRoundRect(gfx::RectToSkRect(gfx::Rect(size)), r, r, flags);
   } else {
     canvas->drawColor(color, SkBlendMode::kSrc);
   }
@@ -190,7 +182,7 @@ void NativeThemeAura::PaintArrowButton(
     cc::PaintCanvas* canvas,
     const ColorProvider* color_provider,
     const gfx::Rect& rect,
-    Part direction,
+    Part part,
     State state,
     bool forced_colors,
     bool dark_mode,
@@ -230,25 +222,23 @@ void NativeThemeAura::PaintArrowButton(
   }
   if (extra_params.track_color.has_value() &&
       extra_params.track_color.value() != gfx::kPlaceholderColor) {
-    bg_color = GetContrastingPressedOrHoveredColor(extra_params.track_color,
-                                                   /*bg_color=*/std::nullopt,
-                                                   state, direction)
-                   .value();
+    bg_color =
+        GetContrastingColorForScrollbarPart(extra_params.track_color,
+                                            /*bg_color=*/std::nullopt, state)
+            .value();
   }
   if (extra_params.thumb_color.has_value() &&
       extra_params.thumb_color.value() != gfx::kPlaceholderColor) {
-    arrow_color = GetContrastingPressedOrHoveredColor(
-                      extra_params.thumb_color, bg_color, state, direction)
+    arrow_color = GetContrastingColorForScrollbarPart(extra_params.thumb_color,
+                                                      bg_color, state)
                       .value();
   }
-  DCHECK_NE(arrow_color, gfx::kPlaceholderColor);
-
-  cc::PaintFlags flags;
-  flags.setColor(bg_color);
+  cc::PaintFlags bg_flags;
+  bg_flags.setColor(bg_color);
 
   if (base::FeatureList::IsEnabled(kNewScrollbarArrowRadius) &&
       !extra_params.needs_rounded_corner) {
-    canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
+    canvas->drawRect(gfx::RectToSkRect(rect), bg_flags);
   } else {
     // This radius lets scrollbar arrows fit in the default rounded border of
     // some form controls.
@@ -257,31 +247,17 @@ void NativeThemeAura::PaintArrowButton(
     static constexpr SkScalar kUnscaledRadius = 1;
     const SkScalar radius =
         kUnscaledRadius * (extra_params.zoom ? extra_params.zoom : 1.0);
-    SkScalar upper_left_radius = 0;
-    SkScalar lower_left_radius = 0;
-    SkScalar upper_right_radius = 0;
-    SkScalar lower_right_radius = 0;
-    if (direction == kScrollbarUpArrow) {
-      if (extra_params.right_to_left) {
-        upper_left_radius = radius;
-      } else {
-        upper_right_radius = radius;
-      }
-    } else if (direction == kScrollbarDownArrow) {
-      if (extra_params.right_to_left) {
-        lower_left_radius = radius;
-      } else {
-        lower_right_radius = radius;
-      }
+    SkScalar ul = 0, ll = 0, ur = 0, lr = 0;
+    if (part == kScrollbarDownArrow) {
+      (extra_params.right_to_left ? ll : lr) = radius;
+    } else if (part == kScrollbarUpArrow) {
+      (extra_params.right_to_left ? ul : ur) = radius;
     }
-    gfx::RRectF rounded_rect(
-        gfx::RectF(rect), upper_left_radius, upper_left_radius,
-        upper_right_radius, upper_right_radius, lower_right_radius,
-        lower_right_radius, lower_left_radius, lower_left_radius);
-    canvas->drawRRect(static_cast<SkRRect>(rounded_rect), flags);
+    const gfx::RRectF rrect(gfx::RectF(rect), ul, ul, ur, ur, lr, lr, ll, ll);
+    canvas->drawRRect(static_cast<SkRRect>(rrect), bg_flags);
   }
 
-  PaintArrow(canvas, rect, direction, arrow_color);
+  PaintArrow(canvas, rect, part, arrow_color);
 }
 
 void NativeThemeAura::PaintScrollbarThumb(
@@ -299,23 +275,8 @@ void NativeThemeAura::PaintScrollbarThumb(
 
   gfx::Rect fill_rect(rect);
   cc::PaintFlags fill_flags;
-
   if (use_overlay_scrollbar()) {
-    const bool hovered = state != kNormal;
-
-    CHECK(color_provider);
-    fill_flags.setColor(extra_params.thumb_color.value_or(
-        color_provider->GetColor(hovered ? kColorOverlayScrollbarFillHovered
-                                         : kColorOverlayScrollbarFill)));
-
-    // In overlay mode, draw a stroke (border).
-    cc::PaintFlags stroke_flags;
-    stroke_flags.setColor(
-        color_provider->GetColor(hovered ? kColorOverlayScrollbarStrokeHovered
-                                         : kColorOverlayScrollbarStroke));
-    stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
-    stroke_flags.setStrokeWidth(kOverlayScrollbarStrokeWidth);
-
+    // Paint a stroke.
     gfx::RectF stroke_rect(fill_rect);
     // The edge to which the scrollbar is attached shouldn't have a border.
     gfx::Insets edge_adjust_insets;
@@ -326,13 +287,25 @@ void NativeThemeAura::PaintScrollbarThumb(
     }
     stroke_rect.Inset(gfx::InsetsF(kOverlayScrollbarStrokeWidth / 2.0f) +
                       static_cast<gfx::InsetsF>(edge_adjust_insets));
+
+    cc::PaintFlags stroke_flags;
+    CHECK(color_provider);
+    const bool hovered = state != kNormal;
+    stroke_flags.setColor(
+        color_provider->GetColor(hovered ? kColorOverlayScrollbarStrokeHovered
+                                         : kColorOverlayScrollbarStroke));
+    stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    stroke_flags.setStrokeWidth(kOverlayScrollbarStrokeWidth);
     canvas->drawRect(gfx::RectFToSkRect(stroke_rect), stroke_flags);
 
     // Inset all the edges so we don't fill in the stroke below. For a left
     // vertical scrollbar, we will horizontally flip the canvas in
     // `ScrollbarThemeOverlay::PaintThumb()`.
-    gfx::Insets fill_insets(kOverlayScrollbarStrokeWidth);
-    fill_rect.Inset(fill_insets + edge_adjust_insets);
+    fill_rect.Inset(gfx::Insets(kOverlayScrollbarStrokeWidth) +
+                    edge_adjust_insets);
+    fill_flags.setColor(extra_params.thumb_color.value_or(
+        color_provider->GetColor(hovered ? kColorOverlayScrollbarFillHovered
+                                         : kColorOverlayScrollbarFill)));
   } else {
     fill_rect.Inset(GetScrollbarSolidColorThumbInsets(part));
     fill_flags.setColor(

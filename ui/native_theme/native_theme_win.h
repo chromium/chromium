@@ -5,8 +5,6 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_WIN_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_WIN_H_
 
-#include <windows.h>
-
 #include <optional>
 
 #include "base/component_export.h"
@@ -56,7 +54,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   friend class TestNativeThemeWin;
 
   PreferredColorScheme CalculatePreferredColorScheme() const override;
-  void CloseHandlesInternal();
 
   void RegisterThemeRegkeyObserver();
   void UpdateDarkModeStatus();

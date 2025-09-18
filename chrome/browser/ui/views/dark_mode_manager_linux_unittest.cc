@@ -35,28 +35,6 @@ class MockNativeTheme : public NativeTheme {
     set_preferred_color_scheme(color_scheme);
     NotifyOnNativeThemeUpdated();
   }
-
-  // Mock some pure-virtual methods even though they're not used.
-  MOCK_METHOD(gfx::Size,
-              GetPartSize,
-              (Part part, State state, const ExtraParams& extra_params),
-              (const override));
-  MOCK_METHOD(void,
-              Paint,
-              (cc::PaintCanvas * canvas,
-               const ui::ColorProvider* color_provider,
-               Part part,
-               State state,
-               const gfx::Rect& rect,
-               const ExtraParams& extra_params,
-               bool forced_colors,
-               PreferredColorScheme color_scheme,
-               PreferredContrast contrast,
-               std::optional<SkColor> accent_color),
-              (const override));
-  MOCK_METHOD(bool, SupportsNinePatch, (Part part), (const override));
-  MOCK_METHOD(gfx::Size, GetNinePatchCanvasSize, (Part part), (const override));
-  MOCK_METHOD(gfx::Rect, GetNinePatchAperture, (Part part), (const override));
 };
 
 ACTION_P2(RegisterSignalCallback, signal_callback, connected_callback) {

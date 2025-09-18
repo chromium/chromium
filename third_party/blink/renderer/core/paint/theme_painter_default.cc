@@ -53,7 +53,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace blink {
 

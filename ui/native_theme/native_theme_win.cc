@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/native_theme/native_theme_win.h"
 
 #include <windows.h>
@@ -16,19 +11,24 @@
 #include <vsstyle.h>
 
 #include <array>
+#include <cmath>
 #include <optional>
-#include <tuple>
 #include <utility>
 #include <variant>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/cstring_view.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
@@ -65,6 +65,8 @@ namespace ui {
 
 namespace {
 
+using ThemeHandles = base::flat_map<base::wcstring_view, HANDLE>;
+
 void SetCheckerboardShader(SkPaint* paint, int left, int top) {
   // Create a 2x2 checkerboard pattern using the 3D face and highlight colors.
   const auto& os_settings_provider = OsSettingsProvider::Get();
@@ -93,27 +95,6 @@ void SetCheckerboardShader(SkPaint* paint, int left, int top) {
   local_matrix.setTranslate(SkIntToScalar(left), SkIntToScalar(top));
   paint->setShader(bitmap.makeShader(SkTileMode::kRepeat, SkTileMode::kRepeat,
                                      SkSamplingOptions(), &local_matrix));
-}
-
-//    <-a->
-// [  *****             ]
-//  ____ |              |
-//  <-a-> <------b----->
-// a: object_width
-// b: frame_width
-// *: animating object
-//
-// - the animation goes from "[" to "]" repeatedly.
-// - the animation offset is at first "|"
-//
-int ComputeAnimationProgress(int frame_width,
-                             int object_width,
-                             int pixels_per_second,
-                             double animated_seconds) {
-  int animation_width = frame_width + object_width;
-  double interval = static_cast<double>(animation_width) / pixels_per_second;
-  double ratio = fmod(animated_seconds, interval) / interval;
-  return static_cast<int>(animation_width * ratio) - object_width;
 }
 
 // Custom scoped object for storing DC and a bitmap that was selected into it,
@@ -162,47 +143,36 @@ base::win::RegKey OpenThemeRegKey(REGSAM access) {
   return hkcu_themes_regkey;
 }
 
-enum ThemeName {
-  BUTTON,
-  LIST,
-  MENU,
-  MENULIST,
-  SCROLLBAR,
-  STATUS,
-  TAB,
-  TEXTFIELD,
-  TRACKBAR,
-  WINDOW,
-  PROGRESS,
-  SPIN,
-  LAST
-};
-
 // Returns the cached open theme handles. This is process-scoped rather than
 // owned by `NativeThemeWin` so that, in case two `NativeThemeWin` instances are
 // live simultaneously (e.g. in tests), destroying one (and thus calling
 // `CloseThemeData()` on all its handles) won't leave the other holding invalid
 // handles.
-HANDLE* GetThemeHandles() {
-  static HANDLE kThemeHandles[LAST] = {};
-  return kThemeHandles;
+ThemeHandles* GetThemeHandles() {
+  static base::NoDestructor<ThemeHandles> kThemeHandles;
+  return kThemeHandles.get();
 }
 
-ThemeName GetThemeName(NativeTheme::Part part) {
+// Returns the theme handle for `part`, opening it if necessary.
+HANDLE GetThemeHandle(NativeTheme::Part part) {
+  base::wcstring_view theme_class;
   switch (part) {
     case NativeTheme::kCheckbox:
     case NativeTheme::kPushButton:
     case NativeTheme::kRadio:
-      return BUTTON;
+      theme_class = L"Button";
+      break;
     case NativeTheme::kMenuList:
     case NativeTheme::kMenuCheck:
     case NativeTheme::kMenuCheckBackground:
     case NativeTheme::kMenuPopupArrow:
     case NativeTheme::kMenuPopupGutter:
     case NativeTheme::kMenuPopupSeparator:
-      return MENU;
+      theme_class = L"Menu";
+      break;
     case NativeTheme::kProgressBar:
-      return PROGRESS;
+      theme_class = L"Progress";
+      break;
     case NativeTheme::kScrollbarDownArrow:
     case NativeTheme::kScrollbarLeftArrow:
     case NativeTheme::kScrollbarRightArrow:
@@ -213,90 +183,38 @@ ThemeName GetThemeName(NativeTheme::Part part) {
     case NativeTheme::kScrollbarVerticalThumb:
     case NativeTheme::kScrollbarHorizontalTrack:
     case NativeTheme::kScrollbarVerticalTrack:
-      return SCROLLBAR;
+      theme_class = OsSettingsProvider::Get().DarkColorSchemeAvailable()
+                        ? base::wcstring_view(L"Explorer::Scrollbar")
+                        : base::wcstring_view(L"Scrollbar");
+      break;
     case NativeTheme::kInnerSpinButton:
-      return SPIN;
+      theme_class = L"Spin";
+      break;
     case NativeTheme::kWindowResizeGripper:
-      return STATUS;
+      theme_class = L"Status";
+      break;
     case NativeTheme::kTabPanelBackground:
-      return TAB;
+      theme_class = L"Tab";
+      break;
     case NativeTheme::kTextField:
-      return TEXTFIELD;
+      theme_class = L"Edit";
+      break;
     case NativeTheme::kTrackbarThumb:
     case NativeTheme::kTrackbarTrack:
-      return TRACKBAR;
-    case NativeTheme::kMenuPopupBackground:
-    case NativeTheme::kMenuItemBackground:
-    case NativeTheme::kScrollbarCorner:
-    case NativeTheme::kSliderTrack:
-    case NativeTheme::kSliderThumb:
-    case NativeTheme::kMaxPart:
+      theme_class = L"Trackbar";
+      break;
+    default:
       NOTREACHED();
   }
-}
 
-// Returns the theme handle for `part`, opening it if necessary.
-HANDLE GetThemeHandle(ThemeName theme_name) {
-  if (theme_name < 0 || theme_name >= LAST) {
-    return nullptr;
+  HANDLE& handle = (*GetThemeHandles())[theme_class];
+  if (!handle) {
+    handle = OpenThemeData(nullptr, theme_class.c_str());
   }
-
-  HANDLE* theme_handles = GetThemeHandles();
-  if (theme_handles[theme_name]) {
-    return theme_handles[theme_name];
-  }
-
-  // Not found, try to load it.
-  HANDLE handle = nullptr;
-  switch (theme_name) {
-    case BUTTON:
-      handle = OpenThemeData(nullptr, L"Button");
-      break;
-    case LIST:
-      handle = OpenThemeData(nullptr, L"Listview");
-      break;
-    case MENU:
-      handle = OpenThemeData(nullptr, L"Menu");
-      break;
-    case MENULIST:
-      handle = OpenThemeData(nullptr, L"Combobox");
-      break;
-    case SCROLLBAR:
-      handle = OpenThemeData(
-          nullptr, OsSettingsProvider::Get().DarkColorSchemeAvailable()
-                       ? L"Explorer::Scrollbar"
-                       : L"Scrollbar");
-      break;
-    case STATUS:
-      handle = OpenThemeData(nullptr, L"Status");
-      break;
-    case TAB:
-      handle = OpenThemeData(nullptr, L"Tab");
-      break;
-    case TEXTFIELD:
-      handle = OpenThemeData(nullptr, L"Edit");
-      break;
-    case TRACKBAR:
-      handle = OpenThemeData(nullptr, L"Trackbar");
-      break;
-    case WINDOW:
-      handle = OpenThemeData(nullptr, L"Window");
-      break;
-    case PROGRESS:
-      handle = OpenThemeData(nullptr, L"Progress");
-      break;
-    case SPIN:
-      handle = OpenThemeData(nullptr, L"Spin");
-      break;
-    case LAST:
-      NOTREACHED();
-  }
-  theme_handles[theme_name] = handle;
   return handle;
 }
 
 int GetWindowsPart(NativeTheme::Part part,
-                   NativeTheme::State state,
                    const NativeTheme::ExtraParams& extra_params) {
   if (part == NativeTheme::kScrollbarHorizontalTrack) {
     return std::get<NativeTheme::ScrollbarTrackExtraParams>(extra_params)
@@ -360,6 +278,38 @@ int GetWindowsPart(NativeTheme::Part part,
 int GetWindowsState(NativeTheme::Part part,
                     NativeTheme::State state,
                     const NativeTheme::ExtraParams& extra_params) {
+  if (part == NativeTheme::kCheckbox) {
+    const auto& button = std::get<NativeTheme::ButtonExtraParams>(extra_params);
+    if (button.checked) {
+      return std::to_array({CBS_CHECKEDDISABLED, CBS_CHECKEDHOT,
+                            CBS_CHECKEDNORMAL, CBS_CHECKEDPRESSED})[state];
+    }
+    if (button.indeterminate) {
+      return std::to_array({CBS_MIXEDDISABLED, CBS_MIXEDHOT, CBS_MIXEDNORMAL,
+                            CBS_MIXEDPRESSED})[state];
+    }
+    return std::to_array({CBS_UNCHECKEDDISABLED, CBS_UNCHECKEDHOT,
+                          CBS_UNCHECKEDNORMAL, CBS_UNCHECKEDPRESSED})[state];
+  }
+  if (part == NativeTheme::kInnerSpinButton &&
+      std::get<NativeTheme::InnerSpinButtonExtraParams>(extra_params).spin_up) {
+    return std::to_array(
+        {UPS_DISABLED, UPS_HOT, UPS_NORMAL, UPS_PRESSED})[state];
+  }
+  if (part == NativeTheme::kMenuCheck &&
+      std::get<NativeTheme::MenuCheckExtraParams>(extra_params).is_radio) {
+    return (state == NativeTheme::kDisabled) ? MC_BULLETDISABLED
+                                             : MC_BULLETNORMAL;
+  }
+  if (part == NativeTheme::kPushButton && state == NativeTheme::kNormal &&
+      std::get<NativeTheme::ButtonExtraParams>(extra_params).is_default) {
+    return PBS_DEFAULTED;
+  }
+  if (part == NativeTheme::kRadio &&
+      std::get<NativeTheme::ButtonExtraParams>(extra_params).checked) {
+    return std::to_array({RBS_CHECKEDDISABLED, RBS_CHECKEDHOT,
+                          RBS_CHECKEDNORMAL, RBS_CHECKEDPRESSED})[state];
+  }
   if (part >= NativeTheme::kScrollbarDownArrow &&
       part <= NativeTheme::kScrollbarUpArrow &&
       state == NativeTheme::kHovered &&
@@ -369,114 +319,72 @@ int GetWindowsState(NativeTheme::Part part,
         {ABS_DOWNHOVER, ABS_LEFTHOVER, ABS_RIGHTHOVER,
          ABS_UPHOVER})[part - NativeTheme::kScrollbarDownArrow];
   }
-  switch (part) {
-    case NativeTheme::kScrollbarDownArrow:
-      return std::to_array({ABS_DOWNDISABLED, ABS_DOWNHOT, ABS_DOWNNORMAL,
-                            ABS_DOWNPRESSED})[state];
-    case NativeTheme::kScrollbarLeftArrow:
-      return std::to_array({ABS_LEFTDISABLED, ABS_LEFTHOT, ABS_LEFTNORMAL,
-                            ABS_LEFTPRESSED})[state];
-    case NativeTheme::kScrollbarRightArrow:
-      return std::to_array({ABS_RIGHTDISABLED, ABS_RIGHTHOT, ABS_RIGHTNORMAL,
-                            ABS_RIGHTPRESSED})[state];
-    case NativeTheme::kScrollbarUpArrow:
-      return std::to_array(
-          {ABS_UPDISABLED, ABS_UPHOT, ABS_UPNORMAL, ABS_UPPRESSED})[state];
-    case NativeTheme::kCheckbox: {
-      const auto& button =
-          std::get<NativeTheme::ButtonExtraParams>(extra_params);
-      if (button.checked) {
-        return std::to_array({CBS_CHECKEDDISABLED, CBS_CHECKEDHOT,
-                              CBS_CHECKEDNORMAL, CBS_CHECKEDPRESSED})[state];
-      }
-      if (button.indeterminate) {
-        return std::to_array({CBS_MIXEDDISABLED, CBS_MIXEDHOT, CBS_MIXEDNORMAL,
-                              CBS_MIXEDPRESSED})[state];
-      }
-      return std::to_array({CBS_UNCHECKEDDISABLED, CBS_UNCHECKEDHOT,
-                            CBS_UNCHECKEDNORMAL, CBS_UNCHECKEDPRESSED})[state];
-    }
-    case NativeTheme::kMenuList:
-      return std::to_array(
-          {CBXS_DISABLED, CBXS_HOT, CBXS_NORMAL, CBXS_PRESSED})[state];
-    case NativeTheme::kTextField:
-      if (state == NativeTheme::kNormal) {
-        const auto& text_field =
-            std::get<NativeTheme::TextFieldExtraParams>(extra_params);
-        if (text_field.is_read_only) {
-          return ETS_READONLY;
-        }
-        if (text_field.is_focused) {
-          return ETS_FOCUSED;
-        }
-      }
-      return std::to_array(
-          {ETS_DISABLED, ETS_HOT, ETS_NORMAL, ETS_SELECTED})[state];
-    case NativeTheme::kMenuPopupArrow:
-      return (state == NativeTheme::kDisabled) ? MSM_DISABLED : MSM_NORMAL;
-    case NativeTheme::kMenuCheck:
-      if (std::get<NativeTheme::MenuCheckExtraParams>(extra_params).is_radio) {
-        return (state == NativeTheme::kDisabled) ? MC_BULLETDISABLED
-                                                 : MC_BULLETNORMAL;
-      }
-      return (state == NativeTheme::kDisabled) ? MC_CHECKMARKDISABLED
-                                               : MC_CHECKMARKNORMAL;
-    case NativeTheme::kMenuCheckBackground:
-      return (state == NativeTheme::kDisabled) ? MCB_DISABLED : MCB_NORMAL;
-    case NativeTheme::kPushButton:
-      if (state == NativeTheme::kNormal &&
-          std::get<NativeTheme::ButtonExtraParams>(extra_params).is_default) {
-        return PBS_DEFAULTED;
-      }
-      return std::to_array(
-          {PBS_DISABLED, PBS_HOT, PBS_NORMAL, PBS_PRESSED})[state];
-    case NativeTheme::kRadio:
-      if (std::get<NativeTheme::ButtonExtraParams>(extra_params).checked) {
-        return std::to_array({RBS_CHECKEDDISABLED, RBS_CHECKEDHOT,
-                              RBS_CHECKEDNORMAL, RBS_CHECKEDPRESSED})[state];
-      }
-      return std::to_array({RBS_UNCHECKEDDISABLED, RBS_UNCHECKEDHOT,
-                            RBS_UNCHECKEDNORMAL, RBS_UNCHECKEDPRESSED})[state];
-    case NativeTheme::kScrollbarHorizontalGripper:
-    case NativeTheme::kScrollbarVerticalGripper:
-    case NativeTheme::kScrollbarHorizontalThumb:
-    case NativeTheme::kScrollbarVerticalThumb:
-      if ((state == NativeTheme::kHovered) &&
-          !std::get<NativeTheme::ScrollbarThumbExtraParams>(extra_params)
-               .is_hovering) {
-        return SCRBS_HOT;
-      }
-      [[fallthrough]];
-    case NativeTheme::kScrollbarHorizontalTrack:
-    case NativeTheme::kScrollbarVerticalTrack:
-      return std::to_array(
-          {SCRBS_DISABLED, SCRBS_HOVER, SCRBS_NORMAL, SCRBS_PRESSED})[state];
-    case NativeTheme::kTrackbarThumb:
-    case NativeTheme::kTrackbarTrack:
-      return std::to_array(
-          {TUS_DISABLED, TUS_HOT, TUS_NORMAL, TUS_PRESSED})[state];
-    case NativeTheme::kInnerSpinButton:
-      if (std::get<NativeTheme::InnerSpinButtonExtraParams>(extra_params)
-              .spin_up) {
-        return std::to_array(
-            {UPS_DISABLED, UPS_HOT, UPS_NORMAL, UPS_PRESSED})[state];
-      }
-      return std::to_array(
-          {DNS_DISABLED, DNS_HOT, DNS_NORMAL, DNS_PRESSED})[state];
-    case NativeTheme::kMenuPopupGutter:
-    case NativeTheme::kMenuPopupSeparator:
-    case NativeTheme::kProgressBar:
-    case NativeTheme::kTabPanelBackground:
-    case NativeTheme::kWindowResizeGripper:
-      return 0;
-    case NativeTheme::kMenuPopupBackground:
-    case NativeTheme::kMenuItemBackground:
-    case NativeTheme::kScrollbarCorner:
-    case NativeTheme::kSliderTrack:
-    case NativeTheme::kSliderThumb:
-    case NativeTheme::kMaxPart:
-      NOTREACHED();
+  if ((part == NativeTheme::kScrollbarHorizontalThumb ||
+       part == NativeTheme::kScrollbarVerticalThumb ||
+       part == NativeTheme::kScrollbarHorizontalGripper ||
+       part == NativeTheme::kScrollbarVerticalGripper) &&
+      state == NativeTheme::kHovered &&
+      !std::get<NativeTheme::ScrollbarThumbExtraParams>(extra_params)
+           .is_hovering) {
+    return SCRBS_HOT;
   }
+  if (part >= NativeTheme::kScrollbarHorizontalThumb &&
+      part <= NativeTheme::kScrollbarVerticalGripper) {
+    return std::to_array(
+        {SCRBS_DISABLED, SCRBS_HOVER, SCRBS_NORMAL, SCRBS_PRESSED})[state];
+  }
+  if (part == NativeTheme::kTextField && state == NativeTheme::kNormal) {
+    const auto& text_field =
+        std::get<NativeTheme::TextFieldExtraParams>(extra_params);
+    if (text_field.is_read_only) {
+      return ETS_READONLY;
+    }
+    if (text_field.is_focused) {
+      return ETS_FOCUSED;
+    }
+  }
+  if (part == NativeTheme::kTrackbarThumb ||
+      part == NativeTheme::kTrackbarTrack) {
+    return std::to_array(
+        {TUS_DISABLED, TUS_HOT, TUS_NORMAL, TUS_PRESSED})[state];
+  }
+  if (part == NativeTheme::kMenuPopupGutter ||
+      part == NativeTheme::kMenuPopupSeparator ||
+      part == NativeTheme::kProgressBar ||
+      part == NativeTheme::kTabPanelBackground ||
+      part == NativeTheme::kWindowResizeGripper) {
+    return 0;
+  }
+
+  static constexpr auto kStateMap = base::MakeFixedFlatMap<
+      NativeTheme::Part, std::array<int, NativeTheme::kNumStates>>(
+      {{NativeTheme::kInnerSpinButton,
+        {DNS_DISABLED, DNS_HOT, DNS_NORMAL, DNS_PRESSED}},
+       {NativeTheme::kMenuList,
+        {CBXS_DISABLED, CBXS_HOT, CBXS_NORMAL, CBXS_PRESSED}},
+       {NativeTheme::kMenuCheck,
+        {MC_CHECKMARKDISABLED, MC_CHECKMARKNORMAL, MC_CHECKMARKNORMAL,
+         MC_CHECKMARKNORMAL}},
+       {NativeTheme::kMenuCheckBackground,
+        {MCB_DISABLED, MCB_NORMAL, MCB_NORMAL, MCB_NORMAL}},
+       {NativeTheme::kMenuPopupArrow,
+        {MSM_DISABLED, MSM_NORMAL, MSM_NORMAL, MSM_NORMAL}},
+       {NativeTheme::kPushButton,
+        {PBS_DISABLED, PBS_HOT, PBS_NORMAL, PBS_PRESSED}},
+       {NativeTheme::kRadio,
+        {RBS_UNCHECKEDDISABLED, RBS_UNCHECKEDHOT, RBS_UNCHECKEDNORMAL,
+         RBS_UNCHECKEDPRESSED}},
+       {NativeTheme::kScrollbarDownArrow,
+        {ABS_DOWNDISABLED, ABS_DOWNHOT, ABS_DOWNNORMAL, ABS_DOWNPRESSED}},
+       {NativeTheme::kScrollbarLeftArrow,
+        {ABS_LEFTDISABLED, ABS_LEFTHOT, ABS_LEFTNORMAL, ABS_LEFTPRESSED}},
+       {NativeTheme::kScrollbarRightArrow,
+        {ABS_RIGHTDISABLED, ABS_RIGHTHOT, ABS_RIGHTNORMAL, ABS_RIGHTPRESSED}},
+       {NativeTheme::kScrollbarUpArrow,
+        {ABS_UPDISABLED, ABS_UPHOT, ABS_UPNORMAL, ABS_UPPRESSED}},
+       {NativeTheme::kTextField,
+        {ETS_DISABLED, ETS_HOT, ETS_NORMAL, ETS_SELECTED}}});
+  return kStateMap.at(part)[state];
 }
 
 void PaintMenuSeparator(
@@ -487,7 +395,7 @@ void PaintMenuSeparator(
   const gfx::RectF rect(*extra_params.paint_rect);
   gfx::PointF start = rect.CenterPoint();
   gfx::PointF end = start;
-  if (extra_params.type == ui::VERTICAL_SEPARATOR) {
+  if (extra_params.type == VERTICAL_SEPARATOR) {
     start.set_y(rect.y());
     end.set_y(rect.bottom());
   } else {
@@ -527,8 +435,7 @@ void PaintButtonClassic(HDC hdc,
   if ((part == NativeTheme::kPushButton) &&
       ((state == NativeTheme::kPressed) || extra_params.is_default)) {
     // Pressed or defaulted buttons have a shadow replacing the outer 1 px.
-    HBRUSH brush = GetSysColorBrush(COLOR_3DDKSHADOW);
-    if (brush) {
+    if (HBRUSH brush = GetSysColorBrush(COLOR_3DDKSHADOW)) {
       FrameRect(hdc, rect, brush);
       InflateRect(rect, -1, -1);
     }
@@ -642,15 +549,14 @@ void PaintHorizontalTrackbarThumbClassic(
   // Split rect into top and bottom pieces.
   const int half_thickness = (rect.right - rect.left) / 2;
   RECT top_section = rect;
-  RECT bottom_section = rect;
   top_section.bottom -= half_thickness;
-  bottom_section.top = top_section.bottom;
   DrawEdge(hdc, &top_section, EDGE_RAISED,
            BF_LEFT | BF_TOP | BF_RIGHT | BF_SOFT | BF_MIDDLE | BF_ADJUST);
 
   // Split bottom piece into two halves.
-  RECT left_half = bottom_section;
-  RECT right_half = bottom_section;
+  RECT left_half = rect;
+  left_half.top = top_section.bottom;
+  RECT right_half = left_half;
   right_half.left += half_thickness;
   left_half.right = right_half.left;
   DrawEdge(hdc, &left_half, EDGE_RAISED,
@@ -700,44 +606,43 @@ void PaintProgressBarOverlayThemed(
   const int pixels_per_second = extra_params.determinate ? 300 : 175;
 
   int bar_width = bar_rect->right - bar_rect->left;
-  if (!extra_params.determinate) {
+  RECT overlay_rect;
+  if (extra_params.determinate) {
+    // We care about the direction here because PP_CHUNK painting is asymmetric.
+    // TODO(morrita): This RTL guess can be wrong.  We should pass in the
+    // direction from WebKit.
+    const bool mirror = bar_rect->right == value_rect->right &&
+                        bar_rect->left != value_rect->left;
+    const DTBGOPTS value_draw_options = {
+        .dwSize = sizeof(DTBGOPTS),
+        .dwFlags = static_cast<DWORD>(mirror ? DTBG_MIRRORDC : 0),
+        .rcClip = *bar_rect};
+
+    // On Vista or later, the progress bar part has a single-block value part
+    // and a glossy effect. The value part has exactly same height as the bar
+    // part, so we don't need to shrink the rect.
+    DrawThemeBackgroundEx(handle, hdc, PP_FILL, 0, value_rect,
+                          &value_draw_options);
+
+    overlay_rect = *value_rect;
+  } else {
     // The glossy overlay for the indeterminate progress bar has a small pause
-    // after each animation. We emulate this by adding an invisible margin the
+    // after each animation. Emulate this by adding an invisible margin the
     // animation has to traverse.
     bar_width += pixels_per_second;
-    RECT overlay_rect = *bar_rect;
-    overlay_rect.left +=
-        ComputeAnimationProgress(bar_width, kOverlayWidth, pixels_per_second,
-                                 extra_params.animated_seconds);
-    overlay_rect.right = overlay_rect.left + kOverlayWidth;
-    DrawThemeBackground(handle, hdc, PP_MOVEOVERLAY, 0, &overlay_rect,
-                        bar_rect);
-    return;
+    overlay_rect = *bar_rect;
   }
 
-  // We care about the direction here because PP_CHUNK painting is asymmetric.
-  // TODO(morrita): This RTL guess can be wrong.  We should pass in the
-  // direction from WebKit.
-  const bool mirror = bar_rect->right == value_rect->right &&
-                      bar_rect->left != value_rect->left;
-  const DTBGOPTS value_draw_options = {
-      .dwSize = sizeof(DTBGOPTS),
-      .dwFlags = static_cast<DWORD>(mirror ? DTBG_MIRRORDC : 0),
-      .rcClip = *bar_rect};
-
-  // On Vista or later, the progress bar part has a single-block value part
-  // and a glossy effect. The value part has exactly same height as the bar
-  // part, so we don't need to shrink the rect.
-  DrawThemeBackgroundEx(handle, hdc, PP_FILL, 0, value_rect,
-                        &value_draw_options);
-
-  RECT overlay_rect = *value_rect;
-  overlay_rect.left +=
-      ComputeAnimationProgress(bar_width, kOverlayWidth, pixels_per_second,
-                               extra_params.animated_seconds);
-  overlay_rect.right = overlay_rect.left + kOverlayWidth;
+  const int animation_width = bar_width + kOverlayWidth;
+  const double interval =
+      static_cast<double>(animation_width) / pixels_per_second;
+  const double ratio =
+      std::fmod(extra_params.animated_seconds, interval) / interval;
+  overlay_rect.right =
+      overlay_rect.left + base::ClampFloor(animation_width * ratio);
+  overlay_rect.left = overlay_rect.right - kOverlayWidth;
   DrawThemeBackground(handle, hdc, PP_MOVEOVERLAY, 0, &overlay_rect,
-                      value_rect);
+                      extra_params.determinate ? value_rect : bar_rect);
 }
 
 void PaintTextFieldThemed(
@@ -815,12 +720,12 @@ void PaintFrameControl(HDC hdc,
 
   // `DrawFrameControl()` for menu arrow/check wants a monochrome bitmap.
   base::win::ScopedGDIObject<HBITMAP> mask_bitmap(
-      CreateBitmap(width, height, 1, 1, NULL));
+      CreateBitmap(width, height, 1, 1, nullptr));
   if (!mask_bitmap.get()) {
     return;
   }
 
-  base::win::ScopedCreateDC bitmap_dc(CreateCompatibleDC(NULL));
+  base::win::ScopedCreateDC bitmap_dc(CreateCompatibleDC(nullptr));
   base::win::ScopedSelectObject select_bitmap(bitmap_dc.Get(),
                                               mask_bitmap.get());
   RECT local_rect = {.left = 0, .top = 0, .right = width, .bottom = height};
@@ -876,8 +781,8 @@ void PaintDirect(SkCanvas* destination_canvas,
   }
 
   // Most parts can be drawn simply when there is a theme handle.
-  const HANDLE handle = GetThemeHandle(GetThemeName(part));
-  const int part_id = GetWindowsPart(part, state, extra_params);
+  const HANDLE handle = GetThemeHandle(part);
+  const int part_id = GetWindowsPart(part, extra_params);
   const int state_id = GetWindowsState(part, state, extra_params);
   if (handle) {
     if (part == NativeTheme::kMenuPopupArrow &&
@@ -1035,7 +940,7 @@ void PaintIndirect(cc::PaintCanvas* destination_canvas,
                    NativeTheme::Part part,
                    NativeTheme::State state,
                    const gfx::Rect& rect,
-                   const NativeTheme::ExtraParams& extra_params) {
+                   NativeTheme::ExtraParams extra_params) {
   // TODO(asvitkine): This path is pretty inefficient - for each paint operation
   // it creates a new offscreen bitmap Skia canvas. This can be sped up by doing
   // it only once per part/state and keeping a cache of the resulting bitmaps.
@@ -1068,9 +973,9 @@ void PaintIndirect(cc::PaintCanvas* destination_canvas,
     return;
   }
 
-  // Will be null if lower-level Windows calls fail, or if the backing
-  // allocated is 0 pixels in size (which should never happen according to
-  // Windows documentation).
+  // Will be null if lower-level Windows calls fail, or if the backing allocated
+  // is 0 pixels in size (which should never happen according to Windows
+  // documentation).
   const sk_sp<SkSurface> offscreen_surface =
       skia::MapPlatformSurface(offscreen_hdc.Get());
   if (!offscreen_surface) {
@@ -1078,7 +983,7 @@ void PaintIndirect(cc::PaintCanvas* destination_canvas,
   }
 
   SkCanvas* const offscreen_canvas = offscreen_surface->getCanvas();
-  DCHECK(offscreen_canvas);
+  CHECK(offscreen_canvas);
 
   // Some of the Windows theme drawing operations do not write correct alpha
   // values for fully-opaque pixels; instead the pixels get alpha 0. This is
@@ -1092,38 +997,41 @@ void PaintIndirect(cc::PaintCanvas* destination_canvas,
 
   // Offset destination rects to have origin (0,0).
   gfx::Rect adjusted_rect(rect.size());
-  NativeTheme::ExtraParams adjusted_extra_params = extra_params;
   if (part == NativeTheme::kProgressBar) {
-    auto progress_bar =
-        std::get<NativeTheme::ProgressBarExtraParams>(adjusted_extra_params);
+    auto& progress_bar =
+        std::get<NativeTheme::ProgressBarExtraParams>(extra_params);
     progress_bar.value_rect_x = 0;
     progress_bar.value_rect_y = 0;
   } else if (part == NativeTheme::kScrollbarHorizontalTrack ||
              part == NativeTheme::kScrollbarVerticalTrack) {
-    auto scrollbar_track =
-        std::get<NativeTheme::ScrollbarTrackExtraParams>(adjusted_extra_params);
+    auto& scrollbar_track =
+        std::get<NativeTheme::ScrollbarTrackExtraParams>(extra_params);
     scrollbar_track.track_x = 0;
     scrollbar_track.track_y = 0;
   }
   // Draw the theme controls using existing HDC-drawing code.
   PaintDirect(offscreen_canvas, offscreen_hdc.Get(), part, state, adjusted_rect,
-              adjusted_extra_params);
+              extra_params);
 
   SkBitmap offscreen_bitmap = skia::MapPlatformBitmap(offscreen_hdc.Get());
 
   // Post-process the pixels to fix up the alpha values (see big comment above).
   const SkPMColor placeholder_value = SkPreMultiplyColor(kPlaceholder);
-  const int pixel_count = rect.width() * rect.height();
-  SkPMColor* pixels = offscreen_bitmap.getAddr32(0, 0);
-  for (int i = 0; i < pixel_count; i++) {
-    if (pixels[i] == placeholder_value) {
+  for (SkPMColor& pixel :
+       // SAFETY: `offscreen_bitmap` is the same size as `offscreen_hdc`, which
+       // is holding `hbitmap`, which is `rect.width()` x `rect.height()` pixels
+       // in size.
+       UNSAFE_BUFFERS(base::span(offscreen_bitmap.getAddr32(0, 0),
+                                 base::CheckMul(rect.width(), rect.height())
+                                     .Cast<size_t>()
+                                     .ValueOrDie()))) {
+    if (pixel == placeholder_value) {
       // Pixel wasn't touched - make it fully transparent.
-      pixels[i] = SkPMColorSetARGB(0, 0, 0, 0);
-    } else if (SkPMColorGetA(pixels[i]) == 0) {
+      pixel = SkPMColorSetARGB(0, 0, 0, 0);
+    } else if (SkPMColorGetA(pixel) == 0) {
       // Pixel was touched but has incorrect alpha of 0, make it fully opaque.
-      pixels[i] =
-          SkPMColorSetARGB(0xFF, SkPMColorGetR(pixels[i]),
-                           SkPMColorGetG(pixels[i]), SkPMColorGetB(pixels[i]));
+      pixel = SkPMColorSetARGB(0xFF, SkPMColorGetR(pixel), SkPMColorGetG(pixel),
+                               SkPMColorGetB(pixel));
     }
   }
 
@@ -1136,44 +1044,37 @@ void PaintIndirect(cc::PaintCanvas* destination_canvas,
 
 // static
 void NativeThemeWin::CloseHandles() {
-  static_cast<NativeThemeWin*>(GetInstanceForNativeUi())
-      ->CloseHandlesInternal();
+  for (auto& entry : *GetThemeHandles()) {
+    if (entry.second) {
+      CloseThemeData(entry.second);
+      entry.second = nullptr;
+    }
+  }
 }
 
 gfx::Size NativeThemeWin::GetPartSize(Part part,
                                       State state,
                                       const ExtraParams& extra_params) const {
-  // The GetThemePartSize call below returns the default size without
-  // accounting for user customization (crbug/218291).
-  switch (part) {
-    case kScrollbarDownArrow:
-    case kScrollbarLeftArrow:
-    case kScrollbarRightArrow:
-    case kScrollbarUpArrow:
-    case kScrollbarHorizontalThumb:
-    case kScrollbarVerticalThumb:
-    case kScrollbarHorizontalTrack:
-    case kScrollbarVerticalTrack: {
-      int size =
-          display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXVSCROLL);
-      if (size == 0) {
-        size = 17;
-      }
-      return gfx::Size(size, size);
+  // The `GetThemePartSize()` call below returns the default size without
+  // accounting for user customization.
+  if (part >= kScrollbarDownArrow && part <= kScrollbarVerticalTrack) {
+    int size =
+        display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXVSCROLL);
+    if (size == 0) {
+      size = 17;
     }
-    default:
-      break;
+    return gfx::Size(size, size);
   }
 
-  int part_id = GetWindowsPart(part, state, extra_params);
-  int state_id = GetWindowsState(part, state, extra_params);
-
-  base::win::ScopedGetDC screen_dc(nullptr);
-  SIZE size;
-  HANDLE handle = GetThemeHandle(GetThemeName(part));
-  if (handle && SUCCEEDED(GetThemePartSize(handle, screen_dc, part_id, state_id,
-                                           nullptr, TS_TRUE, &size))) {
-    return gfx::Size(size.cx, size.cy);
+  if (HANDLE handle = GetThemeHandle(part)) {
+    base::win::ScopedGetDC screen_dc(nullptr);
+    SIZE size;
+    if (SUCCEEDED(GetThemePartSize(handle, screen_dc,
+                                   GetWindowsPart(part, extra_params),
+                                   GetWindowsState(part, state, extra_params),
+                                   nullptr, TS_TRUE, &size))) {
+      return gfx::Size(size.cx, size.cy);
+    }
   }
 
   // TODO(rogerta): For now, we need to support radio buttons and checkboxes
@@ -1181,69 +1082,6 @@ gfx::Size NativeThemeWin::GetPartSize(Part part,
   // if/when needed.
   return (part == kCheckbox || part == kRadio) ? gfx::Size(13, 13)
                                                : gfx::Size();
-}
-
-void NativeThemeWin::PaintImpl(cc::PaintCanvas* canvas,
-                               const ColorProvider* color_provider,
-                               Part part,
-                               State state,
-                               const gfx::Rect& rect,
-                               const ExtraParams& extra_params,
-                               bool forced_colors,
-                               bool dark_mode,
-                               PreferredContrast contrast,
-                               std::optional<SkColor> accent_color) const {
-  switch (part) {
-    case kMenuPopupGutter:
-      PaintMenuGutter(canvas, color_provider, rect);
-      return;
-    case kMenuPopupSeparator:
-      PaintMenuSeparator(canvas, color_provider,
-                         std::get<MenuSeparatorExtraParams>(extra_params));
-      return;
-    case kMenuPopupBackground:
-      PaintMenuBackground(canvas, color_provider, rect);
-      return;
-    case kMenuItemBackground:
-      PaintMenuItemBackground(canvas, color_provider, state, rect,
-                              std::get<MenuItemExtraParams>(extra_params));
-      return;
-    default:
-      PaintIndirect(canvas, part, state, rect, extra_params);
-      return;
-  }
-}
-
-NativeTheme::PreferredColorScheme
-NativeThemeWin::CalculatePreferredColorScheme() const {
-  if (IsForcedDarkMode()) {
-    return PreferredColorScheme::kDark;
-  }
-
-  if (forced_colors() != ColorProviderKey::ForcedColors::kNone) {
-    // According to the spec, the preferred color scheme for web content is
-    // "dark" if the Canvas color has L<33% and "light" if L>67%, where "L" is
-    // LAB lightness. The Canvas color is mapped to the Window system color.
-    // https://www.w3.org/TR/css-color-adjust-1/#forced
-    if (const auto bg_color = OsSettingsProvider::Get().Color(
-            OsSettingsProvider::ColorId::kWindow)) {
-      const SkColor srgb_legacy = bg_color.value();
-      const auto [r, g, b] = gfx::SRGBLegacyToSRGB(SkColorGetR(srgb_legacy),
-                                                   SkColorGetG(srgb_legacy),
-                                                   SkColorGetB(srgb_legacy));
-      const auto [x, y, z] = gfx::SRGBToXYZD50(r, g, b);
-      const float lab_lightness = std::get<0>(gfx::XYZD50ToLab(x, y, z));
-      if (lab_lightness < 33.0f) {
-        return PreferredColorScheme::kDark;
-      }
-      if (lab_lightness > 67.0f) {
-        return PreferredColorScheme::kLight;
-      }
-    }
-  }
-
-  return in_dark_mode_ ? PreferredColorScheme::kDark
-                       : PreferredColorScheme::kLight;
 }
 
 NativeThemeWin::NativeThemeWin() {
@@ -1288,9 +1126,38 @@ NativeThemeWin::NativeThemeWin() {
 }
 
 NativeThemeWin::~NativeThemeWin() {
-  // TODO(crbug.com/40551168): Calling CloseHandles() here breaks
-  // certain tests and the reliability bots.
-  // CloseHandles();
+  CloseHandles();
+}
+
+void NativeThemeWin::PaintImpl(cc::PaintCanvas* canvas,
+                               const ColorProvider* color_provider,
+                               Part part,
+                               State state,
+                               const gfx::Rect& rect,
+                               const ExtraParams& extra_params,
+                               bool forced_colors,
+                               bool dark_mode,
+                               PreferredContrast contrast,
+                               std::optional<SkColor> accent_color) const {
+  switch (part) {
+    case kMenuPopupGutter:
+      PaintMenuGutter(canvas, color_provider, rect);
+      return;
+    case kMenuPopupSeparator:
+      PaintMenuSeparator(canvas, color_provider,
+                         std::get<MenuSeparatorExtraParams>(extra_params));
+      return;
+    case kMenuPopupBackground:
+      PaintMenuBackground(canvas, color_provider, rect);
+      return;
+    case kMenuItemBackground:
+      PaintMenuItemBackground(canvas, color_provider, state, rect,
+                              std::get<MenuItemExtraParams>(extra_params));
+      return;
+    default:
+      PaintIndirect(canvas, part, state, rect, extra_params);
+      return;
+  }
 }
 
 void NativeThemeWin::OnToolkitSettingsChanged(bool force_notify) {
@@ -1298,14 +1165,36 @@ void NativeThemeWin::OnToolkitSettingsChanged(bool force_notify) {
   NativeTheme::OnToolkitSettingsChanged(force_notify);
 }
 
-void NativeThemeWin::CloseHandlesInternal() {
-  HANDLE* theme_handles = GetThemeHandles();
-  for (int i = 0; i < LAST; ++i) {
-    if (theme_handles[i]) {
-      CloseThemeData(theme_handles[i]);
-      theme_handles[i] = nullptr;
+NativeTheme::PreferredColorScheme
+NativeThemeWin::CalculatePreferredColorScheme() const {
+  if (IsForcedDarkMode()) {
+    return PreferredColorScheme::kDark;
+  }
+
+  if (forced_colors() != ColorProviderKey::ForcedColors::kNone) {
+    // According to the spec, the preferred color scheme for web content is
+    // "dark" if the Canvas color has L<33% and "light" if L>67%, where "L" is
+    // LAB lightness. The Canvas color is mapped to the Window system color.
+    // https://www.w3.org/TR/css-color-adjust-1/#forced
+    if (const auto bg_color = OsSettingsProvider::Get().Color(
+            OsSettingsProvider::ColorId::kWindow)) {
+      const SkColor srgb_legacy = bg_color.value();
+      const auto [r, g, b] = gfx::SRGBLegacyToSRGB(SkColorGetR(srgb_legacy),
+                                                   SkColorGetG(srgb_legacy),
+                                                   SkColorGetB(srgb_legacy));
+      const auto [x, y, z] = gfx::SRGBToXYZD50(r, g, b);
+      const float lab_lightness = std::get<0>(gfx::XYZD50ToLab(x, y, z));
+      if (lab_lightness < 33.0f) {
+        return PreferredColorScheme::kDark;
+      }
+      if (lab_lightness > 67.0f) {
+        return PreferredColorScheme::kLight;
+      }
     }
   }
+
+  return in_dark_mode_ ? PreferredColorScheme::kDark
+                       : PreferredColorScheme::kLight;
 }
 
 void NativeThemeWin::RegisterThemeRegkeyObserver() {
@@ -1330,7 +1219,7 @@ void NativeThemeWin::UpdateDarkModeStatus() {
     in_dark_mode_ = (apps_use_light_theme == 0);
   }
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  CloseHandlesInternal();
+  CloseHandles();
   NotifyOnNativeThemeUpdated();
 }
 

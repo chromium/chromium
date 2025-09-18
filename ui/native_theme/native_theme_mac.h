@@ -14,28 +14,21 @@ namespace ui {
 
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
  public:
-  static const int kButtonCornerRadius = 3;
-
-  // Type of gradient to use on a button background. Use HIGHLIGHTED for the
-  // default button of a window and all combobox controls, but only when the
-  // window is active.
-  enum class ButtonBackgroundType {
-    DISABLED,
-    HIGHLIGHTED,
-    NORMAL,
-    PRESSED,
-    COUNT
-  };
-
   NativeThemeMac(const NativeThemeMac&) = delete;
   NativeThemeMac& operator=(const NativeThemeMac&) = delete;
 
   // The minimum size in px for the thumb, given device scale factor `scale`.
   // Exposed publicly for testing.
-  static gfx::Size GetThumbMinSize(bool vertical, float scale);
+  static gfx::Size GetThumbMinSize(bool horizontal, float scale);
 
   // NativeThemeBase:
   SkColor GetSystemButtonPressedColor(SkColor base_color) const override;
+  void PaintMenuItemBackground(
+      cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
+      State state,
+      const gfx::Rect& rect,
+      const MenuItemExtraParams& extra_params) const override;
 
  protected:
   NativeThemeMac();
@@ -52,12 +45,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
                  bool dark_mode,
                  PreferredContrast contrast,
                  std::optional<SkColor> accent_color) const override;
-  void PaintMenuItemBackground(
-      cc::PaintCanvas* canvas,
-      const ColorProvider* color_provider,
-      State state,
-      const gfx::Rect& rect,
-      const MenuItemExtraParams& extra_params) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,

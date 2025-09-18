@@ -22,7 +22,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_constants_fluent.h"
 
 namespace ui {
 
@@ -93,8 +92,8 @@ class NativeThemeFluentTest : public ::testing::Test,
   }
 
   gfx::RectF ButtonRect(NativeTheme::Part part) const {
-    const int button_length =
-        base::ClampFloor(kFluentScrollbarButtonSideLength * ScaleFromDIP());
+    const int button_length = base::ClampFloor(
+        NativeThemeFluent::kScrollbarButtonSideLength * ScaleFromDIP());
     const int track_thickness = base::ClampFloor(
         NativeThemeFluent::kScrollbarThickness * ScaleFromDIP());
 
@@ -136,18 +135,17 @@ TEST_P(NativeThemeFluentTest, VerifyArrowRectWithTriangularArrows) {
   VerifyArrowRect();
 }
 
-// Verify the dimensions of an arrow rect with arrow icons for a given
-// button rect depending on the arrow direction and state.
+// Verify the dimensions of an arrow rect with arrow icons for a given button
+// rect depending on the arrow direction and state.
 TEST_P(NativeThemeFluentTest, VerifyArrowRectWithArrowIcons) {
   SetArrowIconsAvailable(true);
   VerifyArrowRect();
 }
 
-// Verify that the thumb paint function draws a round rectangle.
-// Generally, NativeThemeFluent::Paint* functions are covered by
-// Blink's web tests; but in web tests we render the thumbs as squares
-// instead of pill-shaped. This test ensures we don't lose coverage on the
-// PaintOp called to draw the thumb.
+// Verify that the thumb paint function draws a round rectangle. Generally,
+// `NativeThemeFluent::Paint*()` functions are covered by Blink's web tests; but
+// in web tests we render the thumbs as squares instead of pill-shaped. This
+// test ensures we don't lose coverage on the PaintOp called to draw the thumb.
 TEST_F(NativeThemeFluentTest, PaintThumbRoundedCorners) {
   cc::RecordPaintCanvas canvas;
   PaintScrollbarThumb(&canvas);
@@ -159,7 +157,7 @@ TEST_F(NativeThemeFluentTest, PaintThumbRoundedCorners) {
 // Verify that GetThumbColor returns the correct color given the scrollbar state
 // and extra params.
 TEST_F(NativeThemeFluentTest, GetThumbColor) {
-  const std::unique_ptr<ui::ColorProvider> color_provider =
+  const std::unique_ptr<ColorProvider> color_provider =
       CreateDefaultColorProviderForBlink(/*dark_mode=*/false);
   NativeTheme::ScrollbarThumbExtraParams extra_params;
   const auto scrollbar_color = [&](auto state) {

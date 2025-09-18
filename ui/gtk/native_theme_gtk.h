@@ -6,16 +6,12 @@
 #define UI_GTK_NATIVE_THEME_GTK_H_
 
 #include "base/no_destructor.h"
-#include "ui/base/glib/scoped_gobject.h"
 #include "ui/native_theme/native_theme_base.h"
 
-typedef struct _GtkCssProvider GtkCssProvider;
 typedef struct _GtkParamSpec GtkParamSpec;
 typedef struct _GtkSettings GtkSettings;
 
 namespace gtk {
-
-using ScopedCssProvider = ScopedGObject<GtkCssProvider>;
 
 class NativeThemeGtk : public ui::NativeThemeBase {
  public:
@@ -29,24 +25,24 @@ class NativeThemeGtk : public ui::NativeThemeBase {
       cc::PaintCanvas* canvas,
       const ui::ColorProvider* color_provider,
       const gfx::Size& size,
-      const MenuBackgroundExtraParams& menu_background) const override;
+      const MenuBackgroundExtraParams& extra_params) const override;
   void PaintMenuSeparator(
       cc::PaintCanvas* canvas,
       const ui::ColorProvider* color_provider,
       State state,
       const gfx::Rect& rect,
-      const MenuSeparatorExtraParams& menu_separator) const override;
+      const MenuSeparatorExtraParams& extra_params) const override;
   void PaintMenuItemBackground(
       cc::PaintCanvas* canvas,
       const ui::ColorProvider* color_provider,
       State state,
       const gfx::Rect& rect,
-      const MenuItemExtraParams& menu_item) const override;
+      const MenuItemExtraParams& extra_params) const override;
   void PaintFrameTopArea(
       cc::PaintCanvas* canvas,
       State state,
       const gfx::Rect& rect,
-      const FrameTopAreaExtraParams& frame_top_area) const override;
+      const FrameTopAreaExtraParams& extra_params) const override;
   void NotifyOnNativeThemeUpdated() override;
 
   void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
@@ -56,10 +52,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
 
   NativeThemeGtk();
   ~NativeThemeGtk() override;
-
-  void SetThemeCssOverride(ScopedCssProvider provider);
-
-  ScopedCssProvider theme_css_override_;
 };
 
 }  // namespace gtk
