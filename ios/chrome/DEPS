@@ -37,7 +37,7 @@ include_rules = [
   "-ios/web/public/test/fakes/test_browser_state.h",
 
   # Disallow direct uses of libraries that compose MaterialComponents.
-  "+ios/third_party/material_components_ios",
+  "-ios/third_party/material_components_ios",
   "-ios/third_party/material_font_disk_loader_ios",
   "-ios/third_party/material_internationalization_ios",
   "-ios/third_party/material_roboto_font_loader_ios",
