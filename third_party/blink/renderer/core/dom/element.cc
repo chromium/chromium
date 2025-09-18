@@ -11555,6 +11555,21 @@ Element::InterestState Element::GetInterestState() {
   return invoker_data->GetInterestState();
 }
 
+namespace {
+Element* NestedSourceInterestInvoker(Element& starting_target) {
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
+      starting_target.GetDocument().GetExecutionContext()));
+  for (Element* target = &starting_target; target;
+       target = target->parentElement()) {
+    if (Element* upstream = target->SourceInterestInvoker()) {
+      return upstream;
+    }
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 // Mechanics of `interestfor` invokers ("interest invokers"):
 //  - It is possible for there to be nested DOM elements that both have the
 //    `interestfor` attribute, in which case, *both* can be active at
@@ -11601,8 +11616,9 @@ void Element::HandleInterestForHoverOrFocus(InterestSource source,
     if (invoker_data) [[unlikely]] {
       invoker_data->CancelInterestLostTask();
     }
-    if (upstream_invoker) [[unlikely]] {
-      upstream_data->CancelInterestLostTask();
+    for (Element* upstream = upstream_invoker; upstream;
+         upstream = NestedSourceInterestInvoker(*upstream)) {
+      upstream->GetInvokerData()->CancelInterestLostTask();
     }
     if (auto* target = InterestForElement();
         target && (!invoker_data || invoker_data->GetInterestState() ==
@@ -11624,7 +11640,8 @@ void Element::HandleInterestForHoverOrFocus(InterestSource source,
         ScheduleInterestLostTask();
       }
     }
-    if (upstream_invoker) [[unlikely]] {
+    for (Element* upstream = upstream_invoker; upstream;
+         upstream = NestedSourceInterestInvoker(*upstream)) {
       // This is the target of an interest invoker, which was just de-hovered or
       // blurred. There are two possibilities:
       // 1. The upstream invoker is either not an ancestor of this target
@@ -11636,9 +11653,9 @@ void Element::HandleInterestForHoverOrFocus(InterestSource source,
       //    and back into a descendant of the invoker. In this case, since
       //    SetFocused() will never be called on the actual invoker, we should
       //    be careful not to schedule the interestlost task.
-      upstream_invoker->GetInvokerData()->CancelInterestGainedTask();
-      if (source == InterestSource::kBlur || !upstream_invoker->IsHovered()) {
-        upstream_invoker->ScheduleInterestLostTask();
+      upstream->GetInvokerData()->CancelInterestGainedTask();
+      if (source == InterestSource::kBlur || !upstream->IsHovered()) {
+        upstream->ScheduleInterestLostTask();
       }
     }
   }
