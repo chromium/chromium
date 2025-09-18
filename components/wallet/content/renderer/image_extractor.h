@@ -55,8 +55,11 @@ class ImageExtractor : public base::SupportsUserData::Data,
   void BindReceiver(
       mojo::PendingReceiver<wallet::mojom::ImageExtractor> receiver);
 
-  std::vector<SkBitmap> ExtractImageElements(
-      const blink::WebDocument& document);
+  std::vector<SkBitmap> ExtractQualifiedImageElements(
+      const blink::WebDocument& document) const;
+
+  // Checks if an image is qualified for barcode detection.
+  bool IsImageQualified(const SkBitmap& bitmap) const;
 
   // The RenderFrame to which this ImageExtractor is associated.
   raw_ptr<content::RenderFrame> render_frame_;

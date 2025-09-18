@@ -9,5 +9,6 @@ include_rules = [
   "+skia/public/mojom",
   "+third_party/blink/public/web",
   "+third_party/skia/include/core",
+  "+ui/gfx/codec",
   # go/keep-sorted end
 ]

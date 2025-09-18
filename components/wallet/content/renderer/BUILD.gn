@@ -8,6 +8,7 @@ source_set("renderer") {
     "image_extractor.h",
   ]
   deps = [
+    "//base",
     "//components/wallet/content/common/mojom",
     "//content/public/renderer",
     "//mojo/public/cpp/bindings",
@@ -21,8 +22,12 @@ source_set("browser_tests") {
   testonly = true
   sources = [ "image_extractor_browsertest.cc" ]
   deps = [
+    "//base",
+    "//base/test:test_support",
     "//components/wallet/content/common/mojom",
     "//components/wallet/content/renderer",
     "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx/codec",
   ]
 }
