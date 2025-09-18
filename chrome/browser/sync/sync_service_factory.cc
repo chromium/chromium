@@ -392,6 +392,9 @@ std::unique_ptr<KeyedService> BuildSyncService(
       content::GetNetworkConnectionTracker();
   init_params.channel = chrome::GetChannel();
   init_params.debug_identifier = profile->GetDebugName();
+  if (base::FeatureList::IsEnabled(syncer::kSyncUseOsCryptAsync)) {
+    init_params.os_crypt_async = g_browser_process->os_crypt_async();
+  }
 
   bool local_sync_backend_enabled = false;
   // Only check the local sync backend pref on the supported platforms of

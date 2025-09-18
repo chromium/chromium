@@ -198,9 +198,8 @@ class ParentApprovalHandlingByExtensionSwitchTest
   ParentApprovalHandlingByExtensionSwitchTest() = default;
 };
 
-IN_PROC_BROWSER_TEST_P(
-    ParentApprovalHandlingByExtensionSwitchTest,
-    PRE_GrantParentApprovalWhenExtensionSwitchBecomesEnabled) {
+IN_PROC_BROWSER_TEST_P(ParentApprovalHandlingByExtensionSwitchTest,
+                       GrantParentApprovalWhenExtensionSwitchBecomesEnabled) {
   ASSERT_TRUE(profile()->IsChild());
 
   // Set the Extensions preference to OFF, requiring parent approval for
@@ -210,11 +209,6 @@ IN_PROC_BROWSER_TEST_P(
   bool should_be_loaded = false;
   bool should_be_enabled = false;
   InstallExtensionAndCheckStatus(should_be_loaded, should_be_enabled);
-}
-
-IN_PROC_BROWSER_TEST_P(ParentApprovalHandlingByExtensionSwitchTest,
-                       GrantParentApprovalWhenExtensionSwitchBecomesEnabled) {
-  ASSERT_TRUE(profile()->IsChild());
 
   // Flip the Extensions preference to ON.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(

@@ -106,6 +106,8 @@ static_library("service") {
     "//base:i18n",
     "//components/keyed_service/core",
     "//components/metrics",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/common",
     "//components/os_crypt/sync",
     "//components/policy:generated",
     "//components/policy/core/browser",

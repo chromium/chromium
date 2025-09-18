@@ -21,8 +21,10 @@
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -202,6 +204,14 @@ class SyncEngineImplTest : public testing::Test {
     params.authenticated_account_info.account_id =
         CoreAccountId::FromGaiaId(gaia_id);
     params.sync_manager_factory = std::move(fake_manager_factory_);
+    if (base::FeatureList::IsEnabled(syncer::kSyncUseOsCryptAsync)) {
+      std::unique_ptr<os_crypt_async::OSCryptAsync> os_cryp_async =
+          os_crypt_async::GetTestOSCryptAsyncForTesting();
+      base::test::TestFuture<os_crypt_async::Encryptor> future;
+      os_cryp_async->GetInstance(future.GetCallback());
+      params.encryptor =
+          std::make_unique<os_crypt_async::Encryptor>(future.Take());
+    }
 
     EXPECT_CALL(mock_host_, OnEngineInitialized(expect_success, _))
         .WillOnce(

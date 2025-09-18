@@ -180,6 +180,10 @@ inline constexpr base::FeatureParam<int>
 BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements);
 #endif  // BUILDFLAG(IS_IOS)
 
+// When enabled, Sync will use OSCryptAsync for encrypting Nigori storage on
+// disk.
+BASE_DECLARE_FEATURE(kSyncUseOsCryptAsync);
+
 BASE_DECLARE_FEATURE(kSyncDetermineAccountManagedStatus);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kSyncDetermineAccountManagedStatusTimeout);

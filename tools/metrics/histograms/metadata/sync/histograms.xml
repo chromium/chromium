@@ -1111,6 +1111,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.EncryptorReceivedTime" units="ms"
+    expires_after="2026-04-14">
+  <owner>mtatarski@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The time between SyncServiceImpl::TryStart() being called and the encryptor
+    being received from OSCryptAsync. Only recorded when kSyncUseOsCryptAsync is
+    enabled.
+  </summary>
+</histogram>
+
 <histogram name="Sync.EntityEncryptionSucceeded{SyncDataType}"
     enum="BooleanSuccess" expires_after="2026-01-18">
   <owner>rushans@google.com</owner>

@@ -193,7 +193,9 @@ std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
       GetApplicationContext()->GetNetworkConnectionTracker();
   init_params.channel = ::GetChannel();
   init_params.debug_identifier = profile->GetProfileName();
-
+  if (base::FeatureList::IsEnabled(syncer::kSyncUseOsCryptAsync)) {
+    init_params.os_crypt_async = GetApplicationContext()->GetOSCryptAsync();
+  }
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
   sync_service->Initialize(CreateControllers(profile, sync_service.get()));

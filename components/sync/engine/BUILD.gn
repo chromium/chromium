@@ -186,6 +186,7 @@ static_library("engine") {
     "//base:i18n",
     "//build:branding_buildflags",
     "//components/autofill/core/browser:payments_sync_utils",
+    "//components/os_crypt/async/common",
     "//components/variations/net",
 
     # For engine/nigori.

@@ -9,12 +9,18 @@
 #include "base/sequence_checker.h"
 #include "components/sync/nigori/nigori_storage.h"
 
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
+
 namespace syncer {
 
 class NigoriStorageImpl : public NigoriStorage {
  public:
-  // `encryptor` must be not null and must outlive this object.
-  explicit NigoriStorageImpl(const base::FilePath& path);
+  // If `encryptor` is not null, it will be used for encryption. Otherwise,
+  // the synchronous OSCrypt will be used.
+  NigoriStorageImpl(const base::FilePath& path,
+                    std::unique_ptr<::os_crypt_async::Encryptor> encryptor);
 
   NigoriStorageImpl(const NigoriStorageImpl&) = delete;
   NigoriStorageImpl& operator=(const NigoriStorageImpl&) = delete;
@@ -29,6 +35,7 @@ class NigoriStorageImpl : public NigoriStorage {
 
  private:
   base::FilePath path_;
+  std::unique_ptr<::os_crypt_async::Encryptor> encryptor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -9,13 +9,16 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 
 namespace syncer {
 
-NigoriStorageImpl::NigoriStorageImpl(const base::FilePath& path)
-    : path_(path) {}
+NigoriStorageImpl::NigoriStorageImpl(
+    const base::FilePath& path,
+    std::unique_ptr<os_crypt_async::Encryptor> encryptor)
+    : path_(path), encryptor_(std::move(encryptor)) {}
 
 NigoriStorageImpl::~NigoriStorageImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -31,9 +34,16 @@ void NigoriStorageImpl::StoreData(const sync_pb::NigoriLocalData& data) {
   }
 
   std::string encrypted_data;
-  if (!OSCrypt::EncryptString(serialized_data, &encrypted_data)) {
-    DLOG(ERROR) << "Failed to encrypt NigoriLocalData.";
-    return;
+  if (encryptor_) {
+    if (!encryptor_->EncryptString(serialized_data, &encrypted_data)) {
+      DLOG(ERROR) << "Failed to encrypt NigoriLocalData.";
+      return;
+    }
+  } else {
+    if (!OSCrypt::EncryptString(serialized_data, &encrypted_data)) {
+      DLOG(ERROR) << "Failed to encrypt NigoriLocalData.";
+      return;
+    }
   }
 
   if (!base::ImportantFileWriter::WriteFileAtomically(path_, encrypted_data,
@@ -55,9 +65,16 @@ std::optional<sync_pb::NigoriLocalData> NigoriStorageImpl::RestoreData() {
   }
 
   std::string serialized_data;
-  if (!OSCrypt::DecryptString(encrypted_data, &serialized_data)) {
-    DLOG(ERROR) << "Failed to decrypt NigoriLocalData.";
-    return std::nullopt;
+  if (encryptor_) {
+    if (!encryptor_->DecryptString(encrypted_data, &serialized_data)) {
+      DLOG(ERROR) << "Failed to decrypt NigoriLocalData.";
+      return std::nullopt;
+    }
+  } else {
+    if (!OSCrypt::DecryptString(encrypted_data, &serialized_data)) {
+      DLOG(ERROR) << "Failed to decrypt NigoriLocalData.";
+      return std::nullopt;
+    }
   }
 
   sync_pb::NigoriLocalData data;

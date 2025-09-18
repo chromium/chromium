@@ -24,6 +24,10 @@
 #include "components/sync/engine/sync_manager_factory.h"
 #include "url/gurl.h"
 
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
+
 namespace syncer {
 
 class EngineComponentsFactory;
@@ -62,6 +66,7 @@ class SyncEngine : public DataTypeConfigurer {
     bool enable_local_sync_backend = false;
     base::FilePath local_sync_backend_folder;
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
+    std::unique_ptr<os_crypt_async::Encryptor> encryptor;
   };
 
   SyncEngine();
