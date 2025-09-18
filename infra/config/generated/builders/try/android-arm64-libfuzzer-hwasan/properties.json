@@ -65,5 +65,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.fuzz",
-  "recipe": "chromium_trybot"
+  "recipe": "chromium/fuzz"
 }

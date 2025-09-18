@@ -1018,7 +1018,8 @@ libfuzzer_linux_asan_builder(
     gclient_apply_configs = ["android"],
     gn_extra_configs = [
         "android",
-        "android_asan",
+        "asan",
+        "android_fastbuild",
     ],
     max_concurrent_invocations = 2,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
@@ -1039,6 +1040,7 @@ libfuzzer_linux_builder(
     gclient_apply_configs = ["android"],
     gn_extra_configs = [
         "android",
+        "android_fastbuild",
         "hwasan",
     ],
     max_concurrent_invocations = 2,

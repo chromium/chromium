@@ -1,7 +1,7 @@
 {
   "gn_args": {
+    "android_static_analysis": "off",
     "dcheck_always_on": false,
-    "default_min_sdk_version": 27,
     "ffmpeg_branding": "ChromeOS",
     "is_asan": true,
     "is_component_build": true,
