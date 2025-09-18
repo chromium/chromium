@@ -9140,7 +9140,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="741906494724992817">Tämä sovellus ei tarvitse erityisiä käyttöoikeuksia.</translation>
 <translation id="7419142833919893307">Käyttäjätunnusta ei vielä lisätty</translation>
 <translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{Väärä PIN-koodi. 1 yritys jäljellä.}other{Väärä PIN-koodi. # yritystä jäljellä.}}</translation>
-<translation id="7419565702166471774">Käytä aina suojattuja yhteyksiä</translation>
+<translation id="7419565702166471774">Käytä aina turvallisia yhteyksiä</translation>
 <translation id="7421293530411019405">Poistutaanko välilehtiryhmästä?</translation>
 <translation id="7421925624202799674">&amp;Näytä sivun lähdekoodi</translation>
 <translation id="7422192691352527311">Asetukset...</translation>

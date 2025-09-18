@@ -3921,7 +3921,7 @@
 <translation id="3707163604290651814">تم تسجيل الدخول حاليًا باسم <ph name="NAME" /></translation>
 <translation id="3707348585109246684">فتح الرابط في علامة تبويب جديدة في <ph name="APP" /></translation>
 <translation id="3708295717182051206">الترجمة والشرح</translation>
-<translation id="3708684582558000260">عدم السماح للمواقع الإلكترونية بإكمال عمليات إرسال البيانات أو تلقيّها</translation>
+<translation id="3708684582558000260">عدم السماح للمواقع الإلكترونية التي تم إغلاقها بإكمال عمليات إرسال البيانات أو استلامها</translation>
 <translation id="3709244229496787112">تم إيقاف المتصفح قبل انتهاء التنزيل.</translation>
 <translation id="3710501561113687889">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> مع هذا الموقع الإلكتروني.</translation>
 <translation id="3711931198657368127">ل&amp;صق والانتقال إلى <ph name="URL" /></translation>

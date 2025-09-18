@@ -1310,7 +1310,7 @@
           <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">رصد استخدامك النشط لهذا الجهاز</translation>
 <translation id="3180358318770512945">تربية الأبناء</translation>
-<translation id="3182185041786697613">هل المطلوب حفظ رمز الأمان؟</translation>
+<translation id="3182185041786697613">حفظ رمز الأمان؟</translation>
 <translation id="3185635157430775689">أجزاء الكمبيوتر</translation>
 <translation id="3187472288455401631">قياس أداء الإعلانات</translation>
 <translation id="3190736958609431397">إيقاف التتبُّع</translation>
@@ -3097,7 +3097,7 @@
 <translation id="6124058285696691147">تنزيل المرفق</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">ظرف صيني رقم 2</translation>
-<translation id="6127379762771434464">أُزيلَ عنصر</translation>
+<translation id="6127379762771434464">تمت إزالة العنصر</translation>
 <translation id="6131824478727057281">الموقع الجغرافي</translation>
 <translation id="6133320744616005677">مواصلة منح الإذن</translation>
 <translation id="6133984428121856852">امتداد الملف فارغ أو غير صالح.</translation>

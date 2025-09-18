@@ -14,7 +14,7 @@
 <translation id="1005671386794704751">玫瑰粉</translation>
 <translation id="1005919400326853998">在新對話方塊中查看「<ph name="CERT_NAME" />」的憑證詳細資料</translation>
 <translation id="1006033052970139968">允許系統服務和具有麥克風權限的應用程式與網站存取麥克風</translation>
-<translation id="1006873397406093306">這項擴充功能可以讀取及變更你造訪的網站所使用的資料。你可以自行設定要給予這項擴充功能哪些網站的存取權限。</translation>
+<translation id="1006873397406093306">這項擴充功能可讀取及變更你網站上的資料。你可以設定擴充功能可存取的網站。</translation>
 <translation id="1007057452468855774">開啟 Google Play 商店</translation>
 <translation id="1008186147501209563">匯出書籤</translation>
 <translation id="1008261151167010035"><ph name="BRAND" />會記住你的登入資訊，並在情況允許時讓你自動登入。如關閉這項功能，系統每次都會詢問你是否要登入</translation>
@@ -1178,7 +1178,7 @@
 <translation id="1803545009660609783">重新調校</translation>
 <translation id="180441032496361123">按一下即可啟動「<ph name="SEARCH_ENGINE_NAME" />」</translation>
 <translation id="1805738995123446102">背景分頁正在使用你的麥克風</translation>
-<translation id="1805822111539868586">檢視模式</translation>
+<translation id="1805822111539868586">偵錯頁面</translation>
 <translation id="1805888043020974594">印表機伺服器</translation>
 <translation id="1805967612549112634">確認 PIN 碼</translation>
 <translation id="1806335016774576568">切換至其他已開啟的應用程式</translation>
@@ -5001,7 +5001,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 偵測到有效的 TPM，這可安全儲存你的資料。</translation>
 <translation id="4452898361839215358">或選取 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">請輕觸鍵盤右上角的指紋感應器。你的指紋資料會安全地儲存在「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
-<translation id="4453946976636652378">執行 <ph name="SEARCH_ENGINE_NAME" /> 搜尋或輸入網址</translation>
+<translation id="4453946976636652378">搜尋 <ph name="SEARCH_ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="4457472090507035117">選取目前的語音：</translation>
 <translation id="4459169140545916303">上次使用時間：<ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前</translation>
 <translation id="4460014764210899310">取消分組</translation>
@@ -10644,7 +10644,7 @@
 <translation id="8455775311562941553">已連線到「<ph name="HOST_DEVICE_NAME" />」</translation>
 <translation id="8456067150616457342">設定預設瀏覽器</translation>
 <translation id="845702320058262034">無法連線。請確認手機的藍牙功能已開啟。</translation>
-<translation id="8457251154056341970">這個頁面不會再顯示<ph name="MODULE_NAME" /></translation>
+<translation id="8457251154056341970">這個頁面不會再顯示「<ph name="MODULE_NAME" />」</translation>
 <translation id="8457451314607652708">匯入書籤</translation>
 <translation id="8458259704995116343">無法啟動 VM。</translation>
 <translation id="8458341576712814616">搜尋捷徑</translation>

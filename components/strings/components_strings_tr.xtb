@@ -1246,7 +1246,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3086579638707268289">Web'de etkinliğiniz izleniyor</translation>
 <translation id="3087734570205094154">Alt</translation>
 <translation id="3090667236485488075">Cam</translation>
-<translation id="3094051226187213523">Bu öneriyle Yapay Zeka Modu'nu açın.</translation>
+<translation id="3094051226187213523">Bu öneriyle AI Modu'nu açın.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Devre dışı bırakma listesinde "*" öğesine eşdeğer bir kalıp olduğundan politika yoksayıldı. "*" öğesi, politikayı devre dışı bırakmayla eşdeğerdir.</translation>
 <translation id="3098944373717628099">Yerel dosyalarınız 1 saat içinde silinecek</translation>
@@ -2988,7 +2988,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5967592137238574583">İletişim Bilgilerini Düzenleyin</translation>
 <translation id="5967867314010545767">Geçmişten kaldır</translation>
 <translation id="5968022600320704045">Arama sonucu yok</translation>
-<translation id="5968400720580217226">Yapay Zeka Modu</translation>
+<translation id="5968400720580217226">AI Modu</translation>
 <translation id="5969199813874624822">Fiyatı kaydet ve takip et</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Altıncı Rulo</translation>
@@ -3186,7 +3186,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6284449872909111707">Metin Mesajlar ve Anlık Mesajlaşma</translation>
 <translation id="6284517535531159884">Varyasyon Çekirdek Türü</translation>
 <translation id="6287197303017372967">Rota izleme özelliğini kullanarak varış noktanız için adım adım yol tarifi alın.</translation>
-<translation id="6288559570252410796">Google'ın Yapay Zeka Modu'na sorun</translation>
+<translation id="6288559570252410796">Google'ın AI Modu'na sorun</translation>
 <translation id="628877850550444614">İndirim bulundu</translation>
 <translation id="6289939620939689042">Sayfa Rengi</translation>
 <translation id="6292819926564202163">Chrome'daki arama motorunuz</translation>
@@ -3984,7 +3984,7 @@ Ek ayrıntılar:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Kredi kartı Chrome'dan kaldırılsın mı?</translation>
 <translation id="7569983096843329377">Siyah</translation>
-<translation id="7571813784389228510">Google Yapay Zeka Modu</translation>
+<translation id="7571813784389228510">Google AI Modu</translation>
 <translation id="7574998639136359461">Kış Sporları Gereçleri</translation>
 <translation id="7575130707299232096">Known traveler number'ı sil</translation>
 <translation id="7575207903026901870">Öneriyi Kaldır düğmesi, bu öneriyi kaldrımak için Enter tuşuna basın</translation>
@@ -4217,7 +4217,7 @@ Ek ayrıntılar:
 <translation id="7953569069500808819">Üstte kenar dikişi</translation>
 <translation id="7955105108888461311">Şahsen sor</translation>
 <translation id="7956713633345437162">Mobil yer işaretleri</translation>
-<translation id="7961015016161918242">Hiçbir Zaman</translation>
+<translation id="7961015016161918242">Hiçbir zaman</translation>
 <translation id="7962467575542381659">Platform makinesi</translation>
 <translation id="7966803981046576691">İş hesap türü</translation>
 <translation id="7967477318370169806">Ortak Fonlar</translation>
@@ -4430,7 +4430,7 @@ Ek ayrıntılar:
 <translation id="831997045666694187">Akşam</translation>
 <translation id="8321448084834652864">Arama motorunuzu istediğiniz zaman Chromium ayarlarından değiştirebilirsiniz.</translation>
 <translation id="8321476692217554900">bildirimler</translation>
-<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google'ın Yapay Zeka Modu'na soru sormak için Enter tuşuna basın</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google'ın AI Modu'na soru sormak için Enter tuşuna basın</translation>
 <translation id="8322402665880479974">Yataklar ve Karyola Başlıkları</translation>
 <translation id="8323505966575306467">Şifrelerinize daha fazla koruma ekleyin</translation>
 <translation id="832547548543012337">Pasaportu silin</translation>
@@ -4833,7 +4833,7 @@ Ek ayrıntılar:
 <translation id="9040341831873780534">Şartları burada görüntüleyin</translation>
 <translation id="9042617223719777575">Yüksek Kapasite</translation>
 <translation id="9042827002460091668">İnternet bağlantınızı kontrol edip tekrar deneyin</translation>
-<translation id="9043161870923715789">Yapay Zeka Modu</translation>
+<translation id="9043161870923715789">AI Modu</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" />, yerel ağınızdaki cihazları arayıp bunlara bağlanmak istiyor</translation>
 <translation id="9046864189129893978">Mikrofonlar (<ph name="MICS_COUNT" />)</translation>
@@ -4977,7 +4977,7 @@ Ek ayrıntılar:
 <translation id="950926967802086924">Geçiş anahtarı • Google Şifre Yöneticisi</translation>
 <translation id="955429569736351433">VR'ye izin verildi</translation>
 <translation id="955627189349169688">Bu politikayı <ph name="BEGIN_LINK" />Chrome Senkronizasyon ayarlarından<ph name="END_LINK" /> devre dışı bırakabilirsiniz.</translation>
-<translation id="95676157383774931">Yapay Zeka Modu düğmesi, Google'ın Yapay Zeka Modu'na soru sormak için etkinleştirin</translation>
+<translation id="95676157383774931">AI Modu düğmesi, Google'ın AI Modu'na soru sormak için etkinleştirin</translation>
 <translation id="95721182352849470">Sarı 2</translation>
 <translation id="961663415146723894">Alttan bağlı</translation>
 <translation id="961856697154696964">Tarama verilerini sil</translation>

@@ -1281,7 +1281,7 @@
 <translation id="3140646734028448730">商業服務</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
 <translation id="3141641372357166056">沒有同意聲明決定</translation>
-<translation id="3144458715650412431">已套用測試政策。如要查看和進行重設，請前往 chrome://policy/test。請注意，系統不會套用管理員政策。</translation>
+<translation id="3144458715650412431">已套用測試政策。如要查看和重設政策，請前往 chrome://policy/test。請注意，系統不會套用管理員政策。</translation>
 <translation id="3145945101586104090">無法將回應解碼</translation>
 <translation id="3147941219998826815">平價旅遊與旅遊出清優惠</translation>
 <translation id="3150653042067488994">伺服器暫時發生錯誤</translation>

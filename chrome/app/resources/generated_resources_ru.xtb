@@ -5007,7 +5007,7 @@
 <translation id="445099924538929605">Операционная система <ph name="DEVICE_OS" /> обнаружила активный модуль TPM, который может повысить надежность хранения данных.</translation>
 <translation id="4452898361839215358">или выберите PPD-файл. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Приложите палец к сканеру отпечатков в правом верхнем углу клавиатуры. Данные отпечатков пальцев надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
-<translation id="4453946976636652378">Введите поисковый запрос в <ph name="SEARCH_ENGINE_NAME" /> или укажите URL</translation>
+<translation id="4453946976636652378">Выполните поиск в <ph name="SEARCH_ENGINE_NAME" /> или укажите URL</translation>
 <translation id="4457472090507035117">Голос:</translation>
 <translation id="4459169140545916303">Последние действия: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. назад</translation>
 <translation id="4460014764210899310">Разгруппировать</translation>
@@ -7249,7 +7249,7 @@
 <translation id="6077189836672154517">Обновления и полезные советы по работе с <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Голосовой ввод</translation>
 <translation id="6078121669093215958">{0,plural, =1{Гость}one{# открытое окно в гостевом режиме}few{# открытых окна в гостевом режиме}many{# открытых окон в гостевом режиме}other{# открытого окна в гостевом режиме}}</translation>
-<translation id="6078323886959318429">Добавить</translation>
+<translation id="6078323886959318429">Добавить ярлык</translation>
 <translation id="6078752646384677957">Проверьте микрофон и уровни громкости.</translation>
 <translation id="608029822688206592">Сеть не найдена. Установите SIM-карту и повторите попытку.</translation>
 <translation id="6080689532560039067">Проверка системного времени</translation>
@@ -9932,7 +9932,7 @@
 <translation id="7958828865373988933">Если вы хотите создать ключ доступа для приложения "<ph name="APP_NAME" />" на электронном ключе, вставьте его в USB-порт и нажмите на нем кнопку.</translation>
 <translation id="7959665254555683862">Новая вкладка инкогнито</translation>
 <translation id="7960540720012720106">Перейти к обзору окон</translation>
-<translation id="7961015016161918242">Нет</translation>
+<translation id="7961015016161918242">Никогда</translation>
 <translation id="7963001036288347286">Ускорение сенсорной панели</translation>
 <translation id="7963408577288987423">{COUNT,plural, =1{1 пароль}one{{COUNT} пароль}few{{COUNT} пароля}many{{COUNT} паролей}other{{COUNT} пароля}}</translation>
 <translation id="7963513503134856713">Окно перемещено вправо</translation>

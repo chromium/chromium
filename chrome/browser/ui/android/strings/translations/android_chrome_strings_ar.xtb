@@ -593,7 +593,7 @@
 <translation id="38243391581572867">‏لا تتوفّر ميزة "عدسة Google" في هذا الحساب.</translation>
 <translation id="38258275871320156">لا يتوفّر هذا الخيار إلا للنوافذ الصغيرة</translation>
 <translation id="3830886834687455630">‏يجب تحديث "خدمات Google Play" للتحقّق من كلمات المرور</translation>
-<translation id="3845098929839618392">فتح في علامة تبويب في وضع التصفّح المتخفي</translation>
+<translation id="3845098929839618392">الفتح في علامة تبويب في وضع التصفّح المتخفي</translation>
 <translation id="3847319713229060696">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3856096718352044181">يُرجى إثبات صلاحية مقدّم الخدمة أو المحاولة مجددًا.</translation>
@@ -1031,7 +1031,7 @@
 <translation id="5833984609253377421">مشاركة الرابط</translation>
 <translation id="5839058148541733625">‏لعبة الديناصور في Chrome</translation>
 <translation id="5841444063256914865">هل المطلوب تنزيل "<ph name="FILE_NAME" />" على أي حال؟</translation>
-<translation id="5842871376175639063">يتم نقل علامات التبويب ومجموعات علامات التبويب التي لم يتم استخدامها لمدة <ph name="DAYS_INACTIVE" /> يوم إلى هنا <ph name="AUTODELETE_SECTION" />. يمكنك تعديل هذا الإعداد في أي وقت من خلال "<ph name="SETTINGS_TITLE" />".</translation>
+<translation id="5842871376175639063">يتم نقل علامات التبويب ومجموعات علامات التبويب غير المستخدمة لمدة <ph name="DAYS_INACTIVE" /> يوم إلى هنا،<ph name="AUTODELETE_SECTION" /> ويمكنك تعديل ذلك في أي وقت من خلال "<ph name="SETTINGS_TITLE" />".</translation>
 <translation id="5848257610304005265">‏هل مطلوب فتح ملف PDF باستخدام "<ph name="APP_NAME" />"؟</translation>
 <translation id="5849288995120328556">هل مطلوب إيقاف المشاركة؟</translation>
 <translation id="5853623416121554550">تم إيقاف عملية التنزيل مؤقتًا</translation>
@@ -1092,7 +1092,7 @@
 <translation id="6124936178263837501">الإبلاغ أنّ المحتوى آمن</translation>
 <translation id="6125202119952209826">الانضمام إلى مجموعة علامات التبويب التي فيها "<ph name="OWNER_FIRST_NAME" />"</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />المزيد من التفاصيل<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">أُزيلَ عنصر</translation>
+<translation id="6127379762771434464">تمت إزالة العنصر</translation>
 <translation id="6130303040046284160">تصغير علامة التبويب</translation>
 <translation id="6134168885321518274">فتح "شريط البحث"</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TAB_COUNT_MANY" />)}few{‫<ph name="TAB_COUNT_MANY" /> علامات تبويب}many{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب}other{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب}}</translation>
