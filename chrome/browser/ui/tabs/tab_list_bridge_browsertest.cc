@@ -233,3 +233,41 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, CloseTab) {
   tab_list_interface->CloseTab(tab_to_close->GetHandle());
   EXPECT_EQ(1, tab_list_interface->GetTabCount());
 }
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, MoveTab) {
+  const GURL url1("http://one.example");
+  const GURL url2("http://two.example");
+  const GURL url3("http://three.example");
+
+  // Open three tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  EXPECT_THAT(tab_list_interface->GetAllTabs(),
+              testing::ElementsAre(MatchesTab(url1), MatchesTab(url2),
+                                   MatchesTab(url3)));
+
+  // Move the first tab to the end.
+  tabs::TabInterface* tab_to_move = tab_list_interface->GetTab(0);
+  tab_list_interface->MoveTab(tab_to_move->GetHandle(), 2);
+  EXPECT_THAT(tab_list_interface->GetAllTabs(),
+              testing::ElementsAre(MatchesTab(url2), MatchesTab(url3),
+                                   MatchesTab(url1)));
+
+  // Move the new first tab (originally second) to the middle.
+  tab_to_move = tab_list_interface->GetTab(0);
+  tab_list_interface->MoveTab(tab_to_move->GetHandle(), 1);
+  EXPECT_THAT(tab_list_interface->GetAllTabs(),
+              testing::ElementsAre(MatchesTab(url3), MatchesTab(url2),
+                                   MatchesTab(url1)));
+}

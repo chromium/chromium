@@ -81,7 +81,13 @@ int TabListBridge::GetIndexOfTab(tabs::TabHandle tab) {
 void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
                                   const std::set<tabs::TabHandle>& tabs) {}
 
-void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {}
+void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {
+  int current_index = GetIndexOfTab(tab);
+  CHECK_NE(index, TabStripModel::kNoTab)
+      << "Trying to move a non-existent tab.";
+  tab_strip_->MoveWebContentsAt(current_index, index,
+                                /*select_after_move=*/false);
+}
 
 void TabListBridge::CloseTab(tabs::TabHandle tab) {
   const int index = GetIndexOfTab(tab);
