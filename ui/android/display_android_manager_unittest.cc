@@ -207,7 +207,7 @@ TEST_F(DisplayAndroidManagerTest, WorkArea) {
 
 TEST_F(DisplayAndroidManagerTest, DisplayTopology) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kAndroidWindowManagementWebApi);
+  scoped_feature_list.InitAndEnableFeature(kAndroidUseDisplayTopology);
 
   // Display Topology
   //             (0, -1440) +-------------+

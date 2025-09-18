@@ -41,10 +41,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "ui/android/ui_android_features.h"
 #endif  // IS_ANDROID
 
 using blink::PermissionType;
@@ -392,8 +389,8 @@ TEST_F(PermissionManagerTest, GetPermissionStatusAfterSet) {
 TEST_F(PermissionManagerTest, AndroidWindowManagementPermission) {
   // Enable kAndroidWindowManagementWebApi flag
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureState(ui::kAndroidWindowManagementWebApi,
-                                           true);
+  scoped_feature_list.InitWithFeatureState(
+      permissions::features::kAndroidWindowManagementWebApi, true);
 
   {
     base::HistogramTester histogram_tester;

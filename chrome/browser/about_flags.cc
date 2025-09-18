@@ -12566,7 +12566,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-window-management-web-api",
      flag_descriptions::kAndroidWindowManagementWebApiName,
      flag_descriptions::kAndroidWindowManagementWebApiDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(ui::kAndroidWindowManagementWebApi)},
+     FEATURE_VALUE_TYPE(permissions::features::kAndroidWindowManagementWebApi)},
 
     {"browser-controls-debugging",
      flag_descriptions::kBrowserControlsDebuggingName,

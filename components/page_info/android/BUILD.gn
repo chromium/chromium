@@ -31,7 +31,6 @@ static_library("android") {
     "//content/public/browser",
     "//net",
     "//third_party/boringssl",
-    "//ui/android",
     "//ui/base",
   ]
 }

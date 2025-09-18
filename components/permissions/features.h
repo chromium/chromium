@@ -13,6 +13,11 @@
 namespace permissions {
 namespace features {
 
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kAndroidWindowManagementWebApi);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kBackForwardCacheUnblockPermissionRequest);
 

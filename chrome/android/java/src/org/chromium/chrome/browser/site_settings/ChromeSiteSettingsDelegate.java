@@ -64,7 +64,6 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaFeatures;
-import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -172,7 +171,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             case SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS:
                 return ChromeFeatureList.isEnabled(ChromeFeatureList.LOCAL_NETWORK_ACCESS);
             case SiteSettingsCategory.Type.WINDOW_MANAGEMENT:
-                return UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled();
+                return ChromeFeatureList.sAndroidWindowManagementWebApi.isEnabled();
             default:
                 return true;
         }

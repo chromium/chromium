@@ -10,6 +10,11 @@
 namespace permissions {
 namespace features {
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables or disables usage of Window Management Web API.
+BASE_FEATURE(kAndroidWindowManagementWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Enables or disables whether pages with pending permission requests will
 // go into back/forward cache.
 BASE_FEATURE(kBackForwardCacheUnblockPermissionRequest,

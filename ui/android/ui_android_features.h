@@ -31,10 +31,6 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUseCorrectWindowBounds);
 // displays.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUseDisplayTopology);
 
-// TODO(crbug.com/401215712): Clean up the flag after making sure tha the Window
-// Management Web API works well.
-UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidWindowManagementWebApi);
-
 // Enables using occlusion information from Android to save CPU and memory.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidWindowOcclusion);
 

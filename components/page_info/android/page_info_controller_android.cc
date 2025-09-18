@@ -34,7 +34,6 @@
 #include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
-#include "ui/android/ui_android_features.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -163,7 +162,8 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   permissions_to_display.push_back(ContentSettingsType::IMAGES);
   permissions_to_display.push_back(ContentSettingsType::JAVASCRIPT);
   permissions_to_display.push_back(ContentSettingsType::POPUPS);
-  if (base::FeatureList::IsEnabled(ui::kAndroidWindowManagementWebApi)) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kAndroidWindowManagementWebApi)) {
     permissions_to_display.push_back(ContentSettingsType::WINDOW_MANAGEMENT);
   }
   permissions_to_display.push_back(ContentSettingsType::ADS);

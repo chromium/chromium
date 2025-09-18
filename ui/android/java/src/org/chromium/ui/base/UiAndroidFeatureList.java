@@ -41,12 +41,6 @@ public class UiAndroidFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
 
-    public static final CachedFlag sAndroidWindowManagementWebApi =
-            newCachedFlag(
-                    UiAndroidFeatures.ANDROID_WINDOW_MANAGEMENT_WEB_API,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
-
     public static final CachedFlag sAndroidWindowOcclusion =
             newCachedFlag(
                     UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION,
@@ -63,7 +57,6 @@ public class UiAndroidFeatureList {
             List.of(
                     sAndroidUseCorrectWindowBounds,
                     sAndroidUseDisplayTopology,
-                    sAndroidWindowManagementWebApi,
                     sAndroidWindowOcclusion,
                     sFormFactorUseMaxWindowMetrics);
 }

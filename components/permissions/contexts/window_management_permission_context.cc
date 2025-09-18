@@ -15,7 +15,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
-#include "ui/android/ui_android_features.h"
+#include "components/permissions/features.h"
 #endif  // IS_ANDROID
 
 namespace permissions {
@@ -43,7 +43,8 @@ WindowManagementPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (base::FeatureList::IsEnabled(ui::kAndroidWindowManagementWebApi)) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kAndroidWindowManagementWebApi)) {
     const ContentSetting content_setting =
         ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
             render_frame_host, requesting_origin, embedding_origin);

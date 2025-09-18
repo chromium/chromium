@@ -74,7 +74,7 @@ Display DisplayAndroidManager::GetDisplayNearestView(
 
 Display DisplayAndroidManager::GetDisplayNearestPoint(
     const gfx::Point& point) const {
-  if (base::FeatureList::IsEnabled(kAndroidWindowManagementWebApi)) {
+  if (base::FeatureList::IsEnabled(kAndroidUseDisplayTopology)) {
     return ScreenBase::GetDisplayNearestPoint(point);
   }
 
@@ -84,7 +84,7 @@ Display DisplayAndroidManager::GetDisplayNearestPoint(
 
 Display DisplayAndroidManager::GetDisplayMatching(
     const gfx::Rect& match_rect) const {
-  if (base::FeatureList::IsEnabled(kAndroidWindowManagementWebApi)) {
+  if (base::FeatureList::IsEnabled(kAndroidUseDisplayTopology)) {
     return ScreenBase::GetDisplayMatching(match_rect);
   }
 
