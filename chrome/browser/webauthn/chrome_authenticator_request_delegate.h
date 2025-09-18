@@ -67,6 +67,16 @@ class ChromeAuthenticatorRequestDelegate
       public AuthenticatorRequestDialogModel::Observer,
       public content::WebContentsUserData<ChromeAuthenticatorRequestDelegate> {
  public:
+  // Returns a nullptr delegate if there is already an ongoing request in the
+  // same WebContents.
+  static ChromeAuthenticatorRequestDelegate* CreateRequestDelegate(
+      content::RenderFrameHost* render_frame_host);
+
+  // Returns the current request delegate associated to the |web_contents| or
+  // nullptr if there is none.
+  static ChromeAuthenticatorRequestDelegate* GetRequestDelegate(
+      content::WebContents* web_contents);
+
   // TestObserver is an interface that observes certain events related to this
   // class for testing purposes. Only a single instance of this interface can
   // be installed at a given time.

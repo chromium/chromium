@@ -8267,7 +8267,6 @@ test("unit_tests") {
       "../browser/ui/webui/webui_embedding_context_unittest.cc",
       "../browser/ui/webui/webui_util_desktop_unittest.cc",
       "../browser/webauthn/authenticator_request_dialog_model_unittest.cc",
-      "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
       "../browser/webauthn/challenge_url_fetcher_unittest.cc",
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
       "../browser/webauthn/chrome_web_authentication_delegate_unittest.cc",

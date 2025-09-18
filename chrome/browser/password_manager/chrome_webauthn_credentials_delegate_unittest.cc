@@ -38,7 +38,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "device/fido/fido_request_handler_base.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -117,7 +116,7 @@ class ChromeWebAuthnCredentialsDelegateTest
 
 #if !BUILDFLAG(IS_ANDROID)
     authenticator_request_delegate_ =
-        AuthenticatorRequestScheduler::CreateRequestDelegate(
+        ChromeAuthenticatorRequestDelegate::CreateRequestDelegate(
             web_contents()->GetPrimaryMainFrame());
     // Setting the RPID creates the dialog model.
     authenticator_request_delegate_->SetRelyingPartyId("rpId");

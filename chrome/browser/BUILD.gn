@@ -4276,8 +4276,6 @@ static_library("browser") {
       "webauthn/authenticator_request_dialog_controller.cc",
       "webauthn/authenticator_request_dialog_controller.h",
       "webauthn/authenticator_request_dialog_model.cc",
-      "webauthn/authenticator_request_scheduler.cc",
-      "webauthn/authenticator_request_scheduler.h",
       "webauthn/cablev2_devices.cc",
       "webauthn/cablev2_devices.h",
       "webauthn/challenge_url_fetcher.cc",

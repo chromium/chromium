@@ -22,7 +22,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
-#include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -60,7 +59,7 @@ ChromeWebAuthnCredentialsDelegate::~ChromeWebAuthnCredentialsDelegate() =
 void ChromeWebAuthnCredentialsDelegate::LaunchSecurityKeyOrHybridFlow() {
 #if !BUILDFLAG(IS_ANDROID)
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
-      AuthenticatorRequestScheduler::GetRequestDelegate(web_contents_);
+      ChromeAuthenticatorRequestDelegate::GetRequestDelegate(web_contents_);
   if (!authenticator_delegate) {
     return;
   }
@@ -93,7 +92,7 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
   request_delegate->OnWebAuthnAccountSelected(*selected_credential_id);
 #else
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
-      AuthenticatorRequestScheduler::GetRequestDelegate(web_contents_);
+      ChromeAuthenticatorRequestDelegate::GetRequestDelegate(web_contents_);
   if (!authenticator_delegate) {
     std::move(callback).Run();
     return;

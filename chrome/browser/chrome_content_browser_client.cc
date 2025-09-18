@@ -573,7 +573,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
 #include "components/commerce/core/commerce_feature_list.h"
@@ -6839,7 +6838,7 @@ ChromeContentBrowserClient::GetDirectSocketsDelegate() {
 content::AuthenticatorRequestClientDelegate*
 ChromeContentBrowserClient::GetWebAuthenticationRequestDelegate(
     content::RenderFrameHost* render_frame_host) {
-  return AuthenticatorRequestScheduler::CreateRequestDelegate(
+  return ChromeAuthenticatorRequestDelegate::CreateRequestDelegate(
       render_frame_host);
 }
 #endif
