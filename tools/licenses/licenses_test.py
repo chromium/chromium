@@ -12,6 +12,7 @@ import io
 import itertools
 import os
 import pathlib
+import shutil
 import sys
 import unittest
 
@@ -93,29 +94,39 @@ class LicensesTest(unittest.TestCase):
       licenses.ParseDir(test_path, REPOSITORY_ROOT)
 
     test_path = os.path.join('tools', 'licenses', 'test_dir')
-    dir_metadata, errors = licenses.ParseDir(test_path, REPOSITORY_ROOT)
-    expected = [
-        {
-            'License File': [
-                os.path.join(REPOSITORY_ROOT, test_path, 'LICENSE')
-            ],
-            'Name': 'License tools directory parsing test',
-            'URL': 'https://chromium.tools.licenses.test/src.git',
-            'License': 'FAKE',
-            'Shipped': 'no',
-        },
-        {
-            'License File': [
-                os.path.join(REPOSITORY_ROOT, test_path, 'LICENSE')
-            ],
-            'Name': 'License tools directory parsing test for multiple',
-            'URL': 'https://chromium.tools.licenses.test/multi/src.git',
-            'License': 'FAKE',
-            'Shipped': 'no',
-        },
-    ]
-    self.assertListEqual(errors, [])
-    self.assertListEqual(dir_metadata, expected)
+
+    # The test file is named README.chromium.test, but the code looks for
+    # README.chromium.
+    abs_readme_path = os.path.join(REPOSITORY_ROOT, test_path,
+                                   'README.chromium')
+    try:
+      shutil.copyfile(abs_readme_path + '.test', abs_readme_path)
+      dir_metadata, errors = licenses.ParseDir(test_path, REPOSITORY_ROOT)
+      expected = [
+          {
+              'License File': [
+                  os.path.join(REPOSITORY_ROOT, test_path, 'LICENSE')
+              ],
+              'Name': 'License tools directory parsing test',
+              'URL': 'https://chromium.tools.licenses.test/src.git',
+              'License': 'FAKE',
+              'Shipped': 'no',
+          },
+          {
+              'License File': [
+                  os.path.join(REPOSITORY_ROOT, test_path, 'LICENSE')
+              ],
+              'Name': 'License tools directory parsing test for multiple',
+              'URL': 'https://chromium.tools.licenses.test/multi/src.git',
+              'License': 'FAKE',
+              'Shipped': 'no',
+          },
+      ]
+      self.assertListEqual(errors, [])
+      self.assertListEqual(dir_metadata, expected)
+    finally:
+      if os.path.exists(abs_readme_path):
+        os.remove(abs_readme_path)
 
   def test_get_third_party_deps_from_gn_deps_output(self):
     prune_path = next(iter(licenses.PRUNE_PATHS))
@@ -530,8 +541,15 @@ class LicensesTest(unittest.TestCase):
 
     # Warnings enabled
     args.extra_third_party_dirs = ["test_dir_invalid_metadata"]
+
+    # The test file is named README.chromium.test, but the code looks for
+    # README.chromium.
+    abs_readme_path = os.path.join(root_dir, 'test_dir_invalid_metadata',
+                                   'README.chromium')
+    shutil.copyfile(abs_readme_path + '.test', abs_readme_path)
     with contextlib.redirect_stdout(io.StringIO()) as captured_output:
       licenses.GenerateLicenseFile(args, root_dir=root_dir)
+    os.remove(abs_readme_path)
     self.assertRegex(captured_output.getvalue(),
                      r"Errors in test_dir_invalid_metadata")
 
@@ -545,8 +563,12 @@ class LicensesTest(unittest.TestCase):
     # # Warnings disabled
     args.enable_warnings = False
     args.extra_third_party_dirs = ["test_dir_invalid_metadata"]
+    abs_readme_path = os.path.join(root_dir, 'test_dir_invalid_metadata',
+                                   'README.chromium')
+    shutil.copyfile(abs_readme_path + '.test', abs_readme_path)
     with contextlib.redirect_stdout(io.StringIO()) as captured_output:
       licenses.GenerateLicenseFile(args, root_dir=root_dir)
+    os.remove(abs_readme_path)
     self.assertNotRegex(captured_output.getvalue(),
                         r"Errors in test_dir_invalid_metadata")
 
@@ -556,7 +578,6 @@ class LicensesTest(unittest.TestCase):
       self.assertNotRegex(
           captured_output.getvalue(),
           r"Error: missing third party .* test_dir_with_missing_files")
-
 
 if __name__ == '__main__':
   unittest.main()
