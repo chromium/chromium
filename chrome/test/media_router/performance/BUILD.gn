@@ -1,8 +1,8 @@
 import("//build/config/python.gni")
 
-python_library("performance_test") {
+python_library("openscreen_cast_performance_test") {
   testonly = true
-  pydeps_file = "performance_test.pydeps"
+  pydeps_file = "openscreen_cast_performance_test.pydeps"
   data = [
     "//.vpython3",
     "//build/util/lib/proto",

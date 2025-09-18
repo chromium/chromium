@@ -115,7 +115,7 @@ copy("e2e_test_resources") {
 # Lab performance tests
 group("performance_tests") {
   testonly = true
-  deps = [ "//chrome/test/media_router/performance:performance_test" ]
+  deps = [ "//chrome/test/media_router/performance:openscreen_cast_performance_test" ]
 }
 
 # Run separately.  TODO: Documentation on how to run
