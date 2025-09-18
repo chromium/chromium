@@ -733,8 +733,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
               {"use-inner-text-as-context", "true"},
               {"update-viewport-each-query", "true"},
           }},
-         {lens::features::kLensOverlayLatencyOptimizations,
-          {{"enable-early-start-query-flow-optimization", "true"}}},
          {lens::features::kLensOverlaySurvey, {}},
          {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}},
         /*disabled_features=*/{});
@@ -5178,76 +5176,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
-class LensOverlayControllerBrowserStartQueryFlowOptimization
-    : public LensOverlayControllerBrowserTest {
- protected:
-  void SetupFeatureList() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{lens::features::kLensOverlay,
-          {{"results-search-url", kResultsSearchBaseUrl},
-           {"use-dynamic-theme", "true"},
-           {"use-dynamic-theme-min-population-pct", "0.002"},
-           {"use-dynamic-theme-min-chroma", "3.0"}}},
-         {lens::features::kLensOverlayContextualSearchbox,
-          {
-              {"use-inner-text-as-context", "true"},
-              {"use-webpage-vit-param", "true"},
-          }},
-         {lens::features::kLensOverlaySurvey, {}},
-         {lens::features::kLensOverlayLatencyOptimizations,
-          {{"enable-early-start-query-flow-optimization", "true"}}}},
-        /*disabled_features=*/{});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserStartQueryFlowOptimization,
-                       CsbPageContentsAreStillUploaded) {
-  WaitForPaint();
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Showing UI should eventually result in overlay state. This also tests that
-  // the start query flow optimization doesn't break the overlay initialization
-  // flow.
-  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  auto* fake_query_controller =
-      static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
-
-  // With the start query flow optimization, the page contents will not be
-  // uploaded with the full image request. This checks that that the page
-  // contents are still uploaded at some point after the overlay is
-  // initialized.
-  EXPECT_FALSE(
-      fake_query_controller->sent_full_image_objects_request().has_payload());
-  EXPECT_EQ(fake_query_controller->last_sent_page_content_payload()
-                .content()
-                .content_data()[0]
-                .content_type(),
-            lens::ContentData::CONTENT_TYPE_INNER_TEXT);
-  EXPECT_EQ(fake_query_controller->sent_full_image_request_id().sequence_id(),
-            1);
-  EXPECT_EQ(fake_query_controller->sent_page_content_request_id().sequence_id(),
-            1);
-  EXPECT_FALSE(
-      controller->GetLensSuggestInputsForTesting().has_encoded_image_signals());
-  EXPECT_FALSE(controller->GetLensSuggestInputsForTesting()
-                   .has_encoded_visual_search_interaction_log_data());
-  EXPECT_EQ(controller->GetLensSuggestInputsForTesting()
-                .contextual_visual_input_type(),
-            "wp");
-  EXPECT_TRUE(
-      controller->GetLensSuggestInputsForTesting().has_encoded_request_id());
-  EXPECT_TRUE(
-      controller->GetLensSuggestInputsForTesting().has_search_session_id());
-}
-
 class LensOverlayControllerBrowserFullscreenDisabled
     : public LensOverlayControllerBrowserTest {
  protected:
@@ -9429,8 +9357,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToScreenshot", 0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFetchBoundingBoxes", 0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCreateBitmap", 0);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.TimeToCheckPageContextEligibility", 0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToGetPageContext", 0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeForPageToBind", 0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCloseOpenedSidePanel",
@@ -9453,8 +9379,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFetchBoundingBoxes", 1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCreateScreenshotBitmap",
                                     1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.TimeToCheckPageContextEligibility", 1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToGetPageContext", 1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToWebuiBound", 1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCloseOpenedSidePanel",

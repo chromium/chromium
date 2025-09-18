@@ -276,10 +276,6 @@ constexpr base::FeatureParam<bool> kEnableEarlyInteractionOptimization{
     &kLensOverlayLatencyOptimizations, "enable-early-interaction-optimization",
     true};
 
-constexpr base::FeatureParam<bool> kEnableEarlyStartQueryFlowOptimization{
-    &kLensOverlayLatencyOptimizations,
-    "enable-early-start-query-flow-optimization", true};
-
 constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
     &kLensOverlayContextualSearchbox, "use-inner-text-as-context", true};
 
@@ -857,11 +853,6 @@ bool IsLensOverlayClusterInfoOptimizationEnabled() {
 bool IsLensOverlayEarlyInteractionOptimizationEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayLatencyOptimizations) &&
          kEnableEarlyInteractionOptimization.Get();
-}
-
-bool IsLensOverlayEarlyStartQueryFlowOptimizationEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayLatencyOptimizations) &&
-         kEnableEarlyStartQueryFlowOptimization.Get();
 }
 
 base::TimeDelta GetLensOverlaySurveyResultsTime() {

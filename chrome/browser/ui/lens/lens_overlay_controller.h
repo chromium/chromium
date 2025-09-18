@@ -718,14 +718,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       std::optional<base::TimeTicks> pdf_page_start_time,
       std::optional<uint32_t> pdf_current_page);
 
-  // Called when the page context eligibility is fetched.
-  void OnPageContextEligibilityFetched(
-      const SkBitmap& bitmap,
-      const std::vector<gfx::Rect>& all_bounds,
-      std::optional<uint32_t> pdf_current_page,
-      std::optional<base::TimeTicks> page_context_eligibility_start_time,
-      bool is_page_context_eligible);
-
   // Process the bitmap and creates all necessary data to initialize the
   // overlay. Happens on a separate thread to prevent main thread from hanging.
   void CreateInitializationData(const SkBitmap& screenshot,

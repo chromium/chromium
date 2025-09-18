@@ -632,13 +632,6 @@ extern bool IsLensOverlayClusterInfoOptimizationEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayEarlyInteractionOptimizationEnabled();
 
-// Whether to enable the early StartQueryFlow optimization for the Lens Overlay.
-// This optimization allows the full image request to be sent as soon as the
-// screenshotted image is ready instead of waiting for all client-side
-// initialization has completed.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlayEarlyStartQueryFlowOptimizationEnabled();
-
 // Time delay for the results trigger of the Lens Overlay HaTS survey.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern base::TimeDelta GetLensOverlaySurveyResultsTime();

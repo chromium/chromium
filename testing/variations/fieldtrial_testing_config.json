@@ -5935,64 +5935,6 @@
             ]
         }
     ],
-    "ChromnientFetchSrp": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "FetchSrpEnabled"
-                }
-            ]
-        }
-    ],
-    "ChromnientLatencyOptimizations": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AllOptimizationsEnabled",
-                    "params": {
-                        "enable-cluster-info-optimization": "true",
-                        "enable-early-interaction-optimization": "true",
-                        "enable-early-start-query-flow-optimization": "true"
-                    },
-                    "enable_features": [
-                        "LensOverlayLatencyOptimizations"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ChromnientNewFeedback": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "NewFeedbackEnabled",
-                    "enable_features": [
-                        "LensSearchSidePanelNewFeedback"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromnientSidePanelOpenInNewTab": [
         {
             "platforms": [

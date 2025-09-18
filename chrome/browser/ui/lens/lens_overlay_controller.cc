@@ -1430,56 +1430,6 @@ void LensOverlayController::DidCaptureScreenshot(
     return;
   }
 
-  if (lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
-    // Start the query as soon as the image is ready since it is the only
-    // critical asynchronous flow. This optimization parallelizes the query flow
-    // with other async startup processes.
-    const auto& tab_url = tab_->GetContents()->GetLastCommittedURL();
-
-    // Check if the page is context eligible. This should start the query flow
-    // after the eligibility is fetched.
-    GetContextualizationController()->IsPageContextEligible(
-        tab_url, /*frame_metadata=*/{},
-        base::BindOnce(
-            &LensOverlayController::OnPageContextEligibilityFetched,
-            weak_factory_.GetWeakPtr(), bitmap, all_bounds, pdf_current_page,
-            std::make_optional<base::TimeTicks>(base::TimeTicks::Now())));
-    return;
-  }
-
-  // The following two methods happen async to parallelize the two bottlenecks
-  // in our invocation flow.
-  CreateInitializationData(bitmap, all_bounds, pdf_current_page);
-  ShowOverlay();
-
-  state_ = State::kStartingWebUI;
-}
-
-void LensOverlayController::OnPageContextEligibilityFetched(
-    const SkBitmap& bitmap,
-    const std::vector<gfx::Rect>& all_bounds,
-    std::optional<uint32_t> pdf_current_page,
-    std::optional<base::TimeTicks> page_context_eligibility_start_time,
-    bool is_page_context_eligible) {
-  if (page_context_eligibility_start_time.has_value()) {
-    lens::RecordTimeToCheckPageContextEligibility(
-        base::TimeTicks::Now() - page_context_eligibility_start_time.value());
-  }
-  auto bitmap_to_send = bitmap;
-  auto page_url = lens_search_controller_->GetPageURL();
-  auto page_title = lens_search_controller_->GetPageTitle();
-  if (!is_page_context_eligible) {
-    bitmap_to_send = SkBitmap();
-    page_url = GURL();
-    page_title = "";
-  }
-
-  lens_overlay_query_controller_->StartQueryFlow(
-      bitmap_to_send, page_url, page_title,
-      ConvertSignificantRegionBoxes(all_bounds),
-      std::vector<lens::PageContent>(), lens::MimeType::kUnknown,
-      pdf_current_page, GetUiScaleFactor(), invocation_time_);
-
   // The following two methods happen async to parallelize the two bottlenecks
   // in our invocation flow.
   CreateInitializationData(bitmap, all_bounds, pdf_current_page);
@@ -1564,14 +1514,12 @@ void LensOverlayController::StorePageContentAndContinueInitialization(
   initialization_data->pdf_page_count_ = page_count;
   InitializeOverlay(std::move(initialization_data));
 
-  // TODO(crbug.com/418825720): Remove this code once the optimization is fully
-  // launched as this recording will instead be done in the contextualization
-  // controller.
-  if (!lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
-    GetContextualizationController()->SetPageContent(page_contents,
-                                                     primary_content_type);
-    GetContextualizationController()->RecordDocumentMetrics(page_count);
-  }
+  // TODO(crbug.com/428208291): Remove this in favor of the contextualization
+  // controller correctly setting the page content and recording the document
+  // metrics.
+  GetContextualizationController()->SetPageContent(page_contents,
+                                                   primary_content_type);
+  GetContextualizationController()->RecordDocumentMetrics(page_count);
 }
 
 std::vector<lens::mojom::CenterRotatedBoxPtr>
@@ -1757,17 +1705,6 @@ void LensOverlayController::InitializeOverlay(
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
 
-  // If the StartQueryFlow optimization is enabled, the page contents will not
-  // be sent with the initial image request, so we need to send it here.
-  if (lens::IsLensOverlayContextualSearchboxEnabled() &&
-      lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled() &&
-      GetContextualizationController()->GetCurrentPageContextEligibility()) {
-    // TODO(crbug.com/418856988): Replace this with a call that starts
-    // contextualization without the unneeded callback.
-    GetContextualizationController()->TryUpdatePageContextualization(
-        base::DoNothing());
-  }
-
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
   if (!pending_region_) {
@@ -1795,8 +1732,7 @@ void LensOverlayController::InitializeOverlay(
 
   // Only start the query flow again if we don't already have a full image
   // response, unless the early start query flow optimization is enabled.
-  if (!initialization_data_->has_full_image_response() &&
-      !lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
+  if (!initialization_data_->has_full_image_response()) {
     if (!GetContextualizationController()->GetCurrentPageContextEligibility()) {
       initialization_data_->initial_screenshot_ = SkBitmap();
       initialization_data_->page_url_ = GURL();
