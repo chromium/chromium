@@ -1200,7 +1200,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
                                              : FakeboxBottomColor(),
                                 pinnedColor, progress)];
 
-  UIColor* defaultTintColor = [UIColor colorNamed:kGrey700Color];
+  UIColor* defaultTintColor =
+      content_suggestions::DefaultIconTintColorWithAIMAllowed(_isAIMAllowed);
   UIColor* defaultDividerColor = [UIColor colorNamed:kGrey600Color];
   UIColor* tintColor = colorPalette ? BlendColors(colorPalette.tintColor,
                                                   defaultTintColor, progress)

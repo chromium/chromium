@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -176,20 +177,20 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
   }
 
   UIButton* button = [[UIButton alloc] init];
-
+  UIColor* baseTintColor =
+      content_suggestions::DefaultIconTintColorWithAIMAllowed(YES);
   if (GetNTPMIAEntrypointVariation() ==
       NTPMIAEntrypointVariation::kOmniboxContainedSingleButton) {
     button.configurationUpdateHandler =
         CreateThemedButtonConfigurationUpdateHandler(
-            [UIColor colorNamed:kGrey700Color],
-            ^(NewTabPageColorPalette* palette) {
+            baseTintColor, ^(NewTabPageColorPalette* palette) {
               return ButtonBackgroundColor(palette);
             });
   } else {
     // Other variations change the blur background to match the omnibox.
     button.configurationUpdateHandler =
         CreateThemedButtonConfigurationUpdateHandler(
-            [UIColor colorNamed:kGrey700Color],
+            baseTintColor,
             ^(NewTabPageColorPalette* palette) {
               return ButtonBackgroundColor(palette);
             },

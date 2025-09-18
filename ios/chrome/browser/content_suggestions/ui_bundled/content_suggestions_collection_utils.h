@@ -78,6 +78,9 @@ int SetUpListTitleStringID();
 // Returns the localized title to be used for the SetUpList.
 NSString* SetUpListTitleString();
 
+// Returns the color to use for the Lens and Voice icons in the Fakebox.
+UIColor* DefaultIconTintColorWithAIMAllowed(bool aim_allowed);
+
 }  // namespace content_suggestions
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CONTENT_SUGGESTIONS_COLLECTION_UTILS_H_
