@@ -314,6 +314,11 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!self.started, base::NotFatalUntil::M145);
+  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+}
+
 - (void)start {
   if (self.started) {
     return;

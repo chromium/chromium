@@ -564,6 +564,10 @@ void OnListFamilyMembersResponse(
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+}
+
 - (void)setProfileState:(ProfileState*)profileState {
   DCHECK(!_sceneState.profileState);
 

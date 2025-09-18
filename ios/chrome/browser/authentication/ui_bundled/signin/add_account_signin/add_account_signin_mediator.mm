@@ -30,6 +30,11 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_authenticationService, base::NotFatalUntil::M145);
+  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+}
+
 #pragma mark - Public
 
 - (void)disconnect {

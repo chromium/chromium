@@ -51,9 +51,9 @@ using bookmarks::BookmarkNode;
                           editedNodes:(std::set<const BookmarkNode*>)editedNodes
                 authenticationService:(AuthenticationService*)authService
                           syncService:(syncer::SyncService*)syncService {
-  DCHECK(model);
-  DCHECK(model->loaded());
-  DCHECK(authService->initialized());
+  CHECK(model, base::NotFatalUntil::M145);
+  CHECK(model->loaded(), base::NotFatalUntil::M145);
+  CHECK(authService->initialized(), base::NotFatalUntil::M145);
 
   self = [super init];
   if (self) {
@@ -91,7 +91,8 @@ using bookmarks::BookmarkNode;
 }
 
 - (void)dealloc {
-  DCHECK(!_localOrSyncableDataSource);
+  CHECK(!_localOrSyncableDataSource, base::NotFatalUntil::M145);
+  CHECK(!_authServiceBridge, base::NotFatalUntil::M145);
 }
 
 - (const std::set<const BookmarkNode*>&)editedNodes {

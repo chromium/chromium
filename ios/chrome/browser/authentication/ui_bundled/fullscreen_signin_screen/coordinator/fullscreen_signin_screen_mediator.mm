@@ -161,12 +161,12 @@ enum class SigninScreenState {
 }
 
 - (void)dealloc {
-  DCHECK(!_accountManagerService);
-  DCHECK(!_authenticationService);
-  DCHECK(!_identityManager);
-  DCHECK(!self.localPrefService);
-  DCHECK(!self.prefService);
-  DCHECK(!self.syncService);
+  CHECK(!_accountManagerService, base::NotFatalUntil::M145);
+  CHECK(!_authenticationService, base::NotFatalUntil::M145);
+  CHECK(!_identityManager, base::NotFatalUntil::M145);
+  CHECK(!self.localPrefService, base::NotFatalUntil::M145);
+  CHECK(!self.prefService, base::NotFatalUntil::M145);
+  CHECK(!self.syncService, base::NotFatalUntil::M145);
 }
 
 - (void)disconnect {

@@ -132,7 +132,8 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 - (void)dealloc {
   CHECK(!_accountManagerService && !_authenticationService &&
             !_identityManager && !_accountReconcilor && !_prefService &&
-            !_identityManagerObserverBridge.get(),
+            !_identityManagerObserverBridge.get() &&
+            !_authServiceObserverBridge,
         base::NotFatalUntil::M142)
       << "_accountManagerService: " << _accountManagerService
       << ", _authenticationService: " << _authenticationService

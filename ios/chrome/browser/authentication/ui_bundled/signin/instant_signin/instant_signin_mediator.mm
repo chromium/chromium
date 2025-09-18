@@ -63,6 +63,10 @@ using signin_metrics::PromoAction;
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+}
+
 #pragma mark - Public
 
 - (void)startSignInOnlyFlowWithAuthenticationFlow:
@@ -75,7 +79,6 @@ using signin_metrics::PromoAction;
 }
 
 - (void)disconnect {
-  _authenticationService = nullptr;
   _authServiceObserverBridge.reset();
   _authenticationService = nil;
   _identityManagerObserver.reset();
