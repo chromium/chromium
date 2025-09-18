@@ -118,7 +118,10 @@ void ReaderModeTabHelper::ActivateReader(ReaderModeAccessPoint access_point) {
   }
   // It is not expected to activate reader mode for a page that is not
   // eligible.
-  CHECK(CurrentPageIsEligibleForReaderMode());
+  if (!CurrentPageIsEligibleForReaderMode()) {
+    RecordDistillationFailure();
+    return;
+  }
   active_ = true;
 
   // If Reader mode is being activated, lazily create the secondary WebState

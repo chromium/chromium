@@ -471,6 +471,33 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfDistillationFailure) {
               BucketsAre(Bucket(ReaderModeAccessPoint::kContextualChip, 1)));
 }
 
+// Tests that ReaderModeTabHelper observers are notified when distillation
+// fails.
+TEST_F(ReaderModeTabHelperTest, DistillationFailureOnIneligiblePage) {
+  MockReaderModeTabHelperObserver mock_observer;
+  base::ScopedObservation<ReaderModeTabHelper, ReaderModeTabHelper::Observer>
+      observation(&mock_observer);
+  observation.Observe(reader_mode_tab_helper());
+
+  // Set an empty DOM Distiller result to simulate failure.
+  GURL test_url("https://www.google.com");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  // Initially, no observer methods should be called.
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  // When ActivateReader() is called and distillation fails,
+  // ReaderModeDistillationFailed should be called.
+  EXPECT_CALL(mock_observer,
+              ReaderModeDistillationFailed(reader_mode_tab_helper()));
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  WaitForPageLoadDelayAndRunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+}
+
 // Tests that the WebViewProxy is updated when reader mode is toggled.
 // TODO(crbug.com/437829140): Re-enable the test on device.
 #if TARGET_OS_SIMULATOR
