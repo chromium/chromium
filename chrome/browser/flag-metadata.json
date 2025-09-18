@@ -10530,7 +10530,7 @@
       "martinkr@google.com",
       "chrome-webauthn@google.com"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 144
   },
   {
     "name": "web-authentication-permit-enterprise-attestation",
