@@ -18959,27 +18959,6 @@
             ]
         }
     ],
-    "PrewarmServiceWorkerRegistrationForDSE": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrewarmServiceWorkerRegistrationForDSE"
-                    ]
-                }
-            ]
-        }
-    ],
     "PriceInsightsDesktopExpansionStudy": [
         {
             "platforms": [
@@ -23046,63 +23025,48 @@
             ]
         }
     ],
-    "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl": [
+    "ServiceWorkerBackgroundUpdate": [
         {
             "platforms": [
                 "android",
                 "android_webview",
                 "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl",
+                    "name": "PreflightForDSE",
                     "enable_features": [
-                        "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl"
+                        "PrewarmServiceWorkerRegistrationForDSE",
+                        "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
+                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys"
                     ]
-                }
-            ]
-        }
-    ],
-    "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
+                },
                 {
-                    "name": "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
+                    "name": "BackgroundUpdateForScopeCache",
                     "enable_features": [
+                        "PrewarmServiceWorkerRegistrationForDSE",
+                        "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
                         "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
                         "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"
                     ],
                     "disable_features": [
                         "ServiceWorkerMergeFindRegistrationForClientUrl"
                     ]
-                }
-            ]
-        }
-    ],
-    "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysForWebView": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
+                },
                 {
-                    "name": "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysForWebView",
+                    "name": "BackgroundUpdateForRegistration",
                     "enable_features": [
-                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled"
+                        "PrewarmServiceWorkerRegistrationForDSE",
+                        "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
+                        "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl",
+                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
+                        "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"
+                    ],
+                    "disable_features": [
+                        "ServiceWorkerMergeFindRegistrationForClientUrl"
                     ]
                 }
             ]
