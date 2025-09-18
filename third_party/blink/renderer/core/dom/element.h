@@ -1718,6 +1718,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void RemoveInterestInvokerTargetData();
   InterestInvokerTargetData& EnsureInterestInvokerTargetData();
   InterestInvokerTargetData* GetInterestInvokerTargetData() const;
+  void HandlePointerEventsForInterestFor(const AtomicString& event_type);
 
   void DefaultEventHandler(Event&) override;
 

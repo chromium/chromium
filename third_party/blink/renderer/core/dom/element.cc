@@ -1765,22 +1765,33 @@ bool Element::InterestLost(Element* target,
   return true;
 }
 
+void Element::HandlePointerEventsForInterestFor(
+    const AtomicString& event_type) {
+  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
+    return;
+  }
+  for (Element* element = this; element; element = element->parentElement()) {
+    if (element->InterestForElement() || element->SourceInterestInvoker() ||
+        element->GetInterestState() != InterestState::kNoInterest)
+        [[unlikely]] {
+      if (event_type == event_type_names::kPointerover) {
+        element->HandleInterestForHoverOrFocus(InterestSource::kHover);
+      } else {
+        CHECK_EQ(event_type, event_type_names::kPointerout);
+        element->HandleInterestForHoverOrFocus(InterestSource::kDeHover);
+      }
+    }
+  }
+}
+
 void Element::DefaultEventHandler(Event& event) {
   if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           GetDocument().GetExecutionContext()) &&
       (InterestForElement() || SourceInterestInvoker() ||
        GetInterestState() != InterestState::kNoInterest)) [[unlikely]] {
-    // Handle new `interestfor` activation via mouse, keyboard, or long-
-    // press.
+    // Handle new `interestfor` activation via keyboard or long-press.
     String type = event.type();
-    if (auto* mouse_event = DynamicTo<MouseEvent>(event);
-        mouse_event && !mouse_event->FromTouch()) {
-      if (type == event_type_names::kMouseover) {
-        HandleInterestForHoverOrFocus(InterestSource::kHover);
-      } else if (type == event_type_names::kMouseout) {
-        HandleInterestForHoverOrFocus(InterestSource::kDeHover);
-      }
-    }
     if (auto* focus_event = DynamicTo<FocusEvent>(event);
         focus_event &&
         (!focus_event->sourceCapabilities() ||

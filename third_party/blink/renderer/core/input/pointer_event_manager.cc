@@ -186,6 +186,13 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
       HTMLElement::HandlePopoverLightDismiss(*pointer_event, *target_node);
       HTMLDialogElement::HandleDialogLightDismiss(*pointer_event, *target_node);
     }
+
+    if (Element* target_element = DynamicTo<Element>(target_node);
+        target_element && !pointer_event->FromTouch() &&
+        (event_type == event_type_names::kPointerover ||
+         event_type == event_type_names::kPointerout)) {
+      target_element->HandlePointerEventsForInterestFor(event_type);
+    }
   }
 
   if (should_filter &&
