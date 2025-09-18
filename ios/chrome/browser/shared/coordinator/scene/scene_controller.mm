@@ -2266,9 +2266,12 @@ using UserFeedbackDataCallback =
   if (![self isTabAvailableToPresentViewController]) {
     return;
   }
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  if (_accountMenuCoordinator) {
+    // In case the account is already opened, no need to open a second one.
+    // It is not clear how it could occur, but it does according to
+    // crbug.com/443698000.
+    return;
+  }
   Browser* browser = self.mainInterface.browser;
   UIViewController* baseViewController = self.mainInterface.viewController;
   _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
