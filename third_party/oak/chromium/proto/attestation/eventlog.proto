@@ -18,21 +18,12 @@ syntax = "proto3";
 
 package oak.attestation.v1;
 
+import "proto/chromium_types/any.proto";
 import "proto/digest.proto";
 
 option go_package = "proto/oak/attestation/v1";
 option java_multiple_files = true;
 option java_package = "com.google.oak.attestation.v1";
-
-// TODO(crbug.com/441088489): //third_party/protobuf/src/google/protobuf/any.proto cannot be
-// directly imported because it is not in the `protobuf_lite` source and the
-// `protobuf_full` source cannot be included because of its large size.
-// Therefore, we copy the single proto we need from protobuf_full which is small
-// (and stable), this is commonly done in other Chromium directories.
-message Any {
-  string type_url = 1;
-  bytes value = 2;
-}
 
 // All the related measurements for Stage 0.
 message Stage0Measurements {
@@ -82,12 +73,11 @@ message Event {
 
 // A sequence of Events intended for inclusion in attestation evidence.
 message EventLog {
-  // TODO: b/333748757 - Remove 'events' once 'encoded_events' is in google3.
-  // Deprecated: Use encoded_events instead.
-  repeated Event events = 1 [deprecated = true];
-  // Holds serialized instances of the the Event message. The serialized form
-  // is used instead of `repeated Event events` as proto serialization is non-
-  // deterministic and attestation evidence contains signatures over the digest
-  // of serialized events.
+  reserved 1;
+  // Holds serialized instances of the the [`Event`] message. The serialized
+  // form is used instead of `repeated Event events` as proto serialization is
+  // non-deterministic and attestation evidence contains signatures over the
+  // digest of serialized events.
+  // TODO: b/389059744 - Use a repeated Variant field instead.
   repeated bytes encoded_events = 2;
 }

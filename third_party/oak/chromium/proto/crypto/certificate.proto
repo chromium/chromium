@@ -1,0 +1,129 @@
+//
+// Copyright 2025 The Project Oak Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+// Minimalistic certificate used for to provide authentication for the enclave.
+//
+// Authentication can be provided when direct remote attestation is not
+// available. Such as when attestation is done by a first-party attestation
+// verification service.
+//
+// Certificate design takes ideas from the X.509 standard:
+// <https://www.ietf.org/rfc/rfc2459.txt>
+
+syntax = "proto3";
+
+package oak.crypto.v1;
+
+import "proto/chromium_types/timestamp.proto";
+
+option go_package = "proto/oak/crypto/v1";
+option java_multiple_files = true;
+option java_package = "com.google.oak.crypto.v1";
+
+// Certificate validity period.
+//
+// Validity period is defined by 2 values: `not_before` and `not_after`. Both of
+// those values must be specified, and `not_before` timestamp must be strictly
+// earlier than `not_after`. Otherwise the certificate is considered invalid.
+//
+// The validity period for a certificate is defined as the period of time from
+// `not_before` through `not_after`, inclusive.
+message Validity {
+  // Timestamp on which the certificate validity period begins (inclusive).
+  Timestamp not_before = 1;
+
+  // Timestamp on which the certificate validity period ends (inclusive).
+  Timestamp not_after = 2;
+}
+
+// Information about the public key that the certificate is issued for.
+// All fields of this message must be set. Otherwise the certificate is
+// considered invalid.
+message SubjectPublicKeyInfo {
+  // Public key that this certificate is issued for.
+  bytes public_key = 1;
+
+  // Purpose (key usage) ID that describes what private key (that subject public
+  // key corresponds to) is used for.
+  // It also describes it's parameters such as algorithm and serialization
+  // format.
+  bytes purpose_id = 2;
+}
+
+// Structure that contains proof (or evidence) that the certificate has been
+// created and signed over recently (for some definition of recent).
+// NIST pulses are used as proof of freshness. Pulses are issued every minute
+// and contain random, unpredictable values. Values and their timestamps
+// can be verified to be authentically from the NIST beacon. Having knowledge of
+// such value (or something derived from it) proves that the message was
+// generated after the pulse. See documentation for NIST fields here:
+// https://csrc.nist.gov/projects/interoperable-randomness-beacons/beacon-20
+// https://csrc.nist.gov/csrc/media/Projects/interoperable-randomness-beacons/documents/certificate/beacon-2.0.xsd
+message ProofOfFreshness {
+  // NIST pulse index (starting with one) of the chain that a pulse is contained
+  // in.
+  int64 nist_chain_index = 1;
+
+  // NIST pulse index: a positive integer starting at 1 which identifies the
+  // pulse in the chain.
+  int64 nist_pulse_index = 2;
+
+  // A 64 byte string with a hash derived from all other values in the pulse.
+  // Crucially, it's impossible to predict the value of this field
+  // in future pulses.
+  bytes nist_pulse_output_value = 3;
+}
+
+// Payload that is signed by the certificate.
+// All fields of this message must be set. Otherwise the certificate is
+// considered invalid.
+message CertificatePayload {
+  // Certificate validity period.
+  Validity validity = 1;
+
+  // Public key that this certificate is issued for.
+  SubjectPublicKeyInfo subject_public_key_info = 2;
+
+  ProofOfFreshness proof_of_freshness = 3;
+}
+
+// Information about the signature that signs the certificate.
+message SignatureInfo {
+  // Signature value bytes.
+  //
+  // Signature format is defined by the Tink library (which includes the
+  // algorithm used to create this signature):
+  // <https://developers.google.com/tink/wire-format#digital_signatures>
+  bytes signature = 1;
+}
+
+// Minimalistic certificate proto definition.
+//
+// Certificate is created as following:
+// - [`CertificatePayload`] proto message is serialized and signed using the
+// certificate authority's private key.
+// - This serialized message is stored in the `serialized_payload` field.
+// - The signature is stored in the `signature_info`.
+//
+// The signature is created using the Tink library:
+// <https://developers.google.com/tink/digital-signature>
+message Certificate {
+  // Serialized [`CertificatePayload`] proto.
+  bytes serialized_payload = 1;
+
+  // Signature over serialized_payload.
+  SignatureInfo signature_info = 2;
+}

@@ -2,7 +2,7 @@ Name: oak
 URL: https://github.com/project-oak/oak/
 Version: N/A
 Date: 2025-08-07
-Revision: bd9e19ed20525444be0882bd5848ec475ac8c040
+Revision: 96c00a6c99ac382f3f3a8f376bc7a70890d1adaa
 Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
@@ -10,8 +10,20 @@ Shipped: yes
 Security Critical: yes
 
 Description:
-Oak is a software platform for building distributed systems providing externally verifiable (or falsifiable) claims about system behaviors in a transparent way. Oak provides building blocks that are used to build Enclave Applications, i.e. applications that are isolated from the host on which they run, and are remotely attestable.
+Oak is a software platform for building distributed systems providing externally
+verifiable (or falsifiable) claims about system behaviors in a transparent way.
+
+Oak provides building blocks that are used to build Enclave Applications,
+i.e. applications that are isolated from the host on which they run, and are
+remotely attestable.
 
 Local Modifications:
-Added "chromium/proto/*" directory to provide protocol buffer that supports protobuf_lite, which is required by Chromium. The reference to //third_party/protobuf/src/google/protobuf/any.proto in `src/proto/attestation/eventlog.proto` is replaced with a wire-compatible equivalents version of Any because Any cannot be directly imported because it is not in the `protobuf_lite` source and the `protobuf_full` source cannot be included because of its large size. Therefore, we copy the single proto we need from protobuf_full which is small (and stable), this is commonly done in other Chromium directories. All other copied protocol buffers are unchanged. 
+Added the "chromium_types/" directory. This directory contains the following
+wire-compatible equivalents of the full protobuf versions:
+- `any.proto`
+- `timestamp.proto`
 
+These are needed because Chromium uses `protobuf_lite`, which does
+not include these files, and including the full protobuf library is not
+feasible due to its size. This approach of copying needed protos is a common
+practice within Chromium. All other protocol buffers are unchanged.

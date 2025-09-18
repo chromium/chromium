@@ -9,7 +9,11 @@ proto_library("oak_proto") {
     "chromium/proto/attestation/endorsement.proto",
     "chromium/proto/attestation/eventlog.proto",
     "chromium/proto/attestation/evidence.proto",
+    "chromium/proto/chromium_types/any.proto",
+    "chromium/proto/chromium_types/timestamp.proto",
+    "chromium/proto/crypto/certificate.proto",
     "chromium/proto/digest.proto",
+    "chromium/proto/variant.proto",
   ]
   proto_in_dir = "chromium"
   cc_generator_options = "lite"
