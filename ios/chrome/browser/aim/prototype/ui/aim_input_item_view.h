@@ -18,6 +18,9 @@
 /// Updates the UI based on the item's type.
 - (void)configureWithItem:(AIMInputItem*)item;
 
+/// Prepares the view for reuse.
+- (void)prepareForReuse;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AIM_PROTOTYPE_UI_AIM_INPUT_ITEM_VIEW_H_

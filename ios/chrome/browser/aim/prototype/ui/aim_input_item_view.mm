@@ -78,6 +78,13 @@ const CGFloat kPreviewImageTopBottomPadding = 6.0;
   }
 }
 
+- (void)prepareForReuse {
+  _leadingIconImageView.image = nil;
+  _previewImageView.image = nil;
+  _titleLabel.text = nil;
+  _subtitleLabel.text = nil;
+}
+
 - (void)setupViews {
   // Icon Image View
   _leadingIconImageView = [[UIImageView alloc] init];

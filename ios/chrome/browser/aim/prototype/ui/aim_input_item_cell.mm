@@ -72,6 +72,11 @@ const CGFloat kMaxCellHeight = 42;
   return self;
 }
 
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  [_inputItemView prepareForReuse];
+}
+
 - (void)configureWithItem:(AIMInputItem*)item {
   [_inputItemView configureWithItem:item];
 
