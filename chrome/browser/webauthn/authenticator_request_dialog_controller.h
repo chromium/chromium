@@ -508,15 +508,6 @@ class AuthenticatorRequestDialogController
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
 
-  // cable_extension_provided_ indicates whether the request included a caBLE
-  // extension.
-  bool cable_extension_provided_ = false;
-
-  // cable_device_ready_ is true if a CTAP-level request has been sent to a
-  // caBLE device. At this point we assume that any transport errors are
-  // cancellations on the device, not networking errors.
-  bool cable_device_ready_ = false;
-
   // cable_connecting_sheet_timer_ is started when we start displaying
   // the "connecting..." sheet for a caBLE connection. To avoid flashing the UI,
   // the sheet won't be automatically replaced until it completes.

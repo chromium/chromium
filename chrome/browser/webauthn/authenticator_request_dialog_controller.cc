@@ -1526,7 +1526,6 @@ void AuthenticatorRequestDialogController::set_cable_transport_info(
     std::optional<bool> extension_is_v2,
     const std::optional<std::string>& cable_qr_string) {
   if (extension_is_v2.has_value()) {
-    cable_extension_provided_ = true;
     if (*extension_is_v2) {
       model_->cable_ui_type =
           AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK;
