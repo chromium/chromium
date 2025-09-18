@@ -5,7 +5,10 @@
 import("//build/config/compiler/sdk_version.gni")
 
 source_set("public") {
-  sources = [ "context_id.h" ]
+  sources = [
+    "context_id.h",
+    "migratable_sync_service_coordinator.h",
+  ]
 
   deps = [ "//base" ]
 }

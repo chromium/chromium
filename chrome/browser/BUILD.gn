@@ -382,6 +382,8 @@ static_library("browser") {
     "data_sharing/data_sharing_navigation_utils.h",
     "data_sharing/data_sharing_service_factory.cc",
     "data_sharing/data_sharing_service_factory.h",
+    "data_sharing/migration/migratable_sync_service_coordinator_factory.cc",
+    "data_sharing/migration/migratable_sync_service_coordinator_factory.h",
     "data_sharing/personal_collaboration_data/personal_collaboration_data_service_factory.cc",
     "data_sharing/personal_collaboration_data/personal_collaboration_data_service_factory.h",
     "defaults.cc",
