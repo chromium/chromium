@@ -6,19 +6,11 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyFloat;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -44,9 +36,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
-import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
-import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridgeJni;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ActionData;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ProfileModel;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -59,7 +52,6 @@ public class ExtensionsMenuMediatorTest {
     // be a public class.
     private static final int TAB1_ID = 111;
     private static final int TAB2_ID = 222;
-    private static final long ACTIONS_BRIDGE_POINTER = 10000L;
 
     private static final Bitmap ICON_RED = createSimpleIcon(Color.RED);
     private static final Bitmap ICON_BLUE = createSimpleIcon(Color.BLUE);
@@ -72,12 +64,16 @@ public class ExtensionsMenuMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
-    @Mock private ExtensionActionsBridge.Natives mActionsBridgeJniMock;
     @Mock private Runnable mDataReadyCallback;
     @Mock private Callback<Boolean> mOnExtensionsSupportedCallback;
     @Mock private WebContents mWebContents;
 
-    private ExtensionActionsBridge mActionsBridge;
+    @Rule
+    public final FakeExtensionActionsBridgeRule mBridgeRule = new FakeExtensionActionsBridgeRule();
+
+    private final FakeExtensionActionsBridge mActionsBridge = mBridgeRule.getFakeBridge();
+
+    private ProfileModel mProfileModel;
     private MockTab mTab1;
     private MockTab mTab2;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
@@ -87,61 +83,12 @@ public class ExtensionsMenuMediatorTest {
 
     @Before
     public void setUp() {
-        ExtensionActionsBridgeJni.setInstanceForTesting(mActionsBridgeJniMock);
-        Context context = ApplicationProvider.getApplicationContext();
-
-        // Provide good defaults for action queries via JNI.
-        mActionsBridge = new ExtensionActionsBridge(ACTIONS_BRIDGE_POINTER);
-        when(mActionsBridgeJniMock.get(mProfile)).thenReturn(mActionsBridge);
-        when(mActionsBridgeJniMock.areActionsInitialized(ACTIONS_BRIDGE_POINTER)).thenReturn(true);
-        when(mActionsBridgeJniMock.extensionsEnabled(ACTIONS_BRIDGE_POINTER)).thenReturn(true);
-        when(mActionsBridgeJniMock.getActionIds(ACTIONS_BRIDGE_POINTER))
-                .thenReturn(new String[] {"a", "b"});
-        when(mActionsBridgeJniMock.getAction(ACTIONS_BRIDGE_POINTER, "a", TAB1_ID))
-                .thenReturn(new ExtensionAction("a", "title of a"));
-        when(mActionsBridgeJniMock.getAction(ACTIONS_BRIDGE_POINTER, "b", TAB1_ID))
-                .thenReturn(new ExtensionAction("b", "title of b"));
-        when(mActionsBridgeJniMock.getAction(ACTIONS_BRIDGE_POINTER, "c", TAB1_ID))
-                .thenReturn(new ExtensionAction("c", "title of c"));
-        when(mActionsBridgeJniMock.getAction(ACTIONS_BRIDGE_POINTER, "a", TAB2_ID))
-                .thenReturn(new ExtensionAction("a", "another title of a"));
-        when(mActionsBridgeJniMock.getAction(ACTIONS_BRIDGE_POINTER, "b", TAB2_ID))
-                .thenReturn(new ExtensionAction("b", "another title of b"));
-        when(mActionsBridgeJniMock.getAction(ACTIONS_BRIDGE_POINTER, "c", TAB2_ID))
-                .thenReturn(new ExtensionAction("c", "another title of c"));
-        when(mActionsBridgeJniMock.getActionIcon(
-                        eq(ACTIONS_BRIDGE_POINTER),
-                        anyString(),
-                        anyInt(),
-                        eq(mWebContents),
-                        anyInt(),
-                        anyInt(),
-                        anyFloat()))
-                .thenAnswer(
-                        invocation -> {
-                            String actionId = invocation.getArgument(1);
-                            int tabId = invocation.getArgument(2);
-                            if (tabId == TAB1_ID) {
-                                switch (actionId) {
-                                    case "a":
-                                        return ICON_RED;
-                                    case "b":
-                                        return ICON_GREEN;
-                                    case "c":
-                                        return ICON_BLUE;
-                                }
-                            } else if (tabId == TAB2_ID) {
-                                switch (actionId) {
-                                    case "a":
-                                        return ICON_CYAN;
-                                    case "b":
-                                        return ICON_MAGENTA;
-                                    case "c":
-                                        return ICON_YELLOW;
-                                }
-                            }
-                            return null;
-                        });
+        mProfileModel = mActionsBridge.getOrCreateProfileModel(mProfile);
+        mProfileModel.setInitialized(true);
+        mProfileModel.putAction(
+                "a", new ActionData.Builder().setTitle("title of a").setIcon(ICON_RED).build());
+        mProfileModel.putAction(
+                "b", new ActionData.Builder().setTitle("title of b").setIcon(ICON_GREEN).build());
 
         // Initialize common objects.
         mTab1 = new MockTab(TAB1_ID, mProfile);
@@ -154,7 +101,7 @@ public class ExtensionsMenuMediatorTest {
 
         mMediator =
                 new ExtensionsMenuMediator(
-                        context,
+                        ApplicationProvider.getApplicationContext(),
                         mProfileSupplier,
                         mCurrentTabSupplier,
                         mModels,
@@ -181,11 +128,11 @@ public class ExtensionsMenuMediatorTest {
         shadowOf(Looper.getMainLooper()).idle();
         verify(mOnExtensionsSupportedCallback).onResult(false);
 
-        long otherBridgePtr = ACTIONS_BRIDGE_POINTER + 1;
+        mActionsBridge.clear();
         Profile otherProfile = mock(Profile.class);
-        ExtensionActionsBridge otherBridge = new ExtensionActionsBridge(otherBridgePtr);
-        when(mActionsBridgeJniMock.get(otherProfile)).thenReturn(otherBridge);
-        when(mActionsBridgeJniMock.extensionsEnabled(otherBridgePtr)).thenReturn(false);
+        ProfileModel otherProfileModel = mActionsBridge.getOrCreateProfileModel(otherProfile);
+        otherProfileModel.setInitialized(true);
+        otherProfileModel.setEnabled(false);
         mProfileSupplier.set(otherProfile);
         shadowOf(Looper.getMainLooper()).idle();
         verify(mOnExtensionsSupportedCallback).onResult(true);
@@ -223,7 +170,6 @@ public class ExtensionsMenuMediatorTest {
 
         // The model should have been not updated.
         assertTrue(mModels.isEmpty());
-        verify(mActionsBridgeJniMock, never()).get(any());
     }
 
     @Test
@@ -233,27 +179,64 @@ public class ExtensionsMenuMediatorTest {
 
         // The model should have been not updated.
         assertTrue(mModels.isEmpty());
-        verify(mActionsBridgeJniMock, never()).getActionIds(anyLong());
     }
 
     @Test
     public void testUpdateModels_tabChanged() {
+        // Set up tab-dependent actions.
+        mProfileModel.putAction(
+                "a",
+                (tabId) -> {
+                    switch (tabId) {
+                        case TAB1_ID:
+                            return new ActionData.Builder()
+                                    .setTitle("a for tab1")
+                                    .setIcon(ICON_RED)
+                                    .build();
+                        case TAB2_ID:
+                            return new ActionData.Builder()
+                                    .setTitle("a for tab2")
+                                    .setIcon(ICON_CYAN)
+                                    .build();
+                        default:
+                            throw new RuntimeException("Unknown tab ID: " + tabId);
+                    }
+                });
+        mProfileModel.putAction(
+                "b",
+                (tabId) -> {
+                    switch (tabId) {
+                        case TAB1_ID:
+                            return new ActionData.Builder()
+                                    .setTitle("b for tab1")
+                                    .setIcon(ICON_GREEN)
+                                    .build();
+                        case TAB2_ID:
+                            return new ActionData.Builder()
+                                    .setTitle("b for tab2")
+                                    .setIcon(ICON_MAGENTA)
+                                    .build();
+                        default:
+                            throw new RuntimeException("Unknown tab ID: " + tabId);
+                    }
+                });
+
         // Set the profile and the tab.
         mProfileSupplier.set(mProfile);
         mCurrentTabSupplier.set(mTab1);
 
         // The model should have been updated.
         assertEquals(2, mModels.size());
-        assertItemAt(0, "title of a", ICON_RED);
-        assertItemAt(1, "title of b", ICON_GREEN);
+        assertItemAt(0, "a for tab1", ICON_RED);
+        assertItemAt(1, "b for tab1", ICON_GREEN);
 
         // Simulate changing the tab.
         mCurrentTabSupplier.set(mTab2);
 
         // The model should have been updated.
         assertEquals(2, mModels.size());
-        assertItemAt(0, "another title of a", ICON_CYAN);
-        assertItemAt(1, "another title of b", ICON_MAGENTA);
+        assertItemAt(0, "a for tab2", ICON_CYAN);
+        assertItemAt(1, "b for tab2", ICON_MAGENTA);
     }
 
     private static Bitmap createSimpleIcon(int color) {
