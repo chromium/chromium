@@ -239,6 +239,16 @@ BASE_FEATURE(kAutofillAddressUserDeclinedSuggestionSurvey,
 BASE_FEATURE(kAutofillDeduplicateAccountAddresses,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// LINT.IfChange(autofill_disallow_more_hyphen_like_labels)
+// When enabled, the list of characters a label cannot exclusively consist of
+// includes more hyphen-like characters: em-dash, minus sign and fullwidth
+// hyphen-minus.
+// TODO(crbug.com/440039204): Remove when launched.
+BASE_FEATURE(kAutofillDisallowMoreHyphenLikeLabels,
+             "AutofillDisallowMoreHyphenLikeLabels",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_disallow_more_hyphen_like_labels)
+
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling, base::FEATURE_DISABLED_BY_DEFAULT);
 

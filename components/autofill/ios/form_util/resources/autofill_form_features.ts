@@ -25,6 +25,14 @@ let autofillAcrossIframes: boolean = true;
 let autofillAcrossIframesThrottling: boolean = true;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_across_iframes_ios)
 
+// LINT.IfChange(autofill_disallow_more_hyphen_like_labels)
+/**
+ * When true, labels that only contain em dashes, minuses, fullwidth hyphens
+ * and other special characters are disallowed.
+ */
+let autofillDisallowMoreHyphenLikeLabels: boolean = false;
+// LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_disallow_more_hyphen_like_labels)
+
 // LINT.IfChange(autofill_ignore_checkable_elements)
 /**
  * If true, checkboxes and radio buttons aren't extracted anymore.
@@ -104,6 +112,20 @@ function setAutofillAcrossIframesThrottling(enabled: boolean): void {
  */
 function isAutofillAcrossIframesThrottlingEnabled(): boolean {
   return autofillAcrossIframesThrottling;
+}
+
+/**
+ * @see autofillDisallowMoreHyphenLikeLabels
+ */
+function setAutofillDisallowMoreHyphenLikeLabels(enabled: boolean) {
+  autofillDisallowMoreHyphenLikeLabels = enabled;
+}
+
+/**
+ * @see setAutofillDisallowMoreHyphenLikeLabel
+ */
+function isAutofillDisallowMoreHyphenLikeLabelsEnabled(): boolean {
+  return autofillDisallowMoreHyphenLikeLabels;
 }
 
 /**
@@ -219,6 +241,12 @@ autofillFormFeatures.addFunction(
 autofillFormFeatures.addFunction(
     'isAutofillAcrossIframesThrottlingEnabled',
     isAutofillAcrossIframesThrottlingEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillDisallowMoreHyphenLikeLabels',
+    setAutofillDisallowMoreHyphenLikeLabels);
+autofillFormFeatures.addFunction(
+    'isAutofillDisallowMoreHyphenLikeLabelsEnabled',
+    isAutofillDisallowMoreHyphenLikeLabelsEnabled);
 autofillFormFeatures.addFunction(
     'setAutofillIgnoreCheckableElements', setAutofillIgnoreCheckableElements);
 autofillFormFeatures.addFunction(

@@ -359,7 +359,11 @@ interface InferredLabel {
  */
 function buildInferredLabelIfValid(label: string): InferredLabel | null {
   // LINT.IfChange(InvalidLabelCriteria)
-  const isValid = label.search(/[^\s*:()\/\.\u2013-]/) >= 0;
+  const isValid = autofillFormFeaturesApi
+                      .getFunction(
+                          'isAutofillDisallowMoreHyphenLikeLabelsEnabled')() ?
+      label.search(/[^\s*:()\/\.\u2013\u2014\u2212\uFF0D-]/) >= 0 :
+      label.search(/[^\s*:()\/\.\u2013-]/) >= 0;
   // LINT.ThenChange(/components/autofill/content/renderer/form_autofill_util.cc:InvalidLabelCriteria)
   if (isValid) {
     return {label: label.trim()};

@@ -3088,6 +3088,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AutofillDisallowMoreHyphenLikeLabels",
                         "AutofillSupportSplitZipCode"
                     ]
                 }

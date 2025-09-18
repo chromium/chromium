@@ -2224,12 +2224,22 @@ std::optional<InferredLabel> InferredLabel::BuildIfValid(std::u16string label,
   // LINT.IfChange(InvalidLabelCriteria)
   auto is_valid_label_character = [](char16_t c) {
     static constexpr std::u16string_view kInvalidChars =
-        u"+*:-\u2013()/.";  // U+2013 is the En Dash "–".
+        u"+*:-\u2013()/.\u2014\u2212\uFF0D";
+    // U+2013: "–"  (En Dash)
+    // U+2014: "—"  (Em Dash)
+    // U+2212: "−"  (Minus Sign)
+    // U+FF0D: "－" (Fullwidth Hyphen-Minus)
     return !base::Contains(kInvalidChars, c) &&
            !base::Contains(std::u16string_view(base::kWhitespaceUTF16), c);
   };
+  auto is_from_extended_hyphen_like_list = [](char16_t c) {
+    return c == u'\u2014' || c == u'\u2212' || c == u'\uFF0D';
+  };
   // LINT.ThenChange(/components/autofill/ios/form_util/resources/fill_element_inference_util.ts:InvalidLabelCriteria)
-  if (std::ranges::any_of(label, is_valid_label_character)) {
+  if (std::ranges::any_of(label, is_valid_label_character) ||
+      (std::ranges::any_of(label, is_from_extended_hyphen_like_list) &&
+       !base::FeatureList::IsEnabled(
+           features::kAutofillDisallowMoreHyphenLikeLabels))) {
     base::TrimWhitespace(label, base::TRIM_ALL, &label);
     return InferredLabel{std::move(label), source};
   }

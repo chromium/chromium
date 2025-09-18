@@ -30,6 +30,8 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillImproveCityFieldClassification;
     case RegexFeature::kAutofillSupportSplitZipCode:
       return &features::kAutofillSupportSplitZipCode;
+    case RegexFeature::kAutofillDisallowMoreHyphenLikeLabels:
+      return &features::kAutofillDisallowMoreHyphenLikeLabels;
   }
   NOTREACHED();
 }

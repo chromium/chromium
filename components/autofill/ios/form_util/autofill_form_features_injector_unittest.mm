@@ -62,6 +62,7 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
       {kAutofillIsolatedWorldForJavascriptIos,
        autofill::features::kAutofillAcrossIframesIosThrottling,
        autofill::features::kAutofillIgnoreCheckableElements,
+       autofill::features::kAutofillDisallowMoreHyphenLikeLabels,
        kAutofillCorrectUserEditedBitInParsedField,
        kAutofillAllowDefaultPreventedSubmission, kAutofillDedupeFormSubmission,
        kAutofillReportFormSubmissionErrors,
@@ -83,6 +84,8 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
                     u"'setAutofillAcrossIframesThrottling', [true]);",
                     u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
                     u"'setAutofillIgnoreCheckableElements', [true]);",
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillDisallowMoreHyphenLikeLabels', [true]);",
                     u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
                     u"'setAutofillIsolatedContentWorld', [true]);",
                     u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "

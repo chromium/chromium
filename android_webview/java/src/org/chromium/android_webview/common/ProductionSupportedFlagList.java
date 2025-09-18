@@ -270,6 +270,10 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_IMPROVE_CITY_FIELD_CLASSIFICATION,
                 "Reduces city field false positive classifications"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_DISALLOW_MORE_HYPHEN_LIKE_LABELS,
+                "Disallows labels that only contain em dashes, minuses, fullwidth hyphens and other"
+                        + " special characters."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_IGNORE_CHECKABLE_ELEMENTS,
                 "Does not extract checkboxes and radio buttons"),
         Flag.baseFeature(
