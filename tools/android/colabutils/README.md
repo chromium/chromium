@@ -6,6 +6,9 @@ environment. These tools provide a programmatic interface for controlling Chrome
 on a connected Android device, recording Perfetto traces, and analyzing the
 collected data.
 
+**Googlers-only:** go/chrome-colabutils-example contains a Colab notebook with
+examples of how to use colabutils.
+
 ## Making colabutils available to the python runtime
 The `colabutils` module assumes that the notebook's current working directory is
 the Chromium source directory. With that in mind, the `colabutils` module
