@@ -652,6 +652,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             childrenList.add(item);
         }
 
+        View.OnClickListener clickListener =
+                (v) -> BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_FOLDER);
+
         // TODO(crbug.com/430057288): Add metric for more submenu folder clicks.
         final PropertyModel model =
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
@@ -660,6 +663,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, childrenList)
                         .with(ListMenuItemProperties.START_ICON_BITMAP, sFolderIconBitmap)
                         .with(ListMenuItemProperties.ENABLED, true)
+                        .with(ListMenuItemProperties.CLICK_LISTENER, clickListener)
                         .build();
 
         ListItem listItem = new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, model);

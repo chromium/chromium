@@ -246,14 +246,16 @@ public class ListMenuUtils {
         }
 
         if (item.model.containsKey(SUBMENU_ITEMS)) {
+            final View.OnClickListener existingListener = item.model.get(CLICK_LISTENER);
             item.model.set(
                     CLICK_LISTENER,
-                    (unusedView) ->
-                            onItemWithSubmenuClicked(
-                                    headerModelList,
-                                    contentModelList,
-                                    item,
-                                    drillDownOverrideValue));
+                    (unusedView) -> {
+                        if (existingListener != null) {
+                            existingListener.onClick(unusedView);
+                        }
+                        onItemWithSubmenuClicked(
+                                headerModelList, contentModelList, item, drillDownOverrideValue);
+                    });
             for (ListItem submenuItem :
                     PropertyModel.getFromModelOrDefault(item.model, SUBMENU_ITEMS, List.of())) {
                 setupCallbacksRecursivelyForItem(
