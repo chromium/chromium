@@ -145,10 +145,19 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
     std::move(cb).Run(std::move(string_wrapper_list));
   }
 
+  void GetAssociatedReceiver(GetAssociatedReceiverCallback cb) override {
+    CHECK(!test_client_.is_bound()) << "This method can only be called once";
+    std::move(cb).Run(test_client_.BindNewEndpointAndPassReceiver());
+    test_client_->BlockUntilBound();
+  }
+
+  void Ping(PingCallback cb) override { std::move(cb).Run("ping"); }
+
  private:
   mojo::Receiver<mojom::WebUITsMojoTestCache> receiver_;
   std::map<GURL, std::string> cache_;
   std::vector<mojo::Remote<mojom::StringWrapper>> string_wrapper_list_;
+  mojo::AssociatedRemote<mojom::TestAssociatedClient> test_client_;
 };
 
 // WebUIController that sets up mojo bindings.

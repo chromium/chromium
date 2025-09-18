@@ -1224,8 +1224,10 @@ mojo.internal.Decoder = class {
         numInterfaceIds);
     const index = this.decodeUint32(offset);
     const interfaceId = interfaceIds[index];
-    return new mojo.internal.interfaceSupport.Endpoint(
+    const endpoint = new mojo.internal.interfaceSupport.Endpoint(
         receivingEndpoint.router, interfaceId);
+    receivingEndpoint.router.addEndpoint(endpoint, interfaceId);
+    return endpoint;
   }
 };
 

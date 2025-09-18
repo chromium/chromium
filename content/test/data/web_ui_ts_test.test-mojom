@@ -40,6 +40,10 @@ struct StringDict {
   MappedDict data;
 };
 
+interface TestAssociatedClient {
+  BlockUntilBound();
+};
+
 interface WebUITsMojoTestCache {
   Put(url.mojom.Url url, string contents);
 
@@ -83,6 +87,12 @@ interface WebUITsMojoTestCache {
 
   GetStringWrapperList()
       => (array<pending_remote<StringWrapper>> string_wrapper_list);
+
+  // Send over an associated interface then immediately write to it.
+  // This tests that the js side correctly blocks messages until the associated
+  // iface client is bound.
+  GetAssociatedReceiver() => (pending_associated_receiver<TestAssociatedClient> client);
+  Ping() => (string ping);
 };
 
 struct Result {

@@ -4,7 +4,7 @@
 
 import {TypeWithNestedEnumTypemap} from './web_ui_mojo_ts_test_converters.js';
 import {MappedOptionalContainer, StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
-import {ExtensibleUnion, ExtensibleUnionFieldTags, MojoResultTestCallbackRouter, MojoResultTestReceiver, MojoResultTestRemote, OptionalNumericsStruct, Result, TestEnum, TestMoreTypemapCallbackRouter, TypeWithNestedEnum_Enum, Union, UnionFieldTags, WebUITsMojoTestCache, whichExtensibleUnion, whichUnion} from './web_ui_ts_test.test-mojom-webui.js';
+import {ExtensibleUnion, ExtensibleUnionFieldTags, MojoResultTestCallbackRouter, MojoResultTestReceiver, MojoResultTestRemote, OptionalNumericsStruct, Result, TestAssociatedClient, TestAssociatedClientReceiver, TestEnum, TestMoreTypemapCallbackRouter, TypeWithNestedEnum_Enum, Union, UnionFieldTags, WebUITsMojoTestCache, whichExtensibleUnion, whichUnion} from './web_ui_ts_test.test-mojom-webui.js';
 import {StringWrapper} from './web_ui_ts_test_types.test-mojom-webui.js';
 
 const TEST_DATA: Array<{url: string, contents: string}> = [
@@ -472,6 +472,40 @@ async function doTest(): Promise<boolean> {
     assert(
         whichExtensibleUnion(u2) === ExtensibleUnionFieldTags.FOO,
         'unexpected extensible union: ' + whichExtensibleUnion(u2));
+  }
+
+  // Test associated interface blocks until client is bound.
+  {
+    // This setup is somewhat convoluted, but basically getAssociatedReceiver()
+    // will return an associated receiver that has a message enqueued on it
+    // immediately. Subsequent calls to the echo service should be blocked until
+    // we bind a client to the associated interface, at which point, all calls
+    // will resolve. The associated interface should preserve ordering. That is,
+    // the associated receiver method call should resolve first, followed by the
+    // latter call to the cache service.
+    const resp = await cache.getAssociatedReceiver();
+
+    const received: string[] = [];
+
+    cache.ping().then(() => {
+      received.push('ping');
+    });
+
+    class Client implements TestAssociatedClient {
+      blockUntilBound() {
+        received.push('blockUntilBound');
+      }
+    }
+
+    const receiver = new TestAssociatedClientReceiver(new Client());
+    receiver.$.bindHandle((resp.client as any).handle);
+
+    await cache.$.flushForTesting();
+
+    assert(
+        JSON.stringify(['blockUntilBound', 'ping']) ===
+            JSON.stringify(received),
+        'unexpected ordering: ' + JSON.stringify(received));
   }
 
   return true;
