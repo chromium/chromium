@@ -35,14 +35,22 @@ test("fuzzing_unittests") {
   data = []
 
   if (use_fuzzing_engine) {
-    sources += [ "stacktrace_test.cc" ]
+    sources += [
+      "fuzzer_smoke_test.cc",
+      "stacktrace_test.cc",
+    ]
 
     deps += [
       "//base",
       "//testing/gmock",
     ]
 
-    data_deps += [ ":stacktrace_test_fuzzer" ]
+    data_deps += [
+      ":stacktrace_test_fuzzer",
+      "//testing/libfuzzer/fuzzers:empty_fuzzer",
+      "//testing/libfuzzer/fuzzers:string_compare_fuzzer",
+      "//testing/libfuzzer/fuzzers:string_compare_proto_fuzzer",
+    ]
 
     data += [ "data/uaf" ]
 
