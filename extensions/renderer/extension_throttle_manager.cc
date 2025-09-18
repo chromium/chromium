@@ -34,6 +34,10 @@ ExtensionThrottleManager::~ExtensionThrottleManager() {
   base::AutoLock auto_lock(lock_);
   // Delete all entries.
   url_entries_.clear();
+
+  for (auto& observer : observers_) {
+    observer.OnExtensionThrottleManagerDestruct(this);
+  }
 }
 
 std::unique_ptr<blink::URLLoaderThrottle>
