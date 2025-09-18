@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_mediator.h"
+#import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_mediator.h"
 
 #import <memory>
 
@@ -15,9 +15,9 @@
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_consumer.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/snippet_search_engine_element.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_consumer.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_element.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 

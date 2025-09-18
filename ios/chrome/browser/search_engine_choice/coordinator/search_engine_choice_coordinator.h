@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_COORDINATOR_SEARCH_ENGINE_CHOICE_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_COORDINATOR_SEARCH_ENGINE_CHOICE_COORDINATOR_H_
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-class PromosManager;
 @class SearchEngineChoiceCoordinator;
 @protocol FirstRunScreenDelegate;
 
@@ -40,4 +39,4 @@ class PromosManager;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_COORDINATOR_SEARCH_ENGINE_CHOICE_COORDINATOR_H_

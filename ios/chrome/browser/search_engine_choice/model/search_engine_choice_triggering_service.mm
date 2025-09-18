@@ -10,7 +10,7 @@
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {

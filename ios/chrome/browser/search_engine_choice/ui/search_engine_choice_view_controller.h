@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_SEARCH_ENGINE_CHOICE_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_SEARCH_ENGINE_CHOICE_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_consumer.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_consumer.h"
 
 @protocol SearchEngineChoiceMutator;
 
@@ -37,4 +37,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_SEARCH_ENGINE_CHOICE_VIEW_CONTROLLER_H_

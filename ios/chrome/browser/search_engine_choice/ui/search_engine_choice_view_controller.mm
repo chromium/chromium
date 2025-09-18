@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_view_controller.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/i18n/rtl.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_mutator.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/snippet_search_engine_button.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/snippet_search_engine_element.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_mutator.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_button.h"
+#import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_element.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

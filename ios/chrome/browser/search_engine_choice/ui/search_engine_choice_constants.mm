@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 
 const CGFloat kFaviconImageViewSize = 24.;
 const CGFloat kFaviconImageViewRadius = 3.;

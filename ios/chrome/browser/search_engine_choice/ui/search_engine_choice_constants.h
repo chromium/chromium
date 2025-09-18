@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_SEARCH_ENGINE_CHOICE_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_SEARCH_ENGINE_CHOICE_CONSTANTS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -42,4 +42,4 @@ extern const char kExpandSearchEngineDescriptionUserAction[];
 // Accessibility identifier for the Learn More view.
 extern NSString* const kSearchEngineChoiceLearnMoreAccessibilityIdentifier;
 
-#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_SEARCH_ENGINE_CHOICE_CONSTANTS_H_

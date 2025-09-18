@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h"
+#import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
 
 #import "base/check_op.h"
 #import "base/metrics/histogram_functions.h"
@@ -17,11 +17,11 @@
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
+#import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_mediator.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/coordinator/search_engine_choice_learn_more_coordinator.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_mediator.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_view_controller.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_view_controller.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"

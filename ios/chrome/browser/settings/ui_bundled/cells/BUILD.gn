@@ -43,7 +43,7 @@ source_set("cells") {
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:authentication_constants",
-    "//ios/chrome/browser/search_engine_choice/ui_bundled:constants",
+    "//ios/chrome/browser/search_engine_choice/ui:constants",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing:safe_browsing_promo_delegate",
     "//ios/chrome/browser/shared/public/commands",

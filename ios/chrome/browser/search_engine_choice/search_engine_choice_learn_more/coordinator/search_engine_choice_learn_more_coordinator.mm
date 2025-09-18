@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/coordinator/search_engine_choice_learn_more_coordinator.h"
 
 #import "ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/ui/search_engine_choice_learn_more_view_controller.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 // #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_COORDINATOR_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_COORDINATOR_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_mutator.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_mutator.h"
 
 class TemplateURLService;
 @protocol SearchEngineChoiceConsumer;
@@ -42,4 +42,4 @@ class SearchEngineChoiceService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_COORDINATOR_SEARCH_ENGINE_CHOICE_MEDIATOR_H_

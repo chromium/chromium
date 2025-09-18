@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h",
+  "+ios/chrome/browser/first_run/model/first_run_metrics.h",
+]
