@@ -155,6 +155,8 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGaiaSigninCookieName[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kWebstoreOAuth2Scope[];
 // OAuth2 scope for push notifications.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPushNotificationOAuth2Scope[];
+// OAuth2 scope for app license check.
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kLicenseCheckOAuth2Scope[];
 
 // Constants for the Chrome Refresh Token Binding.
 inline constexpr std::string_view kTokenBindingAssertionSentinel =

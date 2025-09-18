@@ -16,10 +16,6 @@
 
 namespace drivefs {
 
-namespace {
-constexpr char kIdentityConsumerId[] = "drivefs";
-}  // namespace
-
 DriveFsAuth::DriveFsAuth(const base::Clock* clock,
                          const base::FilePath& profile_path,
                          std::unique_ptr<base::OneShotTimer> timer,
@@ -66,13 +62,9 @@ void DriveFsAuth::GetAccessToken(bool use_cached,
   timer_->Start(
       FROM_HERE, base::Seconds(30),
       base::BindOnce(&DriveFsAuth::AuthTimeout, base::Unretained(this)));
-  std::set<std::string> scopes(
-      {GaiaConstants::kClientChannelOAuth2Scope,
-       GaiaConstants::kDriveOAuth2Scope,
-       GaiaConstants::kExperimentsAndConfigsOAuth2Scope});
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          kIdentityConsumerId, identity_manager, scopes,
+          signin::OAuthConsumerId::kDrivefsAuth, identity_manager,
           base::BindOnce(&DriveFsAuth::GotChromeAccessToken,
                          base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,

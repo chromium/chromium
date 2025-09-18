@@ -69,7 +69,12 @@ enum class OAuthConsumerId {
   kAndroidManagementClient = 54,
   kArcBackgroundAuthCodeFetcher = 55,
   kGcmAccountTracker = 56,
-  kMaxValue = kGcmAccountTracker,
+  kPolicyTokenForwarder = 57,
+  kPluginVmLicenseChecker = 58,
+  kDrivefsAuth = 59,
+  kNearbyPresenceServerClient = 60,
+  kCryptAuthClient = 61,
+  kMaxValue = kCryptAuthClient,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

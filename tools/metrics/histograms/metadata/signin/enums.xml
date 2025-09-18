@@ -745,6 +745,11 @@ chromium-metrics-reviews@google.com.
   <int value="54" label="Android Management Client"/>
   <int value="55" label="Arc Background Auth Code Fetcher"/>
   <int value="56" label="GCM Account Tracker"/>
+  <int value="57" label="Policy Token Forwarder"/>
+  <int value="58" label="Plugin Vm License Checker"/>
+  <int value="59" label="Drivefs Auth"/>
+  <int value="60" label="Nearby Presence Server Client"/>
+  <int value="61" label="Crypt Auth Client"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->
