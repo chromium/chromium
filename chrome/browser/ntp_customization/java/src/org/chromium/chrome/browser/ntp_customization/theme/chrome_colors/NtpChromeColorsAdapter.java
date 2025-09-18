@@ -110,9 +110,7 @@ public class NtpChromeColorsAdapter
 
         /** Binds a colorInfo and a click listener to the view. */
         void bind(NtpThemeColorInfo colorInfo, View.OnClickListener onItemClickListener) {
-            Context context = itemView.getContext();
-
-            mColorCircle.setForeground(context.getDrawable(colorInfo.iconResId));
+            mColorCircle.setForeground(colorInfo.iconDrawable);
             itemView.setOnClickListener(onItemClickListener);
         }
     }

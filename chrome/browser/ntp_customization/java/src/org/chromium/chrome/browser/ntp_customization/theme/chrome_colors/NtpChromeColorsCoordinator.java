@@ -106,7 +106,7 @@ public class NtpChromeColorsCoordinator {
     private void initColorsList() {
         if (!mChromeColorsList.isEmpty()) return;
 
-        mChromeColorsList.addAll(NtpThemeColorUtils.getThemeColors(mContext));
+        mChromeColorsList.addAll(NtpThemeColorUtils.createThemeColorList(mContext));
     }
 
     /**

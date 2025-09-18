@@ -56,7 +56,7 @@ public class NtpChromeColorsAdapterUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mColorResources = NtpThemeColorUtils.getThemeColors(mContext);
+        mColorResources = NtpThemeColorUtils.createThemeColorList(mContext);
         mAdapter = new NtpChromeColorsAdapter(mContext, mColorResources, mOnItemClickCallback);
     }
 

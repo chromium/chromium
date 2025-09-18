@@ -182,8 +182,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         mContext,
                         NtpThemeColorInfo.NtpThemeColorId.BLUE,
                         colorResId,
-                        R.color.default_bg_color_blue,
-                        R.drawable.chrome_color_theme_icon_blue);
+                        R.color.default_bg_color_blue);
         @ColorInt int color = ContextCompat.getColor(mContext, colorResId);
         @ColorInt
         int defaultColor = ContextCompat.getColor(mContext, R.color.home_surface_background_color);
