@@ -731,14 +731,6 @@ export declare interface GlicBrowserHost {
 /** Fields of interest from the system settings page. */
 export type OsPermissionType = 'media'|'geolocation';
 
-/** Fields of interest from the Glic settings page. */
-export enum SettingsPageField {
-  /** The OS hotkey configuration field. */
-  OS_HOTKEY = 1,
-  /** The OS entrypoint enabling field. */
-  OS_ENTRYPOINT_TOGGLE = 2,
-}
-
 /** Optional parameters for the openGlicSettingsPage function. */
 export declare interface OpenSettingsOptions {
   /**
@@ -827,35 +819,6 @@ export declare interface GlicBrowserHostMetrics {
    * scope.
    */
   onModelChanged?(model: WebClientModel): void;
-}
-
-/** The type of user input reaction. */
-export enum MetricUserInputReactionType {
-  /** An unknown reaction type. */
-  UNKNOWN = 0,
-  /**
-   * A canned reaction which can be presented without communication with the
-   * server.
-   */
-  CANNED = 1,
-  /** A reaction which requires some generic modeling to produce. */
-  MODEL = 2,
-}
-
-/** Web client's operation modes */
-export enum WebClientMode {
-  /** Text operation mode. */
-  TEXT = 0,
-  /** Audio operation mode. */
-  AUDIO = 1,
-}
-
-export enum WebClientModel {
-  /** Default model. */
-  DEFAULT = 0,
-
-  /** Actor model. */
-  ACTOR = 1,
 }
 
 export enum ResponseStopCause {
@@ -1014,36 +977,6 @@ export declare interface PanelOpeningData {
    * capability is present.
    */
   conversationId?: string;
-}
-
-/** Entry points that can trigger the opening of the panel. */
-export enum InvocationSource {
-  /** Button in the OS. */
-  OS_BUTTON = 0,
-  /** Menu from button in the OS. */
-  OS_BUTTON_MENU = 1,
-  /** OS-level hotkey. */
-  OS_HOTKEY = 2,
-  /** Button in top-chrome. */
-  TOP_CHROME_BUTTON = 3,
-  /** First run experience. */
-  FRE = 4,
-  /** From the profile picker. */
-  PROFILE_PICKER = 5,
-  /** From contextual cueing. */
-  NUDGE = 6,
-  /** From 3-dot menu. */
-  THREE_DOTS_MENU = 7,
-  /** An unsupported/unknown source. */
-  UNSUPPORTED = 8,
-  /** From the What's New page. */
-  WHATS_NEW = 9,
-  /** User clicks sign-in and then signs in. */
-  AFTER_SIGN_IN = 10,
-  /** User shared a tab. */
-  SHARED_TAB = 11,
-  /** From the actor task icon. */
-  ACTOR_TASK_ICON = 12,
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */
@@ -1379,78 +1312,6 @@ export enum ActInFocusedTabErrorReason {
   FAILED_TO_START_TASK = 4,
 }
 
-/** Reason for failure when trying to create a task. */
-export enum CreateTaskErrorReason {
-  UNKNOWN = 0,
-  /** Task system unavailable. */
-  TASK_SYSTEM_UNAVAILABLE = 1,
-}
-
-/** The state of the actor task. */
-export enum ActorTaskState {
-  UNKNOWN = 0,
-  /** The actor task is idle and waiting for the next action instruction. */
-  IDLE = 1,
-  /** The actor task is performing an action. */
-  ACTING = 2,
-  /** The actor task is paused and waiting to be resumed or stopped. */
-  PAUSED = 3,
-  /** The actor task is stopped and going away. */
-  STOPPED = 4,
-}
-
-/* The reason/source of why a actor task was paused. */
-export enum ActorTaskPauseReason {
-  /* Actor task was paused by the model. */
-  PAUSED_BY_MODEL = 0,
-  /* Actor task was puased by the user. */
-  PAUSED_BY_USER = 1,
-}
-
-/* The reason/source of why an actor task was stopped. */
-export enum ActorTaskStopReason {
-  /* Actor task is complete. */
-  TASK_COMPLETE = 0,
-  /* Actor task was stopped by the user. */
-  STOPPED_BY_USER = 1,
-}
-
-export enum PerformActionsErrorReason {
-  UNKNOWN = 0,
-
-  /** The serialized Actions proto failed to parse. */
-  INVALID_ACTION_PROTO = 1,
-}
-
-/** Reason for failure when switching a conversation. */
-export enum SwitchConversationErrorReason {
-  UNKNOWN = 0,
-}
-
-/** Reason for failure when registering a conversation. */
-export enum RegisterConversationErrorReason {
-  UNKNOWN = 0,
-  /** The instance already has a conversation ID. */
-  INSTANCE_ALREADY_HAS_CONVERSATION_ID = 1,
-}
-
-/**
- * Reason why capturing desktop screenshot failed. NOTE: This may be extended in
- * the future so avoid using complete switches on the currently used enum
- * values.
- */
-export enum CaptureScreenshotErrorReason {
-  /** Screen capture or frame encoding failure. */
-  UNKNOWN = 0,
-  /**
-   * Screen capture requested but already in progress of serving another
-   * request.
-   */
-  SCREEN_CAPTURE_REQUEST_THROTTLED = 1,
-  /** User declined screen capture dialog before taking a screenshot. */
-  USER_CANCELLED_SCREEN_PICKER_DIALOG = 2,
-}
-
 export declare interface ActInFocusedTabResult {
   // The tab context result after acting and gathering new context.
   tabContextResult?: TabContextResult;
@@ -1586,47 +1447,6 @@ export declare interface ScrollToNodeSelector {
 /** Error type used for scrollTo(). */
 export type ScrollToError = ErrorWithReason<'scrollTo'>;
 
-/** Reason why scrollTo() failed. */
-export enum ScrollToErrorReason {
-  /**
-   * Invalid params were provided to scrollTo(), or the browser doesn't support
-   * scrollTo() yet.
-   */
-  NOT_SUPPORTED = 0,
-  /** scrollTo() was called again before this call finished processing. */
-  NEWER_SCROLL_TO_CALL = 1,
-  /** There is no tab currently in focus. */
-  NO_FOCUSED_TAB = 2,
-  /** The selector did not match any content in the document. */
-  NO_MATCH_FOUND = 3,
-  /**
-   * The currently focused tab changed or navigated while processing the
-   * scrollTo() call.
-   */
-  FOCUSED_TAB_CHANGED_OR_NAVIGATED = 4,
-  /**
-   * The documentId or url provided doesn't match the currently focused tab's
-   * primary document. The document may have been navigated away, may not
-   * currently be in focus, or may not be in a primary main frame (we don't
-   * currently support iframes).
-   */
-  NO_MATCHING_DOCUMENT = 5,
-
-  /**
-   *  The search range starting from DOMNodeId did not result in a valid range.
-   */
-  SEARCH_RANGE_INVALID = 6,
-
-  /**
-   * Tab context permission was disabled.
-   */
-  TAB_CONTEXT_PERMISSION_DISABLED = 7,
-
-  /**
-   * The web client requested to drop the highlight via `dropScrollToHighlight`.
-   */
-  DROPPED_BY_WEB_CLIENT = 8,
-}
 
 /**
  * A rectangular area based in the glic window's coordinate system. All
@@ -1824,16 +1644,6 @@ export declare interface ActiveBrowserInfo {
   usingThisProfile: boolean;
 }
 
-/** Describes the capability of the glic host. */
-export enum HostCapability {
-  /** Glic host supports scrollTo() on PDF documents. */
-  SCROLL_TO_PDF = 0,
-  /** Glic host will reset panel size and location on open. */
-  RESET_SIZE_AND_LOCATION_ON_OPEN = 1,
-  /** The glic host's getModelQualityClientId() can be called safely. */
-  GET_MODEL_QUALITY_CLIENT_ID = 2,
-}
-
 /**
  * Describes how long the user grants the actor with the permission to actuate.
  * Used when the actor is to actuate with sensitive data, such as entering
@@ -1981,3 +1791,217 @@ export interface ExtensibleEnums {
   actorTaskStopReason: typeof ActorTaskStopReason;
   UserGrantedPermissionDuration: typeof UserGrantedPermissionDuration;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+/// BEGIN_GENERATED - DO NOT MODIFY BELOW
+
+// This block is generated by
+// chrome/browser/resources/glic/glic_api_impl/generate.py
+
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The type of user input reaction.
+export enum MetricUserInputReactionType {
+  // An unknown reaction type.
+  UNKNOWN = 0,
+  // A canned reaction which can be presented without communication with the
+  // server.
+  CANNED = 1,
+  // A reaction which requires some generic modeling to produce.
+  MODEL = 2,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Reason for failure while acting.
+export enum PerformActionsErrorReason {
+  UNKNOWN = 0,
+  // The serialized actions proto failed to parse.
+  INVALID_ACTION_PROTO = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Reason for failure when creating an actor task.
+export enum CreateTaskErrorReason {
+  UNKNOWN = 0,
+  // The host does not support the actor task system.
+  TASK_SYSTEM_UNAVAILABLE = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The state of an actor task.
+export enum ActorTaskState {
+  UNKNOWN = 0,
+  // The actor task is idle and waiting for the next action instruction.
+  IDLE = 1,
+  // The actor task is performing an action.
+  ACTING = 2,
+  // The actor task is paused and waiting to be resumed or stopped.
+  PAUSED = 3,
+  // The actor task is stopped and going away.
+  STOPPED = 4,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The reason/source of why an actor task was paused.
+export enum ActorTaskPauseReason {
+  // Actor task was paused by the model.
+  PAUSED_BY_MODEL = 0,
+  // Actor task was puased by the user.
+  PAUSED_BY_USER = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The reason/source of why an actor task was stopped.
+export enum ActorTaskStopReason {
+  // Actor task is complete.
+  TASK_COMPLETE = 0,
+  // Actor task was stopped by the user.
+  STOPPED_BY_USER = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Reason why capturing desktop screenshot failed. NOTE: This may be extended in
+// the future so avoid using complete switches on the currently used enum
+// values.
+export enum CaptureScreenshotErrorReason {
+  // Screen capture or frame encoding failure.
+  UNKNOWN = 0,
+  // Screen capture requested but already in progress of serving another
+  // request.
+  SCREEN_CAPTURE_REQUEST_THROTTLED = 1,
+  // User declined screen capture dialog before taking a screenshot.
+  USER_CANCELLED_SCREEN_PICKER_DIALOG = 2,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Reason why scrollTo() failed.
+export enum ScrollToErrorReason {
+  // Invalid params were provided to scrollTo(), or the browser doesn't support
+  // scrollTo() yet.
+  NOT_SUPPORTED = 0,
+  // scrollTo() was called again before this call finished processing.
+  NEWER_SCROLL_TO_CALL = 1,
+  // There is no tab currently in focus.
+  NO_FOCUSED_TAB = 2,
+  // The input selector did not match any content in the document or a given
+  // range.
+  NO_MATCH_FOUND = 3,
+  // The currently focused tab changed or navigated while processing the
+  // scrollTo() call.
+  FOCUSED_TAB_CHANGED_OR_NAVIGATED = 4,
+  // The document_id or url provided doesn't match the active document in the
+  // primary main frame of the currently focused tab. The document may have been
+  // navigated away, may not currently be in focus, or may not be in a primary
+  // main frame (we don't currently support iframes).
+  NO_MATCHING_DOCUMENT = 5,
+  // The search range starting from DOMNodeId did not result in a valid range.
+  SEARCH_RANGE_INVALID = 6,
+  // Page context access is disabled.
+  TAB_CONTEXT_PERMISSION_DISABLED = 7,
+  // The web client requested to drop the highlight via
+  // `dropScrollToHighlight()`.
+  DROPPED_BY_WEB_CLIENT = 8,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Reason for failure when switching a conversation.
+export enum SwitchConversationErrorReason {
+  UNKNOWN = 0,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Reason for failure when registering a conversation.
+export enum RegisterConversationErrorReason {
+  UNKNOWN = 0,
+  // The instance already has a conversation ID.
+  INSTANCE_ALREADY_HAS_CONVERSATION_ID = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Entry points that can trigger the opening of the panel.
+export enum InvocationSource {
+  // Button in the OS.
+  OS_BUTTON = 0,
+  // Menu from button in the OS.
+  OS_BUTTON_MENU = 1,
+  // OS-level hotkey.
+  OS_HOTKEY = 2,
+  // Button in top-chrome.
+  TOP_CHROME_BUTTON = 3,
+  // First run experience.
+  FRE = 4,
+  // From the profile picker.
+  PROFILE_PICKER = 5,
+  // From tab strip nudge.
+  NUDGE = 6,
+  // From 3-dot menu.
+  THREE_DOTS_MENU = 7,
+  // An unsupported/unknown source.
+  UNSUPPORTED = 8,
+  // From the What's New page.
+  WHATS_NEW = 9,
+  // User clicked the sign-in button and signed in.
+  AFTER_SIGN_IN = 10,
+  // User shared a tab (e.g. via its context menu).
+  SHARED_TAB = 11,
+  // From the actor task icon.
+  ACTOR_TASK_ICON = 12,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Web client's operation modes.
+export enum WebClientMode {
+  // Text operation mode.
+  TEXT = 0,
+  // Audio operation mode.
+  AUDIO = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Web client's operation model.
+export enum WebClientModel {
+  // Default model.
+  DEFAULT = 0,
+  // Actor operation mode.
+  ACTOR = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Fields of interest from the Glic settings page.
+export enum SettingsPageField {
+  // The OS hotkey configuration field.
+  OS_HOTKEY = 1,
+  // The OS entrypoint enabling field.
+  OS_ENTRYPOINT_TOGGLE = 2,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Describes the capability of the glic host.
+export enum HostCapability {
+  // Glic host supports scrollTo() with PDF documents.
+  SCROLL_TO_PDF = 0,
+  // Glic host will reset panel size and location on open.
+  RESET_SIZE_AND_LOCATION_ON_OPEN = 1,
+  // The glic host's getModelQualityClientId() is enabled and can be called
+  // safely.
+  GET_MODEL_QUALITY_CLIENT_ID = 2,
+}
+
+
+/// END_GENERATED - DO NOT MODIFY ABOVE
+///////////////////////////////////////////////////////////////////////////////

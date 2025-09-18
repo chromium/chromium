@@ -18,6 +18,10 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+// Warning: a script copies some enums from this file over to glic_api.ts.
+// Run this script to update them, and read it for details.
+// chrome/browser/resources/glic/glic_api_impl/generate.py
+
 // The ready state of the profile.
 enum ProfileReadyState {
   // The profile is not ready for Glic.
@@ -87,6 +91,8 @@ enum WebUiState {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
 
+// @generate glic_api
+// The type of user input reaction.
 [Stable, Extensible]
 enum MetricUserInputReactionType {
   // An unknown reaction type.
@@ -142,8 +148,8 @@ interface PageHandler {
   WebUiStateChanged(WebUiState new_state);
 };
 
-// Reason for failure while acting. This MUST be kept in sync with the
-// glic_api.ts enum.
+// @generate glic_api
+// Reason for failure while acting.
 // LINT.IfChange(PerformActionsErrorReason)
 [Stable, Extensible]
 enum PerformActionsErrorReason {
@@ -157,8 +163,8 @@ enum PerformActionsErrorReason {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PerformActionsErrorReason)
 
-// Reason for failure when creating an actor task. This MUST be kept in sync
-// with the glic_api.ts enum.
+// @generate glic_api
+// Reason for failure when creating an actor task.
 // LINT.IfChange(CreateTaskErrorReason)
 [Stable, Extensible]
 enum CreateTaskErrorReason {
@@ -170,40 +176,51 @@ enum CreateTaskErrorReason {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:CreateTaskErrorReason)
 
-// The state of an actor task. This MUST be kept in sync with the glic_api.ts
-// enum.
+// @generate glic_api
+// The state of an actor task.
 [Stable, Extensible]
 enum ActorTaskState {
   [Default] kUnknown = 0,
+  // The actor task is idle and waiting for the next action instruction.
   kIdle = 1,
+  // The actor task is performing an action.
   kActing = 2,
+  // The actor task is paused and waiting to be resumed or stopped.
   kPaused = 3,
+  // The actor task is stopped and going away.
   kStopped = 4,
 };
 
+// @generate glic_api
 // The reason/source of why an actor task was paused.
-// This MUST be kept in sync with the glic_api.ts enum.
 [Stable, Extensible]
 enum ActorTaskPauseReason {
+  // Actor task was paused by the model.
   [Default] kPausedByModel = 0,
+  // Actor task was puased by the user.
   kPausedByUser = 1,
 };
 
+// @generate glic_api
 // The reason/source of why an actor task was stopped.
-// This MUST be kept in sync with the glic_api.ts enum.
 [Stable, Extensible]
 enum ActorTaskStopReason {
+  // Actor task is complete.
   [Default] kTaskComplete = 0,
+  // Actor task was stopped by the user.
   kStoppedByUser = 1,
 };
 
-// Reason why capturing desktop screenshot failed. This MUST be kept in sync
-// with the glic_api.ts enum.
+// @generate glic_api
+// Reason why capturing desktop screenshot failed. NOTE: This may be extended in
+// the future so avoid using complete switches on the currently used enum
+// values.
 [Stable, Extensible]
 enum CaptureScreenshotErrorReason {
   // Screen capture or frame encoding failure.
   [Default] kUnknown = 0,
-  // Screen capture requested but already in progress of serving another request
+  // Screen capture requested but already in progress of serving another
+  // request.
   kScreenCaptureRequestThrottled = 1,
   // User declined screen capture dialog before taking a screenshot.
   kUserCancelledScreenPickerDialog = 2,
@@ -384,18 +401,17 @@ struct ScrollToNodeSelector {
   int32 node_id;
 };
 
-// Note: This must be kept in sync with the corresponding enum (same name) in
-// glic_api.ts. The enums are also recorded as histograms when they are
-// reported.
+// @generate glic_api
+// Reason why scrollTo() failed.
 // Next version: 8
 // LINT.IfChange(ScrollToErrorReason)
 [Stable, Extensible]
 enum ScrollToErrorReason {
-  // Default error reason. Used when the browser doesn't support ScrollTo, the
-  // params are invalid, or during shutdown.
+  // Invalid params were provided to scrollTo(), or the browser doesn't support
+  // scrollTo() yet.
   [Default] kNotSupported = 0,
 
-  // ScrollTo() was called again before this call finished processing.
+  // scrollTo() was called again before this call finished processing.
   [MinVersion=1] kNewerScrollToCall,
 
   // There is no tab currently in focus.
@@ -406,7 +422,7 @@ enum ScrollToErrorReason {
   [MinVersion=1] kNoMatchFound,
 
   // The currently focused tab changed or navigated while processing the
-  // ScrollTo() call.
+  // scrollTo() call.
   [MinVersion=1] kFocusedTabChangedOrNavigated,
 
   // The document_id or url provided doesn't match the active document in the
@@ -421,7 +437,8 @@ enum ScrollToErrorReason {
   // Page context access is disabled.
   [MinVersion=6] kTabContextPermissionDisabled,
 
-  // The web client drops the highlight.
+  // The web client requested to drop the highlight via
+  // `dropScrollToHighlight()`.
   [MinVersion=7] kDroppedByWebClient,
 };
 
@@ -738,7 +755,7 @@ interface WebClientHandler {
   // fails, or null otherwise.
   ScrollTo(ScrollToParams params) => (ScrollToErrorReason? error_reason);
 
-  // Drops the content highlight from ScrollTo(). No effects if no contents are
+  // Drops the content highlight from scrollTo(). No effects if no contents are
   // highlighted.
   DropScrollToHighlight();
 
@@ -799,12 +816,14 @@ interface WebClientHandler {
       => (RegisterConversationErrorReason? error_reason);
 };
 
+// @generate glic_api
 // Reason for failure when switching a conversation.
 [Stable, Extensible]
 enum SwitchConversationErrorReason {
   [Default] kUnknown = 0,
 };
 
+// @generate glic_api
 // Reason for failure when registering a conversation.
 [Stable, Extensible]
 enum RegisterConversationErrorReason {
@@ -846,10 +865,8 @@ struct PanelState {
   int32? window_id;
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// The default is set to a valid value because this enum is only sent to the
-// web client, so Mojo will never handle an unknown value.
+// @generate glic_api
+// Entry points that can trigger the opening of the panel.
 // LINT.IfChange(InvocationSource)
 [Stable, Extensible]
 enum InvocationSource {
@@ -870,6 +887,8 @@ enum InvocationSource {
   // From 3-dot menu.
   kThreeDotsMenu = 7,
   // An unsupported/unknown source.
+  /// The default is set to a valid value because this enum is only sent to the
+  /// web client, so Mojo will never handle an unknown value.
   [Default] kUnsupported = 8,
   // From the What's New page.
   [MinVersion=1] kWhatsNew = 9,
@@ -883,12 +902,8 @@ enum InvocationSource {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)
 
+// @generate glic_api
 // Web client's operation modes.
-// WARNING: These enum values should match WebClientMode in
-// chrome/browser/resources/glic/glic_api/glic_api.ts
-// Warning: this is used for UMA histograms, so values should not be
-// renumbered. See GlicWebClientMode in
-// tools/metrics/histograms/metadata/glic/enums.xml
 // LINT.IfChange(WebClientMode)
 [Stable, Extensible]
 enum WebClientMode {
@@ -901,11 +916,11 @@ enum WebClientMode {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebClientMode)
 
+// @generate glic_api
 // Web client's operation model.
-// WARNING: These enum values should match WebClientModel in
-// chrome/browser/resources/glic/glic_api/glic_api.ts
 [Stable, Extensible]
 enum WebClientModel {
+  // Default model.
   [Default] kDefault = 0,
   // Actor operation mode.
   kActor = 1,
@@ -1177,6 +1192,7 @@ struct Screenshot {
   ImageOriginAnnotations origin_annotations;
 };
 
+// @generate glic_api
 // Fields of interest from the Glic settings page.
 [Stable, Extensible]
 enum SettingsPageField {
@@ -1194,13 +1210,14 @@ struct OpenSettingsOptions {
   SettingsPageField highlightField;
 };
 
+// @generate glic_api
 // Describes the capability of the glic host.
 enum HostCapability {
-  // Glic host supports ScrollTo() with PDF documents.
+  // Glic host supports scrollTo() with PDF documents.
   kScrollToPdf = 0,
   // Glic host will reset panel size and location on open.
   kResetSizeAndLocationOnOpen = 1,
-  // The glic host's GetModelQualityClientId() is enabled and can be called
+  // The glic host's getModelQualityClientId() is enabled and can be called
   // safely.
   kGetModelQualityClientId = 2,
 };
