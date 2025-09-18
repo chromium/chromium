@@ -5110,62 +5110,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.IpProtection.AndroidAuthClient.AuthAndSignTime"
-    units="ms" expires_after="2026-01-22">
-  <owner>ashleynewson@chromium.org</owner>
-  <owner>src/android_webview/browser/ip_protection/OWNERS</owner>
-  <summary>
-    Records the time taken to perform a successful AuthAndSign request via the
-    Android auth client/service. The timer begins when the request is passed
-    onto the auth client, and thus does not include any time for which requests
-    are queued waiting for an auth client to be created.
-
-    This histogram applies only to WebView and will only be emitted if the
-    MaskedDomainList and EnableIpPrivacyProxy features are enabled. The
-    system-provided auth service must also be accessible and able to service
-    requests successfully. The histogram is emitted during auth token
-    generation, which may happen multiple times during a session.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.IpProtection.AndroidAuthClient.CreationTime"
-    units="ms" expires_after="2026-01-22">
-  <owner>ashleynewson@chromium.org</owner>
-  <owner>src/android_webview/browser/ip_protection/OWNERS</owner>
-  <summary>
-    Records the time taken to create an Android IP Protection auth client,
-    including binding to the system-provided auth service. Measured between
-    BlindSignMessageAndroidImpl::CreateIpProtectionAuthClient and
-    BlindSignMessageAndroidImpl::OnCreateIpProtectionAuthClientComplete.
-
-    This histogram applies only to WebView and will only be emitted if the
-    MaskedDomainList and EnableIpPrivacyProxy features are enabled. The
-    system-provided auth service must also be accessible, but not necessarily
-    able to service requests successfully. The histogram is typically emitted
-    only once for the first auth token generation workflow, but may happen
-    multiple times in the case of serious service-related errors.
-  </summary>
-</histogram>
-
-<histogram
-    name="NetworkService.IpProtection.AndroidAuthClient.GetInitialDataTime"
-    units="ms" expires_after="2026-01-22">
-  <owner>ashleynewson@chromium.org</owner>
-  <owner>src/android_webview/browser/ip_protection/OWNERS</owner>
-  <summary>
-    Records the time taken to perform a successful GetInitialData request via
-    the Android auth client/service. The timer begins when the request is passed
-    onto the auth client, and thus does not include any time for which requests
-    are queued waiting for an auth client to be created.
-
-    This histogram applies only to WebView and will only be emitted if the
-    MaskedDomainList and EnableIpPrivacyProxy features are enabled. The
-    system-provided auth service must also be accessible and able to service
-    requests successfully. The histogram is emitted during auth token
-    generation, which may happen multiple times during a session.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.IpProtection.EmptyTokenCache2"
     enum="IpProtectionProxyLayer" expires_after="2026-03-08">
   <owner>awillia@chromium.org</owner>

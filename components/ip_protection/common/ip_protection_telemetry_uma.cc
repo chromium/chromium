@@ -207,26 +207,6 @@ void IpProtectionTelemetryUma::MdlUpdateSuccess(bool success) {
       "NetworkService.IpProtection.ProxyAllowList.UpdateSuccess", success);
 }
 
-void IpProtectionTelemetryUma::AndroidAuthClientCreationTime(
-    base::TimeDelta duration) {
-  base::UmaHistogramMediumTimes(
-      "NetworkService.IpProtection.AndroidAuthClient.CreationTime", duration);
-}
-
-void IpProtectionTelemetryUma::AndroidAuthClientGetInitialDataTime(
-    base::TimeDelta duration) {
-  base::UmaHistogramMediumTimes(
-      "NetworkService.IpProtection.AndroidAuthClient.GetInitialDataTime",
-      duration);
-}
-
-void IpProtectionTelemetryUma::AndroidAuthClientAuthAndSignTime(
-    base::TimeDelta duration) {
-  base::UmaHistogramMediumTimes(
-      "NetworkService.IpProtection.AndroidAuthClient.AuthAndSignTime",
-      duration);
-}
-
 void IpProtectionTelemetryUma::MdlFirstUpdateTime(base::TimeDelta duration) {
   base::UmaHistogramTimes("NetworkService.MaskedDomainList.FirstUpdateTime",
                           duration);

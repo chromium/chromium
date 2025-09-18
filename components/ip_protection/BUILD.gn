@@ -12,6 +12,7 @@ source_set("unit_tests") {
     "//components/ip_protection/common:ip_protection_core_impl_mojo_unittest",
     "//components/ip_protection/common:ip_protection_core_impl_unittest",
     "//components/ip_protection/common:ip_protection_data_types_unittest",
+    "//components/ip_protection/common:ip_protection_performance_hooks_unittest",
     "//components/ip_protection/common:ip_protection_probabilistic_reveal_token_crypter_unittest",
     "//components/ip_protection/common:ip_protection_probabilistic_reveal_token_data_storage_unittest",
     "//components/ip_protection/common:ip_protection_probabilistic_reveal_token_direct_fetcher_unittest",
@@ -22,7 +23,6 @@ source_set("unit_tests") {
     "//components/ip_protection/common:ip_protection_proxy_config_mojo_fetcher_unittest",
     "//components/ip_protection/common:ip_protection_proxy_delegate_unittest",
     "//components/ip_protection/common:ip_protection_token_direct_fetcher_unittest",
-    "//components/ip_protection/common:ip_protection_performance_hooks_unittest",
     "//components/ip_protection/common:ip_protection_token_manager_impl_unittest",
     "//components/ip_protection/common:ip_protection_token_mojo_fetcher_unittest",
     "//components/ip_protection/common:masked_domain_list_manager_unittest",
@@ -40,10 +40,6 @@ source_set("unit_tests") {
   if (use_blink) {
     deps +=
         [ "//components/ip_protection/common:ip_protection_status_unittest" ]
-  }
-
-  if (is_android) {
-    deps += [ "//components/ip_protection/android:blind_sign_message_android_impl_unittest" ]
   }
 
   data = [ "//components/test/data/ip_protection/" ]
