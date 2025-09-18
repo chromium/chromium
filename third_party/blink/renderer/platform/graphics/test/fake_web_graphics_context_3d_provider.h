@@ -10,7 +10,6 @@
 #include "cc/tiles/image_decode_cache.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -29,17 +28,6 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
       : gl_(gl),
         image_decode_cache_(cache ? cache : &stub_image_decode_cache_),
         raster_context_provider_(raster_context_provider) {
-    if (!raster_context_provider_) {
-      // If there is no raster context provider, fall back to using a locally
-      // created raster interface. Unit tests that want to use something other
-      // than RasterImplementationGLES should pas a raster_context_provider.
-      raster_interface_ =
-          std::make_unique<gpu::raster::RasterImplementationGLES>(
-              gl_, nullptr, capabilities_);
-      test_shared_image_interface_ =
-          base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    }
-
     webgpu_interface_ = std::make_unique<gpu::webgpu::WebGPUInterfaceStub>();
 
     // enable all gpu features.
