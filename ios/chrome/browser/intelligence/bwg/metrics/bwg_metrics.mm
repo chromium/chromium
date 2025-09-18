@@ -228,3 +228,11 @@ void RecordBWGEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow) {
 void RecordBWGNewChatButtonTapped() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiNewChatTapped"));
 }
+
+void RecordAIHubNewBadgeTapped() {
+  base::RecordAction(base::UserMetricsAction("MobileAIHubNewBadgeTapped"));
+}
+
+void RecordAIHubIconTapped() {
+  base::RecordAction(base::UserMetricsAction("MobileAIHubIconTapped"));
+}

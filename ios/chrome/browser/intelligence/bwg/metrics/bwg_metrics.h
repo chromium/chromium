@@ -171,4 +171,10 @@ void RecordBWGEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow);
 // Records that the user tapped the new chat button in a BWG session.
 void RecordBWGNewChatButtonTapped();
 
+// Records that the AI Hub new badge was tapped.
+void RecordAIHubNewBadgeTapped();
+
+// Records that the AI Hub icon was tapped.
+void RecordAIHubIconTapped();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_

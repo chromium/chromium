@@ -23122,6 +23122,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileAIHubIconTapped">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>Reported when the user taps the AI Hub icon.</description>
+</action>
+
+<action name="MobileAIHubNewBadgeTapped">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>Reported when the user taps the New Feature Badge</description>
+</action>
+
 <action name="MobileBandwidthSettingsBack">
   <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
