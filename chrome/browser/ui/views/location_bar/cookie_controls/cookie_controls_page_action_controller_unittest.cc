@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
@@ -23,6 +25,8 @@
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -90,28 +94,36 @@ class MockBubbleDelegate
 
   MOCK_METHOD(bool, IsReloading, (), (override));
   MOCK_METHOD(bool, HasBubble, (), (override));
+  MOCK_METHOD(void,
+              ShowBubble,
+              (ToolbarButtonProvider * toolbar_button_provider,
+               content::WebContents* web_contents,
+               content_settings::CookieControlsController* controller),
+              (override));
 };
 
-class CookieControlsPageActionControllerTest
-    : public testing::Test,
-      public testing::WithParamInterface<CookieBlocking3pcdStatus> {
+class CookieControlsPageActionControllerTestBase : public testing::Test {
  public:
-  CookieControlsPageActionControllerTest() {
+  CookieControlsPageActionControllerTestBase() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPageActionsMigration,
           {{features::kPageActionsMigrationCookieControls.name, "true"}}},
          {privacy_sandbox::kActUserBypassUx, {}}},
         {});
 
-    auto mock_bubble_delegate = std::make_unique<MockBubbleDelegate>();
-    mock_bubble_delegate_ = mock_bubble_delegate.get();
-
     cookie_controls_page_action_controller_ =
         std::make_unique<CookieControlsPageActionController>(
-            mock_tab_interface_, page_action_controller_);
+            mock_tab_interface_, profile_, page_action_controller_);
+
+    auto mock_bubble_delegate = std::make_unique<MockBubbleDelegate>();
+    mock_bubble_delegate_ = mock_bubble_delegate.get();
     controller().set_bubble_delegate_for_testing(
         std::move(mock_bubble_delegate));
 
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    ON_CALL(mock_tab_interface_, GetContents())
+        .WillByDefault(Return(web_contents_.get()));
     ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
         .WillByDefault(Return(&mock_browser_window_interface_));
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
@@ -132,6 +144,8 @@ class CookieControlsPageActionControllerTest
 
     ON_CALL(*mock_bubble_delegate_, IsReloading()).WillByDefault(Return(false));
     ON_CALL(*mock_bubble_delegate_, HasBubble()).WillByDefault(Return(false));
+
+    controller().Init();
   }
 
   CookieControlsPageActionController& controller() {
@@ -146,7 +160,39 @@ class CookieControlsPageActionControllerTest
     return user_education_.value();
   }
 
+  TestingProfile& profile() { return profile_; }
+
   MockBubbleDelegate* mock_bubble_delegate() { return mock_bubble_delegate_; }
+
+  base::UserActionTester& user_action_tester() { return user_action_tester_; }
+
+  tabs::MockTabInterface& mock_tab_interface() { return mock_tab_interface_; }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ui::UnownedUserDataHost user_data_host_;
+  TestingProfile profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  MockBrowserWindowInterface mock_browser_window_interface_;
+  tabs::MockTabInterface mock_tab_interface_;
+
+  std::optional<MockBrowserUserEducationInterface> user_education_;
+  FakePageActionController page_action_controller_;
+  std::unique_ptr<CookieControlsPageActionController>
+      cookie_controls_page_action_controller_;
+  raw_ptr<MockBubbleDelegate> mock_bubble_delegate_;
+  base::UserActionTester user_action_tester_;
+};
+
+class CookieControlsPageActionControllerTest
+    : public CookieControlsPageActionControllerTestBase,
+      public testing::WithParamInterface<CookieBlocking3pcdStatus> {
+ public:
+  using CookieControlsPageActionControllerTestBase::
+      CookieControlsPageActionControllerTestBase;
 
   bool In3pcd() const {
     return GetParam() != CookieBlocking3pcdStatus::kNotIn3pcd;
@@ -159,18 +205,6 @@ class CookieControlsPageActionControllerTest
                : l10n_util::GetStringUTF16(
                      IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  ui::UnownedUserDataHost user_data_host_;
-  MockBrowserWindowInterface mock_browser_window_interface_;
-  std::optional<MockBrowserUserEducationInterface> user_education_;
-  tabs::MockTabInterface mock_tab_interface_;
-  FakePageActionController page_action_controller_;
-
-  std::unique_ptr<CookieControlsPageActionController>
-      cookie_controls_page_action_controller_;
-  raw_ptr<MockBubbleDelegate> mock_bubble_delegate_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -455,4 +489,69 @@ TEST_P(CookieControlsPageActionControllerTest, NoChipWhenIPHActive) {
       /*should_highlight=*/true);
 }
 
+TEST_P(CookieControlsPageActionControllerTest, WebContentsChangeUpdatesIcon) {
+  // Set initial state.
+  EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
+  EXPECT_CALL(page_action_controller(),
+              OverrideTooltip(kActionShowCookieControls, BlockedLabel()));
+  controller().OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::kBlocked3pc, GetParam(),
+      /*should_highlight=*/false);
+  EXPECT_EQ(page_action_controller().last_text(), BlockedLabel());
+  testing::Mock::VerifyAndClearExpectations(&page_action_controller());
+
+  // Simulate switching to a new tab (new WebContents).
+  std::unique_ptr<content::WebContents> web_contents2 =
+      content::WebContentsTester::CreateTestWebContents(&profile(), nullptr);
+  ON_CALL(mock_tab_interface(), GetContents())
+      .WillByDefault(Return(web_contents2.get()));
+
+  // Send an update for the new tab. The tooltip and label should update.
+  EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
+  EXPECT_CALL(page_action_controller(),
+              OverrideTooltip(kActionShowCookieControls, AllowedLabel()));
+  controller().OnCookieControlsIconStatusChanged(
+      /*icon_visible=*/true, CookieControlsState::kAllowed3pc, GetParam(),
+      /*should_highlight=*/false);
+  EXPECT_EQ(page_action_controller().last_text(), AllowedLabel());
+}
+
+struct ActionTestParams {
+  CookieControlsState controls_state;
+  std::string action_name;
+};
+
+class CookieControlsPageActionControllerActionTest
+    : public CookieControlsPageActionControllerTestBase,
+      public testing::WithParamInterface<ActionTestParams> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CookieControlsPageActionControllerActionTest,
+    testing::Values(
+        ActionTestParams{CookieControlsState::kBlocked3pc,
+                         "CookieControls.Bubble.CookiesBlocked.Opened"},
+        ActionTestParams{CookieControlsState::kAllowed3pc,
+                         "CookieControls.Bubble.CookiesAllowed.Opened"},
+        ActionTestParams{CookieControlsState::kActiveTp,
+                         "TrackingProtections.Bubble.ProtectionsActive.Opened"},
+        ActionTestParams{
+            CookieControlsState::kPausedTp,
+            "TrackingProtections.Bubble.ProtectionsPaused.Opened"}));
+
+TEST_P(CookieControlsPageActionControllerActionTest, ExecuteAction) {
+  // Setup controller so that the icon is visible.
+  controller().OnCookieControlsIconStatusChanged(
+      true, GetParam().controls_state, CookieBlocking3pcdStatus::kNotIn3pcd,
+      false);
+
+  EXPECT_CALL(*mock_bubble_delegate(), ShowBubble);
+  EXPECT_CALL(user_education(),
+              NotifyFeaturePromoFeatureUsed(
+                  testing::Ref(feature_engagement::kIPHCookieControlsFeature),
+                  FeaturePromoFeatureUsedAction::kClosePromoIfPresent));
+  controller().ExecutePageAction(nullptr);
+
+  EXPECT_EQ(1, user_action_tester().GetActionCount(GetParam().action_name));
+}
 }  // namespace
