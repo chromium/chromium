@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_PAGE_HANDLER_H_
 
-#include <deque>
 #include <memory>
 #include <string>
 
@@ -31,9 +30,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/session/session_observer.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/chrome_os_extension_wrapper.h"
-#include "chromeos/ash/components/language_packs/language_pack_manager.h"
-using ash::language_packs::PackResult;
 #else
 #include "extensions/browser/extension_registry_observer.h"
 #endif
@@ -178,11 +174,9 @@ class ReadAnythingUntrustedPageHandler :
   // on system voice usage.
   void LogExtensionState() override;
 
-#if BUILDFLAG(IS_CHROMEOS)
   // ash::SessionObserver
+#if BUILDFLAG(IS_CHROMEOS)
   void OnLockStateChanged(bool locked) override;
-  void SetChromeOsExtensionWrapperForTesting(
-      std::unique_ptr<ChromeOsExtensionWrapper> wrapper);
 #endif
 
  protected:
@@ -207,24 +201,6 @@ class ReadAnythingUntrustedPageHandler :
   // which read anything needs to know about to access the new voices.
   void OnExtensionReady(content::BrowserContext* browser_context,
                         const extensions::Extension* extension) override;
-#else
-  enum LanguageRequestType {
-    kInstall,
-    kInfo,
-  };
-
-  struct LanguageRequest {
-    std::string language;
-    LanguageRequestType type;
-  };
-
-  // The ChromeOS TTS engine gets put to sleep with a very short amount of
-  // inactivity, so we often need to wake it when requesting language
-  // installation. This is used as a callback when the engine is awake.
-  void OnTtsEngineAwake(bool success);
-  void SendOrQueueLanguageRequest(LanguageRequest request);
-  void SendNextLanguageRequest();
-  void OnInstallPackResponse(const PackResult& pack_result);
 #endif
 
   // ui::AXActionHandlerObserver:
@@ -311,15 +287,6 @@ class ReadAnythingUntrustedPageHandler :
 
   // The current language being used in the app.
   std::string current_language_code_ = "en-US";
-#if BUILDFLAG(IS_CHROMEOS)
-  // The ChromeOS language pack manager can't handle more than one language
-  // request at a time. When we receive requests from the page, queue them up
-  // here and only request the next one when we receive the callback for the
-  // previous one.
-  std::deque<LanguageRequest> queued_language_requests_;
-  bool has_pending_language_request_ = false;
-  std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_;
-#endif
 
   // Observes the AXActionHandlerRegistry for AXTree removals.
   base::ScopedObservation<ui::AXActionHandlerRegistry,

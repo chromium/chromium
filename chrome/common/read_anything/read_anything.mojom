@@ -31,8 +31,7 @@ enum ErrorCode {
   kWrongId = 2,
   kNeedReboot = 3,
   kAllocation = 4,
-  kUnsupportedPlatform = 5,
-  [MinVersion=2] kNotReached = 6,
+  kUnsupportedPlatform = 5
 };
 
 union VoicePackInstallationState {

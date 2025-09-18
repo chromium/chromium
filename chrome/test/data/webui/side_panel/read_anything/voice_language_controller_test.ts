@@ -98,7 +98,6 @@ suite('VoiceLanguageController', () => {
     chrome.readingMode.sendUninstallVoiceRequest = (lang) => {
       uninstalledLangs.push(lang);
     };
-    notificationType = null;
     const notificationListener = {
       notify(type: NotificationType, _lang?: string): void {
         notificationType = type;
@@ -924,19 +923,6 @@ suite('VoiceLanguageController', () => {
     setup(() => {
       voiceLanguageController.enableLang(lang);
       chrome.readingMode.onLanguagePrefChange(lang, true);
-    });
-
-    test('with no lang does nothing', () => {
-      voiceLanguageController.updateLanguageStatus('', 'kInstalled');
-      assertEquals(null, notificationType);
-      assertArrayEquals([], installedLangs);
-    });
-
-    test('with no lang and not reached status notifies of no engine', () => {
-      voiceLanguageController.updateLanguageStatus('', 'kNotReached');
-      assertEquals(
-          NotificationType.GOOGLE_VOICES_UNAVAILABLE, notificationType);
-      assertArrayEquals([], installedLangs);
     });
 
     test('with lang not marked for download does not install', () => {

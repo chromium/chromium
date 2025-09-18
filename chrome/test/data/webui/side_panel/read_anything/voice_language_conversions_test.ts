@@ -41,9 +41,6 @@ suite('voice and language conversions', () => {
     assertEquals(
         VoicePackServerStatusErrorCode.UNSUPPORTED_PLATFORM,
         mojoVoicePackStatusToVoicePackStatusEnum('kUnsupportedPlatform').code);
-    assertEquals(
-        VoicePackServerStatusErrorCode.NOT_REACHED,
-        mojoVoicePackStatusToVoicePackStatusEnum('kNotReached').code);
   });
 
   test('convertLangOrLocaleForVoicePackManager', () => {

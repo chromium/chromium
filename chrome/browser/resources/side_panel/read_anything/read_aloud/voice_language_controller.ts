@@ -499,15 +499,12 @@ export class VoiceLanguageController {
 
   updateLanguageStatus(lang: string, status: string) {
     this.stopWaitingForSpeechExtension();
-    const newStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
     if (!lang.length) {
-      if (newStatus.code === VoicePackServerStatusErrorCode.NOT_REACHED) {
-        this.notificationManager_.onNoEngineConnection();
-      }
       return;
     }
 
     const lowerLang = lang.toLowerCase();
+    const newStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
     this.setServerStatus(lowerLang, newStatus);
     this.updateApplicationState_(lowerLang, newStatus);
 
@@ -570,7 +567,6 @@ export class VoiceLanguageController {
         case VoicePackServerStatusErrorCode.WRONG_ID:
         case VoicePackServerStatusErrorCode.NEED_REBOOT:
         case VoicePackServerStatusErrorCode.UNSUPPORTED_PLATFORM:
-        case VoicePackServerStatusErrorCode.NOT_REACHED:
           this.setLocalStatus(lang, VoiceClientSideStatusCode.ERROR_INSTALLING);
           break;
         case VoicePackServerStatusErrorCode.ALLOCATION:
@@ -678,6 +674,7 @@ export class VoiceLanguageController {
         language,
         isRetry ? VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY :
                   VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+
     chrome.readingMode.sendInstallVoicePackRequest(language);
   }
 
