@@ -4754,6 +4754,13 @@
       name: "StorageBucketsLocks",
       status: "experimental",
     },
+    // Enforces that MIME types matched via *+json wildcards have HTTP token
+    // compliant type and subtype (rejects invalid characters) in addition to
+    // requiring a single slash.
+    {
+      name: "StrictJsonMimeTypeTokenValidation",
+      status: "experimental",
+    },
     {
       name: "StrictMimeTypesForWorkers",
       status: "experimental",

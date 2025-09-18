@@ -4,11 +4,13 @@
 
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "net/base/mime_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
@@ -40,6 +42,20 @@ TEST(MimeUtilJsonMimeTypeTest, IsJSON) {
   EXPECT_TRUE(IsJSONMimeType("text/blah+json;x=1"));
   EXPECT_TRUE(IsJSONMimeType("text/html+json"));
   EXPECT_TRUE(IsJSONMimeType("image/svg+json"));
+}
+
+TEST(MimeUtilJsonMimeTypeTest, IsJSONStrictTokenValidation) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(
+      blink::features::kStrictJsonMimeTypeTokenValidation, true);
+
+  EXPECT_TRUE(IsJSONMimeType("application/json"));
+  EXPECT_TRUE(IsJSONMimeType("text/json"));
+  EXPECT_TRUE(IsJSONMimeType("text/hal+json"));
+  EXPECT_FALSE(IsJSONMimeType("te xt/hal+json"));
+  EXPECT_FALSE(IsJSONMimeType("text/ha l+json"));
+  EXPECT_FALSE(IsJSONMimeType("aplicación/hal+json"));
+  EXPECT_FALSE(IsJSONMimeType("text/halé+json"));
 }
 
 TEST(MimeUtilTest, LookupTypes) {

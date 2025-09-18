@@ -71,7 +71,7 @@ class MimeUtil : public PlatformMimeUtil {
 
   bool MatchesMimeType(std::string_view mime_type_pattern,
                        std::string_view mime_type,
-                       bool validate_mime_type) const;
+                       MimeTypeValidationLevel level) const;
 
   bool ParseMimeTypeWithoutParameter(std::string_view type_string,
                                      std::string* top_level_type,
@@ -457,7 +457,7 @@ bool MatchesMimeTypeParameters(std::string_view mime_type_pattern,
 // in the tested type for a match to succeed.
 bool MimeUtil::MatchesMimeType(std::string_view mime_type_pattern,
                                std::string_view mime_type,
-                               bool validate_mime_type) const {
+                               MimeTypeValidationLevel level) const {
   if (mime_type_pattern.empty())
     return false;
 
@@ -466,12 +466,18 @@ bool MimeUtil::MatchesMimeType(std::string_view mime_type_pattern,
   semicolon = mime_type.find(';');
   const std::string_view base_type = mime_type.substr(0, semicolon);
 
-  // If validation is enabled and pattern contains wildcards, validate that
-  // the MIME type being matched has exactly one slash in the type/subtype
-  // portion.
-  if (validate_mime_type && base_pattern.find('*') != std::string::npos) {
-    if (std::ranges::count(base_type, '/') != 1u) {
-      return false;
+  if (level != MimeTypeValidationLevel::kNone &&
+      base_pattern.find('*') != std::string::npos) {
+    if (level == MimeTypeValidationLevel::kWildcardSlashAndTokens) {
+      auto parts = base::SplitStringOnce(base_type, '/');
+      if (!parts || !HttpUtil::IsToken(parts->first) ||
+          !HttpUtil::IsToken(parts->second)) {
+        return false;
+      }
+    } else {  // kWildcardSlashOnly
+      if (std::ranges::count(base_type, '/') != 1u) {
+        return false;
+      }
     }
   }
 
@@ -686,9 +692,9 @@ bool GetPreferredExtensionForMimeType(std::string_view mime_type,
 
 bool MatchesMimeType(std::string_view mime_type_pattern,
                      std::string_view mime_type,
-                     bool validate_mime_type) {
+                     MimeTypeValidationLevel validation_level) {
   return MimeUtil::Get().MatchesMimeType(mime_type_pattern, mime_type,
-                                         validate_mime_type);
+                                         validation_level);
 }
 
 bool ParseMimeTypeWithoutParameter(std::string_view type_string,

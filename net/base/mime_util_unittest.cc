@@ -182,99 +182,111 @@ TEST(MimeUtilTest, MatchesMimeType) {
     const char* mime_type;
     bool expected_without_validation;
     bool expected_with_validation;
+    bool expected_with_strict_validation;
   } kTestCases[] = {
       // MIME types are case insensitive.
-      {"VIDEO/*", "video/x-mpeg", true, true},
-      {"video/*", "VIDEO/X-MPEG", true, true},
+      {"VIDEO/*", "video/x-mpeg", true, true, true},
+      {"video/*", "VIDEO/X-MPEG", true, true, true},
 
-      {"*", "video/x-mpeg", true, true},
-      {"video/*", "video/x-mpeg", true, true},
-      {"video/*", "video/*", true, true},
-      {"video/x-mpeg", "video/x-mpeg", true, true},
+      {"*", "video/x-mpeg", true, true, true},
+      {"video/*", "video/x-mpeg", true, true, true},
+      {"video/*", "video/*", true, true, true},
+      {"video/x-mpeg", "video/x-mpeg", true, true, true},
 
-      {"application/*+xml", "application/html+xml", true, true},
-      {"application/*+xml", "application/+xml", true, true},
-      {"application/*+json", "application/x-myformat+json", true, true},
+      {"application/*+xml", "application/html+xml", true, true, true},
+      {"application/*+xml", "application/+xml", true, true, true},
+      {"application/*+json", "application/x-myformat+json", true, true, true},
 
-      {"aaa*aaa", "aaaaaa", true, false},
+      {"aaa*aaa", "aaaaaa", true, false, false},
 
-      {"*", "", true, false},
-      {"video/", "video/x-mpeg", false, false},
-      {"VIDEO/", "Video/X-MPEG", false, false},
-      {"", "video/x-mpeg", false, false},
-      {"", "", false, false},
-      {"video/x-mpeg", "", false, false},
+      {"*", "", true, false, false},
+      {"video/", "video/x-mpeg", false, false, false},
+      {"VIDEO/", "Video/X-MPEG", false, false, false},
+      {"", "video/x-mpeg", false, false, false},
+      {"", "", false, false, false},
+      {"video/x-mpeg", "", false, false, false},
 
-      {"application/*+xml", "application/xml", false, false},
-      {"application/*+xml", "application/html+xmlz", false, false},
-      {"application/*+xml", "applcation/html+xml", false, false},
-      {"aaa*aaa", "aaaaa", false, false},
+      {"application/*+xml", "application/xml", false, false, false},
+      {"application/*+xml", "application/html+xmlz", false, false, false},
+      {"application/*+xml", "applcation/html+xml", false, false, false},
+      {"aaa*aaa", "aaaaa", false, false, false},
 
-      {"*", "video/x-mpeg;param=val", true, true},
-      {"*", "Video/X-MPEG;PARAM=VAL", true, true},
-      {"video/*", "video/x-mpeg;param=val", true, true},
-      {"video/*;param=val", "video/mpeg", false, false},
-      {"Video/*;PARAM=VAL", "VIDEO/Mpeg", false, false},
-      {"video/*;param=val", "video/mpeg;param=other", false, false},
-      {"video/*;param=val", "video/mpeg;param=val", true, true},
-      {"Video/*;PARAM=Val", "VIDEO/Mpeg;Param=Val", true, true},
-      {"Video/*;PARAM=VAL", "VIDEO/Mpeg;Param=Val", false, false},
-      {"video/x-mpeg", "video/x-mpeg;param=val", true, true},
-      {"video/x-mpeg;param=val", "video/x-mpeg;param=val", true, true},
-      {"video/x-mpeg;param2=val2", "video/x-mpeg;param=val", false, false},
-      {"video/x-mpeg;param2=val2", "video/x-mpeg;param2=val", false, false},
-      {"video/x-mpeg;param=val", "video/x-mpeg;param=val;param2=val2", true,
-       true},
-      {"Video/X-Mpeg;Param=Val", "VIDEO/X-MPEG;PARAM=Val;PARAM2=val2", true,
-       true},
-      {"Video/X-Mpeg;Param=VAL", "VIDEO/X-MPEG;PARAM=VAL;PARAM2=val2", true,
-       true},
-      {"Video/X-Mpeg;Param=val", "VIDEO/X-MPEG;PARAM=VAL;PARAM2=val2", false,
+      {"*", "video/x-mpeg;param=val", true, true, true},
+      {"*", "Video/X-MPEG;PARAM=VAL", true, true, true},
+      {"video/*", "video/x-mpeg;param=val", true, true, true},
+      {"video/*;param=val", "video/mpeg", false, false, false},
+      {"Video/*;PARAM=VAL", "VIDEO/Mpeg", false, false, false},
+      {"video/*;param=val", "video/mpeg;param=other", false, false, false},
+      {"video/*;param=val", "video/mpeg;param=val", true, true, true},
+      {"Video/*;PARAM=Val", "VIDEO/Mpeg;Param=Val", true, true, true},
+      {"Video/*;PARAM=VAL", "VIDEO/Mpeg;Param=Val", false, false, false},
+      {"video/x-mpeg", "video/x-mpeg;param=val", true, true, true},
+      {"video/x-mpeg;param=val", "video/x-mpeg;param=val", true, true, true},
+      {"video/x-mpeg;param2=val2", "video/x-mpeg;param=val", false, false,
        false},
+      {"video/x-mpeg;param2=val2", "video/x-mpeg;param2=val", false, false,
+       false},
+      {"video/x-mpeg;param=val", "video/x-mpeg;param=val;param2=val2", true,
+       true, true},
+      {"Video/X-Mpeg;Param=Val", "VIDEO/X-MPEG;PARAM=Val;PARAM2=val2", true,
+       true, true},
+      {"Video/X-Mpeg;Param=VAL", "VIDEO/X-MPEG;PARAM=VAL;PARAM2=val2", true,
+       true, true},
+      {"Video/X-Mpeg;Param=val", "VIDEO/X-MPEG;PARAM=VAL;PARAM2=val2", false,
+       false, false},
       {"video/x-mpeg;param=VAL;param2=val2",
-       "video/x-mpeg;param=val;param2=val2", false, false},
+       "video/x-mpeg;param=val;param2=val2", false, false, false},
       {"video/x-mpeg;param2=val2;param=val",
-       "video/x-mpeg;param=val;param2=val2", true, true},
+       "video/x-mpeg;param=val;param2=val2", true, true, true},
       {"video/x-mpeg;param3=val3;param=val",
-       "video/x-mpeg;param=val;param2=val2", false, false},
+       "video/x-mpeg;param=val;param2=val2", false, false, false},
       {"video/x-mpeg;param=val ;param2=val2 ",
-       "video/x-mpeg;param=val;param2=val2", true, true},
+       "video/x-mpeg;param=val;param2=val2", true, true, true},
 
-      {"*/*;param=val", "video/x-mpeg;param=val", true, true},
-      {"*/*;param=val", "video/x-mpeg;param=val2", false, false},
+      {"*/*;param=val", "video/x-mpeg;param=val", true, true, true},
+      {"*/*;param=val", "video/x-mpeg;param=val2", false, false, false},
 
-      {"*", "*", true, false},
-      {"*", "*/*", true, true},
-      {"*/*", "*/*", true, true},
-      {"*/*", "*", true, false},
-      {"video/*", "video/*", true, true},
-      {"video/*", "*/*", false, false},
-      {"video/*;param=val", "video/*", false, false},
-      {"video/*;param=val", "video/*;param=val", true, true},
-      {"video/*;param=val", "video/*;param=val2", false, false},
+      {"*", "*", true, false, false},
+      {"*", "*/*", true, true, true},
+      {"*/*", "*/*", true, true, true},
+      {"*/*", "*", true, false, false},
+      {"video/*", "video/*", true, true, true},
+      {"video/*", "*/*", false, false, false},
+      {"video/*;param=val", "video/*", false, false, false},
+      {"video/*;param=val", "video/*;param=val", true, true, true},
+      {"video/*;param=val", "video/*;param=val2", false, false, false},
 
-      {"ab*cd", "abxxxcd", true, false},
-      {"ab*cd", "abx/xcd", true, true},
-      {"ab/*cd", "ab/xxxcd", true, true},
+      {"ab*cd", "abxxxcd", true, false, false},
+      {"ab*cd", "abx/xcd", true, true, true},
+      {"ab/*cd", "ab/xxxcd", true, true, true},
 
-      {"*+json", "application/hal+json", true, true},
-      {"*+json", "invalidmimetype+json", true, false},
+      {"*+json", "application/hal+json", true, true, true},
+      {"*+json", "application/vnd.collection+json", true, true, true},
+      {"*+json", "invalidmimetype+json", true, false, false},
+      {"*+json", "applic\x09ation/vnd.api+json", true, true, false},
+      {"*+json", "application/vnd\x09.api+json", true, true, false},
+      {"*+json", "applic<ation/vnd.api+json", true, true, false},
+      {"*+json", "application/vnd<api+json", true, true, false},
+      {"*+json", "applic ation/vnd api+json", true, true, false},
+      {"*+json", "\"application/vnd.api+json", true, true, false},
+      {"*+json", "application/vnd.api +json", true, true, false},
+      {"*+json", "\"application\"/\"vnd.api\"+json", true, true, false},
 
-      {"*", "invalid", true, false},
-      {"*/*", "invalid", true, false},
-      {"*", "valid/mime", true, true},
-      {"*/*", "valid/mime", true, true},
+      {"*", "invalid", true, false, false},
+      {"*/*", "invalid", true, false, false},
+      {"*", "valid/mime", true, true, true},
+      {"*/*", "valid/mime", true, true, true},
 
-      {"text", "text/plain/extra", false, false},
-      {"text/*", "text/plain/extra", true, false},
-      {"text/plain/extra", "text/plain/extra", true, true},
+      {"text", "text/plain/extra", false, false, false},
+      {"text/*", "text/plain/extra", true, false, false},
+      {"text/plain/extra", "text/plain/extra", true, true, true},
 
-      {"text/*", "text;charset=utf-8/plain", false, false},
+      {"text/*", "text;charset=utf-8/plain", false, false, false},
       {"text/*;charset=utf-8/extra", "text/plain;charset=utf-8/extra", true,
-       true},
+       true, true},
 
-      {"image*jpeg", "image/jpeg", true, true},
-      {"image*jpeg", "image/jpeg/extra", false, false},
+      {"image*jpeg", "image/jpeg", true, true, true},
+      {"image*jpeg", "image/jpeg/extra", false, false, false},
   };
 
   for (const auto& test : kTestCases) {
@@ -285,14 +297,20 @@ TEST(MimeUtilTest, MatchesMimeType) {
     // Test with explicit validation disabled
     EXPECT_EQ(test.expected_without_validation,
               MatchesMimeType(test.pattern, test.mime_type,
-                              /*validate_mime_type=*/false))
+                              MimeTypeValidationLevel::kNone))
         << "With validation explicitly disabled";
 
     // Test with validation enabled
     EXPECT_EQ(test.expected_with_validation,
               MatchesMimeType(test.pattern, test.mime_type,
-                              /*validate_mime_type=*/true))
+                              MimeTypeValidationLevel::kWildcardSlashOnly))
         << "With validation enabled";
+
+    // Test with strict validation enabled
+    EXPECT_EQ(test.expected_with_strict_validation,
+              MatchesMimeType(test.pattern, test.mime_type,
+                              MimeTypeValidationLevel::kWildcardSlashAndTokens))
+        << "With strict validation enabled";
   }
 }
 

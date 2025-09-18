@@ -62,14 +62,24 @@ NET_EXPORT bool GetPreferredExtensionForMimeType(
     std::string_view mime_type,
     base::FilePath::StringType* extension);
 
+// kNone: no extra checks.
+// kWildcardSlashOnly: require exactly one '/' in the type/subtype.
+// kWildcardSlashAndTokens: above + require type and subtype are HTTP tokens
+// when the wildcard targets a structured suffix (e.g. *+json).
+enum class MimeTypeValidationLevel {
+  kNone = 0,
+  kWildcardSlashOnly = 1,
+  kWildcardSlashAndTokens = 2,
+};
+
 // Returns true if this the mime_type_pattern matches a given mime-type.
 // Checks for absolute matching and wildcards. MIME types are case insensitive.
-// If `validate_mime_type` is true, MIME types in patterns containing wildcards
-// are validated to ensure they have exactly one slash in the type/subtype
-// portion (before any parameters).
-NET_EXPORT bool MatchesMimeType(std::string_view mime_type_pattern,
-                                std::string_view mime_type,
-                                bool validate_mime_type = false);
+// When the pattern contains a wildcard, `validation_level` can enforce
+// slash/token rules.
+NET_EXPORT bool MatchesMimeType(
+    std::string_view mime_type_pattern,
+    std::string_view mime_type,
+    MimeTypeValidationLevel validation_level = MimeTypeValidationLevel::kNone);
 
 // Parses |type_str| for |mime_type| and any |params|. Returns false if mime
 // cannot be parsed, and does not modify |mime_type| or |params|.
