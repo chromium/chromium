@@ -976,14 +976,12 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
   v8::Local<v8::Function> promise_resolved_function;
   if (OnMessagePromisesSupported()) {
     promise_resolved_function = port.message_response_function.Get(isolate);
+    // Ensure the global function doesn't outlive port closing.
+    port.message_response_function.SetWeak();
   }
 
   if (CheckAndHandleAsyncListenerReply(isolate, context, result, port_id,
                                        promise_resolved_function)) {
-    if (OnMessagePromisesSupported()) {
-      // Ensure the global function doesn't outlive port closing.
-      port.message_response_function.SetWeak();
-    }
     // Inform the browser that one of the listeners said they would be replying
     // later and leave the channel open.
     if (auto* message_port_host = messaging_service->GetMessagePortHostIfExists(
