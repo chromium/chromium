@@ -28,7 +28,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_security_policy_violation_event_disposition.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_security_policy_violation_event_init.h"
-#include "third_party/blink/renderer/core/securitypolicyviolation_disposition_names.h"
 
 namespace blink {
 

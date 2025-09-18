@@ -1096,11 +1096,6 @@ make_names("make_core_generated_script_type_names") {
   output_dir = blink_core_output_dir
 }
 
-make_names("make_core_generated_securitypolicyviolation_disposition_names") {
-  in_files = [ "events/securitypolicyviolation_disposition_names.json5" ]
-  output_dir = blink_core_output_dir
-}
-
 make_names("make_core_generated_shadow_element_names") {
   in_files = [ "html/shadow/shadow_element_names.json5" ]
   output_dir = "$blink_core_output_dir/html/shadow"
@@ -1301,7 +1296,6 @@ targets_generating_sources = [
   ":make_core_generated_preference_values",
   ":make_core_generated_property_bitsets",
   ":make_core_generated_script_type_names",
-  ":make_core_generated_securitypolicyviolation_disposition_names",
   ":make_core_generated_settings",
   ":make_core_generated_shadow_element_names",
   ":make_core_generated_style_property_shorthand",

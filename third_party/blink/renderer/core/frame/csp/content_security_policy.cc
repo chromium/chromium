@@ -71,7 +71,6 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
-#include "third_party/blink/renderer/core/securitypolicyviolation_disposition_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -1222,8 +1221,8 @@ SourceLocation* GatherSecurityPolicyViolationEventData(
   init->setOriginalPolicy(header);
   init->setDisposition(
       header_type == ContentSecurityPolicyType::kEnforce
-          ? securitypolicyviolation_disposition_names::kEnforce
-          : securitypolicyviolation_disposition_names::kReport);
+          ? V8SecurityPolicyViolationEventDisposition::Enum::kEnforce
+          : V8SecurityPolicyViolationEventDisposition::Enum::kReport);
   init->setStatusCode(0);
 
   // See https://w3c.github.io/webappsec-csp/#create-violation-for-global.
