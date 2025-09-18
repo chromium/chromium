@@ -1469,7 +1469,7 @@ bool RequestWillUseWiFi(handles::NetworkHandle network) {
 void HostResolverManager::FinishIPv6ReachabilityCheck(
     CompletionOnceCallback callback,
     int rv) {
-  SetLastIPv6ProbeResult((rv == OK) ? true : false);
+  SetLastIPv6ProbeResult(rv == OK);
   std::move(callback).Run(OK);
   if (!ipv6_request_callbacks_.empty()) {
     std::vector<CompletionOnceCallback> tmp_request_callbacks;
@@ -1510,7 +1510,7 @@ int HostResolverManager::StartIPv6ReachabilityCheck(
         base::BindOnce(&HostResolverManager::FinishIPv6ReachabilityCheck,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     if (rv != ERR_IO_PENDING) {
-      SetLastIPv6ProbeResult((rv == OK) ? true : false);
+      SetLastIPv6ProbeResult(rv == OK);
       rv = OK;
     }
     cached = false;

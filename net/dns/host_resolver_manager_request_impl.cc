@@ -318,7 +318,7 @@ int HostResolverManager::RequestImpl::DoGetParameters() {
 
 int HostResolverManager::RequestImpl::DoGetParametersComplete(int rv) {
   next_state_ = STATE_RESOLVE_LOCALLY;
-  only_ipv6_reachable_ = (rv == ERR_FAILED) ? true : false;
+  only_ipv6_reachable_ = (rv == ERR_FAILED);
   return OK;
 }
 

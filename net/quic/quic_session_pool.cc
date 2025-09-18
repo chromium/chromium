@@ -427,7 +427,7 @@ int QuicSessionRequest::Request(
       HostPortPair::FromURL(url), privacy_mode, proxy_chain, session_usage,
       socket_tag, network_anonymization_key, secure_dns_policy,
       require_dns_https_alpn, disable_cert_verification_network_fetches);
-  bool use_dns_aliases = session_usage == SessionUsage::kProxy ? false : true;
+  bool use_dns_aliases = session_usage != SessionUsage::kProxy;
 
   int rv = pool_->RequestSession(
       session_key_, std::move(destination), quic_version,

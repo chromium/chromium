@@ -272,8 +272,7 @@ base::Value::Dict NetLogQuicOnConnectionClosedParams(
   return base::Value::Dict()
       .Set("quic_error", static_cast<int>(error))
       .Set("details", error_details)
-      .Set("from_peer",
-           source == quic::ConnectionCloseSource::FROM_PEER ? true : false);
+      .Set("from_peer", source == quic::ConnectionCloseSource::FROM_PEER);
 }
 
 base::Value::Dict NetLogQuicCertificateVerifiedParams(
