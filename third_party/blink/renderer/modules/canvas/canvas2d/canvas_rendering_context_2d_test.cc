@@ -416,6 +416,40 @@ class CanvasRenderingContext2DTest : public CanvasRenderingContext2DTestBase {
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTest);
 
+class CanvasRenderingContext2DTestAccelerated
+    : public CanvasRenderingContext2DTest {
+ protected:
+  bool AllowsAcceleration() override { return true; }
+
+  void ConfigureContextProvider(
+      viz::TestContextProvider& context_provider) override {
+    context_provider.GetTestRasterInterface()->set_gpu_rasterization(true);
+  }
+
+  void CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled() {
+    for (int i = 0; i < 200; ++i) {
+      auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
+      CreateContext(
+          kNonOpaque, kNormalLatency,
+          CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
+          canvas);
+      static_cast<CanvasRenderingContext2D*>(canvas->RenderingContext())
+          ->GetOrCreateCanvas2DResourceProvider();
+      // Expect that at least the first 10 are accelerated. The exact number
+      // depends on the feature params.
+      if (i < 10) {
+        EXPECT_TRUE(canvas->IsAccelerated());
+      }
+      canvas->DisableAccelerationForCanvas2D();
+    }
+  }
+
+ private:
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
+
 CanvasRenderingContext2DTestBase::CanvasRenderingContext2DTestBase()
     : wrap_gradients_(MakeGarbageCollected<WrapGradients>()),
       opaque_bitmap_(gfx::Size(10, 10), kOpaqueBitmap),
@@ -691,7 +725,7 @@ TEST_P(CanvasRenderingContext2DTest,
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 }
 
-TEST_P(CanvasRenderingContext2DTest,
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        DisplayedPaintableNonCompositedCanvasIsNotRateLimited) {
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
@@ -713,7 +747,7 @@ TEST_P(CanvasRenderingContext2DTest,
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 }
 
-TEST_P(CanvasRenderingContext2DTest,
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        DisplayedPaintableCompositedCanvasIsRateLimited) {
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
@@ -735,7 +769,8 @@ TEST_P(CanvasRenderingContext2DTest,
   EXPECT_TRUE(!!CanvasElement().RateLimiter());
 }
 
-TEST_P(CanvasRenderingContext2DTest, HidingCanvasTurnsOffRateLimiting) {
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       HidingCanvasTurnsOffRateLimiting) {
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
@@ -1320,7 +1355,7 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_Clipped) {
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
-TEST_P(CanvasRenderingContext2DTest, PutImageData_FullCoverage) {
+TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_FullCoverage) {
   base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
@@ -1352,7 +1387,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_FullCoverage) {
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
-TEST_P(CanvasRenderingContext2DTest, PutImageData_PartialCoverage) {
+TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_PartialCoverage) {
   base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);
   CanvasElement().SetSize(gfx::Size(10, 10));
@@ -1433,7 +1468,8 @@ TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   context->drawImage(image_source, 0, 0, exception_state);
 }
 
-TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       GPUMemoryUpdateForAcceleratedCanvas) {
   CreateContext(kNonOpaque);
 
   gfx::Size size(10, 10);
@@ -1753,40 +1789,6 @@ TEST_P(CanvasRenderingContext2DTest, TextRenderingTest) {
   EXPECT_EQ(GetContext2DState().GetFontDescription().TextRendering(),
             TextRenderingMode::kOptimizeSpeed);
 }
-
-class CanvasRenderingContext2DTestAccelerated
-    : public CanvasRenderingContext2DTest {
- protected:
-  bool AllowsAcceleration() override { return true; }
-
-  void ConfigureContextProvider(
-      viz::TestContextProvider& context_provider) override {
-    context_provider.GetTestRasterInterface()->set_gpu_rasterization(true);
-  }
-
-  void CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled() {
-    for (int i = 0; i < 200; ++i) {
-      auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
-      CreateContext(
-          kNonOpaque, kNormalLatency,
-          CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
-          canvas);
-      static_cast<CanvasRenderingContext2D*>(canvas->RenderingContext())
-          ->GetOrCreateCanvas2DResourceProvider();
-      // Expect that at least the first 10 are accelerated. The exact number
-      // depends on the feature params.
-      if (i < 10) {
-        EXPECT_TRUE(canvas->IsAccelerated());
-      }
-      canvas->DisableAccelerationForCanvas2D();
-    }
-  }
-
- private:
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
-};
-
-INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
 
 TEST_P(CanvasRenderingContext2DTestAccelerated, GetImage) {
   CreateContext(kNonOpaque);
