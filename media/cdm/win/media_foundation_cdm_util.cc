@@ -252,7 +252,7 @@ HRESULT CreateMediaFoundationCdm(
   return S_OK;
 }
 
-bool IsMediaFoundationContentTypeSupported(
+IsTypeSupportedValueOrError IsMediaFoundationContentTypeSupported(
     Microsoft::WRL::ComPtr<IMFExtendedDRMTypeSupport> mf_type_support,
     const std::string& key_system,
     const std::string& content_type) {
@@ -261,7 +261,7 @@ bool IsMediaFoundationContentTypeSupported(
 
   if (key_system.empty() || content_type.empty()) {
     DLOG(ERROR) << __func__ << ": key_system or content_type is empty";
-    return false;
+    return base::ok(false);
   }
 
   // `IMFContentDecryptionModuleFactory::IsTypeSupported()` returns
@@ -282,7 +282,7 @@ bool IsMediaFoundationContentTypeSupported(
 
     if (FAILED(hr)) {
       DLOG(ERROR) << __func__ << ": type_query support failed. hr=" << hr;
-      return false;
+      return base::unexpected(hr);
     } else if (answer != MF_MEDIA_ENGINE_CANPLAY_MAYBE) {
       break;
     }
@@ -293,7 +293,7 @@ bool IsMediaFoundationContentTypeSupported(
 
   DVLOG(2) << __func__ << ": answer=" << answer << ", " << key_system << ", "
            << content_type;
-  return (answer == MF_MEDIA_ENGINE_CANPLAY_PROBABLY);
+  return base::ok(answer == MF_MEDIA_ENGINE_CANPLAY_PROBABLY);
 }
 
 }  // namespace media

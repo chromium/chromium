@@ -13,11 +13,15 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "media/base/cdm_config.h"
 #include "media/base/media_export.h"
+#include "media/base/win/hresults.h"
 
 namespace media {
+
+using IsTypeSupportedValueOrError = base::expected<bool, HRESULT>;
 
 MEDIA_EXPORT HRESULT CreateMediaFoundationCdm(
     Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
@@ -27,7 +31,7 @@ MEDIA_EXPORT HRESULT CreateMediaFoundationCdm(
     const base::FilePath& cdm_store_path_root,
     Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
 
-MEDIA_EXPORT bool IsMediaFoundationContentTypeSupported(
+MEDIA_EXPORT IsTypeSupportedValueOrError IsMediaFoundationContentTypeSupported(
     Microsoft::WRL::ComPtr<IMFExtendedDRMTypeSupport> mf_type_support,
     const std::string& key_system,
     const std::string& content_type);

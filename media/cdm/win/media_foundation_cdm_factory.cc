@@ -30,16 +30,18 @@ using Microsoft::WRL::ComPtr;
 
 const char kMediaFoundationCdmUmaPrefix[] = "Media.EME.MediaFoundationCdm.";
 
-bool IsTypeSupportedInternal(
+IsTypeSupportedValueOrError IsTypeSupportedInternal(
     ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
     const std::string& key_system,
     const std::string& content_type) {
-  return cdm_factory->IsTypeSupported(base::UTF8ToWide(key_system).c_str(),
-                                      base::UTF8ToWide(content_type).c_str());
+  return base::ok(
+      cdm_factory->IsTypeSupported(base::UTF8ToWide(key_system).c_str(),
+                                   base::UTF8ToWide(content_type).c_str()));
 }
 
-bool IsTypeSupportedInternalEx(const std::string& key_system,
-                               const std::string& content_type) {
+IsTypeSupportedValueOrError IsTypeSupportedInternalEx(
+    const std::string& key_system,
+    const std::string& content_type) {
   ComPtr<IMFExtendedDRMTypeSupport> mf_type_support;
   HRESULT hr =
       CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr,
@@ -48,7 +50,7 @@ bool IsTypeSupportedInternalEx(const std::string& key_system,
     DLOG(ERROR) << __func__
                 << ": Failed to create class factory for IsTypeSupportedEx. hr="
                 << hr;
-    return false;
+    return base::unexpected(hr);
   }
 
   return IsMediaFoundationContentTypeSupported(mf_type_support, key_system,
@@ -200,7 +202,7 @@ void MediaFoundationCdmFactory::IsTypeSupported(
   HRESULT hr = GetCdmFactory(key_system, cdm_factory);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to GetCdmFactory. hr=" << hr;
-    std::move(is_type_supported_result_cb).Run(false);
+    std::move(is_type_supported_result_cb).Run(base::unexpected(hr));
     return;
   }
 

@@ -20,6 +20,7 @@
 #include "media/base/cdm_factory.h"
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
+#include "media/cdm/win/media_foundation_cdm_util.h"
 
 namespace media {
 
@@ -49,7 +50,8 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
 
  private:
   // Callback to MediaFoundationCDM to resolve the promise.
-  using IsTypeSupportedResultCB = base::OnceCallback<void(bool is_supported)>;
+  using IsTypeSupportedResultCB =
+      base::OnceCallback<void(IsTypeSupportedValueOrError value_or_error)>;
 
   void OnCdmOriginIdObtained(
       const CdmConfig& cdm_config,

@@ -19,6 +19,7 @@
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_document_service.h"
+#include "media/cdm/win/media_foundation_cdm_util.h"
 
 namespace media {
 
@@ -55,7 +56,8 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
       void(HRESULT&, Microsoft::WRL::ComPtr<IMFContentDecryptionModule>&)>;
 
   // Callback for `IsTypeSupportedCB` below.
-  using IsTypeSupportedResultCB = base::OnceCallback<void(bool is_supported)>;
+  using IsTypeSupportedResultCB = base::OnceCallback<void(
+      IsTypeSupportedValueOrError is_supported_or_error)>;
 
   // Callback to IMFMediaFoundataionCdmFactory's IsTypeSupported.
   using IsTypeSupportedCB =
@@ -137,9 +139,9 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
   // Called when CdmEvent happens.
   void OnCdmEvent(CdmEvent event, HRESULT hresult);
 
-  // Called when IsTypeSupported() result is available.
-  void OnIsTypeSupportedResult(std::unique_ptr<KeyStatusCdmPromise> promise,
-                               bool is_supported);
+  // Called when GetStatusForPolicy() result is available.
+  void OnGetStatusForPolicyResult(std::unique_ptr<KeyStatusCdmPromise> promise,
+                                  IsTypeSupportedValueOrError value_or_error);
 
   void StoreClientTokenIfNeeded();
 

@@ -397,7 +397,7 @@ void MediaFoundationCdm::GetStatusForPolicy(
 
   is_type_supported_cb_.Run(
       content_type,
-      base::BindOnce(&MediaFoundationCdm::OnIsTypeSupportedResult,
+      base::BindOnce(&MediaFoundationCdm::OnGetStatusForPolicyResult,
                      weak_factory_.GetWeakPtr(), std::move(promise)));
 }
 
@@ -719,9 +719,16 @@ void MediaFoundationCdm::OnCdmEvent(CdmEvent event, HRESULT hr) {
   cdm_event_cb_.Run(event, hr);
 }
 
-void MediaFoundationCdm::OnIsTypeSupportedResult(
+void MediaFoundationCdm::OnGetStatusForPolicyResult(
     std::unique_ptr<KeyStatusCdmPromise> promise,
-    bool is_supported) {
+    IsTypeSupportedValueOrError value_or_error) {
+  if (!value_or_error.has_value()) {
+    base::UmaHistogramSparse(uma_prefix_ + "GetStatusForPolicy",
+                             value_or_error.error());
+  }
+
+  auto is_supported = value_or_error.value_or(false);
+
   if (is_supported) {
     promise->resolve(CdmKeyInformation::KeyStatus::USABLE);
   } else {

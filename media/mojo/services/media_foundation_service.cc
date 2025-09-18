@@ -139,8 +139,9 @@ bool IsTypeSupportedByOsCdm(ComPtr<IMFExtendedDRMTypeSupport> mf_type_support,
                             const std::string& content_type) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   // Force the use of the hardware based PlayReady key system.
-  bool supported = IsMediaFoundationContentTypeSupported(
+  auto is_supported_or_error = IsMediaFoundationContentTypeSupported(
       mf_type_support, kPlayReadyKeySystemRecommendationHwSecure, content_type);
+  bool supported = is_supported_or_error.value_or(false);
   // The above function may take seconds to run. Report UMA to understand the
   // actual performance impact. Report UMA only for success cases.
   if (supported) {
