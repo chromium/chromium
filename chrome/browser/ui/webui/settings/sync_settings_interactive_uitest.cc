@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -17,15 +18,25 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+
+namespace {
+const char kTestEmail[] = "kTestEmail@email.com";
+const InteractiveBrowserTest::DeepQuery kHistoryOptinAcceptButton = {
+    "history-sync-optin-app", "#acceptButton"};
+const InteractiveBrowserTest::DeepQuery kHistoryOptinRejectButton = {
+    "history-sync-optin-app", "#rejectButton"};
+}  // namespace
 
 class SyncSettingsInteractiveTest
     : public SigninBrowserTestBaseT<
@@ -54,9 +65,10 @@ class SyncSettingsInteractiveTest
   StateChange UiElementHasAppeared(DeepQuery element_selector) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kStateChange);
     StateChange state_change;
-    state_change.type = StateChange::Type::kExists;
+    state_change.type = StateChange::Type::kExistsAndConditionTrue;
     state_change.where = element_selector;
     state_change.event = kStateChange;
+    state_change.test_function = "(el) => { return el.hidden == false; }";
     return state_change;
   }
 
@@ -122,51 +134,90 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
       signin::ConsentLevel::kSignin));
 }
 
-// Tests that a signed in user that does not sync the history data type,
-// can open the History Sync Optin dialog from the settings menu.
-// Approving the dialog enables the history syncing preference.
+// Tests that a signed in user sees the History Sync Optin dialog after
+// signing-in from the settings menu.
 IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
-                       ShowAndAcceptHistorySyncOptinDialogFromSettings) {
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "kTestEmail@email.com", signin::ConsentLevel::kSignin);
-  ASSERT_FALSE(SyncServiceFactory::GetForProfile(browser()->profile())
-                   ->GetUserSettings()
-                   ->GetSelectedTypes()
-                   .Has(syncer::UserSelectableType::kHistory));
-
+                       ShowHistorySyncOptinDialogFromSettingsSignin) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDiceSignInTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
-  const DeepQuery kTurnHistorySyncOn = {"settings-ui",
-                                        "settings-main",
-                                        "settings-people-page-index",
-                                        "settings-account-page",
-                                        "settings-sync-account-control",
-                                        "cr-button#sync-button"};
-  const DeepQuery kHistoryOptinAcceptButton = {"history-sync-optin-app",
-                                               "#acceptButton"};
-  const DeepQuery kHistoryOptinRejectButton = {"history-sync-optin-app",
-                                               "#rejectButton"};
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kTabCountState);
+  const DeepQuery kSignInButton = {"settings-ui",
+                                   "settings-main",
+                                   "settings-people-page-index",
+                                   "settings-account-page",
+                                   "settings-sync-account-control",
+                                   "cr-button#signIn"};
   const GURL kAccountSettingsUrl = GURL(chrome::kChromeUIAccountSettingsURL);
 
   RunTestSequence(
       InstrumentTab(kTabId, 0, browser()),
       NavigateWebContents(kTabId, kAccountSettingsUrl),
       WaitForStateChange(kTabId, PageWithMatchingTitle("Settings")),
-      WaitForStateChange(kTabId, UiElementHasAppeared(kTurnHistorySyncOn)),
-      ClickButton(kTabId, kTurnHistorySyncOn),
+      WaitForStateChange(kTabId, UiElementHasAppeared(kSignInButton)),
+      PollState(kTabCountState,
+                [&]() { return browser()->tab_strip_model()->count() == 2; }),
+      ClickButton(kTabId, kSignInButton), WaitForState(kTabCountState, true),
+      StopObservingState(kTabCountState),
+      InstrumentTab(kDiceSignInTabId, 1, browser()), Do([&]() {
+        CoreAccountInfo account_info =
+            identity_test_env()->MakeAccountAvailable(kTestEmail);
+        // TODO(crbug.com/419203245): Investigate why using the more suitable
+        // `GetSignInTabWithAccessPoint` returns null.
+        content::WebContents* contents =
+            browser()->tab_strip_model()->GetWebContentsAt(1);
+        // Mock processing the ENABLE_SYNC signal from Gaia.
+        std::unique_ptr<ProcessDiceHeaderDelegateImpl>
+            process_dice_header_delegate_impl =
+                ProcessDiceHeaderDelegateImpl::Create(contents);
+        process_dice_header_delegate_impl->EnableSync(account_info);
+      }),
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
       WaitForStateChange(kHistorySyncOptinDialogContentsId,
                          UiElementHasAppeared(kHistoryOptinAcceptButton)),
       WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinRejectButton)),
-      ClickButton(kHistorySyncOptinDialogContentsId, kHistoryOptinAcceptButton),
-      WaitForHide(SigninViewController::kHistorySyncOptinViewId));
-
-  EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
-                  ->GetUserSettings()
-                  ->GetSelectedTypes()
-                  .Has(syncer::UserSelectableType::kHistory));
+                         UiElementHasAppeared(kHistoryOptinRejectButton)));
   // TODO(crbug.com/419203245): Add metrics checks once they are implemented.
+}
+
+// Tests that a signed in user on the web can trigger and see the History
+// Sync Optin dialog.
+IN_PROC_BROWSER_TEST_F(
+    SyncSettingsInteractiveTest,
+    ShowHistorySyncOptinDialogFromSettingsInAccountAwareMode) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
+  const DeepQuery kContinueAsButton = {"settings-ui",
+                                       "settings-main",
+                                       "settings-people-page-index",
+                                       "settings-account-page",
+                                       "settings-sync-account-control",
+                                       "cr-button#account-aware"};
+  const GURL kAccountSettingsUrl = GURL(chrome::kChromeUIAccountSettingsURL);
+
+  // Sign the user on the web only.
+  AccountInfo info = signin::MakeAccountAvailable(
+      identity_test_env()->identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie()
+          .Build(kTestEmail));
+  signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
+                                      info);
+
+  RunTestSequence(
+      InstrumentTab(kTabId, 0, browser()),
+      NavigateWebContents(kTabId, kAccountSettingsUrl),
+      WaitForStateChange(kTabId, PageWithMatchingTitle("Settings")),
+      WaitForStateChange(kTabId, UiElementHasAppeared(kContinueAsButton)),
+      ClickButton(kTabId, kContinueAsButton),
+      WaitForShow(SigninViewController::kHistorySyncOptinViewId),
+      InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
+                              SigninViewController::kHistorySyncOptinViewId),
+      WaitForStateChange(kHistorySyncOptinDialogContentsId,
+                         UiElementHasAppeared(kHistoryOptinAcceptButton)),
+      WaitForStateChange(kHistorySyncOptinDialogContentsId,
+                         UiElementHasAppeared(kHistoryOptinRejectButton)));
 }

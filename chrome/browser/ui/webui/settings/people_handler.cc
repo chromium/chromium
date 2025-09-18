@@ -658,6 +658,7 @@ base::Value::List PeopleHandler::GetStoredAccountsList() {
   return accounts;
 }
 
+// TODO(crbug.com/419203245): Rename this method once syncing is removed.
 void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) ||
@@ -667,32 +668,6 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
 
   DCHECK(IsChangePrimaryAccountAllowed(profile_, email.GetString()))
       << "Changing the primary account is not allowed!";
-
-  // TODO(crbug.com/419203245): Update the UI for this button and the conditions
-  // under which it appears when it triggers the History Sync Optin, instead of
-  // the Sync Consent screen.
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    if (signin_util::ShouldShowHistorySyncOptinScreen(*profile_.get())) {
-      const signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(profile_);
-      CHECK(identity_manager);
-      CHECK(gaia::AreEmailsSame(
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-              .email,
-          email.GetString()));
-
-      Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
-      if (!browser) {
-        return;
-      }
-      browser->GetFeatures()
-          .signin_view_controller()
-          ->ShowModalHistorySyncOptInDialog(base::DoNothing());
-    }
-    return;
-  }
-
   AccountInfo maybe_account =
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email.GetString());
