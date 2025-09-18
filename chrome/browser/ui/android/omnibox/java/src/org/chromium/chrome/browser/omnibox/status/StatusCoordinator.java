@@ -111,7 +111,9 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         PageInfoIphController pageInfoIphController =
                 new PageInfoIphController(
                         new UserEducationHelper(
-                                activity, profileSupplier, new Handler(Looper.getMainLooper())),
+                                activity,
+                                (Supplier<@Nullable Profile>) profileSupplier,
+                                new Handler(Looper.getMainLooper())),
                         getSecurityIconView());
 
         mMediator =

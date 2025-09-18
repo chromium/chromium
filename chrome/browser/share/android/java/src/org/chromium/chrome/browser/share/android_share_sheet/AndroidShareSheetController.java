@@ -53,7 +53,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private final BottomSheetController mController;
     private final Supplier<@Nullable Tab> mTabProvider;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Profile mProfile;
     private final Callback<Tab> mPrintCallback;
     private final TabGroupSharingController mTabGroupSharingController;
     private long mShareStartTime;
@@ -70,7 +70,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * @param tabProvider Supplier for the current activity tab.
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}. Used to determine
      *     whether incognito mode is selected or not.
-     * @param profileSupplier Supplier of the current profile of the User.
+     * @param profile The current profile of the User.
      * @param printCallback The callback used to trigger print action.
      * @param tabGroupSharingController Controller for handling tab group sharing action.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
@@ -81,7 +81,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             BottomSheetController controller,
             Supplier<@Nullable Tab> tabProvider,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            Supplier<Profile> profileSupplier,
+            Profile profile,
             Callback<Tab> printCallback,
             TabGroupSharingController tabGroupSharingController,
             DeviceLockActivityLauncher deviceLockActivityLauncher) {
@@ -90,7 +90,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                         controller,
                         tabProvider,
                         tabModelSelectorSupplier,
-                        profileSupplier,
+                        profile,
                         printCallback,
                         tabGroupSharingController,
                         deviceLockActivityLauncher);
@@ -108,7 +108,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * @param tabProvider Supplier for the current activity tab.
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}. Used to determine
      *     whether incognito mode is selected or not.
-     * @param profileSupplier Supplier of the current profile of the User.
+     * @param profile The current profile of the User.
      * @param printCallback The callback used to trigger print action.
      * @param tabGroupSharingController Controller for handling tab group sharing action.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
@@ -118,14 +118,14 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             BottomSheetController controller,
             Supplier<@Nullable Tab> tabProvider,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            Supplier<Profile> profileSupplier,
+            Profile profile,
             Callback<Tab> printCallback,
             TabGroupSharingController tabGroupSharingController,
             DeviceLockActivityLauncher deviceLockActivityLauncher) {
         mController = controller;
         mTabProvider = tabProvider;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mProfileSupplier = profileSupplier;
+        mProfile = profile;
         mPrintCallback = printCallback;
         mTabGroupSharingController = tabGroupSharingController;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
@@ -150,7 +150,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
 
     private void showShareSheetWithCustomAction(
             ShareParams params, ChromeShareExtras chromeShareExtras, boolean showCustomActions) {
-        Profile profile = mProfileSupplier.get();
+        Profile profile = mProfile;
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         boolean isIncognito = tabModelSelector != null && tabModelSelector.isIncognitoSelected();
         Activity activity = assumeNonNull(params.getWindow().getActivity().get());

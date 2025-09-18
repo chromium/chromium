@@ -36,7 +36,6 @@ import androidx.annotation.StringRes;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.chromium.base.DeviceInfo;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -57,6 +56,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.task.test.ShadowPostTask.TestImpl;
@@ -195,7 +195,7 @@ public class AndroidShareSheetControllerUnitTest {
                         mBottomSheetController,
                         () -> mTab,
                         () -> mTabModelSelector,
-                        () -> mProfile,
+                        mProfile,
                         mPrintCallback::notifyCalled,
                         mTabGroupSharingController,
                         null);
@@ -299,7 +299,7 @@ public class AndroidShareSheetControllerUnitTest {
                 mBottomSheetController,
                 () -> mTab,
                 () -> mTabModelSelector,
-                () -> mProfile,
+                mProfile,
                 mPrintCallback::notifyCalled,
                 mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
@@ -566,7 +566,7 @@ public class AndroidShareSheetControllerUnitTest {
                 mBottomSheetController,
                 () -> mTab,
                 () -> mTabModelSelector,
-                () -> mProfile,
+                mProfile,
                 mPrintCallback::notifyCalled,
                 mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
@@ -621,7 +621,7 @@ public class AndroidShareSheetControllerUnitTest {
                 mBottomSheetController,
                 () -> mTab,
                 () -> mTabModelSelector,
-                () -> mProfile,
+                mProfile,
                 mPrintCallback::notifyCalled,
                 mTabGroupSharingController,
                 mDeviceLockActivityLauncher);

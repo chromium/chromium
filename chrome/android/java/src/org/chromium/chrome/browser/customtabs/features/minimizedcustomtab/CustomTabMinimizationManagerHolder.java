@@ -67,7 +67,7 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
                             mActivityTabProvider,
                             new UserEducationHelper(
                                     mActivity,
-                                    profileSupplier,
+                                    (Supplier<@Nullable Profile>) profileSupplier,
                                     new Handler(Looper.getMainLooper())),
                             profileSupplier);
             Runnable closeTabRunnable = mNavigationController.get()::navigateOnClose;

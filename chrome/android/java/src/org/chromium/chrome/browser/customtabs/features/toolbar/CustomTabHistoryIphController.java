@@ -88,7 +88,9 @@ public class CustomTabHistoryIphController {
         if (mUserEducationHelper == null) {
             mUserEducationHelper =
                     new UserEducationHelper(
-                            mActivity, mProfileSupplier, new Handler(Looper.getMainLooper()));
+                            mActivity,
+                            (Supplier<@Nullable Profile>) mProfileSupplier,
+                            new Handler(Looper.getMainLooper()));
         }
 
         View ctOverflowMenu = mActivity.findViewById(R.id.menu_button_wrapper);

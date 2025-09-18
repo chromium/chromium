@@ -71,7 +71,7 @@ public class ShareDelegateImpl implements ShareDelegate {
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Supplier<@Nullable Tab> mTabProvider;
     private final Supplier<TabModelSelector> mTabModelSelectorProvider;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
     private final ShareSheetDelegate mDelegate;
     private final boolean mIsCustomTab;
     private final @Nullable DataSharingTabManager mDataSharingTabManager;
@@ -98,7 +98,7 @@ public class ShareDelegateImpl implements ShareDelegate {
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Supplier<@Nullable Tab> tabProvider,
             Supplier<TabModelSelector> tabModelSelectorProvider,
-            Supplier<Profile> profileSupplier,
+            Supplier<@Nullable Profile> profileSupplier,
             ShareSheetDelegate delegate,
             boolean isCustomTab,
             @Nullable DataSharingTabManager dataSharingTabManager) {
@@ -133,7 +133,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                             mLifecycleDispatcher,
                             mTabProvider,
                             mTabModelSelectorProvider,
-                            mProfileSupplier,
+                            assertNonNull(mProfileSupplier.get()),
                             this::printTab,
                             new TabGroupSharingControllerImpl(mDataSharingTabManager),
                             shareOrigin,
@@ -402,18 +402,12 @@ public class ShareDelegateImpl implements ShareDelegate {
                 ActivityLifecycleDispatcher lifecycleDispatcher,
                 Supplier<@Nullable Tab> tabProvider,
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
-                Supplier<Profile> profileSupplier,
+                Profile profile,
                 Callback<Tab> printCallback,
                 TabGroupSharingController tabGroupSharingController,
                 @ShareOrigin int shareOrigin,
                 long shareStartTime,
                 boolean sharingHubEnabled) {
-            Profile profile = profileSupplier.get();
-            if (profile == null) {
-                assert false : "Unexpected null profile";
-                return;
-            }
-
             if (chromeShareExtras.shareDirectly()) {
                 ShareHelper.shareWithLastUsedComponent(params);
             } else if (sharingHubEnabled) {
@@ -454,7 +448,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                         controller,
                         tabProvider,
                         tabModelSelectorSupplier,
-                        profileSupplier,
+                        profile,
                         printCallback,
                         tabGroupSharingController,
                         DeviceLockActivityLauncherImpl.get());

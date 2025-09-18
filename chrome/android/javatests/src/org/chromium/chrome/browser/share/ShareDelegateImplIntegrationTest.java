@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -127,7 +126,7 @@ public class ShareDelegateImplIntegrationTest {
                                         ActivityLifecycleDispatcher lifecycleDispatcher,
                                         Supplier<Tab> tabProvider,
                                         Supplier<TabModelSelector> tabModelSelectorProvider,
-                                        Supplier<Profile> profileSupplier,
+                                        Profile profileSupplier,
                                         Callback<Tab> printCallback,
                                         TabGroupSharingController tabGroupSharingController,
                                         int shareOrigin,
@@ -147,7 +146,7 @@ public class ShareDelegateImplIntegrationTest {
                                     mActivityTestRule.getActivity().getLifecycleDispatcher(),
                                     mActivityTestRule.getActivity().getActivityTabProvider(),
                                     mActivityTestRule.getActivity().getTabModelSelectorSupplier(),
-                                    new ObservableSupplierImpl<>(),
+                                    () -> mActivityTestRule.getProfile(false),
                                     delegate,
                                     false,
                                     mActivityTestRule

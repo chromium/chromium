@@ -753,7 +753,7 @@ public class ShareDelegateImplUnitTest {
                 BottomSheetController controller,
                 Supplier<Tab> tabProvider,
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
-                Supplier<Profile> profileSupplier,
+                Profile profile,
                 Callback<Tab> printCallback,
                 TabGroupSharingController tabGroupSharingController,
                 DeviceLockActivityLauncher deviceLockActivityLauncher) {

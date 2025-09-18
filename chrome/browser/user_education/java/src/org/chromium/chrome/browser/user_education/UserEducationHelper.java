@@ -76,10 +76,7 @@ public class UserEducationHelper {
      * a reference to the {@link Profile#getOriginalProfile()}.
      */
     public UserEducationHelper(
-            Activity activity, Supplier<Profile> profileSupplier, Handler handler) {
-        assert activity != null : "Trying to show an IPH for a null activity.";
-        assert profileSupplier != null : "Trying to show an IPH with a null profile supplier";
-
+            Activity activity, Supplier<@Nullable Profile> profileSupplier, Handler handler) {
         mActivity = activity;
         mHandler = handler;
 

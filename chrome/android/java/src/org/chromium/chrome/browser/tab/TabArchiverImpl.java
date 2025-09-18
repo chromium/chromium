@@ -391,22 +391,22 @@ public class TabArchiverImpl implements TabArchiver {
         }
 
         Callback<@Nullable ArchivePersistedTabData> callback =
-                mCallbackController.makeCancelable(
-                        (@Nullable ArchivePersistedTabData archivePersistedTabData) -> {
-                            if (archivePersistedTabData != null) {
-                                // Persisted tab data requires a true supplier before saving to
-                                // disk.
-                                archivePersistedTabData.registerIsTabSaveEnabledSupplier(
-                                        new ObservableSupplierImpl<>(true));
-                                archivePersistedTabData.setArchivedTimeMs(
-                                        mClock.currentTimeMillis());
-                            }
+                (@Nullable ArchivePersistedTabData archivePersistedTabData) -> {
+                    if (archivePersistedTabData != null) {
+                        // Persisted tab data requires a true supplier before saving to
+                        // disk.
+                        archivePersistedTabData.registerIsTabSaveEnabledSupplier(
+                                new ObservableSupplierImpl<>(true));
+                        archivePersistedTabData.setArchivedTimeMs(mClock.currentTimeMillis());
+                    }
 
-                            postUiThreadCancellableTask(
-                                    () ->
-                                            initializePersistedTabDataAsyncImpl(
-                                                    archivedTabs, currentIndex + 1, startTimeMs));
-                        });
+                    postUiThreadCancellableTask(
+                            () ->
+                                    initializePersistedTabDataAsyncImpl(
+                                            archivedTabs, currentIndex + 1, startTimeMs));
+                };
+        callback = mCallbackController.makeCancelable(callback);
+
         ArchivePersistedTabData.from(archivedTabs.get(currentIndex), callback);
     }
 
@@ -437,32 +437,30 @@ public class TabArchiverImpl implements TabArchiver {
 
         Tab tab = tabs.get(currentIndex);
         Callback<@Nullable ArchivePersistedTabData> callback =
-                mCallbackController.makeCancelable(
-                        (@Nullable ArchivePersistedTabData archivePersistedTabData) -> {
-                            if (isArchivedTabEligibleForDeletion(archivePersistedTabData)) {
-                                int tabAgeDays =
-                                        timestampMillisToDays(
-                                                archivePersistedTabData.getArchivedTimeMs());
-                                mArchivedTabGroupModelFilter
-                                        .getTabModel()
-                                        .getTabRemover()
-                                        .closeTabs(
-                                                TabClosureParams.closeTab(tab)
-                                                        .allowUndo(false)
-                                                        .build(),
-                                                /* allowDialog= */ false);
-                                RecordHistogram.recordCount1000Histogram(
-                                        "Tabs.TabAutoDeleted.AfterNDays", tabAgeDays);
-                                RecordUserAction.record("Tabs.ArchivedTabAutoDeleted");
-                            }
-                            postUiThreadCancellableTask(
-                                    () ->
-                                            deleteArchivedTabsIfEligibleAsyncImpl(
-                                                    tabs,
-                                                    currentIndex + 1,
-                                                    startTimeMs,
-                                                    autodeleteTasksRemaining));
-                        });
+                (@Nullable ArchivePersistedTabData archivePersistedTabData) -> {
+                    if (isArchivedTabEligibleForDeletion(archivePersistedTabData)) {
+                        int tabAgeDays =
+                                timestampMillisToDays(archivePersistedTabData.getArchivedTimeMs());
+                        mArchivedTabGroupModelFilter
+                                .getTabModel()
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                        /* allowDialog= */ false);
+                        RecordHistogram.recordCount1000Histogram(
+                                "Tabs.TabAutoDeleted.AfterNDays", tabAgeDays);
+                        RecordUserAction.record("Tabs.ArchivedTabAutoDeleted");
+                    }
+                    postUiThreadCancellableTask(
+                            () ->
+                                    deleteArchivedTabsIfEligibleAsyncImpl(
+                                            tabs,
+                                            currentIndex + 1,
+                                            startTimeMs,
+                                            autodeleteTasksRemaining));
+                };
+        callback = mCallbackController.makeCancelable(callback);
+
         ArchivePersistedTabData.from(tab, callback);
     }
 

@@ -44,15 +44,15 @@ public class CurrentTabObserver {
         mTabSupplier = tabSupplier;
         mTabObserver = tabObserver;
         mCallbackController = new CallbackController();
-        mTabSupplierCallback =
-                mCallbackController.makeCancelable(
-                        (tab) -> {
-                            if (mTab == tab) return;
-                            if (mTab != null) mTab.removeObserver(mTabObserver);
-                            mTab = tab;
-                            if (mTab != null) mTab.addObserver(mTabObserver);
-                            if (swapCallback != null) swapCallback.onResult(tab);
-                        });
+        Callback<@Nullable Tab> supplierCallback =
+                tab -> {
+                    if (mTab == tab) return;
+                    if (mTab != null) mTab.removeObserver(mTabObserver);
+                    mTab = tab;
+                    if (mTab != null) mTab.addObserver(mTabObserver);
+                    if (swapCallback != null) swapCallback.onResult(tab);
+                };
+        mTabSupplierCallback = mCallbackController.makeCancelable(supplierCallback);
         mTabSupplier.addObserver(mTabSupplierCallback);
     }
 

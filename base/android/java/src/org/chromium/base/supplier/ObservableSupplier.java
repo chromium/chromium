@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  * @param <E> The type of the wrapped object.
  */
 @NullMarked
-public interface ObservableSupplier<E extends @Nullable Object> extends Supplier<@Nullable E> {
+public interface ObservableSupplier<E extends @Nullable Object> extends Supplier<E> {
     /**
      * A bitmask of flags that control the notification behavior of {@link #addObserver(Callback,
      * int)}.
