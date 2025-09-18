@@ -241,9 +241,9 @@ ExtensionFunction::ResponseAction StorageStorageAreaGetFunction::Run() {
   return RespondLater();
 }
 
-// Setting a reasonable size limit for a single 'get' operation (e.g., 512 MB)
-// to prevent OOM crash which occurs around 2GB.
-constexpr size_t kMaxSingleGetSizeBytes = 512 * 1024 * 1024;
+// Setting a 99.9% percentile cutoff size limit for a single 'get' operation
+// which is 25 MB. See crbug.com/427600178 for more details.
+constexpr size_t kMaxSingleGetSizeBytes = 25 * 1024 * 1024;
 
 void StorageStorageAreaGetFunction::OnGetOperationFinished(
     std::optional<base::Value::Dict> defaults,
@@ -266,13 +266,6 @@ void StorageStorageAreaGetFunction::OnGetOperationFinished(
 
   // Estimate the size of the result data before attempting to send it over IPC.
   size_t data_size = EstimateMemoryUsage(*result.data);
-
-  // Log the size of the data to understand the distribution of `get` operation
-  // sizes and assess the impact of enforcing a size limit.
-  // See crbug.com/427600178 for more details.
-  UMA_HISTOGRAM_MEMORY_LARGE_MB(
-      "Extensions.Storage.GetOperation.AllocationSize",
-      data_size / (1024 * 1024));
 
   if (base::FeatureList::IsEnabled(kEnforceStorageGetSizeLimit) &&
       data_size > kMaxSingleGetSizeBytes) {
