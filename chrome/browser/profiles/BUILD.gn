@@ -239,6 +239,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/background_fetch",
     "//chrome/browser/background_sync",
     "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/bluetooth",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/commerce",
     "//chrome/browser/content_settings:content_settings_factory",

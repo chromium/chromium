@@ -2362,6 +2362,8 @@ if (!is_android) {
       "//chrome/browser/badging",
       "//chrome/browser/battery",
       "//chrome/browser/bitmap_fetcher:browser_tests",
+      "//chrome/browser/bluetooth:browser_tests",
+      "//chrome/browser/bluetooth:test_support",
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/chooser_controller:browser_tests",
@@ -3195,9 +3197,6 @@ if (!is_android) {
       "../browser/banners/app_banner_manager_browsertest.cc",
       "../browser/banners/app_banner_manager_desktop_browsertest.cc",
       "../browser/battery/battery_metrics_browsertest.cc",
-      "../browser/bluetooth/web_bluetooth_browsertest.cc",
-      "../browser/bluetooth/web_bluetooth_test_utils.cc",
-      "../browser/bluetooth/web_bluetooth_test_utils.h",
       "../browser/browser_encoding_browsertest.cc",
       "../browser/browsing_data/browsing_data_model_browsertest.cc",
       "../browser/browsing_data/browsing_data_remover_browsertest.cc",
@@ -6340,7 +6339,6 @@ test("unit_tests") {
     "../browser/apps/user_type_filter_unittest.cc",
     "../browser/autofill/automated_tests/cache_replayer_unittest.cc",
     "../browser/battery/battery_saver_unittest.cc",
-    "../browser/bluetooth/bluetooth_chooser_context_unittest.cc",
     "../browser/bookmarks/managed_bookmark_service_unittest.cc",
     "../browser/browser_about_handler_unittest.cc",
     "../browser/browsing_data/browsing_data_history_observer_service_unittest.cc",
@@ -6866,6 +6864,7 @@ test("unit_tests") {
     "//chrome/browser/battery",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/bitmap_fetcher:unit_tests",
+    "//chrome/browser/bluetooth:unit_tests",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/breadcrumbs:unit_tests",
     "//chrome/browser/browsing_data:constants",
@@ -8294,6 +8293,7 @@ test("unit_tests") {
       "//chrome/browser/actor",
       "//chrome/browser/actor:unit_tests",
       "//chrome/browser/actor/ui:unit_tests",
+      "//chrome/browser/bluetooth",
       "//chrome/browser/contextual_cueing:unit_tests",
       "//chrome/browser/device_notifications:unit_tests",
       "//chrome/browser/passage_embeddings:unit_tests",
@@ -12751,14 +12751,12 @@ if (is_linux || is_mac || is_win) {
   test("device_realtarget_browsertests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
-      "../browser/bluetooth/chrome_bluetooth_realtarget_browsertest.cc",
-      "../browser/hid/chrome_hid_realtarget_browsertest.cc",
-    ]
+    sources = [ "../browser/hid/chrome_hid_realtarget_browsertest.cc" ]
     deps = [
       ":browser_tests_runner",
       ":test_support",
       "//chrome:packed_resources",
+      "//chrome/browser/bluetooth:device_realtarget_browsertests",
       "//chrome/browser/serial:device_realtarget_browsertests",
       "//chrome/browser/ui/hid",
       "//chrome/browser/usb:device_realtarget_browsertests",

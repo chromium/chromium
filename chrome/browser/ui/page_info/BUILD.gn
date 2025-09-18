@@ -40,6 +40,7 @@ source_set("impl") {
     "chrome_page_info_ui_delegate.cc",
   ]
   deps = [
+    "//chrome/browser/bluetooth",
     "//chrome/browser/page_info",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/serial",
