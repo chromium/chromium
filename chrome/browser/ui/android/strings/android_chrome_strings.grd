@@ -6919,7 +6919,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           =1 {Not used for 1 day or more}
           other {Not used for # days or more}}
       </message>
-      <message name="IDS_ARCHIVED_TAB_CARD_SUBTITLE_WITH_TAB_GROUPS" desc="Shown in the tab switcher to inform the user how long the relevant tabs and tab groups have been inactive for.">
+      <message name="IDS_ARCHIVED_TAB_CARD_SUBTITLE_WITH_TAB_GROUPS" desc="Shown in the tab switcher to inform the user how long the relevant tabs and tab groups have been inactive for. [CHAR_LIMIT=32]">
         {INACTIVE_TIME_DAYS, plural,
           =1 {Tabs and groups not used for 1 day or more}
           other {Tabs and groups not used for # days or more}}
