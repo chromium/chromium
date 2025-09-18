@@ -292,23 +292,26 @@ std::unique_ptr<MappableBuffer>
 ClientSharedImage::CreateMappableBufferFromHandle(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     gpu::SharedImageUsageSet si_usage,
     MappableBuffer::CopyNativeBufferToShMemCallback
         copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
+  auto buffer_format =
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          format);
   switch (handle.type) {
     case gfx::SHARED_MEMORY_BUFFER:
-      return MappableBufferSharedMemory::CreateFromHandle(std::move(handle),
-                                                          size, format, usage);
+      return MappableBufferSharedMemory::CreateFromHandle(
+          std::move(handle), size, buffer_format, usage);
 #if BUILDFLAG(IS_APPLE)
     case gfx::IO_SURFACE_BUFFER: {
       bool is_read_only_cpu_usage =
           si_usage.Has(SHARED_IMAGE_USAGE_CPU_READ) &&
           !si_usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY);
       return MappableBufferIOSurface::CreateFromHandle(
-          std::move(handle), size, format, is_read_only_cpu_usage);
+          std::move(handle), size, buffer_format, is_read_only_cpu_usage);
     }
 #endif
 #if BUILDFLAG(IS_OZONE)
@@ -317,14 +320,14 @@ ClientSharedImage::CreateMappableBufferFromHandle(
       auto client_native_pixmap_factory =
           ui::CreateClientNativePixmapFactoryOzone();
       return MappableBufferNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory.get(), std::move(handle), size, format,
-          usage);
+          client_native_pixmap_factory.get(), std::move(handle), size,
+          buffer_format, usage);
     }
 #endif
 #if BUILDFLAG(IS_WIN)
     case gfx::DXGI_SHARED_HANDLE:
       return MappableBufferDXGI::CreateFromHandle(
-          std::move(handle), size, format,
+          std::move(handle), size, buffer_format,
           std::move(copy_native_buffer_to_shmem_callback), std::move(pool));
 #endif
 #if BUILDFLAG(IS_ANDROID)
@@ -333,7 +336,7 @@ ClientSharedImage::CreateMappableBufferFromHandle(
 #endif
     default:
       // TODO(dcheng): Remove default case (https://crbug.com/676224).
-      NOTREACHED() << gfx::BufferFormatToString(format) << ", "
+      NOTREACHED() << format.ToString() << ", "
                    << gfx::BufferUsageToString(usage);
   }
 }
@@ -458,9 +461,7 @@ ClientSharedImage::ClientSharedImage(
   if (exported_si.buffer_handle_) {
     mappable_buffer_ = CreateMappableBufferFromHandle(
         std::move(exported_si.buffer_handle_.value()), metadata_.size,
-        viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-            metadata_.format),
-        exported_si.buffer_usage_.value(), metadata_.usage,
+        metadata_.format, exported_si.buffer_usage_.value(), metadata_.usage,
         base::BindRepeating(
             &ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
             base::Unretained(this)));
@@ -482,9 +483,7 @@ ClientSharedImage::ClientSharedImage(ExportedSharedImage exported_si)
   if (exported_si.buffer_handle_) {
     mappable_buffer_ = CreateMappableBufferFromHandle(
         std::move(exported_si.buffer_handle_.value()), metadata_.size,
-        viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-            metadata_.format),
-        exported_si.buffer_usage_.value(), metadata_.usage,
+        metadata_.format, exported_si.buffer_usage_.value(), metadata_.usage,
         base::BindRepeating(
             &ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
             base::Unretained(this)));
@@ -509,8 +508,7 @@ ClientSharedImage::ClientSharedImage(
       mappable_buffer_(CreateMappableBufferFromHandle(
           std::move(handle_info.handle),
           metadata_.size,
-          viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-              metadata_.format),
+          metadata_.format,
           handle_info.buffer_usage,
           info.meta.usage,
           base::BindRepeating(

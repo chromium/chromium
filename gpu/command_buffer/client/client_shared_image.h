@@ -322,7 +322,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   std::unique_ptr<MappableBuffer> CreateMappableBufferFromHandle(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
       gpu::SharedImageUsageSet si_usage,
       MappableBuffer::CopyNativeBufferToShMemCallback
