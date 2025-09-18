@@ -351,6 +351,66 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 }
 
 TEST_F(PhysicalDeviceRecoveryFactorTest,
+       ShouldTolerateLocalDataObsoleteChange) {
+  StoreKeys(account_info(), {kVaultKey}, kLastKeyVersion);
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      device_registration_callback;
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info()),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
+          _,
+          Eq(AuthenticationFactorTypeAndRegistrationParams(
+              LocalPhysicalDevice())),
+          _))
+      .WillOnce([&](const CoreAccountInfo&,
+                    const MemberKeysSource& member_keys_source,
+                    const SecureBoxPublicKey& device_public_key,
+                    AuthenticationFactorTypeAndRegistrationParams,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        device_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // Register the device.
+  base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
+  TrustedVaultRecoveryFactorRegistrationStateForUMA status =
+      recovery_factor()->MaybeRegister(register_callback.Get());
+  EXPECT_EQ(status, TrustedVaultRecoveryFactorRegistrationStateForUMA::
+                        kAttemptingRegistrationWithNewKeyPair);
+  ASSERT_FALSE(device_registration_callback.is_null());
+
+  // Pretend that the local data obsolete flag changed while the network request
+  // was in flight.
+  storage()
+      ->FindUserVault(account_info().gaia)
+      ->set_last_registration_returned_local_data_obsolete(true);
+
+  // Pretend that the registration succeeded.
+  EXPECT_CALL(register_callback,
+              Run(TrustedVaultRegistrationStatus::kSuccess, _, _));
+  std::move(device_registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess,
+           /*key_version=*/kLastKeyVersion);
+
+  // Verify persisted file state.
+  trusted_vault_pb::LocalTrustedVault proto =
+      file_access()->GetStoredLocalTrustedVault();
+  ASSERT_THAT(proto.user_size(), Eq(1));
+  // Ensure that the failure is cleared, since registration succeeded.
+  EXPECT_FALSE(
+      proto.user(0).has_last_registration_returned_local_data_obsolete());
+  // Additionally ensure that |local_device_registration_info| has correct
+  // state.
+  EXPECT_TRUE(
+      proto.user(0).local_device_registration_info().device_registered());
+}
+
+TEST_F(PhysicalDeviceRecoveryFactorTest,
        MarkAsNotRegisteredShouldClearRegistrationData) {
   // Mimic device previously registered with some keys.
   StoreKeysAndMimicDeviceRegistration(account_info(), {kVaultKey},
