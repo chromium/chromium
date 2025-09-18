@@ -70,7 +70,7 @@ constexpr base::FeatureParam<ServerEnvironment> kServerEnvironment(
     ServerEnvironment::kAutopush,
     &kServerEnvironmentOptions);
 
-ServerEnvironment GetServerEnvironmentParam() {
+ServerEnvironment GetServerEnvironment() {
   if (base::FeatureList::IsEnabled(kDataSharingNonProductionEnvironment)) {
     return kServerEnvironment.Get();
   } else {

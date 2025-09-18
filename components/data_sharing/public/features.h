@@ -68,6 +68,10 @@ bool IsDataSharingFunctionalityEnabled();
 // Note : Don't use this method for other versioning related checks.
 bool ShouldInterceptUrlForVersioning();
 
+// Returns the ServerEnvironment to be used for making RPCs call for data
+// sharing service.
+ServerEnvironment GetServerEnvironment();
+
 }  // namespace data_sharing::features
 
 #endif  // COMPONENTS_DATA_SHARING_PUBLIC_FEATURES_H_

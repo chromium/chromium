@@ -112,6 +112,7 @@ source_set("unit_tests") {
 if (is_android) {
   android_library("public_java") {
     sources = [
+      "android/java/src/org/chromium/components/data_sharing/DataSharingConversionUtils.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkResult.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegate.java",
@@ -149,7 +150,10 @@ if (is_android) {
       "//url:gurl_java",
     ]
 
-    srcjar_deps = [ ":enums_java" ]
+    srcjar_deps = [
+      ":enums_java",
+      ":jni_headers",
+    ]
   }
 
   android_library("logger_java") {
@@ -173,6 +177,7 @@ if (is_android) {
     visibility = [ ":*" ]
 
     sources = [
+      "android/java/src/org/chromium/components/data_sharing/DataSharingConversionUtils.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkResult.java",
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
