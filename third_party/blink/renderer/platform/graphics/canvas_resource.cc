@@ -338,25 +338,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
   DCHECK(raster_interface);
   owning_thread_data().client_shared_image = client_shared_image;
 
-  if (use_oop_rasterization_)
-    return;
-
-  // For the non-accelerated case, writes are done on the CPU. So we don't need
-  // a texture for reads or writes.
-  if (!is_accelerated_)
-    return;
-
-  owning_thread_data().texture_id_for_read_access =
-      raster_interface->CreateAndConsumeForGpuRaster(client_shared_image);
-
-  if (shared_image_usage_flags.Has(
-          gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
-    owning_thread_data().texture_id_for_write_access =
-        raster_interface->CreateAndConsumeForGpuRaster(client_shared_image);
-  } else {
-    owning_thread_data().texture_id_for_write_access =
-        owning_thread_data().texture_id_for_read_access;
-  }
+  CHECK(use_oop_rasterization_ || !is_accelerated_);
 }
 
 scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
