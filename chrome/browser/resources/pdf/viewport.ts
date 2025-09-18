@@ -1536,21 +1536,15 @@ export class Viewport {
         return true;
       case 'ArrowLeft':
       case 'ArrowRight':
-        if (caretBrowsingEnabled) {
-          // TODO(crbug.com/435623341): Handle directional keys for non-text
-          // pages in caret browsing mode.
-          return true;
+        if (!caretBrowsingEnabled) {
+          this.arrowLeftRightHandler_(e, formFieldFocused);
         }
-        this.arrowLeftRightHandler_(e, formFieldFocused);
         return true;
       case 'ArrowDown':
       case 'ArrowUp':
-        if (caretBrowsingEnabled) {
-          // TODO(crbug.com/435623341): Handle directional keys for non-text
-          // pages in caret browsing mode.
-          return true;
+        if (!caretBrowsingEnabled) {
+          this.arrowUpDownHandler_(e, formFieldFocused);
         }
-        this.arrowUpDownHandler_(e, formFieldFocused);
         return true;
       default:
         return false;
