@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<head>
+  <title>drawElementImage paints CSS transforms - ref</title>
+  <link rel="author" href="mailto:schenney@chromium.org">
+  <style>
+    canvas {
+      background: black;
+    }
+    #wrapper {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      left: 8px;
+      top: 8px;
+      overflow: clip;
+    }
+    div > div {
+      width: 100px;
+      height: 100px;
+      background-image: url("/css/css-images/image-orientation/support/exif-orientation-1-ul.jpg");
+      transform: rotate(45deg);
+    }
+  </style>
+</head>
+<body>
+  <canvas id=canvas width="100" height="100" layoutsubtree>
+  </canvas>
+
+  <div id="wrapper">
+    <div></div>
+  </div>
+</body>

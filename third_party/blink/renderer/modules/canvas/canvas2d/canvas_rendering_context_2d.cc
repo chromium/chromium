@@ -846,14 +846,14 @@ void CanvasRenderingContext2D::DrawElementInternal(
       builder.Context(),
       PaintFlag::kPrivacyPreserving | PaintFlag::kOmitCompositingInfo);
 
-  PropertyTreeState property_tree_state = layer->GetLayoutObject()
-                                              .FirstFragment()
+  PropertyTreeState property_tree_state = canvas_element->GetLayoutBox()
+                                              ->FirstFragment()
                                               .LocalBorderBoxProperties()
                                               .Unalias();
 
   cc::PaintRecord paint_record = builder.EndRecording(property_tree_state);
 
-  // The filter must have been resolved before calling Draw, because it
+  // The filter needs to be resolved before calling Draw, because it
   // immediately checks IsFilterResolved() and uses a null canvas if not.
   StateGetFilter();
 
