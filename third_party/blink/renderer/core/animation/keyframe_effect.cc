@@ -154,6 +154,7 @@ KeyframeEffect* KeyframeEffect::Create(
         exception_state.ThrowDOMException(
             DOMExceptionCode::kSyntaxError,
             "A valid pseudo-selector must be null or start with ::.");
+        return nullptr;
       }
     }
   }
