@@ -249,9 +249,7 @@ class InspectorFileReaderLoaderClient final
 
   ~InspectorFileReaderLoaderClient() override = default;
 
-  void Start() {
-    loader_->Start(blob_);
-  }
+  void Start() { loader_->Start(blob_); }
 
   FileErrorCode DidStartLoading(uint64_t) override {
     return FileErrorCode::kOK;
@@ -2495,6 +2493,24 @@ protocol::Response InspectorNetworkAgent::emulateNetworkConditions(
     std::optional<double> packet_loss,
     std::optional<int> packet_queue_length,
     std::optional<bool> packet_reordering) {
+  return overrideNetworkState(offline, latency, download_throughput,
+                              upload_throughput, std::move(connection_type));
+}
+
+protocol::Response InspectorNetworkAgent::emulateNetworkConditionsByRule(
+    bool offline,
+    std::unique_ptr<protocol::Array<protocol::Network::NetworkConditions>>
+        matched_network_conditions,
+    std::unique_ptr<protocol::Array<String>>* rule_ids_result) {
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorNetworkAgent::overrideNetworkState(
+    bool offline,
+    double latency,
+    double download_throughput,
+    double upload_throughput,
+    std::optional<String> connection_type) {
   WebConnectionType type = kWebConnectionTypeUnknown;
   if (connection_type.has_value()) {
     type = ToWebConnectionType(connection_type.value());

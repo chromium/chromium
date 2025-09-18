@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "base/unguessable_token.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
@@ -41,7 +42,9 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
       std::vector<network::mojom::HttpRawHeaderPairPtr> request_headers,
       const base::TimeTicks timestamp,
       network::mojom::ClientSecurityStatePtr security_state,
-      network::mojom::OtherPartitionInfoPtr other_partition_info) override;
+      network::mojom::OtherPartitionInfoPtr other_partition_info,
+      const std::optional<base::UnguessableToken>&
+          applied_network_conditions_id) override;
   void OnRawResponse(
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& response_cookie_list,

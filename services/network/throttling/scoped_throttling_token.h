@@ -36,6 +36,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ScopedThrottlingToken {
 
   ~ScopedThrottlingToken();
 
+  uint32_t source_id() const { return net_log_source_id_; }
+
  private:
   ScopedThrottlingToken(uint32_t net_log_source_id,
                         const base::UnguessableToken& throttling_profile_id);

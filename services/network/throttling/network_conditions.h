@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_THROTTLING_NETWORK_CONDITIONS_H_
 
 #include "base/component_export.h"
+#include "base/unguessable_token.h"
 
 namespace network {
 
@@ -31,11 +32,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkConditions {
                     double upload_throughput,
                     double packet_loss,
                     int packet_queue_length,
-                    bool packet_reordering);
+                    bool packet_reordering,
+                    std::optional<base::UnguessableToken> rule_id);
 
   bool IsThrottling() const;
 
   bool offline() const { return offline_; }
+  const std::optional<base::UnguessableToken>& rule_id() const {
+    return rule_id_;
+  }
 
   // These are 0 if the corresponding throttle is disabled, >0 otherwise.
   double latency() const { return latency_; }
@@ -53,6 +58,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkConditions {
   double packet_loss_;
   int packet_queue_length_;
   bool packet_reordering_;
+  std::optional<base::UnguessableToken> rule_id_;
 };
 
 }  // namespace network

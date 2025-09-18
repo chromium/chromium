@@ -96,7 +96,8 @@ interface DevToolsObserver {
     array<HttpRawHeaderPair> headers,
     mojo_base.mojom.TimeTicks timestamp,
     ClientSecurityState? client_security_state,
-    OtherPartitionInfo? other_partition_info);
+    OtherPartitionInfo? other_partition_info,
+    mojo_base.mojom.UnguessableToken? applied_network_conditions_id);
 
   // Called to send information about the cookies blocked from storage from a
   // received response. Only called when |devtool_request_id| is available to

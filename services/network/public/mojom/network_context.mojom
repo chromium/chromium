@@ -679,6 +679,16 @@ struct NetworkConditions {
 
   // Allow packet reordering for WebRTC connections.
   bool packet_reordering;
+
+  // Used to tag requests that were affected by these conditions.
+  mojo_base.mojom.UnguessableToken? rule_id;
+};
+
+struct MatchedNetworkConditions {
+  // A URLPattern matching the conditions. An empty pattern matches all
+  // requests.
+  string pattern;
+  NetworkConditions conditions;
 };
 
 struct NetworkDurableMessageConfig {
@@ -1317,9 +1327,8 @@ interface NetworkContext {
   // Configures network conditions for the specified throttling profile.
   // The throttling will be applied only to requests that have matching
   // throttling_profile_id.
-  // Passing null NetworkConditions disables the throttling.
   SetNetworkConditions(mojo_base.mojom.UnguessableToken throttling_profile_id,
-                       NetworkConditions? conditions);
+                       array<MatchedNetworkConditions> conditions);
 
   // Enables network level storage of HTTP request/response bodies.
   EnableDurableMessageCollector(

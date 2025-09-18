@@ -1039,7 +1039,7 @@ class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
         {{{},
           NetworkConditions{state.offline, state.latency.InMillisecondsF(), 0.0,
                             0.0, state.packet_loss, state.packet_queue_length,
-                            false}}});
+                            false, std::nullopt}}});
   }
 
   void RemoveThrottling() {

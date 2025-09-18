@@ -183,6 +183,11 @@ class NetworkHandler : public DevToolsDomainHandler,
       std::optional<double> packet_loss,
       std::optional<int> packet_queue_length,
       std::optional<bool> packet_reordering) override;
+  Response EmulateNetworkConditionsByRule(
+      bool offline,
+      std::unique_ptr<protocol::Array<protocol::Network::NetworkConditions>>
+          matched_network_conditions,
+      std::unique_ptr<protocol::Array<String>>* rule_ids_result) override;
   Response SetBypassServiceWorker(bool bypass) override;
 
   DispatchResponse SetRequestInterception(
@@ -299,7 +304,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
       const base::TimeTicks timestamp,
       const network::mojom::ClientSecurityStatePtr& security_state,
-      const network::mojom::OtherPartitionInfoPtr& other_partition_info);
+      const network::mojom::OtherPartitionInfoPtr& other_partition_info,
+      std::optional<base::UnguessableToken> applied_network_conditions_id);
   void OnResponseReceivedExtraInfo(
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& response_cookie_list,
@@ -383,7 +389,10 @@ class NetworkHandler : public DevToolsDomainHandler,
                                      int net_error,
                                      std::string content);
   void RequestIntercepted(std::unique_ptr<InterceptedRequestInfo> request_info);
-  void SetNetworkConditions(network::mojom::NetworkConditionsPtr conditions);
+  void SetNetworkConditions(
+      std::vector<network::mojom::MatchedNetworkConditionsPtr>
+          matched_conditions,
+      bool offline);
   void ConfigureDurableMessageCollector(
       network::mojom::NetworkDurableMessageConfigPtr config);
   void ProcessDurableMessageOrGetLocalData(

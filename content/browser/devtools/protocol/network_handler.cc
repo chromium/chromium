@@ -29,6 +29,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_io_context.h"
@@ -104,6 +105,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -1490,7 +1492,7 @@ Response NetworkHandler::Enable(
 Response NetworkHandler::Disable() {
   enabled_ = false;
   url_loader_interceptor_.reset();
-  SetNetworkConditions(nullptr);
+  SetNetworkConditions({}, /*offline=*/false);
   durable_message_collector_.reset();
   extra_headers_.clear();
   ClearAcceptedEncodingsOverride();
@@ -1964,21 +1966,63 @@ Response NetworkHandler::EmulateNetworkConditions(
     std::optional<double> packet_loss,
     std::optional<int> packet_queue_length,
     std::optional<bool> packet_reordering) {
-  network::mojom::NetworkConditionsPtr network_conditions;
+  std::vector<network::mojom::MatchedNetworkConditionsPtr> network_conditions;
   bool throttling_enabled = offline || latency > 0 || download_throughput > 0 ||
                             upload_throughput > 0;
   if (throttling_enabled) {
-    network_conditions = network::mojom::NetworkConditions::New();
-    network_conditions->offline = offline;
-    network_conditions->latency = base::Milliseconds(latency);
-    network_conditions->download_throughput = download_throughput;
-    network_conditions->upload_throughput = upload_throughput;
-    network_conditions->packet_loss = packet_loss.value_or(0.);
-    network_conditions->packet_queue_length = packet_queue_length.value_or(0);
-    network_conditions->packet_reordering = packet_reordering.value_or(false);
+    network_conditions.push_back(
+        network::mojom::MatchedNetworkConditions::New());
+    network_conditions.back()->conditions =
+        network::mojom::NetworkConditions::New();
+    network_conditions.back()->conditions->offline = offline;
+    network_conditions.back()->conditions->latency =
+        base::Milliseconds(latency);
+    network_conditions.back()->conditions->download_throughput =
+        download_throughput;
+    network_conditions.back()->conditions->upload_throughput =
+        upload_throughput;
+    network_conditions.back()->conditions->packet_loss =
+        packet_loss.value_or(0.);
+    network_conditions.back()->conditions->packet_queue_length =
+        packet_queue_length.value_or(0);
+    network_conditions.back()->conditions->packet_reordering =
+        packet_reordering.value_or(false);
   }
-  SetNetworkConditions(std::move(network_conditions));
+  SetNetworkConditions(std::move(network_conditions), offline);
   return Response::FallThrough();
+}
+
+Response NetworkHandler::EmulateNetworkConditionsByRule(
+    bool offline,
+    std::unique_ptr<protocol::Array<protocol::Network::NetworkConditions>>
+        matched_network_conditions,
+    std::unique_ptr<protocol::Array<String>>* rule_ids_result) {
+  std::vector<network::mojom::MatchedNetworkConditionsPtr> matched_conditions;
+  *rule_ids_result = std::make_unique<protocol::Array<String>>();
+  for (auto& matched_condition : *matched_network_conditions) {
+    auto rule_id = base::UnguessableToken::Create();
+    network::mojom::MatchedNetworkConditionsPtr conditions =
+        network::mojom::MatchedNetworkConditions::New();
+    conditions->pattern = matched_condition->GetUrlPattern();
+    conditions->conditions = network::mojom::NetworkConditions::New();
+    conditions->conditions->offline = offline;
+    conditions->conditions->latency =
+        base::Milliseconds(matched_condition->GetLatency());
+    conditions->conditions->download_throughput =
+        matched_condition->GetDownloadThroughput();
+    conditions->conditions->upload_throughput =
+        matched_condition->GetUploadThroughput();
+    conditions->conditions->packet_loss = matched_condition->GetPacketLoss(0.);
+    conditions->conditions->packet_queue_length =
+        matched_condition->GetPacketQueueLength(0);
+    conditions->conditions->packet_reordering =
+        matched_condition->GetPacketReordering(false);
+    conditions->conditions->rule_id = rule_id;
+    rule_ids_result->get()->push_back(rule_id.ToString());
+    matched_conditions.emplace_back(std::move(conditions));
+  }
+  SetNetworkConditions(std::move(matched_conditions), offline);
+  return Response::Success();
 }
 
 Response NetworkHandler::SetBypassServiceWorker(bool bypass) {
@@ -3395,18 +3439,22 @@ void NetworkHandler::RequestIntercepted(
 }
 
 void NetworkHandler::SetNetworkConditions(
-    network::mojom::NetworkConditionsPtr conditions) {
-  if (!storage_partition_)
+    std::vector<network::mojom::MatchedNetworkConditionsPtr> matched_conditions,
+    bool offline) {
+  if (!storage_partition_) {
     return;
+  }
   network::mojom::NetworkContext* context =
       storage_partition_->GetNetworkContext();
-  bool offline = conditions ? conditions->offline : false;
 
-  if (!devtools_token_.is_empty())
-    context->SetNetworkConditions(devtools_token_, std::move(conditions));
+  if (!devtools_token_.is_empty()) {
+    context->SetNetworkConditions(devtools_token_,
+                                  std::move(matched_conditions));
+  }
 
-  if (offline == !!background_sync_restorer_)
+  if (offline == !!background_sync_restorer_) {
     return;
+  }
   background_sync_restorer_.reset(
       offline ? new BackgroundSyncRestorer(host_id_, storage_partition_)
               : nullptr);
@@ -3553,9 +3601,11 @@ void NetworkHandler::OnRequestWillBeSentExtraInfo(
     const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
     const base::TimeTicks timestamp,
     const network::mojom::ClientSecurityStatePtr& security_state,
-    const network::mojom::OtherPartitionInfoPtr& other_partition_info) {
-  if (!enabled_)
+    const network::mojom::OtherPartitionInfoPtr& other_partition_info,
+    std::optional<base::UnguessableToken> applied_network_conditions_id) {
+  if (!enabled_) {
     return;
+  }
 
   frontend_->RequestWillBeSentExtraInfo(
       devtools_request_id, BuildProtocolAssociatedCookies(request_cookie_list),
@@ -3564,6 +3614,9 @@ void NetworkHandler::OnRequestWillBeSentExtraInfo(
       other_partition_info
           ? std::optional<bool>(
                 other_partition_info->site_has_cookie_in_other_partition)
+          : std::nullopt,
+      applied_network_conditions_id.has_value()
+          ? std::optional<String>(applied_network_conditions_id->ToString())
           : std::nullopt);
 }
 

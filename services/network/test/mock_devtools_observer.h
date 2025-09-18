@@ -10,6 +10,7 @@
 
 #include "base/run_loop.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/url_request/url_request.h"
@@ -39,8 +40,9 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
       const base::TimeTicks timestamp,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      network::mojom::OtherPartitionInfoPtr site_has_cookie_in_other_partition)
-      override;
+      network::mojom::OtherPartitionInfoPtr site_has_cookie_in_other_partition,
+      const std::optional<base::UnguessableToken>&
+          applied_network_conditions_id) override;
 
   void OnRawResponse(
       const std::string& devtools_request_id,

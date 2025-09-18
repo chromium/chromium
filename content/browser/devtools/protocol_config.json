@@ -115,6 +115,7 @@
                   "setExtraHTTPHeaders",
                   "canEmulateNetworkConditions",
                   "emulateNetworkConditions",
+                  "emulateNetworkConditionsByRule",
                   "setBypassServiceWorker",
                   "setRequestInterception",
                   "continueInterceptedRequest",

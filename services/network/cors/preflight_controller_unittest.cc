@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -376,7 +377,9 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
       const base::TimeTicks timestamp,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      network::mojom::OtherPartitionInfoPtr other_partition_info) override {
+      network::mojom::OtherPartitionInfoPtr other_partition_info,
+      const std::optional<base::UnguessableToken>&
+          applied_network_conditions_id) override {
     on_raw_request_called_ = true;
   }
   void OnRawResponse(

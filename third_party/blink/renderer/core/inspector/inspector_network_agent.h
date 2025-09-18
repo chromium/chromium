@@ -303,6 +303,17 @@ class CORE_EXPORT InspectorNetworkAgent final
       std::optional<double> packet_loss,
       std::optional<int> packet_queue_length,
       std::optional<bool> packet_reordering) override;
+  protocol::Response emulateNetworkConditionsByRule(
+      bool offline,
+      std::unique_ptr<protocol::Array<protocol::Network::NetworkConditions>>
+          matched_network_conditions,
+      std::unique_ptr<protocol::Array<String>>* rule_ids_result) override;
+  protocol::Response overrideNetworkState(
+      bool offline,
+      double latency,
+      double download_throughput,
+      double upload_throughput,
+      std::optional<String> connection_type) override;
   protocol::Response setCacheDisabled(bool) override;
   protocol::Response setBypassServiceWorker(bool) override;
   protocol::Response getCertificate(

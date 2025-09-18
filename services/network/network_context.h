@@ -326,8 +326,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                               ClearDomainReliabilityCallback callback) override;
   void CloseAllConnections(CloseAllConnectionsCallback callback) override;
   void CloseIdleConnections(CloseIdleConnectionsCallback callback) override;
-  void SetNetworkConditions(const base::UnguessableToken& throttling_profile_id,
-                            mojom::NetworkConditionsPtr conditions) override;
+  void SetNetworkConditions(
+      const base::UnguessableToken& throttling_profile_id,
+      std::vector<mojom::MatchedNetworkConditionsPtr> conditions) override;
   void EnableDurableMessageCollector(
       const base::UnguessableToken& throttling_profile_id,
       mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver)
