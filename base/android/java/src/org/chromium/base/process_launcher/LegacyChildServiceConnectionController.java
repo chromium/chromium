@@ -236,6 +236,56 @@ import javax.annotation.concurrent.GuardedBy;
     }
 
     @Override
+    public void setEffectiveBindingState(@ChildBindingState int effectiveBindingState) {
+        assert effectiveBindingState != ChildBindingState.UNBOUND;
+        if (mUnbound) {
+            return;
+        }
+
+        // Bind the new effective binding state first.
+        switch (effectiveBindingState) {
+            case ChildBindingState.STRONG:
+                if (!mStrongBinding.isBound()) {
+                    mStrongBinding.bindServiceConnection();
+                }
+                updateBindingState();
+                break;
+            case ChildBindingState.VISIBLE:
+                if (!mVisibleBinding.isBound()) {
+                    mVisibleBinding.bindServiceConnection();
+                }
+                updateBindingState();
+                break;
+            case ChildBindingState.NOT_PERCEPTIBLE:
+                if (!mNotPerceptibleBinding.isBound()) {
+                    mNotPerceptibleBinding.bindServiceConnection();
+                }
+                updateBindingState();
+                break;
+            case ChildBindingState.WAIVED:
+                // do nothing
+                break;
+            case ChildBindingState.UNBOUND:
+            default:
+                assert false : "Unsupported effective binding state: " + effectiveBindingState;
+        }
+
+        // Unbind bindings that are not in the effective binding state. Unbinding is done in the
+        // reverse order of binding to make the getBindingState() result consistent.
+        if (effectiveBindingState != ChildBindingState.NOT_PERCEPTIBLE) {
+            if (mNotPerceptibleBinding != null) {
+                mNotPerceptibleBinding.unbindServiceConnection(() -> updateBindingState());
+            }
+        }
+        if (effectiveBindingState != ChildBindingState.VISIBLE) {
+            mVisibleBinding.unbindServiceConnection(() -> updateBindingState());
+        }
+        if (effectiveBindingState != ChildBindingState.STRONG) {
+            mStrongBinding.unbindServiceConnection(() -> updateBindingState());
+        }
+    }
+
+    @Override
     public void setStrongBinding() {
         mStrongBinding.bindServiceConnection();
         updateBindingState();

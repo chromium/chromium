@@ -17,6 +17,7 @@ namespace {
 // this array may either refer to features defined in //base features.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBackgroundNotPerceptibleBinding,
+    &features::kEffectiveBindingState,
     &features::kPostPowerMonitorBroadcastReceiverInitToBackground,
     &features::kPostGetMyMemoryStateToBackground,
     &features::kUpdateStateBeforeUnbinding,
