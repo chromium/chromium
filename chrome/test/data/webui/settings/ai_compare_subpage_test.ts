@@ -89,6 +89,8 @@ suite('CompareSubpage', function() {
     assertEquals(
         learnMoreLink.href, loadTimeData.getString('compareLearnMoreUrl'));
 
+    // Prevent navigation.
+    learnMoreLink.addEventListener('click', e => e.preventDefault());
     learnMoreLink.click();
     await assertFeatureInteractionMetrics(
         AiPageCompareInteractions.LEARN_MORE_LINK_CLICKED,
