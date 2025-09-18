@@ -1041,6 +1041,12 @@ void NativeWidgetMacNSWindowHost::OnApplicationHostDestroying(
   while (!children_.empty()) {
     children_.front()->OnApplicationHostDestroying(host);
   }
+  // Allow the process hosting this window to clean away any window state in its
+  // environment before the mojo remote is destroyed and the host process is
+  // terminated.
+  if (GetNSWindowMojo()) {
+    GetNSWindowMojo()->CloseWindowNow();
+  }
   OnWindowHasClosed();
 }
 
