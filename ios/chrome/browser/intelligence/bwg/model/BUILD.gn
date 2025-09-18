@@ -138,26 +138,32 @@ source_set("snapshot_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "bwg_browser_agent_unittest.mm",
     "bwg_service_unittest.mm",
     "bwg_session_handler_unittest.mm",
     "bwg_snapshot_utils_unittest.mm",
     "bwg_tab_helper_unittest.mm",
   ]
   deps = [
+    ":browser_agent",
     ":bwg_service",
     ":model",
     ":snapshot_utils",
     ":tab_helper",
     "//base/test:test_support",
+    "//components/favicon/core",
+    "//components/favicon/ios",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync/base",
     "//components/sync/service",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
