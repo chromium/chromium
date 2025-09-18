@@ -13,12 +13,15 @@
 #include "chrome/common/extensions/api/windows.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/api/tabs/tabs_event_router_android.h"
 #else
 #include "chrome/browser/extensions/api/tabs/tabs_event_router.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
