@@ -21,6 +21,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation_traits.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "device/fido/fido_constants.h"
@@ -223,6 +224,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
     virtual ~Observer();
 
+    // `StartObserving` and `StopObserving` are called when the request handler
+    // is constructed and destructed, respectively.
+    virtual void StartObserving(FidoRequestHandlerBase* request_handler) = 0;
+    virtual void StopObserving(FidoRequestHandlerBase* request_handler) = 0;
+
     // This method will not be invoked until the observer is set.
     virtual void OnTransportAvailabilityEnumerated(
         TransportAvailabilityInfo data) = 0;
@@ -334,7 +340,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
   base::WeakPtr<FidoRequestHandlerBase> GetWeakPtr();
 
-  void set_observer(Observer* observer);
+  void SetObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Returns whether FidoAuthenticator with id equal to |authenticator_id|
   // exists. Fake FidoRequestHandler objects used in testing overrides this
@@ -445,5 +452,23 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 };
 
 }  // namespace device
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<device::FidoRequestHandlerBase,
+                               device::FidoRequestHandlerBase::Observer> {
+  static void AddObserver(device::FidoRequestHandlerBase* source,
+                          device::FidoRequestHandlerBase::Observer* observer) {
+    source->SetObserver(observer);
+  }
+  static void RemoveObserver(
+      device::FidoRequestHandlerBase* source,
+      device::FidoRequestHandlerBase::Observer* observer) {
+    source->RemoveObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // DEVICE_FIDO_FIDO_REQUEST_HANDLER_BASE_H_

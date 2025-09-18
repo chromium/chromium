@@ -352,6 +352,9 @@ void FidoRequestHandlerBase::InitDiscoveries(
 }
 
 FidoRequestHandlerBase::~FidoRequestHandlerBase() {
+  if (observer_) {
+    observer_->StopObserving(this);
+  }
   CancelActiveAuthenticators();
 }
 
@@ -423,13 +426,18 @@ base::WeakPtr<FidoRequestHandlerBase> FidoRequestHandlerBase::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void FidoRequestHandlerBase::set_observer(
+void FidoRequestHandlerBase::SetObserver(
     FidoRequestHandlerBase::Observer* observer) {
   DCHECK(!observer_) << "Only one observer is supported.";
   observer_ = observer;
 
   FIDO_LOG(DEBUG) << "FidoRequestHandler observer set";
   MaybeSignalTransportsEnumerated();
+}
+
+void FidoRequestHandlerBase::RemoveObserver(
+    FidoRequestHandlerBase::Observer* observer) {
+  observer_ = nullptr;
 }
 
 void FidoRequestHandlerBase::Start() {

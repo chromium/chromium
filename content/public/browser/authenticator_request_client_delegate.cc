@@ -120,6 +120,12 @@ void AuthenticatorRequestClientDelegate::ProvideChallengeUrl(
     base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
         callback) {}
 
+void AuthenticatorRequestClientDelegate::StartObserving(
+    device::FidoRequestHandlerBase* request_handler) {}
+
+void AuthenticatorRequestClientDelegate::StopObserving(
+    device::FidoRequestHandlerBase* request_handler) {}
+
 void AuthenticatorRequestClientDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {}
 

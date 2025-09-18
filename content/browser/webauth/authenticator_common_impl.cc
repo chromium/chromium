@@ -960,9 +960,10 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
           &device::FidoRequestHandlerBase::RequestBluetoothPermission,
           req_state_->request_handler
               ->GetWeakPtr()) /* request_ble_permission_callback */);
-  // `set_observer` can destroy `this`. It is not safe to refer to local state
-  // after this call.
-  req_state_->request_handler->set_observer(req_state_->request_delegate.get());
+  // `StartObserving` can destroy `this`. It is not safe to refer to local
+  // state after this call.
+  req_state_->request_delegate->StartObserving(
+      req_state_->request_handler.get());
 }
 
 void AuthenticatorCommonImpl::StartGetAssertionRequest(
@@ -1053,9 +1054,10 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
           request_handler->GetWeakPtr()) /* request_ble_permission_callback */);
 
   req_state_->request_handler = std::move(request_handler);
-  // `set_observer` can destroy `this`. It is not safe to refer to local state
-  // after this call.
-  req_state_->request_handler->set_observer(req_state_->request_delegate.get());
+  // `StartObserving` can destroy `this`. It is not safe to refer to local
+  // state after this call.
+  req_state_->request_delegate->StartObserving(
+      req_state_->request_handler.get());
 }
 
 bool AuthenticatorCommonImpl::IsFocused() const {

@@ -37,6 +37,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/authenticator_impl.h"
+#include "content/browser/webauth/default_authenticator_request_client_delegate.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/navigation_handle.h"
@@ -432,7 +433,7 @@ class WebAuthBrowserTestWebAuthenticationDelegate
 };
 
 class WebAuthBrowserTestClientDelegate
-    : public AuthenticatorRequestClientDelegate {
+    : public DefaultAuthenticatorRequestClientDelegate {
  public:
   explicit WebAuthBrowserTestClientDelegate(WebAuthBrowserTestState* test_state)
       : test_state_(test_state) {}

@@ -63,6 +63,7 @@
 #include "content/browser/webauth/authenticator_request_outcome_enums.h"
 #include "content/browser/webauth/authenticator_test_base.h"
 #include "content/browser/webauth/client_data_json.h"
+#include "content/browser/webauth/default_authenticator_request_client_delegate.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
@@ -4691,7 +4692,7 @@ static constexpr char kTestPIN[] = "1234";
 static constexpr char16_t kTestPIN16[] = u"1234";
 
 class UVTestAuthenticatorClientDelegate
-    : public AuthenticatorRequestClientDelegate {
+    : public DefaultAuthenticatorRequestClientDelegate {
  public:
   explicit UVTestAuthenticatorClientDelegate(bool* collected_pin,
                                              uint32_t* min_pin_length,
@@ -4852,7 +4853,7 @@ struct PINExpectation {
 };
 
 class PINTestAuthenticatorRequestDelegate
-    : public AuthenticatorRequestClientDelegate {
+    : public DefaultAuthenticatorRequestClientDelegate {
  public:
   PINTestAuthenticatorRequestDelegate(
       bool supports_pin,
@@ -6555,7 +6556,7 @@ TEST_F(UVTokenAuthenticatorImplTest, MakeCredentialUvBlockedFallBackToPin) {
 }
 
 class BlockingAuthenticatorRequestDelegate
-    : public AuthenticatorRequestClientDelegate {
+    : public DefaultAuthenticatorRequestClientDelegate {
  public:
   BlockingAuthenticatorRequestDelegate() = default;
 
@@ -6694,7 +6695,7 @@ TEST_F(BlockingDelegateAuthenticatorImplTest, PostCancelMessage) {
 //      with "/", and compares the result against |expected_accounts|.
 //   c) auto-selects the account with the user ID matching |selected_user_id|.
 class ResidentKeyTestAuthenticatorRequestDelegate
-    : public AuthenticatorRequestClientDelegate {
+    : public DefaultAuthenticatorRequestClientDelegate {
  public:
   struct Config {
     // A string representation of the accounts expected to be passed to
@@ -8816,7 +8817,7 @@ TEST_F(TouchIdAuthenticatorImplTest, MakeCredential_Eviction) {
 class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
  protected:
   class InspectTAIAuthenticatorRequestDelegate
-      : public AuthenticatorRequestClientDelegate {
+      : public DefaultAuthenticatorRequestClientDelegate {
    public:
     using Callback = base::RepeatingCallback<void(
         const device::FidoRequestHandlerBase::TransportAvailabilityInfo&,
@@ -9215,7 +9216,7 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
   };
 
   class ContactWhenReadyAuthenticatorRequestDelegate
-      : public AuthenticatorRequestClientDelegate {
+      : public DefaultAuthenticatorRequestClientDelegate {
    public:
     explicit ContactWhenReadyAuthenticatorRequestDelegate(
         base::RepeatingClosure callback)

@@ -14,6 +14,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "content/common/content_export.h"
@@ -283,17 +284,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
           callback);
 
   // device::FidoRequestHandlerBase::Observer:
+  void StartObserving(device::FidoRequestHandlerBase* request_handler) override;
+  void StopObserving(device::FidoRequestHandlerBase* request_handler) override;
   void OnTransportAvailabilityEnumerated(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo data) override;
-  // If true, the request handler will defer dispatch of its request onto the
-  // given authenticator to the embedder. The embedder needs to call
-  // |StartAuthenticatorRequest| when it wants to initiate request dispatch.
-  //
-  // This method is invoked before |FidoAuthenticatorAdded|, and may be
-  // invoked multiple times for the same authenticator. Depending on the
-  // result, the request handler might decide not to make the authenticator
-  // available, in which case it never gets passed to
-  // |FidoAuthenticatorAdded|.
   bool EmbedderControlsAuthenticatorDispatch(
       const device::FidoAuthenticator& authenticator) override;
   void BluetoothAdapterStatusChanged(

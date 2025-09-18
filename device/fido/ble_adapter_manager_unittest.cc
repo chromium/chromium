@@ -46,6 +46,8 @@ class MockObserver : public FidoRequestHandlerBase::Observer {
 
   ~MockObserver() override = default;
 
+  void StartObserving(FidoRequestHandlerBase* request_handler) override {}
+  void StopObserving(FidoRequestHandlerBase* request_handler) override {}
   MOCK_METHOD1(OnTransportAvailabilityEnumerated,
                void(FidoRequestHandlerBase::TransportAvailabilityInfo data));
   MOCK_METHOD1(EmbedderControlsAuthenticatorDispatch,
@@ -73,7 +75,7 @@ class FakeFidoRequestHandlerBase : public FidoRequestHandlerBase {
                              FidoDiscoveryFactory* fido_discovery_factory)
       : FidoRequestHandlerBase(fido_discovery_factory,
                                {FidoTransportProtocol::kHybrid}) {
-    set_observer(observer);
+    SetObserver(observer);
     Start();
   }
 

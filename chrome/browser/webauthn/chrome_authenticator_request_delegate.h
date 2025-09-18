@@ -179,6 +179,8 @@ class ChromeAuthenticatorRequestDelegate
           callback) override;
 
   // device::FidoRequestHandlerBase::Observer:
+  void StartObserving(device::FidoRequestHandlerBase* request_handler) override;
+  void StopObserving(device::FidoRequestHandlerBase* request_handler) override;
   void OnTransportAvailabilityEnumerated(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo data) override;
   bool EmbedderControlsAuthenticatorDispatch(
@@ -325,6 +327,10 @@ class ChromeAuthenticatorRequestDelegate
   PasswordSelectedCallback password_selected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
   base::OnceClosure cancel_ui_timeout_callback_;
+
+  base::ScopedObservation<device::FidoRequestHandlerBase,
+                          device::FidoRequestHandlerBase::Observer>
+      request_handler_observation_{this};
 
   // The number of credential types that have been requested to be displayed.
   int credential_types_ =

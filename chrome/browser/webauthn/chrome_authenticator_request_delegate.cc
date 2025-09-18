@@ -705,6 +705,16 @@ void ChromeAuthenticatorRequestDelegate::ProvideChallengeUrl(
   dialog_controller_->ProvideChallengeUrl(url, std::move(callback));
 }
 
+void ChromeAuthenticatorRequestDelegate::StartObserving(
+    device::FidoRequestHandlerBase* request_handler) {
+  request_handler_observation_.Observe(request_handler);
+}
+
+void ChromeAuthenticatorRequestDelegate::StopObserving(
+    device::FidoRequestHandlerBase* request_handler) {
+  request_handler_observation_.Reset();
+}
+
 void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     TransportAvailabilityInfo data) {
   if (g_observer) {

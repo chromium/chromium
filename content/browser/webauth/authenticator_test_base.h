@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "content/browser/webauth/default_authenticator_request_client_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_authentication_delegate.h"
@@ -213,7 +214,7 @@ GetCredentialOptionsPtr GetTestGetCredentialOptions();
 // TestAuthenticatorRequestDelegate is a test fake implementation of the
 // AuthenticatorRequestClientDelegate embedder interface.
 class TestAuthenticatorRequestDelegate
-    : public AuthenticatorRequestClientDelegate {
+    : public DefaultAuthenticatorRequestClientDelegate {
  public:
   TestAuthenticatorRequestDelegate(
       RenderFrameHost* render_frame_host,
