@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/app_controller_mac.h"
+#import <AuthenticationServices/AuthenticationServices.h>
+#import <Foundation/Foundation.h>
 
-#include "base/apple/foundation_util.h"
+#import "base/apple/foundation_util.h"
+#import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -55,6 +57,18 @@ void SetGuestProfileAsLastProfile() {
 
 using AuthSessionBrowserTest = InProcessBrowserTest;
 
+@interface MockASWebAuthenticationSessionCallback : NSObject
+@end
+
+@implementation MockASWebAuthenticationSessionCallback
+
+- (BOOL)matchesURL:(NSURL*)url {
+  return [url.scheme compare:@"mAkEiTsO"
+                     options:NSCaseInsensitiveSearch] == NSOrderedSame;
+}
+
+@end
+
 @interface MockASWebAuthenticationSessionRequest : NSObject {
   NSUUID* __strong _uuid;
   NSURL* __strong _initialURL;
@@ -68,6 +82,8 @@ using AuthSessionBrowserTest = InProcessBrowserTest;
 @property(readonly, nonatomic) NSURL* URL;
 @property(readonly, nonatomic) BOOL shouldUseEphemeralSession;
 @property(nullable, readonly, nonatomic, copy) NSString* callbackURLScheme;
+@property(readonly, nonatomic)
+    ASWebAuthenticationSessionCallback* callback API_AVAILABLE(macos(14.4));
 @property(readonly, nonatomic) NSUUID* UUID;
 
 - (void)completeWithCallbackURL:(NSURL*)url;
@@ -101,6 +117,10 @@ using AuthSessionBrowserTest = InProcessBrowserTest;
 - (NSString*)callbackURLScheme {
   // Use occasional capital letters to test the canonicalization of schemes.
   return @"mAkEiTsO";
+}
+
+- (ASWebAuthenticationSessionCallback*)callback {
+  return (id)[[MockASWebAuthenticationSessionCallback alloc] init];
 }
 
 - (NSUUID*)UUID {
