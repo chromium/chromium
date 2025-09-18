@@ -294,4 +294,21 @@ bool PageContentStore::DeleteAllEntries() {
   return transaction.Commit();
 }
 
+std::vector<int64_t> PageContentStore::GetAllTabIds() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_initialized_) {
+    return {};
+  }
+
+  static const char kSelectSql[] =
+      "SELECT tab_id FROM page_metadata WHERE tab_id IS NOT NULL";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+
+  std::vector<int64_t> tab_ids;
+  while (statement.Step()) {
+    tab_ids.push_back(statement.ColumnInt64(0));
+  }
+  return tab_ids;
+}
+
 }  // namespace optimization_guide

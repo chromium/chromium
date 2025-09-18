@@ -64,6 +64,9 @@ class PageContentStore {
   // Deletes all entries.
   bool DeleteAllEntries();
 
+  // Retrieves all tab IDs from the database.
+  std::vector<int64_t> GetAllTabIds();
+
  private:
   bool InitializeDb();
 

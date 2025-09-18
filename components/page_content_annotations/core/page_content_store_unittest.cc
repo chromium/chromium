@@ -216,6 +216,26 @@ TEST_F(PageContentStoreTest, DeleteAllEntries) {
   ASSERT_FALSE(got_apc.has_value());
 }
 
+TEST_F(PageContentStoreTest, GetAllTabIds) {
+  const base::Time visit_timestamp = base::Time::Now();
+  const base::Time extraction_timestamp = base::Time::Now();
+
+  EXPECT_TRUE(store_->AddPageContent(GURL("https://example.com/1"),
+                                     TestContent("test title 1"),
+                                     visit_timestamp, extraction_timestamp, 1));
+  EXPECT_TRUE(store_->AddPageContent(GURL("https://example.com/2"),
+                                     TestContent("test title 2"),
+                                     visit_timestamp, extraction_timestamp, 2));
+  EXPECT_TRUE(store_->AddPageContent(
+      GURL("https://example.com/3"), TestContent("test title 3"),
+      visit_timestamp, extraction_timestamp, std::nullopt));
+
+  std::vector<int64_t> tab_ids = store_->GetAllTabIds();
+  EXPECT_EQ(tab_ids.size(), 2u);
+  EXPECT_EQ(tab_ids[0], 1);
+  EXPECT_EQ(tab_ids[1], 2);
+}
+
 class PageContentStoreNoEncryptorTest : public testing::Test {
  public:
   void SetUp() override {

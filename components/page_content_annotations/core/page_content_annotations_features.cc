@@ -150,6 +150,11 @@ BASE_FEATURE(kAnnotatedPageContentExtraction,
 
 BASE_FEATURE(kOnDeviceCategoryClassifier, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPageContentCache, base::FEATURE_DISABLED_BY_DEFAULT);
+
+base::FeatureParam<int> kPageContentCacheMaxCacheAgeInDays{
+    &kPageContentCache, "max_cache_age_in_days", 7};
+
 base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       kPageContentAnnotations,
