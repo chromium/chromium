@@ -53,6 +53,21 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="A non-restored tab was painted first."/>
 </enum>
 
+<!-- LINT.IfChange(SessionRestoreInfoBarAction) -->
+
+<enum name="SessionRestoreInfoBarAction">
+  <int value="0" label="Shown">The infobar was shown to the user.</int>
+  <int value="1" label="Dismissed">The user explicitly closed the infobar.</int>
+  <int value="2" label="Link Clicked">
+    The user clicked on the link in the infobar.
+  </int>
+  <int value="3" label="Ignored">
+    The infobar got closed without user interacting with it.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h:SessionRestoreInfoBarAction) -->
+
 <enum name="SessionStorageDatabaseOpen">
   <int value="0" label="OK">Succesfully opened the database.</int>
   <int value="1" label="Recovered">

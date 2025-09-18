@@ -1195,6 +1195,37 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SessionRestore.InfoBar.TurnOffFromRestart"
+    enum="SessionRestoreInfoBarAction" expires_after="2026-09-01">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <summary>
+    Records user interaction with the session restore infobar when it is shown
+    to inform the user about turning off session restore from browser restart.
+  </summary>
+</histogram>
+
+<histogram name="SessionRestore.InfoBar.TurnOffFromSession"
+    enum="SessionRestoreInfoBarAction" expires_after="2026-09-01">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <summary>
+    Records user interaction with the session restore infobar when it is shown
+    to inform the user about turning off session restore from a restored
+    session.
+  </summary>
+</histogram>
+
+<histogram name="SessionRestore.InfoBar.TurnOnSessionRestore"
+    enum="SessionRestoreInfoBarAction" expires_after="2026-09-01">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <summary>
+    Records user interaction with the session restore infobar when it is shown
+    to inform the user about turning on session restore.
+  </summary>
+</histogram>
+
 <histogram name="SessionRestore.PageStateOldVersions" units="version"
     expires_after="2026-02-22">
   <owner>creis@chromium.org</owner>

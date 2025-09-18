@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,11 +23,39 @@
 
 namespace session_restore_infobar {
 
+namespace {
+
+void RecordInfoBarAction(
+    SessionRestoreInfoBarDelegate::InfobarMessageType message_type,
+    SessionRestoreInfoBarDelegate::InfobarAction action) {
+  switch (message_type) {
+    case SessionRestoreInfoBarDelegate::InfobarMessageType::kTurnOffFromRestart:
+      base::UmaHistogramEnumeration("SessionRestore.InfoBar.TurnOffFromRestart",
+                                    action);
+      break;
+    case SessionRestoreInfoBarDelegate::InfobarMessageType::kTurnOffFromSession:
+      base::UmaHistogramEnumeration("SessionRestore.InfoBar.TurnOffFromSession",
+                                    action);
+      break;
+    case SessionRestoreInfoBarDelegate::InfobarMessageType::
+        kTurnOnSessionRestore:
+      base::UmaHistogramEnumeration(
+          "SessionRestore.InfoBar.TurnOnSessionRestore", action);
+      break;
+    case SessionRestoreInfoBarDelegate::InfobarMessageType::kNone:
+      break;
+  }
+}
+
+}  // namespace
+
 // static
 infobars::InfoBar* SessionRestoreInfoBarDelegate::Show(
     infobars::ContentInfoBarManager* infobar_manager,
     base::OnceCallback<void()> close_cb,
     SessionRestoreInfoBarDelegate::InfobarMessageType message_type) {
+  RecordInfoBarAction(message_type,
+                      SessionRestoreInfoBarDelegate::InfobarAction::kShown);
   std::unique_ptr<SessionRestoreInfoBarDelegate> delegate =
       std::make_unique<SessionRestoreInfoBarDelegate>(std::move(close_cb),
                                                       message_type);
@@ -38,7 +67,12 @@ SessionRestoreInfoBarDelegate::SessionRestoreInfoBarDelegate(
     SessionRestoreInfoBarDelegate::InfobarMessageType message_type)
     : close_cb_(std::move(close_cb)), message_type_(message_type) {}
 
-SessionRestoreInfoBarDelegate::~SessionRestoreInfoBarDelegate() = default;
+SessionRestoreInfoBarDelegate::~SessionRestoreInfoBarDelegate() {
+  if (!action_taken_) {
+    RecordInfoBarAction(message_type_,
+                        SessionRestoreInfoBarDelegate::InfobarAction::kIgnored);
+  }
+}
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 SessionRestoreInfoBarDelegate::GetIdentifier() const {
@@ -91,10 +125,29 @@ int SessionRestoreInfoBarDelegate::GetLinkSpacingWhenPositionedBeforeButton()
 }
 
 void SessionRestoreInfoBarDelegate::InfoBarDismissed() {
+  action_taken_ = true;
+  RecordInfoBarAction(message_type_,
+                      SessionRestoreInfoBarDelegate::InfobarAction::kDismissed);
   if (close_cb_) {
     std::move(close_cb_).Run();
   }
   ConfirmInfoBarDelegate::InfoBarDismissed();
+}
+
+GURL SessionRestoreInfoBarDelegate::GetLinkURL() const {
+  const std::string learn_more_url_str = "chrome://settings/onStartup";
+  GURL learn_more_url(learn_more_url_str);
+  CHECK(learn_more_url.is_valid());
+  return learn_more_url;
+}
+
+bool SessionRestoreInfoBarDelegate::LinkClicked(
+    WindowOpenDisposition disposition) {
+  action_taken_ = true;
+  RecordInfoBarAction(
+      message_type_,
+      SessionRestoreInfoBarDelegate::InfobarAction::kLinkClicked);
+  return ConfirmInfoBarDelegate::LinkClicked(disposition);
 }
 
 }  // namespace session_restore_infobar

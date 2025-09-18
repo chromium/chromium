@@ -34,6 +34,19 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
     kTurnOnSessionRestore,
   };
 
+  // Enum for session restore infobar actions.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(InfobarAction)
+  enum class InfobarAction {
+    kShown = 0,
+    kDismissed = 1,
+    kLinkClicked = 2,
+    kIgnored = 3,
+    kMaxValue = kIgnored,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:SessionRestoreInfoBarAction)
+
   explicit SessionRestoreInfoBarDelegate(base::OnceCallback<void()> close_cb,
                                          InfobarMessageType message_type);
   SessionRestoreInfoBarDelegate(const SessionRestoreInfoBarDelegate&) = delete;
@@ -58,10 +71,13 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool ShouldShowLinkBeforeButton() const override;
   int GetLinkSpacingWhenPositionedBeforeButton() const override;
   void InfoBarDismissed() override;
+  GURL GetLinkURL() const override;
+  bool LinkClicked(WindowOpenDisposition disposition) override;
 
  private:
   base::OnceCallback<void()> close_cb_;
   const InfobarMessageType message_type_;
+  bool action_taken_ = false;
 };
 
 }  // namespace session_restore_infobar

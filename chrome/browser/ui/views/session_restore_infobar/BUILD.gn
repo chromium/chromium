@@ -65,6 +65,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profiles_extra_parts",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//components/infobars/content",
     "//components/omnibox/browser:vector_icons",
     "//components/prefs",
     "//components/prefs:test_support",

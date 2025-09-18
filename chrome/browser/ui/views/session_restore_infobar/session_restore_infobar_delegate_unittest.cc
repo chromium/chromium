@@ -1,65 +1,130 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
 
-#include <memory>
-
-#include "base/functional/callback.h"
-#include "base/test/mock_callback.h"
-#include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
-#include "components/infobars/core/infobar_delegate.h"
-#include "components/omnibox/browser/vector_icons.h"
-#include "components/vector_icons/vector_icons.h"
+#include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace session_restore_infobar {
 
-class SessionRestoreInfoBarDelegateTest : public testing::Test {
- public:
-  SessionRestoreInfoBarDelegateTest() = default;
-  SessionRestoreInfoBarDelegateTest(const SessionRestoreInfoBarDelegateTest&) =
-      delete;
-  SessionRestoreInfoBarDelegateTest& operator=(
-      const SessionRestoreInfoBarDelegateTest&) = delete;
+namespace {
 
-  SessionRestoreInfoBarDelegate* delegate() { return delegate_.get(); }
-  base::MockRepeatingCallback<void()>& close_cb() { return close_cb_; }
-
-  void CreateDelegate() {
-    delegate_ = std::make_unique<SessionRestoreInfoBarDelegate>(
-        close_cb_.Get(),
-        SessionRestoreInfoBarDelegate::InfobarMessageType::kNone);
-  }
-
- private:
-  base::MockRepeatingCallback<void()> close_cb_;
-  std::unique_ptr<SessionRestoreInfoBarDelegate> delegate_;
+struct SessionRestoreInfoBarTestParams {
+  SessionRestoreInfoBarDelegate::InfobarMessageType message_type;
+  const char* histogram_name;
 };
 
-TEST_F(SessionRestoreInfoBarDelegateTest, GetIdentifier) {
+}  // namespace
+
+class SessionRestoreInfoBarDelegateTest
+    : public testing::TestWithParam<SessionRestoreInfoBarTestParams> {
+ protected:
+  SessionRestoreInfoBarDelegateTest()
+      : web_contents_(content::WebContentsTester::CreateTestWebContents(
+            content::WebContents::CreateParams(&profile_))) {}
+
+  void SetUp() override {
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents_.get());
+  }
+
+  infobars::InfoBar* CreateDelegate() {
+    return SessionRestoreInfoBarDelegate::Show(
+        infobar_manager(), base::DoNothing(), GetParam().message_type);
+  }
+
+  infobars::ContentInfoBarManager* infobar_manager() {
+    return infobars::ContentInfoBarManager::FromWebContents(
+        web_contents_.get());
+  }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+ private:
+  // Must be the first member.
+  content::BrowserTaskEnvironment task_environment_;
+  ChromeLayoutProvider layout_provider_;
+  base::HistogramTester histogram_tester_;
+  TestingProfile profile_;
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
+  std::unique_ptr<content::WebContents> web_contents_;
+};
+
+// Executes the code to ensure that creating the infobar doesn't crash. When the
+// infobar is created, the "shown" histogram should be recorded.
+TEST_P(SessionRestoreInfoBarDelegateTest, Create) {
   CreateDelegate();
-  EXPECT_EQ(delegate()->GetIdentifier(),
-            infobars::InfoBarDelegate::SESSION_RESTORE_INFOBAR_DELEGATE);
+  histogram_tester().ExpectUniqueSample(
+      GetParam().histogram_name,
+      SessionRestoreInfoBarDelegate::InfobarAction::kShown, 1);
 }
 
-TEST_F(SessionRestoreInfoBarDelegateTest, GetVectorIcon) {
-  CreateDelegate();
-  EXPECT_EQ(&delegate()->GetVectorIcon(), &vector_icons::kProductRefreshIcon);
+// When the infobar is dismissed, the "dismissed" histogram should be recorded.
+TEST_P(SessionRestoreInfoBarDelegateTest, DismissedHistogram) {
+  infobars::InfoBar* infobar = CreateDelegate();
+  infobar->delegate()->InfoBarDismissed();
+  histogram_tester().ExpectBucketCount(
+      GetParam().histogram_name,
+      SessionRestoreInfoBarDelegate::InfobarAction::kDismissed, 1);
 }
 
-TEST_F(SessionRestoreInfoBarDelegateTest, GetButtons) {
-  CreateDelegate();
-  EXPECT_EQ(delegate()->GetButtons(),
-            SessionRestoreInfoBarDelegate::BUTTON_NONE);
+// When the link is clicked, the "link clicked" histogram should be recorded.
+TEST_P(SessionRestoreInfoBarDelegateTest, LinkClickedHistogram) {
+  infobars::InfoBar* infobar = CreateDelegate();
+  infobar->delegate()->LinkClicked(WindowOpenDisposition::CURRENT_TAB);
+  histogram_tester().ExpectBucketCount(
+      GetParam().histogram_name,
+      SessionRestoreInfoBarDelegate::InfobarAction::kLinkClicked, 1);
 }
 
-TEST_F(SessionRestoreInfoBarDelegateTest, ShouldShowLinkBeforeButton) {
-  CreateDelegate();
-  EXPECT_TRUE(delegate()->ShouldShowLinkBeforeButton());
+// When the infobar is destroyed without being accepted or dismissed, the
+// "ignored" histogram should be recorded.
+TEST_P(SessionRestoreInfoBarDelegateTest, IgnoredHistogram) {
+  infobars::InfoBar* infobar = CreateDelegate();
+  infobar_manager()->RemoveInfoBar(infobar);
+  histogram_tester().ExpectBucketCount(
+      GetParam().histogram_name,
+      SessionRestoreInfoBarDelegate::InfobarAction::kIgnored, 1);
 }
+
+// When the infobar is destroyed after being dismissed, the "dismissed"
+// histogram (not the "ignored" histogram) should be recorded.
+TEST_P(SessionRestoreInfoBarDelegateTest, DismissedHistogramInfoBarDestroyed) {
+  infobars::InfoBar* infobar = CreateDelegate();
+  infobar->delegate()->InfoBarDismissed();
+  infobar_manager()->RemoveInfoBar(infobar);
+  histogram_tester().ExpectBucketCount(
+      GetParam().histogram_name,
+      SessionRestoreInfoBarDelegate::InfobarAction::kDismissed, 1);
+  histogram_tester().ExpectBucketCount(
+      GetParam().histogram_name,
+      SessionRestoreInfoBarDelegate::InfobarAction::kIgnored, 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SessionRestoreInfoBarDelegateTest,
+    testing::Values(
+        SessionRestoreInfoBarTestParams{
+            SessionRestoreInfoBarDelegate::InfobarMessageType::
+                kTurnOffFromRestart,
+            "SessionRestore.InfoBar.TurnOffFromRestart"},
+        SessionRestoreInfoBarTestParams{
+            SessionRestoreInfoBarDelegate::InfobarMessageType::
+                kTurnOffFromSession,
+            "SessionRestore.InfoBar.TurnOffFromSession"},
+        SessionRestoreInfoBarTestParams{
+            SessionRestoreInfoBarDelegate::InfobarMessageType::
+                kTurnOnSessionRestore,
+            "SessionRestore.InfoBar.TurnOnSessionRestore"}));
 
 }  // namespace session_restore_infobar
